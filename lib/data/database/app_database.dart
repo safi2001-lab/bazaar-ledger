@@ -5,6 +5,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
 import 'tables/all_tables.dart';
+import 'daos/parties_dao.dart';
+import 'daos/pdc_dao.dart';
+import 'daos/ledger_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -24,6 +27,10 @@ part 'app_database.g.dart';
   JournalLines,
   SyncQueue,
   AuditLogs,
+], daos: [
+  PartiesDao,
+  PdcDao,
+  LedgerDao,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
