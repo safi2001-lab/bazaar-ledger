@@ -1,19 +1,23 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/database/app_database.dart';
 import '../../../shared/providers/database_provider.dart';
 
-part 'inventory_controller.g.dart';
+class InventoryNotifier extends StateNotifier<AsyncValue<List<Item>>> {
+  final Ref ref;
 
-@riverpod
-class InventoryController extends _$InventoryController {
-  @override
-  Stream<List<Item>> build() {
-    final db = ref.watch(appDatabaseProvider);
-    return db.itemsDao.watchAllItems(1); // Company ID 1
+  InventoryNotifier(this.ref) : super(const AsyncValue.loading()) {
+    _init();
   }
 
-  /// Add a new item to the catalog
+  void _init() {
+    final db = ref.read(appDatabaseProvider);
+    db.itemsDao.watchAllItems(1).listen(
+      (data) => state = AsyncValue.data(data),
+      onError: (err, stack) => state = AsyncValue.error(err, stack),
+    );
+  }
+
   Future<int> addItem({
     required String name,
     String? barcode,
@@ -28,7 +32,7 @@ class InventoryController extends _$InventoryController {
     bool trackSerial = false,
     bool is3rdSchedule = false,
   }) async {
-    final db = ref.watch(appDatabaseProvider);
+    final db = ref.read(appDatabaseProvider);
     final companion = ItemsCompanion.insert(
       companyId: 1,
       name: name,
@@ -47,13 +51,12 @@ class InventoryController extends _$InventoryController {
     return db.itemsDao.insertItem(companion);
   }
 
-  /// Adjust stock level
   Future<void> adjustStock({
     required int itemId,
     required double quantityDelta,
-    required String movementType, // 'Stock In', 'Stock Out', 'Wastage', 'Adjustment'
+    required String movementType,
   }) async {
-    final db = ref.watch(appDatabaseProvider);
+    final db = ref.read(appDatabaseProvider);
     await db.itemsDao.adjustStock(
       companyId: 1,
       itemId: itemId,
@@ -62,21 +65,24 @@ class InventoryController extends _$InventoryController {
     );
   }
 
-  /// Delete item
   Future<void> deleteItem(int itemId) async {
-    final db = ref.watch(appDatabaseProvider);
+    final db = ref.read(appDatabaseProvider);
     await db.itemsDao.deleteItem(itemId);
   }
 }
 
-@riverpod
-Stream<List<Item>> lowStockItems(LowStockItemsRef ref) {
+final inventoryControllerProvider =
+    StateNotifierProvider<InventoryNotifier, AsyncValue<List<Item>>>((ref) {
+  return InventoryNotifier(ref);
+});
+
+final lowStockItemsProvider = StreamProvider<List<Item>>((ref) {
   final db = ref.watch(appDatabaseProvider);
   return db.itemsDao.watchLowStockItems(1);
-}
+});
 
-@riverpod
-Stream<List<StockMovement>> itemStockMovements(ItemStockMovementsRef ref, {int? itemId}) {
+final itemStockMovementsProvider =
+    StreamProvider.family<List<StockMovement>, int?>((ref, itemId) {
   final db = ref.watch(appDatabaseProvider);
   return db.itemsDao.watchStockMovements(1, itemId: itemId);
-}
+});

@@ -27,9 +27,9 @@ void main() {
       pairingPin: '4321',
     );
 
-    // Start embedded master server on ephemeral port (port 0 assigns available OS port)
-    final port = await service.startMasterServer(port: 0);
-    expect(port, isPositive);
+    // Start embedded master server on port 8099
+    final port = await service.startMasterServer(port: 8099);
+    expect(port, equals(8099));
     expect(service.isServerRunning, isTrue);
 
     final client = http.Client();

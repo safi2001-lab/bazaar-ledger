@@ -1,20 +1,31 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart';
 import '../../../data/database/app_database.dart';
 import '../../../shared/providers/database_provider.dart';
 
-part 'party_ledger_controller.g.dart';
+class PartyLedgerNotifier extends StateNotifier<AsyncValue<List<Party>>> {
+  final Ref ref;
 
-@riverpod
-class PartyLedgerController extends _$PartyLedgerController {
-  @override
-  Stream<List<Party>> build() {
-    final db = ref.watch(appDatabaseProvider);
-    // Hardcoded companyId = 1 for now, in a real app this comes from an auth provider
-    return db.partiesDao.watchAllParties(1);
+  PartyLedgerNotifier(this.ref) : super(const AsyncValue.loading()) {
+    _init();
   }
 
-  Future<void> addParty(String name, String phone, String partyType, double creditLimit, double openingBalance) async {
-    final db = ref.watch(appDatabaseProvider);
+  void _init() {
+    final db = ref.read(appDatabaseProvider);
+    db.partiesDao.watchAllParties(1).listen(
+      (data) => state = AsyncValue.data(data),
+      onError: (err, stack) => state = AsyncValue.error(err, stack),
+    );
+  }
+
+  Future<void> addParty(
+    String name,
+    String phone,
+    String partyType,
+    double creditLimit,
+    double openingBalance,
+  ) async {
+    final db = ref.read(appDatabaseProvider);
     final companion = PartiesCompanion.insert(
       companyId: 1,
       name: name,
@@ -28,14 +39,9 @@ class PartyLedgerController extends _$PartyLedgerController {
   }
 
   Future<void> recordPaymentReceived(int partyId, double amount, String paymentMode) async {
-    final db = ref.watch(appDatabaseProvider);
-    
-    // Decrease the udhaar balance (negative balance means they owe us)
-    // Actually, let's treat positive as they owe us, negative as we owe them (standard AR approach).
-    // If they pay us, the balance decreases.
+    final db = ref.read(appDatabaseProvider);
     await db.partiesDao.updatePartyBalance(partyId, -amount);
 
-    // Record the payment entry
     final payment = PaymentsCompanion.insert(
       companyId: 1,
       partyId: partyId,
@@ -43,10 +49,11 @@ class PartyLedgerController extends _$PartyLedgerController {
       paymentType: 'Payment-In',
       paymentMode: paymentMode,
     );
-    final paymentId = await db.into(db.payments).insert(payment);
-
-    // Record Double-Entry Journal
-    // We would inject or call the DoubleEntryEngine here.
-    // For now, this is a placeholder for where that integration goes.
+    await db.into(db.payments).insert(payment);
   }
 }
+
+final partyLedgerControllerProvider =
+    StateNotifierProvider<PartyLedgerNotifier, AsyncValue<List<Party>>>((ref) {
+  return PartyLedgerNotifier(ref);
+});

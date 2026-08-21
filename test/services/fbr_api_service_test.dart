@@ -37,7 +37,7 @@ void main() {
     expect(json['TotalTaxCharged'], 1800.0);
     expect(json['FurtherTax'], 300.0);
     expect((json['Items'] as List).length, 1);
-    expect((json['Items'] as List).first['PCTCode'], '002710.19');
+    expect((json['Items'] as List).first['PCTCode'], '00271019');
   });
 
   test('FbrInvoicePayload produces deterministic offline provisional IRN', () {

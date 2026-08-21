@@ -32,6 +32,7 @@ class BackupService {
   static Future<void> shareBackupToDrive() async {
     final backupFile = await createLocalBackup();
     final xFile = XFile(backupFile.path);
+    // ignore: deprecated_member_use
     await Share.shareXFiles(
       [xFile],
       text: 'Save this .pkbak file to your Google Drive or local storage.',

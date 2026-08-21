@@ -149,7 +149,7 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _selectedUnit,
+                      initialValue: _selectedUnit,
                       decoration: const InputDecoration(labelText: 'Primary Unit'),
                       items: _units
                           .map((u) => DropdownMenuItem(value: u, child: Text(u)))
@@ -164,10 +164,9 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Pricing & Tax
+            // Pricing & Taxes Card
             Card(
               elevation: 0,
-              color: Colors.grey.shade50,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
                 side: BorderSide(color: Colors.grey.shade200),
@@ -178,7 +177,7 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Pricing & Tax Slabs',
+                      'Pricing & FBR Tax Slab',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 12),
@@ -187,14 +186,14 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _salePriceController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
-                              labelText: 'Sale Price (Rs) *',
-                              prefixText: 'Rs. ',
+                              labelText: 'Sale Price (PKR) *',
+                              prefixIcon: Icon(Icons.sell),
                             ),
                             validator: (val) {
                               if (val == null || val.trim().isEmpty) return 'Required';
-                              if (double.tryParse(val) == null) return 'Invalid price';
+                              if (double.tryParse(val) == null) return 'Invalid amount';
                               return null;
                             },
                           ),
@@ -203,10 +202,10 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _purchasePriceController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            keyboardType: TextInputType.number,
                             decoration: const InputDecoration(
-                              labelText: 'Purchase Price (Rs)',
-                              prefixText: 'Rs. ',
+                              labelText: 'Purchase Price (PKR)',
+                              prefixIcon: Icon(Icons.shopping_cart),
                             ),
                           ),
                         ),
@@ -214,7 +213,7 @@ class _AddEditItemScreenState extends ConsumerState<AddEditItemScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<double>(
-                      value: _selectedTaxRate,
+                      initialValue: _selectedTaxRate,
                       decoration: const InputDecoration(labelText: 'FBR Sales Tax Rate'),
                       items: const [
                         DropdownMenuItem(value: 18.0, child: Text('18% Standard Sales Tax')),

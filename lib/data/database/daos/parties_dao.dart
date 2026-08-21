@@ -4,9 +4,9 @@ import '../tables/all_tables.dart';
 
 part 'parties_dao.g.dart';
 
-@DriftAccessor(tables: [Parties, Companies])
+@DriftAccessor(tables: [Parties, Invoices, Payments, Companies])
 class PartiesDao extends DatabaseAccessor<AppDatabase> with _$PartiesDaoMixin {
-  PartiesDao(AppDatabase db) : super(db);
+  PartiesDao(super.db);
 
   /// Get all parties for a specific company
   Stream<List<Party>> watchAllParties(int companyId) {

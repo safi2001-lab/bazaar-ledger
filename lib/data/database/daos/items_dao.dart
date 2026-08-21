@@ -6,7 +6,7 @@ part 'items_dao.g.dart';
 
 @DriftAccessor(tables: [Items, StockMovements, Companies])
 class ItemsDao extends DatabaseAccessor<AppDatabase> with _$ItemsDaoMixin {
-  ItemsDao(AppDatabase db) : super(db);
+  ItemsDao(super.db);
 
   /// Watch all items for a company
   Stream<List<Item>> watchAllItems(int companyId) {
@@ -101,7 +101,7 @@ class ItemsDao extends DatabaseAccessor<AppDatabase> with _$ItemsDaoMixin {
       ..where((tbl) =>
           tbl.companyId.equals(companyId) &
           (itemId != null ? tbl.itemId.equals(itemId) : const Constant(true)))
-      ..orderBy([(t) => OrderingTerm(expression: t.movementDate, mode: OrderingMode.desc)]);
+      ..orderBy([(t) => OrderingTerm(expression: t.id, mode: OrderingMode.desc)]);
     return query.watch();
   }
 

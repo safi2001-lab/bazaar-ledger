@@ -218,7 +218,7 @@ class _ItemListScreenState extends ConsumerState<ItemListScreen> {
               Text('Current Stock: ${item.stockQuantity} ${item.unit}'),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: reason,
+                initialValue: reason,
                 decoration: const InputDecoration(labelText: 'Adjustment Reason'),
                 items: const [
                   DropdownMenuItem(value: 'Stock In', child: Text('Stock In (Purchase/Add)')),

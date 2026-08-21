@@ -4,9 +4,16 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../services/hardware_scanner_listener.dart';
 import '../../../services/scale_barcode_parser.dart';
+import '../../company/screens/company_profile_screen.dart';
 import '../../inventory/screens/item_list_screen.dart';
 import '../../p2p_sync/screens/p2p_sync_screen.dart';
+import '../../subscription/screens/paywall_screen.dart';
+import '../../subscription/services/subscription_service.dart';
+import '../../subscription/widgets/feature_gate.dart';
 import '../controllers/cart_controller.dart';
+import '../widgets/cash_tender_dialog.dart';
+import '../widgets/qr_payment_modal.dart';
+import '../widgets/split_payment_dialog.dart';
 
 class PosCheckoutScreen extends ConsumerWidget {
   const PosCheckoutScreen({super.key});
@@ -64,6 +71,62 @@ class PosCheckoutScreen extends ConsumerWidget {
     );
   }
 
+  void _processPayment(BuildContext context, WidgetRef ref) {
+    final cart = ref.read(cartProvider);
+    final cartNotifier = ref.read(cartProvider.notifier);
+    final mode = cart.paymentMode;
+
+    if (mode == 'Cash') {
+      showDialog(
+        context: context,
+        builder: (_) => CashTenderDialog(
+          totalAmount: cart.grandTotal,
+          onComplete: (tendered) {
+            _finishSale(context, cartNotifier, 'Cash (Received: Rs. ${tendered.toStringAsFixed(0)})');
+          },
+        ),
+      );
+    } else if (mode == 'Raast' || mode == 'JazzCash' || mode == 'EasyPaisa') {
+      showDialog(
+        context: context,
+        builder: (_) => QrPaymentModal(
+          totalAmount: cart.grandTotal,
+          paymentChannel: mode,
+          onPaymentConfirmed: () {
+            _finishSale(context, cartNotifier, mode);
+          },
+        ),
+      );
+    } else if (mode == 'Split') {
+      showDialog(
+        context: context,
+        builder: (_) => SplitPaymentDialog(
+          totalAmount: cart.grandTotal,
+          onComplete: (cashPortion, creditPortion) {
+            _finishSale(
+              context,
+              cartNotifier,
+              'Split (Cash: Rs. ${cashPortion.toStringAsFixed(0)} + Khata: Rs. ${creditPortion.toStringAsFixed(0)})',
+            );
+          },
+        ),
+      );
+    } else {
+      // Credit / Udhaar
+      _finishSale(context, cartNotifier, 'Credit (Udhaar Khata)');
+    }
+  }
+
+  void _finishSale(BuildContext context, dynamic cartNotifier, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: AppTheme.successGreen,
+        content: Text('Sale processed via $message! Thermal receipt printed.'),
+      ),
+    );
+    cartNotifier.clearCart();
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cart = ref.watch(cartProvider);
@@ -100,9 +163,37 @@ class PosCheckoutScreen extends ConsumerWidget {
             icon: const Icon(Icons.sync_alt),
             tooltip: 'Multi-Counter Wi-Fi Sync',
             onPressed: () {
+              FeatureGate.check(
+                context,
+                ref,
+                requiredTier: SubscriptionTier.gold,
+                featureName: 'Multi-Counter Wi-Fi Sync',
+                onAllowed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const P2pSyncScreen()),
+                  );
+                },
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.storefront_outlined),
+            tooltip: 'Store & QR Setup',
+            onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const P2pSyncScreen()),
+                MaterialPageRoute(builder: (_) => const CompanyProfileScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.workspace_premium, color: Colors.amber),
+            tooltip: 'Subscription Plans',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const PaywallScreen()),
               );
             },
           ),
@@ -112,13 +203,6 @@ class PosCheckoutScreen extends ConsumerWidget {
               tooltip: 'Clear Cart',
               onPressed: () => cartNotifier.clearCart(),
             ),
-          IconButton(
-            icon: const Icon(Icons.qr_code_scanner),
-            tooltip: 'Scan Barcode',
-            onPressed: () {
-              _handleBarcode(context, ref, '2000125015004'); // Simulates 1.500 Kg scale item
-            },
-          ),
           const SizedBox(width: 8),
         ],
       ),
@@ -272,7 +356,7 @@ class PosCheckoutScreen extends ConsumerWidget {
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: ['Cash', 'Raast', 'JazzCash', 'EasyPaisa', 'Credit (Udhaar)'].map((mode) {
+                      children: ['Cash', 'Raast', 'JazzCash', 'EasyPaisa', 'Credit (Udhaar)', 'Split'].map((mode) {
                         final isSelected = cart.paymentMode == mode;
                         return Padding(
                           padding: const EdgeInsets.only(right: 8),
@@ -329,17 +413,7 @@ class PosCheckoutScreen extends ConsumerWidget {
                       label: const Text('Charge & Print Receipt'),
                       onPressed: cart.items.isEmpty
                           ? null
-                          : () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  backgroundColor: AppTheme.successGreen,
-                                  content: Text(
-                                    'Bill of ${AppConstants.currencySymbol} ${cart.grandTotal.toStringAsFixed(2)} processed via ${cart.paymentMode}!',
-                                  ),
-                                ),
-                              );
-                              cartNotifier.clearCart();
-                            },
+                          : () => _processPayment(context, ref),
                     ),
                   ),
                 ],

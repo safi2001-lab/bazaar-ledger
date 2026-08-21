@@ -4,9 +4,9 @@ import '../tables/all_tables.dart';
 
 part 'pdc_dao.g.dart';
 
-@DriftAccessor(tables: [PostDatedCheques, Parties])
+@DriftAccessor(tables: [PostDatedCheques, Parties, Companies])
 class PdcDao extends DatabaseAccessor<AppDatabase> with _$PdcDaoMixin {
-  PdcDao(AppDatabase db) : super(db);
+  PdcDao(super.db);
 
   /// Get all PDCs for a company
   Stream<List<PostDatedCheque>> watchAllPdc(int companyId) {
@@ -45,7 +45,7 @@ class PdcDao extends DatabaseAccessor<AppDatabase> with _$PdcDaoMixin {
     if (pdc != null) {
       await update(postDatedCheques).replace(pdc.copyWith(
         status: 'Cleared',
-        clearanceDate: clearanceDate,
+        clearanceDate: Value(clearanceDate),
       ));
     }
   }
@@ -56,7 +56,7 @@ class PdcDao extends DatabaseAccessor<AppDatabase> with _$PdcDaoMixin {
     if (pdc != null) {
       await update(postDatedCheques).replace(pdc.copyWith(
         status: 'Bounced',
-        returnMemoRef: returnMemoRef,
+        returnMemoRef: Value(returnMemoRef),
       ));
     }
   }

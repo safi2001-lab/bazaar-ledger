@@ -1,7 +1,5 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../services/subscription_service.dart';
-
-part 'subscription_controller.g.dart';
 
 class SubscriptionState {
   final SubscriptionTier currentTier;
@@ -17,9 +15,12 @@ class SubscriptionState {
   // Feature Gate Accessors
   bool get canUseThermalPrint => currentTier != SubscriptionTier.free;
   bool get canUseWhatsAppShare => currentTier != SubscriptionTier.free;
-  bool get canUseMultiCounter => currentTier == SubscriptionTier.gold || currentTier == SubscriptionTier.platinum;
-  bool get canUseKhata => currentTier == SubscriptionTier.gold || currentTier == SubscriptionTier.platinum;
-  bool get canUsePdc => currentTier == SubscriptionTier.gold || currentTier == SubscriptionTier.platinum;
+  bool get canUseMultiCounter =>
+      currentTier == SubscriptionTier.gold || currentTier == SubscriptionTier.platinum;
+  bool get canUseKhata =>
+      currentTier == SubscriptionTier.gold || currentTier == SubscriptionTier.platinum;
+  bool get canUsePdc =>
+      currentTier == SubscriptionTier.gold || currentTier == SubscriptionTier.platinum;
   bool get canUseFbr => currentTier == SubscriptionTier.platinum;
   bool get canUseTajirDost => currentTier == SubscriptionTier.platinum;
   bool get canUseCloudBackup => currentTier == SubscriptionTier.platinum;
@@ -37,12 +38,8 @@ class SubscriptionState {
   }
 }
 
-@riverpod
-class SubscriptionController extends _$SubscriptionController {
-  @override
-  SubscriptionState build() {
-    return const SubscriptionState();
-  }
+class SubscriptionNotifier extends StateNotifier<SubscriptionState> {
+  SubscriptionNotifier() : super(const SubscriptionState());
 
   void activateTier(SubscriptionTier tier) {
     state = state.copyWith(currentTier: tier);
@@ -60,3 +57,8 @@ class SubscriptionController extends _$SubscriptionController {
     }
   }
 }
+
+final subscriptionControllerProvider =
+    StateNotifierProvider<SubscriptionNotifier, SubscriptionState>((ref) {
+  return SubscriptionNotifier();
+});

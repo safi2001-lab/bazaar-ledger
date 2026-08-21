@@ -1,10 +1,8 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../data/database/app_database.dart';
 import '../../../services/tajir_dost_engine.dart';
 import '../../../shared/providers/database_provider.dart';
-
-part 'tajir_dost_controller.g.dart';
 
 class TajirDostSummaryState {
   final double monthlyTurnover;
@@ -34,31 +32,25 @@ class TajirDostSummaryState {
   }
 }
 
-@riverpod
-class TajirDostController extends _$TajirDostController {
-  @override
-  TajirDostSummaryState build() {
-    final initialTurnover = 500000.0; // Rs 5 Lakh sample initial turnover
-    final initialWht = 2500.0; // Rs 2,500 electricity bill advance tax
-    final result = TajirDostEngine.calculateMonthlyTax(
-      monthlyTurnover: initialTurnover,
-      monthlyElectricityWht: initialWht,
-    );
+class TajirDostNotifier extends StateNotifier<TajirDostSummaryState> {
+  final Ref ref;
 
-    return TajirDostSummaryState(
-      monthlyTurnover: initialTurnover,
-      monthlyElectricityWht: initialWht,
-      taxResult: result,
-    );
-  }
+  TajirDostNotifier(this.ref)
+      : super(TajirDostSummaryState(
+          monthlyTurnover: 500000.0,
+          monthlyElectricityWht: 2500.0,
+          taxResult: TajirDostEngine.calculateMonthlyTax(
+            monthlyTurnover: 500000.0,
+            monthlyElectricityWht: 2500.0,
+          ),
+        ));
 
-  /// Log an electricity bill with advance withholding tax (Section 235)
   Future<void> logElectricityBill({
     required double billAmount,
     required double whtAmount,
     String? consumerNumber,
   }) async {
-    final db = ref.watch(appDatabaseProvider);
+    final db = ref.read(appDatabaseProvider);
     await db.into(db.expenses).insert(
       ExpensesCompanion.insert(
         companyId: 1,
@@ -93,3 +85,8 @@ class TajirDostController extends _$TajirDostController {
     );
   }
 }
+
+final tajirDostControllerProvider =
+    StateNotifierProvider<TajirDostNotifier, TajirDostSummaryState>((ref) {
+  return TajirDostNotifier(ref);
+});

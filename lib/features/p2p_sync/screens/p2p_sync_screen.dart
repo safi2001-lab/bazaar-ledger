@@ -37,18 +37,18 @@ class _P2pSyncScreenState extends ConsumerState<P2pSyncScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.emerald.shade50,
+              color: Colors.green.shade50,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.emerald.shade200),
+              border: Border.all(color: Colors.green.shade200),
             ),
             child: Row(
               children: [
-                Icon(Icons.wifi, size: 32, color: Colors.emerald.shade800),
+                Icon(Icons.wifi, size: 32, color: Colors.green.shade800),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
                     'Operate 2–4 counter devices simultaneously over your shop\'s Wi-Fi router. 100% offline with zero cloud server cost.',
-                    style: TextStyle(fontSize: 13, color: Colors.emerald.shade900),
+                    style: TextStyle(fontSize: 13, color: Colors.green.shade900),
                   ),
                 ),
               ],

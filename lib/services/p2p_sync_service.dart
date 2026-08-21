@@ -6,6 +6,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
 
+import 'package:drift/drift.dart';
 import '../core/utils/hlc.dart';
 import '../data/database/app_database.dart';
 
@@ -72,9 +73,12 @@ class P2pSyncService {
       );
     });
 
-    // Middleware to check PIN
+    // Middleware to check PIN (allows unauthenticated discovery ping)
     Handler pinAuthMiddleware(Handler innerHandler) {
       return (Request request) async {
+        if (request.url.path.endsWith('ping')) {
+          return innerHandler(request);
+        }
         final pin = request.headers['x-pairing-pin'];
         if (pin != pairingPin) {
           return Response.forbidden(
@@ -88,7 +92,6 @@ class P2pSyncService {
 
     // 2. Pull mutations from Master
     router.get('/api/v1/sync/pull', (Request request) async {
-      final sinceParam = request.url.queryParameters['since'];
       // Query pending sync queue or recent records
       final syncRecords = await (db.select(db.syncQueue)
             ..where((tbl) => tbl.isSynced.equals(false)))
@@ -194,7 +197,7 @@ class P2pSyncService {
         // Mark local records as synced
         for (var item in pendingQueue) {
           await (db.update(db.syncQueue)..where((tbl) => tbl.id.equals(item.id)))
-              .write(const SyncQueueCompanion(isSynced: drift_value(true)));
+              .write(const SyncQueueCompanion(isSynced: Value(true)));
         }
         return outgoingMutations.length;
       } else {
@@ -216,5 +219,3 @@ class P2pSyncService {
     }
   }
 }
-
-const drift_value = Value;

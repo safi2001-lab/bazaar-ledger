@@ -1,9 +1,7 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart';
 import '../../../data/database/app_database.dart';
-import '../../../services/fbr_api_service.dart';
 import '../../../shared/providers/database_provider.dart';
-
-part 'fbr_sync_controller.g.dart';
 
 class FbrConfigState {
   final bool isFbrEnabled;
@@ -45,15 +43,14 @@ class FbrConfigState {
   }
 }
 
-@riverpod
-class FbrSyncController extends _$FbrSyncController {
-  @override
-  FbrConfigState build() {
-    return const FbrConfigState(
-      posId: '100245',
-      bearerToken: 'test-fbr-token-sandbox',
-    );
-  }
+class FbrSyncNotifier extends StateNotifier<FbrConfigState> {
+  final Ref ref;
+
+  FbrSyncNotifier(this.ref)
+      : super(const FbrConfigState(
+          posId: '100245',
+          bearerToken: 'test-fbr-token-sandbox',
+        ));
 
   void toggleFbr(bool enabled) {
     state = state.copyWith(isFbrEnabled: enabled);
@@ -72,24 +69,22 @@ class FbrSyncController extends _$FbrSyncController {
   }
 
   Future<void> flushOfflineQueue() async {
-    final db = ref.watch(appDatabaseProvider);
+    final db = ref.read(appDatabaseProvider);
     state = state.copyWith(isSyncing: true, lastSyncStatus: null);
 
     try {
-      // Find all unsynced invoices in SQLite
       final unsyncedInvoices = await (db.select(db.invoices)
             ..where((tbl) => tbl.isFbrSynced.equals(false)))
           .get();
 
-      // Simulated sync with FBR IMS endpoint
       await Future.delayed(const Duration(seconds: 1));
 
-      // Mark invoices as synced
       for (var inv in unsyncedInvoices) {
         await (db.update(db.invoices)..where((tbl) => tbl.id.equals(inv.id))).write(
           InvoicesCompanion(
-            isFbrSynced: const drift_value(true),
-            fbrIrn: drift_value(inv.fbrIrn ?? 'FBR-${state.posId}-${DateTime.now().millisecondsSinceEpoch}'),
+            isFbrSynced: const Value(true),
+            fbrIrn: Value(inv.fbrIrn ??
+                'FBR-${state.posId}-${DateTime.now().millisecondsSinceEpoch}'),
           ),
         );
       }
@@ -97,7 +92,8 @@ class FbrSyncController extends _$FbrSyncController {
       state = state.copyWith(
         isSyncing: false,
         pendingQueueCount: 0,
-        lastSyncStatus: 'Successfully synced ${unsyncedInvoices.length} invoices with FBR!',
+        lastSyncStatus:
+            'Successfully synced ${unsyncedInvoices.length} invoices with FBR!',
       );
     } catch (e) {
       state = state.copyWith(
@@ -108,4 +104,7 @@ class FbrSyncController extends _$FbrSyncController {
   }
 }
 
-const drift_value = Value;
+final fbrSyncControllerProvider =
+    StateNotifierProvider<FbrSyncNotifier, FbrConfigState>((ref) {
+  return FbrSyncNotifier(ref);
+});

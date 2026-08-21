@@ -8,7 +8,7 @@ class StockMovementScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final movementsAsync = ref.watch(itemStockMovementsProvider());
+    final movementsAsync = ref.watch(itemStockMovementsProvider(null));
 
     return Scaffold(
       appBar: AppBar(

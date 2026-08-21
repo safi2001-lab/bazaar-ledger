@@ -1,15 +1,9 @@
 import 'dart:io';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/backup_service.dart';
 
-part 'backup_sync_controller.g.dart';
-
-@riverpod
-class BackupSyncController extends _$BackupSyncController {
-  @override
-  bool build() {
-    return false; // represents isLoading state
-  }
+class BackupSyncNotifier extends StateNotifier<bool> {
+  BackupSyncNotifier() : super(false); // false = not loading
 
   Future<File?> createBackup() async {
     state = true;
@@ -32,3 +26,8 @@ class BackupSyncController extends _$BackupSyncController {
     }
   }
 }
+
+final backupSyncControllerProvider =
+    StateNotifierProvider<BackupSyncNotifier, bool>((ref) {
+  return BackupSyncNotifier();
+});

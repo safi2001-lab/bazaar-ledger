@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../controllers/party_ledger_controller.dart';
-import '../../../data/database/app_database.dart';
 
 class PartiesListScreen extends ConsumerWidget {
   const PartiesListScreen({super.key});

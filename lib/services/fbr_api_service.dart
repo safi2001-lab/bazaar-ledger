@@ -29,7 +29,7 @@ class FbrInvoiceItemPayload {
   Map<String, dynamic> toJson() => {
         'ItemCode': itemCode,
         'ItemName': itemName,
-        'PCTCode': pctCode.padLeft(8, '0'),
+        'PCTCode': pctCode.replaceAll('.', '').padLeft(8, '0'),
         'Quantity': quantity,
         'TotalAmount': totalAmount,
         'SaleValue': saleValue,

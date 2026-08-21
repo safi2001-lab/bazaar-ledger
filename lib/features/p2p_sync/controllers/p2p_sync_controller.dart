@@ -1,8 +1,6 @@
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/p2p_sync_service.dart';
 import '../../../shared/providers/database_provider.dart';
-
-part 'p2p_sync_controller.g.dart';
 
 enum CounterRole { master, subCounter }
 
@@ -54,20 +52,19 @@ class P2pSyncState {
   }
 }
 
-@riverpod
-class P2pSyncController extends _$P2pSyncController {
+class P2pSyncNotifier extends StateNotifier<P2pSyncState> {
+  final Ref ref;
   P2pSyncService? _service;
 
-  @override
-  P2pSyncState build() {
-    final db = ref.watch(appDatabaseProvider);
-    final nodeId = 'COUNTER-${DateTime.now().millisecondsSinceEpoch % 10000}';
+  P2pSyncNotifier(this.ref)
+      : super(P2pSyncState(
+            nodeId: 'COUNTER-${DateTime.now().millisecondsSinceEpoch % 10000}')) {
+    final db = ref.read(appDatabaseProvider);
     _service = P2pSyncService(
       db: db,
-      nodeId: nodeId,
-      pairingPin: '1234',
+      nodeId: state.nodeId,
+      pairingPin: state.pairingPin,
     );
-    return P2pSyncState(nodeId: nodeId);
   }
 
   void setRole(CounterRole role) {
@@ -119,3 +116,8 @@ class P2pSyncController extends _$P2pSyncController {
     }
   }
 }
+
+final p2pSyncControllerProvider =
+    StateNotifierProvider<P2pSyncNotifier, P2pSyncState>((ref) {
+  return P2pSyncNotifier(ref);
+});

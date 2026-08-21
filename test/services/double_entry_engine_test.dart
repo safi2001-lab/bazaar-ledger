@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:pakistan_sme_billing/data/database/app_database.dart';
 import 'package:pakistan_sme_billing/services/double_entry_engine.dart';
@@ -62,8 +63,8 @@ void main() {
     );
 
     final lines = [
-      JournalLinesCompanion(accountId: const Value(1), debit: const Value(100.0), credit: const Value(0.0)),
-      JournalLinesCompanion(accountId: const Value(2), debit: const Value(0.0), credit: const Value(99.0)),
+      const JournalLinesCompanion(accountId: Value(1), debit: Value(100.0), credit: Value(0.0)),
+      const JournalLinesCompanion(accountId: Value(2), debit: Value(0.0), credit: Value(99.0)),
     ];
 
     expect(

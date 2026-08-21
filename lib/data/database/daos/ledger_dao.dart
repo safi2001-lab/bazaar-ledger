@@ -4,9 +4,9 @@ import '../tables/all_tables.dart';
 
 part 'ledger_dao.g.dart';
 
-@DriftAccessor(tables: [Accounts, JournalEntries, JournalLines])
+@DriftAccessor(tables: [Accounts, JournalEntries, JournalLines, Companies])
 class LedgerDao extends DatabaseAccessor<AppDatabase> with _$LedgerDaoMixin {
-  LedgerDao(AppDatabase db) : super(db);
+  LedgerDao(super.db);
 
   /// Ensure default chart of accounts exists
   Future<void> initializeDefaultAccounts(int companyId) async {

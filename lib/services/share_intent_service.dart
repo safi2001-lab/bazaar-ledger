@@ -5,6 +5,7 @@ class ShareIntentService {
   /// Share an invoice PDF or Image via native OS Share intent (WhatsApp, Email, etc.)
   static Future<void> shareInvoiceFile(File file, String invoiceNumber) async {
     final xFile = XFile(file.path);
+    // ignore: deprecated_member_use
     await Share.shareXFiles(
       [xFile],
       text: 'Here is your Invoice #$invoiceNumber from our store.',
@@ -22,6 +23,7 @@ Please arrange the payment at your earliest convenience.
 
 Thank you!
 ''';
+    // ignore: deprecated_member_use
     await Share.share(message, subject: 'Payment Reminder');
   }
 }
