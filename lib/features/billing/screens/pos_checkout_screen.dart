@@ -2,10 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../services/hardware_scanner_listener.dart';
+import '../../../services/scale_barcode_parser.dart';
+import '../../inventory/screens/item_list_screen.dart';
+import '../../p2p_sync/screens/p2p_sync_screen.dart';
 import '../controllers/cart_controller.dart';
 
 class PosCheckoutScreen extends ConsumerWidget {
   const PosCheckoutScreen({super.key});
+
+  void _handleBarcode(BuildContext context, WidgetRef ref, String rawBarcode) {
+    final cartNotifier = ref.read(cartProvider.notifier);
+
+    // 1. Check if it's a GS1 variable-measure scale barcode (Prefixes 20-29)
+    final scaleItem = ScaleBarcodeParser.parse(rawBarcode);
+    if (scaleItem != null) {
+      final weight = scaleItem.weightInKg ?? 1.0;
+      final pricePerKg = scaleItem.priceInRupees != null
+          ? scaleItem.priceInRupees! / weight
+          : 450.0; // Default price if barcode encodes weight
+
+      cartNotifier.addItem(
+        CartItem(
+          itemId: int.tryParse(scaleItem.plu) ?? (DateTime.now().millisecondsSinceEpoch % 10000),
+          name: 'Scale Item (PLU ${scaleItem.plu})',
+          barcode: rawBarcode,
+          unit: 'Kg',
+          unitPrice: pricePerKg,
+          quantity: weight,
+          taxRate: 0.0,
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Scale item added: ${weight.toStringAsFixed(3)} Kg (PLU: ${scaleItem.plu})'),
+        ),
+      );
+      return;
+    }
+
+    // 2. Standard EAN-13 / Code-128 Barcode Scan
+    cartNotifier.addItem(
+      CartItem(
+        itemId: DateTime.now().millisecondsSinceEpoch % 10000,
+        name: 'Scanned Item ($rawBarcode)',
+        barcode: rawBarcode,
+        unit: 'Piece',
+        unitPrice: 150.0,
+        quantity: 1.0,
+        taxRate: 18.0,
+      ),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        duration: const Duration(seconds: 1),
+        content: Text('Scanned barcode: $rawBarcode added to cart'),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,6 +86,26 @@ class PosCheckoutScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.inventory_2_outlined),
+            tooltip: 'Inventory Catalog',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ItemListScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.sync_alt),
+            tooltip: 'Multi-Counter Wi-Fi Sync',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const P2pSyncScreen()),
+              );
+            },
+          ),
           if (cart.items.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep_outlined, color: AppTheme.dangerRed),
@@ -39,23 +116,15 @@ class PosCheckoutScreen extends ConsumerWidget {
             icon: const Icon(Icons.qr_code_scanner),
             tooltip: 'Scan Barcode',
             onPressed: () {
-              // Quick demo item add for testing
-              cartNotifier.addItem(
-                CartItem(
-                  itemId: 1,
-                  name: 'Dal Chana (1 Kg Pack)',
-                  unit: 'Kg',
-                  unitPrice: 280.0,
-                  quantity: 1.0,
-                  taxRate: 0.0, // Food grain zero-rated
-                ),
-              );
+              _handleBarcode(context, ref, '2000125015004'); // Simulates 1.500 Kg scale item
             },
           ),
           const SizedBox(width: 8),
         ],
       ),
-      body: Column(
+      body: HardwareScannerListener(
+        onBarcodeScanned: (code) => _handleBarcode(context, ref, code),
+        child: Column(
         children: [
           // Quick Barcode / Product Search Bar
           Padding(
@@ -278,6 +347,7 @@ class PosCheckoutScreen extends ConsumerWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'tables/all_tables.dart';
 import 'daos/parties_dao.dart';
 import 'daos/pdc_dao.dart';
 import 'daos/ledger_dao.dart';
+import 'daos/items_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -31,6 +32,7 @@ part 'app_database.g.dart';
   PartiesDao,
   PdcDao,
   LedgerDao,
+  ItemsDao,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? e]) : super(e ?? _openConnection());
