@@ -72,6 +72,24 @@ dev_dependencies:
   image: ^4.5.4
   integration_test:
     sdk: flutter
+  # The gate runner. From melos 3.0 it must be a dev_dependency beside
+  # melos.yaml or every `melos run` refuses with a migration notice — which
+  # is what every one of them did, silently, because nothing in this repo had
+  # ever invoked one. The whole CI workflow calls melos and would have failed
+  # on its first step.
+  #
+  # Pinned to 6.x deliberately. Melos 7 dropped melos.yaml for pub workspaces,
+  # so an unpinned `dart pub global activate melos` in CI resolves to 8.x and
+  # cannot read this workspace at all. That is exactly how this broke: the
+  # workflow was written when 6 was current and went wrong without anybody
+  # editing it.
+  melos: ^6.3.2
+  # Test-only. The share sheet is faked at the platform seam rather than at
+  # the method channel, because a host `flutter test` has no Android to talk
+  # to: share_plus resolves to its desktop implementation and the Android
+  # channel is never called. A test that stubbed the channel would record
+  # nothing while asserting it had.
+  share_plus_platform_interface: ^7.2.0
 
 flutter:
   uses-material-design: true

@@ -666,6 +666,59 @@ features:
       - a bill left on the counter is there after a cold start
     proof: []
 
+  - id: M0-NUM-02
+    milestone: M0
+    title: A shop can still bill on the first of July
+    status: done
+    # Found while reading the numbering code ahead of M3, not by a failing
+    # test, and it was the most serious defect in the repository.
+    #
+    # Pakistan's financial year runs 1 July to 30 June and invoice series are
+    # numbered by it: INV-2627-0001. `numbering_sequences` is scoped to
+    # (firm, doc_type, device, fiscal_year), and first run seeded rows for the
+    # fiscal year the shop was created in and no other. Nothing anywhere
+    # created the next year's row.
+    #
+    # So `SequenceAllocator` threw `SequenceNotConfigured`, and a grep for
+    # that name found exactly one hit — the throw itself. Nothing caught it,
+    # no screen offered to fix it, and the exception's own message told the
+    # shopkeeper to "set up numbering for the new financial year before
+    # billing" through a path that was never written.
+    #
+    # Every shop running this would have stopped being able to bill on 1 July.
+    # Not degraded, not slower: a hard throw on the sale path, at the counter,
+    # for every user at once, on a date known years in advance. It would have
+    # looked like the app breaking overnight for no reason, and no host test
+    # would ever have caught it, because every test in the repository ran on a
+    # date inside the year its fixture firm was created in.
+    #
+    # A financial year turning over is the calendar, not an exceptional
+    # condition, so the row is minted on first use inside the same transaction
+    # as the document that needed it — a rolled back sale leaves no series
+    # behind that nobody used.
+    #
+    # Two things the naive fix gets wrong. The new year has to start at the
+    # counter's own reserved block rather than at 1, or a second till on the
+    # shop's wi-fi is put back onto the first one's numbers the moment the
+    # year turns — the exact collision the block exists to prevent, arriving
+    # annually. And the guard has to keep meaning something: a doc type absent
+    # from `DocumentSeries` still throws, because "nobody decided the
+    # numbering for this" is a programming error and must not silently invent
+    # a prefix.
+    #
+    # Reproduced before it was fixed: six of these failed against the old
+    # allocator, all of them on 1 July.
+    proof:
+      - the year the shop opened in was seeded, and still numbers
+      - 30 June is the last day of that year
+      - 1 July still bills, on a series nobody had to create by hand
+      - the new year starts at one, not where the old one stopped
+      - the old year is untouched and can still be numbered into
+      - every series rolls over, not only invoices
+      - a document type nobody has defined numbering for still throws
+      - the minted row keeps this counter reserved block
+      - minting is recorded like any other write
+
   - id: M0-CI-01
     milestone: M0
     title: CI runs every gate and fails closed

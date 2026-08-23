@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
+import 'document_series.dart';
 import 'tx_runner.dart';
 
 /// What first run produced, so the caller can build an [ActorContext].
@@ -333,31 +334,30 @@ final class FirstRunSeeder {
           if (w.isDefault) cashPaymentAccountId = id;
         }
 
-        // Invoice numbering for this device, this fiscal year. INV-2627-0001.
-        await tx.insert('numbering_sequences', {
-          'doc_type': 'sale_invoice',
-          'device_id': deviceId,
-          'fiscal_year': actor.businessDate.fiscalYear,
-          'prefix': 'INV',
-          'pad_width': 4,
-          'next_value': 1,
-        });
-        await tx.insert('numbering_sequences', {
-          'doc_type': 'payment_in',
-          'device_id': deviceId,
-          'fiscal_year': actor.businessDate.fiscalYear,
-          'prefix': 'RCV',
-          'pad_width': 4,
-          'next_value': 1,
-        });
-        await tx.insert('numbering_sequences', {
-          'doc_type': 'journal_entry',
-          'device_id': deviceId,
-          'fiscal_year': actor.businessDate.fiscalYear,
-          'prefix': 'JV',
-          'pad_width': 5,
-          'next_value': 1,
-        });
+        // Numbering for this device, this fiscal year. INV-2627-0001.
+        //
+        // The three a new shop uses on day one. Every other series, and every
+        // later financial year, is opened by `SequenceAllocator` the first
+        // time something needs it — so these are a head start rather than the
+        // only way a series can come to exist. That distinction is the whole
+        // fix for the 1 July failure: a shop set up in August has rows for
+        // that year and no other, and nothing used to create the next one.
+        //
+        // Prefixes come from `DocumentSeries` rather than being written here,
+        // because a prefix invented at two call sites is a prefix that
+        // disagrees with itself, and a shop then has two invoice series with
+        // no way to tell an auditor which is which.
+        for (final docType in ['sale_invoice', 'payment_in', 'journal_entry']) {
+          final series = DocumentSeries.forType(docType)!;
+          await tx.insert('numbering_sequences', {
+            'doc_type': series.docType,
+            'device_id': deviceId,
+            'fiscal_year': actor.businessDate.fiscalYear,
+            'prefix': series.prefix,
+            'pad_width': series.padWidth,
+            'next_value': 1,
+          });
+        }
 
         tx.audit(
           action: 'FIRM_CREATED',

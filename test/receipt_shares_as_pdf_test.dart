@@ -1,12 +1,10 @@
 import 'dart:io';
 
+import 'package:bazaar_ledger/features/sales/receipt_file_name.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
-
-import 'package:bazaar_ledger/features/sales/receipt_file_name.dart';
 
 import 'support/harness.dart';
 

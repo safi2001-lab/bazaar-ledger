@@ -1,3 +1,6 @@
+import 'package:drift/drift.dart';
+
+import 'document_series.dart';
 import 'tx_runner.dart';
 
 /// A freshly allocated document number.
@@ -44,7 +47,7 @@ final class SequenceAllocator {
     required String docType,
     required int fiscalYear,
   }) async {
-    final row = await tx.selectOne(
+    var row = await tx.selectOne(
       '''
       SELECT id, prefix, pad_width, next_value, block_start, block_end
       FROM numbering_sequences
@@ -54,13 +57,21 @@ final class SequenceAllocator {
       [tx.actor.firmId, docType, tx.actor.deviceId, fiscalYear],
     );
 
-    if (row == null) {
-      throw SequenceNotConfigured(
-        docType: docType,
-        fiscalYear: fiscalYear,
-        deviceId: tx.actor.deviceId,
-      );
-    }
+    // The financial year turned over.
+    //
+    // Pakistan's runs 1 July to 30 June and the series is scoped to it, so a
+    // shop set up in August has rows for that year and no other. This used to
+    // throw, and nothing anywhere caught it — so on 1 July every shop running
+    // this stopped being able to bill, at the counter, on a date known years
+    // in advance, for every user at once. The exception's own message told the
+    // shopkeeper to set numbering up for the new year through a screen that
+    // does not exist.
+    //
+    // A financial year turning over is not an exceptional condition. It is the
+    // calendar, and the row for it is minted here, in the same transaction as
+    // the document that needed it, so a rolled back sale does not leave a
+    // series behind that nobody used.
+    row ??= await _openYear(tx, docType: docType, fiscalYear: fiscalYear);
 
     final next = row.read<int>('next_value');
     final blockEnd = row.read<int>('block_end');
@@ -92,6 +103,72 @@ final class SequenceAllocator {
       sequence: next,
       fiscalYear: fiscalYear,
     );
+  }
+
+  /// Opens [docType] for [fiscalYear] on this device and returns its row.
+  ///
+  /// The reserved block carries forward from the most recent year this device
+  /// already has. Two tills on one shop's wi-fi must never mint the same
+  /// number, and a new year that reset Counter 2 to the default block would
+  /// put it back onto Counter 1's numbers the moment the year turned — the
+  /// exact failure the block exists to prevent, arriving annually.
+  Future<QueryRow> _openYear(
+    Tx tx, {
+    required String docType,
+    required int fiscalYear,
+  }) async {
+    final series = DocumentSeries.forType(docType);
+    if (series == null) {
+      // Still thrown, and it still means something. "The new year has not
+      // been opened" is the calendar and is handled above; this is code
+      // asking for a kind of document nobody has decided the numbering for,
+      // which is a programming error and must not silently invent a prefix.
+      throw SequenceNotConfigured(
+        docType: docType,
+        fiscalYear: fiscalYear,
+        deviceId: tx.actor.deviceId,
+      );
+    }
+
+    final previous = await tx.selectOne(
+      '''
+      SELECT block_start, block_end
+      FROM numbering_sequences
+      WHERE firm_id = ? AND doc_type = ? AND device_id = ?
+        AND fiscal_year < ? AND deleted_at_utc IS NULL
+      ORDER BY fiscal_year DESC
+      LIMIT 1
+      ''',
+      [tx.actor.firmId, docType, tx.actor.deviceId, fiscalYear],
+    );
+
+    final blockStart = previous?.read<int>('block_start') ?? 1;
+    final blockEnd = previous?.read<int>('block_end') ?? 999999;
+
+    final id = await tx.insert('numbering_sequences', {
+      'doc_type': docType,
+      'device_id': tx.actor.deviceId,
+      'fiscal_year': fiscalYear,
+      'prefix': series.prefix,
+      'pad_width': series.padWidth,
+      // At the start of the block, not at one. A counter whose block begins
+      // at 5000 must not mint 1.
+      'next_value': blockStart,
+      'block_start': blockStart,
+      'block_end': blockEnd,
+    });
+
+    final opened = await tx.selectOne(
+      '''
+      SELECT id, prefix, pad_width, next_value, block_start, block_end
+      FROM numbering_sequences WHERE id = ?
+      ''',
+      [id],
+    );
+    if (opened == null) {
+      throw StateError('the numbering row just written cannot be read back');
+    }
+    return opened;
   }
 }
 
