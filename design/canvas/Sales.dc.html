@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --paper:oklch(0.981 0.006 85); --surface:oklch(1 0 0); --sunken:oklch(0.958 0.008 85);
+  --line:oklch(0.887 0.008 85); --line-strong:oklch(0.74 0.012 85);
+  --ink:oklch(0.22 0.012 85); --ink2:oklch(0.46 0.012 85); --ink3:oklch(0.63 0.010 85);
+  --brand:oklch(0.47 0.125 162); --brandInk:oklch(0.99 0 0); --brandSoft:oklch(0.945 0.038 162);
+  --in:oklch(0.47 0.125 162); --inSoft:oklch(0.945 0.038 162);
+  --out:oklch(0.525 0.165 32); --outSoft:oklch(0.955 0.030 32);
+  --warn:oklch(0.58 0.13 72); --warnSoft:oklch(0.955 0.045 80);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --r1:4px; --r2:8px; --r3:12px;
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+.dark{
+  --paper:oklch(0.175 0.008 85); --surface:oklch(0.222 0.009 85); --sunken:oklch(0.148 0.008 85);
+  --line:oklch(0.315 0.010 85); --line-strong:oklch(0.44 0.012 85);
+  --ink:oklch(0.955 0.005 85); --ink2:oklch(0.75 0.010 85); --ink3:oklch(0.58 0.010 85);
+  --brand:oklch(0.72 0.145 162); --brandInk:oklch(0.16 0.02 162); --brandSoft:oklch(0.30 0.055 162);
+  --in:oklch(0.72 0.145 162); --inSoft:oklch(0.30 0.055 162);
+  --out:oklch(0.70 0.155 32); --outSoft:oklch(0.31 0.060 32);
+  --warn:oklch(0.78 0.14 78); --warnSoft:oklch(0.32 0.055 78);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{color:var(--ink);text-decoration:underline}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.micro{font-size:11px;line-height:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+.ph{width:360px;height:800px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.hdr{height:56px;flex-shrink:0;display:flex;align-items:center;gap:8px;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.iconBtn{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--ink);border-radius:6px}
+.bkp{flex-shrink:0;display:flex;align-items:center;gap:7px;padding:7px 12px;background:var(--inSoft);border-bottom:1px solid var(--line)}
+.filters{flex-shrink:0;display:flex;gap:6px;padding:10px 12px;background:var(--surface);border-bottom:1px solid var(--line);overflow:hidden}
+.fchip{height:34px;padding:0 13px;display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:600;color:var(--ink2);background:var(--surface);white-space:nowrap}
+.fOn{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.summary{flex-shrink:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--surface);border-bottom:2px solid var(--ink)}
+.sCell{padding:12px 10px;display:flex;flex-direction:column;gap:3px;border-right:1px solid var(--line)}
+.sCell:last-child{border-right:none}
+.sV{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:17px;line-height:21px;font-weight:600;letter-spacing:-0.01em}
+.list{flex:1;overflow-y:auto}
+.dayHd{padding:8px 12px;background:var(--sunken);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+.row{display:flex;align-items:center;gap:10px;padding:0 12px;height:68px;background:var(--surface);border-bottom:1px solid var(--line)}
+.rMain{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.rTop{display:flex;align-items:baseline;gap:7px}
+.rNo{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:11px;font-weight:600;color:var(--ink3)}
+.rParty{font-size:14px;line-height:19px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rMeta{font-size:11px;line-height:15px;color:var(--ink3);display:flex;align-items:center;gap:5px}
+.rRight{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.rAmt{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;letter-spacing:-0.01em}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600;letter-spacing:.03em;text-transform:uppercase}
+.fab{position:absolute;right:16px;bottom:16px;height:56px;padding:0 20px;border-radius:28px;background:var(--brand);color:var(--brandInk);display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;border:none}
+.wrap{position:relative;width:360px;height:800px}
+  </style>
+</helmet>
+
+<div class="wrap">
+<div class="ph">
+
+  <div class="hdr">
+    <button class="iconBtn" aria-label="Wapas">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+    </button>
+    <div style="flex:1;font-size:17px;font-weight:700">Bill Kitab</div>
+    <button class="iconBtn" aria-label="Dhoondein">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+    </button>
+    <button class="iconBtn" aria-label="Filter">
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 5h18M6 12h12M10 19h4"/></svg>
+    </button>
+  </div>
+
+  <div class="bkp">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--in);flex-shrink:0"><path d="M20 6 9 17l-5-5"/></svg>
+    <div style="font-size:11px;line-height:15px;color:var(--ink2)">Backup mehfooz — <b style="color:var(--ink)">2 ghante pehle</b></div>
+  </div>
+
+  <div class="filters">
+    <div class="fchip fOn">Aaj</div>
+    <div class="fchip">Kal</div>
+    <div class="fchip">Hafta</div>
+    <div class="fchip">Udhaar</div>
+    <div class="fchip">Mahina</div>
+  </div>
+
+  <div class="summary">
+    <div class="sCell">
+      <div class="micro">Bill</div>
+      <div class="sV">41</div>
+    </div>
+    <div class="sCell">
+      <div class="micro">Farokht</div>
+      <div class="sV">138,400</div>
+    </div>
+    <div class="sCell">
+      <div class="micro" style="color:var(--out)">Udhaar</div>
+      <div class="sV" style="color:var(--out)">− 12,750</div>
+    </div>
+  </div>
+
+  <div class="list">
+    <div class="dayHd">
+      <div class="micro">Aaj · 23 August</div>
+      <div class="mono" style="font-size:11px;font-weight:600;color:var(--ink2)">41 bill</div>
+    </div>
+
+    <div class="row">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo">0041</div><div class="rParty">Walk-in</div></div>
+        <div class="rMeta"><span>4:38 pm</span><span>·</span><span>Naqad</span><span>·</span><span>3 cheez</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt">Rs 5,525.00</div>
+        <span class="pill" style="background:var(--inSoft);color:var(--in)">● Ada</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo">0040</div><div class="rParty">Bilal Traders</div></div>
+        <div class="rMeta"><span>4:12 pm</span><span>·</span><span>Udhaar</span><span>·</span><span>11 cheez</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt" style="color:var(--out)">Rs 12,750.00</div>
+        <span class="pill" style="background:var(--outSoft);color:var(--out)">▲ Baqaya</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo">0039</div><div class="rParty">Walk-in</div></div>
+        <div class="rMeta"><span>3:55 pm</span><span>·</span><span>EasyPaisa</span><span>·</span><span>2 cheez</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt">Rs 1,180.00</div>
+        <span class="pill" style="background:var(--inSoft);color:var(--in)">● Ada</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo">0038</div><div class="rParty">Hafiz Sahab</div></div>
+        <div class="rMeta"><span>3:41 pm</span><span>·</span><span>Naqad + Udhaar</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt">Rs 8,900.00</div>
+        <span class="pill" style="background:var(--outSoft);color:var(--out)">▲ Baqaya 3,900</span>
+      </div>
+    </div>
+
+    <div class="row" style="background:var(--sunken)">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo" style="text-decoration:line-through">0037</div><div class="rParty" style="color:var(--ink3)">Walk-in</div></div>
+        <div class="rMeta"><span>3:20 pm</span><span>·</span><span>Mansookh — Ali</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt" style="color:var(--ink3);text-decoration:line-through">Rs 640.00</div>
+        <span class="pill" style="background:var(--surface);color:var(--ink3);border:1px solid var(--line)">✕ Mansookh</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo">0036</div><div class="rParty">Walk-in</div></div>
+        <div class="rMeta"><span>3:02 pm</span><span>·</span><span>Naqad</span><span>·</span><span>1 cheez</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt">Rs 250.00</div>
+        <span class="pill" style="background:var(--inSoft);color:var(--in)">● Ada</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="rMain">
+        <div class="rTop"><div class="rNo">0035</div><div class="rParty">Rehan Store</div></div>
+        <div class="rMeta"><span>2:44 pm</span><span>·</span><span>Bank</span><span>·</span><span>24 cheez</span></div>
+      </div>
+      <div class="rRight">
+        <div class="rAmt">Rs 41,200.00</div>
+        <span class="pill" style="background:var(--inSoft);color:var(--in)">● Ada</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+<button class="fab">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  Naya Bill
+</button>
+</div>
+</x-dc>
+</body>
+</html>

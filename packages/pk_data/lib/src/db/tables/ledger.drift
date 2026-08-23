@@ -1,0 +1,131 @@
+import 'core.drift';
+import 'catalogue.drift';
+import 'documents.drift';
+import 'payments.drift';
+
+-- Bazaar Ledger — schema v1, part 6 of 7: double entry.
+--
+-- Every document and every payment posts a journal entry inside the same
+-- transaction that writes it. There is no nightly job, no "post to accounts"
+-- button, and no way to have a sale that never reached the books.
+--
+-- Sum of debits equals sum of credits is enforced three times over: a CHECK on
+-- the entry, a CHECK on each line forcing exactly one side, and
+-- assertBooksBalance() run before every commit. The previous build had a
+-- balance check with a hardcoded `> 0.01` tolerance to hide floating-point
+-- drift. A ledger that only balances to within a paisa is not a ledger.
+
+CREATE TABLE accounts (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  account_type TEXT NOT NULL CHECK (account_type IN (
+    'asset', 'liability', 'equity', 'income', 'expense')),
+  normal_side TEXT NOT NULL CHECK (normal_side IN ('debit', 'credit')),
+  parent_id TEXT REFERENCES accounts(id) DEFERRABLE INITIALLY DEFERRED,
+
+  -- A stable handle the posting rules look up by, so renaming "Cash in Hand"
+  -- to "Golak" does not break the sale posting.
+  system_key TEXT,
+  -- Direct vs indirect, for the P&L split.
+  is_direct INTEGER NOT NULL DEFAULT 0 CHECK (is_direct IN (0, 1)),
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+
+  CHECK (parent_id IS NULL OR parent_id <> id)
+) STRICT;
+
+CREATE UNIQUE INDEX idx_accounts_code ON accounts (firm_id, code);
+CREATE UNIQUE INDEX idx_accounts_syskey
+  ON accounts (firm_id, system_key) WHERE system_key IS NOT NULL;
+CREATE INDEX idx_accounts_parent ON accounts (parent_id);
+CREATE INDEX idx_accounts_type ON accounts (firm_id, account_type);
+
+CREATE TABLE journal_entries (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  entry_no TEXT NOT NULL,
+  entry_date_utc INTEGER NOT NULL,
+  entry_date_local TEXT NOT NULL,
+  fiscal_year INTEGER NOT NULL,
+
+  source_type TEXT NOT NULL CHECK (source_type IN (
+    'sale', 'sale_return', 'purchase', 'purchase_return', 'payment',
+    'expense', 'other_income', 'opening', 'adjustment', 'manual',
+    'reversal', 'year_close')),
+  document_id TEXT REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+  payment_id TEXT REFERENCES payments(id) DEFERRABLE INITIALLY DEFERRED,
+  -- A correction never edits history; it posts the opposite entry and points
+  -- at what it undid.
+  reverses_entry_id TEXT REFERENCES journal_entries(id) DEFERRABLE INITIALLY DEFERRED,
+
+  narration TEXT,
+  total_debit_paisa INTEGER NOT NULL CHECK (total_debit_paisa >= 0),
+  total_credit_paisa INTEGER NOT NULL CHECK (total_credit_paisa >= 0),
+
+  -- The database itself refuses an unbalanced entry.
+  CHECK (total_debit_paisa = total_credit_paisa)
+) STRICT;
+
+CREATE UNIQUE INDEX idx_je_no ON journal_entries (firm_id, entry_no);
+CREATE INDEX idx_je_date ON journal_entries (firm_id, entry_date_local, id);
+CREATE INDEX idx_je_doc ON journal_entries (document_id);
+CREATE INDEX idx_je_payment ON journal_entries (payment_id);
+CREATE INDEX idx_je_reverses ON journal_entries (reverses_entry_id);
+CREATE INDEX idx_je_source ON journal_entries (firm_id, source_type, entry_date_local);
+
+CREATE TABLE journal_lines (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  journal_entry_id TEXT NOT NULL REFERENCES journal_entries(id) DEFERRABLE INITIALLY DEFERRED,
+  line_no INTEGER NOT NULL CHECK (line_no >= 1),
+  account_id TEXT NOT NULL REFERENCES accounts(id) DEFERRABLE INITIALLY DEFERRED,
+
+  debit_paisa INTEGER NOT NULL DEFAULT 0 CHECK (debit_paisa >= 0),
+  credit_paisa INTEGER NOT NULL DEFAULT 0 CHECK (credit_paisa >= 0),
+
+  -- Sub-ledger dimensions, so a party statement and a party-wise P&L are one
+  -- indexed aggregation rather than a join through documents.
+  party_id TEXT REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED,
+  item_id TEXT REFERENCES items(id) DEFERRABLE INITIALLY DEFERRED,
+  cost_centre TEXT,
+  narration TEXT,
+
+  -- Exactly one side carries an amount, and it is never zero. A line with
+  -- both sides zero is noise; a line with both sides filled is a bug someone
+  -- would spend a week finding six months from now.
+  CHECK ((debit_paisa = 0) <> (credit_paisa = 0))
+) STRICT;
+
+CREATE UNIQUE INDEX idx_jl_seq ON journal_lines (journal_entry_id, line_no);
+CREATE INDEX idx_jl_account ON journal_lines (account_id, created_at_utc);
+CREATE INDEX idx_jl_firm_account ON journal_lines (firm_id, account_id);
+CREATE INDEX idx_jl_party ON journal_lines (party_id, created_at_utc);
+CREATE INDEX idx_jl_item ON journal_lines (item_id, created_at_utc);

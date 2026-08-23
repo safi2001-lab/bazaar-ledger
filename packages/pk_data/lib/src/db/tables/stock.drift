@@ -1,0 +1,110 @@
+import 'core.drift';
+import 'catalogue.drift';
+import 'documents.drift';
+
+-- Bazaar Ledger — schema v1, part 5 of 7: stock.
+--
+-- The stock ledger is APPEND-ONLY. A quantity on hand is a SUM over this
+-- table, never a mutable number someone can drift out of true. The cached
+-- balance in `balance_after_thousandths` is a convenience the reconciler
+-- rebuilds with the same code that verifies it.
+--
+-- Both extra dimensions are reserved in v1 even though batches and multiple
+-- godowns do not ship until M11: adding a dimension to an append-only ledger
+-- later means recomputing every balance in every user's database, on their
+-- phone, during a migration they did not ask for.
+
+CREATE TABLE stock_lots (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  item_id TEXT NOT NULL REFERENCES items(id) DEFERRABLE INITIALLY DEFERRED,
+  lot_no TEXT NOT NULL,
+  batch_no TEXT,
+  mfg_date_local TEXT,
+  expiry_date_local TEXT,
+
+  -- MRP HANGS OFF THE BATCH, NOT THE ITEM. The Drug Pricing Policy fixes the
+  -- maximum retail price per batch: a price increase does not apply to stock
+  -- manufactured before it, so two batches of the same medicine on the same
+  -- shelf legally sell at different prices. No app built for another market
+  -- has a reason to model this.
+  mrp_paisa INTEGER,
+  cost_milli_paisa INTEGER NOT NULL DEFAULT 0,
+
+  -- DRAP MIS/GL/T&T/001 s.14.2.2 requires retailers to be able to scan AIDC
+  -- data from 9 October 2026. One GS1 DataMatrix carries (01) GTIN,
+  -- (17) expiry, (10) batch and (21) serial; a single scan fills this row.
+  gtin TEXT,
+  serial TEXT,
+
+  received_at_utc INTEGER,
+  supplier_party_id TEXT REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED
+) STRICT;
+
+CREATE UNIQUE INDEX idx_lots_no ON stock_lots (firm_id, item_id, lot_no);
+CREATE INDEX idx_lots_item ON stock_lots (item_id);
+CREATE INDEX idx_lots_expiry
+  ON stock_lots (firm_id, expiry_date_local) WHERE expiry_date_local IS NOT NULL;
+CREATE INDEX idx_lots_gtin ON stock_lots (firm_id, gtin) WHERE gtin IS NOT NULL;
+CREATE INDEX idx_lots_supplier ON stock_lots (supplier_party_id);
+
+CREATE TABLE stock_ledger (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  item_id TEXT NOT NULL REFERENCES items(id) DEFERRABLE INITIALLY DEFERRED,
+
+  -- Reserved dimension. Named `location_code` rather than `location_id`
+  -- deliberately: there is no `locations` table until M11, and a column
+  -- called `*_id` with no REFERENCES clause is exactly the lie this schema
+  -- exists to prevent. The ledger is already partitioned by location, so M11
+  -- adds a parent table and a lookup — it never recomputes a balance.
+  location_code TEXT NOT NULL DEFAULT 'MAIN',
+  lot_id TEXT REFERENCES stock_lots(id) DEFERRABLE INITIALLY DEFERRED,
+
+  document_id TEXT REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+  document_line_id TEXT REFERENCES document_lines(id) DEFERRABLE INITIALLY DEFERRED,
+
+  txn_type TEXT NOT NULL CHECK (txn_type IN (
+    'opening', 'sale', 'sale_return', 'purchase', 'purchase_return',
+    'adjustment', 'transfer_in', 'transfer_out', 'assembly_in',
+    'assembly_out', 'wastage')),
+
+  -- Always in the item's BASE unit, thousandths. Negative is stock leaving.
+  qty_delta_thousandths INTEGER NOT NULL CHECK (qty_delta_thousandths <> 0),
+  rate_milli_paisa INTEGER NOT NULL DEFAULT 0,
+  value_delta_paisa INTEGER NOT NULL DEFAULT 0,
+  -- Cached running balance. Derived, verified, never authoritative.
+  balance_after_thousandths INTEGER,
+
+  occurred_at_utc INTEGER NOT NULL,
+  occurred_on_local TEXT NOT NULL,
+  reason TEXT
+) STRICT;
+
+-- The hot path: current stock for one item at one location.
+CREATE INDEX idx_stock_position
+  ON stock_ledger (firm_id, item_id, location_code, occurred_at_utc, id);
+CREATE INDEX idx_stock_item ON stock_ledger (item_id, occurred_at_utc);
+CREATE INDEX idx_stock_doc ON stock_ledger (document_id);
+CREATE INDEX idx_stock_doc_line ON stock_ledger (document_line_id);
+CREATE INDEX idx_stock_lot ON stock_ledger (lot_id, occurred_at_utc);
+CREATE INDEX idx_stock_daybook
+  ON stock_ledger (firm_id, occurred_on_local, txn_type);

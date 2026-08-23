@@ -1,0 +1,7 @@
+include: ../../analysis_options.base.yaml
+
+analyzer:
+  exclude:
+    # Generated from the .drift files, which are the source of truth. Nothing
+    # here is hand-edited, and nothing here is reviewed.
+    - lib/**.g.dart

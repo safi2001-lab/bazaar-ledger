@@ -1,0 +1,397 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --paper:oklch(0.981 0.006 85); --surface:oklch(1 0 0); --sunken:oklch(0.958 0.008 85);
+  --line:oklch(0.887 0.008 85); --line-strong:oklch(0.74 0.012 85);
+  --ink:oklch(0.22 0.012 85); --ink2:oklch(0.46 0.012 85); --ink3:oklch(0.63 0.010 85);
+  --brand:oklch(0.47 0.125 162); --brandInk:oklch(0.99 0 0); --brandSoft:oklch(0.945 0.038 162);
+  --in:oklch(0.47 0.125 162); --inSoft:oklch(0.945 0.038 162);
+  --out:oklch(0.525 0.165 32); --outSoft:oklch(0.955 0.030 32);
+  --warn:oklch(0.58 0.13 72); --warnSoft:oklch(0.955 0.045 80);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --r1:4px; --r2:8px; --r3:12px;
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+.dark{
+  --paper:oklch(0.175 0.008 85); --surface:oklch(0.222 0.009 85); --sunken:oklch(0.148 0.008 85);
+  --line:oklch(0.315 0.010 85); --line-strong:oklch(0.44 0.012 85);
+  --ink:oklch(0.955 0.005 85); --ink2:oklch(0.75 0.010 85); --ink3:oklch(0.58 0.010 85);
+  --brand:oklch(0.72 0.145 162); --brandInk:oklch(0.16 0.02 162); --brandSoft:oklch(0.30 0.055 162);
+  --in:oklch(0.72 0.145 162); --inSoft:oklch(0.30 0.055 162);
+  --out:oklch(0.70 0.155 32); --outSoft:oklch(0.31 0.060 32);
+  --warn:oklch(0.78 0.14 78); --warnSoft:oklch(0.32 0.055 78);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{color:var(--ink);text-decoration:underline}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.micro{font-size:11px;line-height:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+.ph{position:relative;width:360px;height:800px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.hdr{height:56px;flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.iconBtn{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--ink);cursor:pointer;border-radius:6px}
+.iconBtn:hover{background:var(--sunken)}
+.langSw{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-shrink:0}
+.langBtn{height:32px;min-width:38px;border:none;background:transparent;font-family:var(--sans);font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer}
+.langOn{background:var(--ink);color:var(--paper)}
+.scan{flex-shrink:0;display:flex;align-items:center;gap:8px;height:52px;padding:0 12px;background:var(--surface);border-bottom:1px solid var(--line)}
+.scanIn{flex:1;height:40px;border:1px solid var(--line);border-radius:6px;background:var(--sunken);padding:0 12px;font-family:var(--sans);font-size:14px;color:var(--ink3);display:flex;align-items:center}
+.cart{flex:1;overflow-y:auto;background:var(--paper)}
+.line{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--surface)}
+.lineN{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.lineT{font-size:14px;line-height:19px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lineS{font-size:11px;line-height:15px;color:var(--ink3)}
+.step{display:flex;align-items:center;border:1px solid var(--line);border-radius:6px;overflow:hidden;flex-shrink:0}
+.stepB{width:36px;height:36px;border:none;background:var(--surface);color:var(--ink);font-size:18px;font-weight:600;cursor:pointer;font-family:var(--sans);line-height:1}
+.stepB:hover{background:var(--sunken)}
+.stepV{min-width:40px;text-align:center;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600;border-left:1px solid var(--line);border-right:1px solid var(--line);height:36px;display:flex;align-items:center;justify-content:center}
+.lineAmt{width:74px;flex-shrink:0;text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600}
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:56px 32px;text-align:center}
+.quick{flex-shrink:0;padding:10px 12px;background:var(--paper);border-top:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.qGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.qBtn{height:52px;border:1px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer;font-family:var(--sans);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0 6px;color:var(--ink)}
+.qBtn:hover{border-color:var(--ink);background:var(--sunken)}
+.qN{font-size:11px;line-height:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.qP{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:11px;color:var(--ink3)}
+.foot{flex-shrink:0;background:var(--surface);border-top:2px solid var(--ink);padding:12px}
+.totRow{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.totK{font-size:13px;font-weight:600;letter-spacing:.02em}
+.totV{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;line-height:34px;font-weight:600;letter-spacing:-0.02em}
+.acts{display:flex;gap:8px}
+.btnGhost{height:52px;padding:0 16px;flex-shrink:0;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink);font-family:var(--sans);font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px}
+.btnGhost:hover{background:var(--sunken)}
+.btnPri{flex:1;height:52px;border:none;border-radius:6px;background:var(--brand);color:var(--brandInk);font-family:var(--sans);font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btnPri:hover{filter:brightness(1.08)}
+.btnPri:disabled{background:var(--line);color:var(--ink3);cursor:not-allowed}
+.sheet{position:absolute;left:0;right:0;bottom:0;top:56px;background:var(--surface);border-top:2px solid var(--ink);display:flex;flex-direction:column;z-index:5}
+.shHd{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px;border-bottom:1px solid var(--line)}
+.tenderBox{flex-shrink:0;padding:14px 12px;background:var(--sunken);border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:8px}
+.tRow{display:flex;align-items:baseline;justify-content:space-between}
+.tK{font-size:12px;font-weight:600;color:var(--ink2)}
+.tV{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600}
+.tBig{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:28px;line-height:32px;font-weight:600;letter-spacing:-0.02em}
+.notes{flex-shrink:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:10px 12px}
+.nBtn{height:40px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer}
+.nBtn:hover{border-color:var(--ink);background:var(--sunken)}
+.pad{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:0 12px 10px}
+.pBtn{height:56px;border:1px solid var(--line);border-radius:6px;background:var(--surface);font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;color:var(--ink);cursor:pointer}
+.pBtn:hover{background:var(--sunken);border-color:var(--ink)}
+.changeBar{flex-shrink:0;display:flex;align-items:baseline;justify-content:space-between;padding:12px;border-top:1px solid var(--line);background:var(--inSoft)}
+.done{position:absolute;inset:0;background:var(--surface);z-index:9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:32px;text-align:center}
+.warnBar{flex-shrink:0;display:flex;align-items:flex-start;gap:8px;padding:9px 12px;background:var(--warnSoft);border-top:1px solid var(--warn)}
+  </style>
+</helmet>
+
+<div class="ph {{themeCls}}">
+
+  <div class="hdr">
+    <button class="iconBtn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:1px">
+      <div style="font-size:14px;font-weight:700;line-height:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">Al-Rehman Kiryana</div>
+      <div class="mono" style="font-size:10px;color:var(--ink3);line-height:13px">{{t.billNo}}</div>
+    </div>
+    <div class="langSw">
+      <button class="langBtn {{ruCls}}" onClick="{{setRu}}">اردو</button>
+      <button class="langBtn {{enCls}}" onClick="{{setEn}}">EN</button>
+    </div>
+  </div>
+
+  <div class="scan">
+    <div class="scanIn">{{t.search}}</div>
+    <button class="iconBtn" style="border:1px solid var(--line);background:var(--surface)" aria-label="Scan barcode">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>
+    </button>
+  </div>
+
+  <div class="cart">
+    <sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
+      <div class="empty">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--ink3)"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.4 12.2a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 2-1.6L21.5 7H6"/></svg>
+        <div style="font-size:15px;font-weight:600">{{t.emptyT}}</div>
+        <div style="font-size:13px;line-height:19px;color:var(--ink2);max-width:30ch">{{t.emptyS}}</div>
+      </div>
+    </sc-if>
+    <sc-for list="{{lines}}" as="line" hint-placeholder-count="3">
+      <div class="line">
+        <div class="lineN">
+          <div class="lineT">{{line.name}}</div>
+          <div class="lineS">{{line.sub}}</div>
+        </div>
+        <div class="step">
+          <button class="stepB" onClick="{{line.dec}}" aria-label="Kam karein">−</button>
+          <div class="stepV">{{line.qty}}</div>
+          <button class="stepB" onClick="{{line.inc}}" aria-label="Ziyada karein">+</button>
+        </div>
+        <div class="lineAmt">{{line.amt}}</div>
+      </div>
+    </sc-for>
+  </div>
+
+  <sc-if value="{{overCashLimit}}" hint-placeholder-val="{{ false }}">
+    <div class="warnBar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--warn);flex-shrink:0;margin-top:1px"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+      <div style="font-size:11px;line-height:15px;color:var(--ink)">{{t.cashWarn}}</div>
+    </div>
+  </sc-if>
+
+  <div class="quick">
+    <div class="micro">{{t.quick}}</div>
+    <div class="qGrid">
+      <sc-for list="{{catalog}}" as="c" hint-placeholder-count="6">
+        <button class="qBtn" onClick="{{c.add}}">
+          <div class="qN">{{c.name}}</div>
+          <div class="qP">{{c.price}}</div>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="totRow">
+      <div class="totK">{{t.total}}</div>
+      <div class="totV">{{totalStr}}</div>
+    </div>
+    <div class="acts">
+      <button class="btnGhost">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 8h6M8 12h8M8 16h5"/></svg>
+        {{t.udhaar}}
+      </button>
+      <button class="btnPri" onClick="{{openTender}}">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>
+        {{t.charge}}
+      </button>
+    </div>
+  </div>
+
+  <sc-if value="{{tenderOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="sheet">
+      <div class="shHd">
+        <div style="font-size:16px;font-weight:700">{{t.cash}}</div>
+        <button class="iconBtn" onClick="{{closeTender}}" aria-label="Band karein">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="tenderBox">
+        <div class="tRow"><div class="tK">{{t.total}}</div><div class="tV">{{totalStr}}</div></div>
+        <div class="tRow"><div class="tK">{{t.tendered}}</div><div class="tBig">{{tenderStr}}</div></div>
+      </div>
+      <div class="notes">
+        <sc-for list="{{noteBtns}}" as="n" hint-placeholder-count="4">
+          <button class="nBtn" onClick="{{n.tap}}">{{n.label}}</button>
+        </sc-for>
+      </div>
+      <div class="pad">
+        <sc-for list="{{keys}}" as="k" hint-placeholder-count="12">
+          <button class="pBtn" onClick="{{k.tap}}">{{k.label}}</button>
+        </sc-for>
+      </div>
+      <div class="changeBar">
+        <div class="tK" style="color:var(--in)">{{t.change}}</div>
+        <div class="tBig" style="color:var(--in)">{{changeStr}}</div>
+      </div>
+      <div style="flex-shrink:0;padding:12px">
+        <button class="btnPri" disabled="{{notEnough}}" onClick="{{confirm}}">{{t.confirm}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{doneOpen}}" hint-placeholder-val="{{ false }}">
+    <div class="done">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--inSoft);display:flex;align-items:center;justify-content:center">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--in)"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+      <div style="font-size:19px;font-weight:700">{{t.saved}}</div>
+      <div class="money" style="font-size:15px;color:var(--ink2)">{{t.billNo}} · {{savedTotal}}</div>
+      <div style="display:flex;gap:8px;margin-top:6px">
+        <button class="btnGhost" onClick="{{reset}}">{{t.print}}</button>
+        <button class="btnPri" style="padding:0 20px" onClick="{{reset}}">{{t.newBill}}</button>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"lang":{"editor":"enum","options":["Roman Urdu","English"],"default":"Roman Urdu","section":"Content"},"theme":{"editor":"enum","options":["light","dark"],"default":"light","section":"Style"},"$preview":{"width":360,"height":800}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      lang: null,
+      cart: [{ id: 'oil', q: 2 }, { id: 'sugar', q: 3.5 }],
+      tenderOpen: false,
+      doneOpen: false,
+      tender: ''
+    };
+  }
+
+  catalogData() {
+    return [
+      { id: 'oil',   name: 'Cooking Oil 5L', price: 250000, unit: 'adad' },
+      { id: 'sugar', name: 'Cheeni',         price: 15000,  unit: 'kg', frac: true },
+      { id: 'chai',  name: 'Chai Patti 950g',price: 118000, unit: 'adad' },
+      { id: 'atta',  name: 'Atta 10 kg',     price: 132000, unit: 'adad' },
+      { id: 'daal',  name: 'Daal Chana',     price: 28000,  unit: 'kg', frac: true },
+      { id: 'sabun', name: 'Sabun',          price: 9500,   unit: 'adad' }
+    ];
+  }
+
+  strings() {
+    const ru = {
+      billNo: 'INV-2627-0001', search: 'Cheez dhoondein ya scan karein',
+      quick: 'Jaldi daalein', total: 'Kul', udhaar: 'Udhaar', charge: 'Charge',
+      cash: 'Naqad — Cash', tendered: 'Diye gaye', change: 'Wapsi', confirm: 'Mukammal karein',
+      saved: 'Bill mehfooz ho gaya', print: 'Print', newBill: 'Naya Bill',
+      emptyT: 'Cart khali hai', emptyS: 'Barcode scan karein ya neeche se koi cheez daalein.',
+      cashWarn: 'Rs 200,000 se ooper naqad — section 21(s) ke tehat 50% kharcha na-manzoor ho sakta hai. Bank ya digital zariya behtar hai.'
+    };
+    const en = {
+      billNo: 'INV-2627-0001', search: 'Search an item or scan',
+      quick: 'Quick add', total: 'Total', udhaar: 'On credit', charge: 'Charge',
+      cash: 'Cash', tendered: 'Tendered', change: 'Change', confirm: 'Complete',
+      saved: 'Bill saved', print: 'Print', newBill: 'New bill',
+      emptyT: 'Cart is empty', emptyS: 'Scan a barcode or tap an item below.',
+      cashWarn: 'Cash above Rs 200,000 — section 21(s) can disallow 50% of the expenditure. A bank or digital channel is safer.'
+    };
+    const chosen = this.state.lang ?? (this.props.lang === 'English' ? 'en' : 'ru');
+    return chosen === 'en' ? en : ru;
+  }
+
+  isEn() {
+    const chosen = this.state.lang ?? (this.props.lang === 'English' ? 'en' : 'ru');
+    return chosen === 'en';
+  }
+
+  fmt(paisa) {
+    const neg = paisa < 0;
+    const n = Math.abs(Math.round(paisa));
+    const r = Math.floor(n / 100);
+    const p = String(n % 100).padStart(2, '0');
+    const withSep = String(r).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '− ' : '') + 'Rs ' + withSep + '.' + p;
+  }
+
+  qtyLabel(c, q) {
+    if (c.frac) return String(q);
+    return String(Math.round(q));
+  }
+
+  cartTotal() {
+    const cat = this.catalogData();
+    return this.state.cart.reduce((sum, l) => {
+      const c = cat.find((x) => x.id === l.id);
+      return sum + (c ? Math.round(c.price * l.q) : 0);
+    }, 0);
+  }
+
+  bump(id, delta) {
+    const cat = this.catalogData();
+    const c = cat.find((x) => x.id === id);
+    const step = c && c.frac ? 0.5 : 1;
+    const next = this.state.cart
+      .map((l) => (l.id === id ? { ...l, q: Math.round((l.q + delta * step) * 100) / 100 } : l))
+      .filter((l) => l.q > 0);
+    this.setState({ cart: next });
+  }
+
+  addItem(id) {
+    const has = this.state.cart.some((l) => l.id === id);
+    if (has) { this.bump(id, 1); return; }
+    const cat = this.catalogData();
+    const c = cat.find((x) => x.id === id);
+    this.setState({ cart: [...this.state.cart, { id, q: c && c.frac ? 0.5 : 1 }] });
+  }
+
+  tenderPaisa() {
+    if (!this.state.tender) return 0;
+    return parseInt(this.state.tender, 10) * 100;
+  }
+
+  renderVals() {
+    const t = this.strings();
+    const cat = this.catalogData();
+    const total = this.cartTotal();
+    const tendered = this.tenderPaisa();
+    const change = tendered - total;
+    const en = this.isEn();
+
+    const lines = this.state.cart.map((l) => {
+      const c = cat.find((x) => x.id === l.id) || { name: l.id, price: 0, unit: '' };
+      return {
+        name: c.name,
+        sub: this.fmt(c.price) + ' / ' + c.unit,
+        qty: this.qtyLabel(c, l.q),
+        amt: this.fmt(Math.round(c.price * l.q)).replace('Rs ', ''),
+        inc: () => this.bump(l.id, 1),
+        dec: () => this.bump(l.id, -1)
+      };
+    });
+
+    const catalog = cat.map((c) => ({
+      name: c.name,
+      price: this.fmt(c.price).replace('Rs ', ''),
+      add: () => this.addItem(c.id)
+    }));
+
+    const noteAmts = [500, 1000, 5000];
+    const noteBtns = noteAmts.map((a) => ({
+      label: String(a),
+      tap: () => this.setState({ tender: String((parseInt(this.state.tender || '0', 10)) + a) })
+    }));
+    noteBtns.push({
+      label: en ? 'Exact' : 'Poora',
+      tap: () => this.setState({ tender: String(Math.ceil(total / 100)) })
+    });
+
+    const keyDefs = ['1','2','3','4','5','6','7','8','9','00','0','DEL'];
+    const keys = keyDefs.map((k) => ({
+      label: k === 'DEL' ? '⌫' : k,
+      tap: () => {
+        if (k === 'DEL') { this.setState({ tender: this.state.tender.slice(0, -1) }); return; }
+        const nxt = (this.state.tender + k).replace(/^0+(?=\d)/, '');
+        if (nxt.length <= 8) this.setState({ tender: nxt });
+      }
+    }));
+
+    return {
+      t,
+      lines,
+      catalog,
+      keys,
+      noteBtns,
+      isEmpty: this.state.cart.length === 0,
+      totalStr: this.fmt(total),
+      tenderStr: this.state.tender ? this.fmt(tendered) : (en ? 'Rs 0.00' : 'Rs 0.00'),
+      changeStr: change >= 0 ? this.fmt(change) : this.fmt(0),
+      savedTotal: this.fmt(total),
+      notEnough: tendered < total,
+      overCashLimit: total > 20000000,
+      tenderOpen: this.state.tenderOpen,
+      doneOpen: this.state.doneOpen,
+      themeCls: this.props.theme === 'dark' ? 'dark' : '',
+      ruCls: en ? '' : 'langOn',
+      enCls: en ? 'langOn' : '',
+      setRu: () => this.setState({ lang: 'ru' }),
+      setEn: () => this.setState({ lang: 'en' }),
+      openTender: () => this.setState({ tenderOpen: true, tender: '' }),
+      closeTender: () => this.setState({ tenderOpen: false }),
+      confirm: () => this.setState({ tenderOpen: false, doneOpen: true }),
+      reset: () => this.setState({ doneOpen: false, cart: [], tender: '' })
+    };
+  }
+}
+</script>
+</body>
+</html>

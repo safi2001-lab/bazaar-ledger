@@ -1,0 +1,101 @@
+import 'core.drift';
+import 'catalogue.drift';
+import 'documents.drift';
+import 'system.drift';
+
+-- Bazaar Ledger — schema v1, part 4 of 7: money in and money out.
+--
+-- Manual entry only. There is no payment integration in this product and none
+-- is planned. `mode` is a string on a ledger row — the same information a
+-- paper cash book records in its mode column. If EasyPaisa disappeared
+-- tomorrow the button would still work, because it is a label.
+
+CREATE TABLE payments (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  payment_no TEXT NOT NULL,
+  direction TEXT NOT NULL CHECK (direction IN ('in', 'out')),
+  party_id TEXT REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED,
+  payment_account_id TEXT NOT NULL REFERENCES payment_accounts(id) DEFERRABLE INITIALLY DEFERRED,
+
+  mode TEXT NOT NULL CHECK (mode IN (
+    'cash', 'bank_transfer', 'jazzcash', 'easypaisa', 'raast', 'card',
+    'cheque', 'adjustment')),
+  -- Whatever the shopkeeper wants to write down: a JazzCash TID, the last four
+  -- of a card slip, nothing at all. We never verify it against anything,
+  -- because there is nothing to verify it against.
+  reference TEXT,
+
+  amount_paisa INTEGER NOT NULL CHECK (amount_paisa > 0),
+  -- Cash tender and change. Stored so a Z-report can reconcile the drawer.
+  tendered_paisa INTEGER,
+  change_paisa INTEGER NOT NULL DEFAULT 0 CHECK (change_paisa >= 0),
+
+  payment_date_utc INTEGER NOT NULL,
+  payment_date_local TEXT NOT NULL,
+
+  status TEXT NOT NULL DEFAULT 'cleared'
+    CHECK (status IN ('cleared', 'pending', 'bounced', 'void')),
+
+  -- Post-dated cheques. The full lifecycle lands in M6; the columns exist now
+  -- so a cheque taken in M3 is not lost data.
+  cheque_no TEXT,
+  cheque_date_utc INTEGER,
+  cheque_bank TEXT,
+  cheque_status TEXT CHECK (cheque_status IN (
+    'issued', 'deposited', 'cleared', 'bounced', 'returned')),
+  cheque_image_attachment_id TEXT REFERENCES attachments(id) DEFERRABLE INITIALLY DEFERRED,
+
+  notes TEXT,
+
+  CHECK (tendered_paisa IS NULL OR tendered_paisa >= amount_paisa),
+  CHECK (mode <> 'cheque' OR cheque_no IS NOT NULL)
+) STRICT;
+
+CREATE UNIQUE INDEX idx_payments_no ON payments (firm_id, payment_no);
+CREATE INDEX idx_payments_party ON payments (party_id, payment_date_local);
+CREATE INDEX idx_payments_account
+  ON payments (payment_account_id, payment_date_local);
+CREATE INDEX idx_payments_daybook
+  ON payments (firm_id, payment_date_local, direction);
+CREATE INDEX idx_payments_cheques
+  ON payments (firm_id, cheque_status, cheque_date_utc)
+  WHERE cheque_no IS NOT NULL;
+CREATE INDEX idx_payments_cheque_img ON payments (cheque_image_attachment_id);
+
+-- Many-to-many from day one. A wholesale customer hands over Rs 50,000
+-- against four open bills, and the single most-complained-about gap in the
+-- competing products is being unable to say which bills it settled.
+CREATE TABLE payment_allocations (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  payment_id TEXT NOT NULL REFERENCES payments(id) DEFERRABLE INITIALLY DEFERRED,
+  document_id TEXT NOT NULL REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+  amount_paisa INTEGER NOT NULL CHECK (amount_paisa > 0),
+  -- FIFO by default, but the cashier can override, so record which it was.
+  allocation_mode TEXT NOT NULL DEFAULT 'fifo'
+    CHECK (allocation_mode IN ('fifo', 'manual', 'exact')),
+  allocated_at_utc INTEGER NOT NULL
+) STRICT;
+
+CREATE UNIQUE INDEX idx_alloc_pair ON payment_allocations (payment_id, document_id);
+CREATE INDEX idx_alloc_doc ON payment_allocations (document_id);
+CREATE INDEX idx_alloc_firm ON payment_allocations (firm_id, allocated_at_utc);

@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --paper:oklch(0.981 0.006 85); --surface:oklch(1 0 0); --sunken:oklch(0.958 0.008 85);
+  --line:oklch(0.887 0.008 85); --line-strong:oklch(0.74 0.012 85);
+  --ink:oklch(0.22 0.012 85); --ink2:oklch(0.46 0.012 85); --ink3:oklch(0.63 0.010 85);
+  --brand:oklch(0.47 0.125 162); --brandInk:oklch(0.99 0 0); --brandSoft:oklch(0.945 0.038 162);
+  --in:oklch(0.47 0.125 162); --inSoft:oklch(0.945 0.038 162);
+  --out:oklch(0.525 0.165 32); --outSoft:oklch(0.955 0.030 32);
+  --warn:oklch(0.58 0.13 72); --warnSoft:oklch(0.955 0.045 80);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --r1:4px; --r2:8px; --r3:12px;
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+.dark{
+  --paper:oklch(0.175 0.008 85); --surface:oklch(0.222 0.009 85); --sunken:oklch(0.148 0.008 85);
+  --line:oklch(0.315 0.010 85); --line-strong:oklch(0.44 0.012 85);
+  --ink:oklch(0.955 0.005 85); --ink2:oklch(0.75 0.010 85); --ink3:oklch(0.58 0.010 85);
+  --brand:oklch(0.72 0.145 162); --brandInk:oklch(0.16 0.02 162); --brandSoft:oklch(0.30 0.055 162);
+  --in:oklch(0.72 0.145 162); --inSoft:oklch(0.30 0.055 162);
+  --out:oklch(0.70 0.155 32); --outSoft:oklch(0.31 0.060 32);
+  --warn:oklch(0.78 0.14 78); --warnSoft:oklch(0.32 0.055 78);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{color:var(--ink);text-decoration:underline}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.micro{font-size:11px;line-height:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+.wrap{width:360px;background:var(--paper);display:flex;flex-direction:column}
+.cap{padding:14px 16px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;gap:4px}
+.ph{height:660px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column;border-top:2px solid var(--ink)}
+.bar{height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+.hero{flex-shrink:0;padding:18px 14px;background:var(--surface);border-bottom:2px solid var(--ink);display:flex;flex-direction:column;gap:12px}
+.heroTop{display:flex;align-items:baseline;justify-content:space-between}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cell{border:1px solid var(--line);border-radius:8px;padding:11px;display:flex;flex-direction:column;gap:4px}
+.list{flex:1;overflow:hidden}
+.lr{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--line);background:var(--surface)}
+.av{width:38px;height:38px;border-radius:50%;background:var(--sunken);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--ink2);flex-shrink:0}
+.tabs{flex-shrink:0;height:64px;display:grid;grid-template-columns:repeat(4,1fr);background:var(--surface);border-top:2px solid var(--ink)}
+.tb{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:600;color:var(--ink3)}
+.tbOn{color:var(--brand)}
+.tradeoff{padding:14px 16px 18px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
+.tl{display:flex;gap:8px;font-size:11.5px;line-height:16px;color:var(--ink2)}
+.mk{font-weight:700;flex-shrink:0;width:16px}
+  </style>
+</helmet>
+
+<div class="wrap">
+
+  <div class="cap">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.65">Direction C — sketch</div>
+    <div style="font-size:19px;font-weight:700;line-height:23px">Khata Pehle</div>
+    <div style="font-size:12px;line-height:17px;opacity:.8">Axis: <b>what the app is</b>. Home is the udhaar book, not the till. Attacks DigiKhata and Udhaar Book where they already have 5M+ installs each — billing is the upsell, not the front door.</div>
+  </div>
+
+  <div class="ph">
+    <div class="bar">
+      <div style="font-size:17px;font-weight:700">Khata</div>
+      <div style="display:flex;gap:8px">
+        <div style="width:36px;height:36px;border:1px solid var(--line);border-radius:6px"></div>
+        <div style="width:36px;height:36px;border:1px solid var(--line);border-radius:6px"></div>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="heroTop">
+        <div class="micro">Kul baqaya · 23 grahak</div>
+      </div>
+      <div class="money" style="font-size:38px;line-height:42px;font-weight:600;letter-spacing:-0.03em;color:var(--out)">− Rs 84,300</div>
+      <div class="split">
+        <div class="cell" style="border-left:3px solid var(--in)">
+          <div class="micro" style="color:var(--in)">Aaj jama</div>
+          <div class="money" style="font-size:17px;font-weight:600;color:var(--in)">+ 18,400</div>
+        </div>
+        <div class="cell" style="border-left:3px solid var(--out)">
+          <div class="micro" style="color:var(--out)">Aaj udhaar</div>
+          <div class="money" style="font-size:17px;font-weight:600;color:var(--out)">− 12,750</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="list">
+      <div class="lr">
+        <div class="av">B</div>
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">Bilal Traders</div><div style="font-size:11px;color:var(--ink3)">14 din se baqaya</div></div>
+        <div style="text-align:right"><div class="money" style="font-size:15px;font-weight:600;color:var(--out)">− 12,750</div></div>
+      </div>
+      <div class="lr">
+        <div class="av">H</div>
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">Hafiz Sahab</div><div style="font-size:11px;color:var(--ink3)">Aaj</div></div>
+        <div style="text-align:right"><div class="money" style="font-size:15px;font-weight:600;color:var(--out)">− 3,900</div></div>
+      </div>
+      <div class="lr">
+        <div class="av">R</div>
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">Rehan Store</div><div style="font-size:11px;color:var(--ink3)">Saaf</div></div>
+        <div style="text-align:right"><div class="money" style="font-size:15px;font-weight:600;color:var(--ink3)">0</div></div>
+      </div>
+      <div class="lr">
+        <div class="av">S</div>
+        <div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600">Saleem Bhai</div><div style="font-size:11px;color:var(--ink3)">41 din se baqaya</div></div>
+        <div style="text-align:right"><div class="money" style="font-size:15px;font-weight:600;color:var(--out)">− 27,100</div></div>
+      </div>
+      <div class="lr" style="background:var(--brandSoft);border-bottom:none">
+        <div style="flex:1;font-size:13px;font-weight:600;color:var(--brand)">Bill banana chaahte hain? POS kholein →</div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tb tbOn"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V5a2 2 0 0 1 2-2h11l3 3v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M8 8h6M8 12h8"/></svg>Khata</div>
+      <div class="tb"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Bill</div>
+      <div class="tb"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-7h6v7"/></svg>Stock</div>
+      <div class="tb"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19h16M7 16V9M12 16V5M17 16v-4"/></svg>Hisaab</div>
+    </div>
+  </div>
+
+  <div class="tradeoff">
+    <div class="tl"><div class="mk" style="color:var(--in)">+</div><div>Meets the market where it already is — 85% of adults run on informal credit, and khata apps have the installs to prove it.</div></div>
+    <div class="tl"><div class="mk" style="color:var(--in)">+</div><div>Baqaya on the home screen is the number the owner actually loses sleep over.</div></div>
+    <div class="tl"><div class="mk" style="color:var(--out)">−</div><div>Fights four free apps head-on, on their turf, at their price — zero.</div></div>
+    <div class="tl"><div class="mk" style="color:var(--out)">−</div><div>Buries the POS, which is the thing the free apps <i>cannot</i> fund and our only real moat.</div></div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

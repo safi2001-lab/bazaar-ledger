@@ -1,0 +1,43 @@
+name: bazaar_ledger
+repository: https://github.com/local/bazaar-ledger
+
+packages:
+  - packages/**
+  - .
+
+command:
+  bootstrap:
+    runPubGetInParallel: true
+
+scripts:
+  analyze:
+    run: melos exec -c 1 -- dart analyze --fatal-infos
+    description: Analyze every package. Zero issues required.
+
+  lint:custom:
+    run: melos exec -c 1 --depends-on="custom_lint" -- dart run custom_lint
+    description: Run the architectural custom_lint rules.
+
+  test:
+    run: melos exec -c 1 --dir-exists="test" -- flutter test
+    description: Run every package test suite.
+
+  test:unit:
+    run: melos exec -c 1 --dir-exists="test" --no-flutter -- dart test
+    description: Run pure-Dart package tests only (fast).
+
+  gen:
+    run: melos exec -c 1 --depends-on="build_runner" -- dart run build_runner build --delete-conflicting-outputs
+    description: Regenerate drift/riverpod/freezed output.
+
+  arch:
+    run: dart run tool/arch_check.dart
+    description: Assert the package import graph matches the layering rules.
+
+  verify:
+    run: dart run tool/verify_ledger.dart
+    description: Fail if any feature marked done lacks a passing proof test.
+
+  ci:
+    run: melos run analyze && melos run lint:custom && melos run arch && melos run test && melos run verify
+    description: Everything CI runs, in order.

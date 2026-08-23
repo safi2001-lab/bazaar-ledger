@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --paper:oklch(0.981 0.006 85); --surface:oklch(1 0 0); --sunken:oklch(0.958 0.008 85);
+  --line:oklch(0.887 0.008 85); --line-strong:oklch(0.74 0.012 85);
+  --ink:oklch(0.22 0.012 85); --ink2:oklch(0.46 0.012 85); --ink3:oklch(0.63 0.010 85);
+  --brand:oklch(0.47 0.125 162); --brandInk:oklch(0.99 0 0); --brandSoft:oklch(0.945 0.038 162);
+  --in:oklch(0.47 0.125 162); --inSoft:oklch(0.945 0.038 162);
+  --out:oklch(0.525 0.165 32); --outSoft:oklch(0.955 0.030 32);
+  --warn:oklch(0.58 0.13 72); --warnSoft:oklch(0.955 0.045 80);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --r1:4px; --r2:8px; --r3:12px;
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+.dark{
+  --paper:oklch(0.175 0.008 85); --surface:oklch(0.222 0.009 85); --sunken:oklch(0.148 0.008 85);
+  --line:oklch(0.315 0.010 85); --line-strong:oklch(0.44 0.012 85);
+  --ink:oklch(0.955 0.005 85); --ink2:oklch(0.75 0.010 85); --ink3:oklch(0.58 0.010 85);
+  --brand:oklch(0.72 0.145 162); --brandInk:oklch(0.16 0.02 162); --brandSoft:oklch(0.30 0.055 162);
+  --in:oklch(0.72 0.145 162); --inSoft:oklch(0.30 0.055 162);
+  --out:oklch(0.70 0.155 32); --outSoft:oklch(0.31 0.060 32);
+  --warn:oklch(0.78 0.14 78); --warnSoft:oklch(0.32 0.055 78);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{color:var(--ink);text-decoration:underline}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.micro{font-size:11px;line-height:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+.wrap{width:360px;background:var(--paper);display:flex;flex-direction:column}
+.cap{padding:14px 16px;background:var(--ink);color:var(--paper);display:flex;flex-direction:column;gap:4px}
+.ph{height:660px;overflow:hidden;background:var(--sunken);display:flex;flex-direction:column;border-top:2px solid var(--ink)}
+.bar{height:60px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:var(--surface);border-bottom:2px solid var(--ink)}
+.tot{flex-shrink:0;background:var(--ink);color:var(--paper);padding:16px 14px;display:flex;align-items:baseline;justify-content:space-between}
+.grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:2px;background:var(--line);padding:2px;align-content:start;overflow:hidden}
+.tile{background:var(--surface);height:104px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:8px}
+.sq{width:36px;height:36px;border:2px solid var(--ink2);border-radius:6px}
+.tN{font-size:14px;font-weight:700}
+.tP{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;color:var(--ink2)}
+.big{flex-shrink:0;height:76px;background:var(--brand);color:var(--brandInk);display:flex;align-items:center;justify-content:center;gap:10px;font-size:22px;font-weight:700}
+.tradeoff{padding:14px 16px 18px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line)}
+.tl{display:flex;gap:8px;font-size:11.5px;line-height:16px;color:var(--ink2)}
+.mk{font-weight:700;flex-shrink:0;width:16px}
+  </style>
+</helmet>
+
+<div class="wrap">
+
+  <div class="cap">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.65">Direction B — sketch</div>
+    <div style="font-size:19px;font-weight:700;line-height:23px">Bade Button</div>
+    <div style="font-size:12px;line-height:17px;opacity:.8">Axis: <b>literacy and glove-thickness</b>. Six huge tiles, almost no prose, the total always in a black band. Built for the 37–41% of adults who cannot reliably read any script.</div>
+  </div>
+
+  <div class="ph">
+    <div class="bar">
+      <div style="font-size:16px;font-weight:700">Al-Rehman</div>
+      <div style="width:44px;height:44px;border:2px solid var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M7 8v8M11 8v8M15 8v8M19 8v8"/></svg>
+      </div>
+    </div>
+
+    <div class="tot">
+      <div style="font-size:14px;font-weight:600;opacity:.75">Kul</div>
+      <div class="money" style="font-size:34px;line-height:38px;font-weight:600;letter-spacing:-0.02em">Rs 5,525</div>
+    </div>
+
+    <div class="grid">
+      <div class="tile"><div class="sq"></div><div class="tN">Tel</div><div class="tP">2,500</div></div>
+      <div class="tile"><div class="sq" style="border-radius:50%"></div><div class="tN">Cheeni</div><div class="tP">150</div></div>
+      <div class="tile"><div class="sq" style="border-radius:0"></div><div class="tN">Chai</div><div class="tP">1,180</div></div>
+      <div class="tile"><div class="sq" style="transform:rotate(45deg)"></div><div class="tN">Atta</div><div class="tP">1,320</div></div>
+      <div class="tile"><div class="sq" style="border-radius:6px 6px 20px 20px"></div><div class="tN">Doodh</div><div class="tP">220</div></div>
+      <div class="tile" style="background:var(--sunken);border:2px dashed var(--line-strong)"><div style="font-size:28px;font-weight:700;color:var(--ink3);line-height:1">+</div><div class="tN" style="color:var(--ink3)">Aur</div></div>
+    </div>
+
+    <div class="big">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M20 6 9 17l-5-5"/></svg>
+      Le liya
+    </div>
+  </div>
+
+  <div class="tradeoff">
+    <div class="tl"><div class="mk" style="color:var(--in)">+</div><div>Unmissable targets; a scan-only shop never reads a word. Works one-handed.</div></div>
+    <div class="tl"><div class="mk" style="color:var(--in)">+</div><div>The black total band is legible across a counter in daylight.</div></div>
+    <div class="tl"><div class="mk" style="color:var(--out)">−</div><div>Six items on screen against twelve. A 20k-SKU shop lives in search, so the tiles stop paying rent fast.</div></div>
+    <div class="tl"><div class="mk" style="color:var(--out)">−</div><div>No room for the qty stepper, so weighed goods get awkward.</div></div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

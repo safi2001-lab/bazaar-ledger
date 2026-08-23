@@ -1,0 +1,185 @@
+import 'core.drift';
+
+-- Bazaar Ledger — schema v1, part 7 of 7: audit, sync, files, tax rules.
+
+-- Who did what, when, on which device. Written inside the same transaction as
+-- the thing it describes, by the one write path, so an audit row cannot go
+-- missing for an action that succeeded — or survive one that did not.
+--
+-- The actor is the envelope: created_by is the user and origin_device_id is
+-- the device. Duplicating them into `actor_*` columns would create two places
+-- for the truth to live and eventually disagree.
+CREATE TABLE audit_log (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  -- Screaming snake case, from a closed set the application declares:
+  -- SALE_POSTED, SALE_VOIDED, PAYMENT_RECEIVED, ITEM_PRICE_CHANGED, ...
+  -- Named `action_code` and not `action`: ACTION is a reserved word in the
+  -- SQL grammar (the ON DELETE ... clause), so a bare `action` column cannot
+  -- be referenced from an index without quoting it everywhere.
+  action_code TEXT NOT NULL,
+  entity_table TEXT NOT NULL,
+  entity_id TEXT NOT NULL,
+  -- One human-readable line, in English, for the activity dashboard. Never
+  -- reconstructed from JSON at read time.
+  summary TEXT,
+  -- Field-level before and after, for the fields that changed only.
+  before_json TEXT,
+  after_json TEXT,
+  amount_paisa INTEGER,
+  at_utc INTEGER NOT NULL
+) STRICT;
+
+CREATE INDEX idx_audit_entity ON audit_log (entity_table, entity_id, at_utc);
+CREATE INDEX idx_audit_firm_time ON audit_log (firm_id, at_utc, id);
+CREATE INDEX idx_audit_actor ON audit_log (firm_id, created_by, at_utc);
+CREATE INDEX idx_audit_action ON audit_log (firm_id, action_code, at_utc);
+
+-- The sync outbox. The TRANSPORT lands in M13; the FORMAT lands now, because
+-- data created before an outbox exists can never be synced afterwards without
+-- a full-table backfill that has no HLC to backfill from.
+CREATE TABLE change_log (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  -- Monotonic per device, allocated from devices.change_seq in the same
+  -- transaction. A peer asks for "everything after 4,117" and gets exactly
+  -- that, in order, with no gaps and no clock involved.
+  seq INTEGER NOT NULL CHECK (seq > 0),
+  entity_table TEXT NOT NULL,
+  entity_id TEXT NOT NULL,
+  op TEXT NOT NULL CHECK (op IN ('insert', 'update', 'delete')),
+  payload_json TEXT NOT NULL,
+  -- The HLC and rev of the ROW as written, which is what the merge rule reads.
+  entity_hlc TEXT NOT NULL,
+  entity_rev INTEGER NOT NULL,
+  at_utc INTEGER NOT NULL,
+
+  sync_state TEXT NOT NULL DEFAULT 'pending'
+    CHECK (sync_state IN ('pending', 'sent', 'acked', 'conflict')),
+  synced_at_utc INTEGER
+) STRICT;
+
+CREATE UNIQUE INDEX idx_changelog_seq ON change_log (origin_device_id, seq);
+CREATE INDEX idx_changelog_outbox ON change_log (firm_id, sync_state, seq);
+CREATE INDEX idx_changelog_entity ON change_log (entity_table, entity_id, seq);
+
+CREATE TABLE attachments (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  kind TEXT NOT NULL CHECK (kind IN (
+    'logo', 'item_image', 'receipt_photo', 'cheque_image', 'bank_qr',
+    'signature', 'other')),
+  -- A loose back-reference on purpose: an attachment outlives the row that
+  -- pointed at it, and a hard FK here would need one column per owner table.
+  owner_table TEXT,
+  owner_id TEXT,
+
+  file_name TEXT NOT NULL,
+  mime_type TEXT NOT NULL,
+  byte_size INTEGER NOT NULL CHECK (byte_size >= 0),
+  sha256 TEXT NOT NULL,
+  -- Small images live inline so a backup is one file and a restore cannot
+  -- come back with missing pictures. Anything larger goes to storage_path.
+  bytes BLOB,
+  storage_path TEXT,
+  width INTEGER,
+  height INTEGER,
+
+  CHECK (bytes IS NOT NULL OR storage_path IS NOT NULL)
+) STRICT;
+
+CREATE INDEX idx_attach_owner ON attachments (owner_table, owner_id);
+CREATE INDEX idx_attach_firm_kind ON attachments (firm_id, kind);
+CREATE INDEX idx_attach_sha ON attachments (firm_id, sha256);
+
+-- Tax rules are DATA, not constants, and they are effective-dated.
+--
+-- Rates change every July. An invoice raised last year must reprint at last
+-- year's rate, so a document stores the pack version it used and the rule
+-- rows are never edited in place — a new rate is a new row with a new
+-- effective_from, and the old row gets an effective_to.
+--
+-- The pack is bundled with the app and copied per firm on first run. A firm
+-- may add its own rows. That copy is what makes "every table is firm scoped"
+-- hold with no exceptions, and what makes a firm export self-contained.
+CREATE TABLE tax_rules (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  pack_version TEXT NOT NULL,
+  code TEXT NOT NULL,
+  name_en TEXT NOT NULL,
+  name_ur TEXT NOT NULL,
+
+  tax_kind TEXT NOT NULL CHECK (tax_kind IN (
+    'sales_tax', 'further_tax', 'extra_tax', 'withholding',
+    'provincial_st', 'fed', 'cess')),
+  jurisdiction TEXT NOT NULL CHECK (jurisdiction IN (
+    'federal', 'punjab', 'sindh', 'kpk', 'balochistan', 'ict', 'gb', 'ajk')),
+  -- Basis points. The 8th Schedule's real slabs include 8.5%, 12.5% and
+  -- 12.75%, none of which survive an integer percent and none of which should
+  -- ever become a float.
+  rate_bp INTEGER NOT NULL,
+  applies_to TEXT NOT NULL DEFAULT 'both'
+    CHECK (applies_to IN ('goods', 'services', 'both')),
+
+  effective_from_local TEXT NOT NULL,
+  effective_to_local TEXT,
+
+  -- Further tax under s.3(1A) STA is 4% and is triggered by the buyer being
+  -- off the Active Taxpayer List. This flag is what the posting rule tests.
+  requires_buyer_off_atl INTEGER NOT NULL DEFAULT 0
+    CHECK (requires_buyer_off_atl IN (0, 1)),
+  -- 3rd Schedule goods are taxed on printed retail price, not on the sale
+  -- value, which changes the base and not just the rate.
+  taxes_on_mrp INTEGER NOT NULL DEFAULT 0 CHECK (taxes_on_mrp IN (0, 1)),
+
+  sro_schedule_no TEXT,
+  sro_item_no TEXT,
+  statute_ref TEXT,
+  -- 0 for a rule the shopkeeper added by hand.
+  is_system INTEGER NOT NULL DEFAULT 1 CHECK (is_system IN (0, 1)),
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+
+  CHECK (effective_to_local IS NULL OR effective_to_local >= effective_from_local)
+) STRICT;
+
+CREATE UNIQUE INDEX idx_taxrules_code
+  ON tax_rules (firm_id, code, effective_from_local);
+CREATE INDEX idx_taxrules_lookup
+  ON tax_rules (firm_id, tax_kind, jurisdiction, effective_from_local);

@@ -1,0 +1,44 @@
+{
+  "pages": [
+    { "id": "page-1", "name": "M0 Screens" },
+    { "id": "page-2", "name": "Foundations" }
+  ],
+  "artboards": [
+    { "file": "Setup.dc.html",      "page": "page-1", "x": 0,    "y": 0,   "w": 360,  "h": 800, "title": "1 · First run" },
+    { "file": "Main.dc.html",       "page": "page-1", "x": 460,  "y": 0,   "w": 360,  "h": 800, "title": "2 · POS counter — live" },
+    { "file": "Sales.dc.html",      "page": "page-1", "x": 920,  "y": 0,   "w": 360,  "h": 800, "title": "3 · Bill Kitab" },
+    { "file": "Receipt.dc.html",    "page": "page-1", "x": 1380, "y": 0,   "w": 760,  "h": 800, "title": "4 · Receipt + 80mm thermal" },
+    { "file": "PosTablet.dc.html",  "page": "page-1", "x": 0,    "y": 950, "w": 1024, "h": 768, "title": "POS — tablet landscape, keyboard-first" },
+    { "file": "DirectionB.dc.html", "page": "page-1", "x": 1140, "y": 950, "w": 360,  "h": 950, "title": "Alternate B" },
+    { "file": "DirectionC.dc.html", "page": "page-1", "x": 1600, "y": 950, "w": 360,  "h": 950, "title": "Alternate C" },
+    { "file": "System.dc.html",     "page": "page-2", "x": 0,    "y": 0,   "w": 880,  "h": 1840, "title": "Design system" },
+    { "file": "Components.dc.html", "page": "page-2", "x": 980,  "y": 0,   "w": 880,  "h": 1640, "title": "Component library" }
+  ],
+  "annotations": [
+    {
+      "id": "note-scope",
+      "page": "page-1",
+      "x": 0,
+      "y": -190,
+      "w": 500,
+      "text": "M0 — the walking skeleton.\n\nThese four screens are the entire first milestone. Nothing else ships until one real sale writes an invoice, its line items, a payment, an allocation, two stock-ledger rows and a balanced journal entry — atomically, in one transaction.\n\nThe POS counter is live: tap items, change quantities, charge, count out cash. The 8-second bill is meant to be timed, not asserted."
+    },
+    {
+      "id": "note-direction",
+      "page": "page-1",
+      "x": 1140,
+      "y": 760,
+      "w": 400,
+      "text": "Two alternates, kept honest.\n\nThe main screens commit to one direction — Bazaar Ledger: ink on paper, rules instead of shadows, tabular money. B and C move on different axes (literacy-density, and what the app is for) so the choice is real. Each carries its own tradeoff, not just a case for the favourite.\n\nSay the word and either one becomes Main."
+    },
+    {
+      "id": "note-legal",
+      "page": "page-1",
+      "x": 1380,
+      "y": -190,
+      "w": 400,
+      "text": "Two things on the receipt are legal decisions, not visual ones.\n\nThe Raast alias prints as plain text. Minting a scheme QR is an offence under s.56 of the PS&EFT Act — up to 3 years or PKR 3m — because SBP issues those first two digits only to licensed PSO/PSPs. A bank-issued QR can be imported and printed; we never synthesise one.\n\nAnd nothing anywhere claims the bill was filed with FBR."
+    }
+  ],
+  "launch": { "view": "canvas", "page": "page-1" }
+}

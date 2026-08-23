@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --paper:oklch(0.981 0.006 85); --surface:oklch(1 0 0); --sunken:oklch(0.958 0.008 85);
+  --line:oklch(0.887 0.008 85); --line-strong:oklch(0.74 0.012 85);
+  --ink:oklch(0.22 0.012 85); --ink2:oklch(0.46 0.012 85); --ink3:oklch(0.63 0.010 85);
+  --brand:oklch(0.47 0.125 162); --brandInk:oklch(0.99 0 0); --brandSoft:oklch(0.945 0.038 162);
+  --in:oklch(0.47 0.125 162); --inSoft:oklch(0.945 0.038 162);
+  --out:oklch(0.525 0.165 32); --outSoft:oklch(0.955 0.030 32);
+  --warn:oklch(0.58 0.13 72); --warnSoft:oklch(0.955 0.045 80);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --r1:4px; --r2:8px; --r3:12px;
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+.dark{
+  --paper:oklch(0.175 0.008 85); --surface:oklch(0.222 0.009 85); --sunken:oklch(0.148 0.008 85);
+  --line:oklch(0.315 0.010 85); --line-strong:oklch(0.44 0.012 85);
+  --ink:oklch(0.955 0.005 85); --ink2:oklch(0.75 0.010 85); --ink3:oklch(0.58 0.010 85);
+  --brand:oklch(0.72 0.145 162); --brandInk:oklch(0.16 0.02 162); --brandSoft:oklch(0.30 0.055 162);
+  --in:oklch(0.72 0.145 162); --inSoft:oklch(0.30 0.055 162);
+  --out:oklch(0.70 0.155 32); --outSoft:oklch(0.31 0.060 32);
+  --warn:oklch(0.78 0.14 78); --warnSoft:oklch(0.32 0.055 78);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{color:var(--ink);text-decoration:underline}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.micro{font-size:11px;line-height:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+.tab{width:1024px;height:768px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column}
+.hdr{height:56px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+.iconBtn{width:44px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:none;background:transparent;color:var(--ink);border-radius:6px}
+.kbd{display:inline-flex;align-items:center;justify-content:center;min-width:22px;height:20px;padding:0 5px;border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--ink2);background:var(--surface)}
+.main{flex:1;display:flex;min-height:0}
+.left{flex:1;min-width:0;display:flex;flex-direction:column;border-right:1px solid var(--line)}
+.search{flex-shrink:0;display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--surface);border-bottom:1px solid var(--line)}
+.searchIn{flex:1;height:44px;border:2px solid var(--brand);border-radius:6px;background:var(--surface);padding:0 12px;display:flex;align-items:center;gap:8px;font-size:15px}
+.caret{width:2px;height:20px;background:var(--ink)}
+.grid{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;align-content:start}
+.card{height:92px;border:1px solid var(--line);border-radius:8px;background:var(--surface);padding:11px;display:flex;flex-direction:column;justify-content:space-between}
+.cardN{font-size:13px;line-height:17px;font-weight:600}
+.cardB{display:flex;align-items:baseline;justify-content:space-between}
+.cardP{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14px;font-weight:600}
+.stk{font-size:10px;font-weight:600;color:var(--ink3)}
+.right{width:400px;flex-shrink:0;display:flex;flex-direction:column;background:var(--surface)}
+.rHd{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line)}
+.tbl{flex:1;overflow-y:auto}
+.thead{display:grid;grid-template-columns:1fr 68px 88px;gap:8px;padding:7px 14px;background:var(--sunken);border-bottom:1px solid var(--line);position:sticky;top:0}
+.tr{display:grid;grid-template-columns:1fr 68px 88px;gap:8px;padding:9px 14px;border-bottom:1px solid var(--line);align-items:center}
+.tr:nth-child(even){background:var(--sunken)}
+.tn{font-size:13px;line-height:18px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ts{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:10.5px;color:var(--ink3)}
+.tq{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;text-align:center}
+.ta{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:13px;font-weight:600;text-align:right}
+.sum{flex-shrink:0;padding:14px;border-top:2px solid var(--ink);display:flex;flex-direction:column;gap:9px}
+.sRow{display:flex;justify-content:space-between;align-items:baseline}
+.acts{display:grid;grid-template-columns:auto 1fr;gap:8px;margin-top:3px}
+.btnGhost{height:56px;padding:0 18px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface);color:var(--ink);font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px}
+.btnPri{height:56px;border:none;border-radius:6px;background:var(--brand);color:var(--brandInk);font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:10px}
+.statusbar{flex-shrink:0;height:32px;display:flex;align-items:center;gap:16px;padding:0 14px;background:var(--sunken);border-top:1px solid var(--line)}
+.sb{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--ink2)}
+  </style>
+</helmet>
+
+<div class="tab">
+
+  <div class="hdr">
+    <button class="iconBtn" aria-label="Menu">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div style="display:flex;flex-direction:column;gap:1px">
+      <div style="font-size:15px;font-weight:700;line-height:18px">Al-Rehman Kiryana</div>
+      <div class="mono" style="font-size:10px;color:var(--ink3);line-height:13px">Counter C1 · Ali</div>
+    </div>
+    <div style="flex:1"></div>
+    <div style="display:flex;align-items:center;gap:9px">
+      <div style="display:flex;align-items:center;gap:5px"><span class="kbd">F2</span><span style="font-size:11px;color:var(--ink2)">Naya</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="kbd">F4</span><span style="font-size:11px;color:var(--ink2)">Udhaar</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="kbd">F9</span><span style="font-size:11px;color:var(--ink2)">Charge</span></div>
+      <div style="display:flex;align-items:center;gap:5px"><span class="kbd">F10</span><span style="font-size:11px;color:var(--ink2)">Print</span></div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <div class="left">
+      <div class="search">
+        <div class="searchIn">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ink3)"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <span>chee</span><span class="caret"></span>
+          <span style="flex:1"></span>
+          <span style="font-size:11px;color:var(--ink3)">3 nataij</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ink2)"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 8v8M10 8v8M13 8v8M17 8v8"/></svg>
+          <span style="font-size:11px;color:var(--ink2)">Scanner chaalu</span>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="card" style="border:2px solid var(--brand);background:var(--brandSoft)"><div class="cardN">Cheeni</div><div class="cardB"><div class="cardP">150.00</div><div class="stk">/ kg</div></div></div>
+        <div class="card"><div class="cardN">Cheeni Brown</div><div class="cardB"><div class="cardP">190.00</div><div class="stk">/ kg</div></div></div>
+        <div class="card"><div class="cardN">Cheeni Sachet</div><div class="cardB"><div class="cardP">15.00</div><div class="stk">42 adad</div></div></div>
+        <div class="card"><div class="cardN">Cooking Oil 5L</div><div class="cardB"><div class="cardP">2,500.00</div><div class="stk">18 adad</div></div></div>
+        <div class="card"><div class="cardN">Chai Patti 950g</div><div class="cardB"><div class="cardP">1,180.00</div><div class="stk">7 adad</div></div></div>
+        <div class="card"><div class="cardN">Atta 10 kg</div><div class="cardB"><div class="cardP">1,320.00</div><div class="stk">24 adad</div></div></div>
+        <div class="card"><div class="cardN">Daal Chana</div><div class="cardB"><div class="cardP">280.00</div><div class="stk">/ kg</div></div></div>
+        <div class="card"><div class="cardN">Sabun</div><div class="cardB"><div class="cardP">95.00</div><div class="stk" style="color:var(--warn);font-weight:700">◆ 3 bache</div></div></div>
+        <div class="card"><div class="cardN">Doodh 1L</div><div class="cardB"><div class="cardP">220.00</div><div class="stk">31 adad</div></div></div>
+        <div class="card"><div class="cardN">Anda — darzan</div><div class="cardB"><div class="cardP">340.00</div><div class="stk">9 darzan</div></div></div>
+        <div class="card"><div class="cardN">Namak 800g</div><div class="cardB"><div class="cardP">60.00</div><div class="stk">55 adad</div></div></div>
+        <div class="card"><div class="cardN">Basmati 5 kg</div><div class="cardB"><div class="cardP">1,650.00</div><div class="stk">12 adad</div></div></div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="rHd">
+        <div style="display:flex;flex-direction:column;gap:1px">
+          <div style="font-size:15px;font-weight:700">Cart</div>
+          <div class="mono" style="font-size:10px;color:var(--ink3)">INV-2627-0041</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="font-size:12px;color:var(--ink2)">Walk-in</div>
+          <button class="iconBtn" style="width:36px;height:36px;border:1px solid var(--line)" aria-label="Grahak chunein">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="8" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="tbl">
+        <div class="thead">
+          <div class="micro">Cheez</div>
+          <div class="micro" style="text-align:center">Tadaad</div>
+          <div class="micro" style="text-align:right">Raqam</div>
+        </div>
+        <div class="tr"><div><div class="tn">Cooking Oil 5L</div><div class="ts">2,500.00 / adad</div></div><div class="tq">2</div><div class="ta">5,000.00</div></div>
+        <div class="tr"><div><div class="tn">Cheeni</div><div class="ts">150.00 / kg</div></div><div class="tq">3.5</div><div class="ta">525.00</div></div>
+        <div class="tr"><div><div class="tn">Chai Patti 950g</div><div class="ts">1,180.00 / adad</div></div><div class="tq">1</div><div class="ta">1,180.00</div></div>
+        <div class="tr"><div><div class="tn">Atta 10 kg</div><div class="ts">1,320.00 / adad</div></div><div class="tq">2</div><div class="ta">2,640.00</div></div>
+        <div class="tr"><div><div class="tn">Anda — darzan</div><div class="ts">340.00 / darzan</div></div><div class="tq">1</div><div class="ta">340.00</div></div>
+      </div>
+
+      <div class="sum">
+        <div class="sRow"><div style="font-size:12px;color:var(--ink2)">5 cheez · 9.5 tadaad</div><div class="money" style="font-size:13px;font-weight:500">9,685.00</div></div>
+        <div class="sRow"><div style="font-size:12px;color:var(--ink2)">Round off</div><div class="money" style="font-size:13px;font-weight:500;color:var(--ink3)">0.00</div></div>
+        <div class="sRow" style="padding-top:9px;border-top:2px solid var(--ink)">
+          <div style="font-size:14px;font-weight:700">Kul</div>
+          <div class="money" style="font-size:32px;line-height:36px;font-weight:600;letter-spacing:-0.02em">Rs 9,685.00</div>
+        </div>
+        <div class="acts">
+          <button class="btnGhost"><span class="kbd">F4</span> Udhaar</button>
+          <button class="btnPri"><span class="kbd" style="border-color:var(--brandInk);color:var(--brandInk);background:transparent">F9</span> Charge</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="statusbar">
+    <div class="sb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--in)"><path d="M20 6 9 17l-5-5"/></svg> Backup 2 ghante pehle</div>
+    <div class="sb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--in)"><rect x="2" y="7" width="20" height="12" rx="2"/><path d="M6 7V5h12v2M8 15h8"/></svg> Printer C1 juda hua</div>
+    <div class="sb"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="color:var(--ink3)"><path d="M12 20h.01M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 14 0"/></svg> LAN sync — C2 se juda</div>
+    <div style="flex:1"></div>
+    <div class="sb mono" style="font-size:10.5px">23 Aug 2026 · 4:38 pm</div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

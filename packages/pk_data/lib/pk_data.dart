@@ -1,0 +1,15 @@
+/// Schema, migrations and the single transactional write path for
+/// Bazaar Ledger.
+///
+/// The schema itself lives in `lib/src/db/tables/*.drift`. Those SQL files are
+/// the source of truth; the Dart in this package is generated from them or
+/// written against them, never the other way round.
+library;
+
+export 'package:drift/drift.dart' show QueryExecutor, QueryRow, Value, Variable;
+
+export 'src/db/app_database.dart';
+export 'src/write/drift_sale_writer.dart';
+export 'src/write/first_run.dart';
+export 'src/write/sequence_allocator.dart';
+export 'src/write/tx_runner.dart';

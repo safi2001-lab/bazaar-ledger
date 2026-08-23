@@ -1,0 +1,44 @@
+# Shared analyzer configuration for every package in the workspace.
+#
+# `melos run analyze` runs with `--fatal-infos`, so everything below is a build
+# failure and not a suggestion. That is deliberate: the previous build had a
+# perfectly clean `flutter analyze` while being roughly 18% implemented, which
+# is exactly what a lint set that only catches formatting will tell you.
+
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+  errors:
+    # The architecture rule that package boundaries enforce at the compiler.
+    # Without this, `lib/` can import drift through a transitive dependency
+    # even though its pubspec never mentions it, and the whole boundary is
+    # decorative.
+    depend_on_referenced_packages: error
+    # An unawaited future in a write path is a lost sale.
+    unawaited_futures: error
+    # A TODO is a note, not a defect.
+    todo: ignore
+
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_dynamic_calls
+    - avoid_slow_async_io
+    - cancel_subscriptions
+    - close_sinks
+    - directives_ordering
+    - literal_only_boolean_expressions
+    - no_adjacent_strings_in_list
+    - prefer_final_locals
+    - prefer_single_quotes
+    - sort_pub_dependencies
+    - test_types_in_equals
+    - throw_in_finally
+    - unawaited_futures
+    - unnecessary_parenthesis
+    - unnecessary_statements
+    - use_super_parameters

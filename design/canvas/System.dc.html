@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+:root{
+  --paper:oklch(0.981 0.006 85); --surface:oklch(1 0 0); --sunken:oklch(0.958 0.008 85);
+  --line:oklch(0.887 0.008 85); --line-strong:oklch(0.74 0.012 85);
+  --ink:oklch(0.22 0.012 85); --ink2:oklch(0.46 0.012 85); --ink3:oklch(0.63 0.010 85);
+  --brand:oklch(0.47 0.125 162); --brandInk:oklch(0.99 0 0); --brandSoft:oklch(0.945 0.038 162);
+  --in:oklch(0.47 0.125 162); --inSoft:oklch(0.945 0.038 162);
+  --out:oklch(0.525 0.165 32); --outSoft:oklch(0.955 0.030 32);
+  --warn:oklch(0.58 0.13 72); --warnSoft:oklch(0.955 0.045 80);
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+  --r1:4px; --r2:8px; --r3:12px;
+  --sans:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+.dark{
+  --paper:oklch(0.175 0.008 85); --surface:oklch(0.222 0.009 85); --sunken:oklch(0.148 0.008 85);
+  --line:oklch(0.315 0.010 85); --line-strong:oklch(0.44 0.012 85);
+  --ink:oklch(0.955 0.005 85); --ink2:oklch(0.75 0.010 85); --ink3:oklch(0.58 0.010 85);
+  --brand:oklch(0.72 0.145 162); --brandInk:oklch(0.16 0.02 162); --brandSoft:oklch(0.30 0.055 162);
+  --in:oklch(0.72 0.145 162); --inSoft:oklch(0.30 0.055 162);
+  --out:oklch(0.70 0.155 32); --outSoft:oklch(0.31 0.060 32);
+  --warn:oklch(0.78 0.14 78); --warnSoft:oklch(0.32 0.055 78);
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none} a:hover{color:var(--ink);text-decoration:underline}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:'tnum' 1}
+.money{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.micro{font-size:11px;line-height:14px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3)}
+.sheet{width:880px;background:var(--paper);padding:40px 40px 48px;display:flex;flex-direction:column;gap:40px}
+.hd{display:flex;flex-direction:column;gap:8px;border-bottom:2px solid var(--ink);padding-bottom:16px}
+.sec{display:flex;flex-direction:column;gap:16px}
+.secH{display:flex;align-items:baseline;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.secT{font-size:18px;font-weight:700}
+.swRow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.sw{display:flex;flex-direction:column;gap:6px}
+.chip{height:56px;border-radius:8px;border:1px solid var(--line)}
+.cap{font-size:11px;color:var(--ink3)}
+.note{font-size:13px;line-height:19px;color:var(--ink2);max-width:64ch}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px}
+.tyRow{display:flex;align-items:baseline;gap:20px;padding:8px 0;border-bottom:1px solid var(--line)}
+.tyK{width:124px;font-size:11px;color:var(--ink3);flex-shrink:0}
+.li{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--line)}
+.k{font-size:13px}
+.v{font-size:14px;font-weight:500}
+  </style>
+</helmet>
+
+<div class="sheet">
+
+  <div class="hd">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px">
+      <div style="font-size:28px;line-height:32px;font-weight:700;letter-spacing:-0.02em">Bazaar Ledger — Design System</div>
+      <div class="mono" style="font-size:12px;color:var(--ink3)">v0.1 · M0</div>
+    </div>
+    <div class="note" style="max-width:72ch">Ink on paper, not glass. Built for a Rs 20,000 Android Go handset held with dirty hands under bazaar strip-lighting: heavy rules instead of shadows, tabular figures wherever money appears, and colour never carrying meaning on its own.</div>
+  </div>
+
+  <div class="sec">
+    <div class="secH"><div class="secT">1 · Colour</div><div class="micro">oklch · one token set, two themes</div></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="micro">Light — paper</div>
+      <div class="swRow">
+        <div class="sw"><div class="chip" style="background:var(--paper)"></div><div class="mono cap">paper</div></div>
+        <div class="sw"><div class="chip" style="background:var(--surface)"></div><div class="mono cap">surface</div></div>
+        <div class="sw"><div class="chip" style="background:var(--sunken)"></div><div class="mono cap">sunken</div></div>
+        <div class="sw"><div class="chip" style="background:var(--line)"></div><div class="mono cap">line</div></div>
+        <div class="sw"><div class="chip" style="background:var(--ink2)"></div><div class="mono cap">ink-2</div></div>
+        <div class="sw"><div class="chip" style="background:var(--ink)"></div><div class="mono cap">ink</div></div>
+      </div>
+    </div>
+    <div class="dark" style="display:flex;flex-direction:column;gap:10px;background:var(--paper);padding:14px;border-radius:8px">
+      <div class="micro">Dark — same names, redefined</div>
+      <div class="swRow">
+        <div class="sw"><div class="chip" style="background:var(--paper)"></div><div class="mono cap">paper</div></div>
+        <div class="sw"><div class="chip" style="background:var(--surface)"></div><div class="mono cap">surface</div></div>
+        <div class="sw"><div class="chip" style="background:var(--sunken)"></div><div class="mono cap">sunken</div></div>
+        <div class="sw"><div class="chip" style="background:var(--line)"></div><div class="mono cap">line</div></div>
+        <div class="sw"><div class="chip" style="background:var(--ink2)"></div><div class="mono cap">ink-2</div></div>
+        <div class="sw"><div class="chip" style="background:var(--ink)"></div><div class="mono cap">ink</div></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px">
+      <div class="card" style="display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--brand)">
+        <div class="micro" style="color:var(--brand)">brand</div>
+        <div style="font-size:13px;font-weight:600">Primary action</div>
+        <div class="note" style="font-size:12px;line-height:17px">Charge, Save, Confirm. One per screen.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--in)">
+        <div class="micro" style="color:var(--in)">in · jama</div>
+        <div class="money" style="font-size:15px;font-weight:600;color:var(--in)">+ Rs 5,525.00</div>
+        <div class="note" style="font-size:12px;line-height:17px">Carries a <b>+</b> and an arrow — never colour alone.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--out)">
+        <div class="micro" style="color:var(--out)">out · udhaar</div>
+        <div class="money" style="font-size:15px;font-weight:600;color:var(--out)">− Rs 1,200.00</div>
+        <div class="note" style="font-size:12px;line-height:17px">Baqaya reads red only alongside a minus sign.</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:8px;border-left:3px solid var(--warn)">
+        <div class="micro" style="color:var(--warn)">warn</div>
+        <div style="font-size:13px;font-weight:600">Threshold</div>
+        <div class="note" style="font-size:12px;line-height:17px">Cash over Rs 200,000 · stock kam · backup purana.</div>
+      </div>
+    </div>
+    <div class="note"><b>Contrast floor 4.5:1 in both themes.</b> Every semantic colour is paired with a glyph, a sign or a label — a shopkeeper with a sun-bleached screen or colour-blindness must read the same meaning.</div>
+  </div>
+
+  <div class="sec">
+    <div class="secH"><div class="secT">2 · Type</div><div class="micro">IBM Plex Sans · IBM Plex Mono</div></div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div class="tyRow"><div class="mono tyK">display 32/36 700</div><div style="font-size:32px;line-height:36px;font-weight:700;letter-spacing:-0.02em">Naya Bill</div></div>
+      <div class="tyRow"><div class="mono tyK">h1 24/28 700</div><div style="font-size:24px;line-height:28px;font-weight:700;letter-spacing:-0.01em">Aaj ka Hisaab</div></div>
+      <div class="tyRow"><div class="mono tyK">h2 20/26 600</div><div style="font-size:20px;line-height:26px;font-weight:600">Udhaar Khata</div></div>
+      <div class="tyRow"><div class="mono tyK">body 15/22 400</div><div style="font-size:15px;line-height:22px">Cooking Oil 5L — per bottle</div></div>
+      <div class="tyRow"><div class="mono tyK">label 13/18 500</div><div style="font-size:13px;line-height:18px;font-weight:500;color:var(--ink2)">Grahak ka naam</div></div>
+      <div class="tyRow" style="border-bottom:none"><div class="mono tyK">micro 11/14 600</div><div class="micro">Baqaya · 14 din</div></div>
+    </div>
+    <div class="note"><b>Roman Urdu is the default, and it is Latin script</b> — one family across the whole ramp, no bidi, no shaping, no Nastaliq metrics. English is a switch, not a second design. Nastaliq lands later as a third locale; the ramp already carries the line-height headroom for it.</div>
+  </div>
+
+  <div class="sec">
+    <div class="secH"><div class="secT">3 · Money</div><div class="micro">the rule that cannot bend</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card" style="display:flex;flex-direction:column;gap:14px">
+        <div class="micro">Scale</div>
+        <div class="money" style="font-size:34px;line-height:38px;font-weight:600;letter-spacing:-0.02em">Rs 5,525.00</div>
+        <div class="money" style="font-size:22px;line-height:26px;font-weight:600">Rs 1,650.00</div>
+        <div class="money" style="font-size:17px;line-height:22px;font-weight:500">Rs 150.00</div>
+        <div class="money" style="font-size:14px;line-height:18px;font-weight:500;color:var(--ink2)">Rs 12.50</div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:10px">
+        <div class="micro">Column alignment · tabular</div>
+        <div style="display:flex;flex-direction:column;gap:0">
+          <div class="li"><div class="k">Cooking Oil ×2</div><div class="money v">5,000.00</div></div>
+          <div class="li"><div class="k">Cheeni 3.5 kg</div><div class="money v">525.00</div></div>
+          <div class="li"><div class="k">Chai patti</div><div class="money v">1,180.00</div></div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0 0"><div style="font-size:13px;font-weight:700">Kul</div><div class="money" style="font-size:17px;font-weight:600">6,705.00</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="note"><b>Numerals are always Latin 1234, never ۱۲۳۴.</b> Unicode CLDR defaults <span class="mono" style="font-size:12px">ur-PK</span> to <span class="mono" style="font-size:12px">latn</span>; only <span class="mono" style="font-size:12px">ur-IN</span> uses arabext. Money is Plex Mono with <span class="mono" style="font-size:12px">tabular-nums</span>, so digits hold a column and never jitter as they tick. Stored as integer paisa — the UI never sees a float.</div>
+  </div>
+
+  <div class="sec">
+    <div class="secH"><div class="secT">4 · Space, surface &amp; touch</div><div class="micro">4px base</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div class="card" style="display:flex;flex-direction:column;gap:14px">
+        <div class="micro">Spacing scale</div>
+        <div style="display:flex;align-items:flex-end;gap:10px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:4px;height:4px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">4</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:8px;height:8px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">8</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:12px;height:12px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">12</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:16px;height:16px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">16</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:24px;height:24px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">24</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:32px;height:32px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">32</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="width:40px;height:40px;background:var(--brand)"></div><div class="mono" style="font-size:10px;color:var(--ink3)">40</div></div>
+        </div>
+        <div class="micro">Radius</div>
+        <div style="display:flex;gap:10px;align-items:center">
+          <div style="width:44px;height:30px;background:var(--sunken);border:1px solid var(--line);border-radius:4px"></div>
+          <div style="width:44px;height:30px;background:var(--sunken);border:1px solid var(--line);border-radius:8px"></div>
+          <div style="width:44px;height:30px;background:var(--sunken);border:1px solid var(--line);border-radius:12px"></div>
+          <div class="mono" style="font-size:11px;color:var(--ink3)">4 · 8 · 12</div>
+        </div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:14px">
+        <div class="micro">Touch targets</div>
+        <div style="display:flex;align-items:flex-end;gap:12px">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:40px;height:40px;border:1px dashed var(--line-strong);border-radius:4px"></div><div class="mono" style="font-size:10px;color:var(--ink3)">40 · dense</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:48px;height:48px;border:2px solid var(--brand);border-radius:4px"></div><div class="mono" style="font-size:10px;color:var(--brand);font-weight:600">48 · floor</div></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px"><div style="width:56px;height:56px;border:2px solid var(--ink);border-radius:4px"></div><div class="mono" style="font-size:10px;color:var(--ink)">56 · keypad</div></div>
+        </div>
+        <div class="note" style="font-size:12px;line-height:17px"><b>Borders, not shadows.</b> One hairline at <span class="mono" style="font-size:11px">1px var(--line)</span> plus one 2px rule carry all structure. A drop shadow disappears on a cheap LCD in daylight; a rule does not.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="secH"><div class="secT">5 · Status</div><div class="micro">glyph + label, never colour alone</div></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <span class="pill" style="background:var(--inSoft);color:var(--in)">● Adaigi mukammal</span>
+      <span class="pill" style="background:var(--outSoft);color:var(--out)">▲ Udhaar</span>
+      <span class="pill" style="background:var(--warnSoft);color:var(--warn)">◆ Stock kam</span>
+      <span class="pill" style="background:var(--sunken);color:var(--ink2);border:1px solid var(--line)">◇ Draft</span>
+      <span class="pill" style="background:var(--sunken);color:var(--ink3);border:1px solid var(--line)">✕ Mansookh</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

@@ -1,0 +1,238 @@
+import 'core.drift';
+import 'system.drift';
+import 'ledger.drift';
+
+-- Bazaar Ledger — schema v1, part 2 of 7: units, items, parties, tenders.
+
+-- Units are per firm because a bori is not a fixed size: flour ships in 10,
+-- 40, 50 and 80 kg sacks and the shop decides which one it means. A Pakistani
+-- maund is 40 kg — the wheat support price is set per 40 kg, not the historic
+-- British-Indian 37.324 kg.
+CREATE TABLE units (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  code TEXT NOT NULL,
+  name_en TEXT NOT NULL,
+  name_ur TEXT NOT NULL,
+  kind TEXT NOT NULL CHECK (kind IN ('count', 'weight', 'volume', 'length')),
+  -- Exactly one base unit per kind per firm; everything else is an alias over
+  -- it with a conversion factor.
+  is_base INTEGER NOT NULL DEFAULT 0 CHECK (is_base IN (0, 1)),
+  -- How many decimals the UI offers. Pieces get 0, weight gets 3.
+  decimals INTEGER NOT NULL DEFAULT 0 CHECK (decimals BETWEEN 0 AND 3),
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+) STRICT;
+
+CREATE UNIQUE INDEX idx_units_code ON units (firm_id, code);
+
+-- 1 from_unit = factor_thousandths / 1000 to_unit.
+-- A per-item row overrides the firm-wide row: one shop's bori of atta is 50 kg
+-- and its bori of rice is 40 kg.
+CREATE TABLE unit_conversions (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  from_unit_id TEXT NOT NULL REFERENCES units(id) DEFERRABLE INITIALLY DEFERRED,
+  to_unit_id TEXT NOT NULL REFERENCES units(id) DEFERRABLE INITIALLY DEFERRED,
+  factor_thousandths INTEGER NOT NULL CHECK (factor_thousandths > 0),
+  -- NULL means firm-wide.
+  item_id TEXT REFERENCES items(id) DEFERRABLE INITIALLY DEFERRED,
+
+  CHECK (from_unit_id <> to_unit_id)
+) STRICT;
+
+-- Two partial indexes rather than one composite: SQLite treats NULLs as
+-- distinct, so a plain UNIQUE containing item_id would not constrain the
+-- firm-wide rows at all.
+CREATE UNIQUE INDEX idx_uconv_firmwide
+  ON unit_conversions (firm_id, from_unit_id, to_unit_id)
+  WHERE item_id IS NULL;
+CREATE UNIQUE INDEX idx_uconv_peritem
+  ON unit_conversions (firm_id, item_id, from_unit_id, to_unit_id)
+  WHERE item_id IS NOT NULL;
+CREATE INDEX idx_uconv_firm_item ON unit_conversions (firm_id, item_id);
+CREATE INDEX idx_uconv_from_unit ON unit_conversions (from_unit_id);
+CREATE INDEX idx_uconv_to_unit ON unit_conversions (to_unit_id);
+CREATE INDEX idx_uconv_item ON unit_conversions (item_id);
+
+CREATE TABLE items (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  code TEXT,
+  name TEXT NOT NULL,
+  -- Lowercased, unaccented, space-collapsed. Roman-Urdu type-ahead matches on
+  -- this, and M1's FTS5 index is built over it.
+  name_search TEXT NOT NULL,
+  item_type TEXT NOT NULL DEFAULT 'goods' CHECK (item_type IN ('goods', 'service')),
+  category TEXT,
+  description TEXT,
+  barcode TEXT,
+
+  base_unit_id TEXT NOT NULL REFERENCES units(id) DEFERRABLE INITIALLY DEFERRED,
+  -- What the counter shows and types in. Stock is always stored in base units.
+  display_unit_id TEXT REFERENCES units(id) DEFERRABLE INITIALLY DEFERRED,
+  display_factor_thousandths INTEGER NOT NULL DEFAULT 1000
+    CHECK (display_factor_thousandths > 0),
+
+  -- Rates are milli-paisa per BASE unit. Loose atta from a Rs 132 ten-kilo bag
+  -- is 1.32 paisa per gram; a paisa-precision column would price it 25% wrong.
+  sale_rate_milli_paisa INTEGER NOT NULL DEFAULT 0,
+  wholesale_rate_milli_paisa INTEGER,
+  purchase_rate_milli_paisa INTEGER,
+  -- Weighted-average cost, maintained by the purchase posting rule from M4.
+  avg_cost_milli_paisa INTEGER NOT NULL DEFAULT 0,
+  -- Printed MRP in paisa. For pharmacy this is a fallback only: MRP hangs off
+  -- the BATCH, not the item, because a price increase does not apply to
+  -- batches manufactured before it.
+  mrp_paisa INTEGER,
+
+  hs_code TEXT,
+  tax_rule_id TEXT REFERENCES tax_rules(id) DEFERRABLE INITIALLY DEFERRED,
+  price_includes_tax INTEGER NOT NULL DEFAULT 0
+    CHECK (price_includes_tax IN (0, 1)),
+  is_third_schedule INTEGER NOT NULL DEFAULT 0
+    CHECK (is_third_schedule IN (0, 1)),
+
+  track_stock INTEGER NOT NULL DEFAULT 1 CHECK (track_stock IN (0, 1)),
+  track_batch INTEGER NOT NULL DEFAULT 0 CHECK (track_batch IN (0, 1)),
+  track_serial INTEGER NOT NULL DEFAULT 0 CHECK (track_serial IN (0, 1)),
+  min_stock_thousandths INTEGER NOT NULL DEFAULT 0,
+  opening_stock_thousandths INTEGER NOT NULL DEFAULT 0,
+  opening_rate_milli_paisa INTEGER NOT NULL DEFAULT 0,
+
+  image_attachment_id TEXT REFERENCES attachments(id) DEFERRABLE INITIALLY DEFERRED,
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+) STRICT;
+
+CREATE INDEX idx_items_firm_name ON items (firm_id, name_search);
+CREATE UNIQUE INDEX idx_items_code ON items (firm_id, code) WHERE code IS NOT NULL;
+CREATE UNIQUE INDEX idx_items_barcode ON items (firm_id, barcode) WHERE barcode IS NOT NULL;
+CREATE INDEX idx_items_category ON items (firm_id, category);
+CREATE INDEX idx_items_base_unit ON items (base_unit_id);
+CREATE INDEX idx_items_display_unit ON items (display_unit_id);
+CREATE INDEX idx_items_tax_rule ON items (tax_rule_id);
+CREATE INDEX idx_items_image ON items (image_attachment_id);
+
+CREATE TABLE parties (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  name TEXT NOT NULL,
+  name_search TEXT NOT NULL,
+  party_type TEXT NOT NULL DEFAULT 'customer'
+    CHECK (party_type IN ('customer', 'supplier', 'both')),
+  party_group TEXT,
+
+  phone TEXT,
+  whatsapp TEXT,
+  email TEXT,
+  address_line1 TEXT,
+  address_line2 TEXT,
+  city TEXT,
+  province TEXT,
+
+  ntn TEXT,
+  strn TEXT,
+  cnic TEXT,
+  -- FBR's own field name. 'unregistered' is the default because most buyers
+  -- at a kiryana counter are.
+  buyer_registration_type TEXT NOT NULL DEFAULT 'unregistered'
+    CHECK (buyer_registration_type IN ('registered', 'unregistered')),
+  -- Further tax under s.3(1A) STA is 4% since the Finance Act 2023 and is
+  -- triggered by the buyer being OFF the Active Taxpayer List — not merely by
+  -- their lacking an STRN. NULL means unknown, which is not the same as false.
+  is_on_atl INTEGER CHECK (is_on_atl IN (0, 1)),
+
+  -- Positive means the party owes us.
+  opening_balance_paisa INTEGER NOT NULL DEFAULT 0,
+  opening_balance_as_of_local TEXT,
+  credit_limit_paisa INTEGER,
+  credit_days INTEGER,
+  default_discount_bp INTEGER NOT NULL DEFAULT 0,
+
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+) STRICT;
+
+CREATE INDEX idx_parties_firm_name ON parties (firm_id, name_search);
+CREATE INDEX idx_parties_firm_type ON parties (firm_id, party_type);
+CREATE INDEX idx_parties_phone ON parties (firm_id, phone) WHERE phone IS NOT NULL;
+
+-- A tender destination: the cash drawer, a bank account, a wallet.
+--
+-- THERE IS NO PAYMENT INTEGRATION ANYWHERE IN THIS PRODUCT. A payment mode is
+-- a label on a ledger row, exactly like the mode column in a paper cash book.
+-- The customer pays however they pay; the money never touches this app. That
+-- is also what keeps us outside the PSO/PSP licensing perimeter — routing,
+-- switching, settling or holding funds is the trigger under Rule 2(p), and
+-- pure record-keeping is clear of it.
+CREATE TABLE payment_accounts (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  name TEXT NOT NULL,
+  account_kind TEXT NOT NULL CHECK (account_kind IN ('cash', 'bank', 'wallet')),
+  -- The label the cashier taps. A string, and nothing more.
+  mode_label TEXT NOT NULL DEFAULT 'cash' CHECK (mode_label IN (
+    'cash', 'bank_transfer', 'jazzcash', 'easypaisa', 'raast', 'card',
+    'cheque', 'adjustment')),
+
+  bank_name TEXT,
+  account_title TEXT,
+  account_number TEXT,
+  iban TEXT,
+  raast_alias TEXT,
+  -- A QR the merchant's own bank issued, imported as a picture. We render the
+  -- image. We never construct a payload.
+  qr_attachment_id TEXT REFERENCES attachments(id) DEFERRABLE INITIALLY DEFERRED,
+
+  opening_balance_paisa INTEGER NOT NULL DEFAULT 0,
+  ledger_account_id TEXT NOT NULL REFERENCES accounts(id) DEFERRABLE INITIALLY DEFERRED,
+  is_default INTEGER NOT NULL DEFAULT 0 CHECK (is_default IN (0, 1)),
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+) STRICT;
+
+CREATE INDEX idx_payacct_firm ON payment_accounts (firm_id, is_active);
+CREATE INDEX idx_payacct_ledger ON payment_accounts (ledger_account_id);
+CREATE INDEX idx_payacct_qr ON payment_accounts (qr_attachment_id);

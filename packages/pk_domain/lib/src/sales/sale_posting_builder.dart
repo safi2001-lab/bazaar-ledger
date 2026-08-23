@@ -1,0 +1,336 @@
+import 'package:pk_money/pk_money.dart';
+
+import '../identity/actor_context.dart';
+import 'sale_calculator.dart';
+import 'sale_draft.dart';
+import 'sale_posting.dart';
+
+/// A document number allocated for a posting.
+final class AllocatedNumber {
+  const AllocatedNumber({
+    required this.formatted,
+    required this.series,
+    required this.sequence,
+  });
+
+  final String formatted;
+  final String series;
+  final int sequence;
+}
+
+/// Turns a priced sale into the exact set of rows it should produce.
+///
+/// Pure. Given the same draft, the same calculated totals and the same
+/// allocated numbers, it produces the same posting every time — which is why
+/// the whole of the double entry below can be tested without a database.
+final class SalePostingBuilder {
+  const SalePostingBuilder();
+
+  SalePosting build({
+    required ActorContext actor,
+    required SaleDraft draft,
+    required CalculatedSale calculated,
+    required AllocatedNumber invoiceNumber,
+    required AllocatedNumber journalNumber,
+    required List<AllocatedNumber> paymentNumbers,
+    required Map<String, String> ledgerAccountByPaymentAccount,
+  }) {
+    if (calculated.withholding.isPositive) {
+      // Not reachable while UntaxedEngine is the only engine. Named rather
+      // than silently mis-posted, because a wrong journal entry is worse than
+      // a refused one.
+      throw UnsupportedError(
+        'Withholding on the sale side arrives with the M12 tax pack. '
+        'Refusing to post an entry whose treatment is not yet defined.',
+      );
+    }
+
+    final millis = actor.epochMillis;
+    final localDate = actor.businessDate.value;
+    final fiscalYear = actor.businessDate.fiscalYear;
+
+    // --- Document and lines ----------------------------------------------
+    final document = DocumentPosting(
+      docType: 'sale_invoice',
+      docNo: invoiceNumber.formatted,
+      docSeries: invoiceNumber.series,
+      docSeq: invoiceNumber.sequence,
+      fiscalYear: fiscalYear,
+      docDateUtcMillis: millis,
+      docDateLocal: localDate,
+      partyId: draft.partyId,
+      partyNameSnapshot: draft.partyName,
+      partyNtnSnapshot: draft.partyNtn,
+      partyStrnSnapshot: draft.partyStrn,
+      partyAddressSnapshot: draft.partyAddress,
+      subtotal: calculated.subtotal,
+      lineDiscount: calculated.lineDiscountTotal,
+      billDiscount: calculated.billDiscount,
+      taxable: calculated.taxable,
+      tax: calculated.tax,
+      furtherTax: calculated.furtherTax,
+      withholding: calculated.withholding,
+      extraCharges: calculated.extraCharges,
+      roundOff: calculated.roundOff,
+      total: calculated.total,
+      paid: calculated.paid,
+      balance: calculated.balance,
+      cost: calculated.cost,
+      roundingMode: _roundingModeCode(draft.roundingMode),
+      taxRuleVersion: calculated.ruleVersion,
+      cashThresholdBreached: calculated.cashThresholdBreached,
+      salespersonId: draft.salespersonId,
+      notes: draft.notes,
+    );
+
+    final lines = <DocumentLinePosting>[];
+    final stock = <StockMovementPosting>[];
+    for (final l in calculated.lines) {
+      lines.add(
+        DocumentLinePosting(
+          lineNo: l.lineNo,
+          itemId: l.draft.itemId,
+          itemNameSnapshot: l.draft.itemName,
+          itemCodeSnapshot: l.draft.itemCode,
+          hsCodeSnapshot: l.draft.hsCode,
+          description: l.draft.description,
+          qty: l.draft.qty,
+          baseQty: l.draft.baseQty,
+          unitId: l.draft.unitId,
+          unitCodeSnapshot: l.draft.unitCode,
+          rate: l.draft.rate,
+          mrp: l.draft.mrp,
+          lotId: l.draft.lotId,
+          gross: l.gross,
+          discountBp: l.draft.discountBp,
+          discount: l.totalDiscount,
+          taxable: l.taxable,
+          tax: l.tax,
+          lineTotal: l.lineTotal,
+          cost: l.cost,
+          isFreeItem: l.draft.isFreeItem,
+          taxes: l.taxes,
+        ),
+      );
+
+      if (l.draft.tracksStock && !l.draft.baseQty.isZero) {
+        stock.add(
+          StockMovementPosting(
+            itemId: l.draft.itemId,
+            txnType: 'sale',
+            qtyDelta: -l.draft.baseQty,
+            rate: l.draft.unitCost,
+            valueDelta: -l.cost,
+            occurredAtUtcMillis: millis,
+            occurredOnLocal: localDate,
+            lineNo: l.lineNo,
+            lotId: l.draft.lotId,
+          ),
+        );
+      }
+    }
+
+    // --- Tenders ----------------------------------------------------------
+    //
+    // Cash is capped at what is actually due. Anything beyond it is change out
+    // of the drawer, not revenue, and posting it as revenue is how a till
+    // ends the day with more money in the books than in the box.
+    final payments = <PaymentPosting>[];
+    var cashRemaining = calculated.paid -
+        Money.sum([
+          for (final t in draft.tenders)
+            if (!t.isCash) t.amount,
+        ]);
+    var changeRemaining = calculated.changeDue;
+
+    for (var i = 0; i < draft.tenders.length; i++) {
+      final tender = draft.tenders[i];
+      final ledgerAccount =
+          ledgerAccountByPaymentAccount[tender.paymentAccountId];
+      if (ledgerAccount == null) {
+        throw StateError(
+          'Payment account ${tender.paymentAccountId} is not linked to an '
+          'account in the chart, so this tender cannot be posted.',
+        );
+      }
+
+      final Money applied;
+      final Money change;
+      if (tender.isCash) {
+        applied = tender.amount <= cashRemaining ? tender.amount : cashRemaining;
+        cashRemaining -= applied;
+        change = changeRemaining;
+        changeRemaining = Money.zero;
+      } else {
+        applied = tender.amount;
+        change = Money.zero;
+      }
+
+      if (applied.isZero && change.isZero) continue;
+
+      payments.add(
+        PaymentPosting(
+          paymentNo: paymentNumbers[i].formatted,
+          direction: 'in',
+          paymentAccountId: tender.paymentAccountId,
+          ledgerAccountId: ledgerAccount,
+          mode: tender.mode,
+          amount: applied,
+          tendered: tender.tendered ?? tender.amount,
+          change: change,
+          reference: tender.reference,
+          partyId: draft.partyId,
+          paymentDateUtcMillis: millis,
+          paymentDateLocal: localDate,
+          chequeNo: tender.chequeNo,
+          chequeBank: tender.chequeBank,
+          chequeDateUtcMillis: tender.chequeDateUtc?.millisecondsSinceEpoch,
+        ),
+      );
+    }
+
+    // --- Double entry -----------------------------------------------------
+    //
+    //   Dr  the account each tender landed in     what was actually paid
+    //   Dr  Receivables (udhaar)                  what is still owed
+    //   Dr  Discount Given                        line + bill discount
+    //   Dr  Round Off                             when the bill was rounded down
+    //   Dr  Cost of Goods Sold                    cost of what left the shelf
+    //     Cr  Sales                               gross, before discount
+    //     Cr  Output Sales Tax                    sales tax
+    //     Cr  Further Tax Payable                 further tax, s.3(1A)
+    //     Cr  Other Income                        extra charges
+    //     Cr  Round Off                           when the bill was rounded up
+    //     Cr  Inventory                           cost of what left the shelf
+    //
+    // Sales is credited GROSS and the discount is a contra-entry rather than
+    // being netted off, because a shopkeeper who gives Rs 40,000 of riayat in
+    // a month needs to be able to see that number.
+    final journalLines = <JournalLinePosting>[];
+    var lineNo = 1;
+
+    void post({
+      required String key,
+      Money debit = Money.zero,
+      Money credit = Money.zero,
+      String? partyId,
+      String? narration,
+    }) {
+      if (debit.isZero && credit.isZero) return;
+      journalLines.add(
+        JournalLinePosting(
+          lineNo: lineNo++,
+          accountSystemKey: key,
+          debit: debit,
+          credit: credit,
+          partyId: partyId,
+          narration: narration,
+        ),
+      );
+    }
+
+    // Tenders, grouped by the account they landed in, so a split payment
+    // across two cash drawers does not produce two identical lines.
+    final byAccount = <String, Money>{};
+    for (final p in payments) {
+      if (p.amount.isZero) continue;
+      // A cheque is not money in the bank until it clears. It sits in
+      // "Cheques in Hand" and moves when the PDC lifecycle says it has.
+      final key = p.isCheque ? '__cheques_in_hand' : p.ledgerAccountId;
+      byAccount[key] = (byAccount[key] ?? Money.zero) + p.amount;
+    }
+    byAccount.forEach((account, amount) {
+      post(
+        key: account == '__cheques_in_hand'
+            ? 'cheques_in_hand'
+            : _accountIdKey(account),
+        debit: amount,
+        narration: 'Received against ${invoiceNumber.formatted}',
+      );
+    });
+
+    post(
+      key: 'accounts_receivable',
+      debit: calculated.balance,
+      partyId: draft.partyId,
+      narration: 'Udhaar on ${invoiceNumber.formatted}',
+    );
+
+    final totalDiscount = calculated.lineDiscountTotal + calculated.billDiscount;
+    post(key: 'discount_given', debit: totalDiscount);
+
+    if (calculated.roundOff.isNegative) {
+      post(key: 'round_off', debit: -calculated.roundOff);
+    }
+
+    post(key: 'cogs', debit: calculated.cost);
+
+    post(key: 'sales', credit: calculated.subtotal);
+    post(key: 'output_tax', credit: calculated.tax);
+    post(key: 'further_tax_payable', credit: calculated.furtherTax);
+    post(key: 'other_income', credit: calculated.extraCharges);
+
+    if (calculated.roundOff.isPositive) {
+      post(key: 'round_off', credit: calculated.roundOff);
+    }
+
+    post(key: 'inventory', credit: calculated.cost);
+
+    final totalDebit = Money.sum([for (final l in journalLines) l.debit]);
+    final totalCredit = Money.sum([for (final l in journalLines) l.credit]);
+
+    final posting = SalePosting(
+      document: document,
+      lines: lines,
+      payments: payments,
+      stockMovements: stock,
+      journal: JournalEntryPosting(
+        entryNo: journalNumber.formatted,
+        entryDateUtcMillis: millis,
+        entryDateLocal: localDate,
+        fiscalYear: fiscalYear,
+        sourceType: 'sale',
+        totalDebit: totalDebit,
+        totalCredit: totalCredit,
+        narration: 'Sale ${invoiceNumber.formatted}',
+        lines: journalLines,
+      ),
+      auditSummary: _summarise(invoiceNumber.formatted, calculated, draft),
+    );
+
+    posting.assertBalanced();
+    return posting;
+  }
+
+  static String _summarise(
+    String docNo,
+    CalculatedSale sale,
+    SaleDraft draft,
+  ) {
+    final who = draft.partyName ?? 'walk-in customer';
+    final items = sale.lines.length == 1 ? '1 item' : '${sale.lines.length} items';
+    final settled = sale.isFullyPaid
+        ? 'paid in full'
+        : '${sale.balance.amountOnly} on udhaar';
+    return '$docNo to $who — $items, ${sale.total.amountOnly}, $settled';
+  }
+
+  static String _roundingModeCode(RoundingMode mode) => switch (mode) {
+        RoundingMode.halfUp => 'half_up',
+        RoundingMode.halfEven => 'half_even',
+        RoundingMode.truncate => 'truncate',
+        RoundingMode.ceilAbs => 'ceil_abs',
+      };
+
+  /// Tender accounts are already resolved to an account id, so they are passed
+  /// through with a marker the writer recognises rather than a system key.
+  static String _accountIdKey(String accountId) => '#$accountId';
+}
+
+/// Whether a journal line names an account by system key or by a resolved id.
+extension JournalAccountLookup on JournalLinePosting {
+  bool get isResolvedAccountId => accountSystemKey.startsWith('#');
+
+  /// The account id, when [isResolvedAccountId].
+  String get accountId => accountSystemKey.substring(1);
+}

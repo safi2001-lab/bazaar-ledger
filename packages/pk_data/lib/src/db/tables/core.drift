@@ -1,0 +1,215 @@
+-- Bazaar Ledger — schema v1, part 1 of 7: identity and configuration.
+--
+-- SQL IS THE SOURCE OF TRUTH. The previous build declared 20+ `.references()`
+-- in a Dart table DSL and shipped DDL containing zero REFERENCES clauses.
+-- Nothing in this schema is expressed in Dart.
+--
+-- Every table carries the universal row envelope and is STRICT. Money is
+-- INTEGER paisa, rates are INTEGER milli-paisa, quantities are INTEGER
+-- thousandths of a base unit. There is no REAL column anywhere in this
+-- database, and ddl_invariants_test fails the build if one appears.
+--
+-- The envelope FKs are DEFERRABLE INITIALLY DEFERRED. They must be: the very
+-- first firm row references the owner user, and the owner user row references
+-- the firm. First-run seeds them in one transaction; the cycle resolves at
+-- COMMIT.
+
+CREATE TABLE firms (
+  id TEXT NOT NULL PRIMARY KEY,
+  -- No REFERENCES on this one: CHECK (firm_id = id) below is strictly stronger
+  -- than a foreign key to the same row, and a self-referencing FK here is what
+  -- turns the whole schema into a reference cycle.
+  firm_id TEXT NOT NULL,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  -- `firms` and `devices` are the two BOOTSTRAP ROOTS, and their actor columns
+  -- carry no foreign key. They cannot: the first firm row is written before
+  -- any user row can exist to point at, and declaring the FK anyway makes
+  -- firms -> users -> firms a cycle that no ordering resolves. Every other
+  -- table in the schema keeps the full FK set. `ddl_invariants_test` names
+  -- these five columns explicitly as the only exceptions, and TxRunner
+  -- asserts the same rule at runtime for rows it writes.
+  created_by TEXT NOT NULL,
+  updated_by TEXT NOT NULL,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  name TEXT NOT NULL,
+  legal_name TEXT,
+  business_kind TEXT NOT NULL DEFAULT 'general' CHECK (business_kind IN (
+    'general', 'kiryana', 'pharmacy', 'garments', 'cloth', 'hardware',
+    'electronics', 'restaurant', 'services', 'wholesale')),
+
+  -- Registration. Most kiryana stores hold none of these: under s.3(9) STA a
+  -- non-Tier-1 retailer pays sales tax through the electricity bill. Nothing
+  -- in the product may gate on them.
+  ntn TEXT,
+  strn TEXT,
+  cnic TEXT,
+  is_sales_tax_registered INTEGER NOT NULL DEFAULT 0
+    CHECK (is_sales_tax_registered IN (0, 1)),
+  province TEXT NOT NULL DEFAULT 'punjab' CHECK (province IN (
+    'punjab', 'sindh', 'kpk', 'balochistan', 'ict', 'gb', 'ajk')),
+
+  address_line1 TEXT,
+  address_line2 TEXT,
+  city TEXT,
+  phone TEXT,
+  whatsapp TEXT,
+  email TEXT,
+  -- The logo is not a column. It is an attachments row with
+  -- owner_table = 'firms', owner_id = this id and kind = 'logo' — the same
+  -- back-reference every other picture in the app uses.
+
+  -- Pakistan's fiscal year runs 1 July to 30 June.
+  fiscal_year_start_month INTEGER NOT NULL DEFAULT 7
+    CHECK (fiscal_year_start_month BETWEEN 1 AND 12),
+  base_currency TEXT NOT NULL DEFAULT 'PKR',
+
+  -- One rounding policy, stamped onto every document, so a reprint five years
+  -- from now is byte-identical to the original.
+  rounding_mode TEXT NOT NULL DEFAULT 'half_up'
+    CHECK (rounding_mode IN ('half_up', 'half_even', 'truncate', 'ceil_abs')),
+  round_invoice_to_rupee INTEGER NOT NULL DEFAULT 1
+    CHECK (round_invoice_to_rupee IN (0, 1)),
+  prices_include_tax INTEGER NOT NULL DEFAULT 0
+    CHECK (prices_include_tax IN (0, 1)),
+
+  -- Printed on the receipt as PLAIN TEXT — exactly like printing a phone
+  -- number. We never synthesise a scheme QR payload: QR Standard s.8.1(a)
+  -- reserves scheme identifiers to SBP-licensed PSO/PSPs, and breach is an
+  -- offence under s.56 PS&EFT Act (up to 3 years or PKR 3m). A bank-issued QR
+  -- may be imported as an IMAGE and stored in attachments.
+  raast_alias TEXT,
+  bank_name TEXT,
+  bank_account_title TEXT,
+  bank_iban TEXT,
+
+  -- A firm's envelope firm_id is its own id, which keeps "every table is firm
+  -- scoped" an invariant with zero exceptions.
+  CHECK (firm_id = id)
+) STRICT;
+
+CREATE TABLE users (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  name TEXT NOT NULL,
+  role TEXT NOT NULL CHECK (role IN ('owner', 'manager', 'cashier', 'accountant')),
+  phone TEXT,
+  -- Argon2id. Never a plaintext or reversible PIN.
+  pin_hash TEXT,
+  pin_salt TEXT,
+  biometric_enabled INTEGER NOT NULL DEFAULT 0
+    CHECK (biometric_enabled IN (0, 1)),
+
+  -- M9 populates these from the role. The columns exist now so ActorContext
+  -- has somewhere to read from without a later migration touching 300 call
+  -- sites.
+  can_see_purchase_price INTEGER NOT NULL DEFAULT 0
+    CHECK (can_see_purchase_price IN (0, 1)),
+  can_see_margin INTEGER NOT NULL DEFAULT 0 CHECK (can_see_margin IN (0, 1)),
+  max_discount_bp INTEGER NOT NULL DEFAULT 0 CHECK (max_discount_bp >= 0),
+
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+  last_login_at_utc INTEGER
+) STRICT;
+
+CREATE TABLE devices (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  -- Bootstrap root; see the note on `firms` above. A device is registered
+  -- during first run, before the owner's user row exists.
+  created_by TEXT NOT NULL,
+  updated_by TEXT NOT NULL,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  label TEXT NOT NULL,
+  device_role TEXT NOT NULL DEFAULT 'master'
+    CHECK (device_role IN ('master', 'counter')),
+  platform TEXT NOT NULL CHECK (platform IN (
+    'android', 'ios', 'windows', 'linux', 'macos', 'test')),
+  model TEXT,
+  os_version TEXT,
+  app_version TEXT,
+
+  -- Per-device document number prefix. Two cashiers must never mint the same
+  -- invoice number, and renumbering after the fact is not an option.
+  doc_prefix TEXT NOT NULL DEFAULT '',
+  is_this_device INTEGER NOT NULL DEFAULT 0 CHECK (is_this_device IN (0, 1)),
+  last_seen_at_utc INTEGER,
+
+  -- Monotonic counter feeding change_log.seq. Never reset, never derived from
+  -- a wall clock.
+  change_seq INTEGER NOT NULL DEFAULT 0 CHECK (change_seq >= 0)
+) STRICT;
+
+CREATE TABLE settings (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  setting_key TEXT NOT NULL,
+  setting_value TEXT NOT NULL,
+  value_type TEXT NOT NULL DEFAULT 'string'
+    CHECK (value_type IN ('string', 'int', 'bool', 'json'))
+) STRICT;
+
+CREATE INDEX idx_users_firm ON users (firm_id, is_active);
+CREATE INDEX idx_devices_firm ON devices (firm_id, last_seen_at_utc);
+
+CREATE UNIQUE INDEX idx_settings_key ON settings (firm_id, setting_key);
+
+CREATE TABLE numbering_sequences (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  doc_type TEXT NOT NULL,
+  device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  -- 2627 means FY 2026-27.
+  fiscal_year INTEGER NOT NULL,
+  prefix TEXT NOT NULL,
+  pad_width INTEGER NOT NULL DEFAULT 4 CHECK (pad_width BETWEEN 1 AND 12),
+  next_value INTEGER NOT NULL DEFAULT 1,
+
+  -- Reserved block per counter, so a LAN-synced second till cannot collide.
+  block_start INTEGER NOT NULL DEFAULT 1,
+  block_end INTEGER NOT NULL DEFAULT 999999,
+
+  CHECK (block_end >= block_start),
+  CHECK (next_value >= block_start)
+) STRICT;
+
+CREATE UNIQUE INDEX idx_numbering_scope
+  ON numbering_sequences (firm_id, doc_type, device_id, fiscal_year);
+CREATE INDEX idx_numbering_device ON numbering_sequences (device_id);
