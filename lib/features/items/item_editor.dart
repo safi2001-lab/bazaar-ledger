@@ -347,7 +347,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                 controller: _category,
                                 label: s.itemCategory,
                                 textInputAction: TextInputAction.done,
-                                onSubmitted: (_) => _save(),
+                                // The button is disabled while busy;
+                                // Enter has to check the same flag or a
+                                // double tap on the keyboard writes twice.
+                                onSubmitted: (_) {
+                                  if (!_busy) _save();
+                                },
                               ),
                             ),
                           ],

@@ -74,7 +74,12 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       // which leaves a trail.
       final columns = _itemColumns(draft)
         ..remove('opening_stock_thousandths')
-        ..remove('opening_rate_milli_paisa');
+        ..remove('opening_rate_milli_paisa')
+        // Whether an item is on the counter is decided by archiveItem, not by
+        // an editor that has no control for it. ItemDraft.isActive defaults to
+        // true, so leaving it in meant correcting an archived item's price
+        // silently put it back on sale.
+        ..remove('is_active');
       await tx.update('items', itemId, columns);
 
       final oldRate = Rate.raw(before.read<int>('sale_rate_milli_paisa'));
@@ -155,13 +160,24 @@ final class DriftCatalogueWriter implements CatalogueWriter {
   @override
   Future<void> archiveParty(ActorContext actor, String partyId) =>
       _runner.run(actor, (tx) async {
+        // The same arithmetic the khata list shows, opening balance included.
+        // Summing only the documents told a shopkeeper that a customer
+        // carrying Rs 5,000 of pre-app udhaar "owes 0", and hid the balance.
         final balance = await tx.selectOne(
           '''
-          SELECT COALESCE(SUM(balance_paisa), 0) AS owed
-          FROM documents
-          WHERE party_id = ? AND status = 'posted' AND deleted_at_utc IS NULL
+          SELECT p.opening_balance_paisa
+                   + COALESCE((
+                       SELECT SUM(d.balance_paisa) FROM documents d
+                       WHERE d.party_id = p.id
+                         AND d.firm_id = p.firm_id
+                         AND d.doc_type = 'sale_invoice'
+                         AND d.status = 'posted'
+                         AND d.deleted_at_utc IS NULL
+                     ), 0) AS owed
+          FROM parties p
+          WHERE p.id = ? AND p.firm_id = ?
           ''',
-          [partyId],
+          [partyId, actor.firmId],
         );
         final owed = Money.paisa(balance?.read<int>('owed') ?? 0);
         if (!owed.isZero) {

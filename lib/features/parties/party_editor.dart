@@ -72,8 +72,9 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         await services.catalogue.addParty(actor, draft);
       }
 
+      if (!mounted) return;
       ref.bumpRefresh();
-      if (mounted) Navigator.of(context).pop();
+      Navigator.of(context).pop();
     } on Object catch (error) {
       if (mounted) {
         setState(() {
@@ -133,7 +134,9 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                       label: s.partyCreditLimit,
                       numeric: true,
                       textInputAction: TextInputAction.done,
-                      onSubmitted: (_) => _save(),
+                      onSubmitted: (_) {
+                        if (!_busy) _save();
+                      },
                     ),
                     if (_failure != null) ...[
                       const SizedBox(height: BlTokens.space4),

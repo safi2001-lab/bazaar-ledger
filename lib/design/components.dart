@@ -547,11 +547,16 @@ class BlEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    // Scrollable so it can never overflow the box it is dropped into. An empty
-    // or error state is the one thing on screen when something has already
-    // gone wrong, and a yellow-and-black overflow stripe on top of it helps
-    // nobody — least of all on a short landscape viewport with the keyboard up.
-    return SingleChildScrollView(
+    // Scrollable when there is a height to overflow, and a plain column when
+    // there is not.
+    //
+    // Both cases are real. Inside an Expanded on a short landscape viewport
+    // this content is taller than its box and must scroll. Inside a ListView
+    // — which is where the home screen puts the empty state, on every fresh
+    // install — the box has no height at all, and an unconditional
+    // SingleChildScrollView throws "Vertical viewport was given unbounded
+    // height" and red-screens the first thing a new user ever sees.
+    return _Fits(
       child: Padding(
         padding: const EdgeInsets.all(BlTokens.space8),
         child: Column(
@@ -610,11 +615,16 @@ class BlError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    // Scrollable so it can never overflow the box it is dropped into. An empty
-    // or error state is the one thing on screen when something has already
-    // gone wrong, and a yellow-and-black overflow stripe on top of it helps
-    // nobody — least of all on a short landscape viewport with the keyboard up.
-    return SingleChildScrollView(
+    // Scrollable when there is a height to overflow, and a plain column when
+    // there is not.
+    //
+    // Both cases are real. Inside an Expanded on a short landscape viewport
+    // this content is taller than its box and must scroll. Inside a ListView
+    // — which is where the home screen puts the empty state, on every fresh
+    // install — the box has no height at all, and an unconditional
+    // SingleChildScrollView throws "Vertical viewport was given unbounded
+    // height" and red-screens the first thing a new user ever sees.
+    return _Fits(
       child: Padding(
         padding: const EdgeInsets.all(BlTokens.space6),
         child: Column(
@@ -669,6 +679,25 @@ class BlError extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Scrolls when it has a height to overflow, and does not when it has none.
+///
+/// The distinction matters because both parents are real and neither is
+/// avoidable: an `Expanded` gives a bounded height that the content can exceed,
+/// and a `ListView` gives no height at all, in which case a viewport inside a
+/// viewport is an error rather than a fallback.
+class _Fits extends StatelessWidget {
+  const _Fits({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) => constraints.hasBoundedHeight
+            ? SingleChildScrollView(child: child)
+            : child,
+      );
 }
 
 /// A skeleton, not a spinner over a blank page.

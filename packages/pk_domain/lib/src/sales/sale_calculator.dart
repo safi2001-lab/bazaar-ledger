@@ -290,6 +290,20 @@ final class SaleCalculator {
     // zero-amount payment row and a negative receivable — both refused by the
     // schema three layers later, as a raw constraint error on a sale the
     // shopkeeper had already been told was going through.
+    for (final t in draft.tenders) {
+      // A negative tender is a refund wearing a sale's clothes. Allowed
+      // through, it produced a negative receivable that balanced — the sums
+      // still matched — and then died on the schema's own
+      // `CHECK (debit_paisa >= 0)`. A return is its own document type.
+      if (t.amount.isNegative || (t.tendered?.isNegative ?? false)) {
+        throw ArgumentError.value(
+          t.amount.amountOnly,
+          'tender',
+          'a tender cannot be negative; a refund is a credit note',
+        );
+      }
+    }
+
     final nonCash = Money.sum([
       for (final t in draft.tenders)
         if (!t.isCash) t.amount,
@@ -315,8 +329,13 @@ final class SaleCalculator {
       final Money offered;
       final Money settled;
       if (t.isCash) {
+        // Two separate caps, and both are needed. `amount` is what the
+        // cashier is settling; `tendered` is the note in their hand. Capping
+        // only by what is due turned "3,000 of this 5,000 bill, here is a
+        // 5,000 note" into a fully-paid bill with no change given.
         offered = t.tendered ?? t.amount;
-        settled = offered > cashDue ? cashDue : offered;
+        final intended = offered < t.amount ? offered : t.amount;
+        settled = intended > cashDue ? cashDue : intended;
         cashDue -= settled;
       } else {
         offered = t.amount;

@@ -238,6 +238,19 @@ final class SalePostingBuilder {
       );
     });
 
+    // An unpaid balance is somebody's khata, and nobody's khata is not a
+    // khata: a receivable with no party is money the shop can never ask for,
+    // sitting in a total it can never explain. Checked here rather than in the
+    // calculator, because pricing a bill is a different question from who owes
+    // what is left on it.
+    if (calculated.balance.isPositive && draft.partyId == null) {
+      throw ArgumentError.value(
+        calculated.balance.amountOnly,
+        'balance',
+        'a bill left part-paid has to name the customer who owes the rest',
+      );
+    }
+
     post(
       key: 'accounts_receivable',
       debit: calculated.balance,

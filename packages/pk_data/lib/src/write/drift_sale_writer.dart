@@ -116,8 +116,9 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       'SELECT pa.id AS id, pa.ledger_account_id AS ledger_account_id '
       'FROM payment_accounts pa '
       'JOIN accounts a ON a.id = pa.ledger_account_id '
-      'WHERE pa.firm_id = ? AND pa.deleted_at_utc IS NULL '
-      'AND a.deleted_at_utc IS NULL '
+      'WHERE pa.firm_id = ? AND a.firm_id = pa.firm_id '
+      'AND pa.deleted_at_utc IS NULL AND pa.is_active = 1 '
+      'AND a.deleted_at_utc IS NULL AND a.is_active = 1 '
       'AND pa.id IN (${_placeholders(ids.length)})',
       [actor.firmId, ...ids],
     );

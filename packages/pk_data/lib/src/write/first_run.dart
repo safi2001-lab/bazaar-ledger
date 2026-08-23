@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 
@@ -54,16 +56,6 @@ final class FirstRunSeeder {
     String province = 'punjab',
     String businessKind = 'general',
   }) async {
-    final existing =
-        await database.customSelect('SELECT id FROM firms LIMIT 1').get();
-    if (existing.isNotEmpty) {
-      throw StateError(
-        'This database already has a firm. First run must not be repeated — '
-        'it would create a second chart of accounts and a second set of '
-        'numbering sequences.',
-      );
-    }
-
     final firmId = ids.next();
     final userId = ids.next();
     final deviceId = ids.next();
@@ -82,6 +74,18 @@ final class FirstRunSeeder {
     late String cashPaymentAccountId;
 
     await database.transaction(() async {
+      // Checked inside the transaction, not before it. Outside, two callers
+      // racing first run both see an empty table and both seed a shop.
+      final existing =
+          await database.customSelect('SELECT id FROM firms LIMIT 1').get();
+      if (existing.isNotEmpty) {
+        throw StateError(
+          'This database already has a firm. First run must not be repeated — '
+          'it would create a second chart of accounts and a second set of '
+          'numbering sequences.',
+        );
+      }
+
       // --- The bootstrap trio, raw. -------------------------------------
       final bootstrapHlc = hlcClock.next().value;
 
@@ -113,6 +117,60 @@ final class FirstRunSeeder {
           bootstrapHlc, //
           ownerName, 'owner', 1, 1, 10000,
         ],
+      );
+
+      // The three rows above skipped TxRunner, so they also skipped the
+      // outbox. Left there, a counter joining over LAN in M13 would never
+      // receive the firm, the owner or the master device — and would sync
+      // rows whose foreign keys point at nothing. The outbox entries are
+      // written by hand here, in the same transaction, for the same reason
+      // the inserts are: at this instant there is no actor for TxRunner to
+      // demand.
+      var bootstrapSeq = 0;
+      for (final row in <(String, String, Map<String, Object?>)>[
+        (
+          'firms',
+          firmId,
+          {
+            'id': firmId,
+            'name': shopName,
+            'city': city,
+            'province': province,
+            'business_kind': businessKind,
+          },
+        ),
+        (
+          'devices',
+          deviceId,
+          {
+            'id': deviceId,
+            'label': deviceLabel,
+            'platform': platform,
+            'device_role': 'master',
+          },
+        ),
+        (
+          'users',
+          userId,
+          {'id': userId, 'name': ownerName, 'role': 'owner'},
+        ),
+      ]) {
+        bootstrapSeq++;
+        await database.customStatement(
+          'INSERT INTO change_log ($_env, seq, entity_table, entity_id, op, '
+          'payload_json, entity_hlc, entity_rev, at_utc) '
+          'VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [
+            ids.next(), firmId, millis, millis, userId, userId, deviceId,
+            bootstrapHlc, //
+            bootstrapSeq, row.$1, row.$2, 'insert', jsonEncode(row.$3),
+            bootstrapHlc, 1, millis,
+          ],
+        );
+      }
+      await database.customStatement(
+        'UPDATE devices SET change_seq = ? WHERE id = ?',
+        [bootstrapSeq, deviceId],
       );
 
       // --- Everything else through the one write path. -------------------

@@ -246,14 +246,27 @@ class _NavGrid extends StatelessWidget {
     // width: a 720x1600 Android Go screen and a 10-inch landscape tablet are
     // both first-class here.
     final columns = context.isWide ? 4 : 2;
-    return GridView.count(
-      crossAxisCount: columns,
+
+    // A height, not an aspect ratio. An aspect ratio ties the tile's height to
+    // the screen's width, so turning the system font up made the label taller
+    // while the tile stayed exactly the same size — and the second line was
+    // clipped on the four largest targets on the home screen, for precisely
+    // the users who turned the font up because they could not read it.
+    final scaler = MediaQuery.textScalerOf(context);
+    final labelHeight = scaler.scale(14) * 2 * 1.45;
+    final extent = BlTokens.space3 * 2 + 28 + BlTokens.space2 + labelHeight;
+
+    return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      mainAxisSpacing: BlTokens.space3,
-      crossAxisSpacing: BlTokens.space3,
-      childAspectRatio: 1.6,
-      children: tiles,
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        mainAxisSpacing: BlTokens.space3,
+        crossAxisSpacing: BlTokens.space3,
+        mainAxisExtent: extent,
+      ),
+      itemCount: tiles.length,
+      itemBuilder: (context, i) => tiles[i],
     );
   }
 }
@@ -298,15 +311,22 @@ class _NavTile extends StatelessWidget {
                   color: accent ? t.accentInk : t.ink,
                 ),
                 const SizedBox(height: BlTokens.space2),
-                Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: accent ? t.accentInk : t.ink,
+                // Flexible as well as a measured tile height. The height is
+                // computed from the text scaler and is close, but "close" on a
+                // layout is a stripe of yellow and black at some font size
+                // nobody tested; giving the label room to shrink means the
+                // worst case is an ellipsis rather than an overflow.
+                Flexible(
+                  child: Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: accent ? t.accentInk : t.ink,
+                    ),
                   ),
                 ),
               ],

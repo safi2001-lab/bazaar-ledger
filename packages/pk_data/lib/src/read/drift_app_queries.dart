@@ -18,11 +18,22 @@ final class DriftAppQueries implements AppQueries {
   final AppDatabase _db;
 
   @override
-  Future<FirmProfile?> currentFirm() async {
+  Future<FirmProfile?> currentFirm() => _firm();
+
+  /// The named firm, or -- with no argument -- the one this device belongs to.
+  ///
+  /// The argument exists because a receipt has to carry the shop whose invoice
+  /// it is. Reading "the first firm" to build a receipt header prints the
+  /// wrong name, NTN and bank details the moment M10 adds a second firm, and
+  /// the mistake is invisible until then.
+  Future<FirmProfile?> _firm([String? firmId]) async {
     final row = await _db
         .customSelect(
-          'SELECT * FROM firms WHERE deleted_at_utc IS NULL '
-          'ORDER BY created_at_utc LIMIT 1',
+          firmId == null
+              ? 'SELECT * FROM firms WHERE deleted_at_utc IS NULL '
+                  'ORDER BY created_at_utc LIMIT 1'
+              : 'SELECT * FROM firms WHERE id = ? AND deleted_at_utc IS NULL',
+          variables: firmId == null ? const [] : [Variable<String>(firmId)],
         )
         .getSingleOrNull();
     if (row == null) return null;
@@ -103,7 +114,14 @@ final class DriftAppQueries implements AppQueries {
             AND i.is_active = 1
             AND (? = '' OR i.name_search LIKE ? OR i.code = ? OR i.barcode = ?)
             AND (? IS NULL OR i.id > ?)
-          ORDER BY i.name_search, i.id
+          -- Ordered by id, which is what the cursor pages on. Ordering by
+          -- name while paginating on id silently drops and repeats rows on
+          -- page two, and a 20,000-SKU catalogue is exactly where nobody
+          -- would notice. ULIDs sort by creation, so this is "most recently
+          -- stocked last" — and the counter's own search is a filter, not a
+          -- browse. Alphabetical browsing arrives in M1 on an FTS5 index with
+          -- a matching composite cursor.
+          ORDER BY i.id
           LIMIT ?
           ''',
           variables: [
@@ -135,6 +153,7 @@ final class DriftAppQueries implements AppQueries {
           FROM items i
           JOIN units u ON u.id = i.base_unit_id
           WHERE i.firm_id = ? AND i.barcode = ? AND i.deleted_at_utc IS NULL
+            AND i.is_active = 1
           LIMIT 1
           ''',
           variables: [
@@ -159,7 +178,7 @@ final class DriftAppQueries implements AppQueries {
                  ), 0) AS stock_thousandths
           FROM items i
           JOIN units u ON u.id = i.base_unit_id
-          WHERE i.firm_id = ? AND i.id = ?
+          WHERE i.firm_id = ? AND i.id = ? AND i.deleted_at_utc IS NULL
           LIMIT 1
           ''',
           variables: [Variable<String>(firmId), Variable<String>(itemId)],
@@ -182,7 +201,10 @@ final class DriftAppQueries implements AppQueries {
                  p.opening_balance_paisa
                    + COALESCE((
                        SELECT SUM(d.balance_paisa) FROM documents d
-                       WHERE d.party_id = p.id AND d.status = 'posted'
+                       WHERE d.party_id = p.id
+                         AND d.firm_id = p.firm_id
+                         AND d.doc_type = 'sale_invoice'
+                         AND d.status = 'posted'
                          AND d.deleted_at_utc IS NULL
                      ), 0) AS balance_paisa
           FROM parties p
@@ -299,12 +321,13 @@ final class DriftAppQueries implements AppQueries {
 
   @override
   Future<ReceiptData?> receiptFor(String firmId, String documentId) async {
-    final firm = await currentFirm();
+    final firm = await _firm(firmId);
     if (firm == null) return null;
 
     final doc = await _db
         .customSelect(
-          'SELECT * FROM documents WHERE id = ? AND firm_id = ?',
+          'SELECT * FROM documents WHERE id = ? AND firm_id = ? '
+          'AND deleted_at_utc IS NULL',
           variables: [
             Variable<String>(documentId),
             Variable<String>(firmId),
@@ -324,10 +347,13 @@ final class DriftAppQueries implements AppQueries {
     final payments = await _db
         .customSelect(
           '''
-          SELECT p.mode, p.amount_paisa, p.change_paisa, p.reference
+          SELECT DISTINCT p.id, p.mode, p.amount_paisa, p.change_paisa,
+                 p.reference
           FROM payments p
           JOIN payment_allocations pa ON pa.payment_id = p.id
-          WHERE pa.document_id = ? AND p.deleted_at_utc IS NULL
+          WHERE pa.document_id = ?
+            AND pa.deleted_at_utc IS NULL
+            AND p.deleted_at_utc IS NULL
           ORDER BY p.payment_no
           ''',
           variables: [Variable<String>(documentId)],

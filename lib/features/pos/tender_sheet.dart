@@ -58,16 +58,47 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   }
 
   Future<void> _post() async {
+    // The very first thing, before any await. `onPressed: _busy ? null :
+    // _post` only disables the button once a frame has been built, so setting
+    // this after the account read left a window in which two taps both
+    // reached postSale and one cart became two invoices.
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+
     final s = AppStrings.of(context);
     final preview = ref.read(cartPreviewProvider);
     final cart = ref.read(cartProvider);
     final firm = ref.read(firmProvider).valueOrNull;
-    if (preview == null || firm == null) return;
-
-    if (_onUdhaar && cart.partyId == null) {
-      setState(() => _failure = s.tenderUdhaarNeedsCustomer);
+    if (preview == null || firm == null) {
+      setState(() => _busy = false);
       return;
     }
+
+    // Anything left owing is somebody's khata, whether the switch was flipped
+    // or the cash handed over simply fell short. There is no such thing as an
+    // anonymous debtor.
+    final leavesBalance = _onUdhaar ||
+        (_mode == 'cash' &&
+            !_tenderedAmount.isZero &&
+            _tenderedAmount < preview.total);
+    if (leavesBalance && cart.partyId == null) {
+      setState(() {
+        _failure = s.tenderUdhaarNeedsCustomer;
+        _busy = false;
+      });
+      return;
+    }
+
+    // Held rather than reached for through `ref` after the write. A sheet that
+    // is dismissed mid-post disposes its ConsumerState, and `ref.read` on a
+    // disposed state throws — which the catch below would swallow, leaving a
+    // committed sale with the cart still full. The shopkeeper then rings the
+    // same bill again.
+    final cartNotifier = ref.read(cartProvider.notifier);
+    final container = ProviderScope.containerOf(context, listen: false);
 
     // Read fresh rather than off the provider cache. A payment account can be
     // archived by the owner on another screen — or, with M13's LAN sync, by a
@@ -97,16 +128,27 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     }
 
     // On udhaar there is no tender at all: the whole bill lands in the
-    // customer's khata. Otherwise the shopkeeper is settling it now, and cash
-    // carries what was handed over so change can be worked out.
+    // customer's khata. Otherwise the shopkeeper is settling what they are
+    // actually settling — which for cash is what the customer handed over,
+    // capped at the bill. Posting `preview.total` regardless meant a cashier
+    // who typed Rs 3,000 against a Rs 5,000 bill saw "Remaining 2,000" on
+    // screen and then wrote a fully-paid Rs 5,000 receipt.
+    final Money settling;
+    if (_mode != 'cash' || _tenderedAmount.isZero) {
+      settling = preview.total;
+    } else {
+      settling =
+          _tenderedAmount < preview.total ? _tenderedAmount : preview.total;
+    }
+
     final tenders = account == null
         ? const <TenderDraft>[]
         : [
             TenderDraft(
               paymentAccountId: account.id,
               mode: _mode,
-              amount: preview.total,
-              tendered: _mode == 'cash' && _tenderedAmount > preview.total
+              amount: settling,
+              tendered: _mode == 'cash' && !_tenderedAmount.isZero
                   ? _tenderedAmount
                   : null,
               reference: _reference.text.trim().isEmpty
@@ -116,10 +158,6 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           ];
 
     if (!mounted) return;
-    setState(() {
-      _busy = true;
-      _failure = null;
-    });
 
     // Captured before anything is popped: a sheet's context is defunct the
     // moment it closes, and reaching through it afterwards is the classic way
@@ -141,9 +179,12 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         ),
       );
 
-      ref.read(cartProvider.notifier).clear();
-      ref.read(posQueryProvider.notifier).state = '';
-      ref.bumpRefresh();
+      // Through the captured handles, not through `ref`: this runs whether or
+      // not the sheet is still on screen, because the sale is committed and
+      // the cart must not survive it.
+      cartNotifier.clear();
+      container.read(posQueryProvider.notifier).state = '';
+      container.read(refreshTickProvider.notifier).update((n) => n + 1);
 
       if (!mounted) return;
 

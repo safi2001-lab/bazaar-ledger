@@ -224,19 +224,24 @@ final class Tx {
     // The firm predicate is not optional. A DAO bug that lost it would let a
     // multi-firm user's write land on another firm's row, and nothing else in
     // the stack would notice.
+    // Tombstoned rows are read-only. Without the predicate, `archiveItem` on
+    // an already-archived item reported success, bumped the revision and
+    // broadcast an update for a row every other counter has deleted.
     await _db.customStatement(
       'UPDATE $table SET ${assignments.join(', ')} '
-      'WHERE id = ? AND firm_id = ?',
+      'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
       _checked(args),
     );
 
     final after = await selectOne(
-      'SELECT * FROM $table WHERE id = ? AND firm_id = ?',
+      'SELECT * FROM $table WHERE id = ? AND firm_id = ? '
+      'AND deleted_at_utc IS NULL',
       [id, actor.firmId],
     );
     if (after == null) {
       throw StateError(
-        'Update of $table.$id affected no row in firm ${actor.firmId}.',
+        'Update of $table.$id affected no row in firm ${actor.firmId}: it '
+        'does not exist, or it has been deleted.',
       );
     }
 

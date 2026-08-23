@@ -24,9 +24,13 @@ void main() {
     );
   });
 
+  // Every draft names a party by default. A bill with nothing tendered leaves
+  // a balance, and a balance is somebody's khata: the posting builder refuses
+  // an anonymous debtor, because money the shop can never ask for should not
+  // be sitting in a total it can never explain.
   SaleDraft draft({
     List<TenderDraft> tenders = const [],
-    String? partyId,
+    String? partyId = 'P-BILAL',
     Rate? explicitCost,
   }) =>
       SaleDraft(

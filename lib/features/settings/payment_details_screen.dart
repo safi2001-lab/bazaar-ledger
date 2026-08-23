@@ -147,7 +147,9 @@ class _PaymentDetailsScreenState extends ConsumerState<PaymentDetailsScreen> {
                         controller: _iban,
                         label: s.settingsIban,
                         textInputAction: TextInputAction.done,
-                        onSubmitted: (_) => _save(),
+                        onSubmitted: (_) {
+                          if (!_busy) _save();
+                        },
                       ),
                       const SizedBox(height: BlTokens.space5),
                       _Note(icon: Icons.qr_code_2, text: s.settingsQrNote),

@@ -83,7 +83,10 @@ void main() {
     for (final l in p.journal.lines) {
       final key = l.isResolvedAccountId ? l.accountId : l.accountSystemKey;
       final prior = out[key] ?? (debit: Money.zero, credit: Money.zero);
-      out[key] = (debit: prior.debit + l.debit, credit: prior.credit + l.credit);
+      out[key] = (
+        debit: prior.debit + l.debit,
+        credit: prior.credit + l.credit,
+      );
     }
     return out;
   }
@@ -165,8 +168,9 @@ void main() {
           lines: [item(rate: Rate.rupees(5000))],
         ),
       );
-      final receivable = posting.journal.lines
-          .firstWhere((l) => l.accountSystemKey == 'accounts_receivable');
+      final receivable = posting.journal.lines.firstWhere(
+        (l) => l.accountSystemKey == 'accounts_receivable',
+      );
       expect(receivable.partyId, 'P-BILAL');
     });
   });
@@ -177,6 +181,7 @@ void main() {
       // that number. Netting it off sales hides it forever.
       final posting = post(
         SaleDraft(
+          partyId: 'P-BILAL',
           lines: [item(rate: Rate.rupees(1000), discountBp: 1000)],
           roundToRupee: false,
         ),
@@ -191,6 +196,7 @@ void main() {
     test('a bill discount lands in the same contra account', () {
       final posting = post(
         SaleDraft(
+          partyId: 'P-BILAL',
           lines: [
             item(name: 'A', rate: Rate.rupees(500)),
             item(name: 'B', rate: Rate.rupees(500)),
@@ -207,7 +213,10 @@ void main() {
   group('round-off', () {
     test('a bill rounded down debits round-off', () {
       final posting = post(
-        SaleDraft(lines: [item(rate: Rate.parse('100.24'))]),
+        SaleDraft(
+          partyId: 'P-BILAL',
+          lines: [item(rate: Rate.parse('100.24'))],
+        ),
       );
       final accounts = byAccount(posting);
       expect(accounts['round_off']!.debit, Money.paisa(24));
@@ -218,7 +227,10 @@ void main() {
 
     test('a bill rounded up credits round-off', () {
       final posting = post(
-        SaleDraft(lines: [item(rate: Rate.parse('100.76'))]),
+        SaleDraft(
+          partyId: 'P-BILAL',
+          lines: [item(rate: Rate.parse('100.76'))],
+        ),
       );
       final accounts = byAccount(posting);
       expect(accounts['round_off']!.credit, Money.paisa(24));
@@ -231,6 +243,7 @@ void main() {
     test('debits COGS and credits inventory', () {
       final posting = post(
         SaleDraft(
+          partyId: 'P-BILAL',
           lines: [
             item(qty: '2', rate: Rate.rupees(150), cost: Rate.rupees(110)),
           ],
@@ -243,7 +256,12 @@ void main() {
     });
 
     test('posts no cost line when nothing has been purchased yet', () {
-      final posting = post(SaleDraft(lines: [item(rate: Rate.rupees(150))]));
+      final posting = post(
+        SaleDraft(
+          partyId: 'P-BILAL',
+          lines: [item(rate: Rate.rupees(150))],
+        ),
+      );
       expect(byAccount(posting).containsKey('cogs'), isFalse);
       expect(byAccount(posting).containsKey('inventory'), isFalse);
     });
@@ -325,6 +343,7 @@ void main() {
     test('moves out of the shop, one movement per stocked line', () {
       final posting = post(
         SaleDraft(
+          partyId: 'P-BILAL',
           lines: [
             item(name: 'Oil', qty: '2', rate: Rate.rupees(2500)),
             SaleLineDraft(
@@ -440,7 +459,11 @@ void main() {
         // is right to refuse, and it is not what this property is about.
         final owed = calculator
             .calculate(
-              SaleDraft(lines: lines, roundToRupee: roundToRupee),
+              SaleDraft(
+                partyId: 'P-BILAL',
+                lines: lines,
+                roundToRupee: roundToRupee,
+              ),
               untaxed,
             )
             .total;

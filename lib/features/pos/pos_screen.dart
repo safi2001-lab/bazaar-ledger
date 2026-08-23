@@ -202,9 +202,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 prefix: const Icon(Icons.search, size: 20),
                 suffix: query.isEmpty
                     ? null
-                    : IconButton(
-                        icon: const Icon(Icons.close, size: 20),
-                        tooltip: s.actionClose,
+                    : BlIconButton(
+                        icon: Icons.close,
+                        label: s.actionClose,
                         onPressed: _clearSearch,
                       ),
               ),
