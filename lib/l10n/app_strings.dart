@@ -1741,6 +1741,48 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Yeh tasveer nahi hai'**
   String get pictureNotAnImage;
+
+  /// No description provided for @scanTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Barcode scan karein'**
+  String get scanTitle;
+
+  /// No description provided for @scanHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Packet ka barcode camera ke saamne rakhein'**
+  String get scanHint;
+
+  /// No description provided for @scanNoCamera.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone mein camera nahi hai'**
+  String get scanNoCamera;
+
+  /// No description provided for @scanDenied.
+  ///
+  /// In ur, this message translates to:
+  /// **'Camera ki ijazat nahi mili'**
+  String get scanDenied;
+
+  /// No description provided for @scanTorch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roshni'**
+  String get scanTorch;
+
+  /// No description provided for @scanNotFound.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh barcode kisi cheez par nahi hai'**
+  String get scanNotFound;
+
+  /// No description provided for @scanAddNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi cheez banayein'**
+  String get scanAddNew;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

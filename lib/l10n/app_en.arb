@@ -349,5 +349,12 @@
   "pictureAdd": "Add a photo",
   "pictureChange": "Change photo",
   "pictureRemove": "Remove photo",
-  "pictureNotAnImage": "That file is not a picture"
+  "pictureNotAnImage": "That file is not a picture",
+  "scanTitle": "Scan a barcode",
+  "scanHint": "Hold the packet barcode in front of the camera",
+  "scanNoCamera": "This phone has no camera",
+  "scanDenied": "Camera permission was not granted",
+  "scanTorch": "Light",
+  "scanNotFound": "No item carries that barcode",
+  "scanAddNew": "Add it as a new item"
 }

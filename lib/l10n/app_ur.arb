@@ -431,5 +431,12 @@
   "pictureAdd": "Tasveer lagayein",
   "pictureChange": "Tasveer badlein",
   "pictureRemove": "Tasveer hatayein",
-  "pictureNotAnImage": "Yeh tasveer nahi hai"
+  "pictureNotAnImage": "Yeh tasveer nahi hai",
+  "scanTitle": "Barcode scan karein",
+  "scanHint": "Packet ka barcode camera ke saamne rakhein",
+  "scanNoCamera": "Is phone mein camera nahi hai",
+  "scanDenied": "Camera ki ijazat nahi mili",
+  "scanTorch": "Roshni",
+  "scanNotFound": "Yeh barcode kisi cheez par nahi hai",
+  "scanAddNew": "Nayi cheez banayein"
 }

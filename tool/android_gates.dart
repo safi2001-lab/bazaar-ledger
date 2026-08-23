@@ -42,6 +42,10 @@ const _allowedPermissions = <String>{
   // Android gates the creation of ANY socket behind this, including one to a
   // printer at 192.168.x.x on the shop's own wi-fi.
   'android.permission.INTERNET',
+  // Reading a barcode off a packet. Runtime-dangerous, not a Play RESTRICTED
+  // permission: no declaration form, only an honest listing and a privacy
+  // policy. Asked for when a shopkeeper taps scan and never before.
+  'android.permission.CAMERA',
   // Capped at API 30 so Android 12 and above do not grant them.
   'android.permission.BLUETOOTH',
   'android.permission.BLUETOOTH_ADMIN',
@@ -49,7 +53,29 @@ const _allowedPermissions = <String>{
   'android.permission.BLUETOOTH_CONNECT',
   // Declared with neverForLocation.
   'android.permission.BLUETOOTH_SCAN',
+
+  // Arrives through the merger, not from any manifest in this repository.
+  //
+  // `com.google.android.datatransport:transport-backend-cct`, pulled in by
+  // ML Kit barcode scanning, declares it -- and declares INTERNET too. It is a
+  // NORMAL permission: auto-granted, never prompted. It permits reading
+  // connectivity state, not reaching the network.
+  //
+  // It is nonetheless visible on the Play listing as "view network
+  // connections", so it is allowlisted deliberately rather than tolerated
+  // silently. See docs/what_leaves_the_phone.md for what ML Kit sends and why
+  // it does not touch a shopkeeper's books.
+  'android.permission.ACCESS_NETWORK_STATE',
 };
+
+/// Permissions an app declares against ITSELF, which no user ever sees.
+///
+/// `androidx.core` 1.9+ backs `ContextCompat.registerReceiver` on API 32 and
+/// below by gating a dynamic receiver behind a signature-level permission that
+/// only this app's own signing key can hold. It is security hardening rather
+/// than a capability, it is generated per package name, and removing it breaks
+/// the receiver at runtime on older Android.
+final _selfPermissions = RegExp(r'\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION$');
 
 Future<void> main(List<String> args) async {
   final pluginOnly = args.contains('--plugin-tests-only');
@@ -218,7 +244,10 @@ List<String> _checkMergedPermissions(String buildTools, File apk) {
       .whereType<String>()
       .toSet();
 
-  final unexpected = found.difference(_allowedPermissions);
+  final unexpected = found
+      .where((p) => !_selfPermissions.hasMatch(p))
+      .toSet()
+      .difference(_allowedPermissions);
   final missing = _allowedPermissions.difference(found);
   final problems = <String>[];
 

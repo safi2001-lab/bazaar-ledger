@@ -24,6 +24,30 @@ dependencies:
   # arrives with barcode scanning or not at all.
   image_picker: ^1.1.2
   intl: ^0.20.2
+  # Camera barcode scanning, with ML Kit BUNDLED rather than downloaded.
+  #
+  # The unbundled variant is ~3 MB smaller and fetches its model through Play
+  # Services on first use — which is the exact moment a shop with a patchy
+  # connection is standing at the counter with a customer waiting. It fails
+  # there, silently, on the first day. Paying the megabytes is the whole
+  # offline-first argument applied to a dependency.
+  #
+  # AGP 9: it builds, on a fuse. The build prints
+  #
+  #   WARNING: Your app uses the following plugins that apply Kotlin Gradle
+  #   Plugin (KGP): mobile_scanner
+  #   Future versions of Flutter will fail to build if your app uses plugins
+  #   that apply KGP.
+  #
+  # so it survives today only because android/gradle.properties still carries
+  # `android.builtInKotlin=false`, the escape hatch Flutter 3.44 added for
+  # exactly this transition. That flag is the single thing standing between
+  # this dependency and a broken build, and it will not be there forever.
+  #
+  # Written down rather than left as a warning nobody reads: when this stops
+  # building, the cause is here and the fix is a mobile_scanner that has
+  # migrated to Built-in Kotlin, not a change on our side.
+  mobile_scanner: ^7.4.0
   path_provider: ^2.1.5
   # The wiring point. It depends on pk_data and drift; this package does not,
   # and must not. A widget that imports drift is a resolution error rather

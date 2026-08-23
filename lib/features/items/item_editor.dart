@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../scan/scan_screen.dart';
 import 'item_history_screen.dart';
 import 'item_picture.dart';
 import 'label_print_sheet.dart';
@@ -247,6 +248,20 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     return units.first.id;
   }
 
+  /// Reads a barcode off the packet into the field.
+  ///
+  /// Whatever the camera reports goes in exactly as read. The
+  /// UPC-A/EAN-13 widening happens at LOOKUP, never at storage: normalising on
+  /// the way in would rewrite what a shopkeeper can see printed on the packet,
+  /// and then the number on screen would not match the number in their hand.
+  Future<void> _scanBarcode() async {
+    final code = await Navigator.of(
+      context,
+    ).push<String>(MaterialPageRoute(builder: (_) => const ScanScreen()));
+    if (code == null || !mounted) return;
+    setState(() => _barcode.text = code);
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
@@ -478,6 +493,16 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                           controller: _barcode,
                           label: s.itemBarcode,
                           textInputAction: TextInputAction.next,
+                          // Thirteen digits typed by hand off a packet, at a
+                          // counter, is where a catalogue gets its wrong
+                          // barcodes — and a wrong barcode is worse than none,
+                          // because it silently matches the wrong packet at
+                          // the till.
+                          suffix: BlIconButton(
+                            icon: Icons.qr_code_scanner,
+                            label: s.scanTitle,
+                            onPressed: _scanBarcode,
+                          ),
                         ),
                         const SizedBox(height: BlTokens.space4),
                         Row(

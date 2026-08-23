@@ -96,10 +96,7 @@ void main() {
     });
 
     test('every line total sums back to the bill total', () {
-      expect(
-        Money.sum([for (final l in sale.lines) l.lineTotal]),
-        sale.total,
-      );
+      expect(Money.sum([for (final l in sale.lines) l.lineTotal]), sale.total);
     });
   });
 

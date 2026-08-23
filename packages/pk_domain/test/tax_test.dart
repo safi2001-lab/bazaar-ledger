@@ -28,24 +28,23 @@ void main() {
     Money extraCharges = Money.zero,
     Money billDiscount = Money.zero,
     bool roundToRupee = false,
-  }) =>
-      SaleDraft(
-        partyId: 'P-BILAL',
-        lines: [
-          for (var i = 0; i < lines.length; i++)
-            SaleLineDraft(
-              itemId: 'I$i',
-              itemName: 'Item $i',
-              qty: Qty.units(lines[i].$2),
-              baseQty: Qty.units(lines[i].$2),
-              unitCode: 'pcs',
-              rate: Rate.rupees(lines[i].$1),
-            ),
-        ],
-        extraCharges: extraCharges,
-        billDiscount: billDiscount,
-        roundToRupee: roundToRupee,
-      );
+  }) => SaleDraft(
+    partyId: 'P-BILAL',
+    lines: [
+      for (var i = 0; i < lines.length; i++)
+        SaleLineDraft(
+          itemId: 'I$i',
+          itemName: 'Item $i',
+          qty: Qty.units(lines[i].$2),
+          baseQty: Qty.units(lines[i].$2),
+          unitCode: 'pcs',
+          rate: Rate.rupees(lines[i].$1),
+        ),
+    ],
+    extraCharges: extraCharges,
+    billDiscount: billDiscount,
+    roundToRupee: roundToRupee,
+  );
 
   group('sales tax at the standard rate', () {
     const calculator = SaleCalculator(taxEngine: _StandardRateEngine());
@@ -115,8 +114,7 @@ void main() {
     });
 
     test('every line carries its own charge, and they sum to the bill', () {
-      final sale =
-          calculator.calculate(billOf([(1000, 2), (525, 1)]), context);
+      final sale = calculator.calculate(billOf([(1000, 2), (525, 1)]), context);
 
       expect(sale.lines, hasLength(2));
       for (final line in sale.lines) {
@@ -171,8 +169,10 @@ void main() {
         pricesIncludeTax: false,
         ruleVersion: 'test-v1',
       );
-      final sale =
-          calculator.calculate(billOf([(1000, 1)]), registeredButLapsed);
+      final sale = calculator.calculate(
+        billOf([(1000, 1)]),
+        registeredButLapsed,
+      );
       expect(sale.furtherTax, Money.rupees(40));
     });
 
@@ -185,8 +185,10 @@ void main() {
         pricesIncludeTax: false,
         ruleVersion: 'test-v1',
       );
-      final sale =
-          calculator.calculate(billOf([(1000, 1)]), unregisteredOnList);
+      final sale = calculator.calculate(
+        billOf([(1000, 1)]),
+        unregisteredOnList,
+      );
       expect(
         sale.furtherTax,
         Money.rupees(40),
@@ -266,8 +268,9 @@ void main() {
       expect(credits['output_tax'], Money.rupees(180));
       expect(credits['further_tax_payable'], Money.rupees(40));
       // The customer owes the whole bill, tax included.
-      final receivable = posting.journal.lines
-          .firstWhere((l) => l.accountSystemKey == 'accounts_receivable');
+      final receivable = posting.journal.lines.firstWhere(
+        (l) => l.accountSystemKey == 'accounts_receivable',
+      );
       expect(receivable.debit, Money.rupees(1220));
       posting.assertBalanced();
     });
@@ -276,8 +279,10 @@ void main() {
       final calculated = calculator.calculate(billOf([(1000, 1)]), context);
       final charges = calculated.lines.single.taxes;
 
-      expect(charges.map((c) => c.kind),
-          [TaxKind.salesTax, TaxKind.furtherTax]);
+      expect(charges.map((c) => c.kind), [
+        TaxKind.salesTax,
+        TaxKind.furtherTax,
+      ]);
       expect(charges.map((c) => c.kind.code), ['sales_tax', 'further_tax']);
       expect(charges.map((c) => c.rateBp), [1800, 400]);
       // The rule version travels with the document so a reprint next year
@@ -296,8 +301,10 @@ void main() {
         pricesIncludeTax: false,
         ruleVersion: 'untaxed-v1',
       );
-      final sale = const SaleCalculator()
-          .calculate(billOf([(1000, 1)]), unregistered);
+      final sale = const SaleCalculator().calculate(
+        billOf([(1000, 1)]),
+        unregistered,
+      );
 
       expect(sale.tax, Money.zero);
       expect(sale.furtherTax, Money.zero);

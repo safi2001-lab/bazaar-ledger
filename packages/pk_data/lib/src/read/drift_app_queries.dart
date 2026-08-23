@@ -142,6 +142,20 @@ final class DriftAppQueries implements AppQueries {
 
   @override
   Future<ItemSummary?> itemByBarcode(String firmId, String barcode) async {
+    // Every form the same physical barcode can arrive in, most likely first.
+    //
+    // A UPC-A packet reaches a hardware wedge as twelve digits and a phone
+    // camera as thirteen, because ML Kit reports UPC-A as the EAN-13 it
+    // formally is. An exact match therefore finds the item when the counter
+    // scans it with the USB gun and misses when the same packet is scanned
+    // with the phone — and nothing about that failure suggests a
+    // normalisation problem. It looks like the item is missing, so the cashier
+    // adds it again by hand, and the catalogue ends up with one packet twice
+    // at two prices.
+    final variants = barcodeVariants(barcode);
+    if (variants.isEmpty) return null;
+
+    final placeholders = List.filled(variants.length, '?').join(', ');
     final rows = await _db
         .customSelect(
           '''
@@ -153,11 +167,20 @@ final class DriftAppQueries implements AppQueries {
                  ), 0) AS stock_thousandths
           FROM items i
           JOIN units u ON u.id = i.base_unit_id
-          WHERE i.firm_id = ? AND i.barcode = ? AND i.deleted_at_utc IS NULL
+          WHERE i.firm_id = ? AND i.barcode IN ($placeholders)
+            AND i.deleted_at_utc IS NULL
             AND i.is_active = 1
+          -- Exactly what was scanned wins over anything inferred from it. Two
+          -- items really can carry the twelve- and thirteen-digit forms of one
+          -- code, and the one the scanner actually read is the right answer.
+          ORDER BY CASE i.barcode WHEN ? THEN 0 ELSE 1 END
           LIMIT 1
           ''',
-          variables: [Variable<String>(firmId), Variable<String>(barcode)],
+          variables: [
+            Variable<String>(firmId),
+            for (final v in variants) Variable<String>(v),
+            Variable<String>(variants.first),
+          ],
         )
         .get();
     return rows.isEmpty ? null : _itemFrom(rows.single);

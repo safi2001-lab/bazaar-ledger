@@ -27,17 +27,17 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final manifests = <String, File>{
     'app': File('android/app/src/main/AndroidManifest.xml'),
-    'printer plugin':
-        File('packages/pk_printer_android/android/src/main/AndroidManifest.xml'),
+    'printer plugin': File(
+      'packages/pk_printer_android/android/src/main/AndroidManifest.xml',
+    ),
   };
 
   /// Every `android.permission.X` a manifest declares.
   Set<String> permissionsIn(File file) {
     final text = file.readAsStringSync();
-    return RegExp(r'android:name="android\.permission\.([A-Z_]+)"')
-        .allMatches(text)
-        .map((m) => m.group(1)!)
-        .toSet();
+    return RegExp(
+      r'android:name="android\.permission\.([A-Z_]+)"',
+    ).allMatches(text).map((m) => m.group(1)!).toSet();
   }
 
   test('every manifest that ships is present', () {
@@ -58,15 +58,15 @@ void main() {
       expect(
         asked.where((p) => p.contains('LOCATION')),
         isEmpty,
-        reason: 'the ${entry.key} manifest asks for location. A billing app '
+        reason:
+            'the ${entry.key} manifest asks for location. A billing app '
             'does not need to know where the shopkeeper is standing, and '
             'location is a restricted permission with a declaration form.',
       );
     }
   });
 
-  test('the app asks for exactly what its features need, and nothing else',
-      () {
+  test('the app asks for exactly what its features need, and nothing else', () {
     // Every entry here has a feature behind it. A permission with no feature
     // behind it makes the Play Data Safety form a lie, so this list grows with
     // the milestone that earns it and not before.
@@ -77,25 +77,33 @@ void main() {
         // to a printer at 192.168.x.x on the shop's own Wi-Fi. There is no
         // narrower permission until ACCESS_LOCAL_NETWORK at targetSdk 37.
         'INTERNET',
+        // Reading a barcode off a packet. Runtime-dangerous, not a Play
+        // RESTRICTED permission: no declaration form, only an honest listing
+        // and a privacy policy. Asked for when a shopkeeper taps scan and
+        // never before, so a shop using a USB gun is never prompted.
+        //
+        // Deliberately still absent: READ_MEDIA_IMAGES. Item photographs go
+        // through Android's own Photo Picker, which needs nothing at all, and
+        // Play restricts that permission to apps whose core function the
+        // picker cannot serve.
+        'CAMERA',
       },
-      reason: 'the app manifest asks for something no feature needs, or is '
+      reason:
+          'the app manifest asks for something no feature needs, or is '
           'missing something a feature does',
     );
   });
 
   test('Bluetooth is asked for by the plugin that uses it', () {
-    expect(
-      permissionsIn(manifests['printer plugin']!),
-      {
-        // Capped at API 30 so Android 12 and above do not grant them.
-        'BLUETOOTH',
-        'BLUETOOTH_ADMIN',
-        // Talking to an already-paired printer.
-        'BLUETOOTH_CONNECT',
-        // Declared with neverForLocation, asserted below.
-        'BLUETOOTH_SCAN',
-      },
-    );
+    expect(permissionsIn(manifests['printer plugin']!), {
+      // Capped at API 30 so Android 12 and above do not grant them.
+      'BLUETOOTH',
+      'BLUETOOTH_ADMIN',
+      // Talking to an already-paired printer.
+      'BLUETOOTH_CONNECT',
+      // Declared with neverForLocation, asserted below.
+      'BLUETOOTH_SCAN',
+    });
   });
 
   test('scanning is declared as never being about location', () {

@@ -1178,8 +1178,80 @@ features:
   - id: M2-SCAN-02
     milestone: M2
     title: The phone camera reads a barcode
-    status: todo
-    proof: []
+    status: done
+    # Most shops in this bracket do not own a USB gun -- it is four thousand
+    # rupees on top of a printer -- and the phone is already in hand.
+    #
+    # The camera and the gun end in the SAME lookup on purpose. Two paths would
+    # be two places for the UPC-A widening below to be got right and one place
+    # for it to be forgotten.
+    #
+    # ML Kit BUNDLED, not downloaded. The unbundled variant is ~3 MB smaller
+    # and fetches its model through Play Services on first use -- and Google's
+    # own documentation says requests made before that download completes
+    # "produce no results", silently. First use is a shopkeeper at a counter
+    # with a customer waiting, in a country that lost 9,735 hours of internet
+    # in 2024. A test asserts the flag that would undo this stays unset.
+    #
+    # It builds under AGP 9 only because android/gradle.properties still
+    # carries `android.builtInKotlin=false`: mobile_scanner still applies the
+    # Kotlin Gradle Plugin and the build says so out loud. Written down in the
+    # pubspec, because when it stops building the cause will not be obvious.
+    #
+    # What this cost, honestly: ML Kit brings Google's Firelog transport, which
+    # sends diagnostics -- device model, package name, version, latency, error
+    # codes, a per-installation id. Never a camera frame, never a barcode,
+    # never a line of anybody's ledger. There is no documented opt-out for
+    # standalone ML Kit. docs/what_leaves_the_phone.md is the full account and
+    # the Data Safety answers it obliges.
+    proof:
+      - the counter offers the camera when nothing is typed
+      - and gives the slot back to clear once something is typed
+      - a scanned code reaches the bill through the wedge path
+      - the item editor can read a barcode instead of typing it
+      - the camera costs one ordinary runtime permission, and no more
+      - ML Kit is bundled, not downloaded on first use
+
+  - id: M2-SCAN-03
+    milestone: M2
+    title: One packet is found however its barcode was read
+    status: done
+    # A latent defect the camera would have made routine.
+    #
+    # A UPC-A packet reaches a hardware wedge as twelve digits and a phone
+    # camera as thirteen, because ML Kit reports UPC-A as the EAN-13 it
+    # formally is. `itemByBarcode` was an exact match, so the same tin would be
+    # found by the gun and not by the phone.
+    #
+    # Nothing about that failure suggests a normalisation problem. It looks
+    # like the item is missing -- so the cashier adds it again by hand, and the
+    # catalogue ends up carrying one packet twice, at two prices, with the
+    # stock split between them and neither figure right.
+    #
+    # Widened at LOOKUP, never at storage: normalising on the way in would
+    # rewrite what a shopkeeper can read printed on the packet. And what was
+    # actually scanned always outranks anything inferred from it, because a
+    # shop really can carry both forms as separate items.
+    proof:
+      - a twelve-digit UPC also matches the EAN-13 a camera reports
+      - a thirteen-digit EAN beginning with zero also matches its UPC
+      - what was actually scanned always comes first
+      - an EAN-13 that does not begin with zero is left alone
+      - an EAN-8 is left alone
+      - a shop code is never given a leading zero
+      - leading zeros are not stripped in general
+      - surrounding space is trimmed, because a wedge sends it
+      - nothing scanned is nothing to look up
+      - the variants never repeat
+      - a packet entered as UPC is found when a camera reads EAN-13
+      - a packet entered as EAN-13 is found when a wedge reads UPC
+      - the exact code wins when both forms exist as separate items
+      - a Pakistani EAN-13 is matched exactly, never widened
+      - a shop code is matched exactly
+      - a code nobody has is not found, and is not an error
+      - nothing scanned finds nothing
+      - an archived packet does not come back onto a bill
+      - another shop barcode is not this shop item
 
   - id: M2-LABEL-01
     milestone: M2

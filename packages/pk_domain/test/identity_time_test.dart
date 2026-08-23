@@ -249,7 +249,8 @@ void main() {
       // A device set to 2031 would otherwise win every conflict for five
       // years, and nobody would ever work out why their edits kept vanishing.
       final wrong = Hlc.of(
-        millis: clock.nowUtc().millisecondsSinceEpoch +
+        millis:
+            clock.nowUtc().millisecondsSinceEpoch +
             const Duration(days: 400).inMilliseconds,
         counter: 0,
         deviceId: 'DEVICE-WRONG',

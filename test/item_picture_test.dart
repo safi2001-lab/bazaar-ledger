@@ -132,15 +132,27 @@ void main() {
   test('photographing a tin of oil costs the Play listing nothing', () {
     // The system Photo Picker needs no permission at all. READ_MEDIA_IMAGES is
     // restricted by Play to apps whose core function the picker cannot serve,
-    // and a billing app asking for it would go through a declaration review
-    // in order to let a shopkeeper photograph a packet.
+    // and a billing app asking for it would go through a declaration review in
+    // order to let a shopkeeper photograph a packet.
     //
-    // CAMERA is absent too: this is gallery-only on purpose, and that
-    // permission arrives with barcode scanning or not at all.
-    final manifest = _manifest();
-    expect(manifest, isNot(contains('READ_MEDIA_IMAGES')));
-    expect(manifest, isNot(contains('READ_EXTERNAL_STORAGE')));
-    expect(manifest, isNot(contains('android.permission.CAMERA')));
+    // This test first asserted CAMERA was absent too, and camera barcode
+    // scanning later made that false — correctly. The assertion had conflated
+    // two different claims: "photographs need no permission", which is still
+    // true and is what this test is for, and "the app has no camera", which
+    // was only ever incidentally true. The gate caught the difference.
+    final declared = RegExp(
+      r'<uses-permission\s+android:name="([^"]+)"',
+    ).allMatches(_manifest()).map((m) => m.group(1)!).toSet();
+
+    expect(declared, isNot(contains('android.permission.READ_MEDIA_IMAGES')));
+    expect(
+      declared,
+      isNot(contains('android.permission.READ_EXTERNAL_STORAGE')),
+    );
+    expect(
+      declared,
+      isNot(contains('android.permission.WRITE_EXTERNAL_STORAGE')),
+    );
   });
 }
 

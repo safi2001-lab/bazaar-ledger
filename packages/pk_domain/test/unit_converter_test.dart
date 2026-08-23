@@ -18,32 +18,16 @@ void main() {
   const seer = 'seer';
 
   UnitConverter shopUnits([List<UnitEdge> extra = const []]) => UnitConverter([
-        // 1 dozen = 12 pcs.
-        const UnitEdge(
-          fromUnitId: dozen,
-          toUnitId: pcs,
-          factorThousandths: 12000,
-        ),
-        // 1 g = one thousandth of a kilo — exactly one unit of storage.
-        const UnitEdge(fromUnitId: g, toUnitId: kg, factorThousandths: 1),
-        // A Pakistani maund is 40 kg.
-        const UnitEdge(
-          fromUnitId: maund,
-          toUnitId: kg,
-          factorThousandths: 40000,
-        ),
-        const UnitEdge(
-          fromUnitId: tola,
-          toUnitId: g,
-          factorThousandths: 11664,
-        ),
-        const UnitEdge(
-          fromUnitId: seer,
-          toUnitId: kg,
-          factorThousandths: 1000,
-        ),
-        ...extra,
-      ]);
+    // 1 dozen = 12 pcs.
+    const UnitEdge(fromUnitId: dozen, toUnitId: pcs, factorThousandths: 12000),
+    // 1 g = one thousandth of a kilo — exactly one unit of storage.
+    const UnitEdge(fromUnitId: g, toUnitId: kg, factorThousandths: 1),
+    // A Pakistani maund is 40 kg.
+    const UnitEdge(fromUnitId: maund, toUnitId: kg, factorThousandths: 40000),
+    const UnitEdge(fromUnitId: tola, toUnitId: g, factorThousandths: 11664),
+    const UnitEdge(fromUnitId: seer, toUnitId: kg, factorThousandths: 1000),
+    ...extra,
+  ]);
 
   group('the everyday conversions', () {
     test('a dozen is twelve pieces', () {
@@ -55,11 +39,7 @@ void main() {
 
     test('two and a half dozen is thirty pieces', () {
       expect(
-        shopUnits().convert(
-          Qty.parse('2.5'),
-          fromUnitId: dozen,
-          toUnitId: pcs,
-        ),
+        shopUnits().convert(Qty.parse('2.5'), fromUnitId: dozen, toUnitId: pcs),
         Qty.units(30),
       );
     });
@@ -90,11 +70,7 @@ void main() {
 
     test('750 grams stays 750 grams through a kilo and back', () {
       final units = shopUnits();
-      final inKg = units.convert(
-        Qty.units(750),
-        fromUnitId: g,
-        toUnitId: kg,
-      );
+      final inKg = units.convert(Qty.units(750), fromUnitId: g, toUnitId: kg);
       expect(inKg, Qty.parse('0.750'));
       expect(
         units.convert(inKg, fromUnitId: kg, toUnitId: g),
@@ -166,14 +142,12 @@ void main() {
 
     test('and the counter can ask first', () {
       final units = shopUnits();
-      expect(
-        units.canConvert(Qty.one, fromUnitId: tola, toUnitId: g),
-        isTrue,
-      );
+      expect(units.canConvert(Qty.one, fromUnitId: tola, toUnitId: g), isTrue);
       expect(
         units.canConvert(Qty.one, fromUnitId: tola, toUnitId: kg),
         isFalse,
-        reason: 'a unit that cannot be sold in is greyed out, not offered '
+        reason:
+            'a unit that cannot be sold in is greyed out, not offered '
             'and then refused at the moment of saving the bill',
       );
     });
@@ -185,20 +159,16 @@ void main() {
     const rice = 'item-rice';
 
     UnitConverter withBoris() => shopUnits([
-          // The shop's default sack, if it has one.
-          const UnitEdge(
-            fromUnitId: bori,
-            toUnitId: kg,
-            factorThousandths: 50000,
-          ),
-          // Flour comes in 80 kg sacks at this shop.
-          const UnitEdge(
-            fromUnitId: bori,
-            toUnitId: kg,
-            factorThousandths: 80000,
-            itemId: flour,
-          ),
-        ]);
+      // The shop's default sack, if it has one.
+      const UnitEdge(fromUnitId: bori, toUnitId: kg, factorThousandths: 50000),
+      // Flour comes in 80 kg sacks at this shop.
+      const UnitEdge(
+        fromUnitId: bori,
+        toUnitId: kg,
+        factorThousandths: 80000,
+        itemId: flour,
+      ),
+    ]);
 
     test('an item with its own sack size uses it', () {
       expect(
@@ -288,11 +258,9 @@ void main() {
 
     test('a rate converts to itself without consulting anything', () {
       expect(
-        UnitConverter(const []).convertRate(
-          const Rate.rupees(250),
-          fromUnitId: kg,
-          toUnitId: kg,
-        ),
+        UnitConverter(
+          const [],
+        ).convertRate(const Rate.rupees(250), fromUnitId: kg, toUnitId: kg),
         const Rate.rupees(250),
       );
     });
@@ -301,11 +269,9 @@ void main() {
   group('the edges of the thing', () {
     test('a unit converts to itself without consulting anything', () {
       expect(
-        UnitConverter(const []).convert(
-          Qty.parse('3.75'),
-          fromUnitId: kg,
-          toUnitId: kg,
-        ),
+        UnitConverter(
+          const [],
+        ).convert(Qty.parse('3.75'), fromUnitId: kg, toUnitId: kg),
         Qty.parse('3.75'),
       );
     });
@@ -319,11 +285,7 @@ void main() {
 
     test('an unknown unit is refused, not guessed at', () {
       expect(
-        () => shopUnits().convert(
-          Qty.one,
-          fromUnitId: 'thaan',
-          toUnitId: kg,
-        ),
+        () => shopUnits().convert(Qty.one, fromUnitId: 'thaan', toUnitId: kg),
         throwsA(isA<UnitConversionException>()),
       );
     });
@@ -341,11 +303,7 @@ void main() {
       // Ten thousand maunds of wheat is a warehouse, not a shop, but the
       // arithmetic should still be arithmetic.
       expect(
-        shopUnits().convert(
-          Qty.units(10000),
-          fromUnitId: maund,
-          toUnitId: g,
-        ),
+        shopUnits().convert(Qty.units(10000), fromUnitId: maund, toUnitId: g),
         Qty.units(400000000),
       );
     });

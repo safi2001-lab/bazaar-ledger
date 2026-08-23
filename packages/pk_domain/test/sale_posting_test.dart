@@ -511,13 +511,17 @@ void main() {
           untaxed,
         );
 
-        final debits = Money.sum([for (final l in posting.journal.lines) l.debit]);
-        final credits =
-            Money.sum([for (final l in posting.journal.lines) l.credit]);
+        final debits = Money.sum([
+          for (final l in posting.journal.lines) l.debit,
+        ]);
+        final credits = Money.sum([
+          for (final l in posting.journal.lines) l.credit,
+        ]);
 
         // What the shop received or is owed, plus the discount it gave away,
         // plus what the goods cost it, plus a downward rounding.
-        final expected = calculated.paid +
+        final expected =
+            calculated.paid +
             calculated.balance +
             calculated.lineDiscountTotal +
             calculated.billDiscount +

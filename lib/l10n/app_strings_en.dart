@@ -913,4 +913,25 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get pictureNotAnImage => 'That file is not a picture';
+
+  @override
+  String get scanTitle => 'Scan a barcode';
+
+  @override
+  String get scanHint => 'Hold the packet barcode in front of the camera';
+
+  @override
+  String get scanNoCamera => 'This phone has no camera';
+
+  @override
+  String get scanDenied => 'Camera permission was not granted';
+
+  @override
+  String get scanTorch => 'Light';
+
+  @override
+  String get scanNotFound => 'No item carries that barcode';
+
+  @override
+  String get scanAddNew => 'Add it as a new item';
 }

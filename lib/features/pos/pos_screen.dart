@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/item_editor.dart';
+import '../scan/scan_screen.dart';
 import 'cart.dart';
 import 'tender_sheet.dart';
 
@@ -133,6 +134,20 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     _clearSearch();
   }
 
+  /// Opens the camera, and treats what it reads exactly like a wedge scan.
+  ///
+  /// Deliberately the same path. A barcode is a barcode however it was read,
+  /// and routing the camera through its own lookup would be two places for the
+  /// UPC-A/EAN-13 normalisation to be got right and one place for it to be
+  /// forgotten.
+  Future<void> _scan() async {
+    final code = await Navigator.of(
+      context,
+    ).push<String>(MaterialPageRoute(builder: (_) => const ScanScreen()));
+    if (code == null || !mounted) return;
+    await _onSubmitted(code);
+  }
+
   void _clearSearch() {
     _debounce?.cancel();
     _search.clear();
@@ -215,8 +230,16 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 onChanged: _onQueryChanged,
                 onSubmitted: _onSubmitted,
                 prefix: const Icon(Icons.search, size: 20),
+                // The camera when the field is empty, clear when it is not.
+                // Both live in the same slot because a cashier reaches for one
+                // or the other, never both, and the counter has no room to
+                // spare beside a search field on a 720-wide screen.
                 suffix: query.isEmpty
-                    ? null
+                    ? BlIconButton(
+                        icon: Icons.qr_code_scanner,
+                        label: s.scanTitle,
+                        onPressed: _scan,
+                      )
                     : BlIconButton(
                         icon: Icons.close,
                         label: s.actionClose,

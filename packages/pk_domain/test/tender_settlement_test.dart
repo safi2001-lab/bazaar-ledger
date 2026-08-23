@@ -12,19 +12,19 @@ void main() {
   const calculator = SaleCalculator();
 
   SaleDraft billOf(int rupees, List<TenderDraft> tenders) => SaleDraft(
-        lines: [
-          SaleLineDraft(
-            itemId: 'I1',
-            itemName: 'Cooking Oil 5L',
-            qty: Qty.one,
-            baseQty: Qty.one,
-            unitCode: 'pcs',
-            rate: Rate.rupees(rupees),
-          ),
-        ],
-        tenders: tenders,
-        roundToRupee: false,
-      );
+    lines: [
+      SaleLineDraft(
+        itemId: 'I1',
+        itemName: 'Cooking Oil 5L',
+        qty: Qty.one,
+        baseQty: Qty.one,
+        unitCode: 'pcs',
+        rate: Rate.rupees(rupees),
+      ),
+    ],
+    tenders: tenders,
+    roundToRupee: false,
+  );
 
   const context = TaxContext(
     isSellerRegistered: false,
@@ -36,17 +36,17 @@ void main() {
   );
 
   TenderDraft cash(int rupees, {int? tendered}) => TenderDraft(
-        paymentAccountId: 'PA-CASH',
-        mode: 'cash',
-        amount: Money.rupees(rupees),
-        tendered: tendered == null ? null : Money.rupees(tendered),
-      );
+    paymentAccountId: 'PA-CASH',
+    mode: 'cash',
+    amount: Money.rupees(rupees),
+    tendered: tendered == null ? null : Money.rupees(tendered),
+  );
 
   TenderDraft digital(int rupees, {String mode = 'easypaisa'}) => TenderDraft(
-        paymentAccountId: 'PA-$mode',
-        mode: mode,
-        amount: Money.rupees(rupees),
-      );
+    paymentAccountId: 'PA-$mode',
+    mode: mode,
+    amount: Money.rupees(rupees),
+  );
 
   group('change', () {
     test('a cash tender capped at what is due gives the rest back', () {
@@ -74,8 +74,10 @@ void main() {
     });
 
     test('two cash tenders share one bill without inventing change', () {
-      final sale =
-          calculator.calculate(billOf(100, [cash(60), cash(60)]), context);
+      final sale = calculator.calculate(
+        billOf(100, [cash(60), cash(60)]),
+        context,
+      );
 
       expect(sale.paid, Money.rupees(100));
       expect(sale.changeDue, Money.rupees(20));
@@ -115,25 +117,27 @@ void main() {
       );
     });
 
-    test('cash offered on top of an exact transfer is handed straight back',
-        () {
-      // The old code wrote this as a payment row with `amount_paisa = 0` and
-      // change of 50, which the schema's `CHECK (amount_paisa > 0)` refused —
-      // three layers below the shopkeeper, as a raw constraint error.
-      final sale = calculator.calculate(
-        billOf(100, [digital(100), cash(50)]),
-        context,
-      );
+    test(
+      'cash offered on top of an exact transfer is handed straight back',
+      () {
+        // The old code wrote this as a payment row with `amount_paisa = 0` and
+        // change of 50, which the schema's `CHECK (amount_paisa > 0)` refused —
+        // three layers below the shopkeeper, as a raw constraint error.
+        final sale = calculator.calculate(
+          billOf(100, [digital(100), cash(50)]),
+          context,
+        );
 
-      expect(sale.tenders, hasLength(1));
-      expect(sale.tenders.single.draft.mode, 'easypaisa');
-      expect(sale.paid, Money.rupees(100));
-      expect(
-        sale.changeDue,
-        Money.zero,
-        reason: 'nothing entered the drawer, so nothing left it',
-      );
-    });
+        expect(sale.tenders, hasLength(1));
+        expect(sale.tenders.single.draft.mode, 'easypaisa');
+        expect(sale.paid, Money.rupees(100));
+        expect(
+          sale.changeDue,
+          Money.zero,
+          reason: 'nothing entered the drawer, so nothing left it',
+        );
+      },
+    );
 
     test('a card overpayment cannot post a negative receivable', () {
       // This one balanced — debits and credits still summed equal — and then
@@ -157,8 +161,10 @@ void main() {
 
   group('rows that would not be written', () {
     test('a tender that settles nothing is not a payment', () {
-      final sale =
-          calculator.calculate(billOf(100, [cash(100), cash(50)]), context);
+      final sale = calculator.calculate(
+        billOf(100, [cash(100), cash(50)]),
+        context,
+      );
 
       // The first note settles the bill; the second is handed straight back
       // and is not a payment at all. Writing it anyway used to draw a receipt
@@ -181,14 +187,18 @@ void main() {
     // invoice above Rs 200,000 is settled otherwise than through a banking or
     // digital channel.
     test('above the threshold in cash is flagged', () {
-      final sale =
-          calculator.calculate(billOf(200001, [cash(200001)]), context);
+      final sale = calculator.calculate(
+        billOf(200001, [cash(200001)]),
+        context,
+      );
       expect(sale.cashThresholdBreached, isTrue);
     });
 
     test('exactly Rs 200,000 is not flagged — the statute says above', () {
-      final sale =
-          calculator.calculate(billOf(200000, [cash(200000)]), context);
+      final sale = calculator.calculate(
+        billOf(200000, [cash(200000)]),
+        context,
+      );
       expect(sale.cashThresholdBreached, isFalse);
     });
 

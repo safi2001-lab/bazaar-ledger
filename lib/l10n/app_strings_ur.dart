@@ -915,4 +915,25 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get pictureNotAnImage => 'Yeh tasveer nahi hai';
+
+  @override
+  String get scanTitle => 'Barcode scan karein';
+
+  @override
+  String get scanHint => 'Packet ka barcode camera ke saamne rakhein';
+
+  @override
+  String get scanNoCamera => 'Is phone mein camera nahi hai';
+
+  @override
+  String get scanDenied => 'Camera ki ijazat nahi mili';
+
+  @override
+  String get scanTorch => 'Roshni';
+
+  @override
+  String get scanNotFound => 'Yeh barcode kisi cheez par nahi hai';
+
+  @override
+  String get scanAddNew => 'Nayi cheez banayein';
 }

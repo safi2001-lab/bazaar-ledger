@@ -28,8 +28,49 @@
       with barcode scanning, USB host with the USB printer, and nothing
       speculative — declaring a permission with no feature behind it makes the
       Play Data Safety form a lie.
+
+      ONE CORRECTION, since camera scanning landed. This permission is no
+      longer ours alone: Google's `transport-backend-cct`, pulled in by ML Kit
+      barcode scanning, declares INTERNET and ACCESS_NETWORK_STATE itself. The
+      merged manifest would carry INTERNET even if the LAN printer were
+      removed tomorrow.
+
+      That does not weaken the claim above, and it does narrow which
+      formulation is true. "No shop data reaches any server" still holds
+      exactly: ML Kit processes images on-device and, in Google's own words,
+      "does not send that data and the resultant outputs to Google servers".
+      What it does send is diagnostics — device model, this app's package name
+      and version, latency, error codes, a per-installation id. Never a
+      barcode, never a camera frame, never a line of anybody's ledger.
+
+      "The app makes no network call" is no longer true and must not be said.
+      docs/what_leaves_the_phone.md is the full account, including the Data
+      Safety answers this obliges.
     -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      The camera, for scanning a barcode off a packet.
+
+      A runtime permission, not a Play RESTRICTED one: camera needs no
+      declaration form, only an honest listing and a privacy policy. It is
+      asked for at the moment a shopkeeper taps the scan button and never
+      before, so a shop that scans with a USB gun is never prompted at all.
+
+      Not required as a feature, so the listing stays visible to a phone with
+      no rear camera. Those still exist at the bottom of this market, and a
+      shop with a hardware scanner has no use for this anyway.
+
+      Deliberately NOT here: READ_MEDIA_IMAGES. Item photographs go through
+      Android's own Photo Picker, which needs no permission whatsoever, and
+      Play now restricts READ_MEDIA_IMAGES to apps whose core function the
+      picker cannot serve. A billing app would go through a declaration review
+      in order to let a shopkeeper photograph a tin of oil.
+    -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
 
     <application
         android:label="Bazaar Ledger"
