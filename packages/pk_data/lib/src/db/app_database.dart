@@ -35,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   /// otherwise run twice.
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -57,7 +57,18 @@ class AppDatabase extends _$AppDatabase {
           // with three years of history.
           await customStatement('PRAGMA defer_foreign_keys = ON');
           try {
-            await stepByStep()(m, from, to);
+            await stepByStep(
+              // v1 → v2: print_jobs, so that "was this bill already printed?"
+              // survives Android reclaiming the app. Purely additive — one new
+              // table and its indexes, no existing table touched, so there is
+              // no twelve-step rebuild and nothing to lose.
+              from1To2: (migrator, schema) async {
+                await migrator.createTable(schema.printJobs);
+                await migrator.create(schema.idxPrintjobsKey);
+                await migrator.create(schema.idxPrintjobsDoc);
+                await migrator.create(schema.idxPrintjobsOpen);
+              },
+            )(m, from, to);
           } on ArgumentError {
             throw StateError(
               'No migration from schema v$from to v$to is registered. '

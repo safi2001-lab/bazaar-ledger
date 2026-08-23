@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:crypto/crypto.dart';
+
 import 'package:pk_domain/pk_domain.dart';
 
 /// What became of one attempt to print.
@@ -15,6 +17,16 @@ enum PrintOutcome {
   /// its own: paper has already moved, and a silent retry hands the customer
   /// two half-receipts and the shop two records of one sale.
   partial,
+
+  /// A job was begun and the app never recorded how it ended, because the
+  /// process died holding it.
+  ///
+  /// NOT the same as `notSent`, and the difference is the reason the record
+  /// lives in a database. On a Transsion ROM the Boost button kills this app
+  /// mid-write to a printer that has already taken 400 of 900 bytes. Paper has
+  /// moved. Only the person looking at it can say what happened, so this
+  /// outcome is a question, never a retry.
+  unknown,
 }
 
 /// The result of a print, and what may be done about it.
@@ -35,8 +47,8 @@ final class PrintResult {
 
   /// Whether the queue may try this again by itself.
   ///
-  /// Only when nothing came out. Everything else is a decision for the person
-  /// holding the paper.
+  /// Only when nothing came out. Everything else — including [unknown], which
+  /// means nobody can tell — is a decision for the person holding the paper.
   bool get mayRetryAutomatically => outcome == PrintOutcome.notSent;
 }
 
@@ -64,11 +76,21 @@ final class PrintResult {
 final class PrintQueue {
   PrintQueue({
     required this.transport,
+    this.log,
     this.maxAttempts = 3,
     this.retryDelay = const Duration(milliseconds: 400),
   });
 
   final PrinterTransport transport;
+
+  /// Where jobs are remembered across a process death.
+  ///
+  /// Optional so the queue's own rules can be tested without a database, and
+  /// supplied by the app always. Without it the maps below are the only
+  /// record, and they do not survive Android reclaiming the app -- which is
+  /// precisely when a shopkeeper reopens, taps Print, and gets a second
+  /// receipt.
+  final PrintJobLog? log;
 
   /// How many times a job that printed NOTHING may be sent again.
   final int maxAttempts;
@@ -102,13 +124,28 @@ final class PrintQueue {
   /// Asking again with the same [jobId] returns the first answer without
   /// touching the printer. That is what makes a double-tapped Print button
   /// produce one receipt.
+  ///
+  /// When [actor] is given and a [log] is configured, the job is recorded
+  /// before the first byte and its outcome after, so the answer survives the
+  /// app being killed. Without both, the queue is in-memory only.
   Future<PrintResult> submit({
     required String jobId,
     required PrinterTarget target,
     required List<int> bytes,
+    ActorContext? actor,
+    String? documentId,
+    int columnsUsed = 48,
+    int copyIndex = 1,
   }) {
+    // Anything already decided stands, whatever it was decided to be.
+    //
+    // This used to short-circuit only on `printed`. A job that ended `partial`
+    // was stored here and then RE-SENT on the next submit -- from a rebuilt
+    // widget, or from a shopkeeper tapping again after a failure -- which is
+    // the exact double-print this class exists to prevent, arriving through
+    // the one door its own doc comment promised was shut.
     final already = _finished[jobId];
-    if (already != null && already.outcome == PrintOutcome.printed) {
+    if (already != null && already.outcome != PrintOutcome.notSent) {
       return Future.value(already);
     }
 
@@ -122,7 +159,15 @@ final class PrintQueue {
     // make every caller wait for every earlier job before even being told
     // theirs was accepted, and the caller already has its own future.
     final chained = _busy.then((_) async {
-      final result = await _run(jobId, target, bytes);
+      final result = await _runRecorded(
+        jobId: jobId,
+        target: target,
+        bytes: bytes,
+        actor: actor,
+        documentId: documentId,
+        columnsUsed: columnsUsed,
+        copyIndex: copyIndex,
+      );
       _finished[jobId] = result;
       _pending.remove(jobId);
       completer.complete(result);
@@ -130,6 +175,72 @@ final class PrintQueue {
     _busy = chained;
     unawaited(chained);
     return completer.future;
+  }
+
+  /// Consults the durable record, prints, and writes the outcome back.
+  ///
+  /// Without a log this is just [_run]. With one, the ordering is the whole
+  /// mechanism: the row is committed BEFORE the first byte, so a row still
+  /// saying it is sending at next launch is how the app knows it does not
+  /// know.
+  Future<PrintResult> _runRecorded({
+    required String jobId,
+    required PrinterTarget target,
+    required List<int> bytes,
+    required ActorContext? actor,
+    required String? documentId,
+    required int columnsUsed,
+    required int copyIndex,
+  }) async {
+    final log = this.log;
+    if (log == null || actor == null) {
+      return _run(jobId, target, bytes);
+    }
+
+    final previous = await log.byKey(actor.firmId, jobId);
+    if (previous != null && !previous.mayRetryAutomatically) {
+      return PrintResult(
+        outcome: switch (previous.status) {
+          PrintJobStatus.printed => PrintOutcome.printed,
+          PrintJobStatus.partial => PrintOutcome.partial,
+          PrintJobStatus.sending => PrintOutcome.unknown,
+          PrintJobStatus.failed => PrintOutcome.notSent,
+        },
+        jobId: jobId,
+        bytesWritten: previous.bytesWritten,
+      );
+    }
+
+    if (previous == null) {
+      await log.begin(
+        actor,
+        jobKey: jobId,
+        transportKind: transport.kind,
+        targetAddress: target.address,
+        columnsUsed: columnsUsed,
+        copyIndex: copyIndex,
+        byteCount: bytes.length,
+        payloadSha256: _digest(bytes),
+        documentId: documentId,
+      );
+    }
+
+    final result = await _run(jobId, target, bytes);
+    await log.finish(
+      actor,
+      jobKey: jobId,
+      status: switch (result.outcome) {
+        PrintOutcome.printed => PrintJobStatus.printed,
+        PrintOutcome.partial => PrintJobStatus.partial,
+        PrintOutcome.notSent => PrintJobStatus.failed,
+        // _run never returns this: a job is only unknown after a process
+        // death, which by definition records nothing.
+        PrintOutcome.unknown => PrintJobStatus.partial,
+      },
+      bytesWritten: result.bytesWritten,
+      failureReason: result.error?.toString(),
+    );
+    return result;
   }
 
   Future<PrintResult> _run(
@@ -178,6 +289,13 @@ final class PrintQueue {
   /// Forgets a job, so it may be printed again.
   ///
   /// For the reprint button, which is a deliberate act by a person who can
-  /// see whether the first one came out.
+  /// see whether the first one came out. Only the in-memory record is
+  /// dropped; the durable row stays, because the history of what came out of
+  /// this printer is not something a button should erase. A deliberate
+  /// reprint uses a new copy index, and therefore a new job key.
   void forget(String jobId) => _finished.remove(jobId);
 }
+
+/// SHA-256 of the bytes, so a reprint at a different column width is visibly a
+/// different piece of paper rather than the same job asked for twice.
+String _digest(List<int> bytes) => sha256.convert(bytes).toString();

@@ -37,8 +37,9 @@ abstract final class AppConfig {
   /// Android. It wants the package name (`pk.bazaarledger`) and the SHA-1 of
   /// the signing certificate; with Play App Signing, take that SHA-1 from the
   /// Play Console signing page, not from the local keystore.
-  static const googleOAuthClientId =
-      String.fromEnvironment('GOOGLE_OAUTH_CLIENT_ID');
+  static const googleOAuthClientId = String.fromEnvironment(
+    'GOOGLE_OAUTH_CLIENT_ID',
+  );
 
   /// The base64 RSA public key from Play Console → Monetisation setup (M9).
   ///
@@ -48,8 +49,9 @@ abstract final class AppConfig {
   /// with no purchase at all, and someone had flipped the default tier to
   /// `platinum`; verifying the signature is what makes that class of mistake
   /// impossible rather than merely absent.
-  static const playBillingPublicKey =
-      String.fromEnvironment('PLAY_BILLING_PUBLIC_KEY');
+  static const playBillingPublicKey = String.fromEnvironment(
+    'PLAY_BILLING_PUBLIC_KEY',
+  );
 
   /// True when Drive backup can be offered at all on this build.
   ///
@@ -71,7 +73,7 @@ abstract final class AppConfig {
   /// feature is mysteriously absent does, and "GOOGLE_OAUTH_CLIENT_ID is not
   /// set in this build" is a better answer than a switch that does nothing.
   static List<String> get missing => [
-        if (!hasDriveBackup) 'GOOGLE_OAUTH_CLIENT_ID',
-        if (!hasPlayBilling) 'PLAY_BILLING_PUBLIC_KEY',
-      ];
+    if (!hasDriveBackup) 'GOOGLE_OAUTH_CLIENT_ID',
+    if (!hasPlayBilling) 'PLAY_BILLING_PUBLIC_KEY',
+  ];
 }

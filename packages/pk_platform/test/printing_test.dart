@@ -50,7 +50,8 @@ void main() {
       expect(
         received,
         bytes,
-        reason: 'the printer was handed different bytes than it was given, '
+        reason:
+            'the printer was handed different bytes than it was given, '
             'which on a real machine is a receipt with its middle missing',
       );
     });
@@ -66,8 +67,9 @@ void main() {
       );
 
       await expectLater(
-        const TcpPrinter(connectTimeout: Duration(milliseconds: 300))
-            .send(unreachable, [1, 2, 3]),
+        const TcpPrinter(
+          connectTimeout: Duration(milliseconds: 300),
+        ).send(unreachable, [1, 2, 3]),
         throwsA(
           isA<PrinterException>()
               .having((e) => e.isSafeToRetry, 'isSafeToRetry', isTrue)
@@ -78,8 +80,7 @@ void main() {
   });
 
   group('the queue, and the rule it exists for', () {
-    test('one job, printed once, however many times it is asked for',
-        () async {
+    test('one job, printed once, however many times it is asked for', () async {
       final printer = _CountingPrinter();
       final queue = PrintQueue(transport: printer);
       const target = PrinterTarget(kind: 'x', address: 'a', name: 'A');
@@ -95,7 +96,8 @@ void main() {
       expect(
         printer.sends,
         1,
-        reason: 'the customer was handed ${printer.sends} receipts for one '
+        reason:
+            'the customer was handed ${printer.sends} receipts for one '
             'sale, and the shop has ${printer.sends} records of it',
       );
     });
@@ -146,23 +148,25 @@ void main() {
       );
     });
 
-    test('a transport that throws something unexpected is treated as partial',
-        () async {
-      // A transport that threw something other than PrinterException has not
-      // told us whether paper moved. Assuming the safe case here is how a bug
-      // in a transport becomes a double-printed bill.
-      final printer = _FailingPrinter(StateError('bug in the transport'));
-      final queue = PrintQueue(transport: printer, retryDelay: Duration.zero);
+    test(
+      'a transport that throws something unexpected is treated as partial',
+      () async {
+        // A transport that threw something other than PrinterException has not
+        // told us whether paper moved. Assuming the safe case here is how a bug
+        // in a transport becomes a double-printed bill.
+        final printer = _FailingPrinter(StateError('bug in the transport'));
+        final queue = PrintQueue(transport: printer, retryDelay: Duration.zero);
 
-      final result = await queue.submit(
-        jobId: 'INV-0004',
-        target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
-        bytes: [1],
-      );
+        final result = await queue.submit(
+          jobId: 'INV-0004',
+          target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
+          bytes: [1],
+        );
 
-      expect(result.outcome, PrintOutcome.partial);
-      expect(printer.sends, 1);
-    });
+        expect(result.outcome, PrintOutcome.partial);
+        expect(printer.sends, 1);
+      },
+    );
 
     test('jobs go out one at a time', () async {
       // Two receipts sent at once to a printer with a small buffer come out
@@ -184,22 +188,255 @@ void main() {
       );
     });
 
-    test('a reprint is a deliberate act and goes through a different door',
-        () async {
-      final printer = _CountingPrinter();
-      final queue = PrintQueue(transport: printer);
+    test(
+      'a reprint is a deliberate act and goes through a different door',
+      () async {
+        final printer = _CountingPrinter();
+        final queue = PrintQueue(transport: printer);
+        const target = PrinterTarget(kind: 'x', address: 'a', name: 'A');
+
+        await queue.submit(jobId: 'INV-0005', target: target, bytes: [1]);
+        expect(queue.hasPrinted('INV-0005'), isTrue);
+
+        // The shopkeeper can see whether the first one came out, and asks for
+        // another. That is not the queue retrying; it is a person deciding.
+        queue.forget('INV-0005');
+        await queue.submit(jobId: 'INV-0005', target: target, bytes: [1]);
+
+        expect(printer.sends, 2);
+      },
+    );
+  });
+  group('the record that outlives the process', () {
+    test(
+      'a half-printed job is not sent again when it is asked for twice',
+      () async {
+        // The defect this group was written for. `submit` short-circuited only
+        // on `printed`, so a job that ended `partial` was stored and then
+        // RE-SENT on the next ask — from a rebuilt widget, or a shopkeeper
+        // tapping again after seeing a failure. Paper had already moved once.
+        final printer = _FailingPrinter(
+          const PrinterException('cable pulled', bytesWritten: 512),
+        );
+        final queue = PrintQueue(transport: printer, retryDelay: Duration.zero);
+        const target = PrinterTarget(kind: 'x', address: 'a', name: 'A');
+
+        final first = await queue.submit(
+          jobId: 'INV-0100',
+          target: target,
+          bytes: [1],
+        );
+        final second = await queue.submit(
+          jobId: 'INV-0100',
+          target: target,
+          bytes: [1],
+        );
+
+        expect(first.outcome, PrintOutcome.partial);
+        expect(second.outcome, PrintOutcome.partial);
+        expect(
+          printer.sends,
+          1,
+          reason:
+              'the customer was handed a second half-receipt for a bill '
+              'that had already partly printed',
+        );
+      },
+    );
+
+    test('a job that never started may still be asked for again', () async {
+      // The other side of the same rule. Nothing came out, so a shopkeeper
+      // pressing Print again must reach the printer rather than be told about
+      // a failure that left no paper.
+      final printer = _EventuallyWorkingPrinter(failuresBeforeSuccess: 1);
+      final queue = PrintQueue(
+        transport: printer,
+        maxAttempts: 1,
+        retryDelay: Duration.zero,
+      );
       const target = PrinterTarget(kind: 'x', address: 'a', name: 'A');
 
-      await queue.submit(jobId: 'INV-0005', target: target, bytes: [1]);
-      expect(queue.hasPrinted('INV-0005'), isTrue);
+      final first = await queue.submit(
+        jobId: 'INV-0101',
+        target: target,
+        bytes: [1],
+      );
+      expect(first.outcome, PrintOutcome.notSent);
 
-      // The shopkeeper can see whether the first one came out, and asks for
-      // another. That is not the queue retrying; it is a person deciding.
-      queue.forget('INV-0005');
-      await queue.submit(jobId: 'INV-0005', target: target, bytes: [1]);
-
+      final second = await queue.submit(
+        jobId: 'INV-0101',
+        target: target,
+        bytes: [1],
+      );
+      expect(second.outcome, PrintOutcome.printed);
       expect(printer.sends, 2);
     });
+
+    test(
+      'a job the log says already printed never reaches the printer',
+      () async {
+        // The kill-survival case, and the whole reason the record is in a
+        // database. The in-memory maps are empty here because this queue is a
+        // fresh object — exactly as it would be after Android reclaimed the app.
+        final printer = _CountingPrinter();
+        final log = _FakeLog()
+          ..records['INV-0102'] = const PrintJobRecord(
+            jobKey: 'INV-0102',
+            status: PrintJobStatus.printed,
+            bytesWritten: 900,
+            byteCount: 900,
+            copyIndex: 1,
+          );
+        final queue = PrintQueue(transport: printer, log: log);
+
+        final result = await queue.submit(
+          jobId: 'INV-0102',
+          target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
+          bytes: [1],
+          actor: _actor,
+        );
+
+        expect(result.outcome, PrintOutcome.printed);
+        expect(
+          printer.sends,
+          0,
+          reason:
+              'a receipt that was printed before the app was killed came '
+              'out a second time',
+        );
+      },
+    );
+
+    test(
+      'a job left mid-flight by a process death reports unknown, not lost',
+      () async {
+        // A row still saying `sending` means the app died holding the job. Paper
+        // may have moved. The only honest answer is that nobody knows, and the
+        // only safe action is to ask a person.
+        final printer = _CountingPrinter();
+        final log = _FakeLog()
+          ..records['INV-0103'] = const PrintJobRecord(
+            jobKey: 'INV-0103',
+            status: PrintJobStatus.sending,
+            bytesWritten: 0,
+            byteCount: 900,
+            copyIndex: 1,
+          );
+        final queue = PrintQueue(transport: printer, log: log);
+
+        final result = await queue.submit(
+          jobId: 'INV-0103',
+          target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
+          bytes: [1],
+          actor: _actor,
+        );
+
+        expect(result.outcome, PrintOutcome.unknown);
+        expect(result.mayRetryAutomatically, isFalse);
+        expect(printer.sends, 0);
+      },
+    );
+
+    test('a job the log says failed outright is sent again', () async {
+      final printer = _CountingPrinter();
+      final log = _FakeLog()
+        ..records['INV-0104'] = const PrintJobRecord(
+          jobKey: 'INV-0104',
+          status: PrintJobStatus.failed,
+          bytesWritten: 0,
+          byteCount: 900,
+          copyIndex: 1,
+        );
+      final queue = PrintQueue(transport: printer, log: log);
+
+      final result = await queue.submit(
+        jobId: 'INV-0104',
+        target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
+        bytes: [1],
+        actor: _actor,
+      );
+
+      expect(result.outcome, PrintOutcome.printed);
+      expect(printer.sends, 1);
+    });
+
+    test(
+      'the job is recorded before a byte is sent, and settled after',
+      () async {
+        // The ordering IS the mechanism. If begin() landed after the send, a
+        // process death mid-print would leave no row at all and the next attempt
+        // would print a second copy believing it was the first.
+        final log = _FakeLog();
+        final printer = _CountingPrinter(journal: log.calls);
+        final queue = PrintQueue(transport: printer, log: log);
+
+        await queue.submit(
+          jobId: 'INV-0105',
+          target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
+          bytes: [1, 2, 3],
+          actor: _actor,
+          documentId: 'DOC-1',
+          columnsUsed: 42,
+        );
+
+        expect(log.calls, [
+          'begin:INV-0105',
+          'send',
+          'finish:INV-0105:printed',
+        ]);
+        expect(log.begunColumns['INV-0105'], 42);
+        expect(log.begunDocuments['INV-0105'], 'DOC-1');
+      },
+    );
+
+    test(
+      'the recorded digest distinguishes two widths of the same bill',
+      () async {
+        // A reprint at 32 columns is a different piece of paper from the same
+        // bill at 48, and the record should say so rather than looking like the
+        // same job asked for twice.
+        final log = _FakeLog();
+        final queue = PrintQueue(transport: _CountingPrinter(), log: log);
+        const target = PrinterTarget(kind: 'x', address: 'a', name: 'A');
+
+        await queue.submit(
+          jobId: 'INV-0106#48',
+          target: target,
+          bytes: [1, 2, 3],
+          actor: _actor,
+        );
+        await queue.submit(
+          jobId: 'INV-0106#32',
+          target: target,
+          bytes: [9, 9, 9],
+          actor: _actor,
+        );
+
+        expect(
+          log.begunDigests['INV-0106#48'],
+          isNot(log.begunDigests['INV-0106#32']),
+        );
+      },
+    );
+
+    test(
+      'without an actor the queue is in-memory only, and says nothing',
+      () async {
+        // The queue's own rules stay testable without a database. What must not
+        // happen is a half-configured queue silently skipping the record while
+        // looking configured.
+        final log = _FakeLog();
+        final queue = PrintQueue(transport: _CountingPrinter(), log: log);
+
+        await queue.submit(
+          jobId: 'INV-0107',
+          target: const PrinterTarget(kind: 'x', address: 'a', name: 'A'),
+          bytes: [1],
+        );
+
+        expect(log.calls, isEmpty);
+      },
+    );
   });
 }
 
@@ -208,9 +445,16 @@ Future<void> _settle() =>
     Future<void>.delayed(const Duration(milliseconds: 50));
 
 final class _CountingPrinter implements PrinterTransport {
-  _CountingPrinter({this.delay = Duration.zero});
+  _CountingPrinter({this.delay = Duration.zero, this.journal});
 
   final Duration delay;
+
+  /// Shared with a _FakeLog so the ORDER of begin, send and finish can be
+  /// asserted. That ordering is the mechanism: if begin landed after the send,
+  /// a process death mid-print would leave no row at all, and the next attempt
+  /// would print a second copy believing it was the first.
+  final List<String>? journal;
+
   int sends = 0;
   int _inFlight = 0;
   int maxConcurrent = 0;
@@ -226,6 +470,7 @@ final class _CountingPrinter implements PrinterTransport {
 
   @override
   Future<void> send(PrinterTarget target, List<int> bytes) async {
+    journal?.add('send');
     sends++;
     _inFlight++;
     maxConcurrent = _inFlight > maxConcurrent ? _inFlight : maxConcurrent;
@@ -253,5 +498,108 @@ final class _FailingPrinter implements PrinterTransport {
   Future<void> send(PrinterTarget target, List<int> bytes) async {
     sends++;
     throw error;
+  }
+}
+
+/// A stand-in actor. The queue only reads `firmId` from it.
+final _actor = ActorContext(
+  firmId: 'FIRM01',
+  userId: 'USER01',
+  deviceId: 'DEV01',
+  startedAtUtc: DateTime.utc(2026, 8, 23, 9, 15),
+);
+
+/// Records what the queue asked of the log, in order.
+final class _FakeLog implements PrintJobLog {
+  final records = <String, PrintJobRecord>{};
+  final calls = <String>[];
+  final begunColumns = <String, int>{};
+  final begunDocuments = <String, String?>{};
+  final begunDigests = <String, String>{};
+
+  @override
+  Future<PrintJobRecord?> byKey(String firmId, String jobKey) async =>
+      records[jobKey];
+
+  @override
+  Future<void> begin(
+    ActorContext actor, {
+    required String jobKey,
+    required String transportKind,
+    required String targetAddress,
+    required int columnsUsed,
+    required int copyIndex,
+    required int byteCount,
+    required String payloadSha256,
+    String? documentId,
+  }) async {
+    calls.add('begin:$jobKey');
+    begunColumns[jobKey] = columnsUsed;
+    begunDocuments[jobKey] = documentId;
+    begunDigests[jobKey] = payloadSha256;
+    records[jobKey] = PrintJobRecord(
+      jobKey: jobKey,
+      status: PrintJobStatus.sending,
+      bytesWritten: 0,
+      byteCount: byteCount,
+      copyIndex: copyIndex,
+      documentId: documentId,
+    );
+  }
+
+  @override
+  Future<void> finish(
+    ActorContext actor, {
+    required String jobKey,
+    required PrintJobStatus status,
+    required int bytesWritten,
+    String? failureReason,
+  }) async {
+    calls.add('finish:$jobKey:${status.name}');
+    final previous = records[jobKey];
+    records[jobKey] = PrintJobRecord(
+      jobKey: jobKey,
+      status: status,
+      bytesWritten: bytesWritten,
+      byteCount: previous?.byteCount ?? 0,
+      copyIndex: previous?.copyIndex ?? 1,
+      documentId: previous?.documentId,
+      failureReason: failureReason,
+    );
+  }
+
+  @override
+  Future<List<PrintJobRecord>> forDocument(
+    String firmId,
+    String documentId,
+  ) async => [
+    for (final r in records.values)
+      if (r.documentId == documentId) r,
+  ];
+}
+
+/// Fails a set number of times, then works. For the "nothing came out, so it
+/// may be asked for again" rule.
+final class _EventuallyWorkingPrinter implements PrinterTransport {
+  _EventuallyWorkingPrinter({required this.failuresBeforeSuccess});
+
+  final int failuresBeforeSuccess;
+  int sends = 0;
+
+  @override
+  String get kind => 'eventual';
+
+  @override
+  Future<bool> get isAvailable async => true;
+
+  @override
+  Future<List<PrinterTarget>> discover({Duration? timeout}) async => const [];
+
+  @override
+  Future<void> send(PrinterTarget target, List<int> bytes) async {
+    sends++;
+    if (sends <= failuresBeforeSuccess) {
+      throw const PrinterException('no route');
+    }
   }
 }

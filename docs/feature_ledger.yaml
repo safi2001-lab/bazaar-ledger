@@ -591,6 +591,31 @@ features:
     status: todo
     proof: []
 
+  - id: M0-RUN-03
+    milestone: M0
+    title: The acceptance suite runs on an emulator
+    status: wip
+    # First actual execution, 23 Aug 2026. integration_test/ had existed for
+    # the life of this project and had never run anywhere.
+    #
+    # cart_recovery_test PASSED on an API 36 emulator: a bill left on the
+    # counter really is still there after a cold start, against the app's own
+    # on-disk database rather than an in-memory one.
+    #
+    # demo_script_test did NOT complete. It died with
+    # `zone.cc: 96: error: Out of memory` inside the Dart compiler, because
+    # Gradle was configured to take 12.5 GB for a single JVM and the machine
+    # was down to 3.7 GB free with the emulator running. That figure is now
+    # 4 GB (android/gradle.properties), but the emulator on this host has since
+    # refused to finish booting, so the run has not been repeated.
+    #
+    # Held at `wip` rather than `done`, and deliberately NOT deferred: a
+    # deferral is for a proof that would pass if a device existed, and this one
+    # has not been observed passing at all.
+    device_proof:
+      - a bill left on the counter is there after a cold start
+    proof: []
+
   - id: M0-CI-01
     milestone: M0
     title: CI runs every gate and fails closed

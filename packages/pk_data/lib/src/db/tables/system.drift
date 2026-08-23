@@ -1,4 +1,6 @@
 import 'core.drift';
+-- print_jobs references documents(id): a print belongs to a bill.
+import 'documents.drift';
 
 -- Bazaar Ledger — schema v1, part 7 of 7: audit, sync, files, tax rules.
 
@@ -183,3 +185,77 @@ CREATE UNIQUE INDEX idx_taxrules_code
   ON tax_rules (firm_id, code, effective_from_local);
 CREATE INDEX idx_taxrules_lookup
   ON tax_rules (firm_id, tax_kind, jurisdiction, effective_from_local);
+
+-- Every print that was attempted, and how far it got. Schema v2.
+--
+-- A thermal printer has no memory and no job identity. Asked twice, it prints
+-- twice, and the customer walks away with two receipts for one sale while the
+-- shop's own record says one. So the ONLY thing that can decide whether a job
+-- may go out again is a record of whether it already did.
+--
+-- That record has to outlive the process. PrintQueue held it in two plain maps
+-- on an object, which is fine until Android reclaims the app -- and this is a
+-- product engineered around exactly that: the cart is persisted to disk on
+-- every mutation because Android Go ROMs kill aggressively. A printed-job
+-- record that evaporates on the same kill means a shopkeeper who reopens the
+-- app and taps Print gets a second receipt.
+--
+-- Not append-only. A row is written `sending` BEFORE the first byte and
+-- updated once the outcome is known, which is the whole mechanism: a row still
+-- saying `sending` at next launch means nobody knows, and nobody-knows is a
+-- question for a person, not a retry.
+CREATE TABLE print_jobs (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  -- Deterministic, never a fresh ULID: '<documentId>#<revision>#<columns>#<copy>'.
+  -- A random id would not match after a restart, which would make the whole
+  -- table pointless at the one moment it exists for.
+  job_key TEXT NOT NULL,
+
+  -- Null for a test print, which belongs to no bill.
+  document_id TEXT REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+
+  transport_kind TEXT NOT NULL CHECK (transport_kind IN ('tcp', 'bluetooth', 'usb')),
+  target_address TEXT NOT NULL,
+  -- 32, 42 or 48. Recorded because a reprint at a different width is a
+  -- different piece of paper, and because it is the setting shopkeepers get
+  -- wrong most often.
+  columns_used INTEGER NOT NULL CHECK (columns_used > 0),
+  copy_index INTEGER NOT NULL DEFAULT 1 CHECK (copy_index >= 1),
+
+  byte_count INTEGER NOT NULL CHECK (byte_count >= 0),
+  -- Of the bytes, not of the document. Two prints of one bill at different
+  -- column widths are genuinely different jobs and this is what says so.
+  payload_sha256 TEXT NOT NULL,
+
+  --   sending  in flight, or the process died holding it. NOT `not printed`.
+  --   printed  every byte acknowledged.
+  --   partial  paper moved and then something went wrong. Never auto-retried.
+  --   failed   nothing came out; safe for the counter to offer again.
+  status TEXT NOT NULL CHECK (status IN ('sending', 'printed', 'partial', 'failed')),
+  bytes_written INTEGER NOT NULL DEFAULT 0 CHECK (bytes_written >= 0),
+  failure_reason TEXT,
+
+  started_at_utc INTEGER NOT NULL,
+  finished_at_utc INTEGER,
+
+  -- A finished job must say how it finished; an unfinished one must not.
+  CHECK ((status = 'sending') = (finished_at_utc IS NULL))
+) STRICT;
+
+-- One row per job key per firm. This is the uniqueness the whole design rests
+-- on: the second submit of a key finds the first row instead of printing.
+CREATE UNIQUE INDEX idx_printjobs_key ON print_jobs (firm_id, job_key);
+-- The covering index ddl_invariants_test requires for every foreign key.
+CREATE INDEX idx_printjobs_doc ON print_jobs (document_id);
+-- "Did anything not finish?" on startup, and the reprint history for one bill.
+CREATE INDEX idx_printjobs_open ON print_jobs (firm_id, status, started_at_utc);

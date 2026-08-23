@@ -10,6 +10,7 @@ import 'package:pk_data/pk_data.dart';
 import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:sqlite3/open.dart';
+import 'printing_services.dart';
 
 /// Everything the app can do, wired once.
 ///
@@ -32,6 +33,7 @@ final class AppServices {
     required this.ids,
     required this.drafts,
     required this.restoredCartDraft,
+    required this.printing,
     required TxRunner runner,
   }) : _runner = runner;
 
@@ -70,6 +72,17 @@ final class AppServices {
   /// ringing again.
   final String? restoredCartDraft;
 
+  /// Getting a receipt onto paper.
+  ///
+  /// This field is the whole of what two commits announcing "a receipt can
+  /// reach paper" actually delivered. The transports, the layouts, the
+  /// ESC/POS encoder and the idempotent queue were all real, all tested, and
+  /// reachable from nothing: `pk_bootstrap` deliberately did not export them,
+  /// AppServices had no printer, and the receipt screen rendered a crossed-out
+  /// printer icon under a string reading "Printing arrives in M2." A library
+  /// nothing links to is not a feature.
+  final PrintingServices printing;
+
   TxRunner _runner;
 
   /// Who is signed in. Null until first run has produced a firm and an owner.
@@ -96,6 +109,7 @@ final class AppServices {
     String? databasePath,
     Clock clock = const SystemClock(),
     String appVersion = '0.1.0',
+    List<PrinterTransport>? transports,
   }) async {
     final path = databasePath ?? await _defaultDatabasePath();
     final database = AppDatabase(
@@ -111,6 +125,7 @@ final class AppServices {
       clock,
       appVersion,
       FileDraftStore(Directory(p.dirname(path))),
+      transports,
     );
   }
 
@@ -120,19 +135,23 @@ final class AppServices {
     Clock clock = const SystemClock(),
     String appVersion = '0.1.0-test',
     DraftStore? drafts,
-  }) =>
-      _wire(
-        AppDatabase(executor),
-        clock,
-        appVersion,
-        drafts ?? InMemoryDraftStore(),
-      );
+    List<PrinterTransport>? transports,
+  }) => _wire(
+    AppDatabase(executor),
+    clock,
+    appVersion,
+    drafts ?? InMemoryDraftStore(),
+    // A test that does not name its transports gets none, so nothing in a
+    // suite can accidentally reach for a real socket or a real radio.
+    transports ?? const [],
+  );
 
   static Future<AppServices> _wire(
     AppDatabase database,
     Clock clock,
     String appVersion,
     DraftStore drafts,
+    List<PrinterTransport>? transports,
   ) async {
     final ids = UlidGenerator();
     final queries = DriftAppQueries(database);
@@ -157,13 +176,24 @@ final class AppServices {
 
     final runner = TxRunner(database: database, ids: ids, hlc: hlc);
 
-    final services = AppServices._(
+    // Declared before `services` so the store can close over it, and reads the
+    // runner through a supplier rather than holding one: the bootstrap rebuilds
+    // its runner once first run registers this device, and anything caching the
+    // old one would keep stamping rows with the `unregistered` node id.
+    late final AppServices services;
+    final printing = PrintingServices(
+      store: DriftPrinterSettings(database, () => services._runner),
+      transports: transports ?? const [],
+    );
+
+    services = AppServices._(
       database: database,
       queries: queries,
       receipts: const ThermalReceiptRenderer(),
       clock: clock,
       ids: ids,
       drafts: drafts,
+      printing: printing,
       // One small file read, before the first frame. The counter has to be
       // able to restore the cart synchronously: a bill that arrives a frame
       // late shows the cashier an empty one first, and an empty one is a bill
@@ -205,19 +235,16 @@ final class AppServices {
     String province = 'punjab',
     String businessKind = 'general',
   }) async {
-    final result = await FirstRunSeeder(
-      database: database,
-      ids: ids,
-      clock: clock,
-    ).seed(
-      shopName: shopName,
-      ownerName: ownerName,
-      deviceLabel: deviceLabel,
-      platform: _platformName(),
-      city: city,
-      province: province,
-      businessKind: businessKind,
-    );
+    final result =
+        await FirstRunSeeder(database: database, ids: ids, clock: clock).seed(
+          shopName: shopName,
+          ownerName: ownerName,
+          deviceLabel: deviceLabel,
+          platform: _platformName(),
+          city: city,
+          province: province,
+          businessKind: businessKind,
+        );
 
     _identity = ActorIdentity(
       firmId: result.firmId,
@@ -229,11 +256,7 @@ final class AppServices {
     // merged: the node id is part of every timestamp and cannot be changed
     // after construction.
     _adoptDevice(
-      await resumeHlcClock(
-        database,
-        deviceId: result.deviceId,
-        clock: clock,
-      ),
+      await resumeHlcClock(database, deviceId: result.deviceId, clock: clock),
     );
 
     final firm = await queries.currentFirm();

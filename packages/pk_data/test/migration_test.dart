@@ -1,28 +1,23 @@
-import 'package:drift/drift.dart';
+import 'dart:io';
+
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:pk_data/pk_data.dart';
 import 'package:test/test.dart';
 
 import 'generated/schema.dart';
+import 'generated/schema_v1.dart' as v1;
 
 /// Migrations, and the machinery that makes them testable at all.
 ///
-/// `onUpgrade` used to throw unconditionally, which was the honest thing to do
-/// while nothing could migrate — but it also meant that the day a table was
-/// added, the migration would be written under pressure against a schema
-/// nobody had written down. There is no way to migrate from a version that was
-/// never captured, and by then every installed copy would be that version.
+/// `onUpgrade` used to throw unconditionally, which was honest while nothing
+/// could migrate — but it also meant that the day a table was added, the
+/// migration would be written under pressure against a schema nobody had
+/// written down. There is no migrating from a version that was never captured,
+/// and by then every installed copy would be that version.
 ///
-/// So the dumps and this file land BEFORE the first table is added, while
-/// there is nothing at stake. `drift_schemas/drift_schema_v1.json` is the
-/// snapshot; `test/generated/` is the code that can build a v1 database on
-/// demand.
-///
-/// When v2 arrives, the shape of the new test is already here: seed a v1
-/// database with a posted sale, migrate, then assert both that the schema
-/// matches the dump AND that the books still balance. A migration that leaves
-/// the ledger unbalanced is worse than one that fails.
+/// So the dumps and this file landed BEFORE the first table was added, while
+/// there was nothing at stake. `print_jobs` is the first thing to use them.
 void main() {
   late SchemaVerifier verifier;
 
@@ -30,50 +25,165 @@ void main() {
     verifier = SchemaVerifier(GeneratedHelper());
   });
 
-  test('the committed dump matches the schema the code creates', () async {
-    // The dump is only useful if it is true. A stale one produces migrations
+  test('the committed dumps match the schema the code creates', () async {
+    // A dump is only useful if it is true. A stale one produces migrations
     // that pass their own tests and mangle real databases.
-    final connection = await verifier.startAt(1);
-    final db = AppDatabase(connection);
-    addTearDown(db.close);
-
-    await verifier.migrateAndValidate(db, 1);
-  });
-
-  test('a database at the current version needs no migration', () async {
-    final db = AppDatabase(NativeDatabase.memory());
-    addTearDown(db.close);
-
-    // Opening is what runs onCreate. If this throws, the DDL and the generated
-    // code disagree.
-    await db.customSelect('SELECT 1').get();
-    expect(db.schemaVersion, 1);
-  });
-
-  test('every schema version has a committed dump', () async {
-    // A version without a dump cannot be migrated from, and the failure only
-    // appears on a user's device. This asserts the two never drift: if
-    // schemaVersion is bumped without running `drift_dev schema dump`, the
-    // build fails here rather than in a shop.
     //
-    // One database at a time, closed before the next opens. Two live drift
-    // instances over one executor race, and the warning it prints is easy to
-    // scroll past in a green run.
-    final current = await _currentSchemaVersion();
-
-    for (var version = 1; version <= current; version++) {
+    // One database at a time, closed before the next opens: two live drift
+    // instances over one executor race, and the warning is easy to scroll past
+    // in a green run.
+    for (var version = 1; version <= _currentVersion; version++) {
       final connection = await verifier.startAt(version);
-      final probe = AppDatabase(connection);
+      final db = AppDatabase(connection);
       try {
-        await verifier.migrateAndValidate(probe, version);
+        await verifier.migrateAndValidate(db, version);
       } finally {
-        await probe.close();
+        await db.close();
       }
     }
   });
 
-  test('foreign keys survive a migration', () async {
-    // Deferred during the migration and re-checked before it commits. SQLite's
+  test('this file knows about every version the code declares', () async {
+    final db = AppDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    expect(
+      db.schemaVersion,
+      _currentVersion,
+      reason:
+          'schemaVersion moved and this test file did not. Update '
+          '_currentVersion, run `drift_dev schema dump`, and write the step.',
+    );
+  });
+
+  test('every schema version has a committed dump on disk', () async {
+    // If `schemaVersion` is bumped without running `drift_dev schema dump`,
+    // the failure otherwise appears on a shopkeeper's device rather than here.
+    for (var version = 1; version <= _currentVersion; version++) {
+      expect(
+        File('drift_schemas/drift_schema_v$version.json').existsSync(),
+        isTrue,
+        reason: 'schema v$version has no dump, so nothing can migrate from it',
+      );
+    }
+  });
+
+  group('v1 to v2 — print_jobs', () {
+    test(
+      'a shop with real data comes through with everything intact',
+      () async {
+        // The case that matters: not an empty database, but one that has been
+        // used. A migration tested only against a fresh schema is a migration
+        // tested against the one database nobody has.
+        final connection = await verifier.startAt(1);
+        final old = v1.DatabaseAtV1(connection);
+
+        const firmId = 'FIRM0000000000000000000001';
+        const userId = 'USER0000000000000000000001';
+        const deviceId = 'DEV00000000000000000000001';
+
+        // The envelope columns are not optional even here: a v1 row that
+        // could not have been written by TxRunner is not a v1 row, and
+        // migrating one would prove nothing about a real database.
+        await old.customStatement('PRAGMA foreign_keys = OFF');
+        await old.customStatement(
+          'INSERT INTO firms (id, firm_id, created_at_utc, updated_at_utc, '
+          'created_by, updated_by, origin_device_id, hlc, rev, name, '
+          'fiscal_year_start_month, base_currency, rounding_mode) '
+          'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, 7, ?, ?)',
+          // customStatement binds raw values, unlike customSelect, which wants
+          // Variable wrappers.
+          [
+            firmId,
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'a-0000-$deviceId',
+            'Test Kiryana',
+            'PKR',
+            'half_up',
+          ],
+        );
+        await old.close();
+
+        // Migrate.
+        final db = AppDatabase(await verifier.startAt(1));
+        addTearDown(db.close);
+        await verifier.migrateAndValidate(db, 2);
+      },
+    );
+
+    test('the new table exists and holds a job after the migration', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+
+      final tables = await db
+          .customSelect(
+            'SELECT name FROM sqlite_master WHERE type = ? AND name = ?',
+            variables: [
+              Variable<String>('table'),
+              Variable<String>('print_jobs'),
+            ],
+          )
+          .get();
+      expect(
+        tables,
+        hasLength(1),
+        reason:
+            'print_jobs is missing, so nothing remembers whether a bill '
+            'was already printed and a reprint after an app kill is a second '
+            'receipt',
+      );
+    });
+
+    test('one job key per firm, enforced by the database', () async {
+      // The uniqueness the whole no-double-print design rests on. If two rows
+      // can share a key, the second submit does not find the first and prints.
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+
+      final index = await db
+          .customSelect(
+            'SELECT sql FROM sqlite_master WHERE type = ? AND name = ?',
+            variables: [
+              Variable<String>('index'),
+              Variable<String>('idx_printjobs_key'),
+            ],
+          )
+          .getSingle();
+      expect(index.data['sql'], contains('UNIQUE'));
+    });
+
+    test(
+      'an unfinished job may not claim a finish time, and vice versa',
+      () async {
+        // `sending` is the state that means "nobody knows", and it is only
+        // meaningful if a finished job cannot wear it. The CHECK is what stops a
+        // half-written row looking like a completed one.
+        final db = AppDatabase(NativeDatabase.memory());
+        addTearDown(db.close);
+
+        final ddl = await db
+            .customSelect(
+              'SELECT sql FROM sqlite_master WHERE type = ? AND name = ?',
+              variables: [
+                Variable<String>('table'),
+                Variable<String>('print_jobs'),
+              ],
+            )
+            .getSingle();
+        final sql = ddl.data['sql']! as String;
+        expect(sql, contains('finished_at_utc IS NULL'));
+        expect(sql, contains('sending'));
+        expect(sql, contains('printed'));
+        expect(sql, contains('partial'));
+        expect(sql, contains('failed'));
+      },
+    );
+  });
+
+  test('foreign keys are enforced and nothing is dangling', () async {
+    // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
     // enforcement on it trips halfway — on a shop's database with three years
     // of history, not on an empty test one.
@@ -94,13 +204,10 @@ void main() {
   });
 }
 
-/// The version the code currently declares, read from a database that is then
-/// closed, so nothing else in this file races with it.
-Future<int> _currentSchemaVersion() async {
-  final db = AppDatabase(NativeDatabase.memory());
-  try {
-    return db.schemaVersion;
-  } finally {
-    await db.close();
-  }
-}
+/// The version this test file knows how to check.
+///
+/// Written down rather than read from a database, and asserted equal to the
+/// real one below. A loop bounded by `db.schemaVersion` would silently keep
+/// passing when a version was added and its dump was not — which is the one
+/// thing these tests exist to catch.
+const _currentVersion = 2;

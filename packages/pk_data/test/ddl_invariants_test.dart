@@ -68,8 +68,7 @@ void main() {
       for (final idx in await db.customSelect('PRAGMA index_list($t)').get()) {
         if (idx.read<int>('partial') == 1) continue;
         final name = idx.read<String>('name');
-        final info =
-            await db.customSelect("PRAGMA index_info('$name')").get();
+        final info = await db.customSelect("PRAGMA index_info('$name')").get();
         final first = info.firstWhere((r) => r.read<int>('seqno') == 0);
         final col = first.readNullable<String>('name');
         if (col != null) leaders.add(col);
@@ -85,8 +84,22 @@ void main() {
 
   tearDownAll(() async => db.close());
 
-  test('schema v1 contains exactly the twenty-five planned tables', () {
-    expect(tables, equals(_expectedTables));
+  test('the schema contains exactly the tables this version plans', () {
+    // Keyed by version, not hardcoded to one. The list used to say "the
+    // twenty-five planned tables" and adding a table broke a green ledger row
+    // -- which is a test failing for bookkeeping rather than for a defect, and
+    // the fastest route to somebody loosening the assertion instead of
+    // updating it.
+    final expected = _tablesByVersion[db.schemaVersion];
+    expect(
+      expected,
+      isNotNull,
+      reason:
+          'schema v${db.schemaVersion} has no table list here. Add one '
+          'when you add the version, so a table that arrives by accident '
+          'still fails.',
+    );
+    expect(tables, equals(expected));
   });
 
   test('every table is STRICT', () {
@@ -95,7 +108,7 @@ void main() {
     // column.
     final loose = [
       for (final t in tables)
-        if (isStrict[t] != true) t
+        if (isStrict[t] != true) t,
     ];
     expect(loose, isEmpty, reason: 'these tables are not STRICT: $loose');
   });
@@ -142,12 +155,15 @@ void main() {
       }
       final byName = {for (final c in columns[t]!) c.name: c};
       for (final e in _envelopeNotNull) {
-        expect(byName[e]!.notNull, isTrue,
-            reason: '$t.$e must be NOT NULL');
+        expect(byName[e]!.notNull, isTrue, reason: '$t.$e must be NOT NULL');
       }
-      expect(byName['deleted_at_utc']!.notNull, isFalse,
-          reason: '$t.deleted_at_utc must be nullable — a live row has no '
-              'deletion timestamp');
+      expect(
+        byName['deleted_at_utc']!.notNull,
+        isFalse,
+        reason:
+            '$t.deleted_at_utc must be nullable — a live row has no '
+            'deletion timestamp',
+      );
     }
   });
 
@@ -163,22 +179,33 @@ void main() {
         }
       }
     }
-    expect(offenders, isEmpty,
-        reason: 'columns named like a foreign key but declaring none:\n'
-            '${offenders.join('\n')}');
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'columns named like a foreign key but declaring none:\n'
+          '${offenders.join('\n')}',
+    );
   });
 
   test('every foreign key points at an existing table and column', () {
     for (final t in tables) {
       for (final f in foreignKeys[t]!) {
-        expect(tables, contains(f.parentTable),
-            reason: '$t.${f.from} references unknown table ${f.parentTable}');
+        expect(
+          tables,
+          contains(f.parentTable),
+          reason: '$t.${f.from} references unknown table ${f.parentTable}',
+        );
         // A null `to` means the FK targets the parent's primary key.
         final target = f.parentColumn ?? 'id';
         final parentColumns = {for (final c in columns[f.parentTable]!) c.name};
-        expect(parentColumns, contains(target),
-            reason: '$t.${f.from} references '
-                '${f.parentTable}.$target, which does not exist');
+        expect(
+          parentColumns,
+          contains(target),
+          reason:
+              '$t.${f.from} references '
+              '${f.parentTable}.$target, which does not exist',
+        );
       }
     }
   });
@@ -196,9 +223,13 @@ void main() {
         }
       }
     }
-    expect(offenders, isEmpty,
-        reason: 'foreign keys with no index leading on the child column:\n'
-            '${offenders.join('\n')}');
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'foreign keys with no index leading on the child column:\n'
+          '${offenders.join('\n')}',
+    );
   });
 
   test('firm scoping is universal', () {
@@ -207,15 +238,18 @@ void main() {
       // firm up by its own primary key: CHECK (firm_id = id) holds, so the
       // table's own b-tree already is the index this rule asks for.
       if (t == 'firms') continue;
-      expect(indexLeaders[t], contains('firm_id'),
-          reason: '$t must have an index leading on firm_id — every query in '
-              'the app filters by firm, and a multi-firm user must never see '
-              'a scan across firms');
+      expect(
+        indexLeaders[t],
+        contains('firm_id'),
+        reason:
+            '$t must have an index leading on firm_id — every query in '
+            'the app filters by firm, and a multi-firm user must never see '
+            'a scan across firms',
+      );
     }
   });
 
-  test('quantity, money and rate columns declare their unit in their name',
-      () {
+  test('quantity, money and rate columns declare their unit in their name', () {
     // `amount` is a question. `amount_paisa` is an answer. This is what stops
     // someone adding a column in eighteen months whose scale nobody can
     // reconstruct from the schema.
@@ -223,8 +257,10 @@ void main() {
     for (final t in tables) {
       for (final c in columns[t]!) {
         if (_bareNumericNames.contains(c.name)) {
-          offenders.add('$t.${c.name} — needs a _paisa / _milli_paisa / '
-              '_thousandths / _bp suffix');
+          offenders.add(
+            '$t.${c.name} — needs a _paisa / _milli_paisa / '
+            '_thousandths / _bp suffix',
+          );
         }
       }
     }
@@ -240,16 +276,21 @@ void main() {
     for (final t in tables) {
       for (final c in columns[t]!) {
         final n = c.name;
-        final looksTemporal = n.endsWith('_at') ||
+        final looksTemporal =
+            n.endsWith('_at') ||
             n.endsWith('_date') ||
             n.endsWith('_on') ||
             n.endsWith('_time');
         if (looksTemporal) offenders.add('$t.$n');
       }
     }
-    expect(offenders, isEmpty,
-        reason: 'these need a _utc or _local suffix:\n'
-            '${offenders.join('\n')}');
+    expect(
+      offenders,
+      isEmpty,
+      reason:
+          'these need a _utc or _local suffix:\n'
+          '${offenders.join('\n')}',
+    );
   });
 
   test('the test harness itself enforces foreign keys', () async {
@@ -270,7 +311,16 @@ void main() {
   });
 }
 
-const _expectedTables = <String>[
+/// Every table, per schema version.
+///
+/// A new version copies the previous list and adds to it. Spelling the whole
+/// set out each time is deliberate: a diff then shows exactly what a migration
+/// introduced, and a table that arrives without anybody deciding to add it
+/// fails here rather than shipping.
+/// Compared against `sqlite_master` in name order, so each list is sorted.
+const _tablesByVersion = <int, List<String>>{1: _tablesV1, 2: _tablesV2};
+
+const _tablesV1 = <String>[
   'accounts',
   'attachments',
   'audit_log',
@@ -289,6 +339,35 @@ const _expectedTables = <String>[
   'payment_accounts',
   'payment_allocations',
   'payments',
+  'settings',
+  'stock_ledger',
+  'stock_lots',
+  'tax_rules',
+  'unit_conversions',
+  'units',
+  'users',
+];
+
+const _tablesV2 = <String>[
+  'accounts',
+  'attachments',
+  'audit_log',
+  'change_log',
+  'devices',
+  'doc_links',
+  'document_line_taxes',
+  'document_lines',
+  'documents',
+  'firms',
+  'items',
+  'journal_entries',
+  'journal_lines',
+  'numbering_sequences',
+  'parties',
+  'payment_accounts',
+  'payment_allocations',
+  'payments',
+  'print_jobs',
   'settings',
   'stock_ledger',
   'stock_lots',

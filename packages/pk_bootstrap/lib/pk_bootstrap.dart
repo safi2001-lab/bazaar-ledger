@@ -8,8 +8,14 @@ library;
 export 'package:pk_application/pk_application.dart';
 export 'package:pk_domain/pk_domain.dart';
 export 'package:pk_platform/pk_platform.dart'
-    show PdfPageFormat, ReceiptLayout, ThermalReceiptRenderer;
+    show
+        PdfPageFormat,
+        PrintOutcome,
+        PrintResult,
+        ReceiptLayout,
+        TcpPrinter,
+        ThermalReceiptRenderer;
 
 export 'src/app_config.dart';
 export 'src/app_services.dart';
-
+export 'src/printing_services.dart';

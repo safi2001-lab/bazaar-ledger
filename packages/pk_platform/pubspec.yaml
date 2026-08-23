@@ -10,6 +10,10 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  # Already in the tree transitively via `pdf`; named here because the print
+  # queue depends on it directly, and a direct import of a transitive
+  # dependency breaks the moment the intermediate package drops it.
+  crypto: ^3.0.6
   pdf: ^3.11.0
   pk_domain:
     path: ../pk_domain
