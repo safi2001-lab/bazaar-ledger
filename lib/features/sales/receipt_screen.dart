@@ -145,9 +145,11 @@ class _ActionsState extends ConsumerState<_Actions> {
       await file.writeAsBytes(bytes, flush: true);
 
       if (!mounted) return;
-      await Share.shareXFiles(
-        [XFile(file.path, mimeType: 'application/pdf')],
-        subject: widget.data.docNo,
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'application/pdf')],
+          subject: widget.data.docNo,
+        ),
       );
     } on Object catch (error) {
       if (!mounted) return;

@@ -49,17 +49,19 @@ android {
         }
     }
 
-    // Four APKs instead of one fat binary. Play splits by ABI on its own for
-    // an app bundle; this is for the direct-download and SHAREit path, which
-    // is how a real proportion of these installs happen.
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86_64")
-            isUniversalApk = false
-        }
-    }
+    // Per-ABI APKs instead of one fat binary matter here: Play splits an app
+    // bundle on its own, but a real proportion of these installs arrive over
+    // Bluetooth or SHAREit during a shutdown, and each megabyte is paid for in
+    // minutes. That split is `flutter build apk --split-per-abi`, and it is
+    // the Flutter tool's job, not this file's.
+    //
+    // Declaring `splits { abi { ... } }` here instead looked equivalent and
+    // was not: the Flutter Gradle plugin sets `ndk.abiFilters` on every build,
+    // and AGP refuses a project that carries both. It failed at configuration
+    // time, before a single source file was read, so EVERY `flutter build apk`
+    // and `flutter run` on Android died with "Conflicting configuration" — the
+    // app had never once been installed on a handset. Nothing in the Dart
+    // suite could see it, because none of it goes near Gradle.
 
     packaging {
         resources {
