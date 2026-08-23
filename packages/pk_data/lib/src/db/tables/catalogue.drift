@@ -105,7 +105,8 @@ CREATE TABLE items (
   sale_rate_milli_paisa INTEGER NOT NULL DEFAULT 0,
   wholesale_rate_milli_paisa INTEGER,
   purchase_rate_milli_paisa INTEGER,
-  -- Weighted-average cost, maintained by the purchase posting rule from M4.
+  -- Weighted-average cost. Seeded from the opening consignment when the item
+  -- is created, and moved by the purchase posting rule from M4.
   avg_cost_milli_paisa INTEGER NOT NULL DEFAULT 0,
   -- Printed MRP in paisa. For pharmacy this is a fallback only: MRP hangs off
   -- the BATCH, not the item, because a price increase does not apply to

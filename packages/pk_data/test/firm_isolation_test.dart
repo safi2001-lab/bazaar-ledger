@@ -122,11 +122,21 @@ void main() {
   });
 
   test('payment accounts and units are per shop', () async {
-    expect(await queries.paymentAccounts(first.firmId), hasLength(1));
-    expect(await queries.paymentAccounts(second.firmId), hasLength(1));
+    // Seven each: one per tender the counter offers.
+    final mineAccounts = await queries.paymentAccounts(first.firmId);
+    final theirAccounts = await queries.paymentAccounts(second.firmId);
+    expect(mineAccounts, hasLength(7));
+    expect(theirAccounts, hasLength(7));
     expect(
-      (await queries.paymentAccounts(first.firmId)).single.id,
-      isNot((await queries.paymentAccounts(second.firmId)).single.id),
+      mineAccounts.map((a) => a.modeLabel).toSet(),
+      theirAccounts.map((a) => a.modeLabel).toSet(),
+      reason: 'both shops offer the same tenders',
+    );
+    expect(
+      mineAccounts.map((a) => a.id).toSet()
+          .intersection(theirAccounts.map((a) => a.id).toSet()),
+      isEmpty,
+      reason: 'and not one row of it is shared between them',
     );
     expect(await queries.units(first.firmId), hasLength(10));
     expect(await queries.units(second.firmId), hasLength(10));

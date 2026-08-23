@@ -50,7 +50,10 @@ void main() {
       expect(await count('accounts'), 37);
       expect(await count('units'), 10);
       expect(await count('unit_conversions'), 6);
-      expect(await count('payment_accounts'), 1);
+      // One per tender the counter offers: cash, bank transfer, JazzCash,
+      // EasyPaisa, Raast, card and cheque. Seeding only cash meant every
+      // non-cash sale debited Cash in Hand.
+      expect(await count('payment_accounts'), 7);
       expect(await count('numbering_sequences'), 3);
 
       final health = await db.checkHealth();

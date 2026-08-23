@@ -75,6 +75,9 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       final columns = _itemColumns(draft)
         ..remove('opening_stock_thousandths')
         ..remove('opening_rate_milli_paisa')
+        // Cost is what was paid, not what an editor types. It moves when
+        // goods are bought, and from M4 the purchase rule moves it.
+        ..remove('avg_cost_milli_paisa')
         // Whether an item is on the counter is decided by archiveItem, not by
         // an editor that has no control for it. ItemDraft.isActive defaults to
         // true, so leaving it in meant correcting an archived item's price
@@ -230,6 +233,19 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         'min_stock_thousandths': d.minStock.inThousandths,
         'opening_stock_thousandths': d.openingStock.inThousandths,
         'opening_rate_milli_paisa': d.openingRate.inMilliPaisa,
+        // The weighted average of one purchase is that purchase. Opening
+        // stock is the shop's first consignment — the goods are already on
+        // the shelf and the shopkeeper types what they cost — so the average
+        // starts there and the M4 purchase rule moves it from there.
+        //
+        // Leaving it at the schema default meant `averageCostFor` returned
+        // zero, the sale posted no COGS line, `documents.cost_paisa` was
+        // stamped 0, and bill-wise profit reported the whole selling price as
+        // margin: Rs 500 of profit on a tin bought for Rs 300. Every shop
+        // hits this, because entering what is on the shelf is the last field
+        // of the item quick-add form.
+        'avg_cost_milli_paisa':
+            d.openingStock.isZero ? 0 : d.openingRate.inMilliPaisa,
         'track_stock': d.tracksStock ? 1 : 0,
         'is_active': d.isActive ? 1 : 0,
       };

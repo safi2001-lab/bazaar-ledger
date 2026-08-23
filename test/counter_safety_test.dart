@@ -134,11 +134,28 @@ void main() {
     // the number rather than against each other: SUM over zero rows is NULL,
     // and `null == null` would have green-lit a sale that wrote no journal at
     // all.
+    //
+    // Rs 8,000, not the Rs 5,000 the bill rang up for. The harness stocks
+    // this item at 60% of its selling price, so the sale also moves Rs 3,000
+    // of goods: Cost of Goods Sold is debited and Inventory credited. This
+    // assertion read 500000 for as long as `items.avg_cost_milli_paisa` was
+    // never populated and the sale posted no cost line at all — a test that
+    // passed because of the defect underneath it.
     final balance = await app.rowsOf(
       'SELECT SUM(debit_paisa) d, SUM(credit_paisa) c FROM journal_lines',
     );
-    expect(balance.single['d'], 500000);
-    expect(balance.single['c'], 500000);
+    expect(balance.single['d'], 800000);
+    expect(balance.single['c'], 800000);
+
+    // And the cost really is the cost, not a plug that happens to balance.
+    final cost = await app.scalar<int>(
+      'SELECT cost_paisa FROM documents',
+    );
+    expect(
+      cost,
+      300000,
+      reason: 'bill-wise profit reads this, and Rs 2,000 is the margin',
+    );
   });
 
   testWidgets('a bill left owing has to name the customer', (tester) async {

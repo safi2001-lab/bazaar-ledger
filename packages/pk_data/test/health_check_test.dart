@@ -125,7 +125,7 @@ Future<void> _seedShop(AppDatabase db) async {
       ],
       tenders: [
         TenderDraft(
-          paymentAccountId: accounts.single.id,
+          paymentAccountId: accounts.firstWhere((a) => a.isDefault).id,
           mode: 'cash',
           amount: const Money.rupees(500),
         ),

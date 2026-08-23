@@ -257,13 +257,82 @@ final class FirstRunSeeder {
         }
 
         cashAccountId = accountIdsByCode['1010']!;
-        cashPaymentAccountId = await tx.insert('payment_accounts', {
-          'name': 'Golak',
-          'account_kind': 'cash',
-          'mode_label': 'cash',
-          'ledger_account_id': cashAccountId,
-          'is_default': 1,
-        });
+
+        // One account per tender the counter offers, each pointing at the
+        // place in the chart where that kind of money actually sits.
+        //
+        // Seeding only cash was not a smaller version of this. The counter
+        // offers all seven chips, and the tender sheet fell back to the
+        // default account whenever no account matched the mode — so a sale
+        // taken on JazzCash debited Cash in Hand. The wallet balance was
+        // invisible, the drawer never reconciled against the day's takings,
+        // and nothing on screen ever said why.
+        //
+        // A cheque is deliberately not money: it debits Cheques in Hand and
+        // moves to the bank only when it clears, which is what the M6 PDC
+        // lifecycle is built on. A card settles T+1 or later, but it settles
+        // into the bank and no earlier account exists to hold it yet.
+        const wallets = [
+          (
+            mode: 'cash',
+            kind: 'cash',
+            code: '1010',
+            name: 'Golak',
+            isDefault: true,
+          ),
+          (
+            mode: 'bank_transfer',
+            kind: 'bank',
+            code: '1020',
+            name: 'Bank',
+            isDefault: false,
+          ),
+          (
+            mode: 'jazzcash',
+            kind: 'wallet',
+            code: '1030',
+            name: 'JazzCash',
+            isDefault: false,
+          ),
+          (
+            mode: 'easypaisa',
+            kind: 'wallet',
+            code: '1030',
+            name: 'EasyPaisa',
+            isDefault: false,
+          ),
+          (
+            mode: 'raast',
+            kind: 'bank',
+            code: '1020',
+            name: 'Raast',
+            isDefault: false,
+          ),
+          (
+            mode: 'card',
+            kind: 'bank',
+            code: '1020',
+            name: 'Card',
+            isDefault: false,
+          ),
+          (
+            mode: 'cheque',
+            kind: 'bank',
+            code: '1150',
+            name: 'Cheque',
+            isDefault: false,
+          ),
+        ];
+        for (final w in wallets) {
+          final id = await tx.insert('payment_accounts', {
+            'name': w.name,
+            'account_kind': w.kind,
+            'mode_label': w.mode,
+            'ledger_account_id': accountIdsByCode[w.code]!,
+            'is_default': w.isDefault ? 1 : 0,
+          });
+          if (w.isDefault) cashPaymentAccountId = id;
+        }
 
         // Invoice numbering for this device, this fiscal year. INV-2627-0001.
         await tx.insert('numbering_sequences', {

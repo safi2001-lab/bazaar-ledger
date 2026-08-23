@@ -45,16 +45,22 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   Money get _tenderedAmount =>
       Money.tryParse(_tendered.text) ?? Money.zero;
 
-  /// The account this tender posts into: one matching the chosen mode, else
-  /// the shop's default, else nothing at all.
+  /// The account this tender posts into. It matches the chosen mode or there
+  /// is none.
+  ///
+  /// There used to be two fallbacks here — the shop's default, then whatever
+  /// sorted first — and first run seeded exactly one account, cash, marked
+  /// default. So every JazzCash, EasyPaisa, Raast, card and cheque sale in
+  /// the app debited Cash in Hand. The wallet balance never existed, the
+  /// drawer never reconciled against the day's takings, and the screen said
+  /// nothing at all. First run now seeds an account per mode; a mode with no
+  /// account is a real failure and says so, rather than quietly booking the
+  /// money somewhere it never went.
   PaymentAccountSummary? _accountFor(List<PaymentAccountSummary> accounts) {
     for (final a in accounts) {
       if (a.modeLabel == _mode) return a;
     }
-    for (final a in accounts) {
-      if (a.isDefault) return a;
-    }
-    return accounts.isEmpty ? null : accounts.first;
+    return null;
   }
 
   Future<void> _post() async {
@@ -163,7 +169,11 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               tendered: _mode == 'cash' && !_tenderedAmount.isZero
                   ? _tenderedAmount
                   : null,
-              reference: _reference.text.trim().isEmpty
+              // Cash has no reference to carry. A transaction id typed under
+              // "Bank transfer" and then switched to "Cash" was being saved
+              // onto the cash payment, where it names a transfer that never
+              // happened.
+              reference: _mode == 'cash' || _reference.text.trim().isEmpty
                   ? null
                   : _reference.text.trim(),
             ),
