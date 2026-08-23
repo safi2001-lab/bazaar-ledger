@@ -71,6 +71,30 @@ void main() {
     );
   });
 
+  testWidgets('a validation error clears when the field is corrected',
+      (tester) async {
+    await Harness.start(tester);
+
+    // Save with the owner's name empty, so the field is marked invalid.
+    await typeInto(tester, 'Dukan ka naam', 'Chishti Kiryana Store');
+    await tapButton(tester, 'Dukan shuru karein');
+    expect(find.text('Yeh khana zaroori hai'), findsWidgets);
+
+    // Now fill it in. Found by hand on an Android 16 handset: the field kept
+    // its red border and its message while holding "Malik Sahib", because
+    // errors only refresh on the next `validate()` call. For an audience
+    // where 60% national and 52% rural literacy is the design constraint, an
+    // error that will not go away is a dead end.
+    await typeInto(tester, 'Aap ka naam', 'Malik Sahib');
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Yeh khana zaroori hai'),
+      findsNothing,
+      reason: 'the field is filled in and still says it is required',
+    );
+  });
+
   testWidgets('leaving a search screen clears the filter with the box',
       (tester) async {
     final app = await Harness.startWithShop(tester);

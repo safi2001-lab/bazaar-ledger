@@ -53,7 +53,9 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
     // to create it a second time.
     final container = ProviderScope.containerOf(context, listen: false);
     try {
-      await ref.read(appServicesProvider).setUpShop(
+      await ref
+          .read(appServicesProvider)
+          .setUpShop(
             shopName: _shop.text.trim(),
             ownerName: _owner.text.trim(),
             deviceLabel: _counter.text.trim().isEmpty
@@ -104,6 +106,16 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 520),
               child: Form(
+                // Re-validated as the shopkeeper types, once they have
+                // touched the form. Without this a field validated on Save
+                // keeps its red border and its error message after the text
+                // is corrected — the message only refreshes on the next
+                // `validate()` call. Found by hand on the handset: "Aap ka
+                // naam" read "Yeh khana zaroori hai" in red while holding
+                // "Malik Sahib". For an audience where 60% national and 52%
+                // rural literacy is the design constraint, an error that
+                // will not go away is a dead end.
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -129,9 +141,8 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                       hint: s.setupShopNameHint,
                       autofocus: true,
                       textInputAction: TextInputAction.next,
-                      validator: (v) => (v ?? '').trim().isEmpty
-                          ? s.commonRequired
-                          : null,
+                      validator: (v) =>
+                          (v ?? '').trim().isEmpty ? s.commonRequired : null,
                     ),
                     const SizedBox(height: BlTokens.space4),
                     BlField(
@@ -139,9 +150,8 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                       label: s.setupOwnerName,
                       hint: s.setupOwnerNameHint,
                       textInputAction: TextInputAction.next,
-                      validator: (v) => (v ?? '').trim().isEmpty
-                          ? s.commonRequired
-                          : null,
+                      validator: (v) =>
+                          (v ?? '').trim().isEmpty ? s.commonRequired : null,
                     ),
                     const SizedBox(height: BlTokens.space4),
                     BlField(

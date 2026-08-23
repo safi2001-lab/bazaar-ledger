@@ -28,14 +28,18 @@ class ItemEditorScreen extends ConsumerStatefulWidget {
 
 class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _name =
-      TextEditingController(text: widget.item?.name ?? widget.initialName ?? '');
-  late final TextEditingController _code =
-      TextEditingController(text: widget.item?.code ?? '');
-  late final TextEditingController _barcode =
-      TextEditingController(text: widget.item?.barcode ?? '');
-  late final TextEditingController _category =
-      TextEditingController(text: widget.item?.category ?? '');
+  late final TextEditingController _name = TextEditingController(
+    text: widget.item?.name ?? widget.initialName ?? '',
+  );
+  late final TextEditingController _code = TextEditingController(
+    text: widget.item?.code ?? '',
+  );
+  late final TextEditingController _barcode = TextEditingController(
+    text: widget.item?.barcode ?? '',
+  );
+  late final TextEditingController _category = TextEditingController(
+    text: widget.item?.category ?? '',
+  );
   late final TextEditingController _saleRate = TextEditingController(
     text: widget.item == null ? '' : widget.item!.saleRate.amountOnly,
   );
@@ -103,8 +107,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         // existing item's stock happens through a stock adjustment with a
         // reason, which lands in M1 — the ledger is append-only and must
         // never be silently overwritten from a form.
-        openingStock:
-            _isEdit ? Qty.zero : Qty.tryParse(_openingStock.text) ?? Qty.zero,
+        openingStock: _isEdit
+            ? Qty.zero
+            : Qty.tryParse(_openingStock.text) ?? Qty.zero,
         openingRate: Rate.tryParse(_purchaseRate.text) ?? Rate.zero,
         minStock: Qty.tryParse(_minStock.text) ?? Qty.zero,
       );
@@ -160,8 +165,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final services = ref.read(appServicesProvider);
-      await services.catalogue
-          .archiveItem(services.actorNow(), widget.item!.id);
+      await services.catalogue.archiveItem(
+        services.actorNow(),
+        widget.item!.id,
+      );
       if (!mounted) return;
       ref.bumpRefresh();
       navigator.pop();
@@ -244,6 +251,16 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 560),
                   child: Form(
+                    // Re-validated as the shopkeeper types, once they have
+                    // touched the form. Without this a field validated on Save
+                    // keeps its red border and its error message after the text
+                    // is corrected — the message only refreshes on the next
+                    // `validate()` call. Found by hand on the handset: "Aap ka
+                    // naam" read "Yeh khana zaroori hai" in red while holding
+                    // "Malik Sahib". For an audience where 60% national and 52%
+                    // rural literacy is the design constraint, an error that
+                    // will not go away is a dead end.
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     key: _formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -267,10 +284,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                 label: s.itemSalePrice,
                                 numeric: true,
                                 textInputAction: TextInputAction.next,
-                                validator: (v) =>
-                                    Rate.tryParse(v ?? '') == null
-                                        ? s.commonRequired
-                                        : null,
+                                validator: (v) => Rate.tryParse(v ?? '') == null
+                                    ? s.commonRequired
+                                    : null,
                               ),
                             ),
                             const SizedBox(width: BlTokens.space3),

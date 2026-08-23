@@ -23,8 +23,9 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   late final TextEditingController _name = TextEditingController(
     text: widget.party?.name ?? widget.initialName ?? '',
   );
-  late final TextEditingController _phone =
-      TextEditingController(text: widget.party?.phone ?? '');
+  late final TextEditingController _phone = TextEditingController(
+    text: widget.party?.phone ?? '',
+  );
   final _opening = TextEditingController();
   late final TextEditingController _creditLimit = TextEditingController(
     text: widget.party?.creditLimit?.amountOnly ?? '',
@@ -60,8 +61,9 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         // started using this app. Set once, at creation; afterwards the
         // balance is whatever the documents say it is, and no form may
         // overwrite it.
-        openingBalance:
-            _isEdit ? Money.zero : Money.tryParse(_opening.text) ?? Money.zero,
+        openingBalance: _isEdit
+            ? Money.zero
+            : Money.tryParse(_opening.text) ?? Money.zero,
         creditLimit: Money.tryParse(_creditLimit.text),
       );
 
@@ -100,6 +102,16 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 560),
               child: Form(
+                // Re-validated as the shopkeeper types, once they have
+                // touched the form. Without this a field validated on Save
+                // keeps its red border and its error message after the text
+                // is corrected — the message only refreshes on the next
+                // `validate()` call. Found by hand on the handset: "Aap ka
+                // naam" read "Yeh khana zaroori hai" in red while holding
+                // "Malik Sahib". For an audience where 60% national and 52%
+                // rural literacy is the design constraint, an error that
+                // will not go away is a dead end.
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
