@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'stock_adjust_sheet.dart';
 
 /// Add an item, or change one.
 ///
@@ -220,6 +221,24 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? s.itemsEdit : s.itemsAdd),
         actions: [
+          // Reachable from the item, because that is where a shopkeeper is
+          // standing when they notice the shelf and the screen disagree.
+          if (_isEdit && widget.item!.tracksStock)
+            BlIconButton(
+              icon: Icons.fact_check_outlined,
+              label: s.stockAdjustTitle,
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                builder: (_) => StockAdjustSheet(
+                  itemId: widget.item!.id,
+                  itemName: widget.item!.name,
+                  onHand: widget.item!.stockOnHand,
+                  unitCode: widget.item!.unitCode,
+                ),
+              ),
+            ),
           if (_isEdit)
             BlIconButton(
               icon: Icons.archive_outlined,

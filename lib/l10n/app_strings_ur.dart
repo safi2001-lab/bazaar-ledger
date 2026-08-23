@@ -661,4 +661,48 @@ class AppStringsUr extends AppStrings {
     );
     return 'Data mein $_temp0 mila. Settings mein dekh lein.';
   }
+
+  @override
+  String get stockAdjustTitle => 'Stock theek karein';
+
+  @override
+  String get stockAdjustCounted => 'Ginti ke baad kitna hai';
+
+  @override
+  String get stockAdjustCurrent => 'Abhi ledger kehta hai';
+
+  @override
+  String get stockAdjustReason => 'Wajah';
+
+  @override
+  String get stockAdjustReasonHint => 'Mahana ginti, toot gaya, chori';
+
+  @override
+  String get stockAdjustSave => 'Theek karein';
+
+  @override
+  String get stockAdjustDone => 'Stock theek ho gaya';
+
+  @override
+  String get stockAdjustNeedsReason => 'Wajah likhna zaroori hai';
+
+  @override
+  String get stockAdjustWriteOff => 'Zaya hua maal';
+
+  @override
+  String get stockAdjustRecount => 'Ginti';
+
+  @override
+  String get stockLowTitle => 'Kam stock';
+
+  @override
+  String get stockLowNone => 'Sab theek hai';
+
+  @override
+  String get stockLowSubtitle => 'Yeh cheezein khatam hone wali hain';
+
+  @override
+  String stockLowFloor(String floor) {
+    return 'Hadd: $floor';
+  }
 }

@@ -1267,6 +1267,90 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Data mein {count, plural, =1{1 masla} other{{count} masle}} mila. Settings mein dekh lein.'**
   String healthWarning(int count);
+
+  /// No description provided for @stockAdjustTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock theek karein'**
+  String get stockAdjustTitle;
+
+  /// No description provided for @stockAdjustCounted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ginti ke baad kitna hai'**
+  String get stockAdjustCounted;
+
+  /// No description provided for @stockAdjustCurrent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi ledger kehta hai'**
+  String get stockAdjustCurrent;
+
+  /// No description provided for @stockAdjustReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah'**
+  String get stockAdjustReason;
+
+  /// No description provided for @stockAdjustReasonHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana ginti, toot gaya, chori'**
+  String get stockAdjustReasonHint;
+
+  /// No description provided for @stockAdjustSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Theek karein'**
+  String get stockAdjustSave;
+
+  /// No description provided for @stockAdjustDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock theek ho gaya'**
+  String get stockAdjustDone;
+
+  /// No description provided for @stockAdjustNeedsReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah likhna zaroori hai'**
+  String get stockAdjustNeedsReason;
+
+  /// No description provided for @stockAdjustWriteOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zaya hua maal'**
+  String get stockAdjustWriteOff;
+
+  /// No description provided for @stockAdjustRecount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ginti'**
+  String get stockAdjustRecount;
+
+  /// No description provided for @stockLowTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam stock'**
+  String get stockLowTitle;
+
+  /// No description provided for @stockLowNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab theek hai'**
+  String get stockLowNone;
+
+  /// No description provided for @stockLowSubtitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh cheezein khatam hone wali hain'**
+  String get stockLowSubtitle;
+
+  /// No description provided for @stockLowFloor.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hadd: {floor}'**
+  String stockLowFloor(String floor);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

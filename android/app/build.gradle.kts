@@ -85,9 +85,9 @@ flutter {
 }
 
 // ---------------------------------------------------------------------------
-// Why this task exists: GeneratedPluginRegistrant.java is one shared file that
-// every Flutter command rewrites in its own build mode, and the release Gradle
-// build reads it two minutes after the only command that writes it correctly.
+// Why this exists: GeneratedPluginRegistrant.java is one shared file that every
+// Flutter command rewrites in its own build mode, and the release build compiles
+// it against a classpath that only matches one of those modes.
 //
 // `integration_test` is a dev_dependency and has to stay one.
 // integration_test/demo_script_test.dart and integration_test/cart_recovery_test.dart
@@ -104,18 +104,12 @@ flutter {
 //     every buildType's `Api` configuration EXCEPT release, so :integration_test
 //     is deliberately not on the release compile classpath.
 //
-// What breaks it is that releaseMode is only ever true for the handful of
-// commands that own a `--release` flag. `flutter pub get`, `flutter analyze`,
-// `flutter test`, `flutter run`, and any IDE or editor plugin that runs a pub
-// get on save all regenerate the same file with releaseMode: false, and put
-// IntegrationTestPlugin straight back. Verified here: a bare `flutter pub get`
-// flips the file, and so does a bare `flutter analyze`.
-//
-// `flutter build apk --release` takes about two and a half minutes, and
-// :app:compileReleaseJavaWithJavac reads the registrant at the very end of it.
-// So any of those commands landing in that window -- another terminal, an IDE
-// analysing on save, a parallel CI step sharing the checkout -- poisons a build
-// that was correct when it started, and javac dies on a class that is missing
+// What breaks it is that releaseMode is only ever true for the few commands that
+// own a `--release` flag. `flutter pub get`, `flutter analyze`, `flutter test`,
+// `flutter run`, and any IDE that runs a pub get on save all regenerate the same
+// file with releaseMode: false and put IntegrationTestPlugin straight back.
+// Verified here: a bare `flutter pub get` flips the file, and so does a bare
+// `flutter analyze`. Then javac reads it and dies on a class that is missing
 // from the release classpath by design:
 //
 //     GeneratedPluginRegistrant.java:19: error:
@@ -123,137 +117,136 @@ flutter {
 //
 // The try/catch the tool wraps each registration in is no help; the failure is
 // at compile time, not run time. Debug and profile never notice, because
-// dev-dependency plugins really are on their classpath -- which is exactly why
+// dev-dependency plugins really are on their classpath -- which is why
 // `flutter build apk --debug` and `flutter test integration_test/...` pass while
-// only release fails, and why the failure reads as deterministic even though
-// it is a race. `flutter build appbundle --release` runs the same javac task,
-// so this blocks the Play upload, not merely a local APK.
+// only release fails. `flutter build appbundle --release` runs the same javac
+// task, so this blocks the Play upload, not merely a local APK.
 //
 // Upstream: https://github.com/flutter/flutter/issues/169336 -- same error, same
 // generated line, still open (P2, c: regression). It is filed against `--no-pub`,
 // which reaches the same state by a different road: skipping the regeneration
-// leaves whatever non-release registrant was last written. The underlying
-// design -- one mode-dependent generated file, rewritten by every command -- is
-// what both share. Background: #161348 (dev dependencies removed from release
-// registrants) and #56591 (plugins should not come from dev_dependencies).
+// leaves whatever non-release registrant was last written. Background: #161348
+// (dev dependencies removed from release registrants) and #56591 (plugins should
+// not come from dev_dependencies).
 //
-// So: immediately before javac, and after everything Gradle itself runs, take
-// whatever is in the file and delete the registration blocks for plugins that
-// .flutter-plugins-dependencies marks "dev_dependency": true. Release variants
-// only -- debug and profile keep every plugin, which is what lets
-// `flutter test integration_test/... -d <device>` register IntegrationTestPlugin.
-// This narrows the window from the whole Gradle run to the moments between this
-// task and javac; it does not make it correct to run `flutter analyze` against
-// this checkout while a release build is in flight.
+// So: strip the registrations for plugins that .flutter-plugins-dependencies
+// marks "dev_dependency": true. Release variants only -- debug and profile keep
+// every plugin, which is what lets `flutter test integration_test/... -d <device>`
+// register IntegrationTestPlugin.
+//
+// This runs as a doFirst on the compile task rather than as a task of its own,
+// and that is the whole point. A separate task ordered before javac still leaves
+// the asset and resource tasks running in between -- about ten seconds -- and a
+// release build here failed in exactly that window, with the strip having
+// already run and something having rewritten the file behind it. Hanging the
+// work off javac itself means nothing can be scheduled between the two.
+//
+// It is still a race, in the sense that a `flutter` command run against this
+// checkout at the wrong microsecond can still lose. It is not safe to run
+// `flutter analyze` against this working copy while a release build is in
+// flight; this makes the ordinary case reliable, not the adversarial one.
 //
 // This is deliberately loud. If a later Flutter stops putting dev dependencies
-// back, the task finds nothing and says nothing. But if the generated file
-// changes shape so the stripping silently stops working, the task fails the
-// build here rather than letting javac fail a minute later with the message
-// this exists to prevent.
+// back, it finds nothing and says nothing. If the generated file changes shape
+// so the stripping silently stops working, it fails the build here rather than
+// letting javac fail with the message this exists to prevent. Reads are retried
+// first, because the same concurrency that motivates this can also be caught
+// halfway through writing the file, and a torn read is not a shape change.
 // ---------------------------------------------------------------------------
 
 val flutterPluginsDependenciesFile = file("../../.flutter-plugins-dependencies")
 val generatedPluginRegistrantFile =
     file("src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java")
 
-val stripDevDependencyPluginRegistrations =
-    tasks.register("stripDevDependencyPluginRegistrations") {
-        group = "flutter"
-        description =
-            "Removes dev_dependency plugin registrations from GeneratedPluginRegistrant.java " +
-                "before the release variant compiles it."
+fun stripDevDependencyPluginRegistrations(logger: org.gradle.api.logging.Logger) {
+    check(flutterPluginsDependenciesFile.isFile) {
+        "$flutterPluginsDependenciesFile is missing, so this build cannot tell which " +
+            "plugins are dev dependencies. Run `flutter pub get`."
+    }
+    check(generatedPluginRegistrantFile.isFile) {
+        "$generatedPluginRegistrantFile is missing. Run `flutter build apk --config-only`."
+    }
 
-        // Anything at all may have rewritten the registrant since the last run,
-        // so there is no state in which skipping this is safe.
-        outputs.upToDateWhen { false }
+    @Suppress("UNCHECKED_CAST")
+    val manifest =
+        groovy.json.JsonSlurper().parse(flutterPluginsDependenciesFile) as Map<String, Any?>
 
-        doLast {
-            check(flutterPluginsDependenciesFile.isFile) {
-                "$flutterPluginsDependenciesFile is missing, so this build cannot tell " +
-                    "which plugins are dev dependencies. Run `flutter pub get`."
+    @Suppress("UNCHECKED_CAST")
+    val androidPlugins =
+        (manifest["plugins"] as Map<String, Any?>)["android"] as List<Map<String, Any?>>
+    val devDependencyPlugins =
+        androidPlugins
+            .filter { it["dev_dependency"] == true }
+            .map { it["name"] as String }
+    if (devDependencyPlugins.isEmpty()) {
+        return
+    }
+
+    var problem: String? = null
+    repeat(5) { attempt ->
+        if (attempt > 0) {
+            Thread.sleep(250L)
+        }
+        val original = generatedPluginRegistrantFile.readText()
+        if (!original.contains("class GeneratedPluginRegistrant")) {
+            problem = "$generatedPluginRegistrantFile does not look like Flutter's " +
+                "generated registrant"
+            return@repeat
+        }
+
+        val lines = original.lines()
+        val kept = mutableListOf<String>()
+        val strippedPlugins = mutableListOf<String>()
+        var index = 0
+        while (index < lines.size) {
+            if (lines[index].trim() != "try {") {
+                kept.add(lines[index])
+                index++
+                continue
             }
-            check(generatedPluginRegistrantFile.isFile) {
-                "$generatedPluginRegistrantFile is missing. Run `flutter build apk --config-only`."
-            }
-
-            @Suppress("UNCHECKED_CAST")
-            val manifest =
-                groovy.json.JsonSlurper().parse(flutterPluginsDependenciesFile)
-                    as Map<String, Any?>
-
-            @Suppress("UNCHECKED_CAST")
-            val androidPlugins =
-                (manifest["plugins"] as Map<String, Any?>)["android"] as List<Map<String, Any?>>
-            val devDependencyPlugins =
-                androidPlugins
-                    .filter { it["dev_dependency"] == true }
-                    .map { it["name"] as String }
-            if (devDependencyPlugins.isEmpty()) {
-                return@doLast
-            }
-
-            val original = generatedPluginRegistrantFile.readText()
-            check(original.contains("class GeneratedPluginRegistrant")) {
-                "$generatedPluginRegistrantFile does not look like Flutter's generated " +
-                    "registrant; refusing to edit it."
-            }
-
-            val lines = original.lines()
-            val kept = mutableListOf<String>()
-            val strippedPlugins = mutableListOf<String>()
-            var index = 0
-            while (index < lines.size) {
-                if (lines[index].trim() != "try {") {
-                    kept.add(lines[index])
-                    index++
-                    continue
+            // One registration is one try { ... } catch (Exception e) { ... }
+            // block, and the catch's log message is the only place the pub
+            // package name appears, so it is what identifies the block's owner.
+            val block = mutableListOf<String>()
+            var end = index
+            var sawCatch = false
+            while (end < lines.size) {
+                block.add(lines[end])
+                if (lines[end].contains("catch (Exception e) {")) {
+                    sawCatch = true
                 }
-                // One registration is one try { ... } catch (Exception e) { ... }
-                // block, and the catch's log message is the only place the pub
-                // package name appears, so it is what identifies the block's owner.
-                val block = mutableListOf<String>()
-                var end = index
-                var sawCatch = false
-                while (end < lines.size) {
-                    block.add(lines[end])
-                    if (lines[end].contains("catch (Exception e) {")) {
-                        sawCatch = true
-                    }
-                    if (sawCatch && lines[end].trim() == "}") {
-                        break
-                    }
-                    end++
+                if (sawCatch && lines[end].trim() == "}") {
+                    break
                 }
-                val owner =
-                    devDependencyPlugins.firstOrNull { name ->
-                        block.any { it.contains("Error registering plugin " + name + ",") }
-                    }
-                if (owner == null) {
-                    kept.addAll(block)
-                } else {
-                    strippedPlugins.add(owner)
-                }
-                index = end + 1
+                end++
             }
+            val owner =
+                devDependencyPlugins.firstOrNull { name ->
+                    block.any { it.contains("Error registering plugin " + name + ",") }
+                }
+            if (owner == null) {
+                kept.addAll(block)
+            } else {
+                strippedPlugins.add(owner)
+            }
+            index = end + 1
+        }
 
-            // Checked before the early return on purpose: a registrant whose shape
-            // has changed enough that no block matched would otherwise leave the
-            // dev-dependency registration in place and say nothing about it.
-            val rewritten = kept.joinToString("\n")
-            val survivors =
-                devDependencyPlugins.filter {
-                    rewritten.contains("Error registering plugin " + it + ",")
-                }
-            check(survivors.isEmpty()) {
-                "Could not strip the dev-dependency plugin registration(s) $survivors from " +
-                    "$generatedPluginRegistrantFile. Flutter's generated registrant has " +
-                    "changed shape -- see the comment above this task."
+        // Checked before the early return on purpose: a registrant whose shape has
+        // changed enough that no block matched would otherwise leave the
+        // dev-dependency registration in place and say nothing about it.
+        val rewritten = kept.joinToString("\n")
+        val survivors =
+            devDependencyPlugins.filter {
+                rewritten.contains("Error registering plugin " + it + ",")
             }
+        if (survivors.isNotEmpty()) {
+            problem = "could not strip the dev-dependency plugin registration(s) " +
+                "$survivors from $generatedPluginRegistrantFile"
+            return@repeat
+        }
 
-            if (strippedPlugins.isEmpty()) {
-                return@doLast
-            }
+        if (strippedPlugins.isNotEmpty()) {
             generatedPluginRegistrantFile.writeText(rewritten)
             logger.lifecycle(
                 "Stripped dev-dependency plugin registration(s) from " +
@@ -261,13 +254,27 @@ val stripDevDependencyPluginRegistrations =
                     strippedPlugins.joinToString(", "),
             )
         }
+        return
     }
 
-tasks.matching { it.name.matches(Regex("^compile\\w*ReleaseJavaWithJavac$")) }.configureEach {
-    dependsOn(stripDevDependencyPluginRegistrations)
+    throw org.gradle.api.GradleException(
+        "After five attempts over about a second, $problem. A concurrent `flutter` " +
+            "command rewriting the file would have settled by now, so Flutter's generated " +
+            "registrant has probably changed shape -- see the comment above this function.",
+    )
 }
 
-stripDevDependencyPluginRegistrations.configure {
-    // Must read what Gradle's own Flutter tasks left behind, not what preceded them.
-    mustRunAfter(tasks.matching { it.name.matches(Regex("^compileFlutterBuild\\w*Release$")) })
+tasks.matching { it.name.matches(Regex("^compile\\w*ReleaseJavaWithJavac$")) }.configureEach {
+    doFirst { stripDevDependencyPluginRegistrations(logger) }
+}
+
+// Also exposed on its own so a CI step, or anyone debugging this, can normalise
+// the file without running a build.
+tasks.register("stripDevDependencyPluginRegistrations") {
+    group = "flutter"
+    description =
+        "Removes dev_dependency plugin registrations from GeneratedPluginRegistrant.java, " +
+            "as the release variant's javac does before it compiles."
+    outputs.upToDateWhen { false }
+    doLast { stripDevDependencyPluginRegistrations(logger) }
 }

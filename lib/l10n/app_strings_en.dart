@@ -660,4 +660,48 @@ class AppStringsEn extends AppStrings {
     );
     return '$_temp0 found in your data. Check Settings.';
   }
+
+  @override
+  String get stockAdjustTitle => 'Correct stock';
+
+  @override
+  String get stockAdjustCounted => 'Counted on the shelf';
+
+  @override
+  String get stockAdjustCurrent => 'The ledger says';
+
+  @override
+  String get stockAdjustReason => 'Reason';
+
+  @override
+  String get stockAdjustReasonHint => 'Monthly count, broken, stolen';
+
+  @override
+  String get stockAdjustSave => 'Correct it';
+
+  @override
+  String get stockAdjustDone => 'Stock corrected';
+
+  @override
+  String get stockAdjustNeedsReason => 'A reason is required';
+
+  @override
+  String get stockAdjustWriteOff => 'Wastage';
+
+  @override
+  String get stockAdjustRecount => 'Stock take';
+
+  @override
+  String get stockLowTitle => 'Low stock';
+
+  @override
+  String get stockLowNone => 'Nothing is running low';
+
+  @override
+  String get stockLowSubtitle => 'These are about to run out';
+
+  @override
+  String stockLowFloor(String floor) {
+    return 'Floor: $floor';
+  }
 }

@@ -263,5 +263,26 @@
   "receiptPrintNotReady": "Printing arrives in M2. For now you can check the bill and send the PDF.",
   "errorStartupRecover": "Restore from a backup",
   "errorStartupNotReady": "Restoring from a backup arrives in M5. For now, close the app and open it again.",
-  "healthWarning": "{count, plural, =1{1 problem} other{{count} problems}} found in your data. Check Settings."
+  "healthWarning": "{count, plural, =1{1 problem} other{{count} problems}} found in your data. Check Settings.",
+  "stockAdjustTitle": "Correct stock",
+  "stockAdjustCounted": "Counted on the shelf",
+  "stockAdjustCurrent": "The ledger says",
+  "stockAdjustReason": "Reason",
+  "stockAdjustReasonHint": "Monthly count, broken, stolen",
+  "stockAdjustSave": "Correct it",
+  "stockAdjustDone": "Stock corrected",
+  "stockAdjustNeedsReason": "A reason is required",
+  "stockAdjustWriteOff": "Wastage",
+  "stockAdjustRecount": "Stock take",
+  "stockLowTitle": "Low stock",
+  "stockLowNone": "Nothing is running low",
+  "stockLowSubtitle": "These are about to run out",
+  "stockLowFloor": "Floor: {floor}",
+  "@stockLowFloor": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      }
+    }
+  }
 }

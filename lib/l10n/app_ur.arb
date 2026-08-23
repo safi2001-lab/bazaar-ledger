@@ -333,5 +333,26 @@
         "type": "int"
       }
     }
+  },
+  "stockAdjustTitle": "Stock theek karein",
+  "stockAdjustCounted": "Ginti ke baad kitna hai",
+  "stockAdjustCurrent": "Abhi ledger kehta hai",
+  "stockAdjustReason": "Wajah",
+  "stockAdjustReasonHint": "Mahana ginti, toot gaya, chori",
+  "stockAdjustSave": "Theek karein",
+  "stockAdjustDone": "Stock theek ho gaya",
+  "stockAdjustNeedsReason": "Wajah likhna zaroori hai",
+  "stockAdjustWriteOff": "Zaya hua maal",
+  "stockAdjustRecount": "Ginti",
+  "stockLowTitle": "Kam stock",
+  "stockLowNone": "Sab theek hai",
+  "stockLowSubtitle": "Yeh cheezein khatam hone wali hain",
+  "stockLowFloor": "Hadd: {floor}",
+  "@stockLowFloor": {
+    "placeholders": {
+      "floor": {
+        "type": "String"
+      }
+    }
   }
 }
