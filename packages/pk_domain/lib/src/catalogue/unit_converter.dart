@@ -85,6 +85,64 @@ final class UnitConverter {
     return Qty.raw(value);
   }
 
+  /// The same price, expressed per a different unit.
+  ///
+  /// A rate is money per unit, so it scales the opposite way to a quantity: a
+  /// dozen is twelve pieces, so twelve pieces of quantity become one dozen
+  /// while a hundred rupees per piece becomes twelve hundred per dozen.
+  ///
+  /// Exact or refused, like everything else here. A price per unit that has
+  /// to be rounded to change units is a price the line total and the unit
+  /// price on the same piece of paper will disagree about — and the customer
+  /// is holding that paper.
+  Rate convertRate(
+    Rate rate, {
+    required String fromUnitId,
+    required String toUnitId,
+    String? itemId,
+  }) {
+    if (fromUnitId == toUnitId) return rate;
+
+    // Both directions, because only one of them is a whole number.
+    //
+    // Going from a price per piece to a price per dozen is a multiplication:
+    // a dozen holds twelve pieces. Going back is a division, and asking "how
+    // many dozen in one piece" would be asking for a twelfth — which this
+    // class refuses on principle, and rightly, for quantities. A price is the
+    // other way up, so the divide is the exact operation.
+    if (canConvert(
+      Qty.one,
+      fromUnitId: toUnitId,
+      toUnitId: fromUnitId,
+      itemId: itemId,
+    )) {
+      final perNew = convert(
+        Qty.one,
+        fromUnitId: toUnitId,
+        toUnitId: fromUnitId,
+        itemId: itemId,
+      );
+      final scaled = rate.inMilliPaisa * perNew.inThousandths;
+      if (scaled % 1000 == 0) return Rate.raw(scaled ~/ 1000);
+    }
+
+    final perOld = convert(
+      Qty.one,
+      fromUnitId: fromUnitId,
+      toUnitId: toUnitId,
+      itemId: itemId,
+    );
+    final numerator = rate.inMilliPaisa * 1000;
+    if (perOld.inThousandths == 0 || numerator % perOld.inThousandths != 0) {
+      throw UnitConversionException(
+        'A price per $fromUnitId does not come out even per $toUnitId. '
+        'Rounding it would put the unit price and the line total on the same '
+        'receipt out of step, and the customer is holding that paper.',
+      );
+    }
+    return Rate.raw(numerator ~/ perOld.inThousandths);
+  }
+
   /// Whether [qty] can be moved exactly, without throwing.
   ///
   /// For the counter, which must grey out a unit it cannot sell in rather
@@ -130,9 +188,15 @@ final class UnitConverter {
   /// both "bori", because that is what the sacks say.
   List<UnitEdge> _edgesFor(String? itemId) {
     if (itemId == null) {
-      return [for (final e in _edges) if (e.itemId == null) e];
+      return [
+        for (final e in _edges)
+          if (e.itemId == null) e,
+      ];
     }
-    final mine = [for (final e in _edges) if (e.itemId == itemId) e];
+    final mine = [
+      for (final e in _edges)
+        if (e.itemId == itemId) e,
+    ];
     final shadowed = {for (final e in mine) '${e.fromUnitId}>${e.toUnitId}'};
     return [
       ...mine,
@@ -161,8 +225,8 @@ final class UnitConverter {
         final next = edge.fromUnitId == current
             ? edge.toUnitId
             : edge.toUnitId == current
-                ? edge.fromUnitId
-                : null;
+            ? edge.fromUnitId
+            : null;
         if (next == null || !seen.add(next)) continue;
         previous[next] = _Hop(
           edge: edge,

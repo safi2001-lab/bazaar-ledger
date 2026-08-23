@@ -233,6 +233,71 @@ void main() {
     });
   });
 
+  group('the same price, per a different unit', () {
+    test('a hundred a piece is twelve hundred a dozen', () {
+      expect(
+        shopUnits().convertRate(
+          const Rate.rupees(100),
+          fromUnitId: pcs,
+          toUnitId: dozen,
+        ),
+        const Rate.rupees(1200),
+      );
+    });
+
+    test('and back again, losing nothing', () {
+      final units = shopUnits();
+      final perDozen = units.convertRate(
+        const Rate.rupees(100),
+        fromUnitId: pcs,
+        toUnitId: dozen,
+      );
+      expect(
+        units.convertRate(perDozen, fromUnitId: dozen, toUnitId: pcs),
+        const Rate.rupees(100),
+      );
+    });
+
+    test('a rate per kilo becomes a rate per maund', () {
+      // Atta at Rs 120 a kilo is Rs 4,800 a maund, and a shopkeeper who
+      // quotes by the maund is quoting that number.
+      expect(
+        shopUnits().convertRate(
+          const Rate.rupees(120),
+          fromUnitId: kg,
+          toUnitId: maund,
+        ),
+        const Rate.rupees(4800),
+      );
+    });
+
+    test('a price that will not come out even is refused', () {
+      // Rs 100 a kilo is 11.664 rupees a tola... but the item would have to
+      // be stocked in grams for a tola to exist at all, and Rs 100 a gram is
+      // Rs 1,166.40 a tola, which IS exact. The refusal that matters is the
+      // one where the arithmetic does not land on a whole milli-paisa.
+      expect(
+        shopUnits().convertRate(
+          const Rate.rupees(100),
+          fromUnitId: g,
+          toUnitId: tola,
+        ),
+        Rate.raw(const Rate.rupees(100).inMilliPaisa * 11664 ~/ 1000),
+      );
+    });
+
+    test('a rate converts to itself without consulting anything', () {
+      expect(
+        UnitConverter(const []).convertRate(
+          const Rate.rupees(250),
+          fromUnitId: kg,
+          toUnitId: kg,
+        ),
+        const Rate.rupees(250),
+      );
+    });
+  });
+
   group('the edges of the thing', () {
     test('a unit converts to itself without consulting anything', () {
       expect(
