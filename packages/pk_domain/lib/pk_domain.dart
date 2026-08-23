@@ -22,6 +22,7 @@ export 'src/ports/printer.dart';
 export 'src/ports/printer_settings.dart';
 export 'src/ports/receipt.dart';
 export 'src/ports/sale_writer.dart';
+export 'src/receivables/fifo_allocator.dart';
 export 'src/sales/sale_calculator.dart';
 export 'src/sales/sale_draft.dart';
 export 'src/sales/sale_posting.dart';

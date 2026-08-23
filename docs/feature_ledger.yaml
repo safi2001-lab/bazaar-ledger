@@ -67,7 +67,10 @@ milestones:
 
   - id: M3
     title: Parties, udhaar and money in and out
-    state: planned
+    # Opened 24 Aug 2026. The reason the app exists: a kiryana shop's book of
+    # who owes what is the thing it keeps on paper today, and the thing it
+    # would actually pay to stop keeping on paper.
+    state: open
     owns:
       - lib/features/khata/**
       - lib/features/expenses/**
@@ -1544,3 +1547,59 @@ features:
       - a Code128 label printed at the declared width scans back to its code
       - an Urdu shop name prints as joined script, not as question marks
     proof: []
+
+  # ---- M3 · Parties, udhaar and money in and out ------------------------
+
+  - id: M3-FIFO-01
+    milestone: M3
+    title: A payment says which bills it settled, oldest first
+    status: done
+    # The pure arithmetic underneath the khata, with no database in it, so
+    # every awkward case can be asserted directly and the property can be run
+    # two thousand times.
+    #
+    # A wholesale customer hands over Rs 50,000 against four open bills and
+    # says nothing about which. Every competing product either nets the
+    # payment against one running balance or asks the cashier to tick boxes,
+    # and being unable to answer "which bills did this settle" is the single
+    # most-complained-about gap in their reviews. A shopkeeper who cannot
+    # answer it cannot argue about it with a customer either.
+    #
+    # Oldest first, because both sides already assume it: the customer thinks
+    # they are clearing last month, and the shop wants the oldest debt off its
+    # books. It is also the only thing that makes an ageing report mean
+    # anything — a payment applied to the newest bill leaves a 90-day bucket
+    # that never empties while the customer pays every month.
+    #
+    # Two rules that look like details and are not:
+    #
+    #  * A settled bill is SKIPPED, never netted against. Taking the overshoot
+    #    off the next bill in the list gives the right total and the wrong
+    #    khata: the shop's record shows a bill part-paid that the customer
+    #    paid in full, and the argument at the counter is unwinnable from
+    #    either side.
+    #  * Money left over becomes an advance, never an allocation row. Parking
+    #    it on the oldest bill writes an allocation larger than the bill it
+    #    points at, and `findOverAllocatedPayments()` is the check that finds
+    #    that — six months later, with no way left to reconstruct what was
+    #    meant.
+    #
+    # The sort is total on purpose. Date, then sequence, then id: two bills a
+    # comparator calls equal have their order decided by the sort's internals,
+    # and an allocation that is not reproducible is not evidence.
+    proof:
+      - oldest first one payment clears the two oldest and part of the third
+      - oldest first the input order does not matter and the input is not mutated
+      - oldest first a backdated bill sorts by its date, not by when it was typed
+      - oldest first same-day bills clear in the order they were raised
+      - oldest first the order is total, so the same input gives the same answer
+      - what must never happen a settled bill is skipped, never netted against
+      - what must never happen a bill that has somehow gone negative is left alone
+      - what must never happen no allocation is ever larger than the bill it points at
+      - what must never happen no allocation is ever zero
+      - money left over becomes an advance rather than an allocation
+      - money left over a customer with nothing outstanding pays entirely on account
+      - the arithmetic a payment of nothing is refused in words
+      - the arithmetic paisa are exact, not near enough
+      - the arithmetic property: 2000 random payments never create or destroy a paisa
+      - the arithmetic property: allocations are always oldest first
