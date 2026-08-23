@@ -108,9 +108,17 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
   ) async {
     final ids = paymentAccountIds.toList();
     if (ids.isEmpty) return const {};
+    // Both ends have to be live. An archived payment account must not take
+    // money, and neither must one whose entry in the chart has been archived
+    // underneath it — otherwise the sale posts into an account that no longer
+    // appears in any report, and the money is real but invisible.
     final rows = await _tx.select(
-      'SELECT id, ledger_account_id FROM payment_accounts '
-      'WHERE firm_id = ? AND id IN (${_placeholders(ids.length)})',
+      'SELECT pa.id AS id, pa.ledger_account_id AS ledger_account_id '
+      'FROM payment_accounts pa '
+      'JOIN accounts a ON a.id = pa.ledger_account_id '
+      'WHERE pa.firm_id = ? AND pa.deleted_at_utc IS NULL '
+      'AND a.deleted_at_utc IS NULL '
+      'AND pa.id IN (${_placeholders(ids.length)})',
       [actor.firmId, ...ids],
     );
     final found = {
@@ -120,7 +128,8 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
     for (final id in ids) {
       if (!found.containsKey(id)) {
         throw StateError(
-          'Payment account $id does not exist in firm ${actor.firmId}.',
+          'Payment account $id is not available in firm ${actor.firmId}: it '
+          'has been archived, or the account it posts into has.',
         );
       }
     }

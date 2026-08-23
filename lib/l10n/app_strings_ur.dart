@@ -591,4 +591,56 @@ class AppStringsUr extends AppStrings {
   @override
   String get errorNothingWasSaved =>
       'Fikar na karein - kuch bhi galat save nahi hua.';
+
+  @override
+  String a11yRupees(String amount) {
+    return 'Rupees $amount';
+  }
+
+  @override
+  String a11yOwing(String amount) {
+    return '$amount baqaya';
+  }
+
+  @override
+  String get a11yLoading => 'Khul raha hai';
+
+  @override
+  String get errorStartupTitle => 'Hisaab khul nahi saka';
+
+  @override
+  String get errorStartupBody =>
+      'Kuch zaya nahi hua. App band kar ke dobara kholein. Agar phir bhi yehi masla rahe to apni aakhri backup se wapas layein.';
+
+  @override
+  String get permissionDeniedTitle => 'Ijazat nahi mili';
+
+  @override
+  String get permissionDeniedBody =>
+      'Yeh kaam karne ke liye phone ki settings mein is app ko ijazat deni hogi.';
+
+  @override
+  String get permissionOpenSettings => 'Phone ki settings kholein';
+
+  @override
+  String get tenderNoAccount =>
+      'Paisay rakhne ka koi khata nahi mila. Settings mein cash khata dobara chalu karein.';
+
+  @override
+  String get itemArchiveConfirm =>
+      'Yeh item counter par nazar nahi aayega. Purane bill jaise the waise hi rahenge.';
+
+  @override
+  String get settingsAddress => 'Pata';
+
+  @override
+  String get settingsTaxRegistered => 'Sales tax mein registered hoon';
+
+  @override
+  String get settingsTaxRegisteredNote =>
+      'Zyada tar kiryana dukanein registered nahi hotin - bijli ke bill mein sales tax jama ho jata hai. Agar aap ke paas STRN hai tab hi yeh chalu karein.';
+
+  @override
+  String get receiptPrintNotReady =>
+      'Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.';
 }

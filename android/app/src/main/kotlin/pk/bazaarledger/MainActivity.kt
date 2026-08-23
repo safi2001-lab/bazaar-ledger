@@ -1,4 +1,4 @@
-package com.pakistan.billing.pakistan_sme_billing
+package pk.bazaarledger
 
 import io.flutter.embedding.android.FlutterActivity
 

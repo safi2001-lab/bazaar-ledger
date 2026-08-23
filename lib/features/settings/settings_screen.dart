@@ -184,9 +184,11 @@ class _DataHealthCard extends ConsumerWidget {
             ),
           ],
         ),
-        error: (error, _) => Text(
-          '$error',
-          style: TextStyle(fontSize: 13, color: t.danger),
+        error: (error, _) => BlError(
+          title: s.commonSomethingWentWrong,
+          message: '$error',
+          retryLabel: s.settingsDataHealthCheck,
+          onRetry: () => ref.invalidate(dataHealthProvider),
         ),
         data: (report) {
           final problems = report.findings;

@@ -132,19 +132,22 @@ final class SalePostingBuilder {
 
     // --- Tenders ----------------------------------------------------------
     //
-    // Cash is capped at what is actually due. Anything beyond it is change out
-    // of the drawer, not revenue, and posting it as revenue is how a till
-    // ends the day with more money in the books than in the box.
-    final payments = <PaymentPosting>[];
-    var cashRemaining = calculated.paid -
-        Money.sum([
-          for (final t in draft.tenders)
-            if (!t.isCash) t.amount,
-        ]);
-    var changeRemaining = calculated.changeDue;
+    // The capping arithmetic is the calculator's, not repeated here. This
+    // builder writes what that pure function decided, one payment row per
+    // tender it decided was real, in the same order — so the caller can
+    // allocate exactly `calculated.tenders.length` receipt numbers and never
+    // burn one on a row that is not written.
+    if (paymentNumbers.length < calculated.tenders.length) {
+      throw ArgumentError(
+        'Got ${paymentNumbers.length} receipt numbers for '
+        '${calculated.tenders.length} payments.',
+      );
+    }
 
-    for (var i = 0; i < draft.tenders.length; i++) {
-      final tender = draft.tenders[i];
+    final payments = <PaymentPosting>[];
+    for (var i = 0; i < calculated.tenders.length; i++) {
+      final settlement = calculated.tenders[i];
+      final tender = settlement.draft;
       final ledgerAccount =
           ledgerAccountByPaymentAccount[tender.paymentAccountId];
       if (ledgerAccount == null) {
@@ -154,20 +157,6 @@ final class SalePostingBuilder {
         );
       }
 
-      final Money applied;
-      final Money change;
-      if (tender.isCash) {
-        applied = tender.amount <= cashRemaining ? tender.amount : cashRemaining;
-        cashRemaining -= applied;
-        change = changeRemaining;
-        changeRemaining = Money.zero;
-      } else {
-        applied = tender.amount;
-        change = Money.zero;
-      }
-
-      if (applied.isZero && change.isZero) continue;
-
       payments.add(
         PaymentPosting(
           paymentNo: paymentNumbers[i].formatted,
@@ -175,9 +164,9 @@ final class SalePostingBuilder {
           paymentAccountId: tender.paymentAccountId,
           ledgerAccountId: ledgerAccount,
           mode: tender.mode,
-          amount: applied,
-          tendered: tender.tendered ?? tender.amount,
-          change: change,
+          amount: settlement.applied,
+          tendered: settlement.offered,
+          change: settlement.change,
           reference: tender.reference,
           partyId: draft.partyId,
           paymentDateUtcMillis: millis,

@@ -172,7 +172,7 @@ final class Tx {
     final placeholders = List.filled(columns.length, '?').join(', ');
     await _db.customStatement(
       'INSERT INTO $table (${columns.join(', ')}) VALUES ($placeholders)',
-      [for (final c in columns) row[c]],
+      _checked([for (final c in columns) row[c]]),
     );
 
     _mutations++;
@@ -227,7 +227,7 @@ final class Tx {
     await _db.customStatement(
       'UPDATE $table SET ${assignments.join(', ')} '
       'WHERE id = ? AND firm_id = ?',
-      args,
+      _checked(args),
     );
 
     final after = await selectOne(
@@ -258,19 +258,40 @@ final class Tx {
   /// not a preference, and a shopkeeper who deletes a bill by accident on a
   /// Tuesday will want it back on the Wednesday.
   Future<void> softDelete(String table, String id) async {
+    // Read first. Deleting a journal line unbalances its entry, and
+    // `assertBooksBalance` only inspects entries this transaction touched —
+    // so a delete that does not register the touch escapes the pre-commit
+    // check entirely and leaves the books wrong until the reconciler runs,
+    // possibly months later.
+    final before = await selectOne(
+      'SELECT * FROM $table WHERE id = ? AND firm_id = ?',
+      [id, actor.firmId],
+    );
+    if (before == null) {
+      throw StateError('No row $table.$id in firm ${actor.firmId} to delete.');
+    }
+    if (before.data['deleted_at_utc'] != null) {
+      // Otherwise the UPDATE matches nothing, the mutation counter still
+      // rises, and a delete that did not happen is broadcast to every other
+      // counter through the outbox.
+      throw StateError('Row $table.$id in firm ${actor.firmId} is already '
+          'deleted.');
+    }
+    _noteJournalTouch(table, id, before.data);
+
     final hlc = _hlc.next().value;
     await _db.customStatement(
       'UPDATE $table SET deleted_at_utc = ?, updated_at_utc = ?, '
       'updated_by = ?, hlc = ?, rev = rev + 1 '
       'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
-      [
+      _checked([
         actor.epochMillis,
         actor.epochMillis,
         actor.userId,
         hlc,
         id,
         actor.firmId,
-      ],
+      ]),
     );
 
     final after = await selectOne(
@@ -470,6 +491,27 @@ final class Tx {
         actor.epochMillis,
       ],
     );
+  }
+
+  /// The same refusal as [_bind], for the raw-value binding that
+  /// `customStatement` uses.
+  ///
+  /// The read path has rejected a bound `double` since day one, and the write
+  /// path — the one that actually stores money — did not. A REAL that happens
+  /// to be integral is coerced silently into a STRICT INTEGER column, so the
+  /// first sign of a float creeping into the money layer would have been a
+  /// rounding difference in a report months later.
+  static List<Object?> _checked(List<Object?> args) {
+    for (final a in args) {
+      if (a == null || a is int || a is String || a is bool) continue;
+      throw ArgumentError.value(
+        a,
+        'args',
+        'only int, String, bool and null may be written — a double here '
+            'would be money represented as a float',
+      );
+    }
+    return args;
   }
 
   static List<Variable<Object>> _bind(List<Object?> args) => [

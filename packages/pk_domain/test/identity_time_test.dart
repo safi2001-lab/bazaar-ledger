@@ -278,15 +278,33 @@ void main() {
       expect(actor.businessDate.fiscalYear, 2627);
     });
 
-    test('refuses an empty identity', () {
+    test('refuses an empty identity, in release as well as in debug', () {
+      // ArgumentError, not AssertionError. An assertion is stripped from a
+      // release build, and this test would then have been passing while the
+      // shipped app happily wrote unattributable rows — the exact shape of
+      // the failure this whole codebase was rebuilt to make impossible.
+      for (final field in const ['firm', 'user', 'device']) {
+        expect(
+          () => ActorContext(
+            firmId: field == 'firm' ? '' : 'F1',
+            userId: field == 'user' ? '' : 'U1',
+            deviceId: field == 'device' ? '' : 'D1',
+            startedAtUtc: DateTime.utc(2026),
+          ),
+          throwsA(isA<ArgumentError>()),
+          reason: 'an empty $field id must be refused',
+        );
+      }
+
+      // Whitespace is empty too: a device label of one space is not an actor.
       expect(
         () => ActorContext(
-          firmId: '',
-          userId: 'U1',
+          firmId: 'F1',
+          userId: '   ',
           deviceId: 'D1',
           startedAtUtc: DateTime.utc(2026),
         ),
-        throwsA(isA<AssertionError>()),
+        throwsA(isA<ArgumentError>()),
       );
     });
   });

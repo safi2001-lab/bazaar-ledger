@@ -41,8 +41,16 @@ final class Rate implements Comparable<Rate> {
   /// pharmacy's pro-rata loose-sale price is computed: the pack MRP divided
   /// by the pack size, which the Drug Pricing Policy requires a strip-cut
   /// sale not to exceed.
+  ///
+  /// Rounds **down** by default, and that default is a legal requirement
+  /// rather than a preference. Half-up here can price the whole pack above
+  /// the pack: a 3-paisa pack of two units rounds 1.5 up to 2 milli-paisa
+  /// each, and two of them come to 4 paisa. The Drug Pricing Policy says the
+  /// MRP on a loose sale "shall not exceed the pro-rata MRP printed on the
+  /// pack", so the fraction of a paisa the shop cannot charge is the shop's
+  /// to lose.
   factory Rate.fromPack(Money packPrice, Qty packSize,
-      {RoundingMode mode = RoundingMode.halfUp}) {
+      {RoundingMode mode = RoundingMode.truncate}) {
     if (packSize.inThousandths <= 0) {
       throw ArgumentError.value(packSize, 'packSize', 'must be > 0');
     }
@@ -105,8 +113,11 @@ final class Rate implements Comparable<Rate> {
   bool operator >(Rate other) => inMilliPaisa > other.inMilliPaisa;
   bool operator >=(Rate other) => inMilliPaisa >= other.inMilliPaisa;
 
-  /// Adjusts by a percentage in basis points — a margin, or the statutory 15%
-  /// pharmacy retailer discount (`-1500`).
+  /// The *portion* of this rate a percentage in basis points comes to.
+  ///
+  /// Not an adjusted rate: `Rate.rupees(1000).percentBp(-1500)` is minus
+  /// Rs 150, not Rs 850. The statutory 15% pharmacy retailer discount is
+  /// therefore `rate + rate.percentBp(-1500)`, or `rate.percentBp(8500)`.
   Rate percentBp(int basisPoints, {RoundingMode mode = RoundingMode.halfUp}) =>
       Rate._(divideRounded(inMilliPaisa * basisPoints, 10000, mode));
 

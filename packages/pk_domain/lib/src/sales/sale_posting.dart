@@ -297,5 +297,20 @@ final class SalePosting {
         'add up to.',
       );
     }
+    // A negative debit is a credit wearing the wrong hat: the sums still
+    // match, so the equality above passes, and the schema's own
+    // `CHECK (debit_paisa >= 0)` then refuses the write three layers later as
+    // a raw constraint error. Caught here instead, where the message can say
+    // which line and why.
+    for (final line in journal.lines) {
+      if (line.debit.isNegative || line.credit.isNegative) {
+        throw StateError(
+          'Sale ${document.docNo} would post a negative amount to '
+          '${line.accountSystemKey}: debit ${line.debit.amountOnly}, credit '
+          '${line.credit.amountOnly}. An entry corrects itself with the '
+          'opposite column, never with a minus sign.',
+        );
+      }
+    }
   }
 }

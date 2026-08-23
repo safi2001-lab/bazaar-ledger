@@ -18,7 +18,7 @@ ThemeData blTheme({required bool dark}) {
     secondary: t.accent,
     onSecondary: t.accentInk,
     error: t.danger,
-    onError: dark ? const Color(0xFF2E1815) : Colors.white,
+    onError: t.dangerSurface,
     surface: t.surface,
     onSurface: t.ink,
     surfaceContainerHighest: t.surfaceRaised,
@@ -131,7 +131,7 @@ ThemeData blTheme({required bool dark}) {
 
     bottomSheetTheme: BottomSheetThemeData(
       backgroundColor: t.surface,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: t.transparent,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(BlTokens.radiusLg),
@@ -141,7 +141,7 @@ ThemeData blTheme({required bool dark}) {
 
     dialogTheme: DialogThemeData(
       backgroundColor: t.surface,
-      surfaceTintColor: Colors.transparent,
+      surfaceTintColor: t.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(BlTokens.radiusLg),
         side: BorderSide(color: t.line),

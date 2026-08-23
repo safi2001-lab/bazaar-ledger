@@ -1165,6 +1165,90 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Fikar na karein - kuch bhi galat save nahi hua.'**
   String get errorNothingWasSaved;
+
+  /// Screen-reader rendering of a money cell.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rupees {amount}'**
+  String a11yRupees(String amount);
+
+  /// Screen-reader rendering of a negative money cell.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} baqaya'**
+  String a11yOwing(String amount);
+
+  /// Screen-reader label on a loading skeleton.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khul raha hai'**
+  String get a11yLoading;
+
+  /// Shown when the database will not open.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab khul nahi saka'**
+  String get errorStartupTitle;
+
+  /// Reassurance under the startup failure title.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch zaya nahi hua. App band kar ke dobara kholein. Agar phir bhi yehi masla rahe to apni aakhri backup se wapas layein.'**
+  String get errorStartupBody;
+
+  /// Shown when Android refused a permission the screen needs.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ijazat nahi mili'**
+  String get permissionDeniedTitle;
+
+  /// What to do about a refused permission.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh kaam karne ke liye phone ki settings mein is app ko ijazat deni hogi.'**
+  String get permissionDeniedBody;
+
+  /// Button that opens the OS app-settings page.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone ki settings kholein'**
+  String get permissionOpenSettings;
+
+  /// Shown when every payment account has been archived.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay rakhne ka koi khata nahi mila. Settings mein cash khata dobara chalu karein.'**
+  String get tenderNoAccount;
+
+  /// Body of the archive-item confirmation dialog.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh item counter par nazar nahi aayega. Purane bill jaise the waise hi rahenge.'**
+  String get itemArchiveConfirm;
+
+  /// Street address of the shop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pata'**
+  String get settingsAddress;
+
+  /// Whether the shop holds an STRN.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sales tax mein registered hoon'**
+  String get settingsTaxRegistered;
+
+  /// Explains s.3(9) STA in plain words.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zyada tar kiryana dukanein registered nahi hotin - bijli ke bill mein sales tax jama ho jata hai. Agar aap ke paas STRN hai tab hi yeh chalu karein.'**
+  String get settingsTaxRegisteredNote;
+
+  /// Honest note on a print button that cannot print yet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.'**
+  String get receiptPrintNotReady;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

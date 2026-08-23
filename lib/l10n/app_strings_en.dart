@@ -590,4 +590,56 @@ class AppStringsEn extends AppStrings {
   @override
   String get errorNothingWasSaved =>
       'Nothing was saved, so nothing is out of place.';
+
+  @override
+  String a11yRupees(String amount) {
+    return 'Rupees $amount';
+  }
+
+  @override
+  String a11yOwing(String amount) {
+    return '$amount owing';
+  }
+
+  @override
+  String get a11yLoading => 'Loading';
+
+  @override
+  String get errorStartupTitle => 'The books could not be opened';
+
+  @override
+  String get errorStartupBody =>
+      'Nothing has been lost. Close the app and open it again. If this keeps happening, restore from your last backup.';
+
+  @override
+  String get permissionDeniedTitle => 'Permission not granted';
+
+  @override
+  String get permissionDeniedBody =>
+      'This needs permission from your phone\'s settings before it can work.';
+
+  @override
+  String get permissionOpenSettings => 'Open phone settings';
+
+  @override
+  String get tenderNoAccount =>
+      'There is no account left to put the money in. Turn the cash account back on in Settings.';
+
+  @override
+  String get itemArchiveConfirm =>
+      'This item will not show at the counter any more. Old bills stay exactly as they were.';
+
+  @override
+  String get settingsAddress => 'Address';
+
+  @override
+  String get settingsTaxRegistered => 'I am registered for sales tax';
+
+  @override
+  String get settingsTaxRegisteredNote =>
+      'Most kiryana shops are not registered - sales tax is collected through the electricity bill instead. Only turn this on if you hold an STRN.';
+
+  @override
+  String get receiptPrintNotReady =>
+      'Printing arrives in M2. For now you can check the bill and send the PDF.';
 }

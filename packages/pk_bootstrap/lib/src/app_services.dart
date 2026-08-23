@@ -1,5 +1,7 @@
+import 'dart:ffi';
 import 'dart:io';
 
+import 'package:drift/native.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -7,6 +9,7 @@ import 'package:pk_application/pk_application.dart';
 import 'package:pk_data/pk_data.dart';
 import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_platform/pk_platform.dart';
+import 'package:sqlite3/open.dart';
 
 /// Everything the app can do, wired once.
 ///
@@ -254,4 +257,44 @@ final class ActorIdentity {
   final String firmId;
   final String userId;
   final String deviceId;
+}
+
+/// Opens a throwaway database in memory, for tests and demos.
+///
+/// Deliberately part of the shipped API rather than a test helper copied into
+/// every suite. Widget and integration tests must drive the real write path
+/// against a real SQLite file — mock databases are banned in integration tests
+/// by lint, because the previous build's suite passed while the app wrote
+/// nothing at all. What varies between production and a test is where the
+/// bytes live, and nothing else.
+Future<AppServices> openInMemoryServices({
+  Clock clock = const SystemClock(),
+  String appVersion = '0.1.0-test',
+}) async {
+  _resolveSqliteForHost();
+  return AppServices.openWith(
+    NativeDatabase.memory(),
+    clock: clock,
+    appVersion: appVersion,
+  );
+}
+
+var _sqliteResolved = false;
+
+/// Points `sqlite3` at a native library on desktop hosts that do not ship one
+/// on the default search path.
+///
+/// Android and iOS get theirs from `sqlite3_flutter_libs`, and Linux CI finds
+/// `libsqlite3.so` the usual way. Windows 10 1803 and later carry
+/// `winsqlite3.dll` in System32 — a current SQLite, 3.51 on the development
+/// machine — so the suite runs with no vendored binary and no download step.
+void _resolveSqliteForHost() {
+  if (_sqliteResolved) return;
+  _sqliteResolved = true;
+  if (Platform.isWindows) {
+    open.overrideFor(
+      OperatingSystem.windows,
+      () => DynamicLibrary.open('winsqlite3.dll'),
+    );
+  }
 }

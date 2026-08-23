@@ -111,7 +111,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                       BlTokens.space10 * 2,
                     ),
                     itemCount: rows.length,
-                    itemExtent: 72,
+                    itemExtent: blRowExtent(context, 72),
                     itemBuilder: (context, i) => _ItemRow(
                       key: ValueKey(rows[i].id),
                       item: rows[i],

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pk_money/pk_money.dart';
 
+import '../l10n/app_strings.dart';
 import 'tokens.dart';
 
 /// The component library.
@@ -46,24 +47,30 @@ class BlMoney extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    final resolved = colour ??
+    final resolved =
+        colour ??
         (amount.isNegative
             ? t.moneyOut
             : showSign && amount.isPositive
-                ? t.money
-                : t.ink);
+            ? t.money
+            : t.ink);
 
     final text = showSign
         ? amount.signed
         : withSymbol
-            ? amount.toString()
-            : amount.amountOnly;
+        ? amount.toString()
+        : amount.amountOnly;
+
+    // The screen-reader rendering is localised like everything else. An
+    // accessibility layer that only speaks English is an accessibility layer
+    // for people who can already read the screen.
+    final s = AppStrings.of(context);
+    final spoken = amount.isNegative
+        ? s.a11yOwing(amount.abs.amountOnly)
+        : s.a11yRupees(amount.amountOnly);
 
     return Semantics(
-      label: '${semanticPrefix ?? ''}'
-          '${semanticPrefix == null ? '' : ' '}'
-          'Rupees ${amount.abs.amountOnly}'
-          '${amount.isNegative ? ' owing' : ''}',
+      label: semanticPrefix == null ? spoken : '$semanticPrefix $spoken',
       excludeSemantics: true,
       child: Text(
         text,
@@ -84,13 +91,7 @@ class BlMoney extends StatelessWidget {
 /// The previous build printed `quantity.toInt()` in the cart, so 0.750 kg of
 /// mutton showed the cashier a zero while the arithmetic underneath was right.
 class BlQty extends StatelessWidget {
-  const BlQty(
-    this.qty, {
-    super.key,
-    this.unit,
-    this.size = 15,
-    this.colour,
-  });
+  const BlQty(this.qty, {super.key, this.unit, this.size = 15, this.colour});
 
   final Qty qty;
   final String? unit;
@@ -158,7 +159,7 @@ class BlButton extends StatelessWidget {
     final (background, foreground, border) = switch (kind) {
       BlButtonKind.primary => (t.accent, t.accentInk, null),
       BlButtonKind.secondary => (t.surface, t.ink, t.lineStrong),
-      BlButtonKind.ghost => (Colors.transparent, t.ink, null),
+      BlButtonKind.ghost => (t.transparent, t.ink, null),
       BlButtonKind.danger => (t.dangerSurface, t.danger, t.danger),
     };
 
@@ -187,8 +188,7 @@ class BlButton extends StatelessWidget {
                   horizontal: BlTokens.space5,
                 ),
                 child: Row(
-                  mainAxisSize:
-                      expand ? MainAxisSize.max : MainAxisSize.min,
+                  mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     if (busy)
@@ -251,19 +251,19 @@ class BlIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message: label,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(icon),
-        color: colour ?? context.bl.ink,
-        iconSize: 22,
-        constraints: const BoxConstraints(
-          minWidth: BlTokens.touchMin,
-          minHeight: BlTokens.touchMin,
-        ),
-        tooltip: label,
+    // IconButton's own `tooltip` already wraps the child in a Tooltip and
+    // sets the semantic label. Wrapping it in a second one announced the
+    // label twice to TalkBack.
+    return IconButton(
+      onPressed: onPressed,
+      icon: Icon(icon),
+      color: colour ?? context.bl.ink,
+      iconSize: 22,
+      constraints: const BoxConstraints(
+        minWidth: BlTokens.touchMin,
+        minHeight: BlTokens.touchMin,
       ),
+      tooltip: label,
     );
   }
 }
@@ -319,7 +319,8 @@ class BlField extends StatelessWidget {
       autofocus: autofocus,
       enabled: enabled,
       maxLines: maxLines,
-      keyboardType: keyboardType ??
+      keyboardType:
+          keyboardType ??
           (numeric
               ? TextInputType.numberWithOptions(decimal: decimals > 0)
               : TextInputType.text),
@@ -408,7 +409,7 @@ class BlCard extends StatelessWidget {
     );
     if (onTap == null) return content;
     return Material(
-      color: Colors.transparent,
+      color: t.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(BlTokens.radiusMd),
@@ -473,9 +474,9 @@ class BlChip extends StatelessWidget {
     final (bg, fg) = switch (tone) {
       BlChipTone.neutral => (t.paper, t.inkMuted),
       BlChipTone.good => (
-          t.money.withValues(alpha: t.isDark ? 0.18 : 0.10),
-          t.money,
-        ),
+        t.money.withValues(alpha: t.isDark ? 0.18 : 0.10),
+        t.money,
+      ),
       BlChipTone.warn => (t.warningSurface, t.warning),
       BlChipTone.bad => (t.dangerSurface, t.danger),
     };
@@ -496,12 +497,20 @@ class BlChip extends StatelessWidget {
             Icon(icon, size: 13, color: fg),
             const SizedBox(width: 4),
           ],
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              color: fg,
+          // A chip carries a khata balance more often than a word, so it
+          // renders in the same tabular figures as every other money cell and
+          // gives way rather than overflowing its row.
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: fg,
+                fontFeatures: BlTokens.tabular,
+              ),
             ),
           ),
         ],
@@ -538,7 +547,11 @@ class BlEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    return Center(
+    // Scrollable so it can never overflow the box it is dropped into. An empty
+    // or error state is the one thing on screen when something has already
+    // gone wrong, and a yellow-and-black overflow stripe on top of it helps
+    // nobody — least of all on a short landscape viewport with the keyboard up.
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(BlTokens.space8),
         child: Column(
@@ -597,7 +610,11 @@ class BlError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    return Center(
+    // Scrollable so it can never overflow the box it is dropped into. An empty
+    // or error state is the one thing on screen when something has already
+    // gone wrong, and a yellow-and-black overflow stripe on top of it helps
+    // nobody — least of all on a short landscape viewport with the keyboard up.
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(BlTokens.space6),
         child: Column(
@@ -642,7 +659,7 @@ class BlError extends StatelessWidget {
             if (onRetry != null) ...[
               const SizedBox(height: BlTokens.space5),
               BlButton(
-                label: retryLabel ?? 'Try again',
+                label: retryLabel ?? AppStrings.of(context).actionRetry,
                 onPressed: onRetry,
                 kind: BlButtonKind.secondary,
               ),
@@ -663,43 +680,74 @@ class BlSkeletonList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    return ListView.separated(
+    // A Column, not a ListView. A fixed handful of grey blocks never needs to
+    // scroll, and a scrollable here cannot be dropped into a page that is
+    // already a list — which is exactly where the home screen puts it, and
+    // where a nested viewport throws "unbounded height" and takes the whole
+    // screen down with it.
+    //
+    // It draws as many rows as there is room for, and no more. A skeleton is
+    // a hint that something is coming, not content: overflowing its box to
+    // show a sixth grey rectangle nobody will read is strictly worse than
+    // showing four.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const rowHeight = 64.0 + BlTokens.space2;
+        final fits = constraints.hasBoundedHeight
+            ? ((constraints.maxHeight - BlTokens.space8) ~/ rowHeight).clamp(
+                1,
+                rows,
+              )
+            : rows;
+        return _skeleton(context, t, fits);
+      },
+    );
+  }
+
+  Widget _skeleton(BuildContext context, BlTokens t, int rows) {
+    return Padding(
       padding: const EdgeInsets.all(BlTokens.space4),
-      itemCount: rows,
-      separatorBuilder: (_, _) => const SizedBox(height: BlTokens.space2),
-      itemBuilder: (_, i) => Semantics(
-        label: i == 0 ? 'Loading' : null,
-        child: Container(
-          height: 64,
-          decoration: BoxDecoration(
-            color: t.surface,
-            borderRadius: BorderRadius.circular(BlTokens.radiusMd),
-            border: Border.all(color: t.line),
-          ),
-          padding: const EdgeInsets.all(BlTokens.space3),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 140,
-                height: 12,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var i = 0; i < rows; i++) ...[
+            if (i > 0) const SizedBox(height: BlTokens.space2),
+            Semantics(
+              label: i == 0 ? AppStrings.of(context).a11yLoading : null,
+              child: Container(
+                height: 64,
                 decoration: BoxDecoration(
-                  color: t.line,
-                  borderRadius: BorderRadius.circular(2),
+                  color: t.surface,
+                  borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+                  border: Border.all(color: t.line),
+                ),
+                padding: const EdgeInsets.all(BlTokens.space3),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 140,
+                      height: 12,
+                      decoration: BoxDecoration(
+                        color: t.line,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(height: BlTokens.space2),
+                    Container(
+                      width: 80,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: t.line,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: BlTokens.space2),
-              Container(
-                width: 80,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: t.line,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -106,7 +106,7 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
                   : ListView.builder(
                       shrinkWrap: true,
                       itemCount: rows.length,
-                      itemExtent: 68,
+                      itemExtent: blRowExtent(context, 68),
                       itemBuilder: (context, i) => PartyRowTile(
                         key: ValueKey(rows[i].id),
                         party: rows[i],

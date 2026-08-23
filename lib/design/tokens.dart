@@ -71,6 +71,11 @@ final class BlTokens extends ThemeExtension<BlTokens> {
   /// Money going out, and negative figures.
   final Color moneyOut;
 
+  /// Fully transparent. A token rather than `Colors.transparent` so the
+  /// `no_hardcoded_color` rule has no exception to carve out, and so a
+  /// theme that wants a tinted scrim later has one place to change.
+  Color get transparent => const Color(0x00000000);
+
   final Color warning;
   final Color warningSurface;
   final Color danger;
@@ -219,6 +224,18 @@ final class BlTokens extends ThemeExtension<BlTokens> {
 }
 
 /// `context.bl` reads the tokens.
+/// A fixed row height that still works at 200% text.
+///
+/// `itemExtent` is the single biggest list win on an Android Go handset — the
+/// framework skips layout entirely for rows it is not drawing — but a constant
+/// sized for 100% text clips the second line the moment a shopkeeper with poor
+/// eyesight turns the system font up. Only the text block is scaled; the
+/// padding around it is not, because padding does not grow with a typeface.
+double blRowExtent(BuildContext context, double base, {double padding = 16}) {
+  final text = base - padding;
+  return padding + MediaQuery.textScalerOf(context).scale(text);
+}
+
 extension BlTokensLookup on BuildContext {
   BlTokens get bl =>
       Theme.of(this).extension<BlTokens>() ?? BlTokens.light;

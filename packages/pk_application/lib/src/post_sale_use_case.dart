@@ -66,8 +66,13 @@ final class PostSaleUseCase {
 
       final invoiceNumber = await write.nextNumber('sale_invoice');
       final journalNumber = await write.nextNumber('journal_entry');
+      // One receipt number per payment that will actually be written, asked
+      // of the calculator rather than counted off the draft. A tender that
+      // settles nothing and gives no change is not a payment, and drawing a
+      // number for it leaves a permanent gap in the receipt series on the
+      // success path — the one place a rollback test would never look.
       final paymentNumbers = <AllocatedNumber>[
-        for (var i = 0; i < priced.tenders.length; i++)
+        for (var i = 0; i < calculated.tenders.length; i++)
           await write.nextNumber('payment_in'),
       ];
 

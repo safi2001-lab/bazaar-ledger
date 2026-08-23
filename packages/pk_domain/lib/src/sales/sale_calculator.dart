@@ -45,6 +45,54 @@ final class CalculatedLine {
   Money get tax => Money.sum([for (final t in taxes) t.amount]);
 }
 
+/// How one tender actually landed.
+///
+/// The capping arithmetic lives here, in the pure calculator, and nowhere
+/// else. It used to be repeated in the posting builder, and the two copies
+/// disagreed: a tender the builder decided contributed nothing was silently
+/// skipped, taking its already-allocated payment number with it. A gap in a
+/// receipt series is the first thing an auditor asks about.
+final class AppliedTender {
+  const AppliedTender({
+    required this.index,
+    required this.draft,
+    required this.offered,
+    required this.applied,
+    required this.change,
+  });
+
+  /// Position in the draft's tender list, so a caller can match them up.
+  final int index;
+
+  final TenderDraft draft;
+
+  /// What the customer actually handed over. For cash that is `tendered` when
+  /// the cashier typed it, and `amount` otherwise.
+  final Money offered;
+
+  /// What came off the bill. Never more than was owed.
+  final Money applied;
+
+  /// Handed back out of the drawer.
+  final Money change;
+
+  /// Whether this settlement went through a banking or digital channel.
+  ///
+  /// Feeds s.21(s): cash is obviously not one, and neither is an internal
+  /// adjustment, which is a book entry rather than a payment at all.
+  bool get isBankingChannel => draft.isBankingChannel;
+
+  /// Whether this tender becomes a payment row.
+  ///
+  /// A note that settles nothing is handed straight back across the counter —
+  /// the customer paid the bill some other way, or gave more cash than was
+  /// needed on top of an exact transfer. Nothing entered the drawer and
+  /// nothing left it, so there is no payment, no allocation and no receipt
+  /// number. Writing one anyway produced a row with `amount_paisa = 0`, which
+  /// the schema refuses outright.
+  bool get isPosted => applied.isPositive;
+}
+
 /// A sale, fully priced, ready to be written.
 final class CalculatedSale {
   const CalculatedSale({
@@ -61,6 +109,7 @@ final class CalculatedSale {
     required this.total,
     required this.paid,
     required this.balance,
+    required this.tenders,
     required this.cost,
     required this.changeDue,
     required this.cashThresholdBreached,
@@ -92,6 +141,13 @@ final class CalculatedSale {
 
   /// Cash handed over less the cash actually due.
   final Money changeDue;
+
+  /// Each tender, with what it actually settled and what came back as change.
+  ///
+  /// Only the ones that will be written: a caller allocating receipt numbers
+  /// asks this list how many it needs, so a number is never drawn for a
+  /// payment row that is then not written.
+  final List<AppliedTender> tenders;
 
   /// s.21(s), Finance Act 2025: 50% of an expenditure is disallowed where a
   /// single invoice above Rs 200,000 is settled otherwise than through a
@@ -225,36 +281,76 @@ final class SaleCalculator {
     final total = beforeRounding + roundOff;
 
     // --- Tenders. --------------------------------------------------------
-    final tendered = Money.sum([for (final t in draft.tenders) t.amount]);
-    if (tendered > total && !draft.tenders.any((t) => t.isCash)) {
-      throw ArgumentError(
-        'Non-cash tenders total ${tendered.amountOnly} against a bill of '
-        '${total.amountOnly}. There is no change to give on a bank transfer.',
-      );
-    }
-
-    // A cash tender is capped at what is actually due; anything beyond it is
-    // change, not revenue.
+    //
+    // Nothing that is not cash can be overpaid: a customer does not transfer
+    // Rs 6,000 for a Rs 5,525 bill and take Rs 475 out of the till, and a
+    // shop that posts the difference as revenue ends the day with more money
+    // in the books than in the box. This used to be allowed through whenever
+    // a cash tender happened to be present alongside, which then produced a
+    // zero-amount payment row and a negative receivable — both refused by the
+    // schema three layers later, as a raw constraint error on a sale the
+    // shopkeeper had already been told was going through.
     final nonCash = Money.sum([
       for (final t in draft.tenders)
         if (!t.isCash) t.amount,
     ]);
-    final cashOffered = Money.sum([
-      for (final t in draft.tenders)
-        if (t.isCash) t.amount,
-    ]);
-    final cashDue = total - nonCash;
-    final cashApplied = cashOffered > cashDue
-        ? (cashDue.isNegative ? Money.zero : cashDue)
-        : cashOffered;
-    final changeDue = cashOffered - cashApplied;
+    if (nonCash > total) {
+      throw ArgumentError(
+        'Non-cash tenders total ${nonCash.amountOnly} against a bill of '
+        '${total.amountOnly}. There is no change to give on a bank transfer.',
+      );
+    }
 
-    final paid = nonCash + cashApplied;
+    // Cash is capped at what is actually due; anything beyond it is change out
+    // of the drawer. `tendered` is what the customer handed over when the
+    // cashier typed it — the note, not the amount being settled — and it is
+    // the basis for the change, exactly as the field's own documentation
+    // promises.
+    final applied = <AppliedTender>[];
+    var cashDue = total - nonCash;
+    if (cashDue.isNegative) cashDue = Money.zero;
+
+    for (var i = 0; i < draft.tenders.length; i++) {
+      final t = draft.tenders[i];
+      final Money offered;
+      final Money settled;
+      if (t.isCash) {
+        offered = t.tendered ?? t.amount;
+        settled = offered > cashDue ? cashDue : offered;
+        cashDue -= settled;
+      } else {
+        offered = t.amount;
+        settled = t.amount;
+      }
+      applied.add(
+        AppliedTender(
+          index: i,
+          draft: t,
+          offered: offered,
+          applied: settled,
+          change: offered - settled,
+        ),
+      );
+    }
+
+    final posted = [
+      for (final a in applied)
+        if (a.isPosted) a,
+    ];
+
+    final paid = Money.sum([for (final a in posted) a.applied]);
+    final changeDue = Money.sum([for (final a in posted) a.change]);
     final balance = total - paid;
 
-    final cashPaid = cashApplied;
-    final breached =
-        total.inPaisa > cashThresholdPaisa && cashPaid.isPositive;
+    // s.21(s) turns on how the invoice was settled, not merely on whether any
+    // cash was involved. An internal adjustment is not cash, but it is not a
+    // banking or digital channel either, and the statute covers it.
+    final outsideBankingChannel = Money.sum([
+      for (final a in posted)
+        if (!a.isBankingChannel) a.applied,
+    ]);
+    final breached = total.inPaisa > cashThresholdPaisa &&
+        outsideBankingChannel.isPositive;
 
     return CalculatedSale(
       lines: List.unmodifiable(calculated),
@@ -270,6 +366,7 @@ final class SaleCalculator {
       total: total,
       paid: paid,
       balance: balance,
+      tenders: List.unmodifiable(posted),
       cost: cost,
       changeDue: changeDue,
       cashThresholdBreached: breached,

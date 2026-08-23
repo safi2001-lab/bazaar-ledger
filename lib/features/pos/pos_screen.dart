@@ -69,6 +69,19 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   Timer? _debounce;
 
   @override
+  void initState() {
+    super.initState();
+    // Clear whatever the last screen was still saying. A snackbar is anchored
+    // to the bottom of the window, which is exactly where the charge button
+    // is, and "Item save ho gaya" lingering for four seconds over it means a
+    // cashier's tap lands on a message instead of on the sale. Nothing on the
+    // billing path may be covered by news about something else.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ScaffoldMessenger.of(context).clearSnackBars();
+    });
+  }
+
+  @override
   void dispose() {
     _debounce?.cancel();
     _search.dispose();
@@ -266,7 +279,7 @@ class _SearchResults extends ConsumerWidget {
           itemCount: items.length,
           // A fixed extent lets the framework skip layout for every row it is
           // not drawing, which is the single biggest list win on a Go handset.
-          itemExtent: 64,
+          itemExtent: blRowExtent(context, 64),
           itemBuilder: (context, i) {
             final item = items[i];
             return _ResultRow(
@@ -450,15 +463,19 @@ class _CartLineTile extends ConsumerWidget {
                         notifier.setQty(line.item.id, line.qty - step),
                   ),
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () => _editLine(context, ref),
-                      child: Container(
-                        height: BlTokens.touchMin,
-                        alignment: Alignment.center,
-                        child: BlQty(
-                          line.qty,
-                          unit: line.item.unitCode,
-                          size: 16,
+                    child: Semantics(
+                      button: true,
+                      label: '${s.actionEdit} ${line.item.name}',
+                      child: InkWell(
+                        onTap: () => _editLine(context, ref),
+                        child: Container(
+                          height: BlTokens.touchKeypad,
+                          alignment: Alignment.center,
+                          child: BlQty(
+                            line.qty,
+                            unit: line.item.unitCode,
+                            size: 16,
+                          ),
                         ),
                       ),
                     ),
@@ -527,8 +544,11 @@ class _StepButton extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(BlTokens.radiusMd),
         child: Container(
-          width: BlTokens.touchMin,
-          height: BlTokens.touchMin,
+          // The counter's own keypad is 56, not 48. A cashier with dirty
+          // hands under a customer's gaze is the constraint this number was
+          // measured against.
+          width: BlTokens.touchKeypad,
+          height: BlTokens.touchKeypad,
           decoration: BoxDecoration(
             border: Border.all(color: t.line),
             borderRadius: BorderRadius.circular(BlTokens.radiusMd),

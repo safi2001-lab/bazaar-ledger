@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../design/components.dart';
 import '../design/theme.dart';
 import '../design/tokens.dart';
 import '../features/home/home_screen.dart';
@@ -91,59 +92,19 @@ class _Root extends ConsumerWidget {
       error: (error, stack) => Scaffold(
         backgroundColor: t.paper,
         body: SafeArea(
-          child: _StartupFailure(error: error, onRetry: () => ref.invalidate(firmProvider)),
+          child: Center(
+            child: BlError(
+              title: AppStrings.of(context).errorStartupTitle,
+              message: '$error',
+              reassurance: AppStrings.of(context).errorStartupBody,
+              retryLabel: AppStrings.of(context).actionRetry,
+              onRetry: () => ref.invalidate(firmProvider),
+            ),
+          ),
         ),
       ),
       data: (profile) =>
           profile == null ? const SetupScreen() : const HomeScreen(),
-    );
-  }
-}
-
-class _StartupFailure extends StatelessWidget {
-  const _StartupFailure({required this.error, required this.onRetry});
-
-  final Object error;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = context.bl;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(BlTokens.space6),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.storage_outlined, size: 44, color: t.danger),
-            const SizedBox(height: BlTokens.space4),
-            Text(
-              'The books could not be opened',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 19,
-                fontWeight: FontWeight.w700,
-                color: t.ink,
-              ),
-            ),
-            const SizedBox(height: BlTokens.space2),
-            Text(
-              'Nothing has been lost. Close the app and open it again; if this '
-              'keeps happening, restore from your last backup.',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: t.inkMuted),
-            ),
-            const SizedBox(height: BlTokens.space4),
-            Text(
-              '$error',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: t.inkFaint),
-            ),
-            const SizedBox(height: BlTokens.space5),
-            FilledButton(onPressed: onRetry, child: const Text('Try again')),
-          ],
-        ),
-      ),
     );
   }
 }

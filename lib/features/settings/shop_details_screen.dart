@@ -134,7 +134,7 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
                         const SizedBox(height: BlTokens.space4),
                         BlField(
                           controller: _address,
-                          label: s.settingsShop,
+                          label: s.settingsAddress,
                           textInputAction: TextInputAction.next,
                         ),
                         const SizedBox(height: BlTokens.space4),
@@ -167,7 +167,12 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
                         SwitchListTile.adaptive(
                           contentPadding: EdgeInsets.zero,
                           value: _registered,
-                          title: Text(s.posTax),
+                          title: Text(s.settingsTaxRegistered),
+                          subtitle: Text(
+                            s.settingsTaxRegisteredNote,
+                            style: TextStyle(fontSize: 12, color: t.inkMuted),
+                          ),
+                          isThreeLine: true,
                           onChanged: (v) => setState(() => _registered = v),
                         ),
                         if (_registered) ...[

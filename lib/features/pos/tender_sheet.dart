@@ -45,7 +45,19 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   Money get _tenderedAmount =>
       Money.tryParse(_tendered.text) ?? Money.zero;
 
-  Future<void> _post({required bool print}) async {
+  /// The account this tender posts into: one matching the chosen mode, else
+  /// the shop's default, else nothing at all.
+  PaymentAccountSummary? _accountFor(List<PaymentAccountSummary> accounts) {
+    for (final a in accounts) {
+      if (a.modeLabel == _mode) return a;
+    }
+    for (final a in accounts) {
+      if (a.isDefault) return a;
+    }
+    return accounts.isEmpty ? null : accounts.first;
+  }
+
+  Future<void> _post() async {
     final s = AppStrings.of(context);
     final preview = ref.read(cartPreviewProvider);
     final cart = ref.read(cartProvider);
@@ -57,19 +69,37 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       return;
     }
 
-    final accounts = ref.read(paymentAccountsProvider).valueOrNull ?? const [];
-    final account = accounts.firstWhere(
-      (a) => a.modeLabel == _mode,
-      orElse: () => accounts.firstWhere(
-        (a) => a.isDefault,
-        orElse: () => accounts.first,
-      ),
-    );
+    // Read fresh rather than off the provider cache. A payment account can be
+    // archived by the owner on another screen — or, with M13's LAN sync, by a
+    // second counter — between this sheet opening and the shopkeeper tapping
+    // save, and a tender pointing at a dead account must fail loudly here
+    // rather than three layers down inside the transaction.
+    List<PaymentAccountSummary> accounts;
+    try {
+      accounts = await ref
+          .read(appServicesProvider)
+          .queries
+          .paymentAccounts(firm.id);
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() => _failure = '${s.billSaveFailed}\n\n$error');
+      }
+      return;
+    }
+
+    final account = _onUdhaar ? null : _accountFor(accounts);
+    if (!_onUdhaar && account == null) {
+      // Nothing to post the money into. First run seeds a cash account, so
+      // this means every account has been archived — which is recoverable,
+      // and is said in words rather than thrown.
+      if (mounted) setState(() => _failure = s.tenderNoAccount);
+      return;
+    }
 
     // On udhaar there is no tender at all: the whole bill lands in the
     // customer's khata. Otherwise the shopkeeper is settling it now, and cash
     // carries what was handed over so change can be worked out.
-    final tenders = _onUdhaar
+    final tenders = account == null
         ? const <TenderDraft>[]
         : [
             TenderDraft(
@@ -85,6 +115,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             ),
           ];
 
+    if (!mounted) return;
     setState(() {
       _busy = true;
       _failure = null;
@@ -129,7 +160,6 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           builder: (_) => ReceiptScreen(
             documentId: posted.documentId,
             docNo: posted.docNo,
-            autoPrint: print,
           ),
         ),
       );
@@ -157,8 +187,16 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     if (preview == null) return const SizedBox.shrink();
 
     final due = preview.total;
-    final change = _tenderedAmount > due ? _tenderedAmount - due : Money.zero;
-    final short = _tenderedAmount < due ? due - _tenderedAmount : Money.zero;
+    // Change and shortfall only mean anything when cash is being counted out.
+    // Switching from cash to card used to leave a stale "Change" row sitting
+    // on the due card.
+    final counting = !_onUdhaar && _mode == 'cash';
+    final change = counting && _tenderedAmount > due
+        ? _tenderedAmount - due
+        : Money.zero;
+    final short = counting && _tenderedAmount.isPositive && _tenderedAmount < due
+        ? due - _tenderedAmount
+        : Money.zero;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -294,18 +332,17 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             ],
 
             const SizedBox(height: BlTokens.space5),
+            // One button, and it does exactly what it says. There is no
+            // "Save and Print" here until a printer transport exists in M2:
+            // a button that announces work it does not do is the specific
+            // failure this rebuild was called for. The receipt opens straight
+            // after saving, and the PDF can be sent from there today.
             BlButton(
-              label: s.tenderSaveAndPrint,
-              icon: Icons.print_outlined,
+              label: s.actionSave,
+              icon: Icons.check,
               big: true,
               busy: _busy,
-              onPressed: _busy ? null : () => _post(print: true),
-            ),
-            const SizedBox(height: BlTokens.space2),
-            BlButton(
-              label: s.tenderSave,
-              kind: BlButtonKind.secondary,
-              onPressed: _busy ? null : () => _post(print: false),
+              onPressed: _busy ? null : _post,
             ),
           ],
         ),

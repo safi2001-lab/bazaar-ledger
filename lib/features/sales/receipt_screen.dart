@@ -23,16 +23,10 @@ class ReceiptScreen extends ConsumerWidget {
     super.key,
     required this.documentId,
     required this.docNo,
-    this.autoPrint = false,
   });
 
   final String documentId;
   final String docNo;
-
-  /// Set when the sale was saved with "Save aur Print". Until a printer
-  /// transport exists this only opens the preview — it never claims to have
-  /// printed something it did not print.
-  final bool autoPrint;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -188,7 +182,7 @@ class _ActionsState extends ConsumerState<_Actions> {
                 const SizedBox(width: BlTokens.space2),
                 Expanded(
                   child: Text(
-                    s.receiptNoPrinter,
+                    s.receiptPrintNotReady,
                     style: TextStyle(fontSize: 12, color: t.inkFaint),
                   ),
                 ),

@@ -1,32 +1,39 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Android 12+ Bluetooth Permissions for Thermal Printers -->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
-                     android:usesPermissionFlags="neverForLocation"
-                     tools:targetApi="s" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
+    <!--
+      There is no INTERNET permission here, and that is the point.
 
-    <!-- Legacy Bluetooth Permissions for Android 11 and below -->
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
+      Debug and profile builds declare it in their own manifests because the
+      Flutter tool needs a socket for hot reload. The release APK does not, so
+      a shopkeeper can check the permission list on the Play listing and see
+      for themselves that this app cannot phone anywhere — not to us, not to
+      anyone. Everything is on the phone; there is nothing on the other end of
+      a network to call.
 
-    <!-- Hardware Peripherals: Camera & USB Host -->
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="false" />
-    <uses-feature android:name="android.hardware.usb.host" android:required="false" />
-
-    <!-- Local Wi-Fi P2P Multi-Counter Sync & Storage -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+      Permissions arrive with the milestone that earns them and not before:
+      Bluetooth and USB host with the printer transports in M2, camera with
+      barcode scanning in M2, and INTERNET only when Drive backup (M5) and
+      Play Billing (M9) actually need it. Declaring them now would make the
+      Play Data Safety form a lie and give a reviewer sensitive permissions
+      with no feature behind them.
+    -->
 
     <application
-        android:label="Pakistan Billing"
+        android:label="Bazaar Ledger"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
+
+        <!--
+          allowBackup is off deliberately. The books are the shop's books and
+          must not be swept into a Google account backup the owner never asked
+          for. Backup is a feature this app provides explicitly in M5, with a
+          recovery phrase the owner holds, not a silent copy on someone
+          else's server.
+        -->
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -37,26 +44,32 @@
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
     </application>
 
+    <!--
+      Narrow <queries> rather than QUERY_ALL_PACKAGES, which Play treats as a
+      sensitive permission needing a declared exception. Sharing a receipt PDF
+      goes through the system share sheet, which needs no query at all; this
+      entry exists so a future "send to WhatsApp" button can tell whether
+      WhatsApp is installed before offering itself.
+    -->
     <queries>
-        <!-- For Direct Free WhatsApp Dispatch -->
         <package android:name="com.whatsapp" />
         <package android:name="com.whatsapp.w4b" />
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.SEND" />
+            <data android:mimeType="application/pdf" />
         </intent>
     </queries>
 </manifest>

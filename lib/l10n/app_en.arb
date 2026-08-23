@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appName": "Bazaar Ledger",
-
   "actionSave": "Save",
   "actionCancel": "Cancel",
   "actionDelete": "Delete",
@@ -17,7 +15,6 @@
   "actionAdd": "Add",
   "actionDone": "Done",
   "actionOk": "OK",
-
   "commonLoading": "Opening...",
   "commonSomethingWentWrong": "Something went wrong",
   "commonNothingSaved": "Nothing was saved",
@@ -25,7 +22,6 @@
   "commonOffline": "No internet - that's fine, everything runs on this phone",
   "commonYes": "Yes",
   "commonNo": "No",
-
   "setupTitle": "Set up your shop",
   "setupSubtitle": "Three things. Everything else can be changed later.",
   "setupShopName": "Shop name",
@@ -40,7 +36,6 @@
   "setupCounterHint": "Counter 1",
   "setupFinish": "Open the shop",
   "setupPrivacyNote": "Your books stay on this phone. No account, no server.",
-
   "businessKindGeneral": "General store",
   "businessKindKiryana": "Kiryana",
   "businessKindPharmacy": "Pharmacy",
@@ -51,7 +46,6 @@
   "businessKindRestaurant": "Restaurant",
   "businessKindServices": "Services",
   "businessKindWholesale": "Wholesale",
-
   "provincePunjab": "Punjab",
   "provinceSindh": "Sindh",
   "provinceKpk": "Khyber Pakhtunkhwa",
@@ -59,11 +53,16 @@
   "provinceIct": "Islamabad",
   "provinceGb": "Gilgit-Baltistan",
   "provinceAjk": "Azad Kashmir",
-
   "homeTitle": "Today",
   "homeTodaySales": "Today's sales",
   "homeBillCount": "{count, plural, =0{No bills} =1{1 bill} other{{count} bills}}",
-  "@homeBillCount": {"placeholders": {"count": {"type": "int"}}},
+  "@homeBillCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "homeReceived": "Received",
   "homeOnUdhaar": "On credit",
   "homeNewBill": "New Bill",
@@ -72,7 +71,6 @@
   "homeCustomers": "Customers",
   "homeSettings": "Settings",
   "homeNoSalesToday": "No bills yet today",
-
   "posTitle": "New Bill",
   "posSearchHint": "Item name or barcode",
   "posCartEmpty": "The bill is empty",
@@ -84,7 +82,13 @@
   "posTotal": "Total",
   "posCharge": "Take payment",
   "posItemsInCart": "{count, plural, =1{1 item} other{{count} items}}",
-  "@posItemsInCart": {"placeholders": {"count": {"type": "int"}}},
+  "@posItemsInCart": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "posRemoveLine": "Remove line",
   "posClearCart": "Clear the bill",
   "posClearCartConfirm": "Clear the whole bill?",
@@ -96,8 +100,16 @@
   "posLineDiscount": "Discount on this line",
   "posNoStock": "Out of stock",
   "posStockLeft": "Stock: {qty} {unit}",
-  "@posStockLeft": {"placeholders": {"qty": {"type": "String"}, "unit": {"type": "String"}}},
-
+  "@posStockLeft": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "tenderTitle": "Take payment",
   "tenderDue": "Due",
   "tenderTendered": "Given",
@@ -118,11 +130,15 @@
   "tenderSave": "Save only",
   "tenderUdhaarNeedsCustomer": "Choose a customer before putting this on credit",
   "tenderCashThresholdWarning": "A single bill over Rs 200,000 settled in cash can have 50% of the expenditure disallowed under s.21(s). A bank or digital channel is safer.",
-
   "billSaved": "Bill {docNo} saved",
-  "@billSaved": {"placeholders": {"docNo": {"type": "String"}}},
+  "@billSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
   "billSaveFailed": "The bill was not saved. Nothing at all was written.",
-
   "itemsTitle": "Items",
   "itemsEmpty": "No items yet",
   "itemsEmptyHint": "Add the first item, then start billing",
@@ -142,9 +158,17 @@
   "itemArchived": "Item hidden",
   "itemSaved": "Item saved",
   "itemInStock": "{qty} {unit} in stock",
-  "@itemInStock": {"placeholders": {"qty": {"type": "String"}, "unit": {"type": "String"}}},
+  "@itemInStock": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "itemLowStock": "Running low",
-
   "partiesTitle": "Customers",
   "partiesEmpty": "No customers yet",
   "partiesEmptyHint": "Add a customer to keep an udhaar khata",
@@ -154,19 +178,35 @@
   "partyOpeningBalance": "Balance carried over",
   "partyCreditLimit": "Credit limit",
   "partyOwes": "owes {amount}",
-  "@partyOwes": {"placeholders": {"amount": {"type": "String"}}},
+  "@partyOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "partySettled": "Settled up",
-
   "salesTitle": "Sales",
   "salesEmpty": "No bills yet",
   "salesEmptyHint": "Make the first bill and it will show up here",
   "salesPaid": "Paid",
   "salesUdhaar": "{amount} owing",
-  "@salesUdhaar": {"placeholders": {"amount": {"type": "String"}}},
+  "@salesUdhaar": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "salesVoided": "Voided",
-
   "receiptTitle": "Bill {docNo}",
-  "@receiptTitle": {"placeholders": {"docNo": {"type": "String"}}},
+  "@receiptTitle": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
   "receiptSharePdf": "Share PDF",
   "receiptPrint": "Send to printer",
   "receiptPreview": "How it will print",
@@ -174,7 +214,6 @@
   "receiptPaper58": "58mm",
   "receiptReprint": "Reprint",
   "receiptNoPrinter": "No printer set up yet. You can still see the preview and share the PDF.",
-
   "settingsTitle": "Settings",
   "settingsLanguage": "Language",
   "settingsLanguageRomanUrdu": "Roman Urdu",
@@ -194,13 +233,32 @@
   "settingsDataHealth": "Data health",
   "settingsDataHealthOk": "Everything checks out",
   "settingsDataHealthProblem": "{count, plural, =1{1 problem found} other{{count} problems found}}",
-  "@settingsDataHealthProblem": {"placeholders": {"count": {"type": "int"}}},
+  "@settingsDataHealthProblem": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsDataHealthCheck": "Check now",
   "settingsAbout": "About",
   "settingsAboutBody": "Everything is on this phone. No server, no account, no internet needed.",
-
   "emptyNoResults": "Nothing found",
   "emptyNoResultsHint": "Try a different word",
   "errorTitle": "Stopped",
-  "errorNothingWasSaved": "Nothing was saved, so nothing is out of place."
+  "errorNothingWasSaved": "Nothing was saved, so nothing is out of place.",
+  "a11yRupees": "Rupees {amount}",
+  "a11yOwing": "{amount} owing",
+  "a11yLoading": "Loading",
+  "errorStartupTitle": "The books could not be opened",
+  "errorStartupBody": "Nothing has been lost. Close the app and open it again. If this keeps happening, restore from your last backup.",
+  "permissionDeniedTitle": "Permission not granted",
+  "permissionDeniedBody": "This needs permission from your phone's settings before it can work.",
+  "permissionOpenSettings": "Open phone settings",
+  "tenderNoAccount": "There is no account left to put the money in. Turn the cash account back on in Settings.",
+  "itemArchiveConfirm": "This item will not show at the counter any more. Old bills stay exactly as they were.",
+  "settingsAddress": "Address",
+  "settingsTaxRegistered": "I am registered for sales tax",
+  "settingsTaxRegisteredNote": "Most kiryana shops are not registered - sales tax is collected through the electricity bill instead. Only turn this on if you hold an STRN.",
+  "receiptPrintNotReady": "Printing arrives in M2. For now you can check the bill and send the PDF."
 }

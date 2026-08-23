@@ -27,6 +27,7 @@ dependencies:
     path: ../pk_money
   pk_platform:
     path: ../pk_platform
+  sqlite3: ^2.9.0
   sqlite3_flutter_libs: ^0.5.26
 
 dev_dependencies:

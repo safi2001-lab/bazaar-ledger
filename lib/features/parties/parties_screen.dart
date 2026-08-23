@@ -106,7 +106,7 @@ class _PartiesScreenState extends ConsumerState<PartiesScreen> {
                       BlTokens.space10 * 2,
                     ),
                     itemCount: rows.length,
-                    itemExtent: 68,
+                    itemExtent: blRowExtent(context, 68),
                     itemBuilder: (context, i) => PartyRowTile(
                       key: ValueKey(rows[i].id),
                       party: rows[i],

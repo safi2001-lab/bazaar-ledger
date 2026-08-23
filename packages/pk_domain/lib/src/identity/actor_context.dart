@@ -15,10 +15,21 @@ final class ActorContext {
     required this.deviceId,
     required this.startedAtUtc,
     Duration timeZoneOffset = pakistanStandardTime,
-  })  : _offset = timeZoneOffset,
-        assert(firmId != '', 'firmId must not be empty'),
-        assert(userId != '', 'userId must not be empty'),
-        assert(deviceId != '', 'deviceId must not be empty');
+  }) : _offset = timeZoneOffset {
+    // Thrown, not asserted. Assertions are stripped from a release build, and
+    // an empty actor in release is precisely the case that matters: every row
+    // it writes is unattributable, forever, and the six-year retention
+    // obligation means nobody gets to delete the evidence and start again.
+    _require(firmId, 'firmId');
+    _require(userId, 'userId');
+    _require(deviceId, 'deviceId');
+  }
+
+  static void _require(String value, String name) {
+    if (value.trim().isEmpty) {
+      throw ArgumentError.value(value, name, 'must not be empty');
+    }
+  }
 
   /// Builds a context stamped with the current instant.
   factory ActorContext.now({

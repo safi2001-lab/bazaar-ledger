@@ -1,10 +1,10 @@
 {
   "@@locale": "ur",
   "@@x-note": "Roman Urdu in Latin script, and the app's default. Every Pakistani khata competitor ships English only and then writes Roman Urdu in their own marketing copy, because that is what shopkeepers actually read. Numerals are always Latin: Unicode CLDR has ur inherit latn, and a billing app is the last place to surprise anybody with different digits.",
-
   "appName": "Bazaar Ledger",
-  "@appName": {"description": "The product name. Not translated."},
-
+  "@appName": {
+    "description": "The product name. Not translated."
+  },
   "actionSave": "Save karein",
   "actionCancel": "Cancel",
   "actionDelete": "Delete karein",
@@ -19,7 +19,6 @@
   "actionAdd": "Shamil karein",
   "actionDone": "Ho gaya",
   "actionOk": "Theek hai",
-
   "commonLoading": "Khul raha hai...",
   "commonSomethingWentWrong": "Kuch masla ho gaya",
   "commonNothingSaved": "Kuch save nahi hua",
@@ -27,7 +26,6 @@
   "commonOffline": "Internet nahi hai - koi baat nahi, sab kuch phone par chalta hai",
   "commonYes": "Haan",
   "commonNo": "Nahi",
-
   "setupTitle": "Apni dukan set karein",
   "setupSubtitle": "Sirf teen cheezein. Baqi baad mein bhi badal sakte hain.",
   "setupShopName": "Dukan ka naam",
@@ -42,7 +40,6 @@
   "setupCounterHint": "Counter 1",
   "setupFinish": "Dukan shuru karein",
   "setupPrivacyNote": "Aap ka saara hisaab isi phone mein rehta hai. Na koi account, na koi server.",
-
   "businessKindGeneral": "General store",
   "businessKindKiryana": "Kiryana",
   "businessKindPharmacy": "Medical store",
@@ -53,7 +50,6 @@
   "businessKindRestaurant": "Hotel / Restaurant",
   "businessKindServices": "Services",
   "businessKindWholesale": "Wholesale",
-
   "provincePunjab": "Punjab",
   "provinceSindh": "Sindh",
   "provinceKpk": "Khyber Pakhtunkhwa",
@@ -61,11 +57,16 @@
   "provinceIct": "Islamabad",
   "provinceGb": "Gilgit-Baltistan",
   "provinceAjk": "Azad Kashmir",
-
   "homeTitle": "Aaj ka hisaab",
   "homeTodaySales": "Aaj ki farokht",
   "homeBillCount": "{count, plural, =0{Koi bill nahi} =1{1 bill} other{{count} bill}}",
-  "@homeBillCount": {"placeholders": {"count": {"type": "int"}}},
+  "@homeBillCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "homeReceived": "Wasool",
   "homeOnUdhaar": "Udhaar par",
   "homeNewBill": "Naya Bill",
@@ -74,7 +75,6 @@
   "homeCustomers": "Gahak",
   "homeSettings": "Settings",
   "homeNoSalesToday": "Aaj abhi koi bill nahi bana",
-
   "posTitle": "Naya Bill",
   "posSearchHint": "Maal ka naam ya barcode",
   "posCartEmpty": "Bill abhi khali hai",
@@ -86,7 +86,13 @@
   "posTotal": "Total",
   "posCharge": "Paisay lein",
   "posItemsInCart": "{count, plural, =1{1 cheez} other{{count} cheezein}}",
-  "@posItemsInCart": {"placeholders": {"count": {"type": "int"}}},
+  "@posItemsInCart": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "posRemoveLine": "Line hatayein",
   "posClearCart": "Bill khali karein",
   "posClearCartConfirm": "Poora bill khali kar dein?",
@@ -98,8 +104,16 @@
   "posLineDiscount": "Is line par riayat",
   "posNoStock": "Stock khatam",
   "posStockLeft": "Stock: {qty} {unit}",
-  "@posStockLeft": {"placeholders": {"qty": {"type": "String"}, "unit": {"type": "String"}}},
-
+  "@posStockLeft": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "tenderTitle": "Paisay lein",
   "tenderDue": "Dena hai",
   "tenderTendered": "Diye gaye",
@@ -120,11 +134,15 @@
   "tenderSave": "Sirf Save karein",
   "tenderUdhaarNeedsCustomer": "Udhaar ke liye gahak chunna zaroori hai",
   "tenderCashThresholdWarning": "Rs 200,000 se upar ka bill cash mein lene par kharche ka 50% na-manzoor ho sakta hai (s.21(s)). Bank ya digital se lena behtar hai.",
-
   "billSaved": "Bill {docNo} save ho gaya",
-  "@billSaved": {"placeholders": {"docNo": {"type": "String"}}},
+  "@billSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
   "billSaveFailed": "Bill save nahi hua. Kuch bhi likha nahi gaya.",
-
   "itemsTitle": "Maal",
   "itemsEmpty": "Abhi koi maal nahi",
   "itemsEmptyHint": "Pehla item daalein, phir bill banana shuru karein",
@@ -144,9 +162,17 @@
   "itemArchived": "Item hata diya gaya",
   "itemSaved": "Item save ho gaya",
   "itemInStock": "{qty} {unit} mojood",
-  "@itemInStock": {"placeholders": {"qty": {"type": "String"}, "unit": {"type": "String"}}},
+  "@itemInStock": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
   "itemLowStock": "Stock kam hai",
-
   "partiesTitle": "Gahak",
   "partiesEmpty": "Abhi koi gahak nahi",
   "partiesEmptyHint": "Udhaar likhne ke liye gahak daalein",
@@ -156,19 +182,35 @@
   "partyOpeningBalance": "Purana baqaya",
   "partyCreditLimit": "Udhaar ki hadd",
   "partyOwes": "{amount} udhaar",
-  "@partyOwes": {"placeholders": {"amount": {"type": "String"}}},
+  "@partyOwes": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "partySettled": "Hisaab saaf",
-
   "salesTitle": "Farokht",
   "salesEmpty": "Abhi koi bill nahi bana",
   "salesEmptyHint": "Pehla bill banayein, yahan aa jayega",
   "salesPaid": "Ada shuda",
   "salesUdhaar": "Baqaya {amount}",
-  "@salesUdhaar": {"placeholders": {"amount": {"type": "String"}}},
+  "@salesUdhaar": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "salesVoided": "Mansookh",
-
   "receiptTitle": "Bill {docNo}",
-  "@receiptTitle": {"placeholders": {"docNo": {"type": "String"}}},
+  "@receiptTitle": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
   "receiptSharePdf": "PDF bhejein",
   "receiptPrint": "Printer par bhejein",
   "receiptPreview": "Kaisa chhapega",
@@ -176,7 +218,6 @@
   "receiptPaper58": "58mm",
   "receiptReprint": "Dobara print",
   "receiptNoPrinter": "Abhi koi printer set nahi. Preview dekh sakte hain aur PDF bhej sakte hain.",
-
   "settingsTitle": "Settings",
   "settingsLanguage": "Zaban",
   "settingsLanguageRomanUrdu": "Roman Urdu",
@@ -196,13 +237,84 @@
   "settingsDataHealth": "Data ki sehat",
   "settingsDataHealthOk": "Sab theek hai",
   "settingsDataHealthProblem": "{count, plural, =1{1 masla mila} other{{count} masle mile}}",
-  "@settingsDataHealthProblem": {"placeholders": {"count": {"type": "int"}}},
+  "@settingsDataHealthProblem": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsDataHealthCheck": "Abhi check karein",
   "settingsAbout": "App ke baare mein",
   "settingsAboutBody": "Sab kuch isi phone mein. Na server, na account, na internet ki zaroorat.",
-
   "emptyNoResults": "Kuch nahi mila",
   "emptyNoResultsHint": "Doosre lafz se talash karein",
   "errorTitle": "Ruk gaya",
-  "errorNothingWasSaved": "Fikar na karein - kuch bhi galat save nahi hua."
+  "errorNothingWasSaved": "Fikar na karein - kuch bhi galat save nahi hua.",
+  "a11yRupees": "Rupees {amount}",
+  "@a11yRupees": {
+    "description": "Screen-reader rendering of a money cell.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "a11yOwing": "{amount} baqaya",
+  "@a11yOwing": {
+    "description": "Screen-reader rendering of a negative money cell.",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "a11yLoading": "Khul raha hai",
+  "@a11yLoading": {
+    "description": "Screen-reader label on a loading skeleton."
+  },
+  "errorStartupTitle": "Hisaab khul nahi saka",
+  "@errorStartupTitle": {
+    "description": "Shown when the database will not open."
+  },
+  "errorStartupBody": "Kuch zaya nahi hua. App band kar ke dobara kholein. Agar phir bhi yehi masla rahe to apni aakhri backup se wapas layein.",
+  "@errorStartupBody": {
+    "description": "Reassurance under the startup failure title."
+  },
+  "permissionDeniedTitle": "Ijazat nahi mili",
+  "@permissionDeniedTitle": {
+    "description": "Shown when Android refused a permission the screen needs."
+  },
+  "permissionDeniedBody": "Yeh kaam karne ke liye phone ki settings mein is app ko ijazat deni hogi.",
+  "@permissionDeniedBody": {
+    "description": "What to do about a refused permission."
+  },
+  "permissionOpenSettings": "Phone ki settings kholein",
+  "@permissionOpenSettings": {
+    "description": "Button that opens the OS app-settings page."
+  },
+  "tenderNoAccount": "Paisay rakhne ka koi khata nahi mila. Settings mein cash khata dobara chalu karein.",
+  "@tenderNoAccount": {
+    "description": "Shown when every payment account has been archived."
+  },
+  "itemArchiveConfirm": "Yeh item counter par nazar nahi aayega. Purane bill jaise the waise hi rahenge.",
+  "@itemArchiveConfirm": {
+    "description": "Body of the archive-item confirmation dialog."
+  },
+  "settingsAddress": "Pata",
+  "@settingsAddress": {
+    "description": "Street address of the shop."
+  },
+  "settingsTaxRegistered": "Sales tax mein registered hoon",
+  "@settingsTaxRegistered": {
+    "description": "Whether the shop holds an STRN."
+  },
+  "settingsTaxRegisteredNote": "Zyada tar kiryana dukanein registered nahi hotin - bijli ke bill mein sales tax jama ho jata hai. Agar aap ke paas STRN hai tab hi yeh chalu karein.",
+  "@settingsTaxRegisteredNote": {
+    "description": "Explains s.3(9) STA in plain words."
+  },
+  "receiptPrintNotReady": "Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.",
+  "@receiptPrintNotReady": {
+    "description": "Honest note on a print button that cannot print yet."
+  }
 }

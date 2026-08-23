@@ -77,7 +77,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   Future<void> _save() async {
     final s = AppStrings.of(context);
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final unitId = _unitId;
+    final units = ref.read(unitsProvider).valueOrNull ?? const [];
+    final unitId = _unitId ?? _defaultUnitId(units);
     if (unitId == null) {
       setState(() => _failure = s.commonRequired);
       return;
@@ -115,8 +116,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         await services.catalogue.addItem(actor, draft);
       }
 
-      ref.bumpRefresh();
       if (!mounted) return;
+      ref.bumpRefresh();
       final messenger = ScaffoldMessenger.of(context);
       Navigator.of(context).pop();
       messenger.showSnackBar(SnackBar(content: Text(s.itemSaved)));
@@ -136,7 +137,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(s.itemArchive),
-        content: Text(s.settingsAboutBody),
+        content: Text(s.itemArchiveConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -151,17 +152,49 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     );
     if (!(yes ?? false) || !mounted) return;
 
-    final services = ref.read(appServicesProvider);
-    await services.catalogue.archiveItem(services.actorNow(), widget.item!.id);
-    ref.bumpRefresh();
-    if (!mounted) return;
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
-    Navigator.of(context).pop();
-    messenger.showSnackBar(SnackBar(content: Text(s.itemArchived)));
+    try {
+      final services = ref.read(appServicesProvider);
+      await services.catalogue
+          .archiveItem(services.actorNow(), widget.item!.id);
+      if (!mounted) return;
+      ref.bumpRefresh();
+      navigator.pop();
+      messenger.showSnackBar(SnackBar(content: Text(s.itemArchived)));
+    } on Object catch (error) {
+      // Archiving is a write like any other, and a write that fails has to
+      // say so. The form stays open with the item intact.
+      if (mounted) {
+        setState(() {
+          _failure = '$error';
+          _busy = false;
+        });
+      }
+    }
   }
 
   static String? _blank(String value) =>
       value.trim().isEmpty ? null : value.trim();
+
+  /// Pieces, when the shop has them.
+  ///
+  /// Not "whatever the units table returns first". That was centimetres, so a
+  /// kiryana owner adding a five-litre tin of oil got a unit of length and no
+  /// indication anything was wrong until the bill printed "2 cm".
+  static String? _defaultUnitId(
+    List<({String id, String code, String name, int decimals})> units,
+  ) {
+    if (units.isEmpty) return null;
+    for (final u in units) {
+      if (u.code == 'pcs') return u.id;
+    }
+    return units.first.id;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -201,7 +234,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             if (unitList.isEmpty) {
               return Center(child: BlEmpty(title: s.commonSomethingWentWrong));
             }
-            _unitId ??= unitList.first.id;
+            // Chosen for display only; the write resolves the same default,
+            // so build stays free of state mutation.
+            final unitId = _unitId ?? _defaultUnitId(unitList);
 
             return SingleChildScrollView(
               padding: const EdgeInsets.all(BlTokens.space4),
@@ -251,7 +286,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                         ),
                         const SizedBox(height: BlTokens.space4),
                         DropdownButtonFormField<String>(
-                          initialValue: _unitId,
+                          initialValue: unitId,
                           isExpanded: true,
                           decoration: InputDecoration(labelText: s.itemUnit),
                           items: [
