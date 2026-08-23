@@ -495,5 +495,8 @@
       }
     }
   },
-  "tenderOverLimitAllow": "Phir bhi udhaar dein"
+  "tenderOverLimitAllow": "Phir bhi udhaar dein",
+  "khataRemind": "Yaad dilayein",
+  "khataRemindNoPhone": "Is gahak ka number nahi hai",
+  "khataRemindNothingOwed": "Kuch baqi nahi hai"
 }

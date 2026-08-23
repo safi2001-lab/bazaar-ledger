@@ -62,6 +62,17 @@ dependencies:
   pk_printer_android:
     path: packages/pk_printer_android
   share_plus: ^13.3.0
+  # Opening WhatsApp on a customer's chat with the reminder already typed.
+  #
+  # An intent, not an API: nothing is sent anywhere by this app, and there is
+  # no token, no account and no endpoint. The `whatsapp://` scheme resolves to
+  # the app already on the phone, and the <queries> block in the manifest is
+  # what lets us ask whether it is there before offering the button.
+  #
+  # Deliberately never `wa.me`. That URL would open a browser to Meta when
+  # WhatsApp is absent — a network call this app does not make — so the
+  # fallback is the system share sheet, which also reaches SMS.
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_lints: ^6.0.0

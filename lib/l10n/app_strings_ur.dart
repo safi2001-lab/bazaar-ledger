@@ -1016,4 +1016,13 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get tenderOverLimitAllow => 'Phir bhi udhaar dein';
+
+  @override
+  String get khataRemind => 'Yaad dilayein';
+
+  @override
+  String get khataRemindNoPhone => 'Is gahak ka number nahi hai';
+
+  @override
+  String get khataRemindNothingOwed => 'Kuch baqi nahi hai';
 }

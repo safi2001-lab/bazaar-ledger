@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_editor.dart';
 import 'khata_providers.dart';
 import 'receive_payment_sheet.dart';
+import 'send_reminder.dart';
 
 /// One customer's khata: what they owe, on which bills, and a way to take it.
 ///
@@ -40,6 +42,13 @@ class KhataScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(current.name),
         actions: [
+          if (current.balance.isPositive)
+            BlIconButton(
+              icon: Icons.chat_outlined,
+              label: s.khataRemind,
+              onPressed: () =>
+                  unawaited(_remind(context, ref, current, bills.valueOrNull)),
+            ),
           BlIconButton(
             icon: Icons.edit_outlined,
             label: s.khataDetails,
@@ -137,6 +146,42 @@ class KhataScreen extends ConsumerWidget {
         label: Text(s.khataReceive),
       ),
     );
+  }
+}
+
+/// Opens WhatsApp on this customer's chat, with the reminder already typed.
+///
+/// Chasing udhaar is the work a khata exists for. A shopkeeper with forty
+/// names spends their evening on it, and the reason to move the book onto a
+/// phone is that the phone can also send the message.
+Future<void> _remind(
+  BuildContext context,
+  WidgetRef ref,
+  PartySummary party,
+  List<OpenBill>? bills,
+) async {
+  final s = AppStrings.of(context);
+  final firm = ref.read(firmProvider).valueOrNull;
+  if (firm == null) return;
+
+  final outcome = await sendReminder(
+    shopName: firm.name,
+    party: party,
+    // Oldest first already, so the first is the one the customer has been
+    // sitting on. "Since June" is what makes a reminder land.
+    oldestBillDate: (bills ?? const []).firstOrNull?.dateLocal,
+  );
+
+  if (!context.mounted) return;
+  final message = switch (outcome) {
+    ReminderOutcome.noNumber => s.khataRemindNoPhone,
+    ReminderOutcome.nothingOwed => s.khataRemindNothingOwed,
+    _ => null,
+  };
+  if (message != null) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
 

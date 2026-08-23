@@ -98,6 +98,32 @@ immediately". **A phone that has never had a network connection will scan
 barcodes.** The only thing a missing network affects is whether a telemetry
 batch succeeds, and a failed telemetry POST does not impede scanning.
 
+## Handing a message to WhatsApp
+
+The khata can open WhatsApp on a customer's chat with a payment reminder
+already typed. This is worth stating precisely, because it is the one place
+the app puts a customer's name and balance in front of another application.
+
+**Nothing is sent by this app.** There is no WhatsApp account, no Business
+API, no token and no endpoint. `whatsapp://send?phone=…&text=…` is an Android
+intent: it resolves to the app already installed on the phone, and hands it a
+string exactly the way a share does. What happens next is between the
+shopkeeper and WhatsApp, under WhatsApp's own privacy policy — the same as if
+they had typed it themselves.
+
+**Deliberately never `wa.me/…`.** That URL is the recipe every tutorial gives
+and it is wrong for this app: with WhatsApp absent it opens a browser to
+Meta's servers, which is a network request this product does not make on a
+shopkeeper's behalf. The fallback is the system share sheet, which reaches
+SMS — still common in this market — and needs no network at all.
+
+The `<queries>` block naming `com.whatsapp` and `com.whatsapp.w4b` exists so
+`canLaunchUrl` can answer whether WhatsApp is there before the button offers
+itself. On Android 11 and above it returns false without that block however
+installed WhatsApp is. It is narrow on purpose: `QUERY_ALL_PACKAGES` is a
+Play-restricted permission requiring a declaration review, and this needs to
+see two packages.
+
 ## Permissions, and where each comes from
 
 | Permission | Source | Prompts? | Why |

@@ -1933,6 +1933,24 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Phir bhi udhaar dein'**
   String get tenderOverLimitAllow;
+
+  /// No description provided for @khataRemind.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad dilayein'**
+  String get khataRemind;
+
+  /// No description provided for @khataRemindNoPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ka number nahi hai'**
+  String get khataRemindNoPhone;
+
+  /// No description provided for @khataRemindNothingOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch baqi nahi hai'**
+  String get khataRemindNothingOwed;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -1014,4 +1014,13 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get tenderOverLimitAllow => 'Give credit anyway';
+
+  @override
+  String get khataRemind => 'Send a reminder';
+
+  @override
+  String get khataRemindNoPhone => 'This customer has no phone number';
+
+  @override
+  String get khataRemindNothingOwed => 'Nothing is outstanding';
 }

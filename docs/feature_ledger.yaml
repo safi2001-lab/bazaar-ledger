@@ -1857,3 +1857,61 @@ features:
       - a customer with no limit is never interrupted
       - a cash sale is never checked against a credit limit
       - what the shop is holding comes off what is owed
+
+  - id: M3-REMIND-01
+    milestone: M3
+    title: A shopkeeper can chase udhaar without typing the message
+    status: done
+    # Chasing is the work a khata exists for. A shopkeeper with forty names in
+    # a book spends their evening on it, and the reason to move the book onto
+    # a phone is that the phone can also send the message.
+    #
+    # An intent, not an API. `whatsapp://send?phone=…&text=…` resolves to the
+    # app already on the handset and hands it a string the way a share does.
+    # No account, no Business API, no token, no endpoint — which is what keeps
+    # it clear of the no-payment-integration rule and of every claim in
+    # docs/what_leaves_the_phone.md.
+    #
+    # Deliberately never `wa.me/…`, which is the recipe every tutorial gives.
+    # With WhatsApp absent that URL opens a browser to Meta — a network
+    # request this product does not make on a shopkeeper's behalf. The
+    # fallback is the system share sheet, which reaches SMS and needs no
+    # network at all.
+    #
+    # The number is normalised and, when it cannot be a Pakistani mobile,
+    # REFUSED rather than guessed. `0300-4471203` handed to WhatsApp unchanged
+    # opens a chat with nobody and the shopkeeper believes the message went; a
+    # landline is refused for the same reason. A reminder that reaches the
+    # wrong number is worse than one not sent, because it tells a stranger
+    # what somebody owes.
+    #
+    # The message threatens nothing and cites no law. Pakistani law has no
+    # thirty-day notice provision of the kind these apps like to invent, and a
+    # shop that sends a legal-sounding message it cannot follow through on has
+    # spent its relationship with a customer for nothing.
+    #
+    # Two of these proofs first failed on their own explanatory comments — the
+    # third time that shape has appeared in this repository, after
+    # READ_MEDIA_IMAGES in a manifest comment and no_phantom_gate firing on
+    # its own rationale. They now read parsed declarations and comment-free
+    # code. The comment stripper then cut the inside of `whatsapp://send` and
+    # asserted the scheme was missing from the file containing it, so it
+    # strips whole-line comments only.
+    proof:
+      - the number WhatsApp needs however the shop wrote it down
+      - the number WhatsApp needs every network prefix, not only the common one
+      - the number WhatsApp needs nothing at all is nothing, not an empty chat
+      - the number WhatsApp needs a half-typed number is refused rather than dialled
+      - the number WhatsApp needs a landline is refused
+      - the message names the shop, the customer and the amount
+      - the message says since when, when the shop knows
+      - the message and does not invent one when it does not
+      - the message threatens nothing, and cites no law
+      - the message is short enough to survive a lock screen
+      - the message greets in the form this market actually uses
+      - a customer who owes nothing is not chased
+      - a customer who owes is chaseable
+      - a customer with no number falls back, and says so
+      - the reminder is addressed to a number WhatsApp can reach
+      - the app never opens a browser to send a reminder
+      - the manifest can still see whether WhatsApp is installed

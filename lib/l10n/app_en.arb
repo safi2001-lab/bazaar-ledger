@@ -413,5 +413,8 @@
       }
     }
   },
-  "tenderOverLimitAllow": "Give credit anyway"
+  "tenderOverLimitAllow": "Give credit anyway",
+  "khataRemind": "Send a reminder",
+  "khataRemindNoPhone": "This customer has no phone number",
+  "khataRemindNothingOwed": "Nothing is outstanding"
 }

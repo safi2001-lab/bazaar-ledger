@@ -26,6 +26,7 @@ export 'src/ports/sale_writer.dart';
 export 'src/receivables/fifo_allocator.dart';
 export 'src/receivables/receipt_builder.dart';
 export 'src/receivables/receipt_posting.dart';
+export 'src/receivables/reminder.dart';
 export 'src/sales/sale_calculator.dart';
 export 'src/sales/sale_draft.dart';
 export 'src/sales/sale_posting.dart';
