@@ -1660,3 +1660,55 @@ features:
       - the arithmetic paisa are exact, not near enough
       - the arithmetic property: 2000 random payments never create or destroy a paisa
       - the arithmetic property: allocations are always oldest first
+
+  - id: M3-RECEIPT-01
+    milestone: M3
+    title: A receipt against udhaar is described in full before it is written
+    status: done
+    # The same shape as a sale posting, for the same reason: the rows are a
+    # value, the entry is proved to balance while it is still a value, and a
+    # use case that wrote nothing has nothing to return.
+    #
+    # Dr the tender account by the whole amount, Cr Receivables by what was
+    # actually applied, Cr Customer Advances by what was left over.
+    #
+    # Three decisions in that sentence that are not obvious:
+    #
+    #  * An advance is a LIABILITY, not a negative receivable. Netting it
+    #    against udhaar hides a real obligation inside an asset, where a
+    #    balance sheet cannot show it and an ageing report cannot find it. The
+    #    shop is holding the customer's money.
+    #  * A cheque debits Cheques in Hand, never the bank. The sale path
+    #    already had this right; getting it wrong here would put a cheque that
+    #    later bounces into the shop's bank balance, and the shopkeeper would
+    #    act on a number that is not theirs yet.
+    #  * Every line touching a party names it. Without that a Trial Balance
+    #    still balances and no report can say whose udhaar moved, which is the
+    #    only question the khata screen asks.
+    #
+    # Settlements carry each bill's new totals rather than deltas. A writer
+    # handed a delta has to read the row, add and write it back, and two tills
+    # doing that against one bill is a lost update; a writer handed the answer
+    # cannot get it wrong.
+    #
+    # `assertBalanced` checks one thing the journal cannot check for itself:
+    # that the allocations plus the advance are the payment. Both halves of a
+    # balanced entry can come from the same wrong total, and the shop's cash
+    # and its khata would then disagree by an amount nobody can account for.
+    proof:
+      - the rows a receipt writes one note clears the oldest bills and leaves the rest on account
+      - the rows a receipt writes each bill is told its new balance, not a delta
+      - the rows a receipt writes a payment that settles nothing still records the advance
+      - the rows a receipt writes the audit line says what happened in words
+      - the journal entry debits the tender and credits receivables and advances
+      - the journal entry every line naming a party names it
+      - the journal entry an advance is a liability, never a negative receivable
+      - the journal entry a cheque is not money in the bank until it clears
+      - the journal entry no empty line is posted
+      - the journal entry the entry is stamped with the business date and fiscal year
+      - what it refuses a receipt of nothing
+      - what it refuses a cheque with no number
+      - the balance guarantee debits equal credits, exactly
+      - the balance guarantee allocations plus the advance are the payment
+      - the balance guarantee a posting that does not tie out is refused, not written
+      - the balance guarantee a negative amount is refused rather than balanced
