@@ -193,15 +193,28 @@ class PartyRowTile extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: BlTokens.space3),
-              if (owes)
-                BlChip(
-                  s.partyOwes(party.balance.amountOnly),
-                  tone: party.isOverCreditLimit
-                      ? BlChipTone.bad
-                      : BlChipTone.warn,
-                )
-              else
-                BlChip(s.partySettled, tone: BlChipTone.good),
+              // Flexible and scaled, not a fixed lump.
+              //
+              // A non-flex child of a Row claims its full natural width
+              // first, so at 200% the balance chip took 204dp of a 360dp
+              // screen and left the customer's name 70dp — about two glyphs
+              // and an ellipsis. Every debtor in the khata rendered as the
+              // same unreadable stub, and only for the users who turned the
+              // font up because they could not read the small one.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: owes
+                      ? BlChip(
+                          s.partyOwes(party.balance.amountOnly),
+                          tone: party.isOverCreditLimit
+                              ? BlChipTone.bad
+                              : BlChipTone.warn,
+                        )
+                      : BlChip(s.partySettled, tone: BlChipTone.good),
+                ),
+              ),
               if (trailingChevron)
                 Icon(Icons.chevron_right, color: t.inkFaint),
             ],

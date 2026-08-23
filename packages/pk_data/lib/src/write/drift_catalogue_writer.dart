@@ -215,6 +215,186 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         );
       });
 
+  @override
+  Future<String> adjustStock(
+    ActorContext actor,
+    StockAdjustmentDraft draft,
+  ) {
+    final reason = draft.reason.trim();
+    if (reason.isEmpty) {
+      // Required, not optional. A stock figure that can be changed without
+      // saying why is a stock figure nobody can defend — and "the numbers are
+      // wrong and nobody knows why" is what makes a shopkeeper stop trusting
+      // a system and go back to the register.
+      throw ArgumentError.value(
+        draft.reason,
+        'reason',
+        'a stock correction has to say why',
+      );
+    }
+
+    return _runner.run(actor, (tx) async {
+      final item = await tx.selectOne(
+        'SELECT name, track_stock, avg_cost_milli_paisa FROM items '
+        'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+        [draft.itemId, actor.firmId],
+      );
+      if (item == null) {
+        throw StateError('No item ${draft.itemId} in this shop.');
+      }
+      final itemName = item.read<String>('name');
+      if (item.read<int>('track_stock') != 1) {
+        throw StateError(
+          '$itemName does not carry stock, so there is nothing to correct.',
+        );
+      }
+
+      // Read inside the transaction, never from a figure the screen was
+      // holding. Two counters correcting the same item at once would
+      // otherwise both compute their difference from the same stale balance,
+      // and the second would undo the first.
+      final current = await tx.selectOne(
+        'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q '
+        'FROM stock_ledger '
+        'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
+        '  AND deleted_at_utc IS NULL',
+        [actor.firmId, draft.itemId, draft.locationCode],
+      );
+      final onHand = Qty.raw(current?.read<int>('q') ?? 0);
+
+      final delta = draft.delta ??
+          Qty.raw(draft.countedQty!.inThousandths - onHand.inThousandths);
+      if (delta.isZero) {
+        // A stock take that agrees with the ledger is not a correction, and
+        // the schema refuses a zero movement anyway. Saying so is better than
+        // writing a row that means nothing.
+        throw StateError(
+          '$itemName already reads ${onHand.display}. Nothing to correct.',
+        );
+      }
+
+      final balanceAfter = onHand.inThousandths + delta.inThousandths;
+
+      // Valued at what the goods cost, not at what they would have sold for.
+      // A shop that loses a tin loses what it paid for the tin; the margin it
+      // did not make is not an expense, it is a sale that never happened.
+      final cost = Rate.raw(item.read<int>('avg_cost_milli_paisa'));
+      final moved = Qty.raw(delta.inThousandths.abs());
+      final value = cost.amountFor(moved);
+
+      final ledgerId = await tx.insert('stock_ledger', {
+        'item_id': draft.itemId,
+        'location_code': draft.locationCode,
+        // A recount that comes out short and a breakage are the same
+        // arithmetic and different facts. The ledger says which it was.
+        'txn_type': draft.isWriteOff ? 'wastage' : 'adjustment',
+        'qty_delta_thousandths': delta.inThousandths,
+        'rate_milli_paisa': cost.inMilliPaisa,
+        'value_delta_paisa':
+            delta.isNegative ? -value.inPaisa : value.inPaisa,
+        'balance_after_thousandths': balanceAfter,
+        'occurred_at_utc': actor.epochMillis,
+        'occurred_on_local': actor.businessDate.value,
+        'reason': reason,
+      });
+
+      if (!value.isZero) {
+        await _postAdjustmentJournal(
+          tx,
+          actor,
+          itemId: draft.itemId,
+          itemName: itemName,
+          value: value,
+          isLoss: delta.isNegative,
+          reason: reason,
+        );
+      }
+
+      tx.audit(
+        action: 'STOCK_ADJUSTED',
+        entityTable: 'stock_ledger',
+        entityId: ledgerId,
+        summary: '$itemName: ${onHand.display} to '
+            '${Qty.raw(balanceAfter).display} — $reason',
+        amountPaisa: value.inPaisa,
+      );
+      return ledgerId;
+    });
+  }
+
+  /// Goods that left the shelf are an expense whether or not anyone noticed.
+  ///
+  /// Without this the Inventory account still carries stock that is not
+  /// there, the Trial Balance is quietly wrong, and the shop's profit is
+  /// overstated by exactly the value of what it lost.
+  Future<void> _postAdjustmentJournal(
+    Tx tx,
+    ActorContext actor, {
+    required String itemId,
+    required String itemName,
+    required Money value,
+    required bool isLoss,
+    required String reason,
+  }) async {
+    final rows = await tx.select(
+      'SELECT id, system_key FROM accounts '
+      'WHERE firm_id = ? AND system_key IN (?, ?) '
+      '  AND deleted_at_utc IS NULL AND is_active = 1',
+      [actor.firmId, 'inventory', 'stock_wastage'],
+    );
+    final byKey = {
+      for (final r in rows) r.read<String>('system_key'): r.read<String>('id'),
+    };
+    final inventory = byKey['inventory'];
+    final wastage = byKey['stock_wastage'];
+    if (inventory == null || wastage == null) {
+      throw StateError(
+        'The chart of accounts has no inventory or wastage account in firm '
+        '${actor.firmId}, so a stock correction cannot be posted.',
+      );
+    }
+
+    final entryId = await tx.insert('journal_entries', {
+      'entry_no': await _nextJournalNo(tx, actor),
+      'entry_date_utc': actor.epochMillis,
+      'entry_date_local': actor.businessDate.value,
+      'fiscal_year': actor.businessDate.fiscalYear,
+      'source_type': 'adjustment',
+      'narration': '$itemName — $reason',
+      'total_debit_paisa': value.inPaisa,
+      'total_credit_paisa': value.inPaisa,
+    });
+
+    // A loss expenses the wastage account and takes the goods off inventory.
+    // A gain does the reverse: stock that turned out to be there was an
+    // expense the shop had already written off.
+    final lines = <(int, String, Money, Money)>[
+      (1, isLoss ? wastage : inventory, value, Money.zero),
+      (2, isLoss ? inventory : wastage, Money.zero, value),
+    ];
+    for (final line in lines) {
+      await tx.insert('journal_lines', {
+        'journal_entry_id': entryId,
+        'line_no': line.$1,
+        'account_id': line.$2,
+        'debit_paisa': line.$3.inPaisa,
+        'credit_paisa': line.$4.inPaisa,
+        'item_id': itemId,
+        'narration': reason,
+      });
+    }
+  }
+
+  /// The next journal number for this firm and fiscal year.
+  Future<int> _nextJournalNo(Tx tx, ActorContext actor) async {
+    final row = await tx.selectOne(
+      'SELECT COALESCE(MAX(entry_no), 0) + 1 AS n FROM journal_entries '
+      'WHERE firm_id = ? AND fiscal_year = ?',
+      [actor.firmId, actor.businessDate.fiscalYear],
+    );
+    return row?.read<int>('n') ?? 1;
+  }
+
   // -----------------------------------------------------------------------
 
   static Map<String, Object?> _itemColumns(ItemDraft d) => {

@@ -222,12 +222,18 @@ class CartNotifier extends Notifier<Cart> {
   }
 
   void remove(String itemId) {
-    state = state.copyWith(
-      lines: [
-        for (final l in state.lines)
-          if (l.item.id != itemId) l,
-      ],
-    );
+    final lines = [
+      for (final l in state.lines)
+        if (l.item.id != itemId) l,
+    ];
+    // The last line off the bill takes the customer with it.
+    //
+    // A named customer used to outlive the lines they were attached to, and
+    // the clear-cart action is hidden once the cart is empty, so there was no
+    // way to detach them. The next walk-in's bill was then written against
+    // that customer's party_id — and if it was taken on udhaar, the debt
+    // landed in the wrong khata for real. An empty counter is a new bill.
+    state = lines.isEmpty ? const Cart() : state.copyWith(lines: lines);
   }
 
   void setBillDiscount(Money amount) =>

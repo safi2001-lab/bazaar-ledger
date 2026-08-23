@@ -405,13 +405,24 @@ class _ResultRow extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: BlTokens.space3),
-              Text(
-                item.saleRate.amountOnly,
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  color: t.ink,
-                  fontFeatures: BlTokens.tabular,
+              // Flexible and scaled, same reason as the khata list: a non-flex
+              // child of a Row takes its full natural width first, and at 200%
+              // the price left the item name about a third of the space it
+              // needed. This one is on the billing path.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    item.saleRate.amountOnly,
+                    maxLines: 1,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: t.ink,
+                      fontFeatures: BlTokens.tabular,
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(width: BlTokens.space3),
@@ -687,7 +698,15 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    return Padding(
+    // Scrollable, like the tender sheet and unlike its previous self.
+    //
+    // The quantity field is autofocused, so the keyboard is always up when
+    // this opens. Sideways that leaves about 160dp, and the confirm and
+    // delete buttons were laid out a hundred pixels below it with nothing to
+    // scroll: the shopkeeper typed the corrected quantity and had no way to
+    // confirm it. The only escapes were dismissing the sheet and losing the
+    // edit, or knowing to press system Back first to drop the keyboard.
+    return SingleChildScrollView(
       padding: EdgeInsets.only(
         left: BlTokens.space4,
         right: BlTokens.space4,

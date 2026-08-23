@@ -104,6 +104,59 @@ final class PartyDraft {
 /// Separate from [SaleWriter] because the transactions are different shapes,
 /// and because a screen that can add an item has no business being able to
 /// post a journal entry.
+
+/// A correction to what the shelf says.
+///
+/// Every one of these carries a reason, and the reason is required rather than
+/// optional. A stock figure that can be changed without saying why is a stock
+/// figure nobody can defend to an auditor, to a supplier, or to the person who
+/// was on the counter that afternoon — and "the numbers are wrong and nobody
+/// knows why" is the complaint that makes shopkeepers stop trusting a system
+/// and go back to the register.
+final class StockAdjustmentDraft {
+  /// A stock take: the shelf was counted, and this is what is on it.
+  ///
+  /// The difference is worked out inside the transaction against the ledger,
+  /// so two counters counting at once cannot both write the same correction
+  /// from the same stale figure.
+  const StockAdjustmentDraft.counted({
+    required this.itemId,
+    required Qty counted,
+    required this.reason,
+    this.locationCode = 'MAIN',
+  })  : countedQty = counted,
+        delta = null;
+
+  /// A known movement: three tins broke, a sack was rat-eaten, a sample went
+  /// out. The shelf is not recounted; this much simply left or arrived.
+  const StockAdjustmentDraft.byDelta({
+    required this.itemId,
+    required Qty change,
+    required this.reason,
+    this.locationCode = 'MAIN',
+  })  : delta = change,
+        countedQty = null;
+
+  final String itemId;
+
+  /// What was counted, for a stock take. Null for a known movement.
+  final Qty? countedQty;
+
+  /// How much moved, for a known movement. Null for a stock take.
+  final Qty? delta;
+
+  /// Why. Never blank.
+  final String reason;
+
+  final String locationCode;
+
+  /// True when this is a write-off rather than a recount.
+  ///
+  /// A recount that comes out short and a breakage are the same arithmetic and
+  /// different facts, and the ledger says which it was.
+  bool get isWriteOff => delta != null;
+}
+
 abstract interface class CatalogueWriter {
   /// Adds an item and, when it has opening stock, the ledger row that puts it
   /// on the shelf.
@@ -126,4 +179,20 @@ abstract interface class CatalogueWriter {
   );
 
   Future<void> archiveParty(ActorContext actor, String partyId);
+
+  /// Corrects the shelf, and tells the books about it.
+  ///
+  /// Not a column write. Stock is a SUM over an append-only ledger, so a
+  /// correction is another row on that ledger — which is what makes it
+  /// visible in the stock detail report, attributable to whoever made it, and
+  /// impossible to make disappear.
+  ///
+  /// It posts a journal entry too, at the item's weighted-average cost.
+  /// Goods that walked off the shelf are an expense whether or not anyone
+  /// noticed: without the entry the Inventory account still carries stock
+  /// that is not there, the Trial Balance is quietly wrong, and the shop's
+  /// profit is overstated by exactly the value of what it lost.
+  ///
+  /// Returns the id of the stock ledger row.
+  Future<String> adjustStock(ActorContext actor, StockAdjustmentDraft draft);
 }

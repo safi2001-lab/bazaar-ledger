@@ -181,6 +181,39 @@ void main() {
     );
   });
 
+  testWidgets('the khata list shows customer names at 200%', (tester) async {
+    useASmallPhone(tester);
+    final app = await Harness.startWithShop(tester);
+    for (final name in const [
+      'Bilal General Store',
+      'Chishti Traders Wholesale',
+    ]) {
+      await app.seedParty(name: name, owedRupees: 125000);
+    }
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Gahak').first);
+    await tester.pumpAndSettle();
+
+    // The balance chip was a non-flex child of the row, so it took its full
+    // natural width first — 204dp of a 360dp screen — and left the name about
+    // two glyphs and an ellipsis. Every debtor rendered as the same
+    // unreadable stub, and only for the shopkeepers who turned the font up
+    // because they could not read the small one.
+    for (final name in const ['Bilal', 'Chishti']) {
+      final finder = find.textContaining(name);
+      expect(finder, findsOneWidget, reason: '$name is not on the screen');
+      final box = tester.renderObject<RenderBox>(finder);
+      expect(
+        box.size.width,
+        greaterThan(110),
+        reason: 'the name column is only ${box.size.width}dp wide, which is '
+            'a couple of characters',
+      );
+    }
+    expectNothingPaintsOffScreen(tester);
+  });
+
   testWidgets('a six-figure bill still fits at 200%', (tester) async {
     useASmallPhone(tester);
     final app = await Harness.startWithShop(tester);

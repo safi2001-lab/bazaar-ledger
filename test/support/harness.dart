@@ -91,6 +91,24 @@ final class Harness {
     );
   }
 
+  /// Puts a customer in the khata, optionally already owing something.
+  ///
+  /// The opening balance is what they owed before the shop started keeping
+  /// books here, which is how every real khata begins.
+  Future<String> seedParty({
+    required String name,
+    int owedRupees = 0,
+    String? phone,
+  }) =>
+      services.catalogue.addParty(
+        services.actorNow(),
+        PartyDraft(
+          name: name,
+          phone: phone,
+          openingBalance: Money.rupees(owedRupees),
+        ),
+      );
+
   /// How many rows a table holds right now.
   Future<int> countIn(String table) async {
     final rows =
