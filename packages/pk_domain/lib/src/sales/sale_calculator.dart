@@ -205,6 +205,21 @@ final class SaleCalculator {
               'credit note against the original bill',
         );
       }
+      // And not zero either. A zero-quantity line prices to nothing, passes
+      // every other guard here, and dies on the schema's
+      // `CHECK (qty_thousandths <> 0)` — after the documents row has already
+      // been inserted. The transaction rolls back, so nothing is corrupted,
+      // but the cashier is handed an untranslated SQLite string on a sale
+      // they were told was going through. Caught here, where the message can
+      // name the line and say why.
+      if (line.qty.isZero) {
+        throw ArgumentError.value(
+          line.qty.display,
+          'qty',
+          '${line.itemName}: a line has to be for some quantity of '
+              'something. Remove the line instead.',
+        );
+      }
       final discount = line.explicitDiscount ??
           lineGross.percentBp(line.discountBp, mode: mode);
       // A negative discount is a surcharge that never appears on the bill.

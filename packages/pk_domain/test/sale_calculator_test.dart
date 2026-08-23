@@ -146,6 +146,31 @@ void main() {
       expect(sale.total, Money.rupees(1150));
     });
 
+    test('a line for no quantity at all is refused here, not by SQLite', () {
+      // A zero-quantity line prices to nothing and passes every other guard.
+      // Left to reach the database it dies on `CHECK (qty_thousandths <> 0)`
+      // — after the documents row has already been inserted. The transaction
+      // rolls back so nothing is corrupted, but the cashier is handed an
+      // untranslated SQLite string on a sale they were told was going
+      // through. This layer's whole job is to catch that here, where the
+      // message can name the item and say what to do about it.
+      expect(
+        () => calculator.calculate(
+          SaleDraft(
+            lines: [line(name: 'Rice', qty: '0', rate: Rate.rupees(100))],
+          ),
+          untaxed,
+        ),
+        throwsA(
+          isA<ArgumentError>().having(
+            (e) => e.message.toString(),
+            'message',
+            allOf(contains('Rice'), contains('Remove the line')),
+          ),
+        ),
+      );
+    });
+
     test('a discount larger than the line is refused', () {
       expect(
         () => calculator.calculate(

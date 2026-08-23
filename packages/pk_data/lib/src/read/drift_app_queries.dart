@@ -347,8 +347,8 @@ final class DriftAppQueries implements AppQueries {
     final payments = await _db
         .customSelect(
           '''
-          SELECT DISTINCT p.id, p.mode, p.amount_paisa, p.change_paisa,
-                 p.reference
+          SELECT DISTINCT p.id, p.mode, p.amount_paisa, p.tendered_paisa,
+                 p.change_paisa, p.reference
           FROM payments p
           JOIN payment_allocations pa ON pa.payment_id = p.id
           WHERE pa.document_id = ?
@@ -377,7 +377,14 @@ final class DriftAppQueries implements AppQueries {
             qtyDisplay: Qty.raw(l.read<int>('qty_thousandths')).display,
             unitCode: l.read<String>('unit_code_snapshot'),
             rate: Rate.raw(l.read<int>('rate_milli_paisa')),
-            amount: Money.paisa(l.read<int>('line_total_paisa')),
+            // Gross, because the line below it prints the discount as a
+            // deduction and the Subtotal is gross too. Printing the net
+            // figure here deducted the discount twice on the paper: a Rs 100
+            // line at 10% off read "1 pcs x 100.00 ... 90.00" with "less
+            // discount -10.00" under it, so the Amount column summed to 90
+            // while the Subtotal claimed 100, and reading the line as printed
+            // gave 80. None of the three numbers agreed.
+            amount: Money.paisa(l.read<int>('gross_paisa')),
             discount: Money.paisa(l.read<int>('discount_paisa')),
             isFreeItem: l.read<int>('is_free_item') == 1,
           ),
@@ -397,7 +404,19 @@ final class DriftAppQueries implements AppQueries {
         for (final p in payments)
           ReceiptTender(
             label: _modeLabel(p.read<String>('mode')),
-            amount: Money.paisa(p.read<int>('amount_paisa')),
+            // What the customer handed over, not what the bill took off it.
+            //
+            // The receipt prints the tenders and then the change, and a
+            // customer checks the paper by subtracting one from the other.
+            // Printing `amount_paisa` — the settled figure — made every cash
+            // receipt with change fail that check: a Rs 5,525 bill paid with
+            // a Rs 6,000 note printed "Cash 5,525.00" and "Change 475.00",
+            // which comes to 5,050, and also stated the customer had handed
+            // over 5,525 when they had handed over 6,000.
+            amount: Money.paisa(
+              p.readNullable<int>('tendered_paisa') ??
+                  p.read<int>('amount_paisa'),
+            ),
             reference: _blankToNull(p.readNullable<String>('reference')),
           ),
       ],

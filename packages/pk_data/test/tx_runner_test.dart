@@ -203,6 +203,81 @@ void main() {
           reason: 'creation time is history and does not move');
     });
 
+    test('a resumed clock never re-issues a timestamp it already used',
+        () async {
+      // The obvious version of `resumeHlcClock` reads `change_log` alone, on
+      // the reasoning that the single write path guarantees the outbox is
+      // complete. The outbox IS complete, for entities — but every audit row
+      // is stamped with an HLC too, audit rows never reach the outbox, and
+      // they are minted LAST, so the highest audit timestamp of the last
+      // transaction is always strictly above the highest one in `change_log`.
+      // Resuming from `change_log` alone therefore handed back a timestamp
+      // the device had already spent, reproducibly, on the very next write.
+      //
+      // The clock here is fixed, which is the honest case: it is what a
+      // shopkeeper produces by correcting the handset date backwards, and
+      // what the wall clock does anyway inside a single millisecond.
+      final highest = await db
+          .customSelect(
+            'SELECT MAX(hlc) AS h FROM ('
+            '  SELECT hlc FROM change_log WHERE origin_device_id = ?'
+            '  UNION ALL'
+            '  SELECT hlc FROM audit_log WHERE origin_device_id = ?'
+            ')',
+            variables: [
+              Variable<String>(firm.deviceId),
+              Variable<String>(firm.deviceId),
+            ],
+          )
+          .getSingle();
+      final spent = highest.read<String>('h');
+
+      final resumed = await resumeHlcClock(
+        db,
+        deviceId: firm.deviceId,
+        clock: clock,
+      );
+
+      expect(
+        resumed.next().value.compareTo(spent) > 0,
+        isTrue,
+        reason: 'the resumed clock handed back $spent, which this device has '
+            'already stamped on a row',
+      );
+    });
+
+    test('an append-only ledger refuses an update', () async {
+      // The more dangerous of the two, and the one that had no guard.
+      // Rewriting `journal_lines.account_id` moves money to a different
+      // account while `assertBooksBalance` still passes, because the debits
+      // and the credits are untouched: the books balance and they are wrong.
+      // Rewriting a stock quantity is worse still — `rebuildStockBalances`
+      // then "repairs" the cached running total to match the tampered figure,
+      // making the corruption permanent and self-consistent.
+      for (final table in const [
+        'stock_ledger',
+        'journal_entries',
+        'journal_lines',
+        'audit_log',
+        'change_log',
+      ]) {
+        await expectLater(
+          runner.run(
+            actor,
+            (tx) => tx.update(table, 'any-id', {'firm_id_unused': 1}),
+          ),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              allOf(contains(table), contains('append-only')),
+            ),
+          ),
+          reason: '$table must not be rewritable',
+        );
+      }
+    });
+
     test('an append-only ledger refuses a soft delete', () async {
       // A stock movement or a journal line is evidence, and a balance is
       // derived by summing it in order. Striking one out leaves every running

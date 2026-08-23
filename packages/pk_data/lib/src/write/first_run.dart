@@ -408,12 +408,27 @@ extension FirstRunWiring on FirstRunResult {
       );
 }
 
-/// Rebuilds this device's HLC from the outbox on startup.
+/// Rebuilds this device's HLC from everything it has ever stamped.
 ///
-/// The highest timestamp this device ever issued is already recorded in
-/// `change_log`, which the single write path guarantees is complete. There is
-/// therefore no separate counter to persist, keep in step, or lose in a power
-/// cut — the thing that would be hardest to get right is simply not there.
+/// There is no separate counter to persist, keep in step, or lose in a power
+/// cut: the highest timestamp this device ever issued is already written down,
+/// so the thing that would be hardest to get right is simply not there.
+///
+/// Both logs, and that matters. The obvious version of this reads `change_log`
+/// alone, on the reasoning that the single write path guarantees the outbox is
+/// complete — and the outbox IS complete, for entities. But `Tx._writeAudit`
+/// mints an HLC for every audit row and audit rows never reach the outbox, and
+/// they are minted last, so the highest audit timestamp of the last
+/// transaction is always strictly above the highest one in `change_log`.
+/// Resuming from `change_log` alone therefore re-issued a timestamp the device
+/// had already used — reproducibly, on the very next write after first run.
+///
+/// The collision landed on `audit_log`, which is never synced and never
+/// ordered by HLC, so no entity row could collide with another. It still had
+/// to go: "lexicographic order is causal order" is either true of every
+/// timestamp this device mints or it is a property nobody can rely on. And a
+/// shopkeeper correcting the handset date backwards walks every counter value
+/// a second time, which is exactly when it stops being harmless.
 Future<HlcClock> resumeHlcClock(
   AppDatabase database, {
   required String deviceId,
@@ -421,8 +436,15 @@ Future<HlcClock> resumeHlcClock(
 }) async {
   final row = await database
       .customSelect(
-        'SELECT MAX(hlc) AS last_hlc FROM change_log WHERE origin_device_id = ?',
-        variables: [Variable<String>(deviceId)],
+        'SELECT MAX(hlc) AS last_hlc FROM ('
+        '  SELECT hlc FROM change_log WHERE origin_device_id = ?'
+        '  UNION ALL'
+        '  SELECT hlc FROM audit_log WHERE origin_device_id = ?'
+        ')',
+        variables: [
+          Variable<String>(deviceId),
+          Variable<String>(deviceId),
+        ],
       )
       .getSingleOrNull();
   final raw = row?.readNullable<String>('last_hlc');

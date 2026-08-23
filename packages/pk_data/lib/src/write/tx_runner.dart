@@ -202,6 +202,7 @@ final class Tx {
     if (values.isEmpty) {
       throw ArgumentError.value(values, 'values', 'must not be empty');
     }
+    _refuseAppendOnly(table, 'rewritten');
     _rejectEnvelopeColumns(table, values);
 
     final hlc = _hlc.next().value;
@@ -271,27 +272,34 @@ final class Tx {
     'change_log',
   };
 
+  /// Refuses to change a row in a ledger that may only be appended to.
+  ///
+  /// A financial ledger is corrected by a reversing row, never by editing or
+  /// hiding one. `stock_ledger.balance_after_thousandths` is a running total
+  /// stamped at the moment its row was written, so a row changed or removed
+  /// underneath it can never be recomputed — and worse, `rebuildStockBalances`
+  /// will happily "repair" the cache to match the tampered quantity, making it
+  /// permanent and self-consistent.
+  ///
+  /// The update path is the more dangerous of the two, and had no guard at
+  /// all. Rewriting `journal_lines.account_id` moves money to a different
+  /// account while `assertBooksBalance` still passes, because the debits and
+  /// the credits are untouched: the books balance and they are wrong.
+  void _refuseAppendOnly(String table, String what) {
+    if (!_appendOnly.contains(table)) return;
+    throw StateError(
+      '$table is append-only and cannot be $what: correct it with a '
+      'reversing entry.',
+    );
+  }
+
   /// Marks a row deleted without destroying it.
   ///
   /// Six-year retention under s.24 STA and s.174(3) ITO is a legal obligation,
   /// not a preference, and a shopkeeper who deletes a bill by accident on a
   /// Tuesday will want it back on the Wednesday.
   Future<void> softDelete(String table, String id) async {
-    if (_appendOnly.contains(table)) {
-      // A financial ledger is corrected by a reversing row, never by hiding
-      // one. `stock_ledger.balance_after_thousandths` is a running total
-      // stamped at the moment the row was written, so a row removed from
-      // underneath it can never be recomputed: the writer sums only live
-      // rows, every caller reads only live rows, and the health check summed
-      // deleted ones too in the belief that the cache had counted them. Void
-      // one row and the three disagree permanently — the shopkeeper is shown
-      // negative stock, Data Health goes red, and the rebuild writes back a
-      // number the next sale contradicts again.
-      throw StateError(
-        '$table is append-only: correct it with a reversing entry, not a '
-        'delete.',
-      );
-    }
+    _refuseAppendOnly(table, 'struck out');
     // Read first. Deleting a journal line unbalances its entry, and
     // `assertBooksBalance` only inspects entries this transaction touched —
     // so a delete that does not register the touch escapes the pre-commit

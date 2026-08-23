@@ -1,5 +1,5 @@
-import 'package:pk_bootstrap/pk_bootstrap.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 /// A build with nothing configured must still be a working shop.
 ///

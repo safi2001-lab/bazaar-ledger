@@ -22,5 +22,7 @@ dev_dependencies:
   lints: ^6.0.0
   pk_application:
     path: ../pk_application
+  pk_platform:
+    path: ../pk_platform
   sqlite3: ^2.4.0
   test: ^1.26.0
