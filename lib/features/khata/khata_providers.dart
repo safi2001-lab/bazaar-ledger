@@ -35,3 +35,29 @@ final partyProvider = FutureProvider.autoDispose.family<PartySummary?, String>((
   if (firm == null) return null;
   return services.queries.partyById(firm.id, partyId);
 });
+
+/// What the shop is owed, bucketed by age, as of today.
+final agingProvider = FutureProvider.autoDispose<Aging>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return const Aging({});
+  return services.queries.aging(
+    firm.id,
+    asOfDateLocal: services.actorNow().businessDate.value,
+  );
+});
+
+/// Who to chase, oldest debt first.
+final chaseListProvider = FutureProvider.autoDispose<List<AgedParty>>((
+  ref,
+) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return const [];
+  return services.queries.partiesToChase(
+    firm.id,
+    asOfDateLocal: services.actorNow().businessDate.value,
+  );
+});

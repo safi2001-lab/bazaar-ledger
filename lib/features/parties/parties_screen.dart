@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../khata/chase_screen.dart';
 import '../khata/khata_screen.dart';
 import 'party_editor.dart';
 
@@ -49,7 +50,21 @@ class _PartiesScreenState extends ConsumerState<PartiesScreen> {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.partiesTitle)),
+      appBar: AppBar(
+        title: Text(s.partiesTitle),
+        actions: [
+          // The list answers "what does Rashid owe". This answers "who do I
+          // call today", which is the question a shopkeeper opens the book
+          // for in the evening.
+          BlIconButton(
+            icon: Icons.notifications_active_outlined,
+            label: s.chaseTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const ChaseScreen()),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [

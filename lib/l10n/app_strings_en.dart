@@ -1023,4 +1023,32 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get khataRemindNothingOwed => 'Nothing is outstanding';
+
+  @override
+  String get chaseTitle => 'Collections';
+
+  @override
+  String get chaseEmpty => 'Nobody owes anything';
+
+  @override
+  String get chaseEmptyHint => 'Every account is settled';
+
+  @override
+  String get chaseTotal => 'Total outstanding';
+
+  @override
+  String get chaseOverdue => 'Overdue';
+
+  @override
+  String chaseSince(int days) {
+    return '$days days';
+  }
+
+  @override
+  String chaseBills(int count) {
+    return '$count bills';
+  }
+
+  @override
+  String get chaseAll => 'All';
 }

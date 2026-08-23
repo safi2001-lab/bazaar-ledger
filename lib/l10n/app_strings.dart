@@ -1951,6 +1951,54 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Kuch baqi nahi hai'**
   String get khataRemindNothingOwed;
+
+  /// No description provided for @chaseTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar wasooli'**
+  String get chaseTitle;
+
+  /// No description provided for @chaseEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kisi ka udhaar baqi nahi'**
+  String get chaseEmpty;
+
+  /// No description provided for @chaseEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab hisaab saaf hai'**
+  String get chaseEmptyHint;
+
+  /// No description provided for @chaseTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul udhaar'**
+  String get chaseTotal;
+
+  /// Everything past the shop's normal fortnightly cycle. Deliberately excludes the current bucket, or every shop looks like it is in trouble every day.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der se baqi'**
+  String get chaseOverdue;
+
+  /// No description provided for @chaseSince.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din se'**
+  String chaseSince(int days);
+
+  /// No description provided for @chaseBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} bill'**
+  String chaseBills(int count);
+
+  /// No description provided for @chaseAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab'**
+  String get chaseAll;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

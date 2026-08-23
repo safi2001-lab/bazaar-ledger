@@ -285,6 +285,105 @@ final class DriftAppQueries implements AppQueries {
   );
 
   @override
+  Future<Aging> aging(String firmId, {required String asOfDateLocal}) async {
+    // Bucketed in SQL rather than by pulling every open bill into Dart. A
+    // wholesaler with three years of udhaar has tens of thousands, and the
+    // shopkeeper is looking at a summary card.
+    //
+    // julianday on the local business date, never on an epoch: PKT is UTC+5
+    // with no daylight saving, so a bill raised at eight in the evening would
+    // be a day older under UTC arithmetic — and 90 versus 91 days is exactly
+    // where an ageing report starts arguments.
+    //
+    // Rides idx_documents_open_balance.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT
+            CAST(julianday(?) - julianday(d.doc_date_local) AS INTEGER) AS days,
+            SUM(d.balance_paisa) AS owed
+          FROM documents d
+          WHERE d.firm_id = ?
+            AND d.balance_paisa > 0
+            AND d.party_id IS NOT NULL
+            AND d.status NOT IN ('void', 'draft')
+            AND d.deleted_at_utc IS NULL
+          GROUP BY days
+          ''',
+          variables: [
+            Variable<String>(asOfDateLocal),
+            Variable<String>(firmId),
+          ],
+          readsFrom: {_db.documents},
+        )
+        .get();
+
+    return ageBills([
+      for (final r in rows)
+        AgedBill(
+          documentId: '',
+          days: r.read<int>('days'),
+          outstanding: Money.paisa(r.read<int>('owed')),
+        ),
+    ]);
+  }
+
+  @override
+  Future<List<AgedParty>> partiesToChase(
+    String firmId, {
+    required String asOfDateLocal,
+    int limit = 100,
+  }) async {
+    // Ordered by the age of the oldest debt, not by size of balance. The
+    // customer who owes Rs 3,000 since March is a different conversation from
+    // the one who owes Rs 40,000 since last week, and a list sorted by amount
+    // puts the second one first every time.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT p.id,
+                 MIN(d.doc_date_local) AS oldest,
+                 COUNT(*) AS open_bills
+          FROM documents d
+          JOIN parties p ON p.id = d.party_id
+          WHERE d.firm_id = ?
+            AND d.balance_paisa > 0
+            AND d.status NOT IN ('void', 'draft')
+            AND d.deleted_at_utc IS NULL
+            AND p.deleted_at_utc IS NULL
+            AND p.is_active = 1
+          GROUP BY p.id
+          ORDER BY oldest
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+          readsFrom: {_db.documents, _db.parties},
+        )
+        .get();
+
+    final chase = <AgedParty>[];
+    for (final row in rows) {
+      // Through partyById so the balance is the one expression the whole app
+      // uses — advances subtracted included. A customer who has paid on
+      // account may owe on a bill and be in credit overall, and the chase
+      // list must not go and knock on their door.
+      final party = await partyById(firmId, row.read<String>('id'));
+      if (party == null || !party.balance.isPositive) continue;
+
+      final oldest = row.read<String>('oldest');
+      chase.add(
+        AgedParty(
+          party: party,
+          oldestDays: daysBetween(oldest, asOfDateLocal),
+          oldestDateLocal: oldest,
+          openBills: row.read<int>('open_bills'),
+        ),
+      );
+    }
+    return chase;
+  }
+
+  @override
   Future<PartySummary?> partyById(String firmId, String partyId) async {
     // The same SELECT as searchParties, with a different WHERE. Shared as a
     // string rather than by calling the other method and filtering: two

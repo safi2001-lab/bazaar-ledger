@@ -416,5 +416,30 @@
   "tenderOverLimitAllow": "Give credit anyway",
   "khataRemind": "Send a reminder",
   "khataRemindNoPhone": "This customer has no phone number",
-  "khataRemindNothingOwed": "Nothing is outstanding"
+  "khataRemindNothingOwed": "Nothing is outstanding",
+  "chaseTitle": "Collections",
+  "chaseEmpty": "Nobody owes anything",
+  "chaseEmptyHint": "Every account is settled",
+  "chaseTotal": "Total outstanding",
+  "chaseOverdue": "Overdue",
+  "@chaseOverdue": {
+    "description": "Everything past the shop's normal fortnightly cycle. Deliberately excludes the current bucket, or every shop looks like it is in trouble every day."
+  },
+  "chaseSince": "{days} days",
+  "@chaseSince": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "chaseBills": "{count} bills",
+  "@chaseBills": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chaseAll": "All"
 }

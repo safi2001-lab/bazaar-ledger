@@ -498,5 +498,30 @@
   "tenderOverLimitAllow": "Phir bhi udhaar dein",
   "khataRemind": "Yaad dilayein",
   "khataRemindNoPhone": "Is gahak ka number nahi hai",
-  "khataRemindNothingOwed": "Kuch baqi nahi hai"
+  "khataRemindNothingOwed": "Kuch baqi nahi hai",
+  "chaseTitle": "Udhaar wasooli",
+  "chaseEmpty": "Kisi ka udhaar baqi nahi",
+  "chaseEmptyHint": "Sab hisaab saaf hai",
+  "chaseTotal": "Kul udhaar",
+  "chaseOverdue": "Der se baqi",
+  "@chaseOverdue": {
+    "description": "Everything past the shop's normal fortnightly cycle. Deliberately excludes the current bucket, or every shop looks like it is in trouble every day."
+  },
+  "chaseSince": "{days} din se",
+  "@chaseSince": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "chaseBills": "{count} bill",
+  "@chaseBills": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "chaseAll": "Sab"
 }

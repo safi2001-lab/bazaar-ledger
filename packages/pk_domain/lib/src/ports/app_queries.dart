@@ -1,6 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
 import '../catalogue/unit_converter.dart';
+import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
 import 'receipt.dart';
 
@@ -202,6 +203,28 @@ final class PartySummary {
   bool get isOverCreditLimit => creditLimit != null && balance > creditLimit!;
 }
 
+/// A customer who owes, and how long they have.
+final class AgedParty {
+  const AgedParty({
+    required this.party,
+    required this.oldestDays,
+    required this.oldestDateLocal,
+    required this.openBills,
+  });
+
+  final PartySummary party;
+
+  /// Days since the oldest bill they still owe on.
+  final int oldestDays;
+  final String oldestDateLocal;
+
+  /// How many bills are open. A customer with one bill from March and one
+  /// with eleven are the same age and different conversations.
+  final int openBills;
+
+  AgeBucket get bucket => AgeBucket.forDays(oldestDays);
+}
+
 /// Everything the app reads.
 ///
 /// Declared here so the UI can be written against domain types and never has
@@ -237,6 +260,26 @@ abstract interface class AppQueries {
     String firmId, {
     String query = '',
     int limit = 40,
+  });
+
+  /// What the shop is owed, bucketed by how old it is.
+  ///
+  /// [asOfDateLocal] is the business date to age against, so a shopkeeper
+  /// doing Friday's books on Sunday gets Friday's numbers if they ask for
+  /// them. Aged on `doc_date_local`, never on a UTC instant: PKT is UTC+5
+  /// with no daylight saving, and a bill raised at eight in the evening would
+  /// otherwise be a day older than it is.
+  Future<Aging> aging(String firmId, {required String asOfDateLocal});
+
+  /// Customers who owe, with their oldest unpaid bill first.
+  ///
+  /// The chase list. Sorted by the age of the oldest debt rather than by size
+  /// of balance, because the customer who owes Rs 3,000 since March is a
+  /// different conversation from the one who owes Rs 40,000 since last week.
+  Future<List<AgedParty>> partiesToChase(
+    String firmId, {
+    required String asOfDateLocal,
+    int limit = 100,
   });
 
   /// One customer, by id.

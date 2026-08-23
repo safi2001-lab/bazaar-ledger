@@ -1025,4 +1025,32 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get khataRemindNothingOwed => 'Kuch baqi nahi hai';
+
+  @override
+  String get chaseTitle => 'Udhaar wasooli';
+
+  @override
+  String get chaseEmpty => 'Kisi ka udhaar baqi nahi';
+
+  @override
+  String get chaseEmptyHint => 'Sab hisaab saaf hai';
+
+  @override
+  String get chaseTotal => 'Kul udhaar';
+
+  @override
+  String get chaseOverdue => 'Der se baqi';
+
+  @override
+  String chaseSince(int days) {
+    return '$days din se';
+  }
+
+  @override
+  String chaseBills(int count) {
+    return '$count bill';
+  }
+
+  @override
+  String get chaseAll => 'Sab';
 }

@@ -1915,3 +1915,67 @@ features:
       - the reminder is addressed to a number WhatsApp can reach
       - the app never opens a browser to send a reminder
       - the manifest can still see whether WhatsApp is installed
+
+  - id: M3-AGING-01
+    milestone: M3
+    title: A shopkeeper can see who to chase, oldest first
+    status: done
+    # A total tells a shopkeeper how much is out and nothing they can act on.
+    # Rs 200,000 spread across this month's customers and Rs 200,000 sitting
+    # since March are the same number and completely different problems, and
+    # the second one is why shops keep a book at all.
+    #
+    # Sorted by the AGE of the oldest debt, never by size of balance. A list
+    # sorted by amount puts the customer who owes Rs 40,000 since last week
+    # ahead of the one who owes Rs 3,000 since March, every time, and the
+    # second is the urgent conversation.
+    #
+    # Four buckets — 0-30, 31-60, 61-90, 90+ — because that is what every
+    # accountant, bank and competing product uses, and a shopkeeper who has
+    # seen one ageing report has seen this one. Empty buckets are shown, or
+    # the shopkeeper wonders whether a missing one is empty or broken.
+    #
+    # "Overdue" deliberately excludes the current bucket. A kiryana shop's
+    # cycle is a fortnight, and counting this week's udhaar as overdue makes
+    # every shop look like it is in trouble every day.
+    #
+    # Aged on doc_date_local via julianday, never on a UTC instant. PKT is
+    # UTC+5 with no daylight saving, so a bill raised at eight in the evening
+    # would be a day older under UTC arithmetic — and 90 versus 91 days is
+    # exactly where an ageing report starts arguments. The arithmetic exists
+    # twice, once in SQL for a wholesaler with tens of thousands of open bills
+    # and once in AgeBucket.forDays, so a proof pins them to the same boundary.
+    #
+    # A customer in credit overall is never chased. The mutation test earned
+    # its keep here: the guard was real but the first proof of it closed the
+    # bill through FIFO and so never reached the guard at all — removing the
+    # guard failed nothing. The sequence that actually produces an open bill
+    # alongside net credit is advance FIRST, bill after, which is how a
+    # standing-order customer pays.
+    proof:
+      - which bucket a debt falls in the boundaries are inclusive at the top
+      - which bucket a debt falls in a bill dated in the future is current, not a crash
+      - days are counted on the business date across a month boundary
+      - days are counted on the business date a leap day is a day
+      - days are counted on the business date the same day is nothing owed for any time at all
+      - bucketing a shop every bucket is present, including the empty ones
+      - bucketing a shop bills land where their age puts them
+      - bucketing a shop a settled bill contributes nothing
+      - bucketing a shop overdue is everything past the shop normal cycle
+      - bucketing a shop the buckets sum back to the total, exactly
+      - a shop with nothing out reports every bucket at zero
+      - bills land in the bucket their date puts them in
+      - the SQL and the domain agree on the boundary
+      - a paid bill drops out of the report
+      - a void bill is never aged
+      - the chase list is ordered by the oldest debt, not the largest
+      - the chase list counts how many bills are open
+      - the chase list a customer in credit overall is not chased
+      - the chase list a customer who overpaid an open bill is not chased either
+      - the chase list a shop that is owed nothing has nobody to chase
+      - the collections view is reachable from the khata list
+      - a shop that is owed nothing says so
+      - the oldest debt is listed first, not the largest
+      - it shows the total and what is overdue separately
+      - a bucket can be tapped to see only those customers
+      - tapping a customer opens their khata
