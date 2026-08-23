@@ -1999,6 +1999,18 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Sab'**
   String get chaseAll;
+
+  /// No description provided for @khataHistory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purana hisaab'**
+  String get khataHistory;
+
+  /// No description provided for @khataHistoryEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi len-den nahi'**
+  String get khataHistoryEmpty;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

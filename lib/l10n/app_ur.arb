@@ -523,5 +523,7 @@
       }
     }
   },
-  "chaseAll": "Sab"
+  "chaseAll": "Sab",
+  "khataHistory": "Purana hisaab",
+  "khataHistoryEmpty": "Abhi koi len-den nahi"
 }

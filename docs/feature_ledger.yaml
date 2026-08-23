@@ -1979,3 +1979,41 @@ features:
       - it shows the total and what is overdue separately
       - a bucket can be tapped to see only those customers
       - tapping a customer opens their khata
+
+  - id: M3-LEDGER-01
+    milestone: M3
+    title: A customer's khata settles the argument, not only the balance
+    status: done
+    # The open-bills view answers "what is still owed". It does not answer the
+    # question a customer actually asks, which is "I paid you last week" — and
+    # that answer has to be a date, an amount and a receipt number they can
+    # match against the paper in their hand. Without the number the shopkeeper
+    # is asking them to take a date on trust, which is how these arguments go
+    # badly in a shop that has an app and a customer who has a receipt.
+    #
+    # One UNION rather than two queries stitched in Dart, so the ordering is
+    # the database's and a bill and a payment on the same day cannot end up in
+    # different relative orders on two different screens.
+    #
+    # Amounts are SIGNED rather than paired with a direction flag. A running
+    # balance that adds some rows and subtracts others by reading a second
+    # column is a running balance somebody eventually gets backwards.
+    #
+    # The running balance is computed on read and never stored. A cached one
+    # is wrong for every row after the insertion point the moment a backdated
+    # bill is entered — which every shop does, because the paperwork happens
+    # on Sunday and the bill was Friday's.
+    #
+    # Oldest first from the query, because that is the order a running balance
+    # is computed in; reversed on screen, because a shopkeeper looking for
+    # last week's payment wants it at the top.
+    proof:
+      - a customer with no history has an empty khata
+      - bills and payments are interleaved by date
+      - a payment reduces what is owed and a bill increases it
+      - the running balance is right after every line
+      - a backdated bill lands where its date puts it
+      - every line carries the number on the customer paper
+      - a void bill never appears
+      - another customer khata is not in this one
+      - the khata shows what was paid, not only what is owed

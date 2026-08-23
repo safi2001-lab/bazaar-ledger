@@ -136,6 +136,17 @@ class KhataScreen extends ConsumerWidget {
                       ],
                     ),
             ),
+            const SizedBox(height: BlTokens.space5),
+            Text(
+              s.khataHistory,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: t.inkMuted,
+              ),
+            ),
+            const SizedBox(height: BlTokens.space2),
+            _History(partyId: party.id),
           ],
         ),
       ),
@@ -225,6 +236,90 @@ class _BalanceCard extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// What has happened on this khata, newest first.
+///
+/// The open bills above answer "what is still owed". This answers the
+/// question a customer actually asks — "I paid you last week" — and every
+/// line carries the number printed on the paper in their hand, because
+/// without it the shopkeeper is asking them to take a date on trust.
+class _History extends ConsumerWidget {
+  const _History({required this.partyId});
+
+  final String partyId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final entries = ref.watch(partyLedgerProvider(partyId));
+
+    return entries.when(
+      loading: () => const BlSkeletonList(rows: 3),
+      error: (error, _) =>
+          BlError(title: s.commonSomethingWentWrong, message: '$error'),
+      data: (rows) => rows.isEmpty
+          ? Text(
+              s.khataHistoryEmpty,
+              style: TextStyle(fontSize: 14, color: t.inkMuted),
+            )
+          : Column(
+              children: [
+                for (final entry in rows)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: BlTokens.space2),
+                    child: BlCard(
+                      child: Row(
+                        children: [
+                          Icon(
+                            entry.isPayment
+                                ? Icons.south_west
+                                : Icons.north_east,
+                            size: 18,
+                            color: entry.isPayment ? t.money : t.inkMuted,
+                          ),
+                          const SizedBox(width: BlTokens.space2),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  entry.reference,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 14, color: t.ink),
+                                ),
+                                Text(
+                                  entry.dateLocal,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: t.inkMuted,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              BlMoney(entry.amount, size: 15, showSign: true),
+                              BlMoney(
+                                entry.balanceAfter,
+                                size: 12,
+                                colour: t.inkMuted,
+                                weight: FontWeight.w400,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
     );
   }
 }

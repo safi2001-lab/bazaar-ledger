@@ -61,3 +61,18 @@ final chaseListProvider = FutureProvider.autoDispose<List<AgedParty>>((
     asOfDateLocal: services.actorNow().businessDate.value,
   );
 });
+
+/// Everything that moved this customer's balance, newest first.
+///
+/// The query returns oldest first because that is the order a running balance
+/// is computed in. It is reversed here, because a shopkeeper looking for last
+/// week's payment wants it at the top.
+final partyLedgerProvider = FutureProvider.autoDispose
+    .family<List<LedgerEntry>, String>((ref, partyId) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return const [];
+      final entries = await services.queries.partyLedger(firm.id, partyId);
+      return entries.reversed.toList();
+    });

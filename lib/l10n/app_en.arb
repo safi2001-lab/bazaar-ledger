@@ -441,5 +441,7 @@
       }
     }
   },
-  "chaseAll": "All"
+  "chaseAll": "All",
+  "khataHistory": "History",
+  "khataHistoryEmpty": "Nothing has happened yet"
 }

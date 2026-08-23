@@ -285,6 +285,84 @@ final class DriftAppQueries implements AppQueries {
   );
 
   @override
+  Future<List<LedgerEntry>> partyLedger(
+    String firmId,
+    String partyId, {
+    int limit = 200,
+  }) async {
+    // One UNION rather than two queries stitched in Dart, so the ordering is
+    // the database's and a bill and a payment on the same day cannot end up
+    // in different relative orders on two different screens.
+    //
+    // Ordered oldest first because the running balance is computed forwards.
+    // The screen reverses it to show the newest at the top, which is what a
+    // shopkeeper looking for last week's payment wants.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT id, kind, reference, date_local, amount_paisa FROM (
+            SELECT d.id AS id,
+                   'sale' AS kind,
+                   d.doc_no AS reference,
+                   d.doc_date_local AS date_local,
+                   d.total_paisa AS amount_paisa,
+                   d.doc_seq AS seq
+            FROM documents d
+            WHERE d.firm_id = ? AND d.party_id = ?
+              AND d.doc_type = 'sale_invoice'
+              AND d.status NOT IN ('void', 'draft')
+              AND d.deleted_at_utc IS NULL
+
+            UNION ALL
+
+            SELECT p.id AS id,
+                   'payment' AS kind,
+                   p.payment_no AS reference,
+                   p.payment_date_local AS date_local,
+                   -p.amount_paisa AS amount_paisa,
+                   0 AS seq
+            FROM payments p
+            WHERE p.firm_id = ? AND p.party_id = ?
+              AND p.direction = 'in'
+              AND p.status <> 'void'
+              AND p.deleted_at_utc IS NULL
+          )
+          ORDER BY date_local, seq, id
+          LIMIT ?
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<String>(partyId),
+            Variable<int>(limit),
+          ],
+          readsFrom: {_db.documents, _db.payments},
+        )
+        .get();
+
+    // The running balance is computed here, never stored. A cached one is
+    // wrong the moment a backdated bill is entered, which happens in every
+    // shop that does its paperwork on Sundays.
+    var running = Money.zero;
+    return [
+      for (final r in rows)
+        () {
+          final amount = Money.paisa(r.read<int>('amount_paisa'));
+          running += amount;
+          return LedgerEntry(
+            id: r.read<String>('id'),
+            kind: r.read<String>('kind'),
+            reference: r.read<String>('reference'),
+            dateLocal: r.read<String>('date_local'),
+            amount: amount,
+            balanceAfter: running,
+          );
+        }(),
+    ];
+  }
+
+  @override
   Future<Aging> aging(String firmId, {required String asOfDateLocal}) async {
     // Bucketed in SQL rather than by pulling every open bill into Dart. A
     // wholesaler with three years of udhaar has tens of thousands, and the

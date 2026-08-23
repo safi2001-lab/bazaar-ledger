@@ -1051,4 +1051,10 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get chaseAll => 'All';
+
+  @override
+  String get khataHistory => 'History';
+
+  @override
+  String get khataHistoryEmpty => 'Nothing has happened yet';
 }

@@ -1053,4 +1053,10 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get chaseAll => 'Sab';
+
+  @override
+  String get khataHistory => 'Purana hisaab';
+
+  @override
+  String get khataHistoryEmpty => 'Abhi koi len-den nahi';
 }

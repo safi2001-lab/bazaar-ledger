@@ -40,8 +40,12 @@ void main() {
     expect(find.text('Khule bill'), findsOneWidget);
     // Without the currency symbol: a column of amounts does not repeat it,
     // and only the headline balance is prefixed.
-    expect(find.text('3,000.00'), findsOneWidget);
-    expect(find.text('1,500.00'), findsOneWidget);
+    //
+    // findsWidgets rather than findsOneWidget, because the history below the
+    // open bills legitimately shows the same figures again — once as what is
+    // owed on the bill, once as what the bill was for.
+    expect(find.text('3,000.00'), findsWidgets);
+    expect(find.text('1,500.00'), findsWidgets);
   });
 
   testWidgets('a payment reaches the database and the balance comes down', (
@@ -80,6 +84,30 @@ void main() {
       'SELECT balance_paisa FROM documents ORDER BY balance_paisa',
     );
     expect(open.map((r) => r['balance_paisa']), [0, 130000]);
+  });
+
+  testWidgets('the khata shows what was paid, not only what is owed', (
+    tester,
+  ) async {
+    // The question a customer actually asks is "I paid you last week", and
+    // the answer has to be a date, an amount and a receipt number they can
+    // match against the paper in their hand. The open-bills view answers a
+    // different question.
+    final app = await Harness.startWithShop(tester);
+    await _sellOnUdhaar(app, rupees: 3000);
+
+    await _openKhata(tester);
+    await _receive(tester, '1000');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Purana hisaab'), findsOneWidget);
+    expect(find.textContaining('RCV-'), findsOneWidget);
+    expect(find.textContaining('INV-'), findsWidgets);
+
+    // Signed, so a payment is visibly money coming back. The glyph is a real
+    // minus sign, not a hyphen: a hyphen beside a figure reads as part of an
+    // invoice number at a glance.
+    expect(find.text('− Rs 1,000.00'), findsWidgets);
   });
 
   testWidgets('the sheet says which bills it will clear, before saving', (

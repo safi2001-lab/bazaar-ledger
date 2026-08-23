@@ -203,6 +203,42 @@ final class PartySummary {
   bool get isOverCreditLimit => creditLimit != null && balance > creditLimit!;
 }
 
+/// One thing that happened on a customer's khata.
+final class LedgerEntry {
+  const LedgerEntry({
+    required this.id,
+    required this.kind,
+    required this.reference,
+    required this.dateLocal,
+    required this.amount,
+    required this.balanceAfter,
+  });
+
+  final String id;
+
+  /// `sale` or `payment`. A return and a note join them in M5.
+  final String kind;
+
+  /// The invoice or receipt number, which is what a customer holding a piece
+  /// of paper can match against.
+  final String reference;
+
+  final String dateLocal;
+
+  /// Positive increases what they owe, negative reduces it. Signed rather
+  /// than paired with a direction flag, because a running balance that adds
+  /// some rows and subtracts others by looking at a second column is a
+  /// running balance somebody eventually gets backwards.
+  final Money amount;
+
+  /// What they owed after this. Computed on read, never stored — a cached
+  /// running balance is wrong the moment a backdated bill is entered, which
+  /// happens in every shop that does its paperwork on Sundays.
+  final Money balanceAfter;
+
+  bool get isPayment => kind == 'payment';
+}
+
 /// A customer who owes, and how long they have.
 final class AgedParty {
   const AgedParty({
@@ -280,6 +316,18 @@ abstract interface class AppQueries {
     String firmId, {
     required String asOfDateLocal,
     int limit = 100,
+  });
+
+  /// Everything that moved this customer's balance, oldest first.
+  ///
+  /// Bills and payments interleaved, with the balance after each. The khata
+  /// shows what is still owed; this is what settles an argument, because the
+  /// question a customer actually asks is "I paid you last week" and the
+  /// answer has to be a date and an amount.
+  Future<List<LedgerEntry>> partyLedger(
+    String firmId,
+    String partyId, {
+    int limit = 200,
   });
 
   /// One customer, by id.
