@@ -38,17 +38,17 @@ final class FirmProfile {
   final String? bankIban;
 
   ReceiptShop toReceiptShop() => ReceiptShop(
-        name: name,
-        addressLine1: addressLine1,
-        city: city,
-        phone: phone,
-        ntn: ntn,
-        strn: strn,
-        raastAlias: raastAlias,
-        bankName: bankName,
-        bankAccountTitle: bankAccountTitle,
-        bankIban: bankIban,
-      );
+    name: name,
+    addressLine1: addressLine1,
+    city: city,
+    phone: phone,
+    ntn: ntn,
+    strn: strn,
+    raastAlias: raastAlias,
+    bankName: bankName,
+    bankAccountTitle: bankAccountTitle,
+    bankIban: bankIban,
+  );
 }
 
 /// One row of the item list, and one tap away from a cart line.
@@ -198,8 +198,7 @@ final class PartySummary {
   final Money balance;
   final Money? creditLimit;
 
-  bool get isOverCreditLimit =>
-      creditLimit != null && balance > creditLimit!;
+  bool get isOverCreditLimit => creditLimit != null && balance > creditLimit!;
 }
 
 /// Everything the app reads.

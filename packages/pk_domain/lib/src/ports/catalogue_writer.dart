@@ -124,8 +124,8 @@ final class StockAdjustmentDraft {
     required Qty counted,
     required this.reason,
     this.locationCode = 'MAIN',
-  })  : countedQty = counted,
-        delta = null;
+  }) : countedQty = counted,
+       delta = null;
 
   /// A known movement: three tins broke, a sack was rat-eaten, a sample went
   /// out. The shelf is not recounted; this much simply left or arrived.
@@ -134,8 +134,8 @@ final class StockAdjustmentDraft {
     required Qty change,
     required this.reason,
     this.locationCode = 'MAIN',
-  })  : delta = change,
-        countedQty = null;
+  }) : delta = change,
+       countedQty = null;
 
   final String itemId;
 

@@ -764,10 +764,10 @@ class _Fits extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) => constraints.hasBoundedHeight
-            ? SingleChildScrollView(child: child)
-            : child,
-      );
+    builder: (context, constraints) => constraints.hasBoundedHeight
+        ? SingleChildScrollView(child: child)
+        : child,
+  );
 }
 
 /// A skeleton, not a spinner over a blank page.

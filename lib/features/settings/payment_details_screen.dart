@@ -129,7 +129,10 @@ class _PaymentDetailsScreenState extends ConsumerState<PaymentDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _Note(icon: Icons.info_outline, text: s.settingsPaymentNote),
+                      _Note(
+                        icon: Icons.info_outline,
+                        text: s.settingsPaymentNote,
+                      ),
                       const SizedBox(height: BlTokens.space5),
                       BlField(
                         controller: _raast,

@@ -13,14 +13,11 @@ import 'package:path_provider/path_provider.dart';
 /// Urdu, which is why Roman Urdu is also the default rather than a preference
 /// they have to find.
 final class AppPreferences {
-  AppPreferences({
-    required this.locale,
-    required this.themeMode,
-  });
+  AppPreferences({required this.locale, required this.themeMode});
 
   AppPreferences.defaults()
-      : locale = const Locale('ur'),
-        themeMode = ThemeMode.system;
+    : locale = const Locale('ur'),
+      themeMode = ThemeMode.system;
 
   Locale locale;
   ThemeMode themeMode;

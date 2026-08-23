@@ -55,7 +55,8 @@ final class CartLine {
   Money get gross => rate.amountFor(qty);
 
   Money get discount =>
-      explicitDiscount ?? (discountBp == 0 ? Money.zero : gross.percentBp(discountBp));
+      explicitDiscount ??
+      (discountBp == 0 ? Money.zero : gross.percentBp(discountBp));
 
   Money get net => gross - discount;
 
@@ -67,18 +68,17 @@ final class CartLine {
     bool clearExplicitDiscount = false,
     String? unitId,
     String? unitCode,
-  }) =>
-      CartLine(
-        item: item,
-        qty: qty ?? this.qty,
-        rate: rate ?? this.rate,
-        discountBp: discountBp ?? this.discountBp,
-        explicitDiscount: clearExplicitDiscount
-            ? null
-            : explicitDiscount ?? this.explicitDiscount,
-        unitId: unitId ?? this.unitId,
-        unitCode: unitCode ?? this.unitCode,
-      );
+  }) => CartLine(
+    item: item,
+    qty: qty ?? this.qty,
+    rate: rate ?? this.rate,
+    discountBp: discountBp ?? this.discountBp,
+    explicitDiscount: clearExplicitDiscount
+        ? null
+        : explicitDiscount ?? this.explicitDiscount,
+    unitId: unitId ?? this.unitId,
+    unitCode: unitCode ?? this.unitCode,
+  );
 
   /// The line as the write path wants it.
   ///
@@ -88,28 +88,28 @@ final class CartLine {
   /// must not stop selling pieces because the conversion table failed to
   /// load.
   SaleLineDraft toDraft([UnitConverter? units]) => SaleLineDraft(
-        itemId: item.id,
-        itemName: item.name,
-        itemCode: item.code,
-        qty: qty,
-        // Stock moves in the item's base unit and nothing else. A bill for
-        // two maunds of atta takes eighty kilos off the shelf, and the
-        // conversion is exact or the sale does not post.
-        baseQty: isConverted && units != null
-            ? units.convert(
-                qty,
-                fromUnitId: sellingUnitId,
-                toUnitId: item.unitId,
-                itemId: item.id,
-              )
-            : qty,
-        unitId: sellingUnitId,
-        unitCode: sellingUnitCode,
-        rate: rate,
-        discountBp: discountBp,
-        explicitDiscount: explicitDiscount,
-        tracksStock: item.tracksStock,
-      );
+    itemId: item.id,
+    itemName: item.name,
+    itemCode: item.code,
+    qty: qty,
+    // Stock moves in the item's base unit and nothing else. A bill for
+    // two maunds of atta takes eighty kilos off the shelf, and the
+    // conversion is exact or the sale does not post.
+    baseQty: isConverted && units != null
+        ? units.convert(
+            qty,
+            fromUnitId: sellingUnitId,
+            toUnitId: item.unitId,
+            itemId: item.id,
+          )
+        : qty,
+    unitId: sellingUnitId,
+    unitCode: sellingUnitCode,
+    rate: rate,
+    discountBp: discountBp,
+    explicitDiscount: explicitDiscount,
+    tracksStock: item.tracksStock,
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -157,13 +157,12 @@ final class Cart {
     String? partyName,
     Money? billDiscount,
     bool clearParty = false,
-  }) =>
-      Cart(
-        lines: lines ?? this.lines,
-        partyId: clearParty ? null : partyId ?? this.partyId,
-        partyName: clearParty ? null : partyName ?? this.partyName,
-        billDiscount: billDiscount ?? this.billDiscount,
-      );
+  }) => Cart(
+    lines: lines ?? this.lines,
+    partyId: clearParty ? null : partyId ?? this.partyId,
+    partyName: clearParty ? null : partyName ?? this.partyName,
+    billDiscount: billDiscount ?? this.billDiscount,
+  );
 }
 
 final cartProvider = NotifierProvider<CartNotifier, Cart>(CartNotifier.new);

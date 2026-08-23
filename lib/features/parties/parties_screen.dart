@@ -85,8 +85,9 @@ class _PartiesScreenState extends ConsumerState<PartiesScreen> {
                   if (rows.isEmpty) {
                     return Center(
                       child: BlEmpty(
-                        title:
-                            query.isEmpty ? s.partiesEmpty : s.emptyNoResults,
+                        title: query.isEmpty
+                            ? s.partiesEmpty
+                            : s.emptyNoResults,
                         message: query.isEmpty
                             ? s.partiesEmptyHint
                             : s.emptyNoResultsHint,
@@ -215,8 +216,7 @@ class PartyRowTile extends StatelessWidget {
                       : BlChip(s.partySettled, tone: BlChipTone.good),
                 ),
               ),
-              if (trailingChevron)
-                Icon(Icons.chevron_right, color: t.inkFaint),
+              if (trailingChevron) Icon(Icons.chevron_right, color: t.inkFaint),
             ],
           ),
         ),

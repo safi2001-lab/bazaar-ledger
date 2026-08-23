@@ -22,8 +22,8 @@ final initialPreferencesProvider = Provider<AppPreferences>(
 
 final preferencesProvider =
     NotifierProvider<PreferencesNotifier, AppPreferences>(
-  PreferencesNotifier.new,
-);
+      PreferencesNotifier.new,
+    );
 
 class PreferencesNotifier extends Notifier<AppPreferences> {
   @override
@@ -62,8 +62,7 @@ final firmProvider = FutureProvider<FirmProfile?>((ref) async {
 final refreshTickProvider = StateProvider<int>((ref) => 0);
 
 extension RefreshTick on WidgetRef {
-  void bumpRefresh() =>
-      read(refreshTickProvider.notifier).update((n) => n + 1);
+  void bumpRefresh() => read(refreshTickProvider.notifier).update((n) => n + 1);
 }
 
 /// The same bump, through a container held across an await.
@@ -78,8 +77,7 @@ extension RefreshTick on WidgetRef {
 ///
 /// So: capture the container before the await, refresh through it afterwards.
 extension RefreshTickOnContainer on ProviderContainer {
-  void bumpRefresh() =>
-      read(refreshTickProvider.notifier).update((n) => n + 1);
+  void bumpRefresh() => read(refreshTickProvider.notifier).update((n) => n + 1);
 }
 
 final todayTotalsProvider = FutureProvider<DayTotals>((ref) async {
@@ -99,21 +97,24 @@ final recentSalesProvider = FutureProvider<List<SaleListRow>>((ref) async {
   return services.queries.recentSales(firm.id, limit: 60);
 });
 
-final paymentAccountsProvider =
-    FutureProvider<List<PaymentAccountSummary>>((ref) async {
+final paymentAccountsProvider = FutureProvider<List<PaymentAccountSummary>>((
+  ref,
+) async {
   final services = ref.watch(appServicesProvider);
   final firm = await ref.watch(firmProvider.future);
   if (firm == null) return const [];
   return services.queries.paymentAccounts(firm.id);
 });
 
-final unitsProvider = FutureProvider<
-    List<({String id, String code, String name, int decimals})>>((ref) async {
-  final services = ref.watch(appServicesProvider);
-  final firm = await ref.watch(firmProvider.future);
-  if (firm == null) return const [];
-  return services.queries.units(firm.id);
-});
+final unitsProvider =
+    FutureProvider<List<({String id, String code, String name, int decimals})>>(
+      (ref) async {
+        final services = ref.watch(appServicesProvider);
+        final firm = await ref.watch(firmProvider.future);
+        if (firm == null) return const [];
+        return services.queries.units(firm.id);
+      },
+    );
 
 /// The shop's unit conversions, as an engine rather than a list of rows.
 ///
@@ -136,34 +137,32 @@ final unitConverterProvider = FutureProvider<UnitConverter>((ref) async {
 /// the app, so every keystroke at the counter permanently retains a provider
 /// and the item list it fetched — unbounded growth on the one screen that
 /// must never stutter, on the handset least able to afford it.
-final itemSearchProvider =
-    FutureProvider.autoDispose.family<List<ItemSummary>, String>(
-        (ref, query) async {
-  ref.watch(refreshTickProvider);
-  final services = ref.watch(appServicesProvider);
-  final firm = await ref.watch(firmProvider.future);
-  if (firm == null) return const [];
-  return services.queries.searchItems(firm.id, query: query);
-});
+final itemSearchProvider = FutureProvider.autoDispose
+    .family<List<ItemSummary>, String>((ref, query) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return const [];
+      return services.queries.searchItems(firm.id, query: query);
+    });
 
-final partySearchProvider =
-    FutureProvider.autoDispose.family<List<PartySummary>, String>(
-        (ref, query) async {
-  ref.watch(refreshTickProvider);
-  final services = ref.watch(appServicesProvider);
-  final firm = await ref.watch(firmProvider.future);
-  if (firm == null) return const [];
-  return services.queries.searchParties(firm.id, query: query);
-});
+final partySearchProvider = FutureProvider.autoDispose
+    .family<List<PartySummary>, String>((ref, query) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return const [];
+      return services.queries.searchParties(firm.id, query: query);
+    });
 
-final receiptProvider =
-    FutureProvider.autoDispose.family<ReceiptData?, String>(
-        (ref, documentId) async {
-  final services = ref.watch(appServicesProvider);
-  final firm = await ref.watch(firmProvider.future);
-  if (firm == null) return null;
-  return services.queries.receiptFor(firm.id, documentId);
-});
+final receiptProvider = FutureProvider.autoDispose.family<ReceiptData?, String>(
+  (ref, documentId) async {
+    final services = ref.watch(appServicesProvider);
+    final firm = await ref.watch(firmProvider.future);
+    if (firm == null) return null;
+    return services.queries.receiptFor(firm.id, documentId);
+  },
+);
 
 /// The integrity check, on demand only.
 ///
@@ -172,7 +171,8 @@ final receiptProvider =
 /// after every write while the Settings screen happens to be open would turn
 /// a diagnostic into a background job on a phone that cannot spare one. The
 /// screen has an explicit "check now" button, and that is the trigger.
-final dataHealthProvider =
-    FutureProvider.autoDispose<DatabaseHealth>((ref) async {
+final dataHealthProvider = FutureProvider.autoDispose<DatabaseHealth>((
+  ref,
+) async {
   return ref.watch(appServicesProvider).checkHealth();
 });

@@ -178,26 +178,25 @@ final class BlTokens extends ThemeExtension<BlTokens> {
     Color? danger,
     Color? dangerSurface,
     bool? isDark,
-  }) =>
-      BlTokens(
-        ink: ink ?? this.ink,
-        inkMuted: inkMuted ?? this.inkMuted,
-        inkFaint: inkFaint ?? this.inkFaint,
-        paper: paper ?? this.paper,
-        surface: surface ?? this.surface,
-        surfaceRaised: surfaceRaised ?? this.surfaceRaised,
-        line: line ?? this.line,
-        lineStrong: lineStrong ?? this.lineStrong,
-        accent: accent ?? this.accent,
-        accentInk: accentInk ?? this.accentInk,
-        money: money ?? this.money,
-        moneyOut: moneyOut ?? this.moneyOut,
-        warning: warning ?? this.warning,
-        warningSurface: warningSurface ?? this.warningSurface,
-        danger: danger ?? this.danger,
-        dangerSurface: dangerSurface ?? this.dangerSurface,
-        isDark: isDark ?? this.isDark,
-      );
+  }) => BlTokens(
+    ink: ink ?? this.ink,
+    inkMuted: inkMuted ?? this.inkMuted,
+    inkFaint: inkFaint ?? this.inkFaint,
+    paper: paper ?? this.paper,
+    surface: surface ?? this.surface,
+    surfaceRaised: surfaceRaised ?? this.surfaceRaised,
+    line: line ?? this.line,
+    lineStrong: lineStrong ?? this.lineStrong,
+    accent: accent ?? this.accent,
+    accentInk: accentInk ?? this.accentInk,
+    money: money ?? this.money,
+    moneyOut: moneyOut ?? this.moneyOut,
+    warning: warning ?? this.warning,
+    warningSurface: warningSurface ?? this.warningSurface,
+    danger: danger ?? this.danger,
+    dangerSurface: dangerSurface ?? this.dangerSurface,
+    isDark: isDark ?? this.isDark,
+  );
 
   @override
   BlTokens lerp(covariant BlTokens? other, double t) {
@@ -238,8 +237,7 @@ double blRowExtent(BuildContext context, double base, {double padding = 16}) {
 }
 
 extension BlTokensLookup on BuildContext {
-  BlTokens get bl =>
-      Theme.of(this).extension<BlTokens>() ?? BlTokens.light;
+  BlTokens get bl => Theme.of(this).extension<BlTokens>() ?? BlTokens.light;
 
   /// True on a tablet in landscape, which is the standard Pakistani retail
   /// counter setup and a recurring complaint against every competitor that

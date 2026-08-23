@@ -3,20 +3,23 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pk_domain/pk_domain.dart';
+import 'package:pk_bootstrap/pk_bootstrap.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/printing_providers.dart';
 
 /// One bill, exactly as it will print.
 ///
 /// The preview is the same 48-column layout the thermal printer receives, so
-/// what a shopkeeper checks on screen is what comes out of the machine. No
-/// printer is wired up in M0 — the transports land in M2 — so the two things
-/// that work today are the ones that need no hardware: look at it, and send
+/// what a shopkeeper checks on screen is what comes out of the machine —
+/// including the column width, which is a per-printer setting because ESC/POS
+/// has no query for it and 80 mm printers ship as both 42 and 48.
+///
+/// Three things happen here: look at it, print it, and send
 /// the PDF.
 class ReceiptScreen extends ConsumerWidget {
   const ReceiptScreen({
@@ -58,7 +61,7 @@ class ReceiptScreen extends ConsumerWidget {
             return Column(
               children: [
                 Expanded(child: _Paper(data: data)),
-                _Actions(data: data),
+                _Actions(documentId: documentId, data: data),
               ],
             );
           },
@@ -120,9 +123,10 @@ class _Paper extends ConsumerWidget {
 }
 
 class _Actions extends ConsumerStatefulWidget {
-  const _Actions({required this.data});
+  const _Actions({required this.data, required this.documentId});
 
   final ReceiptData data;
+  final String documentId;
 
   @override
   ConsumerState<_Actions> createState() => _ActionsState();
@@ -165,10 +169,115 @@ class _ActionsState extends ConsumerState<_Actions> {
     }
   }
 
+  /// Sends the bill to the configured printer, once.
+  ///
+  /// The job key is deterministic and carries the column width, so a reprint
+  /// at a different width is honestly a different piece of paper rather than
+  /// the same job asked for twice. [copyIndex] is what a person increments
+  /// when they have looked at the paper and decided they want another.
+  Future<void> _print({int copyIndex = 1}) async {
+    // First statement, before any await. A disabled button only disables on
+    // the next build, so two taps in one frame both reach here -- and this is
+    // the one path in the app where that costs a customer a second receipt.
+    if (_busy) return;
+    final s = AppStrings.of(context);
+    setState(() => _busy = true);
+
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final settings = await ref.read(printerSettingsProvider.future);
+      if (settings == null) {
+        messenger.showSnackBar(SnackBar(content: Text(s.receiptNoPrinter)));
+        return;
+      }
+      final bytes = await ref.read(
+        receiptBytesProvider(widget.documentId).future,
+      );
+      if (bytes == null) {
+        messenger.showSnackBar(SnackBar(content: Text(s.receiptNoPrinter)));
+        return;
+      }
+
+      final services = ref.read(appServicesProvider);
+      final result = await services.printing.print(
+        actor: services.actorNow(),
+        settings: settings,
+        jobKey: printJobKey(
+          documentId: widget.documentId,
+          revision: 1,
+          columns: settings.columns,
+          copyIndex: copyIndex,
+        ),
+        bytes: bytes,
+        documentId: widget.documentId,
+        copyIndex: copyIndex,
+      );
+      if (!mounted) return;
+
+      switch (result.outcome) {
+        case PrintOutcome.printed:
+          messenger.showSnackBar(SnackBar(content: Text(s.printerDone)));
+        case PrintOutcome.notSent:
+          messenger.showSnackBar(SnackBar(content: Text(s.printerNotSent)));
+        case PrintOutcome.partial:
+          // Paper has already moved. Never offered as a retry -- the
+          // shopkeeper is told to look at what came out.
+          messenger.showSnackBar(SnackBar(content: Text(s.printerPartial)));
+        case PrintOutcome.unknown:
+          // The app was killed mid-print. Nobody can say whether paper moved,
+          // so the only honest thing is to ask the person holding it.
+          await _askWhetherItPrinted(copyIndex: copyIndex);
+      }
+    } on Object catch (error) {
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(content: Text('${s.commonSomethingWentWrong}: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// The question a killed print leaves behind.
+  ///
+  /// There is no correct automatic answer here. The row says `sending`, which
+  /// means the app died holding the job, and on a Transsion ROM that happens
+  /// after the printer has already taken part of the receipt. Only the person
+  /// looking at the paper knows.
+  Future<void> _askWhetherItPrinted({required int copyIndex}) async {
+    final s = AppStrings.of(context);
+    final again = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: Text(s.printerUnknownAsk),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(s.actionCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(s.printerPrintAgain),
+          ),
+        ],
+      ),
+    );
+    if (again != true || !mounted) return;
+    // A new copy index, so it is recorded as the deliberate second print it
+    // is rather than overwriting the record of the first.
+    setState(() => _busy = false);
+    await _print(copyIndex: copyIndex + 1);
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    final printer = ref.watch(printerSettingsProvider);
+    final history = ref.watch(printHistoryProvider(widget.documentId));
+    final alreadyPrinted =
+        history.valueOrNull?.any((r) => r.status == PrintJobStatus.printed) ??
+        false;
 
     return Container(
       decoration: BoxDecoration(
@@ -181,24 +290,42 @@ class _ActionsState extends ConsumerState<_Actions> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.print_disabled_outlined, size: 15, color: t.inkFaint),
-                const SizedBox(width: BlTokens.space2),
-                Expanded(
-                  child: Text(
-                    s.receiptPrintNotReady,
-                    style: TextStyle(fontSize: 12, color: t.inkFaint),
-                  ),
+            if (printer.valueOrNull == null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: BlTokens.space3),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.print_disabled_outlined,
+                      size: 15,
+                      color: t.inkFaint,
+                    ),
+                    const SizedBox(width: BlTokens.space2),
+                    Expanded(
+                      child: Text(
+                        s.receiptNoPrinter,
+                        style: TextStyle(fontSize: 12, color: t.inkFaint),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const SizedBox(height: BlTokens.space3),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.only(bottom: BlTokens.space3),
+                child: BlButton(
+                  label: alreadyPrinted ? s.receiptReprint : s.receiptPrint,
+                  icon: Icons.print_outlined,
+                  big: true,
+                  busy: _busy,
+                  onPressed: _busy ? null : _print,
+                ),
+              ),
             BlButton(
               label: s.receiptSharePdf,
               icon: Icons.picture_as_pdf_outlined,
-              big: true,
+              kind: BlButtonKind.secondary,
               busy: _busy,
               onPressed: _busy ? null : _sharePdf,
             ),

@@ -1,7 +1,10 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
+import 'package:pk_printer_android/pk_printer_android.dart';
 
 import 'app/app.dart';
 import 'app/localisation.dart';
@@ -32,7 +35,7 @@ Future<void> main() async {
 
   final AppServices services;
   try {
-    services = await AppServices.open();
+    services = await AppServices.open(transports: _printerTransports());
   } on Object catch (error, stack) {
     // The database would not open: a corrupt file, a full disk, a schema from
     // a newer build. Before this, that was a black screen — the app died
@@ -82,10 +85,7 @@ class _StartupFailureApp extends StatelessWidget {
       themeMode: prefs.themeMode,
       locale: prefs.locale,
       supportedLocales: supportedLocales,
-      localizationsDelegates: const [
-        AppStrings.delegate,
-        ...chromeDelegates,
-      ],
+      localizationsDelegates: const [AppStrings.delegate, ...chromeDelegates],
       home: Builder(
         builder: (context) {
           final s = AppStrings.of(context);
@@ -114,3 +114,21 @@ class _StartupFailureApp extends StatelessWidget {
     );
   }
 }
+
+/// The printers this build can talk to.
+///
+/// Named here rather than inside the bootstrap because this is the one place
+/// that knows which platform the app is running on. `pk_bootstrap` stays
+/// testable headless, and a test that does not name its transports gets none —
+/// so nothing in a suite can accidentally open a real socket or reach for a
+/// real radio.
+///
+/// Bluetooth is Android-only: the plugin is a method channel, and asking a
+/// host test for a bonded device list would hang rather than fail.
+List<PrinterTransport> _printerTransports() => [
+  // The shop's own wi-fi. Needs INTERNET, which Android requires for ANY
+  // socket including one to 192.168.x.x, and nothing more until targetSdk 37
+  // brings ACCESS_LOCAL_NETWORK.
+  const TcpPrinter(),
+  if (!kIsWeb && Platform.isAndroid) const BluetoothPrinter(),
+];

@@ -376,12 +376,17 @@ final class ActorIdentity {
 Future<AppServices> openInMemoryServices({
   Clock clock = const SystemClock(),
   String appVersion = '0.1.0-test',
+  List<PrinterTransport>? transports,
 }) async {
   _resolveSqliteForHost();
   return AppServices.openWith(
     NativeDatabase.memory(),
     clock: clock,
     appVersion: appVersion,
+    // None unless a test asks for one. A suite that could reach a real socket
+    // or a real Bluetooth radio would pass or fail depending on what happened
+    // to be plugged into the machine running it.
+    transports: transports,
   );
 }
 

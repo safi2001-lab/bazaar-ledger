@@ -170,8 +170,9 @@ void main() {
 
         final audit = await db
             .customSelect(
-              "SELECT action_code, summary FROM audit_log "
-              "WHERE action_code = 'PRINTER_CONFIGURED'",
+              'SELECT action_code, summary FROM audit_log '
+              'WHERE action_code = ?',
+              variables: [Variable<String>('PRINTER_CONFIGURED')],
             )
             .getSingle();
         expect(audit.read<String>('summary'), contains('Counter printer'));

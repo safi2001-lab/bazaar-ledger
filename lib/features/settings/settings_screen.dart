@@ -5,6 +5,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/printer_setup_screen.dart';
 import 'payment_details_screen.dart';
 import 'shop_details_screen.dart';
 
@@ -84,6 +85,15 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(
                   builder: (_) => const PaymentDetailsScreen(),
+                ),
+              ),
+            ),
+            _Row(
+              icon: Icons.print_outlined,
+              label: s.settingsPrinter,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const PrinterSetupScreen(),
                 ),
               ),
             ),
@@ -225,10 +235,7 @@ class _DataHealthCard extends ConsumerWidget {
               ),
               for (final problem in problems) ...[
                 const SizedBox(height: BlTokens.space2),
-                Text(
-                  problem,
-                  style: TextStyle(fontSize: 12, color: t.danger),
-                ),
+                Text(problem, style: TextStyle(fontSize: 12, color: t.danger)),
               ],
             ],
           );

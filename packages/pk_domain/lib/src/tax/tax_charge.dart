@@ -16,14 +16,14 @@ enum TaxKind {
 
   /// The value stored in `document_line_taxes.tax_kind`.
   String get code => switch (this) {
-        TaxKind.salesTax => 'sales_tax',
-        TaxKind.furtherTax => 'further_tax',
-        TaxKind.extraTax => 'extra_tax',
-        TaxKind.withholding => 'withholding',
-        TaxKind.provincialSt => 'provincial_st',
-        TaxKind.fed => 'fed',
-        TaxKind.cess => 'cess',
-      };
+    TaxKind.salesTax => 'sales_tax',
+    TaxKind.furtherTax => 'further_tax',
+    TaxKind.extraTax => 'extra_tax',
+    TaxKind.withholding => 'withholding',
+    TaxKind.provincialSt => 'provincial_st',
+    TaxKind.fed => 'fed',
+    TaxKind.cess => 'cess',
+  };
 }
 
 /// One tax applied to one line.
@@ -138,6 +138,5 @@ final class UntaxedEngine implements TaxEngine {
     required String? itemTaxRuleId,
     required bool isThirdSchedule,
     required TaxContext context,
-  }) =>
-      const [];
+  }) => const [];
 }

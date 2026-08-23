@@ -246,7 +246,7 @@ features:
     title: Schema v1 holds all twenty-five tables, every one STRICT
     status: done
     proof:
-      - schema v1 contains exactly the twenty-five planned tables
+      - the schema contains exactly the tables this version plans
       - every table is STRICT
       - a STRICT table refuses text in an integer column
 
@@ -858,12 +858,22 @@ features:
   - id: M2-QUEUE-04
     milestone: M2
     title: Idempotency survives the process being killed mid-print
-    status: todo
-    # _finished and _pending are plain maps on an object. Android Go ROMs kill
-    # this app aggressively — the cart is persisted to disk for exactly that
-    # reason — so a shopkeeper who reopens and taps Print gets a second
-    # receipt. Nothing writes a job id anywhere that outlives the process.
-    proof: []
+    status: done
+    # print_jobs, schema v2. The row is committed BEFORE the first byte, so a
+    # row still saying `sending` at next launch means the app died holding the
+    # job — which is NOT the same as un-printed, because on a Transsion ROM the
+    # kill lands after the printer has already taken part of the receipt.
+    proof:
+      - what has already been printed a job interrupted by a process kill is UNKNOWN, not un-printed
+      - what has already been printed a job that finished is remembered as printed
+      - what has already been printed a job that never started is safe to try again
+      - what has already been printed a job that failed part way is never safe to try again
+      - what has already been printed the same job key cannot be begun twice
+      - what has already been printed finishing a job nobody started is refused, and says why
+      - the record that outlives the process a job the log says already printed never reaches the printer
+      - the record that outlives the process a job left mid-flight by a process death reports unknown, not lost
+      - the record that outlives the process a half-printed job is not sent again when it is asked for twice
+      - the record that outlives the process the job is recorded before a byte is sent, and settled after
 
   - id: M2-PERM-01
     milestone: M2
@@ -898,21 +908,45 @@ features:
   - id: M2-WIRE-01
     milestone: M2
     title: A printer is reachable from the app at all
-    status: todo
-    # The row this milestone lives or dies on. grep for PrintQueue, TcpPrinter,
-    # BluetoothPrinter or PrinterTransport across lib/ returns nothing.
-    proof: []
+    status: done
+    # The row this milestone lived or died on. AppServices now carries
+    # PrintingServices, the barrel exports what a screen needs, and main.dart
+    # registers the LAN transport plus the Bluetooth one on Android.
+    #
+    # The proof drives the real widget tree by taps and typing and asserts on
+    # bytes that arrived at a transport. A test that called print() on the
+    # services directly would have passed throughout the period when nothing
+    # under lib/ imported a printer at all.
+    proof:
+      - a shopkeeper sets up a printer and a bill reaches it
+      - the printer a shop chose is remembered by the database
 
   - id: M2-SETUP-01
     milestone: M2
     title: A printer setup screen with a test print you can look at
-    status: todo
-    proof: []
+    status: done
+    # The test print is the point of the screen. ESC/POS has no query for
+    # column width and 80 mm printers ship as both 42 and 48, so the only
+    # reliable detector is a ruler on paper and a shopkeeper looking at it.
+    #
+    # The width assertion in the proof was vacuous on its first draft — it
+    # matched any 48-character line, and the sample money rows are padded to
+    # exactly that. Shortening the ruler by three characters did not fail it.
+    # It now matches the ruler specifically.
+    proof:
+      - a shopkeeper sets up a printer and a bill reaches it
+      - a printer that cannot work here is offered, and says why
 
   - id: M2-PRINT-01
     milestone: M2
     title: A bill prints from the receipt screen and from the counter
-    status: todo
+    status: wip
+    # The button exists on the receipt screen, says Print or Reprint depending
+    # on what the log holds, and asks a person what happened when a job comes
+    # back `unknown`. What is missing is a test that rings a real sale and
+    # prints THAT, rather than a test print — so it stays wip.
+    #
+    # The counter half (auto-print after a tender) is not built.
     proof: []
 
   - id: M2-SCAN-01

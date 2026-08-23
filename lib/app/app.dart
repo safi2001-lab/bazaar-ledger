@@ -25,10 +25,7 @@ class BazaarLedgerApp extends ConsumerWidget {
       themeMode: prefs.themeMode,
       locale: prefs.locale,
       supportedLocales: supportedLocales,
-      localizationsDelegates: const [
-        AppStrings.delegate,
-        ...chromeDelegates,
-      ],
+      localizationsDelegates: const [AppStrings.delegate, ...chromeDelegates],
       builder: (context, child) {
         // Text scales to 200% without clipping, but a shopkeeper who has set
         // their phone to 300% would lose the money column entirely, so it is
@@ -81,7 +78,10 @@ class _Root extends ConsumerWidget {
               SizedBox(
                 width: 22,
                 height: 22,
-                child: CircularProgressIndicator(strokeWidth: 2, color: t.accent),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: t.accent,
+                ),
               ),
             ],
           ),

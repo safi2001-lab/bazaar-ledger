@@ -193,8 +193,9 @@ final class SaleCalculator {
     final gross = <Money>[];
     final lineDiscounts = <Money>[];
     for (final line in draft.lines) {
-      final lineGross =
-          line.isFreeItem ? Money.zero : line.rate.amountFor(line.qty, mode: mode);
+      final lineGross = line.isFreeItem
+          ? Money.zero
+          : line.rate.amountFor(line.qty, mode: mode);
       gross.add(lineGross);
 
       if (line.qty.isNegative) {
@@ -220,7 +221,8 @@ final class SaleCalculator {
               'something. Remove the line instead.',
         );
       }
-      final discount = line.explicitDiscount ??
+      final discount =
+          line.explicitDiscount ??
           lineGross.percentBp(line.discountBp, mode: mode);
       // A negative discount is a surcharge that never appears on the bill.
       // It made `taxable` exceed `subtotal`, so the printed lines stopped
@@ -295,12 +297,13 @@ final class SaleCalculator {
     final cost = Money.sum([for (final l in calculated) l.cost]);
 
     Money byKind(TaxKind kind) => Money.sum([
-          for (final l in calculated)
-            for (final t in l.taxes)
-              if (t.kind == kind) t.amount,
-        ]);
+      for (final l in calculated)
+        for (final t in l.taxes)
+          if (t.kind == kind) t.amount,
+    ]);
 
-    final salesTax = byKind(TaxKind.salesTax) +
+    final salesTax =
+        byKind(TaxKind.salesTax) +
         byKind(TaxKind.extraTax) +
         byKind(TaxKind.provincialSt) +
         byKind(TaxKind.fed) +
@@ -403,8 +406,8 @@ final class SaleCalculator {
       for (final a in posted)
         if (!a.isBankingChannel) a.applied,
     ]);
-    final breached = total.inPaisa > cashThresholdPaisa &&
-        outsideBankingChannel.isPositive;
+    final breached =
+        total.inPaisa > cashThresholdPaisa && outsideBankingChannel.isPositive;
 
     return CalculatedSale(
       lines: List.unmodifiable(calculated),

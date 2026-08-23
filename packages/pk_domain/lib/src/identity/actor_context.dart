@@ -38,14 +38,13 @@ final class ActorContext {
     required String deviceId,
     required Clock clock,
     Duration timeZoneOffset = pakistanStandardTime,
-  }) =>
-      ActorContext(
-        firmId: firmId,
-        userId: userId,
-        deviceId: deviceId,
-        startedAtUtc: clock.nowUtc(),
-        timeZoneOffset: timeZoneOffset,
-      );
+  }) => ActorContext(
+    firmId: firmId,
+    userId: userId,
+    deviceId: deviceId,
+    startedAtUtc: clock.nowUtc(),
+    timeZoneOffset: timeZoneOffset,
+  );
 
   final String firmId;
   final String userId;
@@ -63,20 +62,19 @@ final class ActorContext {
   final Duration _offset;
 
   /// The shopkeeper's calendar day for [startedAtUtc].
-  BusinessDate get businessDate =>
-      BusinessDate.fromUtc(startedAtUtc, _offset);
+  BusinessDate get businessDate => BusinessDate.fromUtc(startedAtUtc, _offset);
 
   int get epochMillis => startedAtUtc.millisecondsSinceEpoch;
 
   /// The same actor at a later instant, for a second operation in the same
   /// session.
   ActorContext at(DateTime instant) => ActorContext(
-        firmId: firmId,
-        userId: userId,
-        deviceId: deviceId,
-        startedAtUtc: instant,
-        timeZoneOffset: _offset,
-      );
+    firmId: firmId,
+    userId: userId,
+    deviceId: deviceId,
+    startedAtUtc: instant,
+    timeZoneOffset: _offset,
+  );
 
   @override
   String toString() =>

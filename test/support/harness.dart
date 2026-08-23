@@ -42,9 +42,10 @@ final class Harness {
   static Future<Harness> startWithShop(
     WidgetTester tester, {
     String shopName = 'Chishti Kiryana Store',
+    List<PrinterTransport>? transports,
   }) async {
     _stubPlatformChannels();
-    final services = await openInMemoryServices();
+    final services = await openInMemoryServices(transports: transports);
     addTearDown(services.close);
 
     await services.setUpShop(
@@ -147,6 +148,24 @@ Future<void> tapButton(WidgetTester tester, String label) async {
   await tester.ensureVisible(button);
   await tester.pumpAndSettle();
   await tester.tap(button);
+  await tester.pumpAndSettle();
+}
+
+/// Taps anything carrying [text], scrolling it into view first.
+///
+/// For rows and cards rather than buttons — a settings row is a tappable card
+/// with a label, not a BlButton.
+Future<void> tapText(WidgetTester tester, String text) async {
+  final target = find.text(text).first;
+  await tester.ensureVisible(target);
+  await tester.pumpAndSettle();
+  await tester.tap(target);
+  await tester.pumpAndSettle();
+}
+
+/// Opens Settings from the home screen's app bar.
+Future<void> openSettings(WidgetTester tester) async {
+  await tester.tap(find.byIcon(Icons.settings_outlined).first);
   await tester.pumpAndSettle();
 }
 

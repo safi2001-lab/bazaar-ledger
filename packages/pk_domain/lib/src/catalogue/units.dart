@@ -160,15 +160,15 @@ const List<UnitSpec> defaultUnits = [
 /// and the shop decides which one it means, so a bori is created per firm — or
 /// per item — rather than shipped with a number baked into it.
 const List<UnitConversionSpec> defaultUnitConversions = [
-  UnitConversionSpec(fromCode: 'dozen', toCode: 'pcs', factorThousandths: 12000),
+  UnitConversionSpec(
+    fromCode: 'dozen',
+    toCode: 'pcs',
+    factorThousandths: 12000,
+  ),
   // 1 g is a thousandth of a kilo, which is exactly one unit of storage.
   UnitConversionSpec(fromCode: 'g', toCode: 'kg', factorThousandths: 1),
   // A Pakistani maund is 40 kg.
-  UnitConversionSpec(
-    fromCode: 'maund',
-    toCode: 'kg',
-    factorThousandths: 40000,
-  ),
+  UnitConversionSpec(fromCode: 'maund', toCode: 'kg', factorThousandths: 40000),
   UnitConversionSpec(fromCode: 'ml', toCode: 'l', factorThousandths: 1),
   UnitConversionSpec(fromCode: 'm', toCode: 'cm', factorThousandths: 100000),
   UnitConversionSpec(fromCode: 'gaz', toCode: 'cm', factorThousandths: 91440),

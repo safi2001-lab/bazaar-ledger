@@ -66,8 +66,7 @@ final class PrinterTarget {
   String get id => '$kind:$address';
 
   @override
-  bool operator ==(Object other) =>
-      other is PrinterTarget && other.id == id;
+  bool operator ==(Object other) => other is PrinterTarget && other.id == id;
 
   @override
   int get hashCode => id.hashCode;
@@ -78,11 +77,7 @@ final class PrinterTarget {
 
 /// A print that did not happen, or did not entirely happen.
 final class PrinterException implements Exception {
-  const PrinterException(
-    this.message, {
-    this.bytesWritten = 0,
-    this.target,
-  });
+  const PrinterException(this.message, {this.bytesWritten = 0, this.target});
 
   final String message;
 
@@ -101,7 +96,8 @@ final class PrinterException implements Exception {
   bool get isSafeToRetry => bytesWritten == 0;
 
   @override
-  String toString() => 'PrinterException: $message'
+  String toString() =>
+      'PrinterException: $message'
       '${target == null ? '' : ' (${target!.name})'}'
       '${bytesWritten == 0 ? '' : ', $bytesWritten bytes already printed'}';
 }

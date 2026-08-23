@@ -670,7 +670,9 @@ class _UnitChoice extends ConsumerWidget {
               selected: u.id == line.sellingUnitId,
               onSelected: (_) {
                 if (u.id == line.sellingUnitId) return;
-                ref.read(cartProvider.notifier).setUnit(
+                ref
+                    .read(cartProvider.notifier)
+                    .setUnit(
                       line.item.id,
                       units,
                       unitId: u.id,
@@ -946,7 +948,11 @@ class _Stack extends StatelessWidget {
     if (!scrollable) {
       return Column(
         mainAxisSize: MainAxisSize.min,
-        children: [totals, const SizedBox(height: BlTokens.space3), action],
+        children: [
+          totals,
+          const SizedBox(height: BlTokens.space3),
+          action,
+        ],
       );
     }
     // Sideways the button goes FIRST, at the top of the panel.

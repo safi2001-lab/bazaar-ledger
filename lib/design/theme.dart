@@ -27,11 +27,11 @@ ThemeData blTheme({required bool dark}) {
   );
 
   TextStyle body(double size, FontWeight weight, Color colour) => TextStyle(
-        fontSize: size,
-        fontWeight: weight,
-        color: colour,
-        height: 1.35,
-      );
+    fontSize: size,
+    fontWeight: weight,
+    color: colour,
+    height: 1.35,
+  );
 
   return ThemeData(
     useMaterial3: true,

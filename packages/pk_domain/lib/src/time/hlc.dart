@@ -75,11 +75,10 @@ final class HlcClock {
     required this.clock,
     Hlc? lastSeen,
     this.maxDrift = const Duration(hours: 1),
-  })  : _millis = lastSeen == null || lastSeen == Hlc.zero
-            ? 0
-            : lastSeen.millis,
-        _counter =
-            lastSeen == null || lastSeen == Hlc.zero ? 0 : lastSeen.counter;
+  }) : _millis = lastSeen == null || lastSeen == Hlc.zero ? 0 : lastSeen.millis,
+       _counter = lastSeen == null || lastSeen == Hlc.zero
+           ? 0
+           : lastSeen.counter;
 
   final String deviceId;
   final Clock clock;
@@ -132,9 +131,11 @@ final class HlcClock {
       );
     }
 
-    final highest = [physical, _millis, remote.millis].reduce(
-      (a, b) => a > b ? a : b,
-    );
+    final highest = [
+      physical,
+      _millis,
+      remote.millis,
+    ].reduce((a, b) => a > b ? a : b);
 
     if (highest == _millis && highest == remote.millis) {
       _counter = (_counter > remote.counter ? _counter : remote.counter) + 1;

@@ -74,11 +74,22 @@ final class ReceiptTender {
     required this.label,
     required this.amount,
     this.reference,
+    this.isCash = false,
   });
 
+  /// What the receipt prints, already translated.
   final String label;
+
   final Money amount;
   final String? reference;
+
+  /// Whether real notes changed hands.
+  ///
+  /// Carried separately from [label] because the label is display text that
+  /// changes with the language, and the one thing that must not depend on the
+  /// shopkeeper's language setting is whether the cash drawer opens. A drawer
+  /// that clicks on a card payment is a drawer somebody unplugs.
+  final bool isCash;
 }
 
 /// Everything a receipt needs, with no reference to how it will be drawn.
@@ -183,6 +194,19 @@ enum ReceiptPaper {
   /// category at all — every 58 mm unit sits under Bluetooth portables.
   mm80(columns: 48, dots: 576),
 
+  /// 80 mm, 576 dots, but 42 columns.
+  ///
+  /// The same paper as [mm80] and a different answer, which is why the width
+  /// is a per-printer setting rather than a property of the roll. Whether an
+  /// 80 mm printer takes 42 or 48 depends on its ROM font and its margins, and
+  /// two machines that look identical on a shelf disagree. ESC/POS has no
+  /// query for it, so the setup screen prints a ruler and the shopkeeper reads
+  /// the answer off the paper.
+  ///
+  /// Getting it wrong is not subtle: a 48-column layout on a 42-column printer
+  /// wraps every total onto the next line.
+  mm80Narrow(columns: 42, dots: 576),
+
   /// 58 mm, 384 dots, 32 columns. The pocket Bluetooth printers.
   mm58(columns: 32, dots: 384);
 
@@ -195,7 +219,11 @@ enum ReceiptPaper {
 /// Renders a receipt for a device that is going to print it.
 abstract interface class ReceiptRenderer {
   /// Bytes for a thermal printer.
-  Uint8List toThermalBytes(ReceiptData data, {ReceiptPaper paper});
+  Uint8List toThermalBytes(
+    ReceiptData data, {
+    ReceiptPaper paper,
+    bool openDrawer,
+  });
 
   /// The same receipt as plain text, one string per printed line.
   ///

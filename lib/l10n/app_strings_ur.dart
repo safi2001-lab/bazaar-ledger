@@ -641,10 +641,6 @@ class AppStringsUr extends AppStrings {
       'Zyada tar kiryana dukanein registered nahi hotin - bijli ke bill mein sales tax jama ho jata hai. Agar aap ke paas STRN hai tab hi yeh chalu karein.';
 
   @override
-  String get receiptPrintNotReady =>
-      'Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.';
-
-  @override
   String get errorStartupRecover => 'Backup se wapas layein';
 
   @override
@@ -726,4 +722,108 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get itemMoreFields => 'Aur tafseel';
+
+  @override
+  String get settingsPrinter => 'Printer';
+
+  @override
+  String get printerTitle => 'Printer set karein';
+
+  @override
+  String get printerNone => 'Abhi koi printer nahi chuna.';
+
+  @override
+  String get printerHowItConnects => 'Printer kaise juda hai';
+
+  @override
+  String get printerViaLan => 'Wi-Fi par (LAN)';
+
+  @override
+  String get printerViaBluetooth => 'Bluetooth';
+
+  @override
+  String get printerViaUsb => 'USB taar';
+
+  @override
+  String get printerNotOnThisPhone => 'Is phone par nahi chal sakta';
+
+  @override
+  String get printerLooking => 'Printer dhoond rahe hain...';
+
+  @override
+  String get printerNoneFound =>
+      'Koi printer nahi mila. Printer chalu hai? Wi-Fi ya Bluetooth juda hai?';
+
+  @override
+  String get printerSearchAgain => 'Dobara dhoondein';
+
+  @override
+  String get printerAddress => 'Printer ka pata';
+
+  @override
+  String get printerAddressHint => '192.168.1.50:9100';
+
+  @override
+  String get printerAddressNeeded => 'Pata likhna zaroori hai.';
+
+  @override
+  String get printerWidth => 'Kagaz ki chaurai';
+
+  @override
+  String get printerWidthHelp =>
+      'Test print nikaal kar dekhein. Jo lakeer poori ek qatar mein aaye, wahi sahi hai.';
+
+  @override
+  String get printerColumns32 => '32 (58mm)';
+
+  @override
+  String get printerColumns42 => '42 (80mm)';
+
+  @override
+  String get printerColumns48 => '48 (80mm)';
+
+  @override
+  String get printerTestPrint => 'Test print nikaalein';
+
+  @override
+  String get printerTestSent => 'Test print bhej diya. Kagaz dekh lein.';
+
+  @override
+  String get printerCopies => 'Kitni copy';
+
+  @override
+  String get printerDrawer => 'Cash sale par draaz kholein';
+
+  @override
+  String get printerSave => 'Printer save karein';
+
+  @override
+  String get printerForget => 'Yeh printer hata dein';
+
+  @override
+  String get printerSaved => 'Printer save ho gaya.';
+
+  @override
+  String get printerPrinting => 'Print ho raha hai...';
+
+  @override
+  String get printerDone => 'Print ho gaya.';
+
+  @override
+  String get printerNotSent =>
+      'Kuch nahi chhapa. Dobara koshish kar sakte hain.';
+
+  @override
+  String get printerPartial =>
+      'Adha bill chhap kar ruk gaya. Kagaz dekh kar khud faisla karein.';
+
+  @override
+  String get printerUnknownAsk =>
+      'Is bill ka print pehle nikla tha ya nahi, pata nahi chala. Kagaz dekh lein.';
+
+  @override
+  String get printerPrintAgain => 'Phir bhi print karein';
+
+  @override
+  String get printerAlreadyPrinted => 'Yeh bill pehle print ho chuka hai.';
 }

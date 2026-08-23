@@ -313,10 +313,6 @@
   "@settingsTaxRegisteredNote": {
     "description": "Explains s.3(9) STA in plain words."
   },
-  "receiptPrintNotReady": "Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.",
-  "@receiptPrintNotReady": {
-    "description": "Honest note on a print button that cannot print yet."
-  },
   "errorStartupRecover": "Backup se wapas layein",
   "@errorStartupRecover": {
     "description": "Button on the startup failure screen that opens the restore flow."
@@ -361,5 +357,47 @@
   "itemDescription": "Tafseel",
   "itemTracksStock": "Is ka stock rakhna hai",
   "itemTracksStockOff": "Service ya kharcha — stock nahi",
-  "itemMoreFields": "Aur tafseel"
+  "itemMoreFields": "Aur tafseel",
+  "settingsPrinter": "Printer",
+  "printerTitle": "Printer set karein",
+  "printerNone": "Abhi koi printer nahi chuna.",
+  "printerHowItConnects": "Printer kaise juda hai",
+  "printerViaLan": "Wi-Fi par (LAN)",
+  "printerViaBluetooth": "Bluetooth",
+  "printerViaUsb": "USB taar",
+  "printerNotOnThisPhone": "Is phone par nahi chal sakta",
+  "printerLooking": "Printer dhoond rahe hain...",
+  "printerNoneFound": "Koi printer nahi mila. Printer chalu hai? Wi-Fi ya Bluetooth juda hai?",
+  "printerSearchAgain": "Dobara dhoondein",
+  "printerAddress": "Printer ka pata",
+  "printerAddressHint": "192.168.1.50:9100",
+  "printerAddressNeeded": "Pata likhna zaroori hai.",
+  "printerWidth": "Kagaz ki chaurai",
+  "printerWidthHelp": "Test print nikaal kar dekhein. Jo lakeer poori ek qatar mein aaye, wahi sahi hai.",
+  "@printerWidthHelp": {
+    "description": "ESC/POS has no query for column width and 80mm printers ship in both 42 and 48. The shopkeeper has to look at paper."
+  },
+  "printerColumns32": "32 (58mm)",
+  "printerColumns42": "42 (80mm)",
+  "printerColumns48": "48 (80mm)",
+  "printerTestPrint": "Test print nikaalein",
+  "printerTestSent": "Test print bhej diya. Kagaz dekh lein.",
+  "printerCopies": "Kitni copy",
+  "printerDrawer": "Cash sale par draaz kholein",
+  "printerSave": "Printer save karein",
+  "printerForget": "Yeh printer hata dein",
+  "printerSaved": "Printer save ho gaya.",
+  "printerPrinting": "Print ho raha hai...",
+  "printerDone": "Print ho gaya.",
+  "printerNotSent": "Kuch nahi chhapa. Dobara koshish kar sakte hain.",
+  "printerPartial": "Adha bill chhap kar ruk gaya. Kagaz dekh kar khud faisla karein.",
+  "@printerPartial": {
+    "description": "Paper has already moved. Never auto-retried."
+  },
+  "printerUnknownAsk": "Is bill ka print pehle nikla tha ya nahi, pata nahi chala. Kagaz dekh lein.",
+  "@printerUnknownAsk": {
+    "description": "Shown when a print job row is still `sending`: the app was killed mid-print and paper may already have moved."
+  },
+  "printerPrintAgain": "Phir bhi print karein",
+  "printerAlreadyPrinted": "Yeh bill pehle print ho chuka hai."
 }

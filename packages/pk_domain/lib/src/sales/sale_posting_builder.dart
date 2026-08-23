@@ -258,7 +258,8 @@ final class SalePostingBuilder {
       narration: 'Udhaar on ${invoiceNumber.formatted}',
     );
 
-    final totalDiscount = calculated.lineDiscountTotal + calculated.billDiscount;
+    final totalDiscount =
+        calculated.lineDiscountTotal + calculated.billDiscount;
     post(key: 'discount_given', debit: totalDiscount);
 
     if (calculated.roundOff.isNegative) {
@@ -304,13 +305,11 @@ final class SalePostingBuilder {
     return posting;
   }
 
-  static String _summarise(
-    String docNo,
-    CalculatedSale sale,
-    SaleDraft draft,
-  ) {
+  static String _summarise(String docNo, CalculatedSale sale, SaleDraft draft) {
     final who = draft.partyName ?? 'walk-in customer';
-    final items = sale.lines.length == 1 ? '1 item' : '${sale.lines.length} items';
+    final items = sale.lines.length == 1
+        ? '1 item'
+        : '${sale.lines.length} items';
     final settled = sale.isFullyPaid
         ? 'paid in full'
         : '${sale.balance.amountOnly} on udhaar';
@@ -318,11 +317,11 @@ final class SalePostingBuilder {
   }
 
   static String _roundingModeCode(RoundingMode mode) => switch (mode) {
-        RoundingMode.halfUp => 'half_up',
-        RoundingMode.halfEven => 'half_even',
-        RoundingMode.truncate => 'truncate',
-        RoundingMode.ceilAbs => 'ceil_abs',
-      };
+    RoundingMode.halfUp => 'half_up',
+    RoundingMode.halfEven => 'half_even',
+    RoundingMode.truncate => 'truncate',
+    RoundingMode.ceilAbs => 'ceil_abs',
+  };
 
   /// Tender accounts are already resolved to an account id, so they are passed
   /// through with a marker the writer recognises rather than a system key.

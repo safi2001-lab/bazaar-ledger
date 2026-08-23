@@ -26,38 +26,38 @@ abstract final class CartDraft {
   static const version = 2;
 
   static String encode(Cart cart) => jsonEncode({
-        'v': version,
-        'partyId': cart.partyId,
-        'partyName': cart.partyName,
-        'billDiscountPaisa': cart.billDiscount.inPaisa,
-        'lines': [
-          for (final line in cart.lines)
-            {
-              'itemId': line.item.id,
-              'name': line.item.name,
-              'code': line.item.code,
-              'barcode': line.item.barcode,
-              'category': line.item.category,
-              'unitId': line.item.unitId,
-              'unitCode': line.item.unitCode,
-              'unitDecimals': line.item.unitDecimals,
-              'saleRateMilliPaisa': line.item.saleRate.inMilliPaisa,
-              'stockOnHandThousandths': line.item.stockOnHand.inThousandths,
-              'minStockThousandths': line.item.minStock.inThousandths,
-              'tracksStock': line.item.tracksStock,
-              'qtyThousandths': line.qty.inThousandths,
-              'rateMilliPaisa': line.rate.inMilliPaisa,
-              'discountBp': line.discountBp,
-              'explicitDiscountPaisa': line.explicitDiscount?.inPaisa,
-              // The unit the line is being SOLD in, which is not always the
-              // unit the item is stocked in. A restored bill that quietly
-              // reverted two maunds of atta to two kilos would be a bill for
-              // a fortieth of the goods.
-              'sellingUnitId': line.unitId,
-              'sellingUnitCode': line.unitCode,
-            },
-        ],
-      });
+    'v': version,
+    'partyId': cart.partyId,
+    'partyName': cart.partyName,
+    'billDiscountPaisa': cart.billDiscount.inPaisa,
+    'lines': [
+      for (final line in cart.lines)
+        {
+          'itemId': line.item.id,
+          'name': line.item.name,
+          'code': line.item.code,
+          'barcode': line.item.barcode,
+          'category': line.item.category,
+          'unitId': line.item.unitId,
+          'unitCode': line.item.unitCode,
+          'unitDecimals': line.item.unitDecimals,
+          'saleRateMilliPaisa': line.item.saleRate.inMilliPaisa,
+          'stockOnHandThousandths': line.item.stockOnHand.inThousandths,
+          'minStockThousandths': line.item.minStock.inThousandths,
+          'tracksStock': line.item.tracksStock,
+          'qtyThousandths': line.qty.inThousandths,
+          'rateMilliPaisa': line.rate.inMilliPaisa,
+          'discountBp': line.discountBp,
+          'explicitDiscountPaisa': line.explicitDiscount?.inPaisa,
+          // The unit the line is being SOLD in, which is not always the
+          // unit the item is stocked in. A restored bill that quietly
+          // reverted two maunds of atta to two kilos would be a bill for
+          // a fortieth of the goods.
+          'sellingUnitId': line.unitId,
+          'sellingUnitCode': line.unitCode,
+        },
+    ],
+  });
 
   /// The cart a string describes, or null if it does not describe one.
   ///

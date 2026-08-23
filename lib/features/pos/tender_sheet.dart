@@ -42,8 +42,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     super.dispose();
   }
 
-  Money get _tenderedAmount =>
-      Money.tryParse(_tendered.text) ?? Money.zero;
+  Money get _tenderedAmount => Money.tryParse(_tendered.text) ?? Money.zero;
 
   /// The account this tender posts into. It matches the chosen mode or there
   /// is none.
@@ -89,7 +88,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     // Anything left owing is somebody's khata, whether the switch was flipped
     // or the cash handed over simply fell short. There is no such thing as an
     // anonymous debtor.
-    final leavesBalance = _onUdhaar ||
+    final leavesBalance =
+        _onUdhaar ||
         (_mode == 'cash' &&
             !_tenderedAmount.isZero &&
             _tenderedAmount < preview.total);
@@ -158,8 +158,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     if (_mode != 'cash' || _tenderedAmount.isZero) {
       settling = preview.total;
     } else {
-      settling =
-          _tenderedAmount < preview.total ? _tenderedAmount : preview.total;
+      settling = _tenderedAmount < preview.total
+          ? _tenderedAmount
+          : preview.total;
     }
 
     final tenders = account == null
@@ -234,10 +235,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       navigator.popUntil((route) => route.isFirst);
       await navigator.push(
         MaterialPageRoute<void>(
-          builder: (_) => ReceiptScreen(
-            documentId: posted.documentId,
-            docNo: posted.docNo,
-          ),
+          builder: (_) =>
+              ReceiptScreen(documentId: posted.documentId, docNo: posted.docNo),
         ),
       );
     } on Object catch (error) {
@@ -271,7 +270,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     final change = counting && _tenderedAmount > due
         ? _tenderedAmount - due
         : Money.zero;
-    final short = counting && _tenderedAmount.isPositive && _tenderedAmount < due
+    final short =
+        counting && _tenderedAmount.isPositive && _tenderedAmount < due
         ? due - _tenderedAmount
         : Money.zero;
 
@@ -359,10 +359,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                   },
                 ),
               ] else
-                BlField(
-                  controller: _reference,
-                  label: s.tenderReference,
-                ),
+                BlField(controller: _reference, label: s.tenderReference),
               const SizedBox(height: BlTokens.space3),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -576,7 +573,7 @@ class _ModePicker extends StatelessWidget {
       'cash': (label: s.tenderModeCash, icon: Icons.payments_outlined),
       'bank_transfer': (
         label: s.tenderModeBank,
-        icon: Icons.account_balance_outlined
+        icon: Icons.account_balance_outlined,
       ),
       'jazzcash': (label: s.tenderModeJazzCash, icon: Icons.smartphone),
       'easypaisa': (label: s.tenderModeEasypaisa, icon: Icons.smartphone),
@@ -618,10 +615,7 @@ class _NoteShortcuts extends StatelessWidget {
       spacing: BlTokens.space2,
       runSpacing: BlTokens.space2,
       children: [
-        ActionChip(
-          label: Text(s.tenderExact),
-          onPressed: () => onPick(due),
-        ),
+        ActionChip(label: Text(s.tenderExact), onPressed: () => onPick(due)),
         for (final note in notes)
           if (Money.rupees(note) > rounded)
             ActionChip(

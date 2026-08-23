@@ -20,10 +20,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 ///
 /// When real Nastaliq arrives it becomes a third locale with its own ARB and
 /// its own RTL delegates. Nothing here has to be rewritten for that.
-const List<Locale> supportedLocales = [
-  Locale('ur'),
-  Locale('en'),
-];
+const List<Locale> supportedLocales = [Locale('ur'), Locale('en')];
 
 const List<LocalizationsDelegate<dynamic>> chromeDelegates = [
   _RomanUrduMaterialDelegate(),

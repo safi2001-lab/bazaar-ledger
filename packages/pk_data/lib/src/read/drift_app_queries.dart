@@ -404,6 +404,7 @@ final class DriftAppQueries implements AppQueries {
         for (final p in payments)
           ReceiptTender(
             label: _modeLabel(p.read<String>('mode')),
+            isCash: p.read<String>('mode') == 'cash',
             // What the customer handed over, not what the bill took off it.
             //
             // The receipt prints the tenders and then the change, and a

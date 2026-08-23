@@ -48,16 +48,19 @@ const Duration pakistanStandardTime = Duration(hours: 5);
 /// means by it.
 extension type const BusinessDate(String value) implements Object {
   /// The business date containing [instant].
-  factory BusinessDate.fromUtc(DateTime instant,
-      [Duration offset = pakistanStandardTime]) {
+  factory BusinessDate.fromUtc(
+    DateTime instant, [
+    Duration offset = pakistanStandardTime,
+  ]) {
     final local = instant.toUtc().add(offset);
     return BusinessDate(_format(local));
   }
 
   /// The business date now, per [clock].
-  factory BusinessDate.now(Clock clock,
-          [Duration offset = pakistanStandardTime]) =>
-      BusinessDate.fromUtc(clock.nowUtc(), offset);
+  factory BusinessDate.now(
+    Clock clock, [
+    Duration offset = pakistanStandardTime,
+  ]) => BusinessDate.fromUtc(clock.nowUtc(), offset);
 
   /// Parses `YYYY-MM-DD`, rejecting anything else rather than guessing.
   static BusinessDate? tryParse(String input) {

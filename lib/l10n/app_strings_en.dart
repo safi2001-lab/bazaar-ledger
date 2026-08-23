@@ -640,10 +640,6 @@ class AppStringsEn extends AppStrings {
       'Most kiryana shops are not registered - sales tax is collected through the electricity bill instead. Only turn this on if you hold an STRN.';
 
   @override
-  String get receiptPrintNotReady =>
-      'Printing arrives in M2. For now you can check the bill and send the PDF.';
-
-  @override
   String get errorStartupRecover => 'Restore from a backup';
 
   @override
@@ -725,4 +721,107 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get itemMoreFields => 'More detail';
+
+  @override
+  String get settingsPrinter => 'Printer';
+
+  @override
+  String get printerTitle => 'Set up the printer';
+
+  @override
+  String get printerNone => 'No printer chosen yet.';
+
+  @override
+  String get printerHowItConnects => 'How the printer connects';
+
+  @override
+  String get printerViaLan => 'Over Wi-Fi (LAN)';
+
+  @override
+  String get printerViaBluetooth => 'Bluetooth';
+
+  @override
+  String get printerViaUsb => 'USB cable';
+
+  @override
+  String get printerNotOnThisPhone => 'Not available on this phone';
+
+  @override
+  String get printerLooking => 'Looking for printers...';
+
+  @override
+  String get printerNoneFound =>
+      'No printers found. Is it switched on, and on the same Wi-Fi or paired?';
+
+  @override
+  String get printerSearchAgain => 'Look again';
+
+  @override
+  String get printerAddress => 'Printer address';
+
+  @override
+  String get printerAddressHint => '192.168.1.50:9100';
+
+  @override
+  String get printerAddressNeeded => 'An address is needed.';
+
+  @override
+  String get printerWidth => 'Paper width';
+
+  @override
+  String get printerWidthHelp =>
+      'Run a test print and look at it. The width whose ruler fits on one line is the right one.';
+
+  @override
+  String get printerColumns32 => '32 (58mm)';
+
+  @override
+  String get printerColumns42 => '42 (80mm)';
+
+  @override
+  String get printerColumns48 => '48 (80mm)';
+
+  @override
+  String get printerTestPrint => 'Run a test print';
+
+  @override
+  String get printerTestSent => 'Test print sent. Have a look at the paper.';
+
+  @override
+  String get printerCopies => 'Copies';
+
+  @override
+  String get printerDrawer => 'Open the drawer on a cash sale';
+
+  @override
+  String get printerSave => 'Save this printer';
+
+  @override
+  String get printerForget => 'Forget this printer';
+
+  @override
+  String get printerSaved => 'Printer saved.';
+
+  @override
+  String get printerPrinting => 'Printing...';
+
+  @override
+  String get printerDone => 'Printed.';
+
+  @override
+  String get printerNotSent => 'Nothing came out. You can try again.';
+
+  @override
+  String get printerPartial =>
+      'It stopped part way through. Look at the paper and decide.';
+
+  @override
+  String get printerUnknownAsk =>
+      'Nobody can tell whether this bill printed before. Have a look at the paper.';
+
+  @override
+  String get printerPrintAgain => 'Print it anyway';
+
+  @override
+  String get printerAlreadyPrinted => 'This bill has already been printed.';
 }

@@ -1244,12 +1244,6 @@ abstract class AppStrings {
   /// **'Zyada tar kiryana dukanein registered nahi hotin - bijli ke bill mein sales tax jama ho jata hai. Agar aap ke paas STRN hai tab hi yeh chalu karein.'**
   String get settingsTaxRegisteredNote;
 
-  /// Honest note on a print button that cannot print yet.
-  ///
-  /// In ur, this message translates to:
-  /// **'Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.'**
-  String get receiptPrintNotReady;
-
   /// Button on the startup failure screen that opens the restore flow.
   ///
   /// In ur, this message translates to:
@@ -1393,6 +1387,204 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Aur tafseel'**
   String get itemMoreFields;
+
+  /// No description provided for @settingsPrinter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer'**
+  String get settingsPrinter;
+
+  /// No description provided for @printerTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer set karein'**
+  String get printerTitle;
+
+  /// No description provided for @printerNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi printer nahi chuna.'**
+  String get printerNone;
+
+  /// No description provided for @printerHowItConnects.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer kaise juda hai'**
+  String get printerHowItConnects;
+
+  /// No description provided for @printerViaLan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wi-Fi par (LAN)'**
+  String get printerViaLan;
+
+  /// No description provided for @printerViaBluetooth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bluetooth'**
+  String get printerViaBluetooth;
+
+  /// No description provided for @printerViaUsb.
+  ///
+  /// In ur, this message translates to:
+  /// **'USB taar'**
+  String get printerViaUsb;
+
+  /// No description provided for @printerNotOnThisPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone par nahi chal sakta'**
+  String get printerNotOnThisPhone;
+
+  /// No description provided for @printerLooking.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer dhoond rahe hain...'**
+  String get printerLooking;
+
+  /// No description provided for @printerNoneFound.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi printer nahi mila. Printer chalu hai? Wi-Fi ya Bluetooth juda hai?'**
+  String get printerNoneFound;
+
+  /// No description provided for @printerSearchAgain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dobara dhoondein'**
+  String get printerSearchAgain;
+
+  /// No description provided for @printerAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer ka pata'**
+  String get printerAddress;
+
+  /// No description provided for @printerAddressHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'192.168.1.50:9100'**
+  String get printerAddressHint;
+
+  /// No description provided for @printerAddressNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pata likhna zaroori hai.'**
+  String get printerAddressNeeded;
+
+  /// No description provided for @printerWidth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kagaz ki chaurai'**
+  String get printerWidth;
+
+  /// ESC/POS has no query for column width and 80mm printers ship in both 42 and 48. The shopkeeper has to look at paper.
+  ///
+  /// In ur, this message translates to:
+  /// **'Test print nikaal kar dekhein. Jo lakeer poori ek qatar mein aaye, wahi sahi hai.'**
+  String get printerWidthHelp;
+
+  /// No description provided for @printerColumns32.
+  ///
+  /// In ur, this message translates to:
+  /// **'32 (58mm)'**
+  String get printerColumns32;
+
+  /// No description provided for @printerColumns42.
+  ///
+  /// In ur, this message translates to:
+  /// **'42 (80mm)'**
+  String get printerColumns42;
+
+  /// No description provided for @printerColumns48.
+  ///
+  /// In ur, this message translates to:
+  /// **'48 (80mm)'**
+  String get printerColumns48;
+
+  /// No description provided for @printerTestPrint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Test print nikaalein'**
+  String get printerTestPrint;
+
+  /// No description provided for @printerTestSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Test print bhej diya. Kagaz dekh lein.'**
+  String get printerTestSent;
+
+  /// No description provided for @printerCopies.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitni copy'**
+  String get printerCopies;
+
+  /// No description provided for @printerDrawer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cash sale par draaz kholein'**
+  String get printerDrawer;
+
+  /// No description provided for @printerSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer save karein'**
+  String get printerSave;
+
+  /// No description provided for @printerForget.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh printer hata dein'**
+  String get printerForget;
+
+  /// No description provided for @printerSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer save ho gaya.'**
+  String get printerSaved;
+
+  /// No description provided for @printerPrinting.
+  ///
+  /// In ur, this message translates to:
+  /// **'Print ho raha hai...'**
+  String get printerPrinting;
+
+  /// No description provided for @printerDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Print ho gaya.'**
+  String get printerDone;
+
+  /// No description provided for @printerNotSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch nahi chhapa. Dobara koshish kar sakte hain.'**
+  String get printerNotSent;
+
+  /// Paper has already moved. Never auto-retried.
+  ///
+  /// In ur, this message translates to:
+  /// **'Adha bill chhap kar ruk gaya. Kagaz dekh kar khud faisla karein.'**
+  String get printerPartial;
+
+  /// Shown when a print job row is still `sending`: the app was killed mid-print and paper may already have moved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill ka print pehle nikla tha ya nahi, pata nahi chala. Kagaz dekh lein.'**
+  String get printerUnknownAsk;
+
+  /// No description provided for @printerPrintAgain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phir bhi print karein'**
+  String get printerPrintAgain;
+
+  /// No description provided for @printerAlreadyPrinted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill pehle print ho chuka hai.'**
+  String get printerAlreadyPrinted;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

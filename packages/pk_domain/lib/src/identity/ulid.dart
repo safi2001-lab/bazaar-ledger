@@ -26,8 +26,8 @@ abstract interface class IdGenerator {
 /// into a different order than they were rung up in.
 final class UlidGenerator implements IdGenerator {
   UlidGenerator({Random? random, DateTime Function()? now})
-      : _random = random ?? Random.secure(),
-        _now = now ?? DateTime.now;
+    : _random = random ?? Random.secure(),
+      _now = now ?? DateTime.now;
 
   final Random _random;
   final DateTime Function() _now;

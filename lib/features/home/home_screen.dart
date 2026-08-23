@@ -37,9 +37,7 @@ class HomeScreen extends ConsumerWidget {
             icon: Icons.settings_outlined,
             label: s.homeSettings,
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const SettingsScreen(),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const SettingsScreen()),
             ),
           ),
         ],
@@ -94,9 +92,7 @@ class HomeScreen extends ConsumerWidget {
   }
 
   static void _open(BuildContext context, Widget screen) {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => screen),
-    );
+    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => screen));
   }
 }
 
@@ -320,11 +316,7 @@ class _NavTile extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  icon,
-                  size: 28,
-                  color: accent ? t.accentInk : t.ink,
-                ),
+                Icon(icon, size: 28, color: accent ? t.accentInk : t.ink),
                 const SizedBox(height: BlTokens.space2),
                 // Flexible as well as a measured tile height. The height is
                 // computed from the text scaler and is close, but "close" on a
@@ -382,8 +374,7 @@ class _RecentSales extends ConsumerWidget {
           children: [
             BlSectionHeader(s.salesTitle),
             const SizedBox(height: BlTokens.space2),
-            for (final row in rows.take(5))
-              SaleRowTile(row: row),
+            for (final row in rows.take(5)) SaleRowTile(row: row),
           ],
         );
       },

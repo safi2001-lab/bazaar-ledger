@@ -1,4 +1,5 @@
 import '../identity/actor_context.dart';
+import 'receipt.dart';
 
 /// Which printer this counter uses, and how to talk to it.
 ///
@@ -72,6 +73,18 @@ final class PrinterSettings {
   final int settleMs;
 
   static const allowedColumns = <int>[32, 42, 48];
+
+  /// The paper this width corresponds to.
+  ///
+  /// Three widths, two roll sizes: an 80 mm printer takes either 42 or 48
+  /// columns depending on its ROM font and margins, and ESC/POS has no query
+  /// for which. That is why the width is a setting a shopkeeper confirms
+  /// against a printed ruler rather than something the app works out.
+  ReceiptPaper get paper => switch (columns) {
+    32 => ReceiptPaper.mm58,
+    42 => ReceiptPaper.mm80Narrow,
+    _ => ReceiptPaper.mm80,
+  };
 
   PrinterSettings copyWith({
     String? transportKind,
