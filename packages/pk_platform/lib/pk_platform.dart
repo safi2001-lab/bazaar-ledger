@@ -10,3 +10,4 @@ export 'package:pdf/pdf.dart' show PdfPageFormat;
 export 'src/receipt/escpos.dart';
 export 'src/receipt/receipt_layout.dart';
 export 'src/receipt/thermal_receipt_renderer.dart';
+export 'src/storage/file_draft_store.dart';

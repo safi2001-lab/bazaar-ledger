@@ -30,6 +30,8 @@ final class AppServices {
     required this.receipts,
     required this.clock,
     required this.ids,
+    required this.drafts,
+    required this.restoredCartDraft,
     required TxRunner runner,
   }) : _runner = runner;
 
@@ -51,6 +53,22 @@ final class AppServices {
   final ReceiptRenderer receipts;
   final Clock clock;
   final IdGenerator ids;
+
+  /// Where a half-finished bill waits out a process kill.
+  ///
+  /// Not the books. A draft has no invoice number, no journal entry, no audit
+  /// row and no place in the sync outbox, and it is kept behind its own port
+  /// and in its own file so that stays structural rather than a rule someone
+  /// has to remember.
+  final DraftStore drafts;
+
+  /// The draft that was on disk when the app opened, if there was one.
+  ///
+  /// Read here rather than by the counter, because the counter must be able to
+  /// restore it synchronously. A cart that arrives one frame late shows the
+  /// cashier an empty bill first, and an empty bill is a bill they start
+  /// ringing again.
+  final String? restoredCartDraft;
 
   TxRunner _runner;
 
@@ -88,7 +106,12 @@ final class AppServices {
         ),
       ),
     );
-    return _wire(database, clock, appVersion);
+    return _wire(
+      database,
+      clock,
+      appVersion,
+      FileDraftStore(Directory(p.dirname(path))),
+    );
   }
 
   /// Opens against an executor the caller already has. Used by tests.
@@ -96,13 +119,20 @@ final class AppServices {
     QueryExecutor executor, {
     Clock clock = const SystemClock(),
     String appVersion = '0.1.0-test',
+    DraftStore? drafts,
   }) =>
-      _wire(AppDatabase(executor), clock, appVersion);
+      _wire(
+        AppDatabase(executor),
+        clock,
+        appVersion,
+        drafts ?? InMemoryDraftStore(),
+      );
 
   static Future<AppServices> _wire(
     AppDatabase database,
     Clock clock,
     String appVersion,
+    DraftStore drafts,
   ) async {
     final ids = UlidGenerator();
     final queries = DriftAppQueries(database);
@@ -133,6 +163,12 @@ final class AppServices {
       receipts: const ThermalReceiptRenderer(),
       clock: clock,
       ids: ids,
+      drafts: drafts,
+      // One small file read, before the first frame. The counter has to be
+      // able to restore the cart synchronously: a bill that arrives a frame
+      // late shows the cashier an empty one first, and an empty one is a bill
+      // they start ringing again.
+      restoredCartDraft: await drafts.read(cartDraftSlot),
       runner: runner,
     );
 

@@ -13,6 +13,7 @@ export 'src/identity/actor_context.dart';
 export 'src/identity/ulid.dart';
 export 'src/ports/app_queries.dart';
 export 'src/ports/catalogue_writer.dart';
+export 'src/ports/draft_store.dart';
 export 'src/ports/health.dart';
 export 'src/ports/receipt.dart';
 export 'src/ports/sale_writer.dart';

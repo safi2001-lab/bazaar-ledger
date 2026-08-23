@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
+
+import '../../app/providers.dart';
+import 'cart_draft.dart';
 
 /// One line as the counter has it so far.
 ///
@@ -117,14 +122,50 @@ final class Cart {
 
 final cartProvider = NotifierProvider<CartNotifier, Cart>(CartNotifier.new);
 
-/// Holds the bill in progress.
+/// Holds the bill in progress, and writes it down.
 ///
-/// Deliberately not auto-disposed. Android Go ROMs kill aggressively and a
-/// shopkeeper who walks away mid-bill to fetch a tin of ghee must find the
-/// cart exactly as they left it when they come back to the screen.
+/// Deliberately not auto-disposed, so walking away from the counter to fetch a
+/// tin of ghee leaves the bill where it was. That covers leaving the screen
+/// and nothing more: an Infinix or Tecno running Phone Master will force-stop
+/// a backgrounded app, and about 44% of the handsets this ships to are
+/// Transsion. A cashier who checks a price in WhatsApp on a fifteen-line bill
+/// and comes back to an empty cart re-scans the lot with the customer
+/// standing there.
+///
+/// So every mutation is written to a file. Not to the books — a draft has no
+/// invoice number, no journal entry and no place in the sync outbox — and not
+/// through Flutter's state restoration, which rides on Android's
+/// `savedInstanceState` and dies with the task record: a force-stop, a swipe
+/// off Recents or a reboot all take it, leaving only the low-memory reclaim
+/// covered, which is the case a shopkeeper is least likely to notice.
 class CartNotifier extends Notifier<Cart> {
   @override
-  Cart build() => const Cart();
+  Cart build() {
+    // Restored synchronously. A cart that arrives a frame late shows an empty
+    // bill first, and an empty bill is one the cashier starts ringing again.
+    final saved = ref.read(appServicesProvider).restoredCartDraft;
+    final restored = saved == null ? null : CartDraft.decode(saved);
+
+    // `listenSelf` rather than a line in each mutator: there are eight of
+    // them, and the ninth that someone adds later would be the one that is
+    // not saved.
+    listenSelf((_, next) => _save(next));
+
+    return restored ?? const Cart();
+  }
+
+  void _save(Cart cart) {
+    final drafts = ref.read(appServicesProvider).drafts;
+    // Never awaited on the scan path. The store coalesces — a write in
+    // flight holds the slot and the newest pending contents replace any older
+    // pending contents — so four quick taps on the quantity stepper cost one
+    // write, and it is the last one.
+    unawaited(
+      cart.isEmpty && cart.partyId == null
+          ? drafts.clear(cartDraftSlot)
+          : drafts.write(cartDraftSlot, CartDraft.encode(cart)),
+    );
+  }
 
   /// Adds an item, or bumps the quantity if it is already on the bill.
   ///
