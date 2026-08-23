@@ -11,6 +11,7 @@ export 'src/accounting/chart_of_accounts.dart';
 export 'src/catalogue/units.dart';
 export 'src/identity/actor_context.dart';
 export 'src/identity/ulid.dart';
+export 'src/ports/receipt.dart';
 export 'src/ports/sale_writer.dart';
 export 'src/sales/sale_calculator.dart';
 export 'src/sales/sale_draft.dart';

@@ -1,0 +1,21 @@
+name: pk_platform
+description: >-
+  Device-facing adapters for Bazaar Ledger: receipt rendering, printer
+  transports, scanners, secure storage. Implements ports declared in
+  pk_domain.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  pdf: ^3.11.0
+  pk_domain:
+    path: ../pk_domain
+  pk_money:
+    path: ../pk_money
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0
