@@ -78,7 +78,10 @@ milestones:
 
   - id: M4
     title: Purchases and cost truth
-    state: planned
+    # Opened 24 Aug 2026. `avg_cost_milli_paisa` is written once at item
+    # creation and never moves, so until this milestone lands every margin
+    # figure in the app is a guess.
+    state: open
     owns:
       - lib/features/purchases/**
       - packages/pk_domain/lib/src/costing/**
@@ -2017,3 +2020,69 @@ features:
       - a void bill never appears
       - another customer khata is not in this one
       - the khata shows what was paid, not only what is owed
+
+  # ---- M4 · Purchases and cost truth ------------------------------------
+
+  - id: M4-COST-01
+    milestone: M4
+    title: The weighted average cost, exact to the paisa over any history
+    status: done
+    # `avg_cost_milli_paisa` has been written once at item creation and never
+    # moved — `drift_catalogue_writer` explicitly removes it from every
+    # update. A shop that opened an item at Rs 90 and has been buying at
+    # Rs 120 for six months still reads a Rs 30 profit on every sale.
+    #
+    # Weighted average rather than FIFO, because a kiryana shop does not know
+    # which sack of rice it sold. The stock is in a bin, the new delivery goes
+    # on top of the old, nobody tracks layers. It is what the shopkeeper
+    # already does in their head and it survives a stock-take; lots land in
+    # M11 for the pharmacies that genuinely need them.
+    #
+    # Held forward by INDUCTION, never by re-summing the stock ledger.
+    # Re-summing looks safer and is not: it makes today's cost a function of
+    # every row ever written, so one bad historical row silently restates last
+    # month's profit, and a shop with three years of movements pays for the
+    # whole history on every sale.
+    #
+    # Four rules that are each one line and each wrong by default:
+    #
+    #  * A sale does NOT move the average. Changing the cost because something
+    #    left would make a sale profitable by selling.
+    #  * At zero the average is KEPT, not cleared. A zero posts no COGS on the
+    #    next sale if the next delivery is entered a minute late, and a sale
+    #    with no cost has infinite margin in every report that reads it.
+    #  * A negative balance is written off to wastage when the delivery lands,
+    #    never averaged in. Letting the absence dilute the new cost makes
+    #    everything on the shelf look cheaper than it was, forever.
+    #  * Landed cost is per receipt, freight included. Dividing it into a
+    #    per-unit rate first throws away the paisa the residue exists to catch.
+    #
+    # The residue is the price of induction. 1.833 kg carried at Rs 85/kg plus
+    # 1.5 kg for Rs 100 gives an average that cannot make the value both
+    # round(avg x qty) and valueBefore + landedCost — one paisa has nowhere to
+    # go. Posted as an extra COGS line; without it Inventory drifts a paisa at
+    # a time and after a year nobody can say when it started.
+    #
+    # The first residue proof used numbers that divided evenly, so it asserted
+    # an equality that held whether the residue existed or not — deleting the
+    # residue line failed nothing. Found by mutation, then by measuring: 24,796
+    # of 200,000 random movements produce one, always exactly one paisa. The
+    # property now asserts conservation (everything paid in is on the shelf,
+    # issued at cost, or residue) AND that residues actually occurred, or the
+    # conservation assertion would prove nothing.
+    proof:
+      - a delivery moves the average the weighted step, with numbers a shopkeeper could check
+      - a delivery moves the average freight is in the cost, because the shop paid it
+      - a delivery moves the average the first delivery sets the cost by itself
+      - a delivery moves the average a delivery onto an empty shelf ignores the old average
+      - a delivery moves the average a fractional quantity averages exactly
+      - a delivery moves the average what it refuses
+      - a sale does not the average is untouched by an issue
+      - a sale does not selling out keeps the average, never clears it
+      - a sale does not selling more than is on the shelf goes negative, not to zero
+      - the shortfall a late delivery covers is written off, never averaged into the new stock
+      - the shortfall a late delivery covers an ordinary delivery writes nothing off
+      - the invariant a residue appears where the division does not come out
+      - 'the invariant property: value always equals round(avg x qty), 5000 movements'
+      - 'the invariant property: an issue never changes the average, 2000 times'
+      - overflow is refused, never wrapped an absurd carried value throws rather than going negative

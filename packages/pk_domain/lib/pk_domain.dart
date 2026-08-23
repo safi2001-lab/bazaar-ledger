@@ -11,6 +11,7 @@ export 'src/accounting/chart_of_accounts.dart';
 export 'src/catalogue/barcode_key.dart';
 export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';
+export 'src/costing/moving_average.dart';
 export 'src/identity/actor_context.dart';
 export 'src/identity/ulid.dart';
 export 'src/ports/app_queries.dart';
