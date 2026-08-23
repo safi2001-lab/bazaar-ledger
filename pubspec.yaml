@@ -1,57 +1,40 @@
-name: pakistan_sme_billing
-description: "High-speed offline-first SME billing and business management platform for Pakistan."
-publish_to: 'none'
-
-version: 1.0.0+1
+name: bazaar_ledger
+description: >-
+  Offline-first billing, khata and stock for Pakistani shops. Everything lives
+  on the phone: no server, no account, no network call on the billing path.
+publish_to: none
+version: 0.1.0+1
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: ^3.12.0
 
 dependencies:
   flutter:
     sdk: flutter
-
-  # State Management & Routing
-  flutter_riverpod: ^2.5.1
-  go_router: ^14.2.0
-
-  # Reactive Local Database & Storage
-  drift: ^2.18.0
-  drift_flutter: ^0.1.0
-  sqlite3_flutter_libs: ^0.5.24
-  path_provider: ^2.1.2
-  path: ^1.9.0
-
-  # Localization, Formatting & Identifiers
-  intl: ^0.19.0
-  uuid: ^4.4.0
-  google_fonts: ^6.2.1
-
-  # Hardware, Thermal Printing & Barcode/QR
-  permission_handler: ^11.3.1
-  flutter_blue_plus: ^1.30.0
-  mobile_scanner: ^5.1.0
-  qr_flutter: ^4.1.0
-  pdf: ^3.10.8
-  printing: ^5.12.0
-
-  cupertino_icons: ^1.0.8
-  share_plus: ^13.3.0
-  archive: ^4.0.9
-  shelf: ^1.4.2
-  shelf_router: ^1.1.4
-  http: ^1.6.0
-  in_app_purchase: ^3.3.0
-  crypto: ^3.0.3
+  flutter_localizations:
+    sdk: flutter
+  flutter_riverpod: ^2.6.1
+  intl: ^0.20.2
+  path_provider: ^2.1.5
+  # The wiring point. It depends on pk_data and drift; this package does not,
+  # and must not. A widget that imports drift is a resolution error rather
+  # than a review comment, and `depend_on_referenced_packages: error` in the
+  # shared analysis options closes the transitive loophole.
+  pk_bootstrap:
+    path: packages/pk_bootstrap
+  pk_domain:
+    path: packages/pk_domain
+  pk_money:
+    path: packages/pk_money
+  share_plus: ^10.1.4
 
 dev_dependencies:
+  flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
-  build_runner: ^2.4.15
-  drift_dev: ^2.28.0
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/
+  generate: true

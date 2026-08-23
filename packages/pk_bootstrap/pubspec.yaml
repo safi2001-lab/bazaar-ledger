@@ -1,0 +1,35 @@
+name: pk_bootstrap
+description: >-
+  The one wiring point. Opens the database, resumes the clocks, and hands the
+  app a set of ports. This is the only package that knows both drift and
+  Flutter, and nothing above it may import either.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  drift: ^2.28.0
+  drift_flutter: ^0.2.4
+  flutter:
+    sdk: flutter
+  path: ^1.9.0
+  path_provider: ^2.1.5
+  pk_application:
+    path: ../pk_application
+  pk_data:
+    path: ../pk_data
+  pk_domain:
+    path: ../pk_domain
+  pk_money:
+    path: ../pk_money
+  pk_platform:
+    path: ../pk_platform
+  sqlite3_flutter_libs: ^0.5.26
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter

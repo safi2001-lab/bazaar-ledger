@@ -189,6 +189,15 @@ abstract interface class ReceiptRenderer {
   /// Bytes for a thermal printer.
   Uint8List toThermalBytes(ReceiptData data, {ReceiptPaper paper});
 
+  /// The same receipt as plain text, one string per printed line.
+  ///
+  /// On the interface rather than only on the implementation, because the
+  /// preview screen must show the strings the printer is actually handed. A
+  /// separate "nicer" on-screen layout is a second implementation that
+  /// drifts, and the first anybody notices is a customer's printed copy
+  /// disagreeing with what the shopkeeper approved.
+  List<String> toPreview(ReceiptData data, {ReceiptPaper paper});
+
   /// A PDF, for sharing over WhatsApp or saving.
   Future<Uint8List> toPdf(ReceiptData data);
 }

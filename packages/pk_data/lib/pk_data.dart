@@ -9,6 +9,8 @@ library;
 export 'package:drift/drift.dart' show QueryExecutor, QueryRow, Value, Variable;
 
 export 'src/db/app_database.dart';
+export 'src/read/drift_app_queries.dart';
+export 'src/write/drift_catalogue_writer.dart';
 export 'src/write/drift_sale_writer.dart';
 export 'src/write/first_run.dart';
 export 'src/write/sequence_allocator.dart';

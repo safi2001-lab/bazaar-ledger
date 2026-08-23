@@ -73,6 +73,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   ///
   /// The same strings the printer is handed, so what the shopkeeper approves
   /// is what comes out of the machine.
+  @override
   List<String> toPreview(
     ReceiptData data, {
     ReceiptPaper paper = ReceiptPaper.mm80,

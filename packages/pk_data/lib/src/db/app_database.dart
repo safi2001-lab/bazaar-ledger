@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:pk_domain/pk_domain.dart';
 
 part 'app_database.g.dart';
 
@@ -177,19 +178,4 @@ class AppDatabase extends _$AppDatabase {
       checkedAtUtc: DateTime.now().toUtc(),
     );
   }
-}
-
-/// The result of [AppDatabase.checkHealth].
-class DatabaseHealth {
-  const DatabaseHealth({required this.findings, required this.checkedAtUtc});
-
-  final List<String> findings;
-  final DateTime checkedAtUtc;
-
-  bool get isHealthy => findings.isEmpty;
-
-  @override
-  String toString() => isHealthy
-      ? 'DatabaseHealth(ok, checked $checkedAtUtc)'
-      : 'DatabaseHealth(${findings.length} finding(s)): ${findings.join('; ')}';
 }
