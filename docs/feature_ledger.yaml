@@ -724,8 +724,65 @@ features:
 
   - id: M0-CI-01
     milestone: M0
-    title: CI runs every gate and fails closed
+    title: The gate chain runs, in one command, and stops at the first failure
+    status: done
+    # Retitled from "CI runs every gate and fails closed", which bundled two
+    # claims that are not equally provable here. The chain running is provable
+    # on this machine and is proved. CI having run is not — see M0-CI-02.
+    #
+    # `melos run ci` chains l10n:check, analyze, arch, ledger, test and verify
+    # with `&&`, so the first failure stops it. Run end to end on 24 Aug 2026:
+    # SUCCESS.
+    #
+    # That was the first time any of it had ever executed. From melos 3.0 the
+    # package must be a dev_dependency beside melos.yaml, and it was declared
+    # nowhere — so every `melos run` in this repository refused with a
+    # migration notice, and since every step of the workflow is `melos run
+    # <something>`, the entire pipeline would have died on its first step.
+    #
+    # The parity tests passed the whole time, and were right to: comparing two
+    # lists of gate names says nothing about whether either list can be run.
+    # That is the same shape as the blind spot the ledger itself had.
+    #
+    # Getting it to run then failed `dart analyze --fatal-infos`, which is
+    # stricter than the plain analyze used until then: it caught a test
+    # importing share_plus_platform_interface without declaring it.
+    #
+    # The pin is load-bearing and now guarded. Melos 7 dropped melos.yaml for
+    # pub workspaces; the workflow runs an unpinned `pub global activate
+    # melos` which resolves to 8.x, and that works only because a global melos
+    # delegates to the local one. Loosen the constraint and the delegation
+    # picks a melos that cannot read this workspace — which is precisely how
+    # this broke with nobody editing a file.
+    proof:
+      - every gate the workflow invokes exists in melos.yaml
+      - the ci script chains every host gate
+      - no melos script matches zero packages and passes
+      - the workflow runs all three verification tiers
+      - the acceptance suite is actually run somewhere
+      - the ledger checkout is deep enough for its own rules
+      - a missing signing key is recorded as skipped, never as passed
+      - the runner that invokes every gate is declared where melos requires it
+      - the runner that invokes every gate is pinned below the version that drops melos.yaml
+      - the runner that invokes every gate the workflow installs it before invoking any gate
+
+  - id: M0-CI-02
+    milestone: M0
+    title: CI has run green on a push
     status: wip
+    # Blocked, and not by anything in the code: `git remote -v` is empty and
+    # `.git/refs/remotes` does not exist. There is nowhere to push, so the
+    # workflow has never been executed by a runner and cannot be.
+    #
+    # Held separately from M0-CI-01 rather than folded into it, because the
+    # two claims fail differently. A chain that runs locally proves the gates
+    # work; it does not prove the runner has the Android SDK, the Java
+    # version, the emulator image or the secrets the workflow assumes. Those
+    # are exactly the things that are wrong the first time a workflow runs,
+    # and finding out is one push away whenever a remote exists.
+    #
+    # Not deferred: a deferral is for a proof that would pass if the machine
+    # existed, and this one has never been observed passing at all.
     proof: []
 
   - id: M0-GOLDEN-01

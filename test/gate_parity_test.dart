@@ -141,4 +141,60 @@ void main() {
           'gates did not run, rather than showing green',
     );
   });
+
+  group('the runner that invokes every gate', () {
+    // Every step in the workflow above is `melos run <something>`, so melos
+    // failing to start is the whole pipeline failing to start.
+    //
+    // It did. From melos 3.0 the package must be a dev_dependency beside
+    // melos.yaml, and it was not declared anywhere — so every `melos run` in
+    // this repository refused with a migration notice, and no gate had ever
+    // actually executed. The parity tests above passed the entire time,
+    // because comparing two lists of gate names says nothing about whether
+    // either list can be run.
+    final rootPubspec = File('pubspec.yaml').readAsStringSync();
+    final melosConstraint = RegExp(
+      r'^\s*melos:\s*(\S+)',
+      multiLine: true,
+    ).firstMatch(rootPubspec)?.group(1);
+
+    test('is declared where melos requires it', () {
+      expect(
+        melosConstraint,
+        isNotNull,
+        reason:
+            'melos is not a dev_dependency of the workspace root, so every '
+            'melos run refuses and every gate in CI is unreachable',
+      );
+    });
+
+    test('is pinned below the version that drops melos.yaml', () {
+      // Melos 7 replaced melos.yaml with pub workspaces. The workflow runs an
+      // unpinned `dart pub global activate melos`, which resolves to 8.x — and
+      // that works only because a global melos delegates to the local one
+      // declared here. Loosen this constraint and the delegation picks a melos
+      // that cannot read this workspace at all.
+      //
+      // Which is exactly how this broke without anybody editing a file: the
+      // workflow was written when 6 was current.
+      expect(
+        melosConstraint,
+        startsWith('^6.'),
+        reason:
+            'the gate runner may resolve to a melos that cannot read '
+            'melos.yaml, and every gate becomes unreachable again',
+      );
+    });
+
+    test('the workflow installs it before invoking any gate', () {
+      final activate = workflow.indexOf('pub global activate melos');
+      final firstGate = workflow.indexOf('melos run ');
+      expect(activate, greaterThanOrEqualTo(0));
+      expect(
+        activate,
+        lessThan(firstGate),
+        reason: 'a gate is invoked before the runner that runs it exists',
+      );
+    });
+  });
 }
