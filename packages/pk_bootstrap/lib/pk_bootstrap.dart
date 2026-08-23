@@ -10,5 +10,6 @@ export 'package:pk_domain/pk_domain.dart';
 export 'package:pk_platform/pk_platform.dart'
     show PdfPageFormat, ReceiptLayout, ThermalReceiptRenderer;
 
+export 'src/app_config.dart';
 export 'src/app_services.dart';
 

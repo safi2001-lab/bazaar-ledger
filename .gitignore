@@ -69,3 +69,9 @@ packages/*/pubspec.lock
 # Scratch probe tests written by audit agents while verifying a finding.
 # They are throwaway by construction and must never reach the suite.
 zz_*_test.dart
+
+# Build-time identifiers: OAuth client ID, Play Billing public key.
+# None are secrets — an Android OAuth client has no secret and the Billing
+# key is public — but they belong to whoever owns the Play listing, and this
+# repository may outlive that. The committed example documents every key.
+config/app_config.json

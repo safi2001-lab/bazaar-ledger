@@ -1,0 +1,39 @@
+{
+  "_comment": [
+    "Copy this file to config/app_config.json and fill it in, then build with:",
+    "    flutter build apk --release --dart-define-from-file=config/app_config.json",
+    "config/app_config.json is gitignored. This example is not.",
+    "",
+    "Every key may be left as an empty string. The app builds and runs fully",
+    "without any of them; the features they unlock are simply not offered,",
+    "rather than offered and broken. Settings > Diagnostics lists what a",
+    "given build is missing."
+  ],
+
+  "_GOOGLE_OAUTH_CLIENT_ID": [
+    "M5, Google Drive backup. Google Cloud Console > Credentials >",
+    "OAuth 2.0 Client IDs > Android. Needs package name pk.bazaarledger and",
+    "the SHA-1 of the signing certificate. With Play App Signing, take that",
+    "SHA-1 from the Play Console signing page, NOT from the local keystore,",
+    "or sign-in will fail only on Play-installed builds.",
+    "There is deliberately no client secret: Android OAuth clients are public",
+    "clients and use PKCE. A secret would need a server to live on.",
+    "Scope used is drive.appdata only, which is non-sensitive: no Google app",
+    "verification, no CASA security assessment, no fee.",
+    "Remember to publish the OAuth consent screen to 'In production'. While",
+    "it is in 'Testing' there is a 100-user cap and refresh tokens expire",
+    "after 7 days, so backup silently stops working a week after a shopkeeper",
+    "turns it on."
+  ],
+  "GOOGLE_OAUTH_CLIENT_ID": "",
+
+  "_PLAY_BILLING_PUBLIC_KEY": [
+    "M9, subscriptions. Play Console > Monetisation setup > Licensing.",
+    "This is Google's PUBLIC key, base64. It verifies that a purchase payload",
+    "was signed by Google; it cannot mint one. Entitlement is written only",
+    "after that signature verifies on the device.",
+    "Without it the app refuses to grant entitlement at all. It must never",
+    "fall open."
+  ],
+  "PLAY_BILLING_PUBLIC_KEY": ""
+}
