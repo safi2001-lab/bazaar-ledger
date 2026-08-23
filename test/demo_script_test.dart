@@ -130,15 +130,32 @@ void main() {
       reason: 'the books balance at exact integer equality, no tolerance',
     );
 
-    expect(
-      await app.countIn('audit_log'),
-      greaterThan(0),
-      reason: 'who did what is recorded in the same transaction',
+    // Both tables already hold rows from first run and from adding the two
+    // items, so `greaterThan(0)` was true before the sale was rung. What has
+    // to be true is that the SALE wrote its own.
+    final saleAudits = await app.rowsOf(
+      '''
+      SELECT action_code FROM audit_log
+      WHERE entity_table = 'documents'
+      ''',
+    );
+    expect(saleAudits, hasLength(1));
+    expect(saleAudits.single['action_code'], 'SALE_POSTED');
+
+    final saleOutbox = await app.rowsOf(
+      '''
+      SELECT entity_table FROM change_log
+      WHERE entity_table IN ('documents', 'document_lines', 'payments',
+                             'payment_allocations', 'journal_entries',
+                             'journal_lines', 'stock_ledger')
+      ''',
     );
     expect(
-      await app.countIn('change_log'),
-      greaterThan(0),
-      reason: 'the sync outbox is written from day one, transport or not',
+      saleOutbox.length,
+      greaterThanOrEqualTo(10),
+      reason: 'every row the sale wrote is offered to the next counter: '
+          'one document, two lines, one payment, one allocation, one entry, '
+          'its lines, and two stock movements',
     );
 
     // ---- 5. And the shopkeeper can see it ---------------------------------

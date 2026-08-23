@@ -159,7 +159,42 @@ void main() {
       expect(sale.total, Money.rupees(1220));
     });
 
-    test('nothing extra for a buyer who is on the ATL', () {
+    test('a registered buyer who is off the list still pays it', () {
+      // The limb the old specification missed. Registration alone is not
+      // enough: a registered person who has fallen off the Active Taxpayer
+      // List is squarely inside s.3(1A).
+      const registeredButLapsed = TaxContext(
+        isSellerRegistered: true,
+        buyerIsRegistered: true,
+        buyerIsOnAtl: false,
+        province: 'punjab',
+        pricesIncludeTax: false,
+        ruleVersion: 'test-v1',
+      );
+      final sale =
+          calculator.calculate(billOf([(1000, 1)]), registeredButLapsed);
+      expect(sale.furtherTax, Money.rupees(40));
+    });
+
+    test('an unregistered buyer pays it however the list reads', () {
+      const unregisteredOnList = TaxContext(
+        isSellerRegistered: true,
+        buyerIsRegistered: false,
+        buyerIsOnAtl: true,
+        province: 'punjab',
+        pricesIncludeTax: false,
+        ruleVersion: 'test-v1',
+      );
+      final sale =
+          calculator.calculate(billOf([(1000, 1)]), unregisteredOnList);
+      expect(
+        sale.furtherTax,
+        Money.rupees(40),
+        reason: 'the two limbs of s.3(1A) are disjunctive',
+      );
+    });
+
+    test('nothing extra for a registered buyer who is on the ATL', () {
       const onAtl = TaxContext(
         isSellerRegistered: true,
         buyerIsRegistered: true,
@@ -331,9 +366,13 @@ final class _FurtherTaxEngine implements TaxEngine {
     ];
     if (!context.isSellerRegistered) return charges;
 
-    // s.3(1A): triggered by the buyer being off the Active Taxpayer List, not
-    // by their merely lacking an STRN. Unknown is not the same as on it.
-    if (context.buyerIsOnAtl ?? false) return charges;
+    // s.3(1A), as amended to 30 June 2026: "made to a person who has not
+    // obtained registration number OR he is not an active taxpayer". Both
+    // limbs trigger it. Unknown ATL standing counts as off the list, because
+    // the shopkeeper pays the difference if it turns out to be true.
+    final registered = context.buyerIsRegistered;
+    final onAtl = context.buyerIsOnAtl ?? false;
+    if (registered && onAtl) return charges;
 
     charges.add(
       TaxCharge(

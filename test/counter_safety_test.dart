@@ -130,11 +130,15 @@ void main() {
     expect(payment.single['amount_paisa'], 300000);
     expect(payment.single['change_paisa'], 0);
 
-    // The books still balance, at exact integer equality.
+    // The books still balance, at exact integer equality. Asserted against
+    // the number rather than against each other: SUM over zero rows is NULL,
+    // and `null == null` would have green-lit a sale that wrote no journal at
+    // all.
     final balance = await app.rowsOf(
       'SELECT SUM(debit_paisa) d, SUM(credit_paisa) c FROM journal_lines',
     );
-    expect(balance.single['d'], balance.single['c']);
+    expect(balance.single['d'], 500000);
+    expect(balance.single['c'], 500000);
   });
 
   testWidgets('a bill left owing has to name the customer', (tester) async {

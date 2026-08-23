@@ -92,14 +92,20 @@ final class FirstRunSeeder {
       }
 
       // --- The bootstrap trio, raw. -------------------------------------
-      final bootstrapHlc = hlcClock.next().value;
+      // One timestamp per row, as TxRunner mints one per write. Sharing a
+      // single value across the three left three outbox entries with
+      // byte-identical `entity_hlc`, which is an unbreakable tie for any
+      // future merge that orders by it.
+      final firmHlc = hlcClock.next().value;
+      final deviceHlc = hlcClock.next().value;
+      final userHlc = hlcClock.next().value;
 
       await database.customStatement(
         'INSERT INTO firms ($_env, name, city, province, business_kind) '
         'VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, 1, ?, ?, ?, ?)',
         [
           firmId, firmId, millis, millis, userId, userId, deviceId,
-          bootstrapHlc, //
+          firmHlc, //
           shopName, city, province, businessKind,
         ],
       );
@@ -109,7 +115,7 @@ final class FirstRunSeeder {
         'VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, 1, ?, ?, ?, ?)',
         [
           deviceId, firmId, millis, millis, userId, userId, deviceId,
-          bootstrapHlc, //
+          deviceHlc, //
           deviceLabel, platform, 'master', 1,
         ],
       );
@@ -119,7 +125,7 @@ final class FirstRunSeeder {
         'VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, 1, ?, ?, ?, ?, ?)',
         [
           userId, firmId, millis, millis, userId, userId, deviceId,
-          bootstrapHlc, //
+          userHlc, //
           ownerName, 'owner', 1, 1, 10000,
         ],
       );
@@ -137,7 +143,7 @@ final class FirstRunSeeder {
       // only the business columns is a row the receiving counter cannot
       // construct. TxRunner records the whole row for exactly this reason,
       // and these three have to match it.
-      Map<String, Object?> envelope(String id) => {
+      Map<String, Object?> envelope(String id, String hlc) => {
             'id': id,
             'firm_id': firmId,
             'created_at_utc': millis,
@@ -146,7 +152,7 @@ final class FirstRunSeeder {
             'updated_by': userId,
             'deleted_at_utc': null,
             'origin_device_id': deviceId,
-            'hlc': bootstrapHlc,
+            'hlc': hlc,
             'rev': 1,
           };
 
@@ -156,7 +162,7 @@ final class FirstRunSeeder {
           'firms',
           firmId,
           {
-            ...envelope(firmId),
+            ...envelope(firmId, firmHlc),
             'name': shopName,
             'city': city,
             'province': province,
@@ -167,7 +173,7 @@ final class FirstRunSeeder {
           'devices',
           deviceId,
           {
-            ...envelope(deviceId),
+            ...envelope(deviceId, deviceHlc),
             'label': deviceLabel,
             'platform': platform,
             'device_role': 'master',
@@ -180,7 +186,7 @@ final class FirstRunSeeder {
           'users',
           userId,
           {
-            ...envelope(userId),
+            ...envelope(userId, userHlc),
             'name': ownerName,
             'role': 'owner',
             'can_see_purchase_price': 1,
@@ -196,9 +202,12 @@ final class FirstRunSeeder {
           'VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)',
           [
             ids.next(), firmId, millis, millis, userId, userId, deviceId,
-            bootstrapHlc, //
+            // The outbox row's own timestamp and the timestamp of the row it
+            // describes are the same thing here: both were written in this
+            // transaction, by this device, for this entity.
+            row.$3['hlc']! as String, //
             bootstrapSeq, row.$1, row.$2, 'insert', jsonEncode(row.$3),
-            bootstrapHlc, 1, millis,
+            row.$3['hlc']! as String, 1, millis,
           ],
         );
       }

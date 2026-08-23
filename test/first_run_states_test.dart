@@ -128,5 +128,43 @@ void main() {
       ''',
     );
     expect(duplicates, isEmpty);
+
+    // Each row carries its own timestamp. Sharing one across the three left
+    // three outbox entries byte-identical in `entity_hlc`, which is a tie no
+    // merge rule can break.
+    final stamps = await app.rowsOf(
+      '''
+      SELECT DISTINCT entity_hlc FROM change_log
+      WHERE entity_table IN ('firms', 'devices', 'users')
+      ''',
+    );
+    expect(stamps, hasLength(3));
+
+    // And the payload a peer would replay is a complete row, not just the
+    // business columns: every envelope column is NOT NULL, so a partial
+    // payload is one the receiving counter cannot insert.
+    final payload = await app.rowsOf(
+      '''
+      SELECT payload_json FROM change_log
+      WHERE entity_table = 'firms'
+      ''',
+    );
+    for (final column in const [
+      'id',
+      'firm_id',
+      'created_at_utc',
+      'updated_at_utc',
+      'created_by',
+      'updated_by',
+      'origin_device_id',
+      'hlc',
+      'rev',
+    ]) {
+      expect(
+        payload.single['payload_json'],
+        contains('"$column"'),
+        reason: 'a peer cannot build the row without $column',
+      );
+    }
   });
 }

@@ -408,15 +408,25 @@ final rules = <Rule>[
       RegExp(r'\bdouble\b'),
       RegExp(r'\.toDouble\(\)'),
       RegExp(r'\bnum\b\s+\w'),
+      // A decimal literal IS a double, whatever it is assigned to.
+      RegExp(r'(?<![\w.])\d+\.\d'),
+      // `/` on two ints returns a double in Dart. Integer division is `~/`,
+      // and every rounding decision goes through `divideRounded` with an
+      // explicit mode.
+      RegExp(r'[\w)\]]\s*(?<!~)/\s*[\w(]'),
     ],
     mustFlag: [
       '  final double total = 0;',
       '  return amount.toDouble();',
       '  num quantity = 1;',
+      '  final share = 0.5;',
+      '  final each = total / count;',
     ],
     mustAllow: [
       "      'a double here would be money represented as a float',",
       '  final int total = 0;',
+      '  final each = total ~/ count;',
+      '  final rate = divideRounded(a, b, mode);',
     ],
   ),
 

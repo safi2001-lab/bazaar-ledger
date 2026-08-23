@@ -76,9 +76,21 @@ final class TaxContext {
 
   final bool buyerIsRegistered;
 
-  /// Further tax under s.3(1A) STA is triggered by the buyer being off the
-  /// Active Taxpayer List — not by their merely lacking an STRN, which is the
-  /// mistake the previous specification made. `null` means unknown.
+  /// Further tax under s.3(1A) STA, verified against the Act as amended to
+  /// 30 June 2026.
+  ///
+  /// The operative words are "where taxable supplies are made to a person who
+  /// has not obtained registration number **or** he is not an active
+  /// taxpayer". The two limbs are disjunctive, so EITHER triggers it: the
+  /// "not an active taxpayer" limb was added by the Finance Act 2022 and the
+  /// rate went from three per cent to four by the Finance Act 2023.
+  ///
+  /// So [buyerIsRegistered] and this field are both inputs to the charge. The
+  /// previous specification had it as registration alone, which under-charges
+  /// a registered buyer who has fallen off the list; reading it as ATL alone
+  /// under-charges an unregistered one. `null` here means nobody has checked,
+  /// which is not the same as being on the list — and the engine treats it as
+  /// off, because the shopkeeper pays the difference either way.
   final bool? buyerIsOnAtl;
 
   final String province;
