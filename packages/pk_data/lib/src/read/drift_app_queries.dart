@@ -479,8 +479,15 @@ final class DriftAppQueries implements AppQueries {
             AND stock_thousandths <= i.min_stock_thousandths
           -- Worst first: how far below the floor, as a fraction of it, so a
           -- staple that is 90% gone outranks a slow-moving line that is one
-          -- unit short.
-          ORDER BY (stock_thousandths * 1000) / i.min_stock_thousandths,
+          -- unit short. Ordering by the raw shortfall would put a 500-piece
+          -- line that is ten short above a 2-piece line nearly out.
+          --
+          -- Both operands are INTEGER columns, so this is SQLite's integer
+          -- division and there is no floating point in it anywhere. The
+          -- result is a truncated per-mille used as a sort key, never a
+          -- number anyone is shown.
+          ORDER BY (stock_thousandths * 1000) -- arch_check: allow no_floating_point_money — integer sort key
+                     / i.min_stock_thousandths,
                    i.name_search
           LIMIT ?
           ''',
