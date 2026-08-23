@@ -6,6 +6,13 @@ import 'package:pk_domain/pk_domain.dart';
 /// Text alignment for [EscPos.align].
 enum EscPosAlign { left, centre, right }
 
+/// Which of the printer's two built-in fonts to print in.
+///
+/// The column count depends on it, and so does whether the receipt is
+/// readable at all: an 80mm head is 576 dots, and the same head gives a
+/// different number of columns in each font.
+enum EscPosFont { a, b }
+
 /// Builds an ESC/POS byte stream.
 ///
 /// Every command here is from the Epson ESC/POS reference and is supported by
@@ -33,6 +40,22 @@ final class EscPos {
   /// ESC t n — select a code page. 0 is PC437; the Latin fast path needs
   /// nothing more, and anything that is not Latin goes through [raster].
   EscPos codePage(int page) => _raw([_esc, 0x74, page]);
+
+  /// ESC M n — select the built-in font. 0 is Font A, 1 is Font B.
+  ///
+  /// Sent explicitly, always, because the column count the whole layout is
+  /// built on depends on it and the default is not the same on every machine.
+  /// An 80mm head is 576 dots; Font A at 12 dots wide gives 48 columns and
+  /// Font B at 9 gives 64, but the clones this ships against are not
+  /// consistent — several are 42 columns in Font A. A layout that assumes 48
+  /// and meets a printer sitting in a 42-column font wraps EVERY line, and
+  /// the receipt is unreadable rather than slightly wrong.
+  ///
+  /// Selecting it does not make the assumption true on every machine, which
+  /// is why the column count is also a per-printer setting. What it does is
+  /// make the printer's state ours rather than whatever the last job left.
+  EscPos font(EscPosFont f) =>
+      _raw([_esc, 0x4D, f == EscPosFont.a ? 0 : 1]);
 
   EscPos align(EscPosAlign a) => _raw([
         _esc,
@@ -80,10 +103,23 @@ final class EscPos {
 
   EscPos feed([int lines = 1]) => _raw([_esc, 0x64, lines]);
 
-  /// GS V 0 — full cut.
-  EscPos cut() => _raw([_gs, 0x56, 0x00]);
+  /// GS V 66 n — feed n units, then cut.
+  ///
+  /// Not the bare `GS V 0`, which is what this used to send. The cutter sits
+  /// several millimetres above the print head, so cutting without feeding
+  /// first drives the blade through the last lines of the receipt — the
+  /// symptom is a bill whose total is missing, or a cut that lands mid-word,
+  /// and it looks like a layout bug rather than a cut bug.
+  ///
+  /// Three units of feed is the figure the Epson reference and the field
+  /// reports agree on for an 80mm head.
+  EscPos cut({int feedUnits = 3}) => _raw([_gs, 0x56, 0x42, feedUnits]);
 
   /// GS V 1 — partial cut, for printers that tear rather than guillotine.
+  ///
+  /// Kept as the bare form: a partial cut leaves the paper attached, so a
+  /// blade landing early tears rather than severs and the shopkeeper can
+  /// still read what it took.
   EscPos partialCut() => _raw([_gs, 0x56, 0x01]);
 
   /// ESC p m t1 t2 — kick the cash drawer on pin 2.

@@ -188,9 +188,28 @@ void main() {
       expect(bytes.sublist(0, 2), [0x1B, 0x40]);
     });
 
-    test('ends with a full cut', () {
+    test('ends with a cut that feeds the paper past the blade first', () {
+      // GS V 66 n, not the bare GS V 0 this used to send. The cutter sits
+      // several millimetres above the print head, so cutting without feeding
+      // drives the blade through the last lines of the receipt — and the
+      // symptom is a bill with its total missing, which reads as a layout
+      // bug rather than a cut bug.
       final bytes = renderer.toThermalBytes(receipt());
-      expect(bytes.sublist(bytes.length - 3), [0x1D, 0x56, 0x00]);
+      expect(bytes.sublist(bytes.length - 4), [0x1D, 0x56, 0x42, 0x03]);
+    });
+
+    test('selects a font rather than trusting the printer default', () {
+      // The whole layout is built on a column count, and the column count
+      // depends on which of the two built-in fonts is active. `ESC @` resets
+      // to the PRINTER's default, which is not the same on every machine —
+      // several of the clones this ships against sit in a 42-column font,
+      // and a receipt laid out for 48 that meets one wraps every line.
+      final bytes = renderer.toThermalBytes(receipt());
+      expect(
+        _contains(bytes, [0x1B, 0x4D, 0x00]),
+        isTrue,
+        reason: 'no ESC M, so the column count is whatever the last job left',
+      );
     });
 
     test('kicks the drawer only when asked', () {

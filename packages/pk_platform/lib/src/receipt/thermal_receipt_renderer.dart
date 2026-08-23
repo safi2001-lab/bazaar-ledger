@@ -27,7 +27,13 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
       // PC437. The receipt is Roman Urdu in Latin script, so the ASCII path
       // covers the common case and nothing needs a code page the printer might
       // not have.
-      ..codePage(0);
+      ..codePage(0)
+      // Font A, explicitly, because the layout's column count depends on it
+      // and the default is not the same on every machine. `ESC @` above
+      // resets to the printer's OWN default, which is not necessarily this
+      // one — and a receipt laid out for 48 columns that meets a printer
+      // sitting in a 42-column font wraps every single line.
+      ..font(EscPosFont.a);
 
     if (data.shop.logo != null) {
       out
