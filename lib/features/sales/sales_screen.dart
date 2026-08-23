@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
 
+import '../../app/paged.dart';
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
@@ -16,7 +17,7 @@ class SalesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final sales = ref.watch(recentSalesProvider);
+    final sales = ref.watch(pagedSalesProvider);
 
     return Scaffold(
       backgroundColor: t.paper,
@@ -32,10 +33,11 @@ class SalesScreen extends ConsumerWidget {
               title: s.commonSomethingWentWrong,
               message: '$error',
               retryLabel: s.actionRetry,
-              onRetry: () => ref.invalidate(recentSalesProvider),
+              onRetry: () => ref.invalidate(pagedSalesProvider),
             ),
           ),
-          data: (rows) {
+          data: (page) {
+            final rows = page.items;
             if (rows.isEmpty) {
               return Center(
                 child: BlEmpty(
@@ -47,10 +49,21 @@ class SalesScreen extends ConsumerWidget {
             }
             return RefreshIndicator(
               onRefresh: () async => ref.bumpRefresh(),
-              child: ListView.builder(
-                padding: const EdgeInsets.all(BlTokens.space4),
-                itemCount: rows.length,
-                itemBuilder: (context, i) => SaleRowTile(row: rows[i]),
+              // The list was a hard limit of sixty. A shop three years in
+              // could not scroll to last month.
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (n) {
+                  final at = n.metrics;
+                  if (at.pixels >= at.maxScrollExtent * 0.8) {
+                    ref.read(pagedSalesProvider.notifier).more();
+                  }
+                  return false;
+                },
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(BlTokens.space4),
+                  itemCount: rows.length,
+                  itemBuilder: (context, i) => SaleRowTile(row: rows[i]),
+                ),
               ),
             );
           },

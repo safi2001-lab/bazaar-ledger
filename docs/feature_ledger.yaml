@@ -779,20 +779,27 @@ features:
   - id: M1-LOW-02
     milestone: M1
     title: A shopkeeper can open the low-stock list and act on it
-    status: todo
-    # The query is written, tested and fast. The four Roman-Urdu strings are in
-    # both ARBs. Nothing in lib/features/ references any of them, so a
-    # shopkeeper cannot reach it — and a commit called this milestone work done.
-    proof: []
+    status: done
+    # A tile on the home screen, and a screen consuming the query and the four
+    # strings that had sat unused since M1. Tapping a row opens the item, so
+    # the list answers "what do I buy tomorrow" and then lets the shopkeeper
+    # act on it.
+    proof:
+      - a shopkeeper can see what is about to run out
+      - nothing running low says so, rather than showing an empty list
 
   - id: M1-PAGE-01
     milestone: M1
     title: The item and sales lists actually page as the shopkeeper scrolls
-    status: todo
-    # searchItems and recentSales both take `afterId` and neither caller passes
-    # it; the sales list is a hard limit of 60. The keyset machinery is real,
-    # tested against 20,000 rows, and unreachable.
-    proof: []
+    status: done
+    # Both lists ask for the next page at eighty per cent of the scroll, so it
+    # has usually arrived before the thumb does. A page that fails to load
+    # leaves the page already on screen intact rather than blanking the list.
+    #
+    # The proof scrolls a real ListView. Dropping `afterId` again fails it,
+    # which is the state the code was in for the whole of M1.
+    proof:
+      - the item list pages past the first forty
 
   - id: M1-HIST-01
     milestone: M1

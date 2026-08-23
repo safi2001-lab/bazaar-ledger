@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
 
-import '../../app/providers.dart';
+import '../../app/paged.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
@@ -58,7 +58,7 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
     final s = AppStrings.of(context);
     final t = context.bl;
     final query = ref.watch(itemsQueryProvider);
-    final items = ref.watch(itemSearchProvider(query));
+    final items = ref.watch(pagedItemsProvider(query));
 
     return Scaffold(
       backgroundColor: t.paper,
@@ -92,10 +92,11 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                     title: s.commonSomethingWentWrong,
                     message: '$error',
                     retryLabel: s.actionRetry,
-                    onRetry: () => ref.invalidate(itemSearchProvider(query)),
+                    onRetry: () => ref.invalidate(pagedItemsProvider(query)),
                   ),
                 ),
-                data: (rows) {
+                data: (page) {
+                  final rows = page.items;
                   if (rows.isEmpty) {
                     return Center(
                       child: BlEmpty(
@@ -112,19 +113,32 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                       ),
                     );
                   }
-                  return ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(
-                      BlTokens.space4,
-                      0,
-                      BlTokens.space4,
-                      BlTokens.space10 * 2,
-                    ),
-                    itemCount: rows.length,
-                    itemExtent: blRowExtent(context, 72),
-                    itemBuilder: (context, i) => _ItemRow(
-                      key: ValueKey(rows[i].id),
-                      item: rows[i],
-                      onTap: () => _openEditor(rows[i]),
+                  // Asks for the next page at eighty per cent, so it has
+                  // usually arrived by the time the shopkeeper's thumb gets
+                  // there. Without this the list stopped at forty items on a
+                  // catalogue of twenty thousand.
+                  return NotificationListener<ScrollNotification>(
+                    onNotification: (n) {
+                      final at = n.metrics;
+                      if (at.pixels >= at.maxScrollExtent * 0.8) {
+                        ref.read(pagedItemsProvider(query).notifier).more();
+                      }
+                      return false;
+                    },
+                    child: ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(
+                        BlTokens.space4,
+                        0,
+                        BlTokens.space4,
+                        BlTokens.space10 * 2,
+                      ),
+                      itemCount: rows.length,
+                      itemExtent: blRowExtent(context, 72),
+                      itemBuilder: (context, i) => _ItemRow(
+                        key: ValueKey(rows[i].id),
+                        item: rows[i],
+                        onTap: () => _openEditor(rows[i]),
+                      ),
                     ),
                   );
                 },
