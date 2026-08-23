@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../khata/khata_screen.dart';
 import 'party_editor.dart';
 
 /// Reset when the screen goes. See [itemsQueryProvider].
@@ -129,9 +130,19 @@ class _PartiesScreenState extends ConsumerState<PartiesScreen> {
     );
   }
 
+  /// A name in a khata opens the khata. Adding one opens the editor.
+  ///
+  /// Tapping a customer used to open the editor — a form for their phone
+  /// number and their credit limit. That is the second thing a shopkeeper
+  /// wants from a name in a khata. The first is how much, and what they do
+  /// next is take money off it.
   static void _open(BuildContext context, [PartySummary? party]) {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(builder: (_) => PartyEditorScreen(party: party)),
+      MaterialPageRoute<void>(
+        builder: (_) => party == null
+            ? const PartyEditorScreen()
+            : KhataScreen(party: party),
+      ),
     );
   }
 }

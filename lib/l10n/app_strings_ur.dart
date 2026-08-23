@@ -936,4 +936,73 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get scanAddNew => 'Nayi cheez banayein';
+
+  @override
+  String get khataTitle => 'Khata';
+
+  @override
+  String get khataBalance => 'Kitna lena hai';
+
+  @override
+  String get khataAdvance => 'Jama shuda';
+
+  @override
+  String get khataOpenBills => 'Khule bill';
+
+  @override
+  String get khataNoBills => 'Koi udhaar baqi nahi';
+
+  @override
+  String get khataNoBillsHint => 'Is gahak ka poora hisaab saaf hai';
+
+  @override
+  String get khataReceive => 'Paisay wasool karein';
+
+  @override
+  String get khataDetails => 'Gahak ki tafseel';
+
+  @override
+  String get khataCreditLimitOver => 'Udhaar ki hadd se ziyada';
+
+  @override
+  String get wasooliTitle => 'Paisay wasool karein';
+
+  @override
+  String get wasooliAmount => 'Kitne paisay milay';
+
+  @override
+  String get wasooliMode => 'Kis tarah';
+
+  @override
+  String get wasooliReference => 'Reference (marzi se)';
+
+  @override
+  String get wasooliChequeNo => 'Cheque number';
+
+  @override
+  String get wasooliChequeBank => 'Bank ka naam';
+
+  @override
+  String get wasooliSettles => 'Yeh bill saaf honge';
+
+  @override
+  String get wasooliSettlesNone =>
+      'Koi khula bill nahi — yeh raqam jama ho jayegi';
+
+  @override
+  String get wasooliOnAccount => 'Jama (advance)';
+
+  @override
+  String get wasooliSave => 'Wasooli save karein';
+
+  @override
+  String wasooliSaved(String amount) {
+    return '$amount wasool ho gaye';
+  }
+
+  @override
+  String get wasooliAmountRequired => 'Raqam likhein';
+
+  @override
+  String get wasooliChequeNoRequired => 'Cheque number likhein';
 }

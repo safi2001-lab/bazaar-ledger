@@ -1783,6 +1783,138 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Nayi cheez banayein'**
   String get scanAddNew;
+
+  /// No description provided for @khataTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khata'**
+  String get khataTitle;
+
+  /// Positive means the customer owes the shop. The khata's only question.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna lena hai'**
+  String get khataBalance;
+
+  /// The shop is holding the customer's money: a liability, never a negative receivable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jama shuda'**
+  String get khataAdvance;
+
+  /// No description provided for @khataOpenBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khule bill'**
+  String get khataOpenBills;
+
+  /// No description provided for @khataNoBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi udhaar baqi nahi'**
+  String get khataNoBills;
+
+  /// No description provided for @khataNoBillsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ka poora hisaab saaf hai'**
+  String get khataNoBillsHint;
+
+  /// No description provided for @khataReceive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay wasool karein'**
+  String get khataReceive;
+
+  /// No description provided for @khataDetails.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ki tafseel'**
+  String get khataDetails;
+
+  /// No description provided for @khataCreditLimitOver.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ki hadd se ziyada'**
+  String get khataCreditLimitOver;
+
+  /// No description provided for @wasooliTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay wasool karein'**
+  String get wasooliTitle;
+
+  /// No description provided for @wasooliAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne paisay milay'**
+  String get wasooliAmount;
+
+  /// No description provided for @wasooliMode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis tarah'**
+  String get wasooliMode;
+
+  /// No description provided for @wasooliReference.
+  ///
+  /// In ur, this message translates to:
+  /// **'Reference (marzi se)'**
+  String get wasooliReference;
+
+  /// No description provided for @wasooliChequeNo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque number'**
+  String get wasooliChequeNo;
+
+  /// No description provided for @wasooliChequeBank.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ka naam'**
+  String get wasooliChequeBank;
+
+  /// Which bills this payment clears, computed by the same function that will write it. A preview that could disagree with the write is worse than none.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill saaf honge'**
+  String get wasooliSettles;
+
+  /// No description provided for @wasooliSettlesNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi khula bill nahi — yeh raqam jama ho jayegi'**
+  String get wasooliSettlesNone;
+
+  /// What no open bill absorbed. Ordinary in a shop that takes standing orders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jama (advance)'**
+  String get wasooliOnAccount;
+
+  /// No description provided for @wasooliSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasooli save karein'**
+  String get wasooliSave;
+
+  /// No description provided for @wasooliSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} wasool ho gaye'**
+  String wasooliSaved(String amount);
+
+  /// No description provided for @wasooliAmountRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam likhein'**
+  String get wasooliAmountRequired;
+
+  /// No description provided for @wasooliChequeNoRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque number likhein'**
+  String get wasooliChequeNoRequired;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

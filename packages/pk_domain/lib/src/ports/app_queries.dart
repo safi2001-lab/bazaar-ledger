@@ -1,6 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
 import '../catalogue/unit_converter.dart';
+import '../receivables/fifo_allocator.dart';
 import 'receipt.dart';
 
 /// The shop, as the app needs it on screen.
@@ -237,6 +238,15 @@ abstract interface class AppQueries {
     String query = '',
     int limit = 40,
   });
+
+  /// Every bill this party still owes on, oldest first.
+  ///
+  /// The same rows, in the same order, that `PaymentWriteContext` reads
+  /// inside the transaction — so a shopkeeper looking at "this will clear
+  /// these three bills" is looking at what will actually happen, computed by
+  /// the same function. Two different orderings here would make the preview a
+  /// guess, and a preview that is sometimes wrong is worse than none.
+  Future<List<OpenBill>> openBillsFor(String firmId, String partyId);
 
   Future<List<SaleListRow>> recentSales(
     String firmId, {

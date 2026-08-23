@@ -261,6 +261,42 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<OpenBill>> openBillsFor(String firmId, String partyId) async {
+    // Deliberately the same WHERE and the same ORDER BY as
+    // `_DriftPaymentWriteContext.openBillsFor`. The preview a shopkeeper
+    // approves has to be what the write actually does, and two orderings
+    // would make it a guess.
+    //
+    // Rides idx_documents_open_balance:
+    // (firm_id, party_id, doc_date_local) WHERE balance_paisa <> 0.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT id, doc_date_local, doc_seq, balance_paisa
+          FROM documents
+          WHERE firm_id = ? AND party_id = ?
+            AND balance_paisa > 0
+            AND status NOT IN ('void', 'draft')
+            AND deleted_at_utc IS NULL
+          ORDER BY doc_date_local, doc_seq, id
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(partyId)],
+          readsFrom: {_db.documents},
+        )
+        .get();
+
+    return [
+      for (final r in rows)
+        OpenBill(
+          documentId: r.read<String>('id'),
+          dateLocal: r.read<String>('doc_date_local'),
+          sequence: r.read<int>('doc_seq'),
+          outstanding: Money.paisa(r.read<int>('balance_paisa')),
+        ),
+    ];
+  }
+
+  @override
   Future<List<SaleListRow>> recentSales(
     String firmId, {
     String? afterId,

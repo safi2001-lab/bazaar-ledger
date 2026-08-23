@@ -1759,3 +1759,50 @@ features:
       - a receipt reaches the outbox so a second till can learn of it
       - a failure part-way through leaves nothing behind
       - a receipt number is never burned by a failure
+
+  - id: M3-KHATA-01
+    milestone: M3
+    title: A shopkeeper can take money off a khata, from the app
+    status: done
+    # The row that stops M3 repeating M2. `PrintQueue`, `TcpPrinter` and the
+    # whole Kotlin plugin sat in this repository for two commits with zero
+    # call sites in `lib/`, and two commit messages announced them as shipped.
+    # A payment path with no button is the same failure in a different
+    # package, so this is proved by driving the actual screens.
+    #
+    # Tapping a customer used to open the editor — a form for their phone
+    # number and their credit limit. That is the second thing a shopkeeper
+    # wants from a name in a khata. The first is how much, and the thing they
+    # do next is take money off it. So the tap lands on the khata and editing
+    # became an action on it.
+    #
+    # The preview is the feature. Every competing product either nets a
+    # payment against one running balance or makes the cashier tick boxes, and
+    # being unable to answer "which bills did this settle" is the single
+    # most-complained-about gap in their reviews. The sheet answers it before
+    # the money is taken — and computes the answer with `allocateFifo`, the
+    # same function the writer runs, over rows read with the same WHERE and
+    # the same ORDER BY. A preview that could disagree with the write would be
+    # worse than none.
+    #
+    # It can still differ in exactly one way: a second till may settle a bill
+    # between the sheet being drawn and Save being tapped. The writer re-reads
+    # inside its transaction, so the write is right and the preview was stale,
+    # which is the correct direction for that error to run.
+    #
+    # A negative balance is labelled "jama shuda", not shown as a negative
+    # amount under "kitna lena hai". The shop is holding the customer's money,
+    # and "owes −2,000" is a sentence a shopkeeper has to translate in their
+    # head at the counter.
+    #
+    # Mutation-tested: a Save button that pops without writing fails two of
+    # these.
+    proof:
+      - a customer name opens their khata, not a form
+      - the khata shows what is owed and on which bills
+      - a payment reaches the database and the balance comes down
+      - the sheet says which bills it will clear, before saving
+      - paying more than is owed is offered as credit, not refused
+      - a customer with nothing owed can still be paid on account
+      - an amount of nothing is refused in words
+      - a cheque with no number is refused in words

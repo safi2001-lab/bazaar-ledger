@@ -356,5 +356,46 @@
   "scanDenied": "Camera permission was not granted",
   "scanTorch": "Light",
   "scanNotFound": "No item carries that barcode",
-  "scanAddNew": "Add it as a new item"
+  "scanAddNew": "Add it as a new item",
+  "khataTitle": "Khata",
+  "khataBalance": "Owes",
+  "@khataBalance": {
+    "description": "Positive means the customer owes the shop. The khata's only question."
+  },
+  "khataAdvance": "In credit",
+  "@khataAdvance": {
+    "description": "The shop is holding the customer's money: a liability, never a negative receivable."
+  },
+  "khataOpenBills": "Open bills",
+  "khataNoBills": "Nothing outstanding",
+  "khataNoBillsHint": "This customer is fully settled",
+  "khataReceive": "Receive payment",
+  "khataDetails": "Customer details",
+  "khataCreditLimitOver": "Over the credit limit",
+  "wasooliTitle": "Receive payment",
+  "wasooliAmount": "Amount received",
+  "wasooliMode": "How",
+  "wasooliReference": "Reference (optional)",
+  "wasooliChequeNo": "Cheque number",
+  "wasooliChequeBank": "Bank name",
+  "wasooliSettles": "This will settle",
+  "@wasooliSettles": {
+    "description": "Which bills this payment clears, computed by the same function that will write it. A preview that could disagree with the write is worse than none."
+  },
+  "wasooliSettlesNone": "No open bills — this will be held on account",
+  "wasooliOnAccount": "On account",
+  "@wasooliOnAccount": {
+    "description": "What no open bill absorbed. Ordinary in a shop that takes standing orders."
+  },
+  "wasooliSave": "Save receipt",
+  "wasooliSaved": "{amount} received",
+  "@wasooliSaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "wasooliAmountRequired": "Enter an amount",
+  "wasooliChequeNoRequired": "Enter the cheque number"
 }

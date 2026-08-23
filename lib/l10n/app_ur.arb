@@ -438,5 +438,46 @@
   "scanDenied": "Camera ki ijazat nahi mili",
   "scanTorch": "Roshni",
   "scanNotFound": "Yeh barcode kisi cheez par nahi hai",
-  "scanAddNew": "Nayi cheez banayein"
+  "scanAddNew": "Nayi cheez banayein",
+  "khataTitle": "Khata",
+  "khataBalance": "Kitna lena hai",
+  "@khataBalance": {
+    "description": "Positive means the customer owes the shop. The khata's only question."
+  },
+  "khataAdvance": "Jama shuda",
+  "@khataAdvance": {
+    "description": "The shop is holding the customer's money: a liability, never a negative receivable."
+  },
+  "khataOpenBills": "Khule bill",
+  "khataNoBills": "Koi udhaar baqi nahi",
+  "khataNoBillsHint": "Is gahak ka poora hisaab saaf hai",
+  "khataReceive": "Paisay wasool karein",
+  "khataDetails": "Gahak ki tafseel",
+  "khataCreditLimitOver": "Udhaar ki hadd se ziyada",
+  "wasooliTitle": "Paisay wasool karein",
+  "wasooliAmount": "Kitne paisay milay",
+  "wasooliMode": "Kis tarah",
+  "wasooliReference": "Reference (marzi se)",
+  "wasooliChequeNo": "Cheque number",
+  "wasooliChequeBank": "Bank ka naam",
+  "wasooliSettles": "Yeh bill saaf honge",
+  "@wasooliSettles": {
+    "description": "Which bills this payment clears, computed by the same function that will write it. A preview that could disagree with the write is worse than none."
+  },
+  "wasooliSettlesNone": "Koi khula bill nahi — yeh raqam jama ho jayegi",
+  "wasooliOnAccount": "Jama (advance)",
+  "@wasooliOnAccount": {
+    "description": "What no open bill absorbed. Ordinary in a shop that takes standing orders."
+  },
+  "wasooliSave": "Wasooli save karein",
+  "wasooliSaved": "{amount} wasool ho gaye",
+  "@wasooliSaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "wasooliAmountRequired": "Raqam likhein",
+  "wasooliChequeNoRequired": "Cheque number likhein"
 }

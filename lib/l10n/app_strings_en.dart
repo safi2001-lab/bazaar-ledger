@@ -934,4 +934,73 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get scanAddNew => 'Add it as a new item';
+
+  @override
+  String get khataTitle => 'Khata';
+
+  @override
+  String get khataBalance => 'Owes';
+
+  @override
+  String get khataAdvance => 'In credit';
+
+  @override
+  String get khataOpenBills => 'Open bills';
+
+  @override
+  String get khataNoBills => 'Nothing outstanding';
+
+  @override
+  String get khataNoBillsHint => 'This customer is fully settled';
+
+  @override
+  String get khataReceive => 'Receive payment';
+
+  @override
+  String get khataDetails => 'Customer details';
+
+  @override
+  String get khataCreditLimitOver => 'Over the credit limit';
+
+  @override
+  String get wasooliTitle => 'Receive payment';
+
+  @override
+  String get wasooliAmount => 'Amount received';
+
+  @override
+  String get wasooliMode => 'How';
+
+  @override
+  String get wasooliReference => 'Reference (optional)';
+
+  @override
+  String get wasooliChequeNo => 'Cheque number';
+
+  @override
+  String get wasooliChequeBank => 'Bank name';
+
+  @override
+  String get wasooliSettles => 'This will settle';
+
+  @override
+  String get wasooliSettlesNone =>
+      'No open bills — this will be held on account';
+
+  @override
+  String get wasooliOnAccount => 'On account';
+
+  @override
+  String get wasooliSave => 'Save receipt';
+
+  @override
+  String wasooliSaved(String amount) {
+    return '$amount received';
+  }
+
+  @override
+  String get wasooliAmountRequired => 'Enter an amount';
+
+  @override
+  String get wasooliChequeNoRequired => 'Enter the cheque number';
 }
