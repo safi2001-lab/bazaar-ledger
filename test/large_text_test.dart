@@ -110,6 +110,42 @@ void main() {
     expectNothingPaintsOffScreen(tester);
   });
 
+  testWidgets('the counter is usable sideways with the keyboard up',
+      (tester) async {
+    // A tablet on the counter is the standard Pakistani retail setup, and
+    // main.dart unlocks every orientation on purpose. Sideways on a phone
+    // with the keyboard up there are about 160dp of body left; the search
+    // field and the totals bar together are taller than that. The list
+    // collapsed to nothing and the Charge button was laid out below the top
+    // of the keyboard, untappable, on the one screen this product exists for.
+    tester.view
+      ..physicalSize = const Size(1600, 720)
+      ..devicePixelRatio = 2
+      ..viewInsets = const FakeViewPadding(bottom: 400);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+      tester.view.resetViewInsets();
+    });
+
+    final app = await Harness.startWithShop(tester);
+    await app.seedItem(name: 'Cooking Oil 5L Tin', rupees: 2500);
+
+    await tester.tap(find.text('Naya Bill').first);
+    await tester.pumpAndSettle();
+    await _addToCart(tester, 'Cooking Oil');
+
+    expect(tester.takeException(), isNull, reason: 'the body overflowed');
+
+    // And the button is not merely laid out — it is reachable and it works.
+    await tapButton(tester, 'Paisay lein');
+    expect(
+      find.widgetWithText(TextFormField, 'Diye gaye'),
+      findsOneWidget,
+      reason: 'the tender sheet never opened, so the button was not tappable',
+    );
+  });
+
   testWidgets('a six-figure bill still fits at 200%', (tester) async {
     useASmallPhone(tester);
     final app = await Harness.startWithShop(tester);

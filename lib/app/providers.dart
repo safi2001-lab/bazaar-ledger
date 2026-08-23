@@ -66,6 +66,22 @@ extension RefreshTick on WidgetRef {
       read(refreshTickProvider.notifier).update((n) => n + 1);
 }
 
+/// The same bump, through a container held across an await.
+///
+/// A `WidgetRef` is only usable while its element is mounted, and every screen
+/// that writes then refreshes has an await in between. If the shopkeeper backs
+/// out during that write — a real thing to do, the write has already been
+/// asked for — `ref.invalidate` throws `StateError`, the surrounding catch
+/// finds `mounted == false` and drops it, and the row is saved while nothing
+/// on screen knows. The shop name stayed stale in the app bar and on every
+/// receipt until some unrelated screen happened to bump the tick.
+///
+/// So: capture the container before the await, refresh through it afterwards.
+extension RefreshTickOnContainer on ProviderContainer {
+  void bumpRefresh() =>
+      read(refreshTickProvider.notifier).update((n) => n + 1);
+}
+
 final todayTotalsProvider = FutureProvider<DayTotals>((ref) async {
   ref.watch(refreshTickProvider);
   final services = ref.watch(appServicesProvider);

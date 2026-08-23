@@ -214,10 +214,21 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         SnackBar(content: Text(s.billSaved(posted.docNo))),
       );
 
-      // The sheet, then the counter. What is left behind is the home screen
-      // with the day's totals already bumped, and the receipt on top of it.
-      navigator.pop();
-      navigator.pop();
+      // Back to the home screen, with the day's totals already bumped, and
+      // the receipt on top of it.
+      //
+      // Counted pops were wrong. `pop` acts on the last route that is still
+      // "present", and a route stops being present the moment it enters
+      // `popping` — which happens synchronously inside `pop` itself. So if the
+      // sheet was already on its way out when the sale returned — the cashier
+      // tapped Save and then the ✕, or used the back gesture, and `postSale`
+      // beat the ~250ms exit animation — the two pops took the counter and
+      // the home screen instead, and the receipt was pushed onto an emptied
+      // navigator. Back from there was a black screen.
+      //
+      // Home is the first route, so this names where to stop rather than how
+      // many times to go, and it cannot overshoot.
+      navigator.popUntil((route) => route.isFirst);
       await navigator.push(
         MaterialPageRoute<void>(
           builder: (_) => ReceiptScreen(

@@ -10,7 +10,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import 'party_editor.dart';
 
-final partiesQueryProvider = StateProvider<String>((ref) => '');
+/// Reset when the screen goes. See [itemsQueryProvider].
+final partiesQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 
 /// The khata: who owes what.
 class PartiesScreen extends ConsumerStatefulWidget {

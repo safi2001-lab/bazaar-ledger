@@ -12,12 +12,18 @@ import '../items/item_editor.dart';
 import 'cart.dart';
 import 'tender_sheet.dart';
 
-/// What the counter typed, after debouncing.
+/// What the counter typed, after debouncing. Reset when the screen goes.
+///
+/// Auto-disposed for a reason that is not tidiness. As a plain global it
+/// outlived the counter while the search field's own `TextEditingController`
+/// came back empty, and `_CartList` is only built when the query is empty —
+/// so a shopkeeper who typed a search, pressed back, and came in again found
+/// a stale result list and no sign of the bill they were building.
 ///
 /// Debounced rather than raw because a 20,000-SKU catalogue on an Android Go
 /// handset cannot afford a query per keystroke, and because the search field
 /// owns its own controller — no keystroke rebuilds the results list.
-final posQueryProvider = StateProvider<String>((ref) => '');
+final posQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 
 /// The running total, computed by the same pure function that will post the
 /// sale.
@@ -111,9 +117,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     if (firm == null) return;
 
     final scanned = await services.queries.itemByBarcode(firm.id, text);
-    final item = scanned ??
-        (await services.queries.searchItems(firm.id, query: text, limit: 2))
-            .let((rows) => rows.length == 1 ? rows.single : null);
+    final item =
+        scanned ??
+        (await services.queries.searchItems(
+          firm.id,
+          query: text,
+          limit: 2,
+        )).let((rows) => rows.length == 1 ? rows.single : null);
 
     if (!mounted) return;
     if (item == null) return;
@@ -181,41 +191,82 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                BlTokens.space4,
-                BlTokens.space3,
-                BlTokens.space4,
-                BlTokens.space2,
-              ),
-              child: BlField(
-                controller: _search,
-                focusNode: _searchFocus,
-                label: s.actionSearch,
-                hint: s.posSearchHint,
-                autofocus: true,
-                textInputAction: TextInputAction.search,
-                onChanged: _onQueryChanged,
-                onSubmitted: _onSubmitted,
-                prefix: const Icon(Icons.search, size: 20),
-                suffix: query.isEmpty
-                    ? null
-                    : BlIconButton(
-                        icon: Icons.close,
-                        label: s.actionClose,
-                        onPressed: _clearSearch,
-                      ),
-              ),
-            ),
-            Expanded(
-              child: query.isEmpty
-                  ? _CartList(onEmptyTapped: () => _searchFocus.requestFocus())
-                  : _SearchResults(query: query, onPick: _addToCart),
-            ),
-            const _TotalsBar(),
-          ],
+        child: LayoutBuilder(
+          builder: (context, box) {
+            // Below this there is not room for a search field, a list and a
+            // pinned totals bar at once. Landscape with a keyboard is the
+            // case that matters; a very large font in portrait reaches it too.
+            final tight = box.maxHeight < 420;
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    BlTokens.space4,
+                    BlTokens.space3,
+                    BlTokens.space4,
+                    BlTokens.space2,
+                  ),
+                  child: BlField(
+                    controller: _search,
+                    focusNode: _searchFocus,
+                    label: s.actionSearch,
+                    hint: s.posSearchHint,
+                    autofocus: true,
+                    textInputAction: TextInputAction.search,
+                    onChanged: _onQueryChanged,
+                    onSubmitted: _onSubmitted,
+                    prefix: const Icon(Icons.search, size: 20),
+                    suffix: query.isEmpty
+                        ? null
+                        : BlIconButton(
+                            icon: Icons.close,
+                            label: s.actionClose,
+                            onPressed: _clearSearch,
+                          ),
+                  ),
+                ),
+                // In a tight viewport the totals bar joins the scroll instead of
+                // being pinned under it.
+                //
+                // The counter is used in landscape — a tablet on the counter is
+                // the standard Pakistani retail setup, and `main.dart` unlocks
+                // every orientation deliberately. Sideways on a phone with the
+                // keyboard up there are about 160dp of body left, and the search
+                // field and the totals bar together are taller than that. The
+                // `Expanded` list collapsed to nothing and the Charge button was
+                // laid out 57dp below the top of the keyboard: untappable, on the
+                // one screen this product exists for.
+                Expanded(
+                  child: tight
+                      ? SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 240,
+                                child: query.isEmpty
+                                    ? _CartList(
+                                        onEmptyTapped: () =>
+                                            _searchFocus.requestFocus(),
+                                      )
+                                    : _SearchResults(
+                                        query: query,
+                                        onPick: _addToCart,
+                                      ),
+                              ),
+                              const _TotalsBar(),
+                            ],
+                          ),
+                        )
+                      : query.isEmpty
+                      ? _CartList(
+                          onEmptyTapped: () => _searchFocus.requestFocus(),
+                        )
+                      : _SearchResults(query: query, onPick: _addToCart),
+                ),
+                if (!tight) const _TotalsBar(),
+              ],
+            );
+          },
         ),
       ),
     );
@@ -417,7 +468,9 @@ class _CartLineTile extends ConsumerWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
     final notifier = ref.read(cartProvider.notifier);
-    final step = line.item.unitDecimals == 0 ? Qty.one : const Qty.parts(0, 100);
+    final step = line.item.unitDecimals == 0
+        ? Qty.one
+        : const Qty.parts(0, 100);
 
     return Dismissible(
       key: ValueKey('dismiss-${line.item.id}'),
@@ -459,8 +512,7 @@ class _CartLineTile extends ConsumerWidget {
                   _StepButton(
                     icon: Icons.remove,
                     label: s.posQty,
-                    onTap: () =>
-                        notifier.setQty(line.item.id, line.qty - step),
+                    onTap: () => notifier.setQty(line.item.id, line.qty - step),
                   ),
                   Expanded(
                     child: Semantics(
@@ -495,8 +547,7 @@ class _CartLineTile extends ConsumerWidget {
                   _StepButton(
                     icon: Icons.add,
                     label: s.posQty,
-                    onTap: () =>
-                        notifier.setQty(line.item.id, line.qty + step),
+                    onTap: () => notifier.setQty(line.item.id, line.qty + step),
                   ),
                   const SizedBox(width: BlTokens.space2),
                   // Flexible, so the rate gives way to the quantity rather
@@ -593,10 +644,12 @@ class _LineEditor extends ConsumerStatefulWidget {
 }
 
 class _LineEditorState extends ConsumerState<_LineEditor> {
-  late final TextEditingController _qty =
-      TextEditingController(text: widget.line.qty.display);
-  late final TextEditingController _rate =
-      TextEditingController(text: widget.line.rate.amountOnly);
+  late final TextEditingController _qty = TextEditingController(
+    text: widget.line.qty.display,
+  );
+  late final TextEditingController _rate = TextEditingController(
+    text: widget.line.rate.amountOnly,
+  );
   late final TextEditingController _discount = TextEditingController(
     text: widget.line.discount.isZero ? '' : widget.line.discount.amountOnly,
   );
@@ -648,11 +701,7 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
             autofocus: true,
           ),
           const SizedBox(height: BlTokens.space3),
-          BlField(
-            controller: _rate,
-            label: s.posRate,
-            numeric: true,
-          ),
+          BlField(controller: _rate, label: s.posRate, numeric: true),
           const SizedBox(height: BlTokens.space3),
           BlField(
             controller: _discount,
@@ -667,9 +716,7 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
                   label: s.posRemoveLine,
                   kind: BlButtonKind.danger,
                   onPressed: () {
-                    ref
-                        .read(cartProvider.notifier)
-                        .remove(widget.line.item.id);
+                    ref.read(cartProvider.notifier).remove(widget.line.item.id);
                     Navigator.of(context).pop();
                   },
                 ),

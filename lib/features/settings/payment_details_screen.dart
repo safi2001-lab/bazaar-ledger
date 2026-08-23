@@ -54,6 +54,8 @@ class _PaymentDetailsScreenState extends ConsumerState<PaymentDetailsScreen> {
       _busy = true;
       _failure = null;
     });
+    // Held across the await; see shop_details_screen for why.
+    final container = ProviderScope.containerOf(context, listen: false);
     try {
       await ref.read(appServicesProvider).updateFirm({
         'raast_alias': _text(_raast),
@@ -61,7 +63,8 @@ class _PaymentDetailsScreenState extends ConsumerState<PaymentDetailsScreen> {
         'bank_account_title': _text(_accountTitle),
         'bank_iban': _text(_iban)?.toUpperCase().replaceAll(' ', ''),
       });
-      ref.invalidate(firmProvider);
+      container.invalidate(firmProvider);
+      container.bumpRefresh();
       if (!mounted) return;
       final messenger = ScaffoldMessenger.of(context);
       Navigator.of(context).pop();

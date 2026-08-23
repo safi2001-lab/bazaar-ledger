@@ -10,7 +10,16 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import 'item_editor.dart';
 
-final itemsQueryProvider = StateProvider<String>((ref) => '');
+/// Reset when the screen goes, because the search box is reset with it.
+///
+/// This was a plain global `StateProvider`, so the filter outlived the screen
+/// while the `TextEditingController` — which lives on the State — came back
+/// empty. Type "Sugar", go back, come in again, and the catalogue appears to
+/// have shrunk to one row with nothing in the search box to explain why. On
+/// the counter it was worse: the cart is only drawn when the query is empty,
+/// so a shopkeeper returning to a half-built bill saw a stale search result
+/// and no bill at all.
+final itemsQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 
 /// Everything on the shelves.
 class ItemsScreen extends ConsumerStatefulWidget {

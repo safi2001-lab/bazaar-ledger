@@ -71,6 +71,40 @@ void main() {
     );
   });
 
+  testWidgets('leaving a search screen clears the filter with the box',
+      (tester) async {
+    final app = await Harness.startWithShop(tester);
+    await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
+    await app.seedItem(name: 'Chawal Basmati', rupees: 525);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Maal').first);
+    await tester.pumpAndSettle();
+
+    await typeInto(tester, 'Talash karein', 'Chawal');
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Cooking Oil'), findsNothing);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Maal').first);
+    await tester.pumpAndSettle();
+
+    // The query lived in a plain global provider while the search field's
+    // controller lived on the State, so coming back gave an empty box over a
+    // filtered list: the catalogue looked as though it had shrunk to one row,
+    // with nothing on screen to explain why. On the counter it was worse —
+    // the cart is only drawn when the query is empty, so a half-built bill
+    // simply was not there.
+    expect(
+      find.textContaining('Cooking Oil'),
+      findsOneWidget,
+      reason: 'the filter outlived the screen and the search box did not',
+    );
+    expect(find.textContaining('Chawal'), findsOneWidget);
+  });
+
   testWidgets('text at 200% does not clip a list row', (tester) async {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L Extra Long Name', rupees: 2500);

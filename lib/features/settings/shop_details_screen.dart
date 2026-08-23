@@ -46,6 +46,13 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
       _busy = true;
       _failure = null;
     });
+    // Held across the await. Backing out of this screen while the write is in
+    // flight disposes the element, and `ref.invalidate` on a disposed
+    // ConsumerState throws — in release as well as debug. The catch below then
+    // finds `mounted == false` and swallows it, so the row was written and
+    // nothing on screen ever knew: the shop name stayed stale in the app bar
+    // and on every receipt printed afterwards.
+    final container = ProviderScope.containerOf(context, listen: false);
     try {
       await ref.read(appServicesProvider).updateFirm({
         'name': _name.text.trim(),
@@ -56,8 +63,8 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
         'strn': _text(_strn),
         'is_sales_tax_registered': _registered ? 1 : 0,
       });
-      ref.invalidate(firmProvider);
-      ref.bumpRefresh();
+      container.invalidate(firmProvider);
+      container.bumpRefresh();
       if (!mounted) return;
       final messenger = ScaffoldMessenger.of(context);
       Navigator.of(context).pop();

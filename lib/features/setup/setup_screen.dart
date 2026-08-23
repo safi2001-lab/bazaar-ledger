@@ -47,6 +47,11 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
       _busy = true;
       _failure = null;
     });
+    // Held across the await. This one matters most of all: the firm provider
+    // is what the root switches on, so if it is never invalidated the shop is
+    // created and the app stays on the setup wizard, inviting the shopkeeper
+    // to create it a second time.
+    final container = ProviderScope.containerOf(context, listen: false);
     try {
       await ref.read(appServicesProvider).setUpShop(
             shopName: _shop.text.trim(),
@@ -60,7 +65,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
           );
       // The firm provider is what `_Root` switches on, so invalidating it is
       // the whole of the navigation.
-      ref.invalidate(firmProvider);
+      container.invalidate(firmProvider);
     } on Object catch (error) {
       if (mounted) setState(() => _failure = error);
     } finally {
