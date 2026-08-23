@@ -1304,5 +1304,88 @@ features:
   - id: M2-URDU-01
     milestone: M2
     title: Urdu on a receipt is rasterised, never sent as code page bytes
+    status: done
+    # A thermal printer draws text from a ROM font chosen by a code page: 256
+    # glyphs, no shaping engine, no bidirectional algorithm, no fallback. The
+    # community ESC/POS capability database catalogues seventy encodings
+    # across every printer family in common use and not one of them is Urdu.
+    #
+    # CP1256 is the near miss, and reaching for it is the obvious mistake. It
+    # fails three ways at once: no shaping, so a cursive script prints as
+    # disconnected isolated forms; no bidi, so the line comes out reversed;
+    # and it is Arabic, not Urdu, so the letters this market actually writes
+    # with are simply absent. Any of the three alone makes it unreadable, and
+    # the result looks like a printer fault rather than a bug here.
+    #
+    # So there is no byte sequence this app could send that would put Urdu on
+    # paper. The only route is a picture, and the shaping and bidi have to be
+    # done on the phone by a text engine that has both.
+    #
+    # The split follows that: pk_platform stays pure Dart and names the lines
+    # it cannot spell, and dart:ui draws them. The survey lives on the
+    # renderer rather than beside the predicate, because only the renderer
+    # knows what it emits — it prints its own larger copy of the shop name and
+    # skips the layout's, so a survey done anywhere else names a line nobody
+    # prints and the caller rasterises an image that is thrown away, once per
+    # receipt, on the path with a customer waiting. That was a real defect,
+    # caught by a count assertion rather than by reading.
+    #
+    # Whole lines, never fragments. `Customer            <urdu name>` is one
+    # string with an LTR run and an RTL one in it, and deciding the order of
+    # those is the bidirectional algorithm's job. Splitting it here and
+    # reassembling after would be this code making that judgement itself.
+    #
+    # Undrawn Urdu still degrades to question marks and never to code page
+    # bytes: legibly wrong beats illegibly wrong. A shopkeeper who sees ?????
+    # where their shop name should be has a complaint somebody can act on; one
+    # who sees random glyphs concludes the printer is broken and returns it.
+    #
+    # The font is the system's. Android has shipped Noto Naskh Arabic since
+    # Android 5, so Urdu renders on every handset this targets with nothing
+    # bundled. Nastaliq is what Urdu is properly set in and what a shopkeeper
+    # would prefer, but it is a 300 KB to 2 MB face and Flutter cannot
+    # tree-shake a font used for text composed at runtime, so all of it would
+    # ship — against release APKs already at 27 MB under a 30 MB ceiling.
+    # That is a preference, and it goes behind a setting if it goes anywhere.
+    proof:
+      - what the printer font can say Urdu cannot
+      - what the printer font can say Urdu-only letters count, not just the Arabic ones
+      - what the printer font can say the characters the encoder folds still count as typeable
+      - finding what has to be drawn an all-Latin receipt needs no pictures at all
+      - finding what has to be drawn an Urdu item name is found, and its price line is not
+      - finding what has to be drawn a mixed line is kept whole, so bidi is decided once
+      - what reaches the printer no Urdu byte is ever emitted, even with no pictures supplied
+      - what reaches the printer a supplied picture is sent as GS v 0 and the text is not
+      - what reaches the printer an undrawn Urdu line degrades to question marks, not to garbage
+      - what reaches the printer the drawn shop name replaces the big text, not adds to it
+      - what reaches the printer a Latin receipt is untouched by the whole mechanism
+      - its byte count is exactly what GS v 0 will declare
+      - there is ink on it
+      - a long line grows taller rather than being clipped
+      - a wider roll gets a wider picture, not a scaled one
+      - the whole receipt path ends in raster, not question marks
+
+  - id: M2-URDU-02
+    milestone: M2
+    title: A shared PDF renders Urdu instead of dropping it
     status: todo
+    # Found while proving M2-URDU-01, and not fixed by it.
+    #
+    # `toPdf` builds its text from Courier and Helvetica, which are Type 1
+    # base fonts: they need no embedding, their figures are tabular, and they
+    # have no Unicode support at all. The `pdf` package says so on stderr on
+    # every render and carries on. An Urdu shop name therefore does not become
+    # question marks in the PDF — it becomes nothing.
+    #
+    # That is the worse half of the two paths. The thermal copy stays behind
+    # the counter; the PDF is what goes to a customer over WhatsApp, and it
+    # arrives with the shop's own name missing from the top of it.
+    #
+    # A PDF has no system font fallback, so unlike the thermal path this
+    # cannot be solved on the device: the face has to be embedded in the file.
+    # Two routes, and the choice is a size decision rather than a technical
+    # one — embed a subset of Noto Naskh Arabic (the `pdf` package bundles
+    # bidi and shaping for exactly this), or reuse the bitmaps M2-URDU-01
+    # already produces and place them as images, which costs no bytes and
+    # loses selectable text.
     proof: []

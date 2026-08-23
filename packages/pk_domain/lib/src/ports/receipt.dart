@@ -219,11 +219,27 @@ enum ReceiptPaper {
 /// Renders a receipt for a device that is going to print it.
 abstract interface class ReceiptRenderer {
   /// Bytes for a thermal printer.
+  ///
+  /// [drawn] carries pictures of the lines the printer's own font cannot say
+  /// — Urdu, in practice — keyed by the exact string the layout produced.
+  /// A line found there is sent as a raster image; every other line takes the
+  /// crisp, small font path. See `unprintableLines` in `pk_platform` for what
+  /// a caller has to draw, and why nothing else will do.
   Uint8List toThermalBytes(
     ReceiptData data, {
     ReceiptPaper paper,
     bool openDrawer,
+    Map<String, MonoBitmap> drawn,
   });
+
+  /// The lines of this receipt the printer's own font cannot say, as the
+  /// exact strings [toThermalBytes] will look up in its `drawn` map.
+  ///
+  /// On the interface because only a renderer knows what it emits — it prints
+  /// its own copy of the shop name and skips the layout's, so a survey done
+  /// anywhere else names a line nobody prints and the caller draws a picture
+  /// that is thrown away.
+  Set<String> unprintableLines(ReceiptData data, {ReceiptPaper paper});
 
   /// The same receipt as plain text, one string per printed line.
   ///

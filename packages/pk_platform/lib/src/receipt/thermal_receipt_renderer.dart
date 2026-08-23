@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pk_domain/pk_domain.dart';
 
 import 'escpos.dart';
+import 'printable.dart';
 import 'receipt_layout.dart';
 
 /// Renders receipts to thermal bytes and to PDF.
@@ -20,6 +21,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
     ReceiptPaper paper = ReceiptPaper.mm80,
     bool openDrawer = false,
     bool cut = true,
+    Map<String, MonoBitmap> drawn = const {},
   }) {
     final layout = ReceiptLayout(paper: paper);
     final out = EscPos()
@@ -44,21 +46,40 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
 
     // The shop name large, then everything else in Font A so the column
     // arithmetic in the layout holds.
-    out
-      ..align(EscPosAlign.centre)
-      ..bold()
-      ..size(width: 2, height: 2)
-      ..lines(_wrapDouble(data.shop.name.toUpperCase(), paper))
-      ..size()
-      ..bold(on: false)
-      ..align(EscPosAlign.left);
+    final name = data.shop.name.toUpperCase();
+    final nameBitmap = drawn[name];
+    out.align(EscPosAlign.centre);
+    if (nameBitmap != null) {
+      // Drawn, not typed. A shop called `الفلاح سٹور` has no byte sequence any
+      // printer would render, so the name arrives as pixels or as question
+      // marks, and question marks on the top line of every receipt a shop
+      // hands out is not a thing to ship.
+      out.raster(nameBitmap);
+    } else {
+      out
+        ..bold()
+        ..size(width: 2, height: 2)
+        ..lines(_wrapDouble(name, paper))
+        ..size()
+        ..bold(on: false);
+    }
+    out.align(EscPosAlign.left);
 
     final lines = layout.render(data);
     // The shop name is drawn double-size above, so drop the layout's own copy
     // of it rather than printing it twice.
     final nameLines = _headerNameLineCount(data, layout);
     for (final line in lines.skip(nameLines)) {
-      out.line(line);
+      final bitmap = drawn[line];
+      if (bitmap == null) {
+        // Either it is Latin, or nobody supplied a picture of it. The encoder
+        // replaces what it cannot represent, so this degrades to question
+        // marks rather than to a code page byte the printer would draw as an
+        // unrelated glyph — legibly wrong beats illegibly wrong.
+        out.line(line);
+      } else {
+        out.raster(bitmap);
+      }
     }
 
     if (data.bankQr != null) {
@@ -73,6 +94,39 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
     if (openDrawer) out.openDrawer();
     if (cut) out.cut();
     return out.bytes;
+  }
+
+  /// Every line of this receipt that has to be drawn instead of typed.
+  ///
+  /// Lives on the renderer rather than beside [isPrintableLatin] because only
+  /// the renderer knows what it actually emits. The layout puts the shop name
+  /// in the body and the renderer prints its own larger copy above instead,
+  /// skipping the layout's; a survey that walked the layout alone would name
+  /// a line nobody prints, and the caller would rasterise it — a wasted image
+  /// per receipt, on a phone, on the path with a customer waiting.
+  ///
+  /// Returned as the exact strings the renderer will look up, because that is
+  /// the key each picture comes back under. Whole lines, never fragments: an
+  /// `Customer` label beside an Urdu name is one string with an LTR run and an
+  /// RTL one in it, and deciding the order of those is the bidirectional
+  /// algorithm's job, done once, by a text engine that has one.
+  @override
+  Set<String> unprintableLines(
+    ReceiptData data, {
+    ReceiptPaper paper = ReceiptPaper.mm80,
+  }) {
+    final layout = ReceiptLayout(paper: paper);
+    final needed = <String>{};
+    for (final line in layout.render(data).skip(
+      _headerNameLineCount(data, layout),
+    )) {
+      if (line.trim().isEmpty) continue;
+      if (!isPrintableLatin(line)) needed.add(line);
+    }
+    // The name as the renderer prints it: uppercased, and its own line.
+    final name = data.shop.name.toUpperCase();
+    if (!isPrintableLatin(name)) needed.add(name);
+    return needed;
   }
 
   /// The plain-text receipt, for the on-screen print preview.

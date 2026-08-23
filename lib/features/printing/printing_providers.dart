@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
+import 'text_rasteriser.dart';
 
 /// What this counter prints on, or null if nobody has chosen yet.
 final printerSettingsProvider = FutureProvider<PrinterSettings?>((ref) async {
@@ -47,12 +48,45 @@ final receiptBytesProvider = FutureProvider.family<List<int>?, String>((
   return services.receipts.toThermalBytes(
     receipt,
     paper: settings.paper,
+    drawn: await _drawUnprintable(
+      services.receipts,
+      receipt,
+      settings.paper,
+    ),
     // Only on a sale that actually took cash. A drawer that clicks on a
     // card payment is a drawer somebody unplugs.
     openDrawer:
         settings.openDrawerOnCash && receipt.tenders.any((t) => t.isCash),
   );
 });
+
+/// Pictures of the lines the printer's own font cannot say.
+///
+/// Empty for the overwhelming majority of receipts: the template is Roman
+/// Urdu in Latin script and every money row is digits, so nothing needs
+/// drawing until the shop types its own name, an item or a customer in Urdu
+/// script. When it does, that line arrives as a raster image rather than as
+/// the row of question marks the encoder would otherwise substitute.
+///
+/// Whole lines, not fragments. An item name padded out to a right-aligned
+/// price is one string containing an RTL run and an LTR one, and deciding
+/// what order those come out in is the bidirectional algorithm's job — done
+/// once, by the text engine, on the composed line.
+Future<Map<String, MonoBitmap>> _drawUnprintable(
+  ReceiptRenderer renderer,
+  ReceiptData receipt,
+  ReceiptPaper paper,
+) async {
+  final needed = renderer.unprintableLines(receipt, paper: paper);
+  if (needed.isEmpty) return const {};
+
+  const rasteriser = UiTextRasteriser();
+  final drawn = <String, MonoBitmap>{};
+  for (final line in needed) {
+    drawn[line] = await rasteriser.rasterise(line, widthDots: paper.dots);
+  }
+  return drawn;
+}
 
 /// A ruler and a sample money row, for finding out how wide the paper is.
 ///

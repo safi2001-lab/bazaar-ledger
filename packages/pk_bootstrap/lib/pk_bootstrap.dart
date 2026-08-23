@@ -20,7 +20,8 @@ export 'package:pk_platform/pk_platform.dart'
         PrintResult,
         ReceiptLayout,
         TcpPrinter,
-        ThermalReceiptRenderer;
+        ThermalReceiptRenderer,
+        isPrintableLatin;
 
 export 'src/app_config.dart';
 export 'src/app_services.dart';
