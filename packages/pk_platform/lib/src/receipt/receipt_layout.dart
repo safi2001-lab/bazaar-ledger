@@ -79,14 +79,27 @@ final class ReceiptLayout {
       // shop-created unit code like `bori-50kg`, the rate was the thing that
       // got cut, and "x 12,4" on a receipt the customer keeps is worse than
       // no rate at all. So the whole rate is dropped rather than truncated.
-      final full =
-          '  ${line.qtyDisplay} ${line.unitCode} x ${line.rate.amountOnly}';
       final amount = line.amount.amountOnly;
       final room = width - amount.length - 1;
-      final detail = full.length <= room
-          ? full
-          : '  ${line.qtyDisplay} ${line.unitCode}';
-      out.add(_row(detail, amount));
+      final short = '  ${line.qtyDisplay} ${line.unitCode}';
+      final full = '$short x ${line.rate.amountOnly}';
+      if (full.length <= room) {
+        out.add(_row(full, amount));
+      } else if (short.length <= room) {
+        out.add(_row(short, amount));
+      } else {
+        // Neither will the quantity and unit alone sit beside the amount.
+        // `_row` clips the left, and a clipped unit code is not a shorter unit
+        // code: `bori-50kg-special` cut to `bori-50kg` names a different pack
+        // at a different price, and it reads as though it were the real unit.
+        // `code` has no length cap in the schema because the shop invents its
+        // own, so the only safe move is to give the detail its own line and
+        // let the amount keep the row to itself.
+        for (final part in _wrap('${line.qtyDisplay} ${line.unitCode}', width - 2)) {
+          out.add('  $part');
+        }
+        out.add(_row('', amount));
+      }
       if (line.discount.isPositive) {
         out.add(_row('    less discount', '-${line.discount.amountOnly}'));
       }

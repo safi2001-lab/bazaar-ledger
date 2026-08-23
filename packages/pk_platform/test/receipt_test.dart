@@ -593,6 +593,55 @@ void _hostileInputTests() {
       }
     });
 
+    test('a long unit code is never truncated on ${paper.columns}', () {
+      // `units.code` has no length cap in the schema, because the shop
+      // invents its own: flour ships in 10, 40, 50 and 80 kg bags and the
+      // codes name the pack. Clipping one does not shorten it, it renames
+      // it — `bori-50kg-special-import` cut to `bori-50kg-spec` is a
+      // different pack at a different price, and it reads as if it were
+      // really the unit. Dropping the rate is not enough to make room here.
+      const code = 'bori-50kg-special-import';
+      final data = receipt(
+        lines: const [
+          ReceiptLine(
+            name: 'Atta',
+            qtyDisplay: '1,000.000',
+            unitCode: code,
+            rate: Rate.rupees(12450),
+            amount: Money.rupees(1234567),
+          ),
+        ],
+        subtotal: const Money.rupees(1234567),
+        total: const Money.rupees(1234567),
+        paid: const Money.rupees(1234567),
+        change: Money.zero,
+        tenders: const [
+          ReceiptTender(label: 'Cash', amount: Money.rupees(1234567)),
+        ],
+      );
+      final lines = renderer.toPreview(data, paper: paper);
+
+      for (final line in lines) {
+        expect(line.length, lessThanOrEqualTo(paper.columns), reason: line);
+      }
+      expect(
+        lines.any((l) => l.contains(code)),
+        isTrue,
+        reason: 'the unit code was cut into a different, plausible unit',
+      );
+      expect(
+        lines.any((l) => l.contains('1,000.000')),
+        isTrue,
+        reason: 'the quantity was cut',
+      );
+      // Grouped the way Pakistan groups: 12,34,567.00, not 1,234,567.00.
+      expect(
+        lines.any((l) => l.trimLeft() == '12,34,567.00'),
+        isTrue,
+        reason: 'the amount lost the row it was given',
+      );
+    });
+
     test('a very long shop name still fits ${paper.columns} columns', () {
       final data = receipt(
         shop: const ReceiptShop(
