@@ -1712,3 +1712,50 @@ features:
       - the balance guarantee allocations plus the advance are the payment
       - the balance guarantee a posting that does not tie out is refused, not written
       - the balance guarantee a negative amount is refused rather than balanced
+
+  - id: M3-RECEIPT-02
+    milestone: M3
+    title: A receipt against udhaar reaches the database, or nothing does
+    status: done
+    # `payments` and `payment_allocations` have existed since schema v1 with
+    # no writer. This is their first one.
+    #
+    # The open bills are read INSIDE the transaction rather than passed in. A
+    # balance read before the transaction opened is a balance a second till
+    # may already have changed, and allocating against a stale figure is how
+    # a shop ends up applying a payment to a bill somebody else settled a
+    # minute earlier.
+    #
+    # Void and draft documents are excluded in the query rather than filtered
+    # afterwards. A payment allocated onto a void bill is money the customer's
+    # khata gains that nobody returned, and `findOverAllocatedPayments()`
+    # cannot catch it because the sum still fits.
+    #
+    # Bills are updated with absolute totals from the builder, never deltas.
+    # A writer handed a delta has to read-modify-write, and two tills doing
+    # that against one bill is a lost update.
+    #
+    # The rollback proof had to be rewritten to mean anything. Its first
+    # version used a payment account that did not exist, which fails before a
+    # single row is written — a rollback test that never reaches the thing it
+    # claims to test. It now removes the Customer Advances account behind the
+    # writer's back and overpays, so the payment and its allocations are
+    # already inserted when the journal cannot find the account. It also
+    # counts rows before and after rather than asserting empty tables, because
+    # the sale that created the udhaar legitimately wrote journal lines of its
+    # own and the first version was asserting the sale away.
+    #
+    # Mutation-tested: dropping the void filter, and routing a cheque to the
+    # bank instead of Cheques in Hand, each fail a proof.
+    proof:
+      - a payment clears the oldest bills and the balances come down
+      - the books still balance afterwards
+      - paying more than is owed leaves a liability, not a negative bill
+      - a customer with no open bills pays entirely on account
+      - the allocations record which bills, and for how much
+      - a cheque is pending and sits in Cheques in Hand
+      - a void bill is never paid against
+      - a receipt is recorded in the audit trail with its own words
+      - a receipt reaches the outbox so a second till can learn of it
+      - a failure part-way through leaves nothing behind
+      - a receipt number is never burned by a failure

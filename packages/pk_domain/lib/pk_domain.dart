@@ -18,6 +18,7 @@ export 'src/ports/attachments.dart';
 export 'src/ports/catalogue_writer.dart';
 export 'src/ports/draft_store.dart';
 export 'src/ports/health.dart';
+export 'src/ports/payment_writer.dart';
 export 'src/ports/printer.dart';
 export 'src/ports/printer_settings.dart';
 export 'src/ports/receipt.dart';
