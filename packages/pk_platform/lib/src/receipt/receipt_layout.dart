@@ -106,6 +106,12 @@ final class ReceiptLayout {
     if (d.furtherTax.isPositive) {
       out.add(_row('Further Tax', d.furtherTax.amountOnly));
     }
+    if (d.withholding.isPositive) {
+      // Deducted, so it prints as a deduction. Without this line the printed
+      // components did not reconcile to the printed total and nothing on the
+      // paper said why.
+      out.add(_row('Withholding', '-${d.withholding.amountOnly}'));
+    }
     if (d.extraCharges.isPositive) {
       out.add(_row('Other Charges', d.extraCharges.amountOnly));
     }

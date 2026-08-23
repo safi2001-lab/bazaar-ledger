@@ -131,6 +131,36 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
       pw.MultiPage(
         pageFormat: format,
         margin: const pw.EdgeInsets.all(24),
+        // The shop's own identity, on every sheet. It was inside `build:`,
+        // which puts it on page one only — so page two of a wholesale bill
+        // was an orphaned table with no shop name, no bill number and no
+        // date, which is exactly the failure the switch to MultiPage was
+        // supposed to fix.
+        header: (context) => context.pageNumber == 1
+            ? pw.SizedBox.shrink()
+            : pw.Padding(
+                padding: const pw.EdgeInsets.only(bottom: 8),
+                child: pw.Column(
+                  crossAxisAlignment: pw.CrossAxisAlignment.stretch,
+                  children: [
+                    pw.Text(
+                      data.shop.name.toUpperCase(),
+                      style: pw.TextStyle(
+                        font: pw.Font.helveticaBold(),
+                        fontSize: 11,
+                      ),
+                    ),
+                    pw.Text(
+                      'Bill No: ${data.docNo}   ${data.dateTimeLabel}',
+                      style: pw.TextStyle(
+                        font: pw.Font.helvetica(),
+                        fontSize: 9,
+                      ),
+                    ),
+                    pw.Divider(thickness: 0.5, height: 6),
+                  ],
+                ),
+              ),
         footer: (context) => pw.Align(
           alignment: pw.Alignment.centerRight,
           child: pw.Text(
@@ -263,6 +293,11 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                         totalRow('Sales Tax', data.tax.amountOnly),
                       if (data.furtherTax.isPositive)
                         totalRow('Further Tax', data.furtherTax.amountOnly),
+                      if (data.withholding.isPositive)
+                        totalRow(
+                          'Withholding',
+                          '-${data.withholding.amountOnly}',
+                        ),
                       if (data.extraCharges.isPositive)
                         totalRow(
                           'Other Charges',
@@ -338,17 +373,19 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   /// can skip them after drawing it double-size.
   static int _headerNameLineCount(ReceiptData data, ReceiptLayout layout) {
     final rendered = layout.render(data);
+    // All whitespace, not only spaces. `_wrap` splits on `\s+`, so a tab or
+    // a newline pasted into the shop name from a form left the name unmatched
+    // on the first line, the count at zero, and the name printed twice.
+    String bare(String s) => s.toUpperCase().replaceAll(RegExp(r'\s+'), '');
     final name = data.shop.name.toUpperCase();
     var count = 0;
     var consumed = 0;
     for (final line in rendered) {
       final trimmed = line.trim();
       if (trimmed.isEmpty) break;
-      if (consumed >= name.replaceAll(' ', '').length) break;
-      if (!name.replaceAll(' ', '').contains(trimmed.replaceAll(' ', ''))) {
-        break;
-      }
-      consumed += trimmed.replaceAll(' ', '').length;
+      if (consumed >= bare(name).length) break;
+      if (!bare(name).contains(bare(trimmed))) break;
+      consumed += bare(trimmed).length;
       count++;
     }
     return count;

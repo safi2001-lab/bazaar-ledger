@@ -50,16 +50,23 @@ final class AppPreferences {
 
   Future<void> save({Directory? directory}) async {
     final file = await _file(directory);
-    await file.writeAsString(
-      jsonEncode({
-        'locale': locale.languageCode,
-        'theme': switch (themeMode) {
-          ThemeMode.light => 'light',
-          ThemeMode.dark => 'dark',
-          ThemeMode.system => 'system',
-        },
-      }),
-    );
+    final payload = jsonEncode({
+      'locale': locale.languageCode,
+      'theme': switch (themeMode) {
+        ThemeMode.light => 'light',
+        ThemeMode.dark => 'dark',
+        ThemeMode.system => 'system',
+      },
+    });
+
+    // Written beside, then renamed over. `writeAsString` truncates first, so a
+    // kill or a full disk in the middle leaves a half-written file; `load`
+    // then catches the parse error and returns defaults, and the shopkeeper
+    // who chose English silently gets Roman Urdu back with no idea why. A
+    // rename is atomic on every filesystem this app runs on.
+    final temporary = File('${file.path}.tmp');
+    await temporary.writeAsString(payload, flush: true);
+    await temporary.rename(file.path);
   }
 
   static Future<File> _file(Directory? directory) async {

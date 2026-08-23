@@ -100,6 +100,7 @@ final class ReceiptData {
     this.discount = Money.zero,
     this.tax = Money.zero,
     this.furtherTax = Money.zero,
+    this.withholding = Money.zero,
     this.extraCharges = Money.zero,
     this.roundOff = Money.zero,
     this.previousBalance,
@@ -120,6 +121,13 @@ final class ReceiptData {
   final Money discount;
   final Money tax;
   final Money furtherTax;
+
+  /// Tax the BUYER withheld and will deposit themselves, under s.153 or a
+  /// similar provision. It comes off the total, so it has to appear on the
+  /// paper: a bill whose printed parts do not add up to its printed total,
+  /// with nothing explaining the gap, is a bill the customer and the auditor
+  /// both read as wrong.
+  final Money withholding;
   final Money extraCharges;
   final Money roundOff;
   final Money total;

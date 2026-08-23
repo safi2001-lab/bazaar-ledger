@@ -230,9 +230,10 @@ class AppDatabase extends _$AppDatabase {
   /// database instead of through the write path: there is nothing here for an
   /// audit trail to record and nothing for a peer to receive.
   Future<int> rebuildStockBalances() async {
-    // arch_check: allow one_write_path — a derived cache, not a fact.
     await customStatement('''
-      UPDATE stock_ledger
+      -- This writes one column that is a SUM of rows already committed:
+      -- nothing for an audit trail to record, nothing for a peer to receive.
+      UPDATE stock_ledger -- arch_check: allow no_raw_dml — derived cache
       SET balance_after_thousandths = (
         SELECT SUM(prior.qty_delta_thousandths)
         FROM stock_ledger prior

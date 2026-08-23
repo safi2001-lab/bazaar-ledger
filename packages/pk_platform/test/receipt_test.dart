@@ -8,6 +8,7 @@ void main() {
   group('preview and print agree', _agreementTests);
   group('hostile input', _hostileInputTests);
   group('PDF pagination', _pdfTests);
+  group('the numbers reconcile', _reconciliationTests);
   const renderer = ThermalReceiptRenderer();
 
   group('80mm layout', () {
@@ -423,6 +424,12 @@ ReceiptData receipt({
   bool reprint = false,
   String? customerName,
   String? customerPhone,
+  Money subtotal = const Money.rupees(5525),
+  Money discount = Money.zero,
+  Money tax = Money.zero,
+  Money furtherTax = Money.zero,
+  Money withholding = Money.zero,
+  Money extraCharges = Money.zero,
 }) =>
     ReceiptData(
       shop: shop ??
@@ -455,7 +462,12 @@ ReceiptData receipt({
               amount: Money.rupees(525),
             ),
           ],
-      subtotal: const Money.rupees(5525),
+      subtotal: subtotal,
+      discount: discount,
+      tax: tax,
+      furtherTax: furtherTax,
+      withholding: withholding,
+      extraCharges: extraCharges,
       total: total,
       tenders: tenders ??
           const [
@@ -615,4 +627,74 @@ void _hostileInputTests() {
       }
     });
   }
+}
+
+/// The printed numbers have to add up to the printed total.
+///
+/// This is the property a customer checks with their thumb, and the one an
+/// auditor checks with a calculator. Every component that moves the total has
+/// to appear, including the ones that move it downwards.
+void _reconciliationTests() {
+  const renderer = ThermalReceiptRenderer();
+
+  Money parseAmount(String s) => Money.parse(s.replaceAll(',', ''));
+
+  test('subtotal, tax, charges and deductions reconcile to TOTAL', () {
+    final data = receipt(
+      subtotal: const Money.rupees(10000),
+      discount: const Money.rupees(500),
+      tax: const Money.rupees(1710),
+      furtherTax: const Money.rupees(380),
+      withholding: const Money.rupees(475),
+      extraCharges: const Money.rupees(200),
+      total: const Money.rupees(11315),
+      paid: const Money.rupees(11315),
+      change: Money.zero,
+      tenders: const [
+        ReceiptTender(label: 'Cash', amount: Money.rupees(11315)),
+      ],
+    );
+
+    final lines = renderer.toPreview(data);
+    Money amountOn(String label) {
+      final line = lines.firstWhere(
+        (l) => l.trimLeft().startsWith(label),
+        orElse: () => throw StateError('"$label" is not on the receipt'),
+      );
+      return parseAmount(line.substring(line.lastIndexOf(' ') + 1));
+    }
+
+    // 10,000 − 500 + 1,710 + 380 − 475 + 200 = 11,315.
+    final reconstructed = amountOn('Subtotal') -
+        amountOn('Discount').abs +
+        amountOn('Sales Tax') +
+        amountOn('Further Tax') -
+        amountOn('Withholding').abs +
+        amountOn('Other Charges');
+
+    expect(
+      reconstructed,
+      const Money.rupees(11315),
+      reason: 'the printed components must reconstruct the printed total',
+    );
+    expect(lines.any((l) => l.contains('11,315.00')), isTrue);
+  });
+
+  test('a withholding deduction is printed, not silently netted', () {
+    final withheld = receipt(
+      withholding: const Money.rupees(475),
+      total: const Money.rupees(5050),
+    );
+    expect(
+      renderer.toPreview(withheld).any((l) => l.contains('Withholding')),
+      isTrue,
+      reason: 'it comes off the total, so it belongs on the paper',
+    );
+
+    // And it does not appear when there is none.
+    expect(
+      renderer.toPreview(receipt()).any((l) => l.contains('Withholding')),
+      isFalse,
+    );
+  });
 }

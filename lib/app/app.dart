@@ -70,7 +70,7 @@ class _Root extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Bazaar Ledger',
+                AppStrings.of(context).appName,
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,

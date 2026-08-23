@@ -1,0 +1,48 @@
+// Shapes that must NOT be flagged, however they are wrapped.
+//
+// A rule broad enough to catch everything is a rule everybody turns off. This
+// file is the other half of the gate's self-test: if any rule fires on
+// anything here, the build fails just as loudly as if one failed to fire on
+// `wrapped_text.dart.txt`.
+
+Widget build(BuildContext context) {
+  final s = AppStrings.of(context);
+  return Column(
+    children: [
+      Text(
+        s.partiesAdd,
+      ),
+      Text(
+        '$count',
+      ),
+      Text(
+        '${u.name} (${u.code})',
+      ),
+      Text(
+        'NTN',
+      ),
+      BlIconButton(
+        icon: Icons.close,
+        label: s.actionClose,
+      ),
+      Container(
+        color: t.ink,
+      ),
+    ],
+  );
+}
+
+Future<void> write(Tx tx) async {
+  await tx.insert(
+    'items',
+    values,
+  );
+  final rows = await tx.select(
+    'SELECT * FROM items WHERE firm_id = ?',
+    [firmId],
+  );
+}
+
+const mode = 'jazzcash';
+const alias = '03001234567';
+final int total = 0;

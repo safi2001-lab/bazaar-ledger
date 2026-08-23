@@ -1,0 +1,65 @@
+// Not Dart the analyzer sees: a fixture the architecture gate reads as text.
+//
+// Every rule in `arch_check.dart` used to match one line at a time, and every
+// fixture proving a rule worked was a synthetic one-liner. Real code is not
+// written that way — `dart format` breaks a long call across three lines, and
+// fifty-four `Text(` call sites in this app are wrapped exactly like the ones
+// below. The rule written to catch an untranslated string could not see any
+// of them, and printed a green tick anyway.
+//
+// So the gate now reads whole files, and proves it can by scanning this one.
+// Every block here MUST be flagged; `wrapped_ok.dart.txt` holds the shapes
+// that must not be.
+
+Widget build(BuildContext context) {
+  return Column(
+    children: [
+      Text(
+        'Add customer',
+      ),
+      Text(
+        'Add '
+        'customer',
+      ),
+      Text(
+        "Close the bill",
+      ),
+      TextField(
+        decoration: InputDecoration(
+          hintText: 'Type a name',
+        ),
+      ),
+      IconButton(
+        onPressed: null,
+        icon: Icon(Icons.add),
+      ),
+      Container(
+        color: Colors.white,
+      ),
+      Container(
+        color: Color.fromARGB(255, 1, 2, 3),
+      ),
+    ],
+  );
+}
+
+Future<void> write() async {
+  await db
+      .into(db.items)
+      .insert(companion);
+  await db
+      .update(db.payments)
+      .write(companion);
+  await db.customStatement(
+    'INSERT INTO items (id) VALUES (?)',
+  );
+}
+
+const endpoint =
+    'https://api.jazzcash.com.pk/v1/pay';
+const iban =
+    'PK36MEZN0001234567890101';
+const guid =
+    'pk.raast';
+
+double total = 0;

@@ -389,6 +389,7 @@ final class DriftAppQueries implements AppQueries {
       ),
       tax: Money.paisa(doc.read<int>('tax_paisa')),
       furtherTax: Money.paisa(doc.read<int>('further_tax_paisa')),
+      withholding: Money.paisa(doc.read<int>('withholding_paisa')),
       extraCharges: Money.paisa(doc.read<int>('extra_charges_paisa')),
       roundOff: Money.paisa(doc.read<int>('round_off_paisa')),
       total: Money.paisa(doc.read<int>('total_paisa')),

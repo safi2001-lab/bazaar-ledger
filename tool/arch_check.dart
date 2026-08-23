@@ -25,6 +25,7 @@
 // must not. They run before the tree is scanned, and a rule that cannot fire
 // fails the build instead of passing it.
 
+import 'dart:convert';
 import 'dart:io';
 
 void main(List<String> args) {
@@ -47,9 +48,14 @@ void main(List<String> args) {
   }
 
   if (violations.isEmpty) {
+    final exemptions = _exemptions();
     stdout.writeln(
-      'arch_check: ${rules.length} rules, self-tested, no violations.',
+      'arch_check: ${rules.length} rules, self-tested, no violations, '
+      '${exemptions.length} written exemption(s).',
     );
+    for (final e in exemptions) {
+      stdout.writeln('  exempt: $e');
+    }
     return;
   }
 
@@ -73,6 +79,10 @@ void main(List<String> args) {
 }
 
 /// Checks that every rule flags what it claims to and permits what it must.
+///
+/// Two halves, and both matter. A rule that cannot fire keeps the green tick
+/// and loses the guarantee; a rule broad enough to fire on ordinary code is a
+/// rule everybody turns off.
 List<String> _selfTest() {
   final failures = <String>[];
   for (final rule in rules) {
@@ -89,6 +99,42 @@ List<String> _selfTest() {
       if (rule.matches(line)) {
         failures.add('${rule.name}: wrongly flags  $line');
       }
+    }
+  }
+
+  // And against real, wrapped code rather than one-liners. `tool/fixtures/`
+  // holds a file every rule must find something in and a file no rule may
+  // touch, both formatted the way `dart format` would actually leave them.
+  final bad = File('tool/fixtures/wrapped_text.dart.txt');
+  final good = File('tool/fixtures/wrapped_ok.dart.txt');
+  if (!bad.existsSync() || !good.existsSync()) {
+    failures.add('tool/fixtures: the wrapped-code fixtures are missing.');
+    return failures;
+  }
+
+  final badSource = bad.readAsStringSync();
+  final goodSource = good.readAsStringSync();
+  const wrapped = {
+    'ui_cannot_reach_the_database': false,
+    'no_hardcoded_user_string': true,
+    'no_hardcoded_colour': true,
+    'every_icon_button_is_labelled': true,
+    'one_write_path': true,
+    'no_raw_dml': true,
+    'no_payment_integration': true,
+    'no_qr_payload_construction': true,
+    'no_floating_point_money': true,
+  };
+  for (final rule in rules) {
+    if (wrapped[rule.name] != true) continue;
+    if (!rule.matches(badSource)) {
+      failures.add(
+        '${rule.name}: cannot see wrapped code — it would miss every call '
+        '`dart format` broke across lines.',
+      );
+    }
+    if (rule.matches(goodSource)) {
+      failures.add('${rule.name}: fires on ordinary wrapped code.');
     }
   }
   return failures;
@@ -174,13 +220,31 @@ final class Rule {
   /// A last-resort escape hatch for a line that legitimately matches.
   final bool Function(String line)? allowLines;
 
-  bool matches(String line) {
-    if (line.trimLeft().startsWith('//')) return false;
-    if (line.contains('arch_check: allow')) return false;
-    if (allowLines != null && allowLines!(line)) return false;
-    final subject = reads.apply(line);
-    return forbid.any((p) => p.hasMatch(subject));
+  /// Whether this rule flags [source], which may be one line or a whole file.
+  bool matches(String source) => _matchesIn(_prepare(source)).isNotEmpty;
+
+  /// Blanks out what the rule must not see, keeping every character position
+  /// so a match can still be turned back into a line number.
+  ///
+  /// Comments go first: a rule about the `double` type must not fire on the
+  /// word "double" in the sentence explaining why doubles are refused. An
+  /// `arch_check: allow` note blanks its own line.
+  String _prepare(String source) {
+    final buffer = StringBuffer();
+    for (final line in const LineSplitter().convert(source)) {
+      final trimmed = line.trimLeft();
+      final suppressed = trimmed.startsWith('//') || _isExemptFrom(line, name);
+      if (suppressed || (allowLines != null && allowLines!(line))) {
+        buffer.writeln(' ' * line.length);
+      } else {
+        buffer.writeln(reads.apply(line));
+      }
+    }
+    return buffer.toString();
   }
+
+  List<Match> _matchesIn(String prepared) =>
+      [for (final p in forbid) ...p.allMatches(prepared)];
 
   List<Violation> run() {
     final found = <Violation>[];
@@ -189,25 +253,36 @@ final class Rule {
       if (!dir.existsSync()) continue;
       for (final entity in dir.listSync(recursive: true)) {
         if (entity is! File || !entity.path.endsWith('.dart')) continue;
-        final normalised = entity.path.replaceAll(r'\', '/');
+        final normalised =
+            entity.path.replaceAll(Platform.pathSeparator, '/');
         if (normalised.contains('/build/')) continue;
         if (normalised.contains('/.dart_tool/')) continue;
         if (normalised.endsWith('.g.dart')) continue;
         if (normalised.endsWith('.drift.dart')) continue;
         if (exclude.any(normalised.contains)) continue;
 
-        final lines = entity.readAsLinesSync();
-        for (var i = 0; i < lines.length; i++) {
-          if (matches(lines[i])) {
-            found.add(
-              Violation(
-                rule: name,
-                file: normalised,
-                line: i + 1,
-                source: lines[i],
-              ),
-            );
-          }
+        // The whole file at once, because real code wraps. Every rule used to
+        // read one line at a time and every fixture was a synthetic
+        // one-liner, so the three lines `dart format` turns a long `Text(...)`
+        // call into were invisible to the rule written to catch it. Fifty-four
+        // call sites in this app are wrapped that way.
+        final source = entity.readAsStringSync();
+        final prepared = _prepare(source);
+        final lines = const LineSplitter().convert(source);
+
+        final seen = <int>{};
+        for (final match in _matchesIn(prepared)) {
+          final before = prepared.substring(0, match.start);
+          final line = '\n'.allMatches(before).length + 1;
+          if (!seen.add(line)) continue;
+          found.add(
+            Violation(
+              rule: name,
+              file: normalised,
+              line: line,
+              source: line <= lines.length ? lines[line - 1] : '',
+            ),
+          );
         }
       }
     }
@@ -568,6 +643,44 @@ final rules = <Rule>[
     ],
   ),
 ];
+
+/// Whether a line carries a written exemption from a particular rule.
+///
+/// The marker has to name the rule and give a reason: `arch_check: allow
+/// no_raw_dml — derived cache`. A bare `arch_check: allow` used to silence
+/// every rule on the line, for nobody's stated reason, and nothing counted
+/// them — which is how a suppression list becomes the real architecture.
+bool _isExemptFrom(String line, String rule) {
+  final match = _exemption.firstMatch(line);
+  if (match == null) return false;
+  return match.group(1) == rule;
+}
+
+final RegExp _exemption =
+    RegExp(r'arch_check:\s*allow\s+(\w+)\s*[—-]\s*\S');
+
+/// Every written exemption in the tree, so they cannot pile up unnoticed.
+List<String> _exemptions() {
+  final found = <String>[];
+  for (final path in const ['lib', 'packages', 'tool']) {
+    final dir = Directory(path);
+    if (!dir.existsSync()) continue;
+    for (final entity in dir.listSync(recursive: true)) {
+      if (entity is! File || !entity.path.endsWith('.dart')) continue;
+      final normalised = entity.path.replaceAll(Platform.pathSeparator, '/');
+      if (normalised.contains('/build/')) continue;
+      if (normalised.contains('/.dart_tool/')) continue;
+      if (normalised.endsWith('arch_check.dart')) continue;
+      final lines = const LineSplitter().convert(entity.readAsStringSync());
+      for (var i = 0; i < lines.length; i++) {
+        if (_exemption.hasMatch(lines[i])) {
+          found.add('$normalised:${i + 1}');
+        }
+      }
+    }
+  }
+  return found;
+}
 
 /// Lines that legitimately match a pattern.
 ///
