@@ -108,6 +108,11 @@ CREATE TABLE documents (
   posted_at_utc INTEGER,
 
   CHECK (revision = 1 OR supersedes_id IS NOT NULL),
+  -- An unpaid balance is somebody's khata. The counter refuses an
+  -- anonymous debtor, but a UI rule protects only the UI: an import, a
+  -- repair script, or an M13 LAN merge could each commit money the shop
+  -- can never ask for, sitting in a receivables total that still balances.
+  CHECK (balance_paisa <= 0 OR party_id IS NOT NULL),
   CHECK (status <> 'posted' OR posted_at_utc IS NOT NULL)
 ) STRICT;
 
@@ -149,7 +154,7 @@ CREATE TABLE document_lines (
   description TEXT,
 
   -- What the cashier typed, in the unit they typed it in.
-  qty_thousandths INTEGER NOT NULL,
+  qty_thousandths INTEGER NOT NULL CHECK (qty_thousandths <> 0),
   unit_id TEXT REFERENCES units(id) DEFERRABLE INITIALLY DEFERRED,
   unit_code_snapshot TEXT NOT NULL,
   -- The same quantity in the item's base unit. Stock moves on this.
@@ -161,7 +166,11 @@ CREATE TABLE document_lines (
   lot_id TEXT REFERENCES stock_lots(id) DEFERRABLE INITIALLY DEFERRED,
 
   gross_paisa INTEGER NOT NULL DEFAULT 0,
-  discount_bp INTEGER NOT NULL DEFAULT 0,
+  -- Basis points, so 100% is 10000. Nothing else is a discount: a line
+  -- discount over the line is a refund, and a negative one is a surcharge
+  -- pretending otherwise.
+  discount_bp INTEGER NOT NULL DEFAULT 0
+    CHECK (discount_bp BETWEEN 0 AND 10000),
   discount_paisa INTEGER NOT NULL DEFAULT 0,
   taxable_paisa INTEGER NOT NULL DEFAULT 0,
   tax_paisa INTEGER NOT NULL DEFAULT 0,

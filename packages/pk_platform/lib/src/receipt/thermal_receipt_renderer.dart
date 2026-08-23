@@ -42,7 +42,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
       ..align(EscPosAlign.centre)
       ..bold()
       ..size(width: 2, height: 2)
-      ..line(_clipDouble(data.shop.name.toUpperCase(), paper))
+      ..lines(_wrapDouble(data.shop.name.toUpperCase(), paper))
       ..size()
       ..bold(on: false)
       ..align(EscPosAlign.left);
@@ -344,8 +344,34 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
     return count;
   }
 
-  static String _clipDouble(String s, ReceiptPaper paper) {
+  /// The shop name at double width, wrapped rather than cut.
+  ///
+  /// Double-size glyphs are twice as wide, so only half the columns fit — 24
+  /// at 80mm, 16 at 58mm. Truncating there printed "Al-Madina Kiryan" for a
+  /// shop the preview showed in full, which breaks the one promise this file
+  /// makes: what the shopkeeper approves on screen is what comes out of the
+  /// machine.
+  static List<String> _wrapDouble(String s, ReceiptPaper paper) {
     final max = paper.columns ~/ 2;
-    return s.length <= max ? s : s.substring(0, max);
+    final out = <String>[];
+    var current = '';
+    for (final word in s.split(RegExp(r'\s+'))) {
+      if (word.isEmpty) continue;
+      final candidate = current.isEmpty ? word : '$current $word';
+      if (candidate.length <= max) {
+        current = candidate;
+        continue;
+      }
+      if (current.isNotEmpty) out.add(current);
+      // A single word longer than the line is broken rather than dropped.
+      var rest = word;
+      while (rest.length > max) {
+        out.add(rest.substring(0, max));
+        rest = rest.substring(max);
+      }
+      current = rest;
+    }
+    if (current.isNotEmpty) out.add(current);
+    return out.isEmpty ? [''] : out;
   }
 }

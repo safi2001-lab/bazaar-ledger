@@ -5,60 +5,8 @@ import 'package:pk_platform/pk_platform.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('preview and print agree', _agreementTests);
   const renderer = ThermalReceiptRenderer();
-
-  ReceiptData receipt({
-    ReceiptShop? shop,
-    List<ReceiptLine>? lines,
-    Money total = const Money.rupees(5525),
-    Money paid = const Money.rupees(5525),
-    Money balance = Money.zero,
-    Money change = const Money.rupees(475),
-    List<ReceiptTender>? tenders,
-    MonoBitmap? logo,
-    bool reprint = false,
-  }) =>
-      ReceiptData(
-        shop: shop ??
-            ReceiptShop(
-              name: 'Chishti Kiryana Store',
-              addressLine1: 'Shop 14, Anarkali',
-              city: 'Lahore',
-              phone: '0300-4471203',
-              logo: logo,
-            ),
-        docNo: 'INV-2627-0001',
-        dateTimeLabel: '23-08-2026  2:15 PM',
-        cashierName: 'Malik Sahib',
-        lines: lines ??
-            const [
-              ReceiptLine(
-                name: 'Cooking Oil 5L',
-                qtyDisplay: '2',
-                unitCode: 'pcs',
-                rate: Rate.rupees(2500),
-                amount: Money.rupees(5000),
-              ),
-              ReceiptLine(
-                name: 'Mutton',
-                qtyDisplay: '3.5',
-                unitCode: 'kg',
-                rate: Rate.rupees(150),
-                amount: Money.rupees(525),
-              ),
-            ],
-        subtotal: const Money.rupees(5525),
-        total: total,
-        tenders: tenders ??
-            const [
-              ReceiptTender(label: 'Cash', amount: Money.rupees(6000)),
-            ],
-        paid: paid,
-        balance: balance,
-        change: change,
-        isReprint: reprint,
-        footerLines: const ['Shukriya! Phir tashreef laayen'],
-      );
 
   group('80mm layout', () {
     test('every line is exactly 48 columns or shorter', () {
@@ -292,7 +240,11 @@ void main() {
       final text = String.fromCharCodes(bytes);
       expect(text, contains('Basmati - "Super"'));
       for (final b in bytes) {
-        expect(b, lessThan(0x100));
+        // 0x80, not 0x100. Every element of a Uint8List is under 0x100 by
+      // type, so the original assertion could not fail; what is actually
+      // claimed is that nothing outside seven-bit ASCII reaches a printer
+      // whose ROM font has no idea what to do with it.
+      expect(b, lessThan(0x80));
       }
     });
 
@@ -362,3 +314,148 @@ int _indexOf(Uint8List haystack, List<int> needle) {
   }
   return -1;
 }
+
+/// The promise this package makes, tested rather than asserted in a comment.
+///
+/// `toPreview` and `toThermalBytes` must show the shopkeeper the same words.
+/// A separate on-screen layout is a second implementation that drifts, and the
+/// first anybody notices is a customer's printed copy disagreeing with what
+/// the shopkeeper approved.
+void _agreementTests() {
+  const renderer = ThermalReceiptRenderer();
+
+  String printedText(ReceiptData data, ReceiptPaper paper) {
+    final bytes = renderer.toThermalBytes(data, paper: paper);
+    // Everything the encoder emitted that is printable, with the control
+    // sequences dropped and the line feeds kept as separators — otherwise the
+    // last word of one line and the first of the next become one token and
+    // the comparison quietly stops meaning anything.
+    return String.fromCharCodes(
+      bytes.map((b) => b == 0x0A ? 0x20 : b).where((b) => b >= 0x20 && b < 0x7F),
+    );
+  }
+
+  for (final paper in ReceiptPaper.values) {
+    test('a long shop name prints in full on ${paper.columns} columns', () {
+      final data = receipt(
+        shop: const ReceiptShop(name: 'Al-Madina Kiryana Store'),
+      );
+
+      final printed = printedText(data, paper);
+      // Every word of the name reaches the paper. It used to be cut at half
+      // the column count — 16 characters at 58mm — while the preview wrapped
+      // and showed all of it.
+      for (final word in ['AL-MADINA', 'KIRYANA', 'STORE']) {
+        expect(printed, contains(word), reason: 'on ${paper.columns} columns');
+      }
+    });
+
+    test('every preview word reaches the paper on ${paper.columns} columns',
+        () {
+      final data = receipt(
+        shop: const ReceiptShop(name: 'Al-Madina Kiryana Store'),
+      );
+
+      // Words, in order, not lines. The shop name is printed double-size, so
+      // it legitimately wraps at half the column count and its line breaks
+      // differ from the preview's. What must never differ is the content: the
+      // same words, in the same order, with nothing dropped and nothing
+      // invented.
+      List<String> words(String text) => text
+          .toUpperCase()
+          .split(RegExp(r'[^A-Z0-9.,\-/:]+'))
+          .where((w) => w.isNotEmpty)
+          .toList();
+
+      final previewWords =
+          words(renderer.toPreview(data, paper: paper).join(' '));
+      final printedWords = words(printedText(data, paper));
+
+      // The printed stream carries a few encoder artefacts around the control
+      // sequences, so it is checked as a subsequence rather than an equality.
+      var cursor = 0;
+      for (final word in previewWords) {
+        final at = printedWords.indexOf(word, cursor);
+        expect(
+          at,
+          isNonNegative,
+          reason: 'the preview showed "$word" and the printer did not, '
+              'on ${paper.columns} columns. printed: $printedWords',
+        );
+        cursor = at + 1;
+      }
+    });
+  }
+
+  test('a raster whose header lies about its size is refused', () {
+    // One byte short and the printer keeps reading: the feed, the cut and the
+    // drawer kick are all swallowed as pixels, and the machine sits waiting
+    // for the rest of a picture that will never arrive.
+    final short = MonoBitmap(
+      width: 16,
+      height: 4,
+      bits: Uint8List(2 * 4 - 1),
+    );
+    expect(
+      () => EscPos().raster(short),
+      throwsA(isA<ArgumentError>()),
+      reason: 'a truncated bitmap must never reach a printer',
+    );
+
+    final exact = MonoBitmap(width: 16, height: 4, bits: Uint8List(2 * 4));
+    expect(() => EscPos().raster(exact), returnsNormally);
+  });
+}
+
+ReceiptData receipt({
+  ReceiptShop? shop,
+  List<ReceiptLine>? lines,
+  Money total = const Money.rupees(5525),
+  Money paid = const Money.rupees(5525),
+  Money balance = Money.zero,
+  Money change = const Money.rupees(475),
+  List<ReceiptTender>? tenders,
+  MonoBitmap? logo,
+  bool reprint = false,
+}) =>
+    ReceiptData(
+      shop: shop ??
+          ReceiptShop(
+            name: 'Chishti Kiryana Store',
+            addressLine1: 'Shop 14, Anarkali',
+            city: 'Lahore',
+            phone: '0300-4471203',
+            logo: logo,
+          ),
+      docNo: 'INV-2627-0001',
+      dateTimeLabel: '23-08-2026  2:15 PM',
+      cashierName: 'Malik Sahib',
+      lines: lines ??
+          const [
+            ReceiptLine(
+              name: 'Cooking Oil 5L',
+              qtyDisplay: '2',
+              unitCode: 'pcs',
+              rate: Rate.rupees(2500),
+              amount: Money.rupees(5000),
+            ),
+            ReceiptLine(
+              name: 'Mutton',
+              qtyDisplay: '3.5',
+              unitCode: 'kg',
+              rate: Rate.rupees(150),
+              amount: Money.rupees(525),
+            ),
+          ],
+      subtotal: const Money.rupees(5525),
+      total: total,
+      tenders: tenders ??
+          const [
+            ReceiptTender(label: 'Cash', amount: Money.rupees(6000)),
+          ],
+      paid: paid,
+      balance: balance,
+      change: change,
+      isReprint: reprint,
+      footerLines: const ['Shukriya! Phir tashreef laayen'],
+    );

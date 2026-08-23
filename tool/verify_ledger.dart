@@ -188,10 +188,12 @@ void _assign(
   if (colon == -1) return;
   final key = text.substring(0, colon).trim();
   final value = text.substring(colon + 1).trim();
-  if (value.isEmpty) {
+  if (value.isEmpty || value == '[]') {
+    // `proof:` on its own opens a block list; `proof: []` is an explicit
+    // empty one. Both mean the same thing here: nothing proves this yet.
     final list = <String>[];
     into[key] = list;
-    openList(list);
+    openList(value.isEmpty ? list : <String>[]);
     return;
   }
   into[key] = _unquote(value);
@@ -228,6 +230,12 @@ Future<Set<String>> _runSuites() async {
       ['test', '--reporter', 'json'],
       workingDirectory: dir,
       runInShell: true,
+      // UTF-8, explicitly. The default is the system encoding, which on
+      // Windows is a code page that turns every em dash in a test name into
+      // mojibake — so a proof whose name contains one silently fails to match
+      // and the gate reports a passing test as missing.
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
     );
 
     final names = <int, String>{};

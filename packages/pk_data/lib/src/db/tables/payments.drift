@@ -57,7 +57,15 @@ CREATE TABLE payments (
 
   notes TEXT,
 
-  CHECK (tendered_paisa IS NULL OR tendered_paisa >= amount_paisa),
+  -- Not merely "at least the amount": the change has to BE the difference.
+  -- A row reading tendered 1000, amount 500, change 0 is legal arithmetic
+  -- and a Rs 500 hole in the drawer, and the Z-report reconciles off
+  -- exactly these three columns.
+  CHECK (
+    tendered_paisa IS NULL
+    OR (tendered_paisa >= amount_paisa
+        AND change_paisa = tendered_paisa - amount_paisa)
+  ),
   CHECK (mode <> 'cheque' OR cheque_no IS NOT NULL)
 ) STRICT;
 

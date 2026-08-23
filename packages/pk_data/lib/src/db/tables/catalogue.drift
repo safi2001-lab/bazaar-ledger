@@ -182,7 +182,8 @@ CREATE TABLE parties (
   opening_balance_as_of_local TEXT,
   credit_limit_paisa INTEGER,
   credit_days INTEGER,
-  default_discount_bp INTEGER NOT NULL DEFAULT 0,
+  default_discount_bp INTEGER NOT NULL DEFAULT 0
+    CHECK (default_discount_bp BETWEEN 0 AND 10000),
 
   is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
 ) STRICT;

@@ -1,0 +1,464 @@
+# The anti-lie gate.
+#
+# One row per feature. A row may say `status: done` only if `proof` names a
+# test that exists, is not skipped, and passed in the run that checked it.
+# `dart run tool/verify_ledger.dart` runs every suite and fails the build if
+# any claim is unsupported.
+#
+# The rule this exists to enforce: a commit may not say "Complete Milestone N"
+# unless this script printed 100% for N. The previous build shipped five
+# commits each announcing a completed sprint; an audit later put the real
+# figure at about 18%, and this script would have printed that number and
+# rejected every one of them.
+#
+# `proof` values are test names exactly as the JSON reporter emits them:
+# group description and test description joined by a space.
+#
+# status: done | wip | todo
+
+features:
+  # ---------------------------------------------------------------------------
+  # M0 — the walking skeleton: one real sale
+  # ---------------------------------------------------------------------------
+
+  - id: M0-MONEY-01
+    milestone: M0
+    title: Money is whole paisa and never a float
+    status: done
+    proof:
+      - arithmetic is exact the classic float failure does not occur
+      - arithmetic is exact a thousand additions of one paisa make exactly ten rupees
+      - arithmetic is exact the reference cart totals to the paisa
+
+  - id: M0-MONEY-02
+    milestone: M0
+    title: Apportionment never creates or destroys a paisa
+    status: done
+    proof:
+      - allocate and split never create or destroy paisa weighted allocation sums back
+      - allocate and split never create or destroy paisa an indivisible split still sums back
+      - allocate and split never create or destroy paisa property: 2000 random allocations all sum back exactly
+
+  - id: M0-MONEY-03
+    milestone: M0
+    title: Quantity carries three decimals and never renders as a whole number
+    status: done
+    proof:
+      - Qty display — the regression that defined this package a fractional weight never renders as a whole number
+      - Qty parse rejects a fourth decimal rather than truncating
+
+  - id: M0-MONEY-04
+    milestone: M0
+    title: Rate times quantity rounds once, half-up, symmetrically
+    status: done
+    proof:
+      - Rate x Qty — the one multiplication in the application the reference line: Rs 150.00/kg x 3.5 kg = Rs 525.00
+      - Rate x Qty — the one multiplication in the application rounding is half-up and symmetric about zero
+      - Rate x Qty — the one multiplication in the application property: 5000 random lines round to within half a paisa
+      - Rate x Qty — the one multiplication in the application the overflow guard throws instead of wrapping silently
+
+  - id: M0-MONEY-05
+    milestone: M0
+    title: A pro-rata loose sale never exceeds the pack MRP
+    status: done
+    proof:
+      - Rate x Qty — the one multiplication in the application pro-rata loose sale never exceeds the pack MRP
+
+  - id: M0-ID-01
+    milestone: M0
+    title: ULID keys are monotonic even when the clock goes backwards
+    status: done
+    proof:
+      - ULID sorts lexicographically in creation order
+      - ULID is strictly increasing inside a single millisecond
+      - ULID does not go backwards when the clock does
+      - ULID does not repeat across 20,000 ids
+
+  - id: M0-ID-02
+    milestone: M0
+    title: HLC string order is causal order
+    status: done
+    proof:
+      - HLC sorts causally as a plain string
+      - HLC still moves forward when the wall clock moves backwards
+      - HLC two devices converge on the same order after exchanging
+      - HLC refuses a peer whose clock is implausibly far ahead
+
+  - id: M0-ID-03
+    milestone: M0
+    title: Every mutation carries a complete, unforgeable row envelope
+    status: done
+    proof:
+      - the envelope is stamped on every row from the ActorContext
+      - the envelope cannot be forged by a caller
+      - the envelope an update bumps the revision and re-stamps the clock
+      - ActorContext refuses an empty identity, in release as well as in debug
+
+  - id: M0-TIME-01
+    milestone: M0
+    title: Reports group on the shopkeeper's day and the Pakistani fiscal year
+    status: done
+    proof:
+      - BusinessDate uses the shopkeeper day, not the UTC day
+      - BusinessDate derives the Pakistani fiscal year, which starts 1 July
+
+  - id: M0-SCHEMA-01
+    milestone: M0
+    title: Schema v1 holds all twenty-five tables, every one STRICT
+    status: done
+    proof:
+      - schema v1 contains exactly the twenty-five planned tables
+      - every table is STRICT
+      - a STRICT table refuses text in an integer column
+
+  - id: M0-SCHEMA-02
+    milestone: M0
+    title: Every foreign key is real, indexed, and enforced
+    status: done
+    proof:
+      - every *_id column is a real foreign key
+      - every foreign key points at an existing table and column
+      - every foreign key has a covering index
+      - the test harness itself enforces foreign keys
+
+  - id: M0-SCHEMA-03
+    milestone: M0
+    title: No REAL column exists anywhere in the database
+    status: done
+    proof:
+      - there is no REAL column anywhere in the database
+      - quantity, money and rate columns declare their unit in their name
+      - timestamp columns declare their zone in their name
+
+  - id: M0-SCHEMA-04
+    milestone: M0
+    title: Every table carries the universal row envelope
+    status: done
+    proof:
+      - every table carries the universal row envelope
+      - every primary key is a single TEXT column named id
+
+  - id: M0-WRITE-01
+    milestone: M0
+    title: One transactional write path, with the books proved before commit
+    status: done
+    proof:
+      - assertBooksBalance lets a balanced entry through
+      - assertBooksBalance refuses to commit an entry whose lines do not balance
+      - assertBooksBalance refuses an entry whose declared total contradicts its lines
+      - the database itself refuses an unbalanced journal entry
+
+  - id: M0-WRITE-02
+    milestone: M0
+    title: A failed write leaves nothing behind and burns no number
+    status: done
+    proof:
+      - atomicity a fault mid-transaction leaves nothing behind, anywhere
+      - atomicity the device sequence does not advance on a rollback
+      - the audit trail never survives a rolled-back action
+      - step 11 — fault injection a failure part-way through leaves all nine tables empty
+      - step 11 — fault injection a burnt invoice number is given back
+
+  - id: M0-WRITE-03
+    milestone: M0
+    title: A write can never land on another firm's row
+    status: done
+    proof:
+      - firm scoping is universal
+      - the envelope a write cannot land on another firm's row
+
+  - id: M0-WRITE-04
+    milestone: M0
+    title: Every mutation reaches the sync outbox, from day one
+    status: done
+    proof:
+      - the outbox records every mutation, in order, with no gaps
+      - the outbox carries a payload a peer can apply
+      - the outbox an update payload carries only what changed
+      - first run puts the bootstrap rows in the sync outbox
+
+  - id: M0-WRITE-05
+    milestone: M0
+    title: Rows are tombstoned, never destroyed
+    status: done
+    proof:
+      - the envelope a soft delete leaves the row where it was
+
+  - id: M0-NUM-01
+    milestone: M0
+    title: Invoice numbers are unique per firm and fiscal year, with no gaps
+    status: done
+    proof:
+      - the same invoice number cannot be issued twice in one firm and year
+      - two sales in a row number consecutively and never collide
+
+  - id: M0-SALE-01
+    milestone: M0
+    title: The reference sale totals to the paisa
+    status: done
+    proof:
+      - the M0 reference sale totals Rs 5,525.00 to the paisa
+      - the M0 reference sale prices the fractional weight line correctly
+      - the M0 reference sale every line total sums back to the bill total
+      - invariants property: lines always re-sum to the bill, across 2000 sales
+
+  - id: M0-SALE-02
+    milestone: M0
+    title: Discounts are exact, apportioned pro-rata, and posted as a contra entry
+    status: done
+    proof:
+      - discounts a percentage discount is exact in basis points
+      - discounts an amount typed by hand beats the percentage
+      - discounts a bill discount splits across lines and loses nothing
+      - discounts a bill discount is pro-rata, not equal
+      - discount is a contra entry, so sales stays gross
+
+  - id: M0-SALE-03
+    milestone: M0
+    title: Change comes out of the drawer and is never posted as revenue
+    status: done
+    proof:
+      - the M0 reference sale gives Rs 475.00 change and records the bill as paid
+      - change a cash tender capped at what is due gives the rest back
+      - change `tendered` is the change basis, exactly as its doc promises
+      - change two cash tenders share one bill without inventing change
+      - change every posted tender satisfies offered = applied + change
+      - a cash sale records the change against the cash tender, not as revenue
+
+  - id: M0-SALE-04
+    milestone: M0
+    title: An overpayment that cannot be given back in cash is refused
+    status: done
+    proof:
+      - overpayment a transfer above the bill is refused outright
+      - overpayment a card overpayment cannot post a negative receivable
+      - overpayment cash offered on top of an exact transfer is handed straight back
+      - rows that would not be written a tender that settles nothing is not a payment
+
+  - id: M0-SALE-05
+    milestone: M0
+    title: Every sale posts a balanced double entry
+    status: done
+    proof:
+      - a cash sale debits the drawer and credits sales
+      - a credit sale debits receivables for what is still owed
+      - cost of goods debits COGS and credits inventory
+      - round-off a bill rounded down debits round-off
+      - round-off a bill rounded up credits round-off
+      - the balance guarantee property: 1000 random sales all balance
+
+  - id: M0-SALE-06
+    milestone: M0
+    title: Stock leaves the shelf, once per stocked line
+    status: done
+    proof:
+      - stock moves out of the shop, one movement per stocked line
+      - the stock ledger refuses a movement of zero
+
+  - id: M0-SALE-07
+    milestone: M0
+    title: A split tender debits each account separately
+    status: done
+    proof:
+      - tenders a split tender debits each account separately
+      - tenders a cheque waits in Cheques in Hand, not in the bank
+      - tenders split tender across bank and cash leaves nothing owing
+
+  - id: M0-SALE-08
+    milestone: M0
+    title: An unpaid balance becomes a named customer's udhaar
+    status: done
+    proof:
+      - selling on udhaar an unpaid sale becomes a receivable against the party
+      - a credit sale tags the receivable line with the party
+      - a bill left owing has to name the customer
+
+  - id: M0-TAX-01
+    milestone: M0
+    title: The s.21(s) cash threshold is flagged, never blocked
+    status: done
+    proof:
+      - s.21(s) cash threshold above the threshold in cash is flagged
+      - s.21(s) cash threshold exactly Rs 200,000 is not flagged — the statute says above
+      - s.21(s) cash threshold above the threshold through a digital channel is not flagged
+      - s.21(s) cash threshold an adjustment is not cash, and is not a banking channel either
+
+  - id: M0-FIRSTRUN-01
+    milestone: M0
+    title: First run seeds a complete, balanced, self-consistent shop
+    status: done
+    proof:
+      - first run seeds a complete, balanced, self-consistent shop
+      - first run seeds a firm, a device and an owner with foreign keys on
+      - first run the chart of accounts hangs together
+      - first run a maund is forty kilos
+      - first run cannot be run twice
+
+  - id: M0-UI-01
+    milestone: M0
+    title: First run asks three things and never a phone number
+    status: done
+    proof:
+      - a shopkeeper sets up, stocks two items and rings a cash sale
+
+  - id: M0-UI-02
+    milestone: M0
+    title: The counter rings a cash sale that is really in the database
+    status: done
+    proof:
+      - a shopkeeper sets up, stocks two items and rings a cash sale
+      - step 7 — the sale is really in the database one document, numbered INV-2627-0001, totalling 552500 paisa
+      - step 7 — the sale is really in the database two lines, with the fractional weight intact
+      - step 7 — the sale is really in the database the journal balances at 552500 on both sides
+      - step 7 — the sale is really in the database two stock movements, out of the shop
+      - step 7 — the sale is really in the database one payment and one allocation, with the change recorded
+
+  - id: M0-UI-03
+    milestone: M0
+    title: A failed save writes nothing and says so in words
+    status: done
+    proof:
+      - a failed save writes nothing and says so
+
+  - id: M0-UI-04
+    milestone: M0
+    title: One cart is one invoice, however fast the cashier taps
+    status: done
+    proof:
+      - tapping charge twice in one frame writes one invoice
+      - a committed sale always empties the cart
+
+  - id: M0-UI-05
+    milestone: M0
+    title: Part-paid cash is recorded as part-paid
+    status: done
+    proof:
+      - part-paid cash is recorded as part-paid
+
+  - id: M0-UI-06
+    milestone: M0
+    title: Every screen renders its empty state without crashing
+    status: done
+    proof:
+      - the home screen renders on a shop with no sales at all
+      - every empty state renders in the list it lives in
+      - the counter is usable with an empty catalogue
+
+  - id: M0-UI-07
+    milestone: M0
+    title: Text scales to 200% without clipping a row
+    status: done
+    proof:
+      - text at 200% does not clip a list row
+
+  - id: M0-UI-08
+    milestone: M0
+    title: Items can be added, edited and archived
+    status: done
+    proof:
+      - editing an archived item does not put it back on the counter
+      - an archived item cannot be scanned back onto a bill
+
+  - id: M0-UI-09
+    milestone: M0
+    title: Customers can be added, and cannot be hidden while they owe
+    status: done
+    proof:
+      - a customer with only an opening balance cannot be hidden
+
+  - id: M0-RECEIPT-01
+    milestone: M0
+    title: The 80mm receipt is exactly 48 columns and never clips an amount
+    status: done
+    proof:
+      - 80mm layout every line is exactly 48 columns or shorter
+      - 80mm layout amounts are flush against the right margin
+      - 80mm layout a long item name wraps instead of being cut off
+      - 80mm layout a huge amount is never clipped, the label is
+      - 80mm layout a fractional weight never prints as a whole number
+
+  - id: M0-RECEIPT-02
+    milestone: M0
+    title: The 58mm receipt is exactly 32 columns
+    status: done
+    proof:
+      - 58mm layout every line is exactly 32 columns or shorter
+
+  - id: M0-RECEIPT-03
+    milestone: M0
+    title: Real ESC/POS bytes, opening with a reset and ending with a cut
+    status: done
+    proof:
+      - ESC/POS byte stream opens with a reset so the last job cannot bleed into this one
+      - ESC/POS byte stream ends with a full cut
+      - ESC/POS byte stream emits GS v 0 when there is a raster to print
+      - ESC/POS byte stream is pure Latin, so no printer renders a random glyph
+      - ESC/POS byte stream kicks the drawer only when asked
+
+  - id: M0-RECEIPT-04
+    milestone: M0
+    title: A real PDF, in A4, A5 and A6
+    status: done
+    proof:
+      - PDF produces a real, non-trivial document
+      - PDF renders A4, A5 and A6 without falling over
+      - PDF survives a bill with forty lines
+
+  - id: M0-LEGAL-01
+    milestone: M0
+    title: We print the merchant's own alias and never mint a scheme QR
+    status: done
+    proof:
+      - payment instructions print the shop's own alias and IBAN as plain text
+      - payment instructions nothing in the byte stream looks like a minted scheme QR
+
+  - id: M0-HEALTH-01
+    milestone: M0
+    title: The database reports its own health, and it is sound after a sale
+    status: done
+    proof:
+      - quick_check passes on a fresh database
+      - a freshly created schema has no orphan rows
+      - step 7 — the sale is really in the database the database is healthy afterwards
+
+  - id: M0-AUDIT-01
+    milestone: M0
+    title: Who did what is recorded in the same transaction as the what
+    status: done
+    proof:
+      - the audit trail is written on commit, attributed to the actor
+      - step 7 — the sale is really in the database the audit trail names the action, the actor and the amount
+
+  # ---------------------------------------------------------------------------
+  # M0 — not yet done. Listed so the percentage is honest.
+  # ---------------------------------------------------------------------------
+
+  - id: M0-UI-10
+    milestone: M0
+    title: The receipt can be shared as a PDF from the app
+    status: wip
+    proof: []
+
+  - id: M0-RUN-01
+    milestone: M0
+    title: The demo script run by hand on a physical Itel or Infinix handset
+    status: todo
+    proof: []
+
+  - id: M0-RUN-02
+    milestone: M0
+    title: A committed screen recording of that run
+    status: todo
+    proof: []
+
+  - id: M0-CI-01
+    milestone: M0
+    title: CI runs every gate and fails closed
+    status: wip
+    proof: []
+
+  - id: M0-GOLDEN-01
+    milestone: M0
+    title: Golden tests for every component, light and dark, both languages
+    status: todo
+    proof: []

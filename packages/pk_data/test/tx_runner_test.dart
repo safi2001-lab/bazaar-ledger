@@ -44,9 +44,12 @@ void main() {
       expect(await count('firms'), 1);
       expect(await count('users'), 1);
       expect(await count('devices'), 1);
-      expect(await count('accounts'), defaultChartOfAccounts.length);
-      expect(await count('units'), defaultUnits.length);
-      expect(await count('unit_conversions'), defaultUnitConversions.length);
+      // Literal numbers, not `defaultChartOfAccounts.length`. An oracle
+      // that reads the same constant the seeder iterates says only that
+      // the loop ran; empty the list and it becomes 0 == 0.
+      expect(await count('accounts'), 37);
+      expect(await count('units'), 10);
+      expect(await count('unit_conversions'), 6);
       expect(await count('payment_accounts'), 1);
       expect(await count('numbering_sequences'), 3);
 

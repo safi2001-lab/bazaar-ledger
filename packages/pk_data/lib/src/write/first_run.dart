@@ -55,6 +55,7 @@ final class FirstRunSeeder {
     String city = '',
     String province = 'punjab',
     String businessKind = 'general',
+    bool allowSecondFirm = false,
   }) async {
     final firmId = ids.next();
     final userId = ids.next();
@@ -76,8 +77,12 @@ final class FirstRunSeeder {
     await database.transaction(() async {
       // Checked inside the transaction, not before it. Outside, two callers
       // racing first run both see an empty table and both seed a shop.
-      final existing =
-          await database.customSelect('SELECT id FROM firms LIMIT 1').get();
+      // Multi-firm is M10. Until then a second firm in one database is a
+      // bug, except in the tests that prove the isolation between them holds
+      // — which is the one place it has to be possible on purpose.
+      final existing = allowSecondFirm
+          ? const <QueryRow>[]
+          : await database.customSelect('SELECT id FROM firms LIMIT 1').get();
       if (existing.isNotEmpty) {
         throw StateError(
           'This database already has a firm. First run must not be repeated — '
@@ -126,13 +131,32 @@ final class FirstRunSeeder {
       // written by hand here, in the same transaction, for the same reason
       // the inserts are: at this instant there is no actor for TxRunner to
       // demand.
+      // The envelope every one of these rows was actually written with. A
+      // payload has to be something a peer can turn straight back into an
+      // INSERT, and every envelope column is NOT NULL — so a payload carrying
+      // only the business columns is a row the receiving counter cannot
+      // construct. TxRunner records the whole row for exactly this reason,
+      // and these three have to match it.
+      Map<String, Object?> envelope(String id) => {
+            'id': id,
+            'firm_id': firmId,
+            'created_at_utc': millis,
+            'updated_at_utc': millis,
+            'created_by': userId,
+            'updated_by': userId,
+            'deleted_at_utc': null,
+            'origin_device_id': deviceId,
+            'hlc': bootstrapHlc,
+            'rev': 1,
+          };
+
       var bootstrapSeq = 0;
       for (final row in <(String, String, Map<String, Object?>)>[
         (
           'firms',
           firmId,
           {
-            'id': firmId,
+            ...envelope(firmId),
             'name': shopName,
             'city': city,
             'province': province,
@@ -143,16 +167,26 @@ final class FirstRunSeeder {
           'devices',
           deviceId,
           {
-            'id': deviceId,
+            ...envelope(deviceId),
             'label': deviceLabel,
             'platform': platform,
             'device_role': 'master',
+            // `is_this_device` is deliberately absent. It is true of this
+            // handset and false of every peer that receives the row, so
+            // shipping it would tell each counter it is the master.
           },
         ),
         (
           'users',
           userId,
-          {'id': userId, 'name': ownerName, 'role': 'owner'},
+          {
+            ...envelope(userId),
+            'name': ownerName,
+            'role': 'owner',
+            'can_see_purchase_price': 1,
+            'can_see_margin': 1,
+            'max_discount_bp': 10000,
+          },
         ),
       ]) {
         bootstrapSeq++;

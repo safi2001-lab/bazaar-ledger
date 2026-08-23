@@ -69,6 +69,15 @@ final class EscPos {
 
   EscPos line([String value = '']) => text(value)._raw([_lf]);
 
+  /// Several lines, in order. A convenience so a caller that wrapped a
+  /// string does not have to decide how to feed the parts.
+  EscPos lines(Iterable<String> values) {
+    for (final value in values) {
+      line(value);
+    }
+    return this;
+  }
+
   EscPos feed([int lines = 1]) => _raw([_esc, 0x64, lines]);
 
   /// GS V 0 — full cut.
@@ -93,6 +102,19 @@ final class EscPos {
     final widthBytes = bitmap.bytesPerRow;
     if (widthBytes > 0xFFFF || bitmap.height > 0xFFFF) {
       throw ArgumentError('bitmap is too large for a single GS v 0 command');
+    }
+    // The header declares exactly widthBytes x height bytes of pixels, and
+    // the printer counts them. One byte short and it keeps reading: the feed,
+    // the cut and the drawer kick are all consumed as image data, and the
+    // machine sits waiting for the rest of a picture that will never arrive,
+    // mid-job, with a customer at the counter. A logo decoder that rounds its
+    // row stride is all it takes.
+    final expected = widthBytes * bitmap.height;
+    if (bitmap.bits.length != expected) {
+      throw ArgumentError(
+        'bitmap declares ${bitmap.width}x${bitmap.height} '
+        '($expected bytes) but carries ${bitmap.bits.length}',
+      );
     }
     _raw([
       _gs,

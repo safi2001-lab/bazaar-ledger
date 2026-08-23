@@ -486,8 +486,73 @@ void main() {
             ],
           ),
         );
-        // Throws if it does not balance, which is the assertion.
-        posting.assertBalanced();
+        // `build` already calls `assertBalanced`, so calling it again here
+        // asserts nothing at all: the posting is balanced by construction and
+        // this loop would pass with the journal emptied, with sales credited
+        // net instead of gross, or with COGS and inventory both dropped.
+        //
+        // What follows is an independent oracle. Every figure is computed from
+        // the calculated sale rather than read back off the posting, so a
+        // wrong account, a missing line or a doubled amount all fail here.
+        final calculated = calculator.calculate(
+          SaleDraft(
+            partyId: 'P-1',
+            lines: lines,
+            roundToRupee: roundToRupee,
+            tenders: [
+              if (paid.isPositive)
+                TenderDraft(
+                  paymentAccountId: 'PA-CASH',
+                  mode: 'cash',
+                  amount: paid,
+                ),
+            ],
+          ),
+          untaxed,
+        );
+
+        final debits = Money.sum([for (final l in posting.journal.lines) l.debit]);
+        final credits =
+            Money.sum([for (final l in posting.journal.lines) l.credit]);
+
+        // What the shop received or is owed, plus the discount it gave away,
+        // plus what the goods cost it, plus a downward rounding.
+        final expected = calculated.paid +
+            calculated.balance +
+            calculated.lineDiscountTotal +
+            calculated.billDiscount +
+            calculated.cost +
+            (calculated.roundOff.isNegative
+                ? -calculated.roundOff
+                : Money.zero);
+
+        expect(debits, expected, reason: 'debits on iteration $i');
+        expect(credits, expected, reason: 'credits on iteration $i');
+        expect(debits, credits);
+
+        // Sales is credited GROSS. Netting the discount off it would still
+        // balance, and would hide from a shopkeeper how much riayat they gave
+        // away this month.
+        final byKey = <String, Money>{};
+        for (final l in posting.journal.lines) {
+          byKey[l.accountSystemKey] =
+              (byKey[l.accountSystemKey] ?? Money.zero) + l.credit;
+        }
+        final grossSales = Money.sum([
+          for (final l in calculated.lines) l.gross,
+        ]);
+        expect(byKey['sales'], grossSales, reason: 'gross sales on $i');
+
+        // Nothing is posted twice, and every amount is a real one.
+        for (final l in posting.journal.lines) {
+          expect(l.debit.isNegative, isFalse);
+          expect(l.credit.isNegative, isFalse);
+          expect(
+            l.debit.isZero != l.credit.isZero,
+            isTrue,
+            reason: 'a journal line carries exactly one side',
+          );
+        }
       }
     });
   });

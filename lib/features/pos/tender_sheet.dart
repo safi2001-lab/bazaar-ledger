@@ -112,8 +112,15 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           .queries
           .paymentAccounts(firm.id);
     } on Object catch (error) {
+      // `_busy` has to come back down here too. Leaving it set showed the
+      // shopkeeper an error message underneath a permanently dead Save
+      // button, and the only way out was to dismiss the sheet and rebuild
+      // the whole cart.
       if (mounted) {
-        setState(() => _failure = '${s.billSaveFailed}\n\n$error');
+        setState(() {
+          _failure = '${s.billSaveFailed}\n\n$error';
+          _busy = false;
+        });
       }
       return;
     }
@@ -123,7 +130,12 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       // Nothing to post the money into. First run seeds a cash account, so
       // this means every account has been archived — which is recoverable,
       // and is said in words rather than thrown.
-      if (mounted) setState(() => _failure = s.tenderNoAccount);
+      if (mounted) {
+        setState(() {
+          _failure = s.tenderNoAccount;
+          _busy = false;
+        });
+      }
       return;
     }
 

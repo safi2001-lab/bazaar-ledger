@@ -10310,7 +10310,8 @@ class Parties extends Table with TableInfo<Parties, Party> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (default_discount_bp BETWEEN 0 AND 10000)',
     defaultValue: const CustomExpression('0'),
   );
   static const VerificationMeta _isActiveMeta = const VerificationMeta(
@@ -13077,6 +13078,7 @@ class Documents extends Table with TableInfo<Documents, Document> {
   @override
   List<String> get customConstraints => const [
     'CHECK(revision = 1 OR supersedes_id IS NOT NULL)',
+    'CHECK(balance_paisa <= 0 OR party_id IS NOT NULL)',
     'CHECK(status <> \'posted\' OR posted_at_utc IS NOT NULL)',
   ];
   @override
@@ -16647,7 +16649,7 @@ class Payments extends Table with TableInfo<Payments, Payment> {
   bool get isStrict => true;
   @override
   List<String> get customConstraints => const [
-    'CHECK(tendered_paisa IS NULL OR tendered_paisa >= amount_paisa)',
+    'CHECK(tendered_paisa IS NULL OR(tendered_paisa >= amount_paisa AND change_paisa = tendered_paisa - amount_paisa))',
     'CHECK(mode <> \'cheque\' OR cheque_no IS NOT NULL)',
   ];
   @override
@@ -24187,7 +24189,7 @@ class DocumentLines extends Table with TableInfo<DocumentLines, DocumentLine> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
+    $customConstraints: 'NOT NULL CHECK (qty_thousandths <> 0)',
   );
   static const VerificationMeta _unitIdMeta = const VerificationMeta('unitId');
   late final GeneratedColumn<String> unitId = GeneratedColumn<String>(
@@ -24272,7 +24274,8 @@ class DocumentLines extends Table with TableInfo<DocumentLines, DocumentLine> {
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (discount_bp BETWEEN 0 AND 10000)',
     defaultValue: const CustomExpression('0'),
   );
   static const VerificationMeta _discountPaisaMeta = const VerificationMeta(
@@ -24847,6 +24850,10 @@ class DocumentLine extends DataClass implements Insertable<DocumentLine> {
   final int? mrpPaisa;
   final String? lotId;
   final int grossPaisa;
+
+  /// Basis points, so 100% is 10000. Nothing else is a discount: a line
+  /// discount over the line is a refund, and a negative one is a surcharge
+  /// pretending otherwise.
   final int discountBp;
   final int discountPaisa;
   final int taxablePaisa;

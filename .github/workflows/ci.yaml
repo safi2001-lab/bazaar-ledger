@@ -1,0 +1,132 @@
+name: ci
+
+# Every gate, failing closed.
+#
+# The order is deliberate: the cheap checks that catch the most run first, and
+# nothing downstream runs if an earlier gate fails. `verify_ledger` runs last
+# because it is the only one that can say the milestone is not what a commit
+# message claims, and it should say so about a tree that is otherwise green.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Pinned exactly, not "stable". A developer on a newer Flutter and a CI on
+  # an older one get different diagnostics from the same code, and the
+  # difference always surfaces as an argument about whose machine is right.
+  FLUTTER_VERSION: 3.44.9
+
+jobs:
+  gates:
+    name: analyze, architecture, tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve every package
+        run: |
+          set -e
+          for dir in packages/*/ .; do
+            echo "== pub get $dir"
+            (cd "$dir" && flutter pub get)
+          done
+
+      - name: Generate localisations
+        run: flutter gen-l10n
+
+      # Zero issues, infos included. Most lint diagnostics are info-level, so
+      # without --fatal-infos a rule that lights up every IDE in the team
+      # passes CI silently.
+      - name: Analyze
+        run: |
+          set -e
+          for dir in packages/*/ .; do
+            echo "== analyze $dir"
+            (cd "$dir" && dart analyze --fatal-infos --fatal-warnings)
+          done
+
+      # Twelve rules, each naming the defect it exists to prevent. A plain
+      # script with no dependencies, so no analyzer bump can silently disable
+      # it and leave the tick green.
+      - name: Architecture rules
+        run: dart run tool/arch_check.dart
+
+      - name: Package tests
+        run: |
+          set -e
+          for dir in packages/*/; do
+            if [ -d "$dir/test" ]; then
+              echo "== test $dir"
+              (cd "$dir" && flutter test --reporter expanded)
+            fi
+          done
+
+      # Widget tests drive the real tree against a real SQLite database. Mock
+      # databases are banned here on purpose: the build this replaced passed
+      # its whole suite while the app wrote nothing at all.
+      - name: App tests
+        run: flutter test --reporter expanded
+
+      # Last, and the only gate that can contradict a commit message.
+      - name: Feature ledger
+        run: dart run tool/verify_ledger.dart
+
+  build:
+    name: release APKs
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: gates
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve every package
+        run: |
+          set -e
+          for dir in packages/*/ .; do
+            (cd "$dir" && flutter pub get)
+          done
+
+      # Per-ABI, because a real proportion of these installs arrive over
+      # Bluetooth or SHAREit during an internet shutdown, and a shopkeeper
+      # pays for every megabyte of a fat APK in minutes.
+      - name: Build
+        run: flutter build apk --release --split-per-abi --split-debug-info=build/symbols --obfuscate
+
+      # The size target is under 30 MB per ABI. Printed rather than asserted
+      # for now; it becomes a hard gate once M2's assets have landed and the
+      # number has stopped moving.
+      - name: Report APK size
+        run: ls -lh build/app/outputs/flutter-apk/*.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apks
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 14
