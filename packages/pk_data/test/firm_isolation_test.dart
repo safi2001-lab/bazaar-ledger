@@ -138,8 +138,9 @@ void main() {
       isEmpty,
       reason: 'and not one row of it is shared between them',
     );
-    expect(await queries.units(first.firmId), hasLength(10));
-    expect(await queries.units(second.firmId), hasLength(10));
+    // Twelve: pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz.
+    expect(await queries.units(first.firmId), hasLength(12));
+    expect(await queries.units(second.firmId), hasLength(12));
   });
 }
 

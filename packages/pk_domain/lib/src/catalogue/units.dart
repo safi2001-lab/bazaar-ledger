@@ -128,6 +128,30 @@ const List<UnitSpec> defaultUnits = [
     kind: UnitKind.length,
     decimals: 2,
   ),
+  // A tola is 11.664 g, and it converts to grams rather than to kilos on
+  // purpose. Thousandths of a kilo are whole grams, and 11.664 g is not a
+  // whole number of them — so a jeweller stocks in grams, where a tola is
+  // exactly 11664 thousandths, and an item stocked in kilos is refused the
+  // conversion rather than quietly rounded. The traditional fractions of a
+  // tola are halves, quarters and eighths, and every one of those is exact.
+  UnitSpec(
+    code: 'tola',
+    nameEn: 'Tola (11.664 g)',
+    nameUr: 'Tola',
+    kind: UnitKind.weight,
+    decimals: 3,
+  ),
+  // Pakistan's seer is metric: a maund is 40 kg and forty seer, so a seer is
+  // a kilo exactly. It is kept as its own unit because the older trades still
+  // price and order in seer, and printing "1 seer" on a bill a shopkeeper
+  // asked for in seer matters more than the arithmetic, which is a no-op.
+  UnitSpec(
+    code: 'seer',
+    nameEn: 'Seer (1 kg)',
+    nameUr: 'Seer',
+    kind: UnitKind.weight,
+    decimals: 3,
+  ),
 ];
 
 /// The conversions that come with [defaultUnits].
@@ -148,4 +172,7 @@ const List<UnitConversionSpec> defaultUnitConversions = [
   UnitConversionSpec(fromCode: 'ml', toCode: 'l', factorThousandths: 1),
   UnitConversionSpec(fromCode: 'm', toCode: 'cm', factorThousandths: 100000),
   UnitConversionSpec(fromCode: 'gaz', toCode: 'cm', factorThousandths: 91440),
+  // 1 tola = 11.664 g. To grams, never to kilos: see the unit above.
+  UnitConversionSpec(fromCode: 'tola', toCode: 'g', factorThousandths: 11664),
+  UnitConversionSpec(fromCode: 'seer', toCode: 'kg', factorThousandths: 1000),
 ];

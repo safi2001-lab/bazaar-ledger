@@ -48,8 +48,13 @@ void main() {
       // that reads the same constant the seeder iterates says only that
       // the loop ran; empty the list and it becomes 0 == 0.
       expect(await count('accounts'), 37);
-      expect(await count('units'), 10);
-      expect(await count('unit_conversions'), 6);
+      // pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz.
+      expect(await count('units'), 12);
+      // dozen→pcs, g→kg, maund→kg, seer→kg, tola→g, ml→l, m→cm, gaz→cm.
+      // No bori: flour ships in 10, 40, 50 and 80 kg sacks and the shop says
+      // which it means, so a bori is created per firm rather than shipped
+      // with a number baked into it.
+      expect(await count('unit_conversions'), 8);
       // One per tender the counter offers: cash, bank transfer, JazzCash,
       // EasyPaisa, Raast, card and cheque. Seeding only cash meant every
       // non-cash sale debited Cash in Hand.

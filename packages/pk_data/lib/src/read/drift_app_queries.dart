@@ -433,6 +433,27 @@ final class DriftAppQueries implements AppQueries {
     ];
   }
 
+  @override
+  Future<List<UnitEdge>> unitConversions(String firmId) async {
+    final rows = await _db
+        .customSelect(
+          'SELECT from_unit_id, to_unit_id, factor_thousandths, item_id '
+          'FROM unit_conversions '
+          'WHERE firm_id = ? AND deleted_at_utc IS NULL',
+          variables: [Variable<String>(firmId)],
+        )
+        .get();
+    return [
+      for (final r in rows)
+        UnitEdge(
+          fromUnitId: r.read<String>('from_unit_id'),
+          toUnitId: r.read<String>('to_unit_id'),
+          factorThousandths: r.read<int>('factor_thousandths'),
+          itemId: r.readNullable<String>('item_id'),
+        ),
+    ];
+  }
+
   static ItemSummary _itemFrom(QueryRow r) => ItemSummary(
         id: r.read<String>('id'),
         name: r.read<String>('name'),

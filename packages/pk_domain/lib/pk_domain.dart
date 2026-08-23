@@ -8,6 +8,7 @@ library;
 export 'package:pk_money/pk_money.dart';
 
 export 'src/accounting/chart_of_accounts.dart';
+export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';
 export 'src/identity/actor_context.dart';
 export 'src/identity/ulid.dart';

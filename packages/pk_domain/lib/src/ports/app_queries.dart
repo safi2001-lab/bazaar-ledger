@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../catalogue/unit_converter.dart';
 import 'receipt.dart';
 
 /// The shop, as the app needs it on screen.
@@ -236,4 +237,13 @@ abstract interface class AppQueries {
   Future<List<({String id, String code, String name, int decimals})>> units(
     String firmId,
   );
+
+  /// Which unit is the same thing as which other, and by how much.
+  ///
+  /// Loaded whole rather than queried per line: a shop has a couple of dozen
+  /// of these at most, the counter needs them on every keystroke to decide
+  /// which units it may offer, and a query per keystroke against a 20,000-SKU
+  /// catalogue on an Android Go handset is the thing this product cannot
+  /// afford.
+  Future<List<UnitEdge>> unitConversions(String firmId);
 }
