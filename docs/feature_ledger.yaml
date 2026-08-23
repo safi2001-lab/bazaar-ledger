@@ -15,6 +15,145 @@
 # group description and test description joined by a space.
 #
 # status: done | wip | todo
+#
+# ---------------------------------------------------------------------------
+# Why `milestones:` exists.
+#
+# For several weeks every one of the fifty rows below said `milestone: M0`, and
+# verify_ledger scored only the milestones that had rows. M1 through M14 had no
+# denominator, were never printed, and could not fail. Eight commits announcing
+# M1 and M2 work passed a gate that was never asked the question.
+#
+# Declaring every milestone up front is what fixes that. A milestone with no
+# rows now prints as a dash and, once it is `open`, fails the build outright.
+# The gate can finally contradict a commit message.
+#
+# state:  planned  declared, not started. Its files may not be touched yet.
+#         open     being built. Must have rows; its percentage is real.
+#         sealed   finished. Still touchable for fixes; still measured.
+#
+# owns:   path globs. The longest matching pattern wins, so `packages/**` under
+#         M0 is a catch-all that any later milestone overrides for its own
+#         area. This is what stops M7 code being written during M2.
+# ---------------------------------------------------------------------------
+
+milestones:
+  - id: M0
+    title: The walking skeleton — one real sale
+    state: sealed
+    owns:
+      - packages/**
+      - lib/**
+
+  - id: M1
+    title: Catalogue and stock truth
+    state: open
+    owns:
+      - lib/features/items/**
+      - packages/pk_domain/lib/src/catalogue/**
+
+  - id: M2
+    title: A receipt reaches paper, once, on hardware a shop owns
+    state: open
+    owns:
+      - packages/pk_platform/**
+      - packages/pk_printer_android/**
+      - lib/features/printing/**
+      - lib/features/scan/**
+
+  - id: M3
+    title: Parties, udhaar and money in and out
+    state: planned
+    owns:
+      - lib/features/khata/**
+      - lib/features/expenses/**
+      - packages/pk_domain/lib/src/receivables/**
+
+  - id: M4
+    title: Purchases and cost truth
+    state: planned
+    owns:
+      - lib/features/purchases/**
+      - packages/pk_domain/lib/src/costing/**
+
+  - id: M5
+    title: Corrections, returns and data safety
+    state: planned
+    owns:
+      - lib/features/backup/**
+      - lib/features/recycle/**
+      - packages/pk_domain/lib/src/corrections/**
+      - packages/pk_platform/lib/src/backup/**
+      - packages/pk_bootstrap/lib/src/backup_service.dart
+      - packages/pk_bootstrap/lib/src/encrypted_database.dart
+
+  - id: M6
+    title: Post-dated cheques
+    state: planned
+    owns:
+      - lib/features/cheques/**
+      - packages/pk_domain/lib/src/cheques/**
+
+  - id: M7
+    title: Sales documents, the conversion chain and pricing
+    state: planned
+    owns:
+      - lib/features/documents/**
+      - packages/pk_domain/lib/src/documents/**
+
+  - id: M8
+    title: The reports engine and the report pack
+    state: planned
+    owns:
+      - packages/pk_reports/**
+      - packages/pk_export/**
+      - lib/features/reports/**
+
+  - id: M9
+    title: Multi-user, roles, audit and entitlement
+    state: planned
+    owns:
+      - lib/features/users/**
+      - lib/features/audit/**
+      - lib/features/day_close/**
+      - lib/features/subscription/**
+      - packages/pk_billing/**
+      - packages/pk_domain/lib/src/entitlement/**
+
+  - id: M10
+    title: Multi-firm and full accounting
+    state: planned
+    owns:
+      - lib/features/accounting/**
+      - lib/features/firms/**
+
+  - id: M11
+    title: Batches, serials, godowns and the pharmacy vertical
+    state: planned
+    owns:
+      - lib/features/batches/**
+      - packages/pk_domain/lib/src/stock/**
+      - packages/pk_domain/lib/src/barcode/**
+
+  - id: M12
+    title: The Pakistan tax pack, computed locally and never transmitted
+    state: planned
+    owns:
+      - lib/features/tax/**
+      - packages/pk_domain/lib/src/tax/pack/**
+
+  - id: M13
+    title: LAN multi-counter sync over the shop's own wi-fi
+    state: planned
+    owns:
+      - lib/features/sync/**
+      - packages/pk_sync/**
+
+  - id: M14
+    title: Launch hardening and Excel import
+    state: planned
+    owns:
+      - lib/features/import/**
 
 features:
   # ---------------------------------------------------------------------------
@@ -461,5 +600,322 @@ features:
   - id: M0-GOLDEN-01
     milestone: M0
     title: Golden tests for every component, light and dark, both languages
+    status: todo
+    proof: []
+
+  # ---------------------------------------------------------------------------
+  # M1 — the catalogue, and stock that tells the truth
+  #
+  # These rows are backfilled. Six commits announced M1 work before a single M1
+  # row existed, so none of it was ever measured. The proofs below all name
+  # tests that were already written and already passing; what changes is that
+  # the gate is now being asked about them, and that the five `todo` rows say
+  # out loud which parts of M1 a shopkeeper still cannot reach.
+  # ---------------------------------------------------------------------------
+
+  - id: M1-UNIT-01
+    milestone: M1
+    title: Units convert both ways, exactly, or refuse
+    status: done
+    proof:
+      - the everyday conversions a dozen is twelve pieces
+      - the everyday conversions 750 grams stays 750 grams through a kilo and back
+      - chains a maund of flour reaches grams through kilos
+      - chains a dozen cannot become a kilo
+      - the edges of the thing a unit converts to itself without consulting anything
+      - the edges of the thing zero is zero in any unit
+      - the edges of the thing an unknown unit is refused, not guessed at
+      - the edges of the thing a very large quantity does not overflow into nonsense
+
+  - id: M1-UNIT-02
+    milestone: M1
+    title: A maund is forty kilos and a tola is 11.664 grams
+    status: done
+    proof:
+      - the everyday conversions a maund is forty kilos, and forty kilos is a maund
+      - the everyday conversions a seer is a kilo, because Pakistan metricated
+      - tola, which is where exactness earns its keep a tola is 11.664 grams
+      - tola, which is where exactness earns its keep the traditional fractions are all exact
+      - tola, which is where exactness earns its keep a tola cannot be expressed in a stock kept in kilos
+      - tola, which is where exactness earns its keep and the counter can ask first
+
+  - id: M1-UNIT-03
+    milestone: M1
+    title: One shop's bori is not another's, and the item may say so
+    status: done
+    proof:
+      - one shop's bori is not another's an item with its own sack size uses it
+      - one shop's bori is not another's an item without one falls back to the shop
+      - one shop's bori is not another's and the shop-wide conversion is unaffected by either
+
+  - id: M1-UNIT-04
+    milestone: M1
+    title: A rate converts per unit without inventing a paisa
+    status: done
+    proof:
+      - the same price, per a different unit a hundred a piece is twelve hundred a dozen
+      - the same price, per a different unit and back again, losing nothing
+      - the same price, per a different unit a rate per kilo becomes a rate per maund
+      - the same price, per a different unit a price that will not come out even is refused
+      - the same price, per a different unit a rate converts to itself without consulting anything
+      - the edges of the thing what a counter may offer for an item
+
+  - id: M1-SALE-01
+    milestone: M1
+    title: A bill written in maunds takes kilos off the shelf
+    status: done
+    proof:
+      - a bill in maunds takes kilos off the shelf
+      - an item with no conversions offers no choice at all
+
+  - id: M1-ITEM-01
+    milestone: M1
+    title: The full item master round-trips through the editor
+    status: done
+    proof:
+      - the full item master round-trips through the editor
+
+  - id: M1-ITEM-02
+    milestone: M1
+    title: A service carries no stock and no opening balance
+    status: done
+    proof:
+      - a service carries no stock and no opening balance
+
+  - id: M1-ITEM-03
+    milestone: M1
+    title: An item can carry a photograph
+    status: todo
+    proof: []
+
+  - id: M1-STOCK-01
+    milestone: M1
+    title: A stock take that comes up short writes the loss off, at cost
+    status: done
+    proof:
+      - a stock take that comes up short writes the loss off
+      - stock that turns up is put back, the other way round
+      - a stock take that agrees with the ledger is not a correction
+      - a stock take that comes up short is written down
+
+  - id: M1-STOCK-02
+    milestone: M1
+    title: A correction says who, when and why, and is refused without a reason
+    status: done
+    proof:
+      - and the correction says who, when and why
+      - a correction without a reason is refused
+      - a correction cannot be saved without a reason
+
+  - id: M1-STOCK-03
+    milestone: M1
+    title: A breakage is typed as what broke, not as a negative
+    status: done
+    proof:
+      - a breakage is a write-off, and says so
+      - a breakage is typed as what broke, not as a negative
+
+  - id: M1-STOCK-04
+    milestone: M1
+    title: The books still balance after a stock correction
+    status: done
+    proof:
+      - the books still balance afterwards
+      - an item that carries no stock has nothing to correct
+
+  - id: M1-PERF-01
+    milestone: M1
+    title: Twenty thousand SKUs, and the counter still answers in time
+    status: done
+    proof:
+      - the fixture really is twenty thousand SKUs
+      - searching the counter stays inside its budget
+      - a search that matches nothing is the worst case, and is measured
+      - a term that only matches the far end of the catalogue
+      - the first page of a browse stays inside its budget
+      - a barcode scan is effectively instant
+
+  - id: M1-PERF-02
+    milestone: M1
+    title: Paging does not get slower the deeper it goes
+    status: done
+    proof:
+      - paging does not get slower the deeper it goes
+      - nothing loads the whole catalogue to answer a question
+
+  - id: M1-LOW-01
+    milestone: M1
+    title: What is about to run out, worst first
+    status: done
+    proof:
+      - what is about to run out, worst first
+      - the low-stock list stays inside its budget
+
+  - id: M1-LOW-02
+    milestone: M1
+    title: A shopkeeper can open the low-stock list and act on it
+    status: todo
+    # The query is written, tested and fast. The four Roman-Urdu strings are in
+    # both ARBs. Nothing in lib/features/ references any of them, so a
+    # shopkeeper cannot reach it — and a commit called this milestone work done.
+    proof: []
+
+  - id: M1-PAGE-01
+    milestone: M1
+    title: The item and sales lists actually page as the shopkeeper scrolls
+    status: todo
+    # searchItems and recentSales both take `afterId` and neither caller passes
+    # it; the sales list is a hard limit of 60. The keyset machinery is real,
+    # tested against 20,000 rows, and unreachable.
+    proof: []
+
+  - id: M1-HIST-01
+    milestone: M1
+    title: An item shows where its stock went
+    status: todo
+    proof: []
+
+  - id: M1-STOCK-05
+    milestone: M1
+    title: A stock summary a shopkeeper can read at a glance
+    status: todo
+    proof: []
+
+  # ---------------------------------------------------------------------------
+  # M2 — a receipt reaches paper, once, on hardware a shop already owns
+  #
+  # Two commits said this milestone had landed. Both described packages, not the
+  # app: nothing under lib/ imports a printer, pk_bootstrap deliberately does
+  # not export one, and the receipt screen renders `print_disabled` under a
+  # string that reads "Printing arrives in M2." The library rows below are
+  # genuinely done and genuinely good. M2-WIRE-01 is the row that decides
+  # whether any of it is a feature.
+  # ---------------------------------------------------------------------------
+
+  - id: M2-LAN-01
+    milestone: M2
+    title: A printer on the shop wi-fi takes every byte, in order
+    status: done
+    proof:
+      - a printer on the shop wi-fi takes every byte of the receipt, in order
+
+  - id: M2-LAN-02
+    milestone: M2
+    title: An unreachable printer is safe to try again
+    status: done
+    proof:
+      - a printer on the shop wi-fi an unreachable printer is safe to try again
+
+  - id: M2-QUEUE-01
+    milestone: M2
+    title: One job, printed once, however many times it is asked for
+    status: done
+    proof:
+      - the queue, and the rule it exists for one job, printed once, however many times it is asked for
+      - the queue, and the rule it exists for jobs go out one at a time
+
+  - id: M2-QUEUE-02
+    milestone: M2
+    title: A print that failed part way is never retried on its own
+    status: done
+    proof:
+      - the queue, and the rule it exists for a print that failed part way is never retried on its own
+      - the queue, and the rule it exists for a print that never started is retried, and then gives up
+      - the queue, and the rule it exists for a transport that throws something unexpected is treated as partial
+
+  - id: M2-QUEUE-03
+    milestone: M2
+    title: A reprint is a deliberate act and goes through a different door
+    status: done
+    proof:
+      - the queue, and the rule it exists for a reprint is a deliberate act and goes through a different door
+
+  - id: M2-QUEUE-04
+    milestone: M2
+    title: Idempotency survives the process being killed mid-print
+    status: todo
+    # _finished and _pending are plain maps on an object. Android Go ROMs kill
+    # this app aggressively — the cart is persisted to disk for exactly that
+    # reason — so a shopkeeper who reopens and taps Print gets a second
+    # receipt. Nothing writes a job id anywhere that outlives the process.
+    proof: []
+
+  - id: M2-PERM-01
+    milestone: M2
+    title: The permission list is a promise a shopkeeper can check
+    status: done
+    proof:
+      - every manifest that ships is present
+      - nothing asks for location, ever
+      - the app asks for exactly what its features need, and nothing else
+      - Bluetooth is asked for by the plugin that uses it
+      - scanning is declared as never being about location
+      - the legacy Bluetooth pair stop at Android 11
+      - the books are kept out of every backup Android performs
+
+  - id: M2-BT-01
+    milestone: M2
+    title: Bluetooth SPP reaches a battery printer without asking for location
+    status: wip
+    # The Kotlin plugin exists and builds into a real APK. It has zero tests —
+    # Dart or Kotlin — and its Gradle test task runs zero tests while reporting
+    # success, because useJUnitPlatform() is configured with no JUnit engine on
+    # the classpath. The chunker and the bytes-written contract are what the
+    # whole no-double-print design rests on, and neither is verified.
+    proof: []
+
+  - id: M2-USB-01
+    milestone: M2
+    title: The printer already cabled to the counter prints
+    status: todo
+    proof: []
+
+  - id: M2-WIRE-01
+    milestone: M2
+    title: A printer is reachable from the app at all
+    status: todo
+    # The row this milestone lives or dies on. grep for PrintQueue, TcpPrinter,
+    # BluetoothPrinter or PrinterTransport across lib/ returns nothing.
+    proof: []
+
+  - id: M2-SETUP-01
+    milestone: M2
+    title: A printer setup screen with a test print you can look at
+    status: todo
+    proof: []
+
+  - id: M2-PRINT-01
+    milestone: M2
+    title: A bill prints from the receipt screen and from the counter
+    status: todo
+    proof: []
+
+  - id: M2-SCAN-01
+    milestone: M2
+    title: A hardware scanner puts the right item on the bill
+    status: todo
+    proof: []
+
+  - id: M2-SCAN-02
+    milestone: M2
+    title: The phone camera reads a barcode
+    status: todo
+    proof: []
+
+  - id: M2-LABEL-01
+    milestone: M2
+    title: Shelf labels print at the declared width
+    status: todo
+    proof: []
+
+  - id: M2-DRAWER-01
+    milestone: M2
+    title: The cash drawer opens on a cash sale, and only then
+    status: todo
+    proof: []
+
+  - id: M2-URDU-01
+    milestone: M2
+    title: Urdu on a receipt is rasterised, never sent as code page bytes
     status: todo
     proof: []

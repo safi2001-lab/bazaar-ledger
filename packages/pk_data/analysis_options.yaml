@@ -5,3 +5,18 @@ analyzer:
     # Generated from the .drift files, which are the source of truth. Nothing
     # here is hand-edited, and nothing here is reviewed.
     - lib/**.g.dart
+
+    # The migration machinery, also generated:
+    #
+    #   lib/src/db/schema_versions.dart   the stepByStep dispatcher
+    #   test/generated/**                 one frozen snapshot per schema
+    #                                     version, used to migrate a realistic
+    #                                     v(N) database into v(N+1) and assert
+    #                                     the result
+    #
+    # These carry `ignore_for_file: type=lint`, which does not silence
+    # `strict_raw_type` — that is a language strictness setting rather than a
+    # lint, and drift's generator emits raw `TableInfo` by design. Excluding
+    # the paths is honest; loosening the setting repository-wide would not be.
+    - lib/src/db/schema_versions.dart
+    - test/generated/**

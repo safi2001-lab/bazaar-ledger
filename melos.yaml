@@ -14,9 +14,16 @@ scripts:
     run: melos exec -c 1 -- dart analyze --fatal-infos
     description: Analyze every package. Zero issues required.
 
-  lint:custom:
-    run: melos exec -c 1 --depends-on="custom_lint" -- dart run custom_lint
-    description: Run the architectural custom_lint rules.
+  l10n:
+    run: flutter gen-l10n
+    description: Regenerate the Roman-Urdu and English string classes.
+
+  l10n:check:
+    run: flutter gen-l10n && git diff --exit-code -- lib/l10n
+    description: >-
+      Fail if the committed string classes differ from what the ARBs generate.
+      The generated files are committed AND regenerated in CI, so without this
+      a stale checked-in generation diverges in silence.
 
   test:
     run: melos exec -c 1 --dir-exists="test" -- flutter test
@@ -34,10 +41,31 @@ scripts:
     run: dart run tool/arch_check.dart
     description: Assert the package import graph matches the layering rules.
 
+  ledger:
+    run: dart run tool/verify_ledger.dart --offline --strict
+    description: >-
+      Check the ledger's shape without running a suite: every milestone
+      declared, every open milestone measured, every changed file owned by a
+      row, every milestone a commit names actually open.
+
   verify:
     run: dart run tool/verify_ledger.dart
     description: Fail if any feature marked done lacks a passing proof test.
 
   ci:
-    run: melos run analyze && melos run lint:custom && melos run arch && melos run test && melos run verify
-    description: Everything CI runs, in order.
+    run: melos run l10n:check && melos run analyze && melos run arch && melos run ledger && melos run test && melos run verify
+    description: >-
+      Every host gate, in order. This is the list CI runs; gate_parity_test
+      fails if the workflow and this script disagree.
+
+  android:
+    run: dart run tool/android_gates.dart
+    description: >-
+      Build the release APKs and assert what only an artefact can prove:
+      real signing, the merged permission set, 16 KB alignment, and size.
+
+  device:
+    run: flutter test integration_test && dart run tool/verify_ledger.dart --device
+    description: >-
+      The acceptance gate. Needs an emulator or a handset; see
+      docs/verification_tiers.md for what runs when neither is available.

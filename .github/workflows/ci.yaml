@@ -2,10 +2,19 @@ name: ci
 
 # Every gate, failing closed.
 #
-# The order is deliberate: the cheap checks that catch the most run first, and
-# nothing downstream runs if an earlier gate fails. `verify_ledger` runs last
-# because it is the only one that can say the milestone is not what a commit
-# message claims, and it should say so about a tree that is otherwise green.
+# Three jobs, in tiers, matching docs/verification_tiers.md:
+#
+#   gates    Tier A — host only. Arithmetic, schema, the write path, widgets,
+#            goldens, and every file-shaped fact.
+#   android  Tier B — host plus the Android SDK. The things only an artefact
+#            can prove: real signing, the MERGED permission set, 16 KB
+#            alignment, size.
+#   device   Tier C — an emulator. integration_test/, which is the acceptance
+#            gate and had never run anywhere but a bench handset.
+#
+# The gate lists live in melos.yaml and this file calls them, so the two cannot
+# drift apart. test/gate_parity_test.dart fails if they do — because a workflow
+# that has quietly stopped running a gate looks exactly like one that runs it.
 
 on:
   push:
@@ -18,19 +27,23 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # Pinned exactly, not "stable". A developer on a newer Flutter and a CI on
-  # an older one get different diagnostics from the same code, and the
-  # difference always surfaces as an argument about whose machine is right.
+  # Pinned exactly, not "stable". A developer on a newer Flutter and a CI on an
+  # older one get different diagnostics from the same code, and the difference
+  # always surfaces as an argument about whose machine is right.
   FLUTTER_VERSION: 3.44.9
 
 jobs:
   gates:
-    name: analyze, architecture, tests
+    name: Tier A — host
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
     steps:
+      # Full history: verify_ledger's R4 and R5 read the commit range, and a
+      # shallow clone silently degrades them into rules that always pass.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: subosito/flutter-action@v2
         with:
@@ -46,25 +59,31 @@ jobs:
             (cd "$dir" && flutter pub get)
           done
 
-      - name: Generate localisations
-        run: flutter gen-l10n
+      - run: dart pub global activate melos
+
+      # The generated string classes are committed AND regenerated here. Without
+      # this, a stale checked-in generation is silently overwritten in CI and
+      # diverges from what every developer sees locally.
+      - name: Localisations are not stale
+        run: melos run l10n:check
 
       # Zero issues, infos included. Most lint diagnostics are info-level, so
-      # without --fatal-infos a rule that lights up every IDE in the team
-      # passes CI silently.
+      # without --fatal-infos a rule that lights up every IDE passes CI in
+      # silence.
       - name: Analyze
-        run: |
-          set -e
-          for dir in packages/*/ .; do
-            echo "== analyze $dir"
-            (cd "$dir" && dart analyze --fatal-infos --fatal-warnings)
-          done
+        run: melos run analyze
 
-      # Twelve rules, each naming the defect it exists to prevent. A plain
-      # script with no dependencies, so no analyzer bump can silently disable
-      # it and leave the tick green.
+      # Thirteen rules, each naming the defect it exists to prevent, each with
+      # fixtures proving it can still fire. A plain script with no dependencies,
+      # so no analyzer bump can disable it and leave the tick green.
       - name: Architecture rules
-        run: dart run tool/arch_check.dart
+        run: melos run arch
+
+      # The ledger's shape, before anything is run: every milestone declared,
+      # every open milestone measured, every changed file owned, every
+      # milestone a commit names actually open.
+      - name: Feature ledger — shape
+        run: melos run ledger
 
       - name: Package tests
         run: |
@@ -77,23 +96,38 @@ jobs:
           done
 
       # Widget tests drive the real tree against a real SQLite database. Mock
-      # databases are banned here on purpose: the build this replaced passed
-      # its whole suite while the app wrote nothing at all.
+      # databases are banned here on purpose: the build this replaced passed its
+      # whole suite while the app wrote nothing at all.
       - name: App tests
         run: flutter test --reporter expanded
 
-      # Last, and the only gate that can contradict a commit message.
-      - name: Feature ledger
-        run: dart run tool/verify_ledger.dart
+      - name: Golden failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: golden-failures
+          path: test/failures/**
+          retention-days: 7
+          if-no-files-found: ignore
 
-  build:
-    name: release APKs
+      # Last, and the only gate that can contradict a commit message.
+      - name: Feature ledger — proofs
+        run: melos run verify
+
+  android:
+    name: Tier B — artefact
     runs-on: ubuntu-latest
     timeout-minutes: 30
     needs: gates
 
     steps:
       - uses: actions/checkout@v4
+
+      # The wrapper jar is committed, so its checksum is checked against
+      # Gradle's published list. That is the actual defence against a tampered
+      # wrapper — rather than not committing one and building against whatever
+      # the runner happens to have.
+      - uses: gradle/actions/wrapper-validation@v4
 
       - uses: actions/setup-java@v4
         with:
@@ -113,20 +147,113 @@ jobs:
             (cd "$dir" && flutter pub get)
           done
 
-      # Per-ABI, because a real proportion of these installs arrive over
-      # Bluetooth or SHAREit during an internet shutdown, and a shopkeeper
-      # pays for every megabyte of a fat APK in minutes.
-      - name: Build
-        run: flutter build apk --release --split-per-abi --split-debug-info=build/symbols --obfuscate
+      # A release build without this now FAILS rather than producing an
+      # unsigned APK, so a fork PR with no access to the secret cannot quietly
+      # produce a green artefact nobody could install.
+      - name: Upload key
+        id: key
+        env:
+          KEYSTORE: ${{ secrets.UPLOAD_KEYSTORE_BASE64 }}
+          STORE_PASSWORD: ${{ secrets.UPLOAD_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.UPLOAD_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.UPLOAD_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No upload keystore secret. The Tier B artefact"\
+                 "gates are SKIPPED, not passed — see the summary."
+            exit 0
+          fi
+          echo "$KEYSTORE" | base64 -d > android/upload.jks
+          cat > android/key.properties <<EOF
+          storeFile=upload.jks
+          storePassword=$STORE_PASSWORD
+          keyAlias=$KEY_ALIAS
+          keyPassword=$KEY_PASSWORD
+          EOF
+          echo "available=true" >> "$GITHUB_OUTPUT"
 
-      # The size target is under 30 MB per ABI. Printed rather than asserted
-      # for now; it becomes a hard gate once M2's assets have landed and the
-      # number has stopped moving.
-      - name: Report APK size
-        run: ls -lh build/app/outputs/flutter-apk/*.apk
+      # Says so in the job summary rather than passing quietly. A skipped gate
+      # that looks like a passing one is the failure this repository keeps
+      # finding in its own history.
+      - name: Record that the artefact gates did not run
+        if: steps.key.outputs.available != 'true'
+        run: |
+          {
+            echo "### Tier B artefact gates: SKIPPED"
+            echo ""
+            echo "No \`UPLOAD_KEYSTORE_BASE64\` secret, so signing, the merged"
+            echo "permission set, 16 KB alignment and size were NOT checked."
+            echo "This is expected on a fork PR and must never be true on main."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Artefact gates
+        if: steps.key.outputs.available == 'true'
+        run: dart run tool/android_gates.dart
+
+      - name: Printer plugin unit tests
+        run: dart run tool/android_gates.dart --plugin-tests-only
 
       - uses: actions/upload-artifact@v4
+        if: steps.key.outputs.available == 'true'
         with:
           name: apks
           path: build/app/outputs/flutter-apk/*.apk
           retention-days: 14
+
+  device:
+    name: Tier C — acceptance
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    needs: gates
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Resolve every package
+        run: |
+          set -e
+          for dir in packages/*/ .; do
+            (cd "$dir" && flutter pub get)
+          done
+
+      # KVM, or the emulator falls back to software rendering and the suite
+      # times out rather than failing for a reason anybody can act on.
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      # API 36, matching targetSdk. Running the acceptance suite on an older
+      # image would prove the app works under a permission model it does not
+      # ship against.
+      - name: Acceptance suite
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 36
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          script: flutter test integration_test --reporter expanded
+
+      # Asserts every `device_proof:` in the ledger actually passed, and fails
+      # if no row names one — otherwise --device is a flag that reports success
+      # for verifying nothing.
+      - name: Feature ledger — device proofs
+        run: dart run tool/verify_ledger.dart --device

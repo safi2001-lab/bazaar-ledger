@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
+import 'schema_versions.dart';
 
 part 'app_database.g.dart';
 
@@ -42,14 +43,32 @@ class AppDatabase extends _$AppDatabase {
           await m.createAll();
         },
         onUpgrade: (m, from, to) async {
-          // Every step gets its own committed schema dump and a test that runs
-          // it against realistically seeded data. There is nothing to upgrade
-          // from at v1; the first `stepByStep` handler arrives with v2.
-          throw StateError(
-            'No migration from schema v$from to v$to is registered. '
-            'A build that can open a database it cannot migrate is how data '
-            'gets silently mangled.',
-          );
+          // Every version has a committed dump under drift_schemas/ and a test
+          // that migrates realistically seeded data into it. There is nothing
+          // to upgrade from at v1, so this path does not run yet — but the
+          // machinery lands before the first table is added rather than being
+          // built under pressure once a shop's database already depends on it.
+          //
+          // Foreign keys are deliberately deferred for the duration. SQLite's
+          // twelve-step table rebuild -- which is what any CHECK constraint
+          // change requires -- moves rows through a temporary table, and with
+          // enforcement on it trips `foreign_key_check` halfway. That failure
+          // does not show up on an empty test database. It shows up on a shop
+          // with three years of history.
+          await customStatement('PRAGMA defer_foreign_keys = ON');
+          try {
+            await stepByStep()(m, from, to);
+          } on ArgumentError {
+            throw StateError(
+              'No migration from schema v$from to v$to is registered. '
+              'A build that can open a database it cannot migrate is how data '
+              'gets silently mangled.',
+            );
+          }
+          // Re-checked before the transaction closes, so a step that broke a
+          // reference fails the migration instead of leaving a database that
+          // opens and is quietly wrong.
+          await customStatement('PRAGMA foreign_key_check');
         },
         beforeOpen: (details) async {
           // Referential integrity is not optional and is not the ORM's job.

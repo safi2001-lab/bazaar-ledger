@@ -72,6 +72,15 @@ kotlin {
 }
 
 dependencies {
+    // `useJUnitPlatform()` above needs an engine on the test runtime classpath.
+    // Without junit-jupiter the task ran ZERO tests and reported success --
+    // full test scaffolding, verbose logging, mockito, and a green tick over
+    // nothing. That is the same shape of failure as the empty lint package and
+    // the ledger milestone with no rows, and it is why CI now asserts that the
+    // JUnit XML reports more than zero tests rather than trusting the exit
+    // code.
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.4")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("org.mockito:mockito-core:5.14.2")
 }

@@ -168,17 +168,29 @@ enum Reads {
 
   /// String literals with `${...}` interpolations removed, so a rule about
   /// untranslated prose does not fire on `Text('$count')`.
-  prose;
+  prose,
+
+  /// The line as written, comments included.
+  ///
+  /// Every other mode blanks comments before matching, which is right for a
+  /// rule about the language: one about `double` must not fire on the word
+  /// "double" in the sentence explaining why doubles are refused. But a rule
+  /// whose subject IS the prose — a citation of a mechanism that does not
+  /// exist, a legal claim with no statute behind it — needs to read them, and
+  /// with the others it would pass while being unable to see its own subject.
+  everything;
 
   String apply(String line) => switch (this) {
-        Reads.raw => line,
-        Reads.code => line
-            .replaceAll(RegExp(r"'[^']*'"), "''")
-            .replaceAll(RegExp(r'"[^"]*"'), '""'),
-        Reads.prose => line
-            .replaceAll(RegExp(r'\$\{[^}]*\}'), '')
-            .replaceAll(RegExp(r'\$\w+'), ''),
-      };
+    Reads.raw || Reads.everything => line,
+    Reads.code =>
+      line
+          .replaceAll(RegExp(r"'[^']*'"), "''")
+          .replaceAll(RegExp(r'"[^"]*"'), '""'),
+    Reads.prose =>
+      line
+          .replaceAll(RegExp(r'\$\{[^}]*\}'), '')
+          .replaceAll(RegExp(r'\$\w+'), ''),
+  };
 }
 
 /// One rule: which files it looks at, and what it refuses to find in them.
@@ -233,7 +245,9 @@ final class Rule {
     final buffer = StringBuffer();
     for (final line in const LineSplitter().convert(source)) {
       final trimmed = line.trimLeft();
-      final suppressed = trimmed.startsWith('//') || _isExemptFrom(line, name);
+      final suppressed =
+          (trimmed.startsWith('//') && reads != Reads.everything) ||
+          _isExemptFrom(line, name);
       if (suppressed || (allowLines != null && allowLines!(line))) {
         buffer.writeln(' ' * line.length);
       } else {
@@ -243,8 +257,9 @@ final class Rule {
     return buffer.toString();
   }
 
-  List<Match> _matchesIn(String prepared) =>
-      [for (final p in forbid) ...p.allMatches(prepared)];
+  List<Match> _matchesIn(String prepared) => [
+    for (final p in forbid) ...p.allMatches(prepared),
+  ];
 
   List<Violation> run() {
     final found = <Violation>[];
@@ -253,8 +268,7 @@ final class Rule {
       if (!dir.existsSync()) continue;
       for (final entity in dir.listSync(recursive: true)) {
         if (entity is! File || !entity.path.endsWith('.dart')) continue;
-        final normalised =
-            entity.path.replaceAll(Platform.pathSeparator, '/');
+        final normalised = entity.path.replaceAll(Platform.pathSeparator, '/');
         if (normalised.contains('/build/')) continue;
         if (normalised.contains('/.dart_tool/')) continue;
         if (normalised.endsWith('.g.dart')) continue;
@@ -296,7 +310,8 @@ final rules = <Rule>[
   // ---------------------------------------------------------------------------
   Rule(
     name: 'ui_cannot_reach_the_database',
-    why: 'The app package does not list pk_data or drift in its pubspec, so '
+    why:
+        'The app package does not list pk_data or drift in its pubspec, so '
         'this is already a resolution error. The rule exists so that adding '
         'the dependency "just for one screen" fails here, loudly, rather '
         'than passing review because the import looked harmless.',
@@ -321,7 +336,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'domain_is_pure',
-    why: 'pk_domain holds the posting rules. It knows nothing about SQL, '
+    why:
+        'pk_domain holds the posting rules. It knows nothing about SQL, '
         'Flutter, files or the network, which is what lets every rule in it '
         'be tested exhaustively without a database, and what keeps a UI '
         'concern from quietly becoming an accounting one.',
@@ -347,7 +363,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'money_has_no_dependencies',
-    why: 'pk_money is the bottom of the stack. Everything else may depend on '
+    why:
+        'pk_money is the bottom of the stack. Everything else may depend on '
         'it; it depends on nothing, so there is no version of this codebase '
         'in which the definition of a rupee is affected by a package bump.',
     include: ['packages/pk_money/lib'],
@@ -366,7 +383,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'application_layer_holds_no_sql',
-    why: 'Use cases orchestrate ports. A use case that writes SQL is one that '
+    why:
+        'Use cases orchestrate ports. A use case that writes SQL is one that '
         'cannot be tested against a fake in four lines, and the first thing '
         'that happens then is that it stops being tested.',
     include: ['packages/pk_application/lib'],
@@ -393,7 +411,8 @@ final rules = <Rule>[
   // ---------------------------------------------------------------------------
   Rule(
     name: 'no_floating_point_money',
-    why: 'Money is whole paisa, quantity is thousandths of a base unit, and a '
+    why:
+        'Money is whole paisa, quantity is thousandths of a base unit, and a '
         'rate is milli-paisa per base unit. A double anywhere in this stack '
         'is a rounding error waiting for a large enough invoice. The old '
         'ledger carried a hardcoded 0.01 tolerance to hide exactly this.',
@@ -435,7 +454,8 @@ final rules = <Rule>[
   // ---------------------------------------------------------------------------
   Rule(
     name: 'one_write_path',
-    why: 'Every mutation goes through TxRunner, which writes change_log and '
+    why:
+        'Every mutation goes through TxRunner, which writes change_log and '
         'audit_log inside the same transaction and asserts the books balance '
         'before commit. A write that goes round it produces a row nobody can '
         'attribute, that no other counter will ever see, and that no '
@@ -477,7 +497,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'no_raw_dml',
-    why: 'The same rule, for SQL written as text. Kept separate because it '
+    why:
+        'The same rule, for SQL written as text. Kept separate because it '
         'has to read inside string literals, and a rule that reads literals '
         'cannot also be the rule that ignores its own error messages. Rows '
         'are tombstoned, never destroyed: six-year retention under s.24 STA '
@@ -513,7 +534,8 @@ final rules = <Rule>[
   // ---------------------------------------------------------------------------
   Rule(
     name: 'no_qr_payload_construction',
-    why: 'SBP Interoperable QR Standard 8.1(a): the scheme identifier in a QR '
+    why:
+        'SBP Interoperable QR Standard 8.1(a): the scheme identifier in a QR '
         'payload is issued by the State Bank only to authorised PSO/PSPs. '
         'Breaching an SBP instruction is an offence under s.56 of the PS&EFT '
         'Act 2007 — up to three years or PKR 3 million. The previous build '
@@ -548,7 +570,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'no_payment_integration',
-    why: 'This product records the money; it never moves it. Routing, '
+    why:
+        'This product records the money; it never moves it. Routing, '
         'switching, settling or holding funds triggers PSO/PSP licensing '
         'under Rule 2(p) — PKR 200 million paid-up capital, and six licensed '
         'operators in the country. A payment mode here is a label on a '
@@ -577,7 +600,8 @@ final rules = <Rule>[
   // ---------------------------------------------------------------------------
   Rule(
     name: 'no_hardcoded_colour',
-    why: 'Colour, type, spacing, radius and motion come from BlTokens. The '
+    why:
+        'Colour, type, spacing, radius and motion come from BlTokens. The '
         'previous build had 154 hardcoded Colors.* references against a '
         'ColorScheme nobody used, and shipped a dark mode with white text on '
         'white cards. Tokens are the only place a colour is written down.',
@@ -605,7 +629,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'no_hardcoded_user_string',
-    why: 'Roman Urdu is the default locale and English is a switch. A literal '
+    why:
+        'Roman Urdu is the default locale and English is a switch. A literal '
         'in a Text widget is a sentence one of the two audiences cannot '
         'read. Strings come from AppStrings, generated from the ARB files, so '
         'a missing translation is a compile error rather than a blank label.',
@@ -635,7 +660,8 @@ final rules = <Rule>[
 
   Rule(
     name: 'every_icon_button_is_labelled',
-    why: 'The previous build had zero Semantics in the entire codebase and '
+    why:
+        'The previous build had zero Semantics in the entire codebase and '
         'used icon-only buttons as its primary navigation. BlIconButton takes '
         'a required label; a bare IconButton does not.',
     include: ['lib'],
@@ -652,6 +678,35 @@ final rules = <Rule>[
       '  final Widget? trailing;',
     ],
   ),
+
+  Rule(
+    name: 'no_phantom_gate',
+    why:
+        'A package called pk_lints was two empty directories for weeks. Two '
+        'source files cited its rules as build-time guarantees, and the melos '
+        'step that claimed to run it matched no package and exited zero. '
+        'Nothing was enforced and three things said it was. This rule exists '
+        'so that name, and the tool it pretended to use, cannot be typed back '
+        'in without somebody building the thing first.',
+    include: ['lib', 'packages', 'tool'],
+    exclude: ['tool/arch_check.dart'],
+    reads: Reads.everything,
+    forbid: [
+      RegExp(r'\bpk_lints\b'),
+      RegExp(r'\bcustom_lint\b'),
+      RegExp(r'\bno_db_write_outside_uow\b'),
+      RegExp(r'\bno_hardcoded_color\b'),
+    ],
+    mustFlag: [
+      '/// no_db_write_outside_uow in pk_lints makes this a build failure.',
+      '  custom_lint: ^0.6.0',
+      '/// The no_hardcoded_color rule forbids a literal.',
+    ],
+    mustAllow: [
+      '/// The `one_write_path` rule in `tool/arch_check.dart` forbids this.',
+      '/// The `no_hardcoded_colour` rule makes a literal a build failure.',
+    ],
+  ),
 ];
 
 /// Whether a line carries a written exemption from a particular rule.
@@ -666,8 +721,7 @@ bool _isExemptFrom(String line, String rule) {
   return match.group(1) == rule;
 }
 
-final RegExp _exemption =
-    RegExp(r'arch_check:\s*allow\s+(\w+)\s*[—-]\s*\S');
+final RegExp _exemption = RegExp(r'arch_check:\s*allow\s+(\w+)\s*[—-]\s*\S');
 
 /// Every written exemption in the tree, so they cannot pile up unnoticed.
 List<String> _exemptions() {

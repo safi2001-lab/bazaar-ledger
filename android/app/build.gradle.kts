@@ -1,11 +1,85 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// The upload key, or nothing.
+//
+// android/key.properties is gitignored and is not in this repository. When it
+// is absent the release build gets NO signing config and `assembleRelease`
+// fails, which is the intended behaviour -- see buildTypes.release below.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+val hasUploadKey = keystoreProperties.getProperty("storeFile") != null
+
+// Without a key, a release build must STOP -- not quietly hand over an
+// artefact nobody can install.
+//
+// Setting `signingConfig = null` on the release build type was the first
+// attempt and it was not enough: Gradle happily assembled an UNSIGNED APK and
+// `flutter build apk --release` exited 0 with a cheerful "Built
+// app-release.apk (23.4MB)". `apksigner verify` on that file says DOES NOT
+// VERIFY / Missing META-INF/MANIFEST.MF. So the build had stopped producing a
+// debug-signed artefact that looks publishable and started producing an
+// unsigned one that looks publishable, which is the same failure wearing a
+// different hat.
+//
+// The task graph is checked instead, so that debug and profile -- the builds
+// used for bench work on a real handset -- are untouched, and only an actual
+// request for a release artefact is refused.
+if (!hasUploadKey) {
+    gradle.taskGraph.whenReady {
+        val wantsRelease = allTasks.any { task ->
+            task.name.contains("Release") &&
+                (task.name.startsWith("assemble") ||
+                    task.name.startsWith("bundle") ||
+                    task.name.startsWith("package"))
+        }
+        if (wantsRelease) {
+            throw GradleException(
+                """
+                No upload key.
+
+                android/key.properties is missing, so this release build would
+                produce an UNSIGNED APK -- one that reports success, weighs the
+                right number of megabytes, and cannot be installed on any
+                device or uploaded to Play.
+
+                  For bench work on a real handset, use --profile. It is
+                  AOT-compiled like release and needs no key.
+
+                  For a real release, create android/key.properties with
+                  storeFile, storePassword, keyAlias and keyPassword. It is
+                  gitignored and must stay that way.
+                """.trimIndent(),
+            )
+        }
+    }
+}
+
 android {
     namespace = "pk.bazaarledger"
-    compileSdk = flutter.compileSdkVersion
+
+    // Pinned, not inherited.
+    //
+    // `flutter.compileSdkVersion` and `flutter.targetSdkVersion` track whichever
+    // Android SDK the developer's Flutter install happens to have resolved. That
+    // is fine for a sample app and wrong here: targetSdk decides the runtime
+    // permission model, whether allowBackup or dataExtractionRules governs
+    // backup, whether edge-to-edge enforcement applies, and whether
+    // BLUETOOTH_CONNECT is a runtime grant. Letting it move with a toolchain
+    // upgrade means the app's security posture changes with no diff in this
+    // repository.
+    //
+    // 36 because Google Play requires API 36 for every new app and every update
+    // from 31 August 2026. packages/pk_printer_android pins the same number;
+    // test/android_build_config_test.dart fails when the two drift apart, and
+    // when either of these lines goes back to inheriting from `flutter.`.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -22,7 +96,7 @@ android {
         // pick up a newer API is a decision to not sell to the shops this
         // product exists for.
         minSdk = 24
-        targetSdk = flutter.targetSdkVersion
+        targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
 
@@ -33,12 +107,31 @@ android {
         resourceConfigurations += listOf("en", "ur")
     }
 
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: replace with a real upload key before the first Play
-            // internal-track build. Debug keys are here only so
-            // `flutter run --release` works on a bench device.
-            signingConfig = signingConfigs.getByName("debug")
+            // No key, no release build. This used to fall back to the debug
+            // signing config so that `flutter run --release` worked on a bench
+            // device, and the cost of that convenience was that every release
+            // artefact this project has ever produced -- including every one CI
+            // uploaded -- was signed with the Android debug key and could never
+            // have been published. A build that cannot ship should say so at
+            // the moment it is asked for, not at the moment somebody tries to
+            // upload it.
+            //
+            // For bench work on a real handset, use `--profile`: it is
+            // AOT-compiled like release and needs no upload key.
+            signingConfig = if (hasUploadKey) signingConfigs.getByName("upload") else null
 
             isMinifyEnabled = true
             isShrinkResources = true

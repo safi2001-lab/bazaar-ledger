@@ -45,9 +45,30 @@ local.properties
 build/
 **/android/app/build
 **/android/captures
-**/android/gradle/
-**/android/gradlew
-**/android/gradlew.bat
+
+# The Gradle wrapper is COMMITTED, deliberately.
+#
+# The usual Flutter .gitignore excludes only gradle-wrapper.jar. This file used
+# to exclude `**/android/gradle/` and both gradlew scripts, which also swept up
+# gradle-wrapper.properties -- the single place Gradle 9.1.0 is pinned for the
+# AGP 9.0.1 declared in android/settings.gradle.kts. A fresh clone therefore had
+# no pinned Gradle at all and built against whatever the machine happened to
+# have, which for a toolchain this new is a coin toss.
+#
+# The jar is committed too, and CI runs gradle/actions/wrapper-validation to
+# check its checksum against Gradle's published list -- which is the actual
+# defence against a tampered wrapper, rather than not having one.
+
+# JVM crash dumps. Two of these (4.4 MB between them) were committed once.
+**/android/hs_err_pid*.log
+**/android/replay_pid*.log
+**/android/local.properties
+
+# The upload keystore and its passwords. Losing these means never being able to
+# update the app on Play again; committing them means anyone can publish as us.
+**/android/key.properties
+*.jks
+*.keystore
 
 # Flutter build outputs
 **/android/app/intermediates/

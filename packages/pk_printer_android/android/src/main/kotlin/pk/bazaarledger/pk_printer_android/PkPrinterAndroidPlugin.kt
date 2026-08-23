@@ -140,31 +140,25 @@ class PkPrinterAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 val device = adapter.getRemoteDevice(address)
                 socket = connect(device)
 
-                val out = socket.outputStream
-                var offset = 0
-                while (offset < bytes.size) {
-                    val end = minOf(offset + chunkSize, bytes.size)
-                    out.write(bytes, offset, end - offset)
-                    out.flush()
-                    written = end
-                    offset = end
-                    // Paced on purpose. The Bluetooth module hands data to the
-                    // print controller over an internal UART with no flow
-                    // control, so RFCOMM delivers faster than the printer
-                    // drains. Nothing reports an error — the receipt just comes
-                    // out garbled, and only the long ones, which is why it
-                    // survives testing and fails in the shop.
-                    if (chunkDelayMs > 0 && offset < bytes.size) {
-                        Thread.sleep(chunkDelayMs.toLong())
-                    }
-                }
-                out.flush()
+                // The chunking, the pacing and the bytes-written contract all
+                // live in PacedWriter, where they can be tested without a
+                // printer in the room. They used to be inline here, which is
+                // why they never were.
+                written = PacedWriter.write(
+                    socket.outputStream,
+                    bytes,
+                    chunkSize,
+                    chunkDelayMs,
+                )
 
                 // Closing straight after the last write truncates the tail, and
                 // the tail is the cut command — so the symptom is a receipt
                 // that prints perfectly and never cuts.
                 Thread.sleep(settleMs.toLong())
                 result.success(null)
+            } catch (partial: PartialWrite) {
+                written = partial.bytesWritten
+                result.error("send", partial.message ?: partial.toString(), written)
             } catch (error: Throwable) {
                 // `written` travels with the error because it decides whether a
                 // retry is allowed. Nothing written means nothing came out and

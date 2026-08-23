@@ -1,0 +1,16 @@
+# gradlew is executed by /bin/sh on the Linux CI runner. Checked out with CRLF
+# it fails as `/bin/sh^M: bad interpreter`, which reads as a broken runner
+# rather than a line-ending problem. This repository is developed on Windows,
+# where core.autocrlf is normally on, so the ending has to be pinned here.
+android/gradlew text eol=lf
+gradlew          text eol=lf
+
+# Binary, never touched.
+*.jar   binary
+*.png   binary
+*.jks   binary
+*.keystore binary
+
+# Golden test images must never be normalised or the comparator sees a diff
+# that is only line endings.
+test/goldens/** binary

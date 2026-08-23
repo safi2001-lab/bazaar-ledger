@@ -8,8 +8,16 @@ import '../db/app_database.dart';
 /// The one and only way anything is written to this database.
 ///
 /// Every mutation in the application goes through [TxRunner.run]. There is no
-/// second path, and `no_db_write_outside_uow` in `pk_lints` makes a direct
-/// write a build failure rather than a review comment.
+/// second path, and the `one_write_path` rule in `tool/arch_check.dart` makes a
+/// direct write a build failure rather than a review comment.
+///
+/// This comment used to credit a lint package that did not exist. It was two
+/// empty directories, and the melos step claiming to run it matched no package
+/// and exited zero. So for several weeks the file documenting this project's
+/// central guarantee named an enforcement mechanism that was not running. The
+/// rule named above is real, is self-tested, and fails the build if it ever
+/// stops being able to fire — and `no_phantom_gate` now refuses the old name
+/// anywhere in the tree, so nobody can cite it again by accident.
 ///
 /// This is what makes the previous build's central defect structurally
 /// impossible. That app's checkout did this:

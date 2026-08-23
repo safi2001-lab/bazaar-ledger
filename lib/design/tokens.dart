@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 ///
 /// The previous build had 154 hardcoded `Colors.*` references against a theme
 /// that defined a proper ColorScheme nobody used, which is why its dark mode
-/// shipped white-on-white. `no_hardcoded_color` in `pk_lints` makes a literal
-/// a build failure; this file is the only exception.
+/// shipped white-on-white. The `no_hardcoded_colour` rule in
+/// `tool/arch_check.dart` makes a literal a build failure; this file is the
+/// only exception.
 ///
 /// The direction is ink on paper. Borders rather than shadows, warm paper
 /// rather than grey, and a receipt that looks like the ledger it replaces.
@@ -72,7 +73,7 @@ final class BlTokens extends ThemeExtension<BlTokens> {
   final Color moneyOut;
 
   /// Fully transparent. A token rather than `Colors.transparent` so the
-  /// `no_hardcoded_color` rule has no exception to carve out, and so a
+  /// `no_hardcoded_colour` rule has no exception to carve out, and so a
   /// theme that wants a tinted scrim later has one place to change.
   Color get transparent => const Color(0x00000000);
 

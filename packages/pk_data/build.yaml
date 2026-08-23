@@ -1,0 +1,27 @@
+# Drift's code generator, configured so the SQL files stay the source of truth.
+#
+# The previous build had 20+ `.references()` calls in a Dart table DSL and ZERO
+# `REFERENCES` clauses in the DDL it actually shipped. Regenerating would have
+# forked production into two incompatible schemas under one version number. So
+# here the `.drift` files ARE the artefact and Dart is generated from them,
+# never the other way round.
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          # The schema dumps under drift_schemas/ are what make a migration
+          # testable at all: `stepByStep` needs to know what every previous
+          # version looked like, and a version nobody wrote down cannot be
+          # migrated from.
+          sql:
+            dialect: sqlite
+            options:
+              version: "3.45"
+          # Integers, not text. Every date in this schema is either an epoch
+          # integer or a local 'YYYY-MM-DD' string chosen deliberately per
+          # column, and letting the generator pick would undo that.
+          store_date_time_values_as_text: false
+          # A generated file that lags the SQL is the failure this whole
+          # arrangement exists to prevent.
+          generate_connect_constructor: false
