@@ -73,9 +73,20 @@ final class ReceiptLayout {
       for (final part in _wrap(line.name, width)) {
         out.add(part);
       }
-      final detail =
+      // Quantity, unit and rate on the left; the amount hard against the
+      // right margin. `_row` clips the left when they collide, which is right
+      // for an item name and wrong for a number: at 32 columns with a
+      // shop-created unit code like `bori-50kg`, the rate was the thing that
+      // got cut, and "x 12,4" on a receipt the customer keeps is worse than
+      // no rate at all. So the whole rate is dropped rather than truncated.
+      final full =
           '  ${line.qtyDisplay} ${line.unitCode} x ${line.rate.amountOnly}';
-      out.add(_row(detail, line.amount.amountOnly));
+      final amount = line.amount.amountOnly;
+      final room = width - amount.length - 1;
+      final detail = full.length <= room
+          ? full
+          : '  ${line.qtyDisplay} ${line.unitCode}';
+      out.add(_row(detail, amount));
       if (line.discount.isPositive) {
         out.add(_row('    less discount', '-${line.discount.amountOnly}'));
       }
@@ -163,10 +174,15 @@ final class ReceiptLayout {
   /// its last digit is a wrong receipt, an item name that lost its last word
   /// is a legible one.
   String _row(String left, String right) {
-    final available = width - right.length - 1;
-    if (available < 1) return right.padLeft(width);
+    // The right side is clipped too. `padLeft` is a no-op when the string is
+    // already longer than the width, so a right-hand value that overran —
+    // a customer's phone number is free text, and the one field never clipped
+    // by its caller — produced a line longer than the paper, silently.
+    final r = _clip(right, width);
+    final available = width - r.length - 1;
+    if (available < 1) return r.padLeft(width);
     final l = _clip(left, available);
-    return '$l${' ' * (width - l.length - right.length)}$right';
+    return '$l${' ' * (width - l.length - r.length)}$r';
   }
 
   String _centre(String s) {

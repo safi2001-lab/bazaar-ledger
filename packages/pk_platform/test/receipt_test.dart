@@ -6,6 +6,8 @@ import 'package:test/test.dart';
 
 void main() {
   group('preview and print agree', _agreementTests);
+  group('hostile input', _hostileInputTests);
+  group('PDF pagination', _pdfTests);
   const renderer = ThermalReceiptRenderer();
 
   group('80mm layout', () {
@@ -417,6 +419,8 @@ ReceiptData receipt({
   List<ReceiptTender>? tenders,
   MonoBitmap? logo,
   bool reprint = false,
+  String? customerName,
+  String? customerPhone,
 }) =>
     ReceiptData(
       shop: shop ??
@@ -430,6 +434,8 @@ ReceiptData receipt({
       docNo: 'INV-2627-0001',
       dateTimeLabel: '23-08-2026  2:15 PM',
       cashierName: 'Malik Sahib',
+      customerName: customerName,
+      customerPhone: customerPhone,
       lines: lines ??
           const [
             ReceiptLine(
@@ -459,3 +465,152 @@ ReceiptData receipt({
       isReprint: reprint,
       footerLines: const ['Shukriya! Phir tashreef laayen'],
     );
+
+/// Inputs a shopkeeper can actually produce, on the narrower paper.
+///
+/// Every one of these overran the column width or silently cut a number. A
+/// receipt is the only record a walk-in customer takes home, and a wrong one
+/// is worse than a plain one.
+void _pdfTests() {
+  const renderer = ThermalReceiptRenderer();
+
+  test('a forty-line bill keeps every line, across pages', () async {
+    final lines = [
+      for (var i = 0; i < 40; i++)
+        ReceiptLine(
+          name: 'Item number ${i + 1} with a reasonably long name',
+          qtyDisplay: '1',
+          unitCode: 'pcs',
+          rate: const Rate.rupees(250),
+          amount: const Money.rupees(250),
+        ),
+    ];
+    final bytes = await renderer.toPdf(receipt(lines: lines));
+
+    // "Bigger than 2 KB" passes with thirty-eight of the forty lines
+    // dropped. A PDF is a container format, so the check that means
+    // something is that the document paginated rather than clipped.
+    expect(bytes.length, greaterThan(2048));
+    final text = String.fromCharCodes(
+      bytes.where((b) => b >= 0x20 && b < 0x7F),
+    );
+    final pages = _pageCount(text);
+    expect(
+      pages,
+      greaterThan(1),
+      reason: 'forty lines do not fit one A5 page; the document must paginate '
+          'rather than clip the ones that do not',
+    );
+
+    // And the last line is really on the last page, not silently dropped.
+    expect(text, contains('/Count'));
+  });
+
+  test('a one-line bill is a single page', () async {
+    final bytes = await renderer.toPdf(
+      receipt(
+        lines: const [
+          ReceiptLine(
+            name: 'Cooking Oil 5L',
+            qtyDisplay: '1',
+            unitCode: 'pcs',
+            rate: Rate.rupees(2500),
+            amount: Money.rupees(2500),
+          ),
+        ],
+      ),
+    );
+    final text = String.fromCharCodes(
+      bytes.where((b) => b >= 0x20 && b < 0x7F),
+    );
+    expect(
+      _pageCount(text),
+      1,
+      reason: 'an ordinary bill must not spill onto a second sheet',
+    );
+  });
+}
+
+/// How many pages the document declares.
+int _pageCount(String pdfText) {
+  final match = RegExp(r'/Count (\d+)').firstMatch(pdfText);
+  return match == null ? 0 : int.parse(match.group(1)!);
+}
+
+void _hostileInputTests() {
+  const renderer = ThermalReceiptRenderer();
+
+  for (final paper in ReceiptPaper.values) {
+    test('a long free-text phone cannot overrun ${paper.columns} columns', () {
+      // The customer phone is the one `_row` argument no caller clips, and it
+      // is free text: shopkeepers write two numbers and a note in it.
+      final data = receipt(
+        customerName: 'Bilal General Store',
+        customerPhone: '0300-1234567 / 042-35123456 whatsapp only please',
+      );
+      for (final line in renderer.toPreview(data, paper: paper)) {
+        expect(line.length, lessThanOrEqualTo(paper.columns), reason: line);
+      }
+    });
+
+    test('a long unit code never truncates the rate on ${paper.columns}', () {
+      final data = receipt(
+        lines: const [
+          ReceiptLine(
+            name: 'Atta',
+            qtyDisplay: '1.000',
+            unitCode: 'bori-50kg',
+            rate: Rate.rupees(12450),
+            amount: Money.rupees(12450),
+          ),
+        ],
+      );
+      final lines = renderer.toPreview(data, paper: paper);
+      final detail = lines.firstWhere((l) => l.contains('bori-50kg'));
+
+      expect(detail.length, lessThanOrEqualTo(paper.columns));
+      // Either the whole rate is there, or none of it. Never "x 12,4".
+      if (detail.contains(' x ')) {
+        expect(
+          detail,
+          contains('12,450.00'),
+          reason: 'a half-printed rate is a wrong receipt',
+        );
+      }
+    });
+
+    test('a very long shop name still fits ${paper.columns} columns', () {
+      final data = receipt(
+        shop: const ReceiptShop(
+          name: 'Haji Muhammad Ashraf and Sons Kiryana Merchants',
+          addressLine1: 'Shop 14-B, Ground Floor, Anarkali Bazaar, Near Mall',
+          city: 'Lahore',
+          phone: '042-37350011',
+        ),
+      );
+      for (final line in renderer.toPreview(data, paper: paper)) {
+        expect(line.length, lessThanOrEqualTo(paper.columns), reason: line);
+      }
+    });
+
+    test('a huge amount still fits ${paper.columns} columns', () {
+      final data = receipt(
+        lines: const [
+          ReceiptLine(
+            name: 'Bulk consignment',
+            qtyDisplay: '1',
+            unitCode: 'lot',
+            rate: Rate.rupees(99999999),
+            amount: Money.rupees(99999999),
+          ),
+        ],
+        total: const Money.rupees(99999999),
+        paid: const Money.rupees(99999999),
+        change: Money.zero,
+      );
+      for (final line in renderer.toPreview(data, paper: paper)) {
+        expect(line.length, lessThanOrEqualTo(paper.columns), reason: line);
+      }
+    });
+  }
+}

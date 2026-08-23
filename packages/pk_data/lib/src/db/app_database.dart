@@ -32,7 +32,6 @@ class AppDatabase extends _$AppDatabase {
   /// Set by the bootstrap when the database is opened for a migration test or
   /// a repair pass, so `beforeOpen` skips the integrity check it would
   /// otherwise run twice.
-  bool skipIntegrityCheckOnOpen = false;
 
   @override
   int get schemaVersion => 1;
@@ -147,6 +146,71 @@ class AppDatabase extends _$AppDatabase {
   /// Returns findings rather than throwing: a shopkeeper opening the app to a
   /// crash screen has lost their business day, whereas one who is told the
   /// database needs repairing still has a working restore button.
+  /// Payments allocated to more than they are worth.
+  ///
+  /// The books can balance perfectly while a payment is spread across two
+  /// invoices for more than the customer handed over — the allocation table is
+  /// many-to-many by design, and nothing in SQLite can express "the parts must
+  /// not exceed the whole" as a CHECK. It is the most likely way a khata
+  /// balance goes quietly wrong, so it is checked rather than assumed.
+  Future<List<String>> findOverAllocatedPayments() async {
+    final rows = await customSelect(
+      '''
+      SELECT p.id AS id,
+             p.amount_paisa AS amount,
+             SUM(pa.amount_paisa) AS allocated
+      FROM payments p
+      JOIN payment_allocations pa ON pa.payment_id = p.id
+      WHERE p.deleted_at_utc IS NULL AND pa.deleted_at_utc IS NULL
+      GROUP BY p.id, p.amount_paisa
+      HAVING SUM(pa.amount_paisa) > p.amount_paisa
+      ''',
+    ).get();
+    return rows.map((r) {
+      final id = r.read<String>('id');
+      final allocated = r.read<int>('allocated');
+      final amount = r.read<int>('amount');
+      return 'payment $id is allocated $allocated paisa against $amount '
+          'received';
+    }).toList();
+  }
+
+  /// Cached stock balances that no longer match the ledger they came from.
+  ///
+  /// `balance_after_thousandths` is a cache, and the schema says so. A cache
+  /// that has drifted from the append-only rows beneath it is how a shop finds
+  /// out its stock figures are fiction — usually while counting.
+  Future<List<String>> findStockLedgerDrift() async {
+    final rows = await customSelect(
+      '''
+      SELECT sl.id AS id,
+             sl.item_id AS item_id,
+             sl.balance_after_thousandths AS cached,
+             (
+               SELECT SUM(prior.qty_delta_thousandths)
+               FROM stock_ledger prior
+               WHERE prior.item_id = sl.item_id
+                 AND prior.location_code = sl.location_code
+                 AND prior.deleted_at_utc IS NULL
+                 AND prior.id <= sl.id
+             ) AS actual
+      FROM stock_ledger sl
+      WHERE sl.deleted_at_utc IS NULL
+        AND sl.balance_after_thousandths IS NOT NULL
+      ''',
+    ).get();
+    return rows
+        .where((r) => r.read<int>('cached') != r.read<int>('actual'))
+        .map((r) {
+      final id = r.read<String>('id');
+      final item = r.read<String>('item_id');
+      final cached = r.read<int>('cached');
+      final actual = r.read<int>('actual');
+      return 'stock row $id on item $item caches $cached where the ledger '
+          'says $actual';
+    }).toList();
+  }
+
   Future<DatabaseHealth> checkHealth() async {
     final findings = <String>[];
 
@@ -172,6 +236,8 @@ class AppDatabase extends _$AppDatabase {
     }
 
     findings.addAll(await findLedgerImbalances());
+    findings.addAll(await findOverAllocatedPayments());
+    findings.addAll(await findStockLedgerDrift());
 
     return DatabaseHealth(
       findings: List.unmodifiable(findings),

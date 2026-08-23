@@ -122,13 +122,23 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
           ),
         );
 
+    // MultiPage, not Page. A single fixed page clipped or threw on a
+    // wholesale bill of thirty or forty lines — which is the bill a
+    // distributor actually prints, and the one where losing lines matters
+    // most. The header repeats on every sheet so page two is still a receipt
+    // rather than an orphaned table.
     doc.addPage(
-      pw.Page(
+      pw.MultiPage(
         pageFormat: format,
         margin: const pw.EdgeInsets.all(24),
-        build: (context) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.stretch,
-          children: [
+        footer: (context) => pw.Align(
+          alignment: pw.Alignment.centerRight,
+          child: pw.Text(
+            '${data.docNo}   ${context.pageNumber} / ${context.pagesCount}',
+            style: pw.TextStyle(font: pw.Font.helvetica(), fontSize: 8),
+          ),
+        ),
+        build: (context) => [
             pw.Center(
               child: pw.Text(
                 data.shop.name.toUpperCase(),
@@ -284,7 +294,8 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                 ),
               ],
             ),
-            pw.Spacer(),
+            // No Spacer: MultiPage has no fixed height to push against.
+            pw.SizedBox(height: 12),
             if (data.shop.raastAlias != null || data.shop.bankIban != null) ...[
               pw.Divider(thickness: 0.5, height: 8),
               pw.Text(
@@ -316,8 +327,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                 ),
               ),
             ],
-          ],
-        ),
+        ],
       ),
     );
 
