@@ -7,6 +7,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import 'item_history_screen.dart';
+import 'item_picture.dart';
 import 'label_print_sheet.dart';
 import 'stock_adjust_sheet.dart';
 
@@ -360,6 +361,15 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
+                        // Above the name, because for a cashier who does not
+                        // read fluently the picture IS the name. Only offered
+                        // once the item exists: a photograph needs a row to
+                        // hang off, and accepting one and losing it would be
+                        // worse than not offering.
+                        if (_isEdit) ...[
+                          ItemPictureField(itemId: widget.item!.id),
+                          const SizedBox(height: BlTokens.space4),
+                        ],
                         BlField(
                           controller: _name,
                           label: s.itemName,

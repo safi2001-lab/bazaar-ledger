@@ -114,10 +114,7 @@ void main() {
       );
       // Grouped the way this market reads it: lakhs and crores, not
       // thousands. Nine crore, eighty-seven lakh.
-      expect(
-        lines.any((l) => l.contains('9,87,65,432.10')),
-        isTrue,
-      );
+      expect(lines.any((l) => l.contains('9,87,65,432.10')), isTrue);
       for (final line in lines) {
         expect(line.length, lessThanOrEqualTo(48));
       }
@@ -126,8 +123,7 @@ void main() {
 
   group('58mm layout', () {
     test('every line is exactly 32 columns or shorter', () {
-      final lines =
-          renderer.toPreview(receipt(), paper: ReceiptPaper.mm58);
+      final lines = renderer.toPreview(receipt(), paper: ReceiptPaper.mm58);
       for (final line in lines) {
         expect(
           line.length,
@@ -214,15 +210,9 @@ void main() {
 
     test('kicks the drawer only when asked', () {
       const kick = [0x1B, 0x70, 0x00, 0x19, 0xFA];
+      expect(_contains(renderer.toThermalBytes(receipt()), kick), isFalse);
       expect(
-        _contains(renderer.toThermalBytes(receipt()), kick),
-        isFalse,
-      );
-      expect(
-        _contains(
-          renderer.toThermalBytes(receipt(), openDrawer: true),
-          kick,
-        ),
+        _contains(renderer.toThermalBytes(receipt(), openDrawer: true), kick),
         isTrue,
       );
     });
@@ -265,20 +255,17 @@ void main() {
       expect(text, contains('Basmati - "Super"'));
       for (final b in bytes) {
         // 0x80, not 0x100. Every element of a Uint8List is under 0x100 by
-      // type, so the original assertion could not fail; what is actually
-      // claimed is that nothing outside seven-bit ASCII reaches a printer
-      // whose ROM font has no idea what to do with it.
-      expect(b, lessThan(0x80));
+        // type, so the original assertion could not fail; what is actually
+        // claimed is that nothing outside seven-bit ASCII reaches a printer
+        // whose ROM font has no idea what to do with it.
+        expect(b, lessThan(0x80));
       }
     });
 
     test('prints the shop name once, not twice', () {
       final bytes = renderer.toThermalBytes(receipt());
       final text = String.fromCharCodes(bytes);
-      expect(
-        'CHISHTI KIRYANA STORE'.allMatches(text).length,
-        1,
-      );
+      expect('CHISHTI KIRYANA STORE'.allMatches(text).length, 1);
     });
   });
 
@@ -288,9 +275,7 @@ void main() {
       expect(bytes.length, greaterThan(2048));
       expect(String.fromCharCodes(bytes.sublist(0, 5)), '%PDF-');
       // Trailer present, so the file is complete rather than truncated.
-      final tail = String.fromCharCodes(
-        bytes.sublist(bytes.length - 64),
-      );
+      final tail = String.fromCharCodes(bytes.sublist(bytes.length - 64));
       expect(tail, contains('%%EOF'));
     });
 
@@ -355,7 +340,9 @@ void _agreementTests() {
     // last word of one line and the first of the next become one token and
     // the comparison quietly stops meaning anything.
     return String.fromCharCodes(
-      bytes.map((b) => b == 0x0A ? 0x20 : b).where((b) => b >= 0x20 && b < 0x7F),
+      bytes
+          .map((b) => b == 0x0A ? 0x20 : b)
+          .where((b) => b >= 0x20 && b < 0x7F),
     );
   }
 
@@ -374,52 +361,52 @@ void _agreementTests() {
       }
     });
 
-    test('every preview word reaches the paper on ${paper.columns} columns',
-        () {
-      final data = receipt(
-        shop: const ReceiptShop(name: 'Al-Madina Kiryana Store'),
-      );
-
-      // Words, in order, not lines. The shop name is printed double-size, so
-      // it legitimately wraps at half the column count and its line breaks
-      // differ from the preview's. What must never differ is the content: the
-      // same words, in the same order, with nothing dropped and nothing
-      // invented.
-      List<String> words(String text) => text
-          .toUpperCase()
-          .split(RegExp(r'[^A-Z0-9.,\-/:]+'))
-          .where((w) => w.isNotEmpty)
-          .toList();
-
-      final previewWords =
-          words(renderer.toPreview(data, paper: paper).join(' '));
-      final printedWords = words(printedText(data, paper));
-
-      // The printed stream carries a few encoder artefacts around the control
-      // sequences, so it is checked as a subsequence rather than an equality.
-      var cursor = 0;
-      for (final word in previewWords) {
-        final at = printedWords.indexOf(word, cursor);
-        expect(
-          at,
-          isNonNegative,
-          reason: 'the preview showed "$word" and the printer did not, '
-              'on ${paper.columns} columns. printed: $printedWords',
+    test(
+      'every preview word reaches the paper on ${paper.columns} columns',
+      () {
+        final data = receipt(
+          shop: const ReceiptShop(name: 'Al-Madina Kiryana Store'),
         );
-        cursor = at + 1;
-      }
-    });
+
+        // Words, in order, not lines. The shop name is printed double-size, so
+        // it legitimately wraps at half the column count and its line breaks
+        // differ from the preview's. What must never differ is the content: the
+        // same words, in the same order, with nothing dropped and nothing
+        // invented.
+        List<String> words(String text) => text
+            .toUpperCase()
+            .split(RegExp(r'[^A-Z0-9.,\-/:]+'))
+            .where((w) => w.isNotEmpty)
+            .toList();
+
+        final previewWords = words(
+          renderer.toPreview(data, paper: paper).join(' '),
+        );
+        final printedWords = words(printedText(data, paper));
+
+        // The printed stream carries a few encoder artefacts around the control
+        // sequences, so it is checked as a subsequence rather than an equality.
+        var cursor = 0;
+        for (final word in previewWords) {
+          final at = printedWords.indexOf(word, cursor);
+          expect(
+            at,
+            isNonNegative,
+            reason:
+                'the preview showed "$word" and the printer did not, '
+                'on ${paper.columns} columns. printed: $printedWords',
+          );
+          cursor = at + 1;
+        }
+      },
+    );
   }
 
   test('a raster whose header lies about its size is refused', () {
     // One byte short and the printer keeps reading: the feed, the cut and the
     // drawer kick are all swallowed as pixels, and the machine sits waiting
     // for the rest of a picture that will never arrive.
-    final short = MonoBitmap(
-      width: 16,
-      height: 4,
-      bits: Uint8List(2 * 4 - 1),
-    );
+    final short = MonoBitmap(width: 16, height: 4, bits: Uint8List(2 * 4 - 1));
     expect(
       () => EscPos().raster(short),
       throwsA(isA<ArgumentError>()),
@@ -449,55 +436,55 @@ ReceiptData receipt({
   Money furtherTax = Money.zero,
   Money withholding = Money.zero,
   Money extraCharges = Money.zero,
-}) =>
-    ReceiptData(
-      shop: shop ??
-          ReceiptShop(
-            name: 'Chishti Kiryana Store',
-            addressLine1: 'Shop 14, Anarkali',
-            city: 'Lahore',
-            phone: '0300-4471203',
-            logo: logo,
-          ),
-      docNo: 'INV-2627-0001',
-      dateTimeLabel: '23-08-2026  2:15 PM',
-      cashierName: 'Malik Sahib',
-      customerName: customerName,
-      customerPhone: customerPhone,
-      lines: lines ??
-          const [
-            ReceiptLine(
-              name: 'Cooking Oil 5L',
-              qtyDisplay: '2',
-              unitCode: 'pcs',
-              rate: Rate.rupees(2500),
-              amount: Money.rupees(5000),
-            ),
-            ReceiptLine(
-              name: 'Mutton',
-              qtyDisplay: '3.5',
-              unitCode: 'kg',
-              rate: Rate.rupees(150),
-              amount: Money.rupees(525),
-            ),
-          ],
-      subtotal: subtotal,
-      discount: discount,
-      tax: tax,
-      furtherTax: furtherTax,
-      withholding: withholding,
-      extraCharges: extraCharges,
-      total: total,
-      tenders: tenders ??
-          const [
-            ReceiptTender(label: 'Cash', amount: Money.rupees(6000)),
-          ],
-      paid: paid,
-      balance: balance,
-      change: change,
-      isReprint: reprint,
-      footerLines: const ['Shukriya! Phir tashreef laayen'],
-    );
+}) => ReceiptData(
+  shop:
+      shop ??
+      ReceiptShop(
+        name: 'Chishti Kiryana Store',
+        addressLine1: 'Shop 14, Anarkali',
+        city: 'Lahore',
+        phone: '0300-4471203',
+        logo: logo,
+      ),
+  docNo: 'INV-2627-0001',
+  dateTimeLabel: '23-08-2026  2:15 PM',
+  cashierName: 'Malik Sahib',
+  customerName: customerName,
+  customerPhone: customerPhone,
+  lines:
+      lines ??
+      const [
+        ReceiptLine(
+          name: 'Cooking Oil 5L',
+          qtyDisplay: '2',
+          unitCode: 'pcs',
+          rate: Rate.rupees(2500),
+          amount: Money.rupees(5000),
+        ),
+        ReceiptLine(
+          name: 'Mutton',
+          qtyDisplay: '3.5',
+          unitCode: 'kg',
+          rate: Rate.rupees(150),
+          amount: Money.rupees(525),
+        ),
+      ],
+  subtotal: subtotal,
+  discount: discount,
+  tax: tax,
+  furtherTax: furtherTax,
+  withholding: withholding,
+  extraCharges: extraCharges,
+  total: total,
+  tenders:
+      tenders ??
+      const [ReceiptTender(label: 'Cash', amount: Money.rupees(6000))],
+  paid: paid,
+  balance: balance,
+  change: change,
+  isReprint: reprint,
+  footerLines: const ['Shukriya! Phir tashreef laayen'],
+);
 
 /// Inputs a shopkeeper can actually produce, on the narrower paper.
 ///
@@ -531,7 +518,8 @@ void _pdfTests() {
     expect(
       pages,
       greaterThan(1),
-      reason: 'forty lines do not fit one A5 page; the document must paginate '
+      reason:
+          'forty lines do not fit one A5 page; the document must paginate '
           'rather than clip the ones that do not',
     );
 
@@ -733,7 +721,8 @@ void _reconciliationTests() {
     }
 
     // 10,000 − 500 + 1,710 + 380 − 475 + 200 = 11,315.
-    final reconstructed = amountOn('Subtotal') -
+    final reconstructed =
+        amountOn('Subtotal') -
         amountOn('Discount').abs +
         amountOn('Sales Tax') +
         amountOn('Further Tax') -

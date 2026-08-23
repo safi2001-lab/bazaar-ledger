@@ -155,3 +155,18 @@ final lowStockProvider = FutureProvider.autoDispose<List<ItemSummary>>((
   if (firm == null) return const [];
   return services.queries.lowStockItems(firm.id);
 });
+
+/// What the shelves are worth, and how much of the shop is not on them.
+///
+/// One indexed aggregation rather than a fetch-and-sum: the largest cluster of
+/// crash reports against the nearest competitor is reports on catalogues of a
+/// few thousand items, and the cause is always adding rows up in Dart.
+final stockSummaryProvider = FutureProvider.autoDispose<StockSummary>((
+  ref,
+) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return StockSummary.empty;
+  return services.queries.stockSummary(firm.id);
+});

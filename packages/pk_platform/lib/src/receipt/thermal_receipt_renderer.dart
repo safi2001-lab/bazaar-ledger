@@ -83,8 +83,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   List<String> toPreview(
     ReceiptData data, {
     ReceiptPaper paper = ReceiptPaper.mm80,
-  }) =>
-      ReceiptLayout(paper: paper).render(data);
+  }) => ReceiptLayout(paper: paper).render(data);
 
   @override
   Future<Uint8List> toPdf(
@@ -175,199 +174,194 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
           ),
         ),
         build: (context) => [
-            pw.Center(
-              child: pw.Text(
-                data.shop.name.toUpperCase(),
-                style: pw.TextStyle(font: sansBold, fontSize: 16),
-              ),
+          pw.Center(
+            child: pw.Text(
+              data.shop.name.toUpperCase(),
+              style: pw.TextStyle(font: sansBold, fontSize: 16),
             ),
+          ),
+          pw.SizedBox(height: 2),
+          pw.Center(
+            child: pw.Text(
+              [
+                data.shop.addressLine1,
+                data.shop.city,
+                data.shop.phone,
+              ].whereType<String>().where((s) => s.isNotEmpty).join('  |  '),
+              style: pw.TextStyle(font: sans, fontSize: 9),
+            ),
+          ),
+          if (data.shop.ntn != null || data.shop.strn != null) ...[
             pw.SizedBox(height: 2),
             pw.Center(
               child: pw.Text(
                 [
-                  data.shop.addressLine1,
-                  data.shop.city,
-                  data.shop.phone,
-                ].whereType<String>().where((s) => s.isNotEmpty).join('  |  '),
+                  if (data.shop.ntn != null) 'NTN ${data.shop.ntn}',
+                  if (data.shop.strn != null) 'STRN ${data.shop.strn}',
+                ].join('   '),
                 style: pw.TextStyle(font: sans, fontSize: 9),
               ),
             ),
-            if (data.shop.ntn != null || data.shop.strn != null) ...[
-              pw.SizedBox(height: 2),
-              pw.Center(
-                child: pw.Text(
-                  [
-                    if (data.shop.ntn != null) 'NTN ${data.shop.ntn}',
-                    if (data.shop.strn != null) 'STRN ${data.shop.strn}',
-                  ].join('   '),
-                  style: pw.TextStyle(font: sans, fontSize: 9),
-                ),
+          ],
+          pw.SizedBox(height: 10),
+          pw.Divider(thickness: 1, height: 1),
+          pw.SizedBox(height: 8),
+          pw.Row(
+            mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+            children: [
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.start,
+                children: [
+                  pw.Text(
+                    'Bill No: ${data.docNo}',
+                    style: pw.TextStyle(font: sansBold, fontSize: 10),
+                  ),
+                  pw.Text(
+                    'Date: ${data.dateTimeLabel}',
+                    style: pw.TextStyle(font: sans, fontSize: 9),
+                  ),
+                  pw.Text(
+                    'Cashier: ${data.cashierName}',
+                    style: pw.TextStyle(font: sans, fontSize: 9),
+                  ),
+                ],
               ),
-            ],
-            pw.SizedBox(height: 10),
-            pw.Divider(thickness: 1, height: 1),
-            pw.SizedBox(height: 8),
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                children: [
+                  if (data.customerName != null)
                     pw.Text(
-                      'Bill No: ${data.docNo}',
+                      data.customerName!,
                       style: pw.TextStyle(font: sansBold, fontSize: 10),
                     ),
+                  if (data.customerPhone != null)
                     pw.Text(
-                      'Date: ${data.dateTimeLabel}',
+                      data.customerPhone!,
                       style: pw.TextStyle(font: sans, fontSize: 9),
                     ),
+                  if (data.isReprint)
                     pw.Text(
-                      'Cashier: ${data.cashierName}',
-                      style: pw.TextStyle(font: sans, fontSize: 9),
+                      'REPRINT',
+                      style: pw.TextStyle(font: sansBold, fontSize: 9),
                     ),
-                  ],
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.end,
-                  children: [
-                    if (data.customerName != null)
-                      pw.Text(
-                        data.customerName!,
-                        style: pw.TextStyle(font: sansBold, fontSize: 10),
-                      ),
-                    if (data.customerPhone != null)
-                      pw.Text(
-                        data.customerPhone!,
-                        style: pw.TextStyle(font: sans, fontSize: 9),
-                      ),
-                    if (data.isReprint)
-                      pw.Text(
-                        'REPRINT',
-                        style: pw.TextStyle(font: sansBold, fontSize: 9),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-            pw.SizedBox(height: 10),
-            pw.TableHelper.fromTextArray(
-              headers: const ['#', 'Item', 'Qty', 'Rate', 'Amount'],
-              headerStyle: pw.TextStyle(font: sansBold, fontSize: 9),
-              headerDecoration: const pw.BoxDecoration(
-                color: PdfColors.grey300,
+                ],
               ),
-              cellStyle: pw.TextStyle(font: sans, fontSize: 9),
-              cellAlignments: {
-                0: pw.Alignment.centerLeft,
-                1: pw.Alignment.centerLeft,
-                2: pw.Alignment.centerRight,
-                3: pw.Alignment.centerRight,
-                4: pw.Alignment.centerRight,
-              },
-              columnWidths: {
-                0: const pw.FixedColumnWidth(18),
-                1: const pw.FlexColumnWidth(4),
-                2: const pw.FlexColumnWidth(1.4),
-                3: const pw.FlexColumnWidth(1.6),
-                4: const pw.FlexColumnWidth(1.8),
-              },
-              cellDecoration: (i, dynamic v, j) => const pw.BoxDecoration(),
-              data: [
-                for (var i = 0; i < data.lines.length; i++)
-                  [
-                    '${i + 1}',
-                    data.lines[i].name +
-                        (data.lines[i].isFreeItem ? '  (free)' : ''),
-                    '${data.lines[i].qtyDisplay} ${data.lines[i].unitCode}',
-                    data.lines[i].rate.amountOnly,
-                    data.lines[i].amount.amountOnly,
-                  ],
-              ],
-            ),
-            pw.SizedBox(height: 10),
-            pw.Row(
-              children: [
-                pw.Expanded(flex: 3, child: pw.SizedBox()),
-                pw.Expanded(
-                  flex: 4,
-                  child: pw.Column(
-                    children: [
-                      totalRow('Subtotal', data.subtotal.amountOnly),
-                      if (data.discount.isPositive)
-                        totalRow('Discount', '-${data.discount.amountOnly}'),
-                      if (data.tax.isPositive)
-                        totalRow('Sales Tax', data.tax.amountOnly),
-                      if (data.furtherTax.isPositive)
-                        totalRow('Further Tax', data.furtherTax.amountOnly),
-                      if (data.withholding.isPositive)
-                        totalRow(
-                          'Withholding',
-                          '-${data.withholding.amountOnly}',
-                        ),
-                      if (data.extraCharges.isPositive)
-                        totalRow(
-                          'Other Charges',
-                          data.extraCharges.amountOnly,
-                        ),
-                      if (!data.roundOff.isZero)
-                        totalRow(
-                          'Round Off',
-                          data.roundOff.signed.replaceAll('Rs ', ''),
-                        ),
-                      pw.Divider(thickness: 1, height: 6),
+            ],
+          ),
+          pw.SizedBox(height: 10),
+          pw.TableHelper.fromTextArray(
+            headers: const ['#', 'Item', 'Qty', 'Rate', 'Amount'],
+            headerStyle: pw.TextStyle(font: sansBold, fontSize: 9),
+            headerDecoration: const pw.BoxDecoration(color: PdfColors.grey300),
+            cellStyle: pw.TextStyle(font: sans, fontSize: 9),
+            cellAlignments: {
+              0: pw.Alignment.centerLeft,
+              1: pw.Alignment.centerLeft,
+              2: pw.Alignment.centerRight,
+              3: pw.Alignment.centerRight,
+              4: pw.Alignment.centerRight,
+            },
+            columnWidths: {
+              0: const pw.FixedColumnWidth(18),
+              1: const pw.FlexColumnWidth(4),
+              2: const pw.FlexColumnWidth(1.4),
+              3: const pw.FlexColumnWidth(1.6),
+              4: const pw.FlexColumnWidth(1.8),
+            },
+            cellDecoration: (i, dynamic v, j) => const pw.BoxDecoration(),
+            data: [
+              for (var i = 0; i < data.lines.length; i++)
+                [
+                  '${i + 1}',
+                  data.lines[i].name +
+                      (data.lines[i].isFreeItem ? '  (free)' : ''),
+                  '${data.lines[i].qtyDisplay} ${data.lines[i].unitCode}',
+                  data.lines[i].rate.amountOnly,
+                  data.lines[i].amount.amountOnly,
+                ],
+            ],
+          ),
+          pw.SizedBox(height: 10),
+          pw.Row(
+            children: [
+              pw.Expanded(flex: 3, child: pw.SizedBox()),
+              pw.Expanded(
+                flex: 4,
+                child: pw.Column(
+                  children: [
+                    totalRow('Subtotal', data.subtotal.amountOnly),
+                    if (data.discount.isPositive)
+                      totalRow('Discount', '-${data.discount.amountOnly}'),
+                    if (data.tax.isPositive)
+                      totalRow('Sales Tax', data.tax.amountOnly),
+                    if (data.furtherTax.isPositive)
+                      totalRow('Further Tax', data.furtherTax.amountOnly),
+                    if (data.withholding.isPositive)
                       totalRow(
-                        'TOTAL',
-                        'Rs ${data.total.amountOnly}',
+                        'Withholding',
+                        '-${data.withholding.amountOnly}',
+                      ),
+                    if (data.extraCharges.isPositive)
+                      totalRow('Other Charges', data.extraCharges.amountOnly),
+                    if (!data.roundOff.isZero)
+                      totalRow(
+                        'Round Off',
+                        data.roundOff.signed.replaceAll('Rs ', ''),
+                      ),
+                    pw.Divider(thickness: 1, height: 6),
+                    totalRow(
+                      'TOTAL',
+                      'Rs ${data.total.amountOnly}',
+                      emphasis: true,
+                    ),
+                    for (final t in data.tenders)
+                      totalRow(t.label, t.amount.amountOnly),
+                    if (data.change.isPositive)
+                      totalRow('Change', data.change.amountOnly),
+                    if (data.balance.isPositive)
+                      totalRow(
+                        'Baqaya (udhaar)',
+                        data.balance.amountOnly,
                         emphasis: true,
                       ),
-                      for (final t in data.tenders)
-                        totalRow(t.label, t.amount.amountOnly),
-                      if (data.change.isPositive)
-                        totalRow('Change', data.change.amountOnly),
-                      if (data.balance.isPositive)
-                        totalRow(
-                          'Baqaya (udhaar)',
-                          data.balance.amountOnly,
-                          emphasis: true,
-                        ),
-                    ],
-                  ),
+                  ],
                 ),
-              ],
+              ),
+            ],
+          ),
+          // No Spacer: MultiPage has no fixed height to push against.
+          pw.SizedBox(height: 12),
+          if (data.shop.raastAlias != null || data.shop.bankIban != null) ...[
+            pw.Divider(thickness: 0.5, height: 8),
+            pw.Text(
+              'Payment ke liye',
+              style: pw.TextStyle(font: sansBold, fontSize: 9),
             ),
-            // No Spacer: MultiPage has no fixed height to push against.
-            pw.SizedBox(height: 12),
-            if (data.shop.raastAlias != null || data.shop.bankIban != null) ...[
-              pw.Divider(thickness: 0.5, height: 8),
+            // Text, never a generated QR. The scheme identifier in an
+            // interoperable QR is issued by the State Bank to licensed
+            // PSO/PSPs only.
+            if (data.shop.raastAlias != null)
               pw.Text(
-                'Payment ke liye',
-                style: pw.TextStyle(font: sansBold, fontSize: 9),
+                'Raast: ${data.shop.raastAlias}',
+                style: pw.TextStyle(font: mono, fontSize: 9),
               ),
-              // Text, never a generated QR. The scheme identifier in an
-              // interoperable QR is issued by the State Bank to licensed
-              // PSO/PSPs only.
-              if (data.shop.raastAlias != null)
-                pw.Text(
-                  'Raast: ${data.shop.raastAlias}',
-                  style: pw.TextStyle(font: mono, fontSize: 9),
-                ),
-              if (data.shop.bankIban != null)
-                pw.Text(
-                  '${data.shop.bankName ?? 'Bank'}: '
-                  '${data.shop.bankIban}'
-                  '${data.shop.bankAccountTitle != null ? '  (${data.shop.bankAccountTitle})' : ''}',
-                  style: pw.TextStyle(font: mono, fontSize: 9),
-                ),
-            ],
-            if (data.footerLines.isNotEmpty) ...[
-              pw.SizedBox(height: 6),
-              pw.Center(
-                child: pw.Text(
-                  data.footerLines.join('   '),
-                  style: pw.TextStyle(font: sans, fontSize: 9),
-                ),
+            if (data.shop.bankIban != null)
+              pw.Text(
+                '${data.shop.bankName ?? 'Bank'}: '
+                '${data.shop.bankIban}'
+                '${data.shop.bankAccountTitle != null ? '  (${data.shop.bankAccountTitle})' : ''}',
+                style: pw.TextStyle(font: mono, fontSize: 9),
               ),
-            ],
+          ],
+          if (data.footerLines.isNotEmpty) ...[
+            pw.SizedBox(height: 6),
+            pw.Center(
+              child: pw.Text(
+                data.footerLines.join('   '),
+                style: pw.TextStyle(font: sans, fontSize: 9),
+              ),
+            ),
+          ],
         ],
       ),
     );

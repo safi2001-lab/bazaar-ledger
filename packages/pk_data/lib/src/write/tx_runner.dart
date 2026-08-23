@@ -539,14 +539,20 @@ final class Tx {
   /// to be integral is coerced silently into a STRICT INTEGER column, so the
   /// first sign of a float creeping into the money layer would have been a
   /// rounding difference in a report months later.
+  /// `Uint8List` is allowed because `attachments.bytes` is a real BLOB
+  /// column: an item photograph, a cheque image, the bank QR a shopkeeper
+  /// imported. The rule here has never been "scalars only" — it is that a
+  /// `double` must never reach a money column, and a blob is not a number that
+  /// can round.
   static List<Object?> _checked(List<Object?> args) {
     for (final a in args) {
       if (a == null || a is int || a is String || a is bool) continue;
+      if (a is Uint8List) continue;
       throw ArgumentError.value(
         a,
         'args',
-        'only int, String, bool and null may be written — a double here '
-            'would be money represented as a float',
+        'only int, String, bool, Uint8List and null may be written — a '
+            'double here would be money represented as a float',
       );
     }
     return args;
@@ -562,12 +568,14 @@ final class Tx {
         Variable<String>(a)
       else if (a is bool)
         Variable<int>(a ? 1 : 0)
+      else if (a is Uint8List)
+        Variable<Uint8List>(a)
       else
         throw ArgumentError.value(
           a,
           'args',
-          'only int, String, bool and null may be bound — a double here '
-              'would be money represented as a float',
+          'only int, String, bool, Uint8List and null may be bound — a '
+              'double here would be money represented as a float',
         ),
   ];
 

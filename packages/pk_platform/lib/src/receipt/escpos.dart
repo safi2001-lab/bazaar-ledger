@@ -54,18 +54,17 @@ final class EscPos {
   /// Selecting it does not make the assumption true on every machine, which
   /// is why the column count is also a per-printer setting. What it does is
   /// make the printer's state ours rather than whatever the last job left.
-  EscPos font(EscPosFont f) =>
-      _raw([_esc, 0x4D, f == EscPosFont.a ? 0 : 1]);
+  EscPos font(EscPosFont f) => _raw([_esc, 0x4D, f == EscPosFont.a ? 0 : 1]);
 
   EscPos align(EscPosAlign a) => _raw([
-        _esc,
-        0x61,
-        switch (a) {
-          EscPosAlign.left => 0,
-          EscPosAlign.centre => 1,
-          EscPosAlign.right => 2,
-        },
-      ]);
+    _esc,
+    0x61,
+    switch (a) {
+      EscPosAlign.left => 0,
+      EscPosAlign.centre => 1,
+      EscPosAlign.right => 2,
+    },
+  ]);
 
   /// ESC E n — emphasised.
   EscPos bold({bool on = true}) => _raw([_esc, 0x45, on ? 1 : 0]);

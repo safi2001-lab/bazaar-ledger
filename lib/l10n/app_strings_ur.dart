@@ -880,4 +880,39 @@ class AppStringsUr extends AppStrings {
   String historyBalance(Object qty) {
     return 'Baqi: $qty';
   }
+
+  @override
+  String get stockSummaryValue => 'Stock ki qeemat';
+
+  @override
+  String stockSummaryItems(Object count) {
+    return '$count cheezein';
+  }
+
+  @override
+  String stockSummaryLow(Object count) {
+    return '$count kam';
+  }
+
+  @override
+  String stockSummaryOut(Object count) {
+    return '$count khatam';
+  }
+
+  @override
+  String stockSummaryNegative(Object count) {
+    return '$count ulta';
+  }
+
+  @override
+  String get pictureAdd => 'Tasveer lagayein';
+
+  @override
+  String get pictureChange => 'Tasveer badlein';
+
+  @override
+  String get pictureRemove => 'Tasveer hatayein';
+
+  @override
+  String get pictureNotAnImage => 'Yeh tasveer nahi hai';
 }

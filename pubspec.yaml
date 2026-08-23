@@ -14,6 +14,15 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^2.6.1
+  # The system photo picker, deliberately. On Android 13+ image_picker routes
+  # through Android's own Photo Picker, which needs NO permission at all --
+  # not READ_MEDIA_IMAGES, which Play now restricts to apps whose core
+  # function the system picker cannot serve, and which would put a billing app
+  # through a declaration review to let a shopkeeper photograph a tin of oil.
+  #
+  # Gallery only. Camera capture would pull in CAMERA, and that permission
+  # arrives with barcode scanning or not at all.
+  image_picker: ^1.1.2
   intl: ^0.20.2
   path_provider: ^2.1.5
   # The wiring point. It depends on pk_data and drift; this package does not,
@@ -34,6 +43,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+  # Test-only. Building a photograph-shaped fixture so the item picture path
+  # can be exercised without a camera or a system dialog.
+  image: ^4.5.4
   integration_test:
     sdk: flutter
 

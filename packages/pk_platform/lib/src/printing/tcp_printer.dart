@@ -112,8 +112,9 @@ final class TcpPrinter implements PrinterTransport {
       // bill in one write is how a receipt comes out with the middle missing.
       const chunk = 1024;
       for (var offset = 0; offset < bytes.length; offset += chunk) {
-        final end =
-            offset + chunk < bytes.length ? offset + chunk : bytes.length;
+        final end = offset + chunk < bytes.length
+            ? offset + chunk
+            : bytes.length;
         socket.add(bytes.sublist(offset, end));
         await socket.flush().timeout(writeTimeout);
         written = end;
@@ -159,7 +160,8 @@ final class TcpPrinter implements PrinterTransport {
           if (parts.length != 4) continue;
           final a = int.tryParse(parts[0]) ?? 0;
           final b = int.tryParse(parts[1]) ?? 0;
-          final isPrivate = a == 10 ||
+          final isPrivate =
+              a == 10 ||
               (a == 172 && b >= 16 && b <= 31) ||
               (a == 192 && b == 168);
           if (isPrivate) prefixes.add('${parts[0]}.${parts[1]}.${parts[2]}');

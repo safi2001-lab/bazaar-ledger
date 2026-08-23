@@ -419,5 +419,17 @@
   "historyAdjustment": "Durusti",
   "historyWastage": "Zaya",
   "historyOther": "Aur",
-  "historyBalance": "Baqi: {qty}"
+  "historyBalance": "Baqi: {qty}",
+  "stockSummaryValue": "Stock ki qeemat",
+  "stockSummaryItems": "{count} cheezein",
+  "stockSummaryLow": "{count} kam",
+  "stockSummaryOut": "{count} khatam",
+  "stockSummaryNegative": "{count} ulta",
+  "@stockSummaryNegative": {
+    "description": "A ledger balance below zero: the shop sold something it never recorded receiving. Impossible on a shelf, and a bookkeeping error a person must fix."
+  },
+  "pictureAdd": "Tasveer lagayein",
+  "pictureChange": "Tasveer badlein",
+  "pictureRemove": "Tasveer hatayein",
+  "pictureNotAnImage": "Yeh tasveer nahi hai"
 }

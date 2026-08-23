@@ -563,6 +563,86 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<StockSummary> stockSummary(String firmId) async {
+    // One pass. The per-item balance is a correlated SUM over the append-only
+    // ledger, which `idx_stock_position` serves, and everything else is
+    // counted from that in the outer query. Nothing is fetched into Dart to be
+    // added up — the largest cluster of crash reports against the nearest
+    // competitor is reports on catalogues of a few thousand items, and that is
+    // the cause every time.
+    //
+    // The value is accumulated in MILLI-PAISA and converted once, in Dart,
+    // through the project's own rounding. Two reasons. Dividing per row would
+    // truncate up to a paisa per item, which on a 20,000-SKU catalogue is a
+    // stock valuation wrong by two hundred rupees. And multiplying without
+    // scaling down first (thousandths x milli-paisa) reaches 1e18 on a large
+    // shop, which is close enough to the int64 ceiling to be a real risk
+    // rather than a theoretical one.
+    final row = await _db
+        .customSelect(
+          '''
+          SELECT
+            COUNT(*) AS tracked,
+            COALESCE(SUM(
+              CASE WHEN stock_thousandths <> 0
+                   -- Both operands are INTEGER columns, so SQLite performs
+              -- integer division and there is no floating point anywhere in
+              -- it. The result is milli-paisa, converted to paisa once in
+              -- Dart with the project's own half-up rounding. Scaling here
+              -- rather than after the SUM keeps the running total four orders
+              -- of magnitude below the int64 ceiling on a large shop.
+              THEN stock_thousandths * i.avg_cost_milli_paisa / 1000 -- arch_check: allow no_floating_point_money — integer scaling
+                   ELSE 0 END
+            ), 0) AS value_milli_paisa,
+            COALESCE(SUM(CASE
+              WHEN stock_thousandths > 0
+               AND i.min_stock_thousandths > 0
+               AND stock_thousandths <= i.min_stock_thousandths
+              THEN 1 ELSE 0 END), 0) AS low_count,
+            COALESCE(SUM(CASE WHEN stock_thousandths = 0
+                              THEN 1 ELSE 0 END), 0) AS out_count,
+            COALESCE(SUM(CASE WHEN stock_thousandths < 0
+                              THEN 1 ELSE 0 END), 0) AS negative_count
+          FROM (
+            SELECT i.id, i.min_stock_thousandths, i.avg_cost_milli_paisa,
+                   COALESCE((
+                     SELECT SUM(sl.qty_delta_thousandths)
+                     FROM stock_ledger sl
+                     WHERE sl.item_id = i.id AND sl.deleted_at_utc IS NULL
+                   ), 0) AS stock_thousandths
+            FROM items i
+            WHERE i.firm_id = ?
+              AND i.deleted_at_utc IS NULL
+              AND i.is_active = 1
+              -- A service has no shelf, so counting it as "out of stock"
+              -- would put every tailoring charge in the shop on an alert
+              -- list, and an alert list that is always full is a list nobody
+              -- reads.
+              AND i.track_stock = 1
+          ) AS i
+          ''',
+          variables: [Variable<String>(firmId)],
+        )
+        .getSingle();
+
+    return StockSummary(
+      trackedItems: row.read<int>('tracked'),
+      // Half-up, once, through the same rounding policy every other figure in
+      // the application uses.
+      stockValue: Money.paisa(
+        divideRounded(
+          row.read<int>('value_milli_paisa'),
+          1000,
+          RoundingMode.halfUp,
+        ),
+      ),
+      lowCount: row.read<int>('low_count'),
+      outCount: row.read<int>('out_count'),
+      negativeCount: row.read<int>('negative_count'),
+    );
+  }
+
+  @override
   Future<List<UnitEdge>> unitConversions(String firmId) async {
     final rows = await _db
         .customSelect(

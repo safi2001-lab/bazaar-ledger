@@ -31,10 +31,10 @@ final class ReceiptLayout {
 
     // --- Head ------------------------------------------------------------
     centred(d.shop.name.toUpperCase());
-    final where = [d.shop.addressLine1, d.shop.city]
-        .whereType<String>()
-        .where((s) => s.isNotEmpty)
-        .join(', ');
+    final where = [
+      d.shop.addressLine1,
+      d.shop.city,
+    ].whereType<String>().where((s) => s.isNotEmpty).join(', ');
     if (where.isNotEmpty) centred(where);
     if (_has(d.shop.phone)) centred(d.shop.phone!);
     // Printed only when the shop holds one. Most kiryana stores do not, and a
@@ -95,7 +95,10 @@ final class ReceiptLayout {
         // `code` has no length cap in the schema because the shop invents its
         // own, so the only safe move is to give the detail its own line and
         // let the amount keep the row to itself.
-        for (final part in _wrap('${line.qtyDisplay} ${line.unitCode}', width - 2)) {
+        for (final part in _wrap(
+          '${line.qtyDisplay} ${line.unitCode}',
+          width - 2,
+        )) {
           out.add('  $part');
         }
         out.add(_row('', amount));

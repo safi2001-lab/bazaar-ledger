@@ -878,4 +878,39 @@ class AppStringsEn extends AppStrings {
   String historyBalance(Object qty) {
     return 'Left: $qty';
   }
+
+  @override
+  String get stockSummaryValue => 'Stock at cost';
+
+  @override
+  String stockSummaryItems(Object count) {
+    return '$count items';
+  }
+
+  @override
+  String stockSummaryLow(Object count) {
+    return '$count low';
+  }
+
+  @override
+  String stockSummaryOut(Object count) {
+    return '$count out';
+  }
+
+  @override
+  String stockSummaryNegative(Object count) {
+    return '$count below zero';
+  }
+
+  @override
+  String get pictureAdd => 'Add a photo';
+
+  @override
+  String get pictureChange => 'Change photo';
+
+  @override
+  String get pictureRemove => 'Remove photo';
+
+  @override
+  String get pictureNotAnImage => 'That file is not a picture';
 }

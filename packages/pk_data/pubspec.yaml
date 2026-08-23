@@ -10,6 +10,10 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  # Content-addressing attachments. Already in the tree transitively; named
+  # here because this package imports it directly, and a direct import of a
+  # transitive dependency breaks the moment the intermediate package drops it.
+  crypto: ^3.0.6
   drift: ^2.28.0
   pk_domain:
     path: ../pk_domain

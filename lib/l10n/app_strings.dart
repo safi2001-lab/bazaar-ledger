@@ -1687,6 +1687,60 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Baqi: {qty}'**
   String historyBalance(Object qty);
+
+  /// No description provided for @stockSummaryValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock ki qeemat'**
+  String get stockSummaryValue;
+
+  /// No description provided for @stockSummaryItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezein'**
+  String stockSummaryItems(Object count);
+
+  /// No description provided for @stockSummaryLow.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} kam'**
+  String stockSummaryLow(Object count);
+
+  /// No description provided for @stockSummaryOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} khatam'**
+  String stockSummaryOut(Object count);
+
+  /// A ledger balance below zero: the shop sold something it never recorded receiving. Impossible on a shelf, and a bookkeeping error a person must fix.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} ulta'**
+  String stockSummaryNegative(Object count);
+
+  /// No description provided for @pictureAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer lagayein'**
+  String get pictureAdd;
+
+  /// No description provided for @pictureChange.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer badlein'**
+  String get pictureChange;
+
+  /// No description provided for @pictureRemove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer hatayein'**
+  String get pictureRemove;
+
+  /// No description provided for @pictureNotAnImage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh tasveer nahi hai'**
+  String get pictureNotAnImage;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

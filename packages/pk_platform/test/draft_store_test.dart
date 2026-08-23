@@ -60,26 +60,26 @@ void main() {
     });
 
     test('a half-written file is never what a reader sees', () async {
-    // The store writes beside the target and renames over it, so a kill
-    // landing mid-write leaves the previous draft intact rather than a
-    // truncated one. Half a cart is worse than none: the cashier cannot tell
-    // it apart from a whole one by looking, and the stock that is not on it
-    // walks out of the shop.
-    await store.write(cartDraftSlot, '{"v":1,"lines":[{"itemId":"a"}]}');
+      // The store writes beside the target and renames over it, so a kill
+      // landing mid-write leaves the previous draft intact rather than a
+      // truncated one. Half a cart is worse than none: the cashier cannot tell
+      // it apart from a whole one by looking, and the stock that is not on it
+      // walks out of the shop.
+      await store.write(cartDraftSlot, '{"v":1,"lines":[{"itemId":"a"}]}');
 
-    final temp = File(
-      '${dir.path}${Platform.pathSeparator}draft_cart.json.tmp',
-    )..writeAsStringSync('{"v":1,"lines":[{"itemId":"a","na');
+      final temp = File(
+        '${dir.path}${Platform.pathSeparator}draft_cart.json.tmp',
+      )..writeAsStringSync('{"v":1,"lines":[{"itemId":"a","na');
 
-    expect(
-      await store.read(cartDraftSlot),
-      '{"v":1,"lines":[{"itemId":"a"}]}',
-      reason: 'a reader must never be handed the file being written',
-    );
-    temp.deleteSync();
-  });
+      expect(
+        await store.read(cartDraftSlot),
+        '{"v":1,"lines":[{"itemId":"a"}]}',
+        reason: 'a reader must never be handed the file being written',
+      );
+      temp.deleteSync();
+    });
 
-  test('a slot name that is not a slot name is refused', () async {
+    test('a slot name that is not a slot name is refused', () async {
       // Nothing builds one from user input today. This is here so it stays
       // true when hold-bill arrives and slots start carrying a counter name.
       expect(

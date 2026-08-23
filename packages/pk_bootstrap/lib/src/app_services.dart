@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:drift/native.dart';
 import 'package:drift_flutter/drift_flutter.dart';
@@ -34,6 +35,7 @@ final class AppServices {
     required this.drafts,
     required this.restoredCartDraft,
     required this.printing,
+    required this.pictures,
     required TxRunner runner,
   }) : _runner = runner;
 
@@ -82,6 +84,14 @@ final class AppServices {
   /// printer icon under a string reading "Printing arrives in M2." A library
   /// nothing links to is not a feature.
   final PrintingServices printing;
+
+  /// Item photographs, cheque images, the bank QR a shopkeeper imported.
+  ///
+  /// Stored inline in the database rather than as files beside it, which the
+  /// schema chose deliberately: a backup is then one file, and a restore
+  /// cannot come back with every picture missing because the phone they were
+  /// taken on is gone.
+  final PictureServices pictures;
 
   TxRunner _runner;
 
@@ -194,6 +204,9 @@ final class AppServices {
       ids: ids,
       drafts: drafts,
       printing: printing,
+      pictures: PictureServices._(
+        store: DriftAttachments(database, () => services._runner),
+      ),
       // One small file read, before the first frame. The counter has to be
       // able to restore the cart synchronously: a bill that arrives a frame
       // late shows the cashier an empty one first, and an empty one is a bill
@@ -408,4 +421,46 @@ void _resolveSqliteForHost() {
       () => DynamicLibrary.open('winsqlite3.dll'),
     );
   }
+}
+
+/// Pictures the shop owns.
+///
+/// A thin seam over the store and the shrinker, so a screen never has to know
+/// that a photograph has to be reduced before it can be kept, or what the
+/// ceiling is. Handing a screen the raw store would mean every caller
+/// remembering to shrink, and the one that forgot would be the one that put an
+/// eight-megabyte camera original into a shop's only backup.
+final class PictureServices {
+  PictureServices._({required DriftAttachments store}) : _store = store;
+
+  final DriftAttachments _store;
+  final ImageShrinker _shrinker = const DartImageShrinker();
+
+  /// Reduces [source] and stores it against one row, replacing what was there.
+  ///
+  /// Throws [FormatException] when the bytes are not a picture this build can
+  /// read — a thing to say to a shopkeeper in words, rather than a silent
+  /// failure that leaves them tapping the same button again.
+  Future<void> setItemPicture(
+    ActorContext actor, {
+    required String itemId,
+    required Uint8List source,
+    required String fileName,
+  }) async {
+    final shrunk = await _shrinker.shrink(source, id: itemId);
+    await _store.attach(
+      actor,
+      kind: 'item_image',
+      ownerTable: 'items',
+      ownerId: itemId,
+      image: shrunk,
+      fileName: fileName,
+    );
+  }
+
+  Future<ImageAttachment?> itemPicture(String firmId, String itemId) =>
+      _store.forOwner(firmId, 'items', itemId);
+
+  Future<void> clearItemPicture(ActorContext actor, String itemId) =>
+      _store.detach(actor, ownerTable: 'items', ownerId: itemId);
 }

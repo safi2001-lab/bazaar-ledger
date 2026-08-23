@@ -289,6 +289,62 @@ abstract interface class AppQueries {
     String? afterId,
     int limit = 50,
   });
+
+  /// What the shelves are worth, and how much of the shop is not on them.
+  ///
+  /// One indexed aggregation, never a fetch-and-sum in Dart. The largest
+  /// single cluster of crash reports against the nearest competitor is reports
+  /// on catalogues of a few thousand items, and the cause is exactly that.
+  Future<StockSummary> stockSummary(String firmId);
+}
+
+/// The shop's stock, in five numbers.
+///
+/// Deliberately small. A shopkeeper glancing at this before locking up wants
+/// to know what is tied up in stock, what is about to run out, and what has
+/// already run out — not a table. The table is the item list, one tap away.
+final class StockSummary {
+  const StockSummary({
+    required this.trackedItems,
+    required this.stockValue,
+    required this.lowCount,
+    required this.outCount,
+    required this.negativeCount,
+  });
+
+  /// Items that carry stock at all. A service has no shelf.
+  final int trackedItems;
+
+  /// Every item's quantity at its own weighted-average cost.
+  ///
+  /// At COST, not at retail. Valuing stock at what it would sell for counts
+  /// profit the shop has not made, which is the single most common way a small
+  /// business talks itself into believing it is richer than it is.
+  final Money stockValue;
+
+  /// At or below the floor the shopkeeper set, and not yet at zero.
+  final int lowCount;
+
+  /// Exactly nothing left.
+  final int outCount;
+
+  /// Less than nothing left.
+  ///
+  /// Impossible on a shelf and entirely possible in a ledger: it means the
+  /// shop sold something it had never recorded receiving. Surfaced rather than
+  /// clamped, because a negative balance is a bookkeeping error a person needs
+  /// to fix, and hiding it makes the stock value quietly wrong.
+  final int negativeCount;
+
+  bool get isEmpty => trackedItems == 0;
+
+  static const StockSummary empty = StockSummary(
+    trackedItems: 0,
+    stockValue: Money.zero,
+    lowCount: 0,
+    outCount: 0,
+    negativeCount: 0,
+  );
 }
 
 /// One line of an item's stock history.

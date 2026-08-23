@@ -47,7 +47,11 @@ milestones:
 
   - id: M1
     title: Catalogue and stock truth
-    state: open
+    # Sealed on 24 Aug 2026 at 20/20, with every proof passing in the run that
+    # checked it. Sealed does not mean untouchable -- a fix to an M1 file is
+    # ordinary -- it means the milestone is measured and complete, and R5 will
+    # now refuse a commit that claims it is not.
+    state: sealed
     owns:
       - lib/features/items/**
       - packages/pk_domain/lib/src/catalogue/**
@@ -710,8 +714,61 @@ features:
   - id: M1-ITEM-03
     milestone: M1
     title: An item can carry a photograph
-    status: todo
-    proof: []
+    status: done
+    # Worth more here than in most catalogues. National literacy is around 60%
+    # and rural literacy near 50%, so a cashier who cannot read a name fluently
+    # can still recognise a packet -- the same reasoning behind the icons, the
+    # big numerals and the colour-coded direction everywhere else in this app.
+    #
+    # Stored INLINE, which the schema chose deliberately: "small images live
+    # inline so a backup is one file and a restore cannot come back with
+    # missing pictures". A path would be faster and would mean a shopkeeper
+    # restoring onto a new phone gets their books back with every photograph
+    # gone, which reads as the restore having half worked.
+    #
+    # That trade only holds while the pictures stay small, so the shrinker is
+    # load-bearing rather than a nicety: 512px longest edge, 96 KB ceiling,
+    # quality stepped down and then size stepped down. It NEVER refuses -- "try
+    # a plainer photograph" is not advice anybody can follow while standing in
+    # front of a shelf.
+    #
+    # The write path had to learn about blobs. `_checked` allowed only int,
+    # String, bool and null; the rule was never "scalars only", it is that a
+    # double must never reach a money column, and a blob is not a number that
+    # can round.
+    #
+    # Gallery only, through Android's system Photo Picker: no READ_MEDIA_IMAGES
+    # (Play restricts it to apps the picker cannot serve, and a billing app
+    # asking for it goes through a declaration review to let a shopkeeper
+    # photograph a tin of oil) and no CAMERA. That permission arrives with
+    # barcode scanning or not at all.
+    proof:
+      - a camera-sized photograph comes back inside the ceiling
+      - the long edge is the one that gets capped
+      - the aspect ratio survives
+      - a small picture is not enlarged to hit the target
+      - a square picture stays square
+      - it comes back as JPEG, whatever went in
+      - a picture that will not compress is shrunk, never refused
+      - something that is not a picture is refused in words
+      - an empty file is refused rather than stored as nothing
+      - the same picture twice gives the same bytes
+      - a picture goes in and comes back byte for byte
+      - an item with no picture is not an error
+      - replacing a picture leaves one, not two
+      - a replaced picture is tombstoned, never destroyed
+      - removing a picture leaves the item alone
+      - removing a picture that is not there is not an error
+      - an oversized picture is refused, and says why
+      - a picture exactly at the ceiling is allowed
+      - the picture is content-addressed
+      - adding a picture is audited like every other change
+      - another firm cannot see this shop pictures
+      - a photograph survives the round trip and comes back small
+      - a new item is not offered a photograph it cannot keep
+      - an existing item offers one, and shows it once set
+      - a file that is not a picture is refused in words
+      - photographing a tin of oil costs the Play listing nothing
 
   - id: M1-STOCK-01
     milestone: M1
@@ -858,8 +915,41 @@ features:
   - id: M1-STOCK-05
     milestone: M1
     title: A stock summary a shopkeeper can read at a glance
-    status: todo
-    proof: []
+    status: done
+    # Five numbers and no table -- the table IS the item list underneath it.
+    #
+    # Valued at COST. Valuing the shelf at what it would sell for counts profit
+    # the shop has not made, and is the commonest way a small business talks
+    # itself into believing it is richer than it is.
+    #
+    # The arithmetic is the other way to get this wrong. Quantity is
+    # thousandths and cost is milli-paisa, so the product needs scaling twice:
+    # dividing per row truncates up to a paisa per item, which is two hundred
+    # rupees across a 20,000-SKU catalogue, and multiplying without scaling
+    # down first reaches 1e18 on a wholesaler -- close enough to the int64
+    # ceiling to be a real risk. Scaled once in SQL, rounded once in Dart
+    # through the project's own half-up policy. Two tests pin both bounds.
+    #
+    # `below zero` is surfaced rather than clamped: a negative ledger balance
+    # means the shop sold something it never recorded receiving. Impossible on
+    # a shelf, and a bookkeeping error a person has to fix -- hiding it makes
+    # the valuation above quietly wrong.
+    proof:
+      - an empty shop is empty, not an error
+      - stock is valued at cost, never at what it would sell for
+      - several items add up
+      - a service is not stock and does not count as out of stock
+      - low, out and negative are counted apart
+      - an item at exactly its floor is low, not fine
+      - an item with no floor is never low, however little is left
+      - a fractional quantity is valued exactly
+      - two thousand items are valued to the paisa
+      - a very large shop does not overflow
+      - another firm is not counted
+      - the item list shows what the stock is worth, at cost
+      - a shop with nothing wrong shows no warnings
+      - what is low and what is gone are counted apart
+      - a brand new shop is not shown an empty valuation
 
   # ---------------------------------------------------------------------------
   # M2 — a receipt reaches paper, once, on hardware a shop already owns

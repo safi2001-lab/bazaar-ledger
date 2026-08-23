@@ -7,6 +7,7 @@ library;
 
 export 'package:pdf/pdf.dart' show PdfPageFormat;
 
+export 'src/media/image_shrinker.dart';
 export 'src/printing/print_queue.dart';
 export 'src/printing/tcp_printer.dart';
 export 'src/receipt/escpos.dart';

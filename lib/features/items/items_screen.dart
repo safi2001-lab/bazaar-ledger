@@ -81,6 +81,11 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
                 prefix: const Icon(Icons.search, size: 20),
               ),
             ),
+            // What the shelves are worth, above the list of what is on them.
+            // Its own card rather than another nav tile: a shopkeeper looking
+            // at stock is already here, and a number one tap further away is a
+            // number nobody looks at.
+            const _StockSummaryCard(),
             Expanded(
               child: items.when(
                 loading: () => const Padding(
@@ -227,6 +232,106 @@ class _ItemRow extends StatelessWidget {
               Icon(Icons.chevron_right, color: t.inkFaint),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The shop's stock in one line, above the item list.
+///
+/// Deliberately five numbers and no table. The table IS the list underneath.
+/// What a shopkeeper wants at a glance before locking up is what is tied up in
+/// stock, what is about to run out, and what has already gone — and each of
+/// those is a different action, so each gets its own chip rather than being
+/// folded into one "needs attention" count.
+class _StockSummaryCard extends ConsumerWidget {
+  const _StockSummaryCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final summary = ref.watch(stockSummaryProvider);
+
+    // No card at all while it loads, and none for a shop with nothing in it.
+    // A skeleton above a list that already has its own skeleton is two
+    // loading states arguing, and an empty valuation on an empty shop is a
+    // zero nobody needs to read.
+    final data = summary.valueOrNull;
+    if (data == null || data.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        BlTokens.space4,
+        0,
+        BlTokens.space4,
+        BlTokens.space3,
+      ),
+      child: BlCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        s.stockSummaryValue,
+                        style: TextStyle(fontSize: 12, color: t.inkMuted),
+                      ),
+                      const SizedBox(height: 2),
+                      // At cost. Valuing the shelf at retail counts profit the
+                      // shop has not made, which is the commonest way a small
+                      // business talks itself into believing it is richer than
+                      // it is.
+                      BlMoney(data.stockValue, size: 20),
+                    ],
+                  ),
+                ),
+                Text(
+                  s.stockSummaryItems('${data.trackedItems}'),
+                  style: TextStyle(fontSize: 12, color: t.inkMuted),
+                ),
+              ],
+            ),
+            if (data.lowCount > 0 ||
+                data.outCount > 0 ||
+                data.negativeCount > 0) ...[
+              const SizedBox(height: BlTokens.space3),
+              Wrap(
+                spacing: BlTokens.space2,
+                runSpacing: BlTokens.space2,
+                children: [
+                  if (data.lowCount > 0)
+                    BlChip(
+                      s.stockSummaryLow('${data.lowCount}'),
+                      tone: BlChipTone.warn,
+                      icon: Icons.trending_down,
+                    ),
+                  if (data.outCount > 0)
+                    BlChip(
+                      s.stockSummaryOut('${data.outCount}'),
+                      tone: BlChipTone.bad,
+                      icon: Icons.remove_shopping_cart_outlined,
+                    ),
+                  // Impossible on a shelf and entirely possible in a ledger:
+                  // it means the shop sold something it never recorded
+                  // receiving. Shown rather than clamped, because it is an
+                  // error a person has to fix and hiding it makes the
+                  // valuation above quietly wrong.
+                  if (data.negativeCount > 0)
+                    BlChip(
+                      s.stockSummaryNegative('${data.negativeCount}'),
+                      tone: BlChipTone.bad,
+                      icon: Icons.priority_high,
+                    ),
+                ],
+              ),
+            ],
+          ],
         ),
       ),
     );
