@@ -26,6 +26,8 @@ dependencies:
     path: packages/pk_domain
   pk_money:
     path: packages/pk_money
+  pk_printer_android:
+    path: packages/pk_printer_android
   share_plus: ^13.3.0
 
 dev_dependencies:

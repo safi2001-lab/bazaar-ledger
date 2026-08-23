@@ -1,0 +1,33 @@
+name: pk_printer_android
+description: >-
+  Android printer transports for Bazaar Ledger: Bluetooth Serial Port Profile
+  today, USB printer class next. Written in-house because AGP 9 refuses most of
+  the Bluetooth ecosystem, the one package that does build is GPL-3.0, and
+  several of the alternatives declare location permissions this app must not
+  carry. Implements the PrinterTransport port from pk_domain.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+  flutter: ">=3.24.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pk_domain:
+    path: ../pk_domain
+  pk_money:
+    path: ../pk_money
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: pk.bazaarledger.pk_printer_android
+        pluginClass: PkPrinterAndroidPlugin

@@ -1,0 +1,37 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+      Two permissions, and deliberately not a third.
+
+      BLUETOOTH_CONNECT is what talking to an already-paired printer needs.
+      BLUETOOTH_SCAN is declared with neverForLocation so that discovery, if it
+      is ever offered, does not drag location in with it — but nothing in this
+      plugin scans today: a shopkeeper pairs the printer once in Android's own
+      settings and the app only enumerates what is already bonded.
+
+      There is no ACCESS_FINE_LOCATION here and there must never be one. It is
+      a restricted permission under Play policy, several of the Bluetooth
+      packages on pub.dev declare it in their own manifests, and the merger
+      would pull it into this app whether it was used or not — putting a
+      billing app through Play's Location review in order to find a printer.
+
+      The legacy pair are capped at 30 so Android 12 and above do not grant
+      them at all.
+    -->
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+
+    <!--
+      Not required, so the Play listing stays visible to phones without a
+      radio. A shop with a LAN printer does not need Bluetooth at all.
+    -->
+    <uses-feature android:name="android.hardware.bluetooth"
+        android:required="false" />
+
+</manifest>

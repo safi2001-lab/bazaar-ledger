@@ -1,22 +1,35 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
-      There is no INTERNET permission here, and that is the point.
+      INTERNET is here now, and the reason is worth stating precisely because
+      the claim it changes is one a shopkeeper can check for themselves.
 
-      Debug and profile builds declare it in their own manifests because the
-      Flutter tool needs a socket for hot reload. The release APK does not, so
-      a shopkeeper can check the permission list on the Play listing and see
-      for themselves that this app cannot phone anywhere — not to us, not to
-      anyone. Everything is on the phone; there is nothing on the other end of
-      a network to call.
+      Until M2 this manifest had no INTERNET permission at all, and the comment
+      here said the app "cannot phone anywhere". That was true and it was a
+      good thing to be able to point at. It stopped being possible the moment
+      the LAN printer transport landed: Android gates the creation of ANY
+      socket behind INTERNET, including a socket to a printer on the shop's own
+      Wi-Fi with a 192.168 address. There is no narrower permission for a local
+      connection — `ACCESS_LOCAL_NETWORK` arrives at targetSdk 37, roughly
+      2027, and it is additional to this rather than instead of it.
 
-      Permissions arrive with the milestone that earns them and not before:
-      Bluetooth and USB host with the printer transports in M2, camera with
-      barcode scanning in M2, and INTERNET only when Drive backup (M5) and
-      Play Billing (M9) actually need it. Declaring them now would make the
-      Play Data Safety form a lie and give a reviewer sensitive permissions
-      with no feature behind them.
+      So the honest version of the claim, which is what the app should say: no
+      byte of a shopkeeper's books is sent to any server we operate, because we
+      operate none. The billing path makes no network call whatsoever. What
+      this permission buys is a printer on the shop's own network, and later a
+      backup the owner explicitly turns on, to their own Drive.
+
+      A release build that quietly could not open a socket would have been
+      worse than either: the LAN printer would simply have failed on a real
+      phone, having passed every test, because the tests run on a host where
+      Android's permission model does not exist.
+
+      Everything else still arrives with the milestone that earns it. Camera
+      with barcode scanning, USB host with the USB printer, and nothing
+      speculative — declaring a permission with no feature behind it makes the
+      Play Data Safety form a lie.
     -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:label="Bazaar Ledger"

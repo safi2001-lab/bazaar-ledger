@@ -470,6 +470,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  pk_printer_android:
+    dependency: "direct main"
+    description:
+      path: "packages/pk_printer_android"
+      relative: true
+    source: path
+    version: "0.1.0"
   platform:
     dependency: transitive
     description:
