@@ -39,22 +39,24 @@ void main() {
     expect(both.every((i) => i.name == 'Cooking Oil 5L'), isTrue);
   });
 
-  test('a barcode scanned in one shop does not find the other shop\'s item',
-      () async {
-    expect(
-      (await queries.itemByBarcode(first.firmId, '8964000000001'))?.name,
-      'Cooking Oil 5L',
-    );
-    expect(
-      await queries.itemByBarcode(first.firmId, '8964000000002'),
-      isNull,
-      reason: 'that barcode belongs to the other shop',
-    );
-    expect(
-      (await queries.itemByBarcode(second.firmId, '8964000000002'))?.name,
-      'Panadol 500mg',
-    );
-  });
+  test(
+    'a barcode scanned in one shop does not find the other shop\'s item',
+    () async {
+      expect(
+        (await queries.itemByBarcode(first.firmId, '8964000000001'))?.name,
+        'Cooking Oil 5L',
+      );
+      expect(
+        await queries.itemByBarcode(first.firmId, '8964000000002'),
+        isNull,
+        reason: 'that barcode belongs to the other shop',
+      );
+      expect(
+        (await queries.itemByBarcode(second.firmId, '8964000000002'))?.name,
+        'Panadol 500mg',
+      );
+    },
+  );
 
   test('itemById refuses to reach across firms', () async {
     expect(await queries.itemById(first.firmId, first.itemId), isNotNull);
@@ -62,14 +64,12 @@ void main() {
   });
 
   test('a customer list is one shop\'s customers', () async {
-    expect(
-      (await queries.searchParties(first.firmId)).map((p) => p.name),
-      ['Bilal General Store'],
-    );
-    expect(
-      (await queries.searchParties(second.firmId)).map((p) => p.name),
-      ['Sadiq Traders'],
-    );
+    expect((await queries.searchParties(first.firmId)).map((p) => p.name), [
+      'Bilal General Store',
+    ]);
+    expect((await queries.searchParties(second.firmId)).map((p) => p.name), [
+      'Sadiq Traders',
+    ]);
   });
 
   test('a khata balance counts only this shop\'s bills', () async {
@@ -103,19 +103,21 @@ void main() {
     expect(theirs.single.total, Money.rupees(7000));
   });
 
-  test('a receipt carries its own shop, not the first one in the table',
-      () async {
-    // The header used to be read as "the first firm by creation date", which
-    // prints the wrong name, NTN and bank details on every receipt the second
-    // shop ever issues.
-    final mine = await queries.receiptFor(first.firmId, first.documentId);
-    final theirs = await queries.receiptFor(second.firmId, second.documentId);
+  test(
+    'a receipt carries its own shop, not the first one in the table',
+    () async {
+      // The header used to be read as "the first firm by creation date", which
+      // prints the wrong name, NTN and bank details on every receipt the second
+      // shop ever issues.
+      final mine = await queries.receiptFor(first.firmId, first.documentId);
+      final theirs = await queries.receiptFor(second.firmId, second.documentId);
 
-    expect(mine!.shop.name, 'Chishti Kiryana Store');
-    expect(theirs!.shop.name, 'Rehman Medical Store');
-    expect(mine.shop.city, 'Karachi');
-    expect(theirs.shop.city, 'Lahore');
-  });
+      expect(mine!.shop.name, 'Chishti Kiryana Store');
+      expect(theirs!.shop.name, 'Rehman Medical Store');
+      expect(mine.shop.city, 'Karachi');
+      expect(theirs.shop.city, 'Lahore');
+    },
+  );
 
   test('a receipt cannot be fetched with the wrong firm', () async {
     expect(await queries.receiptFor(first.firmId, second.documentId), isNull);
@@ -133,7 +135,9 @@ void main() {
       reason: 'both shops offer the same tenders',
     );
     expect(
-      mineAccounts.map((a) => a.id).toSet()
+      mineAccounts
+          .map((a) => a.id)
+          .toSet()
           .intersection(theirAccounts.map((a) => a.id).toSet()),
       isEmpty,
       reason: 'and not one row of it is shared between them',
@@ -203,25 +207,24 @@ Future<_Shop> _seed(AppDatabase db, String name, String city) async {
     PartyDraft(name: isFirst ? 'Bilal General Store' : 'Sadiq Traders'),
   );
 
-  final posted = await PostSaleUseCase(
-    writer: DriftSaleWriter(runner: runner),
-  ).call(
-    actor,
-    SaleDraft(
-      partyId: partyId,
-      lines: [
-        SaleLineDraft(
-          itemId: itemId,
-          itemName: isFirst ? 'Cooking Oil 5L' : 'Panadol 500mg',
-          qty: Qty.one,
-          baseQty: Qty.one,
-          unitCode: 'pcs',
-          rate: Rate.rupees(isFirst ? 1000 : 7000),
+  final posted = await PostSaleUseCase(writer: DriftSaleWriter(runner: runner))
+      .call(
+        actor,
+        SaleDraft(
+          partyId: partyId,
+          lines: [
+            SaleLineDraft(
+              itemId: itemId,
+              itemName: isFirst ? 'Cooking Oil 5L' : 'Panadol 500mg',
+              qty: Qty.one,
+              baseQty: Qty.one,
+              unitCode: 'pcs',
+              rate: Rate.rupees(isFirst ? 1000 : 7000),
+            ),
+          ],
+          roundToRupee: false,
         ),
-      ],
-      roundToRupee: false,
-    ),
-  );
+      );
 
   return _Shop(
     firmId: run.firmId,

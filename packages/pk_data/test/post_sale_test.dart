@@ -90,7 +90,8 @@ void main() {
             rate: Rate.rupees(150),
           ),
         ],
-        tenders: tenders ??
+        tenders:
+            tenders ??
             const [
               TenderDraft(
                 paymentAccountId: '',
@@ -120,30 +121,32 @@ void main() {
       );
     });
 
-    test('one document, numbered INV-2627-0001, totalling 552500 paisa',
-        () async {
-      final rows = await db.customSelect('SELECT * FROM documents').get();
-      expect(rows, hasLength(1));
+    test(
+      'one document, numbered INV-2627-0001, totalling 552500 paisa',
+      () async {
+        final rows = await db.customSelect('SELECT * FROM documents').get();
+        expect(rows, hasLength(1));
 
-      final doc = rows.single;
-      expect(doc.read<String>('doc_no'), 'INV-2627-0001');
-      expect(doc.read<int>('total_paisa'), 552500);
-      expect(doc.read<String>('doc_type'), 'sale_invoice');
-      expect(doc.read<String>('status'), 'posted');
-      expect(doc.read<int>('fiscal_year'), 2627);
-      expect(doc.read<String>('doc_date_local'), '2026-08-23');
-      expect(doc.read<int>('paid_paisa'), 552500);
-      expect(doc.read<int>('balance_paisa'), 0);
-      expect(doc.read<String>('tax_rule_version'), 'untaxed-v1');
-      expect(doc.read<String>('rounding_mode'), 'half_up');
-      expect(doc.read<int>('cash_threshold_breached'), 0);
-      expect(doc.readNullable<int>('posted_at_utc'), isNotNull);
+        final doc = rows.single;
+        expect(doc.read<String>('doc_no'), 'INV-2627-0001');
+        expect(doc.read<int>('total_paisa'), 552500);
+        expect(doc.read<String>('doc_type'), 'sale_invoice');
+        expect(doc.read<String>('status'), 'posted');
+        expect(doc.read<int>('fiscal_year'), 2627);
+        expect(doc.read<String>('doc_date_local'), '2026-08-23');
+        expect(doc.read<int>('paid_paisa'), 552500);
+        expect(doc.read<int>('balance_paisa'), 0);
+        expect(doc.read<String>('tax_rule_version'), 'untaxed-v1');
+        expect(doc.read<String>('rounding_mode'), 'half_up');
+        expect(doc.read<int>('cash_threshold_breached'), 0);
+        expect(doc.readNullable<int>('posted_at_utc'), isNotNull);
 
-      expect(result.docNo, 'INV-2627-0001');
-      expect(result.total, Money.rupees(5525));
-      expect(result.change, Money.rupees(475));
-      expect(result.documentId, doc.read<String>('id'));
-    });
+        expect(result.docNo, 'INV-2627-0001');
+        expect(result.total, Money.rupees(5525));
+        expect(result.change, Money.rupees(475));
+        expect(result.documentId, doc.read<String>('id'));
+      },
+    );
 
     test('two lines, with the fractional weight intact', () async {
       final lines = await db
@@ -177,14 +180,12 @@ void main() {
       expect(payments.single.read<String>('mode'), 'cash');
       expect(payments.single.read<String>('status'), 'cleared');
 
-      final allocations =
-          await db.customSelect('SELECT * FROM payment_allocations').get();
+      final allocations = await db
+          .customSelect('SELECT * FROM payment_allocations')
+          .get();
       expect(allocations, hasLength(1));
       expect(allocations.single.read<int>('amount_paisa'), 552500);
-      expect(
-        allocations.single.read<String>('document_id'),
-        result.documentId,
-      );
+      expect(allocations.single.read<String>('document_id'), result.documentId);
     });
 
     test('two stock movements, out of the shop', () async {
@@ -207,8 +208,9 @@ void main() {
     });
 
     test('the journal balances at 552500 on both sides', () async {
-      final entries =
-          await db.customSelect('SELECT * FROM journal_entries').get();
+      final entries = await db
+          .customSelect('SELECT * FROM journal_entries')
+          .get();
       expect(entries, hasLength(1));
       expect(entries.single.read<String>('entry_no'), 'JV-2627-00001');
       expect(entries.single.read<String>('source_type'), 'sale');
@@ -225,14 +227,12 @@ void main() {
 
       // Cash in, sales out. Nothing else, because nothing was bought yet so
       // there is no cost to post.
-      final lines = await db
-          .customSelect('''
+      final lines = await db.customSelect('''
             SELECT a.system_key AS k, jl.debit_paisa AS d, jl.credit_paisa AS c
             FROM journal_lines jl
             JOIN accounts a ON a.id = jl.account_id
             ORDER BY jl.line_no
-          ''')
-          .get();
+          ''').get();
       expect(lines, hasLength(2));
       expect(lines[0].read<String>('k'), 'cash_in_hand');
       expect(lines[0].read<int>('d'), 552500);
@@ -242,23 +242,25 @@ void main() {
       expect(await db.findLedgerImbalances(), isEmpty);
     });
 
-    test('the audit trail names the action, the actor and the amount',
-        () async {
-      final rows = await db
-          .customSelect(
-            "SELECT * FROM audit_log WHERE action_code = 'SALE_POSTED'",
-          )
-          .get();
-      expect(rows, hasLength(1));
-      expect(rows.single.read<String>('created_by'), firm.ownerUserId);
-      expect(rows.single.read<String>('origin_device_id'), firm.deviceId);
-      expect(rows.single.read<String>('entity_id'), result.documentId);
-      expect(rows.single.read<int>('amount_paisa'), 552500);
-      expect(
-        rows.single.read<String>('summary'),
-        allOf(contains('INV-2627-0001'), contains('5,525.00')),
-      );
-    });
+    test(
+      'the audit trail names the action, the actor and the amount',
+      () async {
+        final rows = await db
+            .customSelect(
+              "SELECT * FROM audit_log WHERE action_code = 'SALE_POSTED'",
+            )
+            .get();
+        expect(rows, hasLength(1));
+        expect(rows.single.read<String>('created_by'), firm.ownerUserId);
+        expect(rows.single.read<String>('origin_device_id'), firm.deviceId);
+        expect(rows.single.read<String>('entity_id'), result.documentId);
+        expect(rows.single.read<int>('amount_paisa'), 552500);
+        expect(
+          rows.single.read<String>('summary'),
+          allOf(contains('INV-2627-0001'), contains('5,525.00')),
+        );
+      },
+    );
 
     test('the outbox knows about every row the sale wrote', () async {
       final rows = await db
@@ -397,18 +399,23 @@ void main() {
 
   group('selling on udhaar', () {
     test('an unpaid sale becomes a receivable against the party', () async {
-      final partyId = await TxRunner(
-        database: db,
-        ids: ids,
-        hlc: await resumeHlcClock(db, deviceId: firm.deviceId, clock: clock),
-      ).run(
-        actor,
-        (tx) => tx.insert('parties', {
-          'name': 'Bilal General Store',
-          'name_search': 'bilal general store',
-          'party_type': 'customer',
-        }),
-      );
+      final partyId =
+          await TxRunner(
+            database: db,
+            ids: ids,
+            hlc: await resumeHlcClock(
+              db,
+              deviceId: firm.deviceId,
+              clock: clock,
+            ),
+          ).run(
+            actor,
+            (tx) => tx.insert('parties', {
+              'name': 'Bilal General Store',
+              'name_search': 'bilal general store',
+              'party_type': 'customer',
+            }),
+          );
 
       final result = await postSale(
         actor,
@@ -429,14 +436,12 @@ void main() {
       expect(result.paid, Money.rupees(2000));
       expect(result.balance, Money.rupees(3525));
 
-      final line = await db
-          .customSelect('''
+      final line = await db.customSelect('''
             SELECT jl.debit_paisa AS d, jl.party_id AS p
             FROM journal_lines jl
             JOIN accounts a ON a.id = jl.account_id
             WHERE a.system_key = 'accounts_receivable'
-          ''')
-          .getSingle();
+          ''').getSingle();
       expect(line.read<int>('d'), 352500);
       expect(line.read<String>('p'), partyId);
       expect(await db.findLedgerImbalances(), isEmpty);
@@ -475,12 +480,15 @@ void main() {
       expect(second.docNo, 'INV-2627-0002');
 
       final stock = await db
-          .customSelect('''
+          .customSelect(
+            '''
             SELECT balance_after_thousandths AS b
             FROM stock_ledger
             WHERE item_id = ?
             ORDER BY occurred_at_utc, id
-          ''', variables: [Variable<String>(muttonId)])
+          ''',
+            variables: [Variable<String>(muttonId)],
+          )
           .get();
       expect([for (final s in stock) s.read<int>('b')], [-3500, -7000]);
       expect(await db.findLedgerImbalances(), isEmpty);
@@ -518,8 +526,7 @@ class _FailAfterDocument implements SaleWriter {
   Future<T> inTransaction<T>(
     ActorContext actor,
     Future<T> Function(SaleWriteContext write) body,
-  ) =>
-      _inner.inTransaction(actor, (write) => body(_FaultyContext(write)));
+  ) => _inner.inTransaction(actor, (write) => body(_FaultyContext(write)));
 }
 
 class _FaultyContext implements SaleWriteContext {

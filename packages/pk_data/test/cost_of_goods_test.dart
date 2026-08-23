@@ -53,9 +53,7 @@ void main() {
     postSale = PostSaleUseCase(writer: DriftSaleWriter(runner: runner));
 
     final unit = await db
-        .customSelect(
-          "SELECT id FROM units WHERE code = 'pcs'",
-        )
+        .customSelect("SELECT id FROM units WHERE code = 'pcs'")
         .getSingle();
     pcsUnitId = unit.read<String>('id');
   });
@@ -64,15 +62,15 @@ void main() {
 
   /// A tin bought for Rs 300 and sold for Rs 500: Rs 200 of margin.
   Future<String> addOilWithOpeningStock() => catalogue.addItem(
-        actor,
-        ItemDraft(
-          name: 'Cooking Oil 5L',
-          baseUnitId: pcsUnitId,
-          saleRate: const Rate.rupees(500),
-          openingStock: Qty.units(20),
-          openingRate: const Rate.rupees(300),
-        ),
-      );
+    actor,
+    ItemDraft(
+      name: 'Cooking Oil 5L',
+      baseUnitId: pcsUnitId,
+      saleRate: const Rate.rupees(500),
+      openingStock: Qty.units(20),
+      openingRate: const Rate.rupees(300),
+    ),
+  );
 
   Future<int?> costOf(String documentId) async {
     final row = await db
@@ -164,21 +162,16 @@ void main() {
     // shelf, and Cost of Goods Sold is debited the same. Without this the
     // sale posted no cost line at all, so the Inventory account still carried
     // stock that had already been sold.
-    final cogs = await db.customSelect(
-      '''
+    final cogs = await db.customSelect('''
       SELECT a.code AS code, jl.debit_paisa AS dr, jl.credit_paisa AS cr
       FROM journal_lines jl
       JOIN accounts a ON a.id = jl.account_id
       WHERE jl.debit_paisa > 0 OR jl.credit_paisa > 0
-      ''',
-    ).get();
+      ''').get();
 
     final byCode = {
       for (final r in cogs)
-        r.read<String>('code'): (
-          r.read<int>('dr'),
-          r.read<int>('cr'),
-        ),
+        r.read<String>('code'): (r.read<int>('dr'), r.read<int>('cr')),
     };
 
     expect(
@@ -193,9 +186,11 @@ void main() {
     );
 
     // The whole entry still balances at exact integer equality.
-    final totals = await db.customSelect(
-      'SELECT SUM(debit_paisa) d, SUM(credit_paisa) c FROM journal_lines',
-    ).getSingle();
+    final totals = await db
+        .customSelect(
+          'SELECT SUM(debit_paisa) d, SUM(credit_paisa) c FROM journal_lines',
+        )
+        .getSingle();
     expect(totals.read<int>('d'), totals.read<int>('c'));
   });
 

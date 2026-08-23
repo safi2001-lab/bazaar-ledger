@@ -130,5 +130,13 @@ List<PrinterTransport> _printerTransports() => [
   // socket including one to 192.168.x.x, and nothing more until targetSdk 37
   // brings ACCESS_LOCAL_NETWORK.
   const TcpPrinter(),
-  if (!kIsWeb && Platform.isAndroid) const BluetoothPrinter(),
+  if (!kIsWeb && Platform.isAndroid) ...[
+    // The battery printer a delivery man carries.
+    const BluetoothPrinter(),
+    // The one already cabled to the counter, which is the shape most
+    // Pakistani shop counters actually have. Needs no permission at all: USB
+    // access is granted per device by the system at the moment of use, so it
+    // adds nothing to the Play listing.
+    const UsbPrinter(),
+  ],
 ];

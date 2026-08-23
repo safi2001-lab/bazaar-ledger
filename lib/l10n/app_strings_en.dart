@@ -824,4 +824,58 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get printerAlreadyPrinted => 'This bill has already been printed.';
+
+  @override
+  String get labelTitle => 'Print shelf labels';
+
+  @override
+  String get labelCopies => 'How many';
+
+  @override
+  String get labelPrint => 'Print labels';
+
+  @override
+  String get labelNoCode =>
+      'This item has no code. Add a barcode or a code first.';
+
+  @override
+  String get labelNoPrinter => 'Set up a printer first.';
+
+  @override
+  String get labelSent => 'Labels sent to the printer.';
+
+  @override
+  String get labelPreview => 'What goes on the sticker';
+
+  @override
+  String get historyTitle => 'Stock history';
+
+  @override
+  String get historyNone => 'Nothing has moved yet';
+
+  @override
+  String get historyOpening => 'Opening stock';
+
+  @override
+  String get historySale => 'Sold';
+
+  @override
+  String get historySaleReturn => 'Returned';
+
+  @override
+  String get historyPurchase => 'Bought';
+
+  @override
+  String get historyAdjustment => 'Correction';
+
+  @override
+  String get historyWastage => 'Wastage';
+
+  @override
+  String get historyOther => 'Other';
+
+  @override
+  String historyBalance(Object qty) {
+    return 'Left: $qty';
+  }
 }

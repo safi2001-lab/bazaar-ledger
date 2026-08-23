@@ -1,6 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:pk_domain/pk_domain.dart';
 
+export 'src/usb_printer.dart';
+
 /// The Bluetooth printer a delivery man carries, over Serial Port Profile.
 ///
 /// Classic Bluetooth, not BLE — every ESC/POS printer in this price bracket is
@@ -107,7 +109,20 @@ final class BluetoothPrinter implements PrinterTransport {
       // that number decides whether the queue may try again on its own.
       // Losing it here would turn every failure into "safe to retry", which
       // is how a flaky link produces two of every long bill.
-      final written = error.details is int ? error.details as int : 0;
+      //
+      // And that is exactly what this line used to do. It read
+      // `error.details is int ? ... : 0`, so a platform error that carried NO
+      // byte count — a Kotlin path that threw before it could count, or any
+      // future one that forgets to pass it — reported zero bytes written,
+      // which reads as "nothing came out, retry freely". The comment above
+      // described the danger and the code below it did the thing.
+      //
+      // Absent is not zero. An error that said nothing about paper has not
+      // told us paper did not move, so it is reported as though it did, and a
+      // person decides. The only way to earn a retry is for the platform to
+      // say, explicitly, that nothing was written.
+      final details = error.details;
+      final written = details is int ? details : 1;
       throw PrinterException(
         error.message ?? 'The printer stopped taking the receipt.',
         bytesWritten: written,
@@ -116,11 +131,7 @@ final class BluetoothPrinter implements PrinterTransport {
     } on Object catch (error) {
       // Anything else has not told us whether paper moved, so it is reported
       // as though it did.
-      throw PrinterException(
-        '$error',
-        bytesWritten: 1,
-        target: target,
-      );
+      throw PrinterException('$error', bytesWritten: 1, target: target);
     }
   }
 }

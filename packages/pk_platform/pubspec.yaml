@@ -10,6 +10,11 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  # Pure Dart, zero platform dependencies, and already in the tree via `pdf`.
+  # Named directly because the label renderer imports it, and a direct import
+  # of a transitive dependency breaks the day the intermediate package drops
+  # it.
+  barcode: ^2.2.9
   # Already in the tree transitively via `pdf`; named here because the print
   # queue depends on it directly, and a direct import of a transitive
   # dependency breaks the moment the intermediate package drops it.

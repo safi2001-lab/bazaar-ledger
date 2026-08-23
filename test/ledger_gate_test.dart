@@ -33,21 +33,17 @@ void main() {
     List<String> extra = const [],
   }) {
     final file = File('${work.path}/ledger.yaml')..writeAsStringSync(yaml);
-    final result = Process.runSync(
-      Platform.isWindows ? 'dart.bat' : 'dart',
-      [
-        'run',
-        'tool/verify_ledger.dart',
-        '--ledger',
-        file.path,
-        '--offline',
-        if (strict) '--strict',
-        '--range',
-        range,
-        ...extra,
-      ],
-      runInShell: true,
-    );
+    final result = Process.runSync(Platform.isWindows ? 'dart.bat' : 'dart', [
+      'run',
+      'tool/verify_ledger.dart',
+      '--ledger',
+      file.path,
+      '--offline',
+      if (strict) '--strict',
+      '--range',
+      range,
+      ...extra,
+    ], runInShell: true);
     return (
       exitCode: result.exitCode,
       output: '${result.stdout}${result.stderr}',
@@ -122,7 +118,8 @@ features:
     expect(
       result.output,
       contains('no feature rows'),
-      reason: 'the gate did not notice a milestone it cannot measure, which '
+      reason:
+          'the gate did not notice a milestone it cannot measure, which '
           'is the failure this whole rewrite exists for',
     );
   });
@@ -176,67 +173,96 @@ features:
     // A range from this repository's own history that certainly touched lib/.
     // Discovered rather than hardcoded, so a rebase cannot turn this test into
     // one that passes because it found nothing to check.
-    final head = Process.runSync(
-      'git',
-      const ['log', '--format=%H', '-n', '1', '--', 'lib/'],
-      runInShell: true,
-    ).stdout.toString().trim();
+    final head = Process.runSync('git', const [
+      'log',
+      '--format=%H',
+      '-n',
+      '1',
+      '--',
+      'lib/',
+    ], runInShell: true).stdout.toString().trim();
     expect(
       head,
       isNotEmpty,
-      reason: 'no commit in this repository touched lib/, which cannot be '
+      reason:
+          'no commit in this repository touched lib/, which cannot be '
           'true — R4 would be untested',
     );
     final range = '$head~1..$head';
 
-    final touched = Process.runSync(
-      'git',
-      ['diff', '--name-only', range],
-      runInShell: true,
-    ).stdout.toString().split('\n').where(
-          (l) => l.trim().startsWith('lib/') && l.trim().endsWith('.dart'),
-        );
+    final touched =
+        Process.runSync('git', ['diff', '--name-only', range], runInShell: true)
+            .stdout
+            .toString()
+            .split('\n')
+            .where(
+              (l) => l.trim().startsWith('lib/') && l.trim().endsWith('.dart'),
+            );
     expect(
       touched,
       isNotEmpty,
-      reason: 'the chosen range changed no Dart file under lib/, so R4 would '
+      reason:
+          'the chosen range changed no Dart file under lib/, so R4 would '
           'be asked nothing and would pass for the wrong reason',
     );
 
-    // M9 owns lib/** and is planned, so every one of those files is a
+    // Every milestone the real commit subjects might name has to be declared,
+    // or R5 fires and this test reports an R4 failure that is nothing of the
+    // kind. It cost a confusing run to notice: the commit under test began
+    // "M2:", the fixture declared only M0 and M1, and the output said "commit
+    // claims M2, which the ledger does not declare" while the test insisted
+    // R4 was broken.
+    String spare({required String ownsLib, required String libState}) {
+      final buffer = StringBuffer('milestones:\n');
+      buffer.writeln('  - id: M0');
+      buffer.writeln('    title: The walking skeleton');
+      buffer.writeln('    state: sealed');
+      buffer.writeln('    owns:');
+      buffer.writeln('      - packages/**');
+      buffer.writeln('  - id: M1');
+      buffer.writeln('    title: The one under test');
+      buffer.writeln('    state: $libState');
+      buffer.writeln('    owns:');
+      buffer.writeln('      - $ownsLib');
+      for (var i = 2; i <= 14; i++) {
+        buffer.writeln('  - id: M$i');
+        buffer.writeln('    title: Declared so R5 has nothing to say');
+        buffer.writeln('    state: open');
+        buffer.writeln('    owns:');
+        buffer.writeln('      - never/matches/anything/m$i/**');
+      }
+
+      // `open` rather than `planned`, so R5 has no complaint about a real
+      // commit subject naming one — and one row each, so R2 has none about a
+      // milestone nobody is measuring. Both rules are doing exactly what they
+      // should here; the fixture just has to be a ledger that holds together
+      // in every respect except the one under test.
+      buffer.write(goodFeatures);
+      for (var i = 2; i <= 14; i++) {
+        buffer.writeln('  - id: M$i-A-01');
+        buffer.writeln('    milestone: M$i');
+        buffer.writeln('    title: A row so the milestone is measurable');
+        buffer.writeln('    status: todo');
+        buffer.writeln('    proof: []');
+      }
+      return buffer.toString();
+    }
+
+    // M1 owns lib/** and is planned, so every changed file under lib/ is a
     // violation.
-    final refused = check('''
-milestones:
-  - id: M0
-    title: The walking skeleton
-    state: sealed
-    owns:
-      - packages/**
-  - id: M9
-    title: Not started
-    state: planned
-    owns:
-      - lib/**
-$goodFeatures''', range: range);
+    final refused = check(
+      spare(ownsLib: 'lib/**', libState: 'planned'),
+      range: range,
+    );
     expect(refused.exitCode, 1, reason: refused.output);
     expect(refused.output, contains('still `planned`'));
 
-    // The same range against a ledger where M0 owns lib/ and is sealed must
+    // The same range against a ledger where the same milestone is OPEN must
     // pass — otherwise this test proves only that the gate dislikes something.
-    final allowed = check('''
-milestones:
-  - id: M0
-    title: The walking skeleton
-    state: sealed
-    owns:
-      - packages/**
-      - lib/**
-  - id: M1
-    title: The catalogue
-    state: open
-    owns:
-      - lib/features/items/**
-$goodFeatures''', range: range);
+    final allowed = check(
+      spare(ownsLib: 'lib/**', libState: 'open'),
+      range: range,
+    );
     expect(allowed.exitCode, 0, reason: allowed.output);
   });
 
@@ -277,9 +303,10 @@ features:
     expect(result.output, contains('not one of'));
   });
 
-  test('a deferred proof drops the row out of done, and fails without the flag',
-      () {
-    const yaml = '''
+  test(
+    'a deferred proof drops the row out of done, and fails without the flag',
+    () {
+      const yaml = '''
 milestones:
   - id: M0
     title: The walking skeleton
@@ -300,22 +327,25 @@ features:
       recorded_by: someone
       expires: 2099-01-01
 ''';
-    final refused = check(yaml);
-    expect(refused.exitCode, 1);
-    expect(refused.output, contains('DEFERRED'));
+      final refused = check(yaml);
+      expect(refused.exitCode, 1);
+      expect(refused.output, contains('DEFERRED'));
 
-    final allowed = check(yaml, extra: const ['--allow-deferred']);
-    expect(allowed.exitCode, 0, reason: allowed.output);
-    expect(
-      allowed.output,
-      contains('0/1 done'),
-      reason: 'a deferred row still counted as done, so the milestone '
-          'percentage did not fall and nobody reading it would notice',
-    );
-  });
+      final allowed = check(yaml, extra: const ['--allow-deferred']);
+      expect(allowed.exitCode, 0, reason: allowed.output);
+      expect(
+        allowed.output,
+        contains('0/1 done'),
+        reason:
+            'a deferred row still counted as done, so the milestone '
+            'percentage did not fall and nobody reading it would notice',
+      );
+    },
+  );
 
   test('an expired deferral fails even with the flag', () {
-    final result = check('''
+    final result = check(
+      '''
 milestones:
   - id: M0
     title: The walking skeleton
@@ -335,7 +365,9 @@ features:
       recorded: 2020-01-01
       recorded_by: someone
       expires: 2020-01-15
-''', extra: const ['--allow-deferred']);
+''',
+      extra: const ['--allow-deferred'],
+    );
     expect(result.exitCode, 1);
     expect(result.output, contains('expired'));
   });

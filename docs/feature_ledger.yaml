@@ -804,8 +804,56 @@ features:
   - id: M1-HIST-01
     milestone: M1
     title: An item shows where its stock went
-    status: todo
-    proof: []
+    status: done
+    # "There should be forty and there are thirty-one" is a question the shelf
+    # cannot answer. `stock_ledger` is append-only and the write path refuses
+    # to rewrite or tombstone a row in it, so this is a reading of history
+    # rather than a reconstruction of one -- which is the whole reason the
+    # answer can be trusted.
+    #
+    # Writing the paging test for it found a real shipping bug two layers
+    # away: `entry_no` is TEXT (it holds `JV-2627-0001`), and the stock
+    # adjustment writer computed the next one with `MAX(entry_no) + 1`. MAX
+    # over TEXT compares lexicographically, so after the ninth entry the
+    # maximum stayed '9' forever and the tenth correction of a fiscal year
+    # died on a UNIQUE constraint. Ten corrections a year is an ordinary
+    # Tuesday. See M1-STOCK-06.
+    proof:
+      - an opening balance is the first thing the history shows
+      - a correction names the reason, because no bill explains it
+      - newest first, because that is the end a shopkeeper starts from
+      - the running balance is carried on each row
+      - another item history is not mixed in
+      - paging every movement appears exactly once across pages
+      - paging paged order matches unpaged order exactly
+      - paging the last page ends, rather than repeating forever
+      - an item shows where its stock went
+      - an item nothing has happened to says so
+      - a sale appears in the history with its bill number
+
+  - id: M1-STOCK-06
+    milestone: M1
+    title: Voucher numbers survive a shop that corrects stock more than nine times
+    status: done
+    # Found by accident, and it would have hit every real shop.
+    #
+    # `journal_entries.entry_no` is TEXT because it holds a document number a
+    # person reads and quotes. The stock adjustment writer numbered its
+    # vouchers with `SELECT MAX(entry_no) + 1`, which is arithmetic on text:
+    # '10' sorts below '9', so the maximum stopped moving at the ninth entry
+    # and the tenth correction failed with a raw SQLite constraint error.
+    #
+    # In a shop that had also posted a sale it was worse. MAX returned
+    # 'JV-2627-0001', SQLite coerced that to 0 for the addition, and the very
+    # first correction tried to write 1 -- a number in a different format from
+    # every other voucher in the book.
+    #
+    # Nothing caught it because no test had ever made more than two
+    # corrections. It now draws from the same SequenceAllocator every other
+    # document uses.
+    proof:
+      - the tenth correction of the year is as ordinary as the first
+      - a correction and a sale draw voucher numbers from one series
 
   - id: M1-STOCK-05
     milestone: M1
@@ -898,19 +946,79 @@ features:
   - id: M2-BT-01
     milestone: M2
     title: Bluetooth SPP reaches a battery printer without asking for location
-    status: wip
-    # The Kotlin plugin exists and builds into a real APK. It has zero tests —
-    # Dart or Kotlin — and its Gradle test task runs zero tests while reporting
-    # success, because useJUnitPlatform() is configured with no JUnit engine on
-    # the classpath. The chunker and the bytes-written contract are what the
-    # whole no-double-print design rests on, and neither is verified.
-    proof: []
+    status: done
+    # The plugin shipped with full JUnit scaffolding, mockito, verbose test
+    # logging -- and zero tests. Worse than zero: useJUnitPlatform() was
+    # configured with no engine on the test runtime classpath, so the Gradle
+    # task ran nothing and reported success. A green tick over an empty room.
+    #
+    # Nine Kotlin tests now cover PacedWriter (chunking, pacing, and the
+    # bytes-written contract), and `melos run android` asserts the JUnit XML
+    # reports MORE THAN ZERO tests rather than trusting the exit code. The
+    # Dart proofs below cover the seam no Kotlin test can reach.
+    #
+    # Writing them found a live inversion. The PlatformException handler read
+    # `error.details is int ? ... : 0`, so a platform error carrying no byte
+    # count reported zero bytes written -- which reads as "nothing came out,
+    # retry freely". The comment directly above it warned that losing that
+    # number "would turn every failure into safe to retry, which is how a
+    # flaky link produces two of every long bill". The comment described the
+    # danger and the code did the thing. Absent is not zero.
+    proof:
+      - what the platform says it can do no radio and no permission both read as unavailable
+      - what the platform says it can do a platform that throws is unavailable, not a crash
+      - what the platform says it can do permission is asked about separately from the radio
+      - finding a printer everything paired is offered, whatever it calls itself
+      - finding a printer nothing paired is an empty list, not an error
+      - finding a printer a device with no name is offered by its address
+      - sending a receipt the pacing settings reach the platform
+      - sending a receipt how much paper moved survives the trip back
+      - sending a receipt nothing written is safe to try again
+      - sending a receipt a failure that says nothing about paper is treated as though it moved
+      - sending a receipt a missing plugin is also treated as though paper moved
+      - sending a receipt a permission refusal names the permission, not a stack trace
+      - Bluetooth is asked for by the plugin that uses it
+      - scanning is declared as never being about location
+      - the legacy Bluetooth pair stop at Android 11
 
   - id: M2-USB-01
     milestone: M2
     title: The printer already cabled to the counter prints
-    status: todo
-    proof: []
+    status: done
+    # The third transport, and the shape most Pakistani shop counters actually
+    # have: an 80mm thermal unit on a USB lead at six to twelve thousand
+    # rupees. The Bluetooth one is what a delivery man carries; the LAN one is
+    # how a counter and a back office share a machine. Without this a shop is
+    # asked to buy a second printer in order to use the app.
+    #
+    # Two things cost real time to get right.
+    #
+    # These devices enumerate as USB PRINTER CLASS (0x07), not CDC serial.
+    # Every usb_serial package looks for 0x02/0x0A, finds nothing, and reports
+    # no device attached against a printer that is plainly plugged in and lit.
+    #
+    # And `bulkTransfer` returns the count it ACTUALLY moved, routinely less
+    # than it was offered. Trusting the request size drops the remainder, and
+    # the remainder at the end of a receipt is the cut command -- so the
+    # symptom is a bill that prints perfectly and never cuts, on some
+    # printers, some of the time. `a short transfer is resumed, not treated as
+    # a whole chunk` is the Kotlin test that holds that line.
+    #
+    # It needs no manifest permission at all: USB access is granted per device
+    # by the system at the moment of use. That makes it the best privacy story
+    # of the three transports.
+    proof:
+      - it is its own transport kind, not the Bluetooth one
+      - a phone without OTG says so instead of failing at print time
+      - a platform that does not answer is unavailable, not a crash
+      - a plugged-in printer is offered, with whether it is ready
+      - nothing plugged in is an empty list, not an error
+      - the bytes and the pacing reach the platform
+      - it does not answer the Bluetooth methods
+      - how much paper moved survives the trip back
+      - nothing written is safe to try again
+      - an error with no byte count is treated as though paper moved
+      - a refused permission is reported in words a shopkeeper can act on
 
   - id: M2-WIRE-01
     milestone: M2
@@ -986,8 +1094,36 @@ features:
   - id: M2-LABEL-01
     milestone: M2
     title: Shelf labels print at the declared width
-    status: todo
-    proof: []
+    status: done
+    # The half of a barcode workflow that competitors put behind a higher
+    # tier, and the half that makes the other half work: a shopkeeper who has
+    # entered manufacturer barcodes for three thousand packets still cannot
+    # scan the loose rice or the repacked masala, because nothing printed a
+    # code for those.
+    #
+    # The first renderer produced a completely convincing symbol that no
+    # scanner could read. The `barcode` package stretches to whatever width it
+    # is handed, so 576 dots over 79 modules made each module 7.29 dots, and
+    # rounding every bar independently left some 7 wide and some 8. A scanner
+    # measures bars in modules. It also had no quiet zones.
+    #
+    # Bars now land on module boundaries by construction, with ten modules of
+    # white either side. Three of the proofs below fail if that is undone.
+    proof:
+      - the symbol itself bars quantise to a whole module, or no scanner can read them
+      - the symbol itself the symbol has quiet zones at both ends
+      - the symbol itself the module count matches how Code 128 is built
+      - the symbol itself every scan line is identical
+      - the symbol itself different codes make different symbols
+      - the symbol itself an empty code is refused rather than printed blank
+      - the printed label carries the name, the code and the price
+      - the printed label the symbol goes out as a raster, not as GS k
+      - the printed label a name too long for the label is cut, never wrapped
+      - the printed label ten labels are ten labels
+      - the printed label a 58mm roll gets a narrower symbol, not a clipped one
+      - a shopkeeper prints stickers for an item
+      - an item with no code says so rather than printing blanks
+      - with no printer set up, nothing is printed and it says why
 
   - id: M2-DRAWER-01
     milestone: M2

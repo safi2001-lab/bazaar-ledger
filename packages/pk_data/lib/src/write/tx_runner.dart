@@ -48,21 +48,14 @@ import '../db/app_database.dart';
 /// If any step throws, the transaction rolls back whole. There is no partial
 /// sale.
 final class TxRunner {
-  TxRunner({
-    required this.database,
-    required this.ids,
-    required this.hlc,
-  });
+  TxRunner({required this.database, required this.ids, required this.hlc});
 
   final AppDatabase database;
   final IdGenerator ids;
   final HlcClock hlc;
 
   /// Runs [body] as a single atomic unit.
-  Future<T> run<T>(
-    ActorContext actor,
-    Future<T> Function(Tx tx) body,
-  ) async {
+  Future<T> run<T>(ActorContext actor, Future<T> Function(Tx tx) body) async {
     return database.transaction(() async {
       final tx = Tx._(database, actor, ids, hlc);
       await tx._begin();
@@ -138,8 +131,7 @@ final class Tx {
   Future<List<QueryRow>> select(String sql, [List<Object?> args = const []]) =>
       _db.customSelect(sql, variables: _bind(args)).get();
 
-  Future<QueryRow?> selectOne(String sql,
-          [List<Object?> args = const []]) =>
+  Future<QueryRow?> selectOne(String sql, [List<Object?> args = const []]) =>
       _db.customSelect(sql, variables: _bind(args)).getSingleOrNull();
 
   // ---------------------------------------------------------------------
@@ -324,8 +316,10 @@ final class Tx {
       // Otherwise the UPDATE matches nothing, the mutation counter still
       // rises, and a delete that did not happen is broadcast to every other
       // counter through the outbox.
-      throw StateError('Row $table.$id in firm ${actor.firmId} is already '
-          'deleted.');
+      throw StateError(
+        'Row $table.$id in firm ${actor.firmId} is already '
+        'deleted.',
+      );
     }
     _noteJournalTouch(table, id, before.data);
 
@@ -411,8 +405,7 @@ final class Tx {
 
     final ids = _touchedJournalEntries.toList();
     final placeholders = List.filled(ids.length, '?').join(', ');
-    final rows = await select(
-      '''
+    final rows = await select('''
       SELECT je.id            AS entry_id,
              je.entry_no      AS entry_no,
              je.total_debit_paisa  AS declared_debit,
@@ -424,9 +417,7 @@ final class Tx {
         ON jl.journal_entry_id = je.id AND jl.deleted_at_utc IS NULL
       WHERE je.id IN ($placeholders)
       GROUP BY je.id
-      ''',
-      ids,
-    );
+      ''', ids);
 
     for (final row in rows) {
       final declaredDebit = row.read<int>('declared_debit');
@@ -448,7 +439,8 @@ final class Tx {
           entryNo: entryNo,
           debitPaisa: actualDebit,
           creditPaisa: actualCredit,
-          detail: 'lines total $actualDebit but the entry declares '
+          detail:
+              'lines total $actualDebit but the entry declares '
               '$declaredDebit debit and $declaredCredit credit',
         );
       }
@@ -459,11 +451,7 @@ final class Tx {
   // Internals
   // ---------------------------------------------------------------------
 
-  void _noteJournalTouch(
-    String table,
-    String id,
-    Map<String, Object?> row,
-  ) {
+  void _noteJournalTouch(String table, String id, Map<String, Object?> row) {
     if (table == 'journal_entries') {
       _touchedJournalEntries.add(id);
     } else if (table == 'journal_lines') {
@@ -565,23 +553,23 @@ final class Tx {
   }
 
   static List<Variable<Object>> _bind(List<Object?> args) => [
-        for (final a in args)
-          if (a == null)
-            const Variable<String>(null)
-          else if (a is int)
-            Variable<int>(a)
-          else if (a is String)
-            Variable<String>(a)
-          else if (a is bool)
-            Variable<int>(a ? 1 : 0)
-          else
-            throw ArgumentError.value(
-              a,
-              'args',
-              'only int, String, bool and null may be bound — a double here '
-                  'would be money represented as a float',
-            ),
-      ];
+    for (final a in args)
+      if (a == null)
+        const Variable<String>(null)
+      else if (a is int)
+        Variable<int>(a)
+      else if (a is String)
+        Variable<String>(a)
+      else if (a is bool)
+        Variable<int>(a ? 1 : 0)
+      else
+        throw ArgumentError.value(
+          a,
+          'args',
+          'only int, String, bool and null may be bound — a double here '
+              'would be money represented as a float',
+        ),
+  ];
 
   static const Set<String> _envelopeColumns = {
     'id',

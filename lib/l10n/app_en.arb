@@ -323,5 +323,22 @@
   "printerPartial": "It stopped part way through. Look at the paper and decide.",
   "printerUnknownAsk": "Nobody can tell whether this bill printed before. Have a look at the paper.",
   "printerPrintAgain": "Print it anyway",
-  "printerAlreadyPrinted": "This bill has already been printed."
+  "printerAlreadyPrinted": "This bill has already been printed.",
+  "labelTitle": "Print shelf labels",
+  "labelCopies": "How many",
+  "labelPrint": "Print labels",
+  "labelNoCode": "This item has no code. Add a barcode or a code first.",
+  "labelNoPrinter": "Set up a printer first.",
+  "labelSent": "Labels sent to the printer.",
+  "labelPreview": "What goes on the sticker",
+  "historyTitle": "Stock history",
+  "historyNone": "Nothing has moved yet",
+  "historyOpening": "Opening stock",
+  "historySale": "Sold",
+  "historySaleReturn": "Returned",
+  "historyPurchase": "Bought",
+  "historyAdjustment": "Correction",
+  "historyWastage": "Wastage",
+  "historyOther": "Other",
+  "historyBalance": "Left: {qty}"
 }

@@ -110,43 +110,47 @@ void main() {
     expect(
       worst,
       lessThan(150),
-      reason: 'a search that takes ${worst}ms on a development machine has no '
+      reason:
+          'a search that takes ${worst}ms on a development machine has no '
           'chance on the handset this ships to',
     );
   });
 
-  test('a search that matches nothing is the worst case, and is measured',
-      () async {
-    // The terms above all match early, and `LIMIT 40` stops the scan as soon
-    // as forty rows are found — so they measure the best case and flatter the
-    // query. A term that matches NOTHING cannot stop early: it walks all
-    // twenty thousand rows before it can say so.
-    //
-    // This is not a hypothetical either. It is what a cashier's fourth
-    // keystroke does on the way to a word that is in the catalogue, and what
-    // every mistyped search does.
-    var worst = 0;
-    for (final term in const [
-      'zzzznothing',
-      'qqqq',
-      'xylophone',
-      'dalda cooking oil that does not exist',
-    ]) {
-      final ms = await millisFor(
-        () => queries.searchItems(firm.firmId, query: term),
-      );
-      worst = ms > worst ? ms : worst;
-      // ignore: avoid_print
-      print('search "$term" (no match): ${ms}ms');
-    }
+  test(
+    'a search that matches nothing is the worst case, and is measured',
+    () async {
+      // The terms above all match early, and `LIMIT 40` stops the scan as soon
+      // as forty rows are found — so they measure the best case and flatter the
+      // query. A term that matches NOTHING cannot stop early: it walks all
+      // twenty thousand rows before it can say so.
+      //
+      // This is not a hypothetical either. It is what a cashier's fourth
+      // keystroke does on the way to a word that is in the catalogue, and what
+      // every mistyped search does.
+      var worst = 0;
+      for (final term in const [
+        'zzzznothing',
+        'qqqq',
+        'xylophone',
+        'dalda cooking oil that does not exist',
+      ]) {
+        final ms = await millisFor(
+          () => queries.searchItems(firm.firmId, query: term),
+        );
+        worst = ms > worst ? ms : worst;
+        // ignore: avoid_print
+        print('search "$term" (no match): ${ms}ms');
+      }
 
-    expect(
-      worst,
-      lessThan(250),
-      reason: 'a search that finds nothing walks the whole catalogue and took '
-          '${worst}ms; that is the keystroke before every successful search',
-    );
-  });
+      expect(
+        worst,
+        lessThan(250),
+        reason:
+            'a search that finds nothing walks the whole catalogue and took '
+            '${worst}ms; that is the keystroke before every successful search',
+      );
+    },
+  );
 
   test('a term that only matches the far end of the catalogue', () async {
     // Ordered by id, so a term whose matches are all at the end has to walk
@@ -193,7 +197,8 @@ void main() {
     expect(
       lastPage,
       lessThan(100),
-      reason: 'page twelve took ${lastPage}ms against page one at '
+      reason:
+          'page twelve took ${lastPage}ms against page one at '
           '${firstPage}ms; the cursor is not doing its job',
     );
   });

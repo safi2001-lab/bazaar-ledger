@@ -58,10 +58,11 @@ void main() {
     postSale = PostSaleUseCase(writer: DriftSaleWriter(runner: runner));
     queries = DriftAppQueries(db);
 
-    pcsUnitId = (await db
-            .customSelect("SELECT id FROM units WHERE code = 'pcs'")
-            .getSingle())
-        .read<String>('id');
+    pcsUnitId =
+        (await db
+                .customSelect("SELECT id FROM units WHERE code = 'pcs'")
+                .getSingle())
+            .read<String>('id');
 
     oilId = await catalogue.addItem(
       actor,
@@ -142,7 +143,8 @@ void main() {
     expect(
       cash - change,
       total,
-      reason: 'cash in minus change out must be the bill; the paper said '
+      reason:
+          'cash in minus change out must be the bill; the paper said '
           '$cash - $change, which is ${cash - change}',
     );
   });
@@ -196,52 +198,52 @@ void main() {
     expect(
       printedAmount,
       const Money.rupees(100),
-      reason: 'the Amount column must print the gross, because the discount '
+      reason:
+          'the Amount column must print the gross, because the discount '
           'is printed again on the line below it and the Subtotal is gross '
           'too. Printing the net deducted the discount twice on the paper: '
           'the column summed to 90 while the Subtotal claimed 100, and '
           'reading the line as printed gave 80. Line was: "$detail"',
     );
-    expect(
-      lines.any((l) => l.contains('less discount')),
-      isTrue,
-    );
+    expect(lines.any((l) => l.contains('less discount')), isTrue);
   });
 
-  test('a bill paid to the paisa prints no change and still reconciles',
-      () async {
-    final posted = await postSale(
-      actor,
-      SaleDraft(
-        lines: [
-          SaleLineDraft(
-            itemId: oilId,
-            itemName: 'Cooking Oil 5L',
-            qty: Qty.one,
-            baseQty: Qty.one,
-            unitId: pcsUnitId,
-            unitCode: 'pcs',
-            rate: const Rate.rupees(100),
-          ),
-        ],
-        tenders: [
-          TenderDraft(
-            paymentAccountId: firm.cashPaymentAccountId,
-            mode: 'cash',
-            amount: const Money.rupees(100),
-            tendered: const Money.rupees(100),
-          ),
-        ],
-      ),
-    );
+  test(
+    'a bill paid to the paisa prints no change and still reconciles',
+    () async {
+      final posted = await postSale(
+        actor,
+        SaleDraft(
+          lines: [
+            SaleLineDraft(
+              itemId: oilId,
+              itemName: 'Cooking Oil 5L',
+              qty: Qty.one,
+              baseQty: Qty.one,
+              unitId: pcsUnitId,
+              unitCode: 'pcs',
+              rate: const Rate.rupees(100),
+            ),
+          ],
+          tenders: [
+            TenderDraft(
+              paymentAccountId: firm.cashPaymentAccountId,
+              mode: 'cash',
+              amount: const Money.rupees(100),
+              tendered: const Money.rupees(100),
+            ),
+          ],
+        ),
+      );
 
-    final lines = await printedReceiptFor(posted.documentId);
-    expect(amountOn(lines, 'Cash'), const Money.rupees(100));
-    expect(amountOn(lines, 'TOTAL'), const Money.rupees(100));
-    expect(
-      lines.any((l) => l.trimLeft().startsWith('Change')),
-      isFalse,
-      reason: 'no change was given, so no change line',
-    );
-  });
+      final lines = await printedReceiptFor(posted.documentId);
+      expect(amountOn(lines, 'Cash'), const Money.rupees(100));
+      expect(amountOn(lines, 'TOTAL'), const Money.rupees(100));
+      expect(
+        lines.any((l) => l.trimLeft().startsWith('Change')),
+        isFalse,
+        reason: 'no change was given, so no change line',
+      );
+    },
+  );
 }

@@ -34,4 +34,18 @@
     <uses-feature android:name="android.hardware.bluetooth"
         android:required="false" />
 
+    <!--
+      USB host, for the printer already cabled to the counter. That is the
+      shape most Pakistani shop counters actually have: an 80mm thermal unit on
+      a USB lead. It needs NO permission at all, because the grant is
+      per-device and the system asks at the moment of use, so nothing is added
+      to the list above. That makes it the best privacy story of the three
+      transports.
+
+      Not required, again, so the listing stays visible to phones without OTG.
+      A shop on Bluetooth or LAN does not need it.
+    -->
+    <uses-feature android:name="android.hardware.usb.host"
+        android:required="false" />
+
 </manifest>

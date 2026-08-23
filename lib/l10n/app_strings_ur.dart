@@ -826,4 +826,58 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get printerAlreadyPrinted => 'Yeh bill pehle print ho chuka hai.';
+
+  @override
+  String get labelTitle => 'Sticker chhapein';
+
+  @override
+  String get labelCopies => 'Kitne sticker';
+
+  @override
+  String get labelPrint => 'Sticker chhapein';
+
+  @override
+  String get labelNoCode =>
+      'Is cheez ka koi code nahi. Pehle barcode ya code likhein.';
+
+  @override
+  String get labelNoPrinter => 'Pehle printer set karein.';
+
+  @override
+  String get labelSent => 'Sticker printer par bhej diye.';
+
+  @override
+  String get labelPreview => 'Sticker par yeh aayega';
+
+  @override
+  String get historyTitle => 'Stock ki tafseel';
+
+  @override
+  String get historyNone => 'Abhi tak koi harkat nahi';
+
+  @override
+  String get historyOpening => 'Shuruaati stock';
+
+  @override
+  String get historySale => 'Bika';
+
+  @override
+  String get historySaleReturn => 'Wapas aaya';
+
+  @override
+  String get historyPurchase => 'Khareeda';
+
+  @override
+  String get historyAdjustment => 'Durusti';
+
+  @override
+  String get historyWastage => 'Zaya';
+
+  @override
+  String get historyOther => 'Aur';
+
+  @override
+  String historyBalance(Object qty) {
+    return 'Baqi: $qty';
+  }
 }

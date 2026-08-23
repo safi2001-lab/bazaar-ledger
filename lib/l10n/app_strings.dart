@@ -1585,6 +1585,108 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Yeh bill pehle print ho chuka hai.'**
   String get printerAlreadyPrinted;
+
+  /// No description provided for @labelTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sticker chhapein'**
+  String get labelTitle;
+
+  /// No description provided for @labelCopies.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne sticker'**
+  String get labelCopies;
+
+  /// No description provided for @labelPrint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sticker chhapein'**
+  String get labelPrint;
+
+  /// A label needs something a scanner can read back; without a code there is nothing to print.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is cheez ka koi code nahi. Pehle barcode ya code likhein.'**
+  String get labelNoCode;
+
+  /// No description provided for @labelNoPrinter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle printer set karein.'**
+  String get labelNoPrinter;
+
+  /// No description provided for @labelSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sticker printer par bhej diye.'**
+  String get labelSent;
+
+  /// No description provided for @labelPreview.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sticker par yeh aayega'**
+  String get labelPreview;
+
+  /// No description provided for @historyTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock ki tafseel'**
+  String get historyTitle;
+
+  /// No description provided for @historyNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi tak koi harkat nahi'**
+  String get historyNone;
+
+  /// No description provided for @historyOpening.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shuruaati stock'**
+  String get historyOpening;
+
+  /// No description provided for @historySale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bika'**
+  String get historySale;
+
+  /// No description provided for @historySaleReturn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas aaya'**
+  String get historySaleReturn;
+
+  /// No description provided for @historyPurchase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareeda'**
+  String get historyPurchase;
+
+  /// No description provided for @historyAdjustment.
+  ///
+  /// In ur, this message translates to:
+  /// **'Durusti'**
+  String get historyAdjustment;
+
+  /// No description provided for @historyWastage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zaya'**
+  String get historyWastage;
+
+  /// No description provided for @historyOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur'**
+  String get historyOther;
+
+  /// No description provided for @historyBalance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi: {qty}'**
+  String historyBalance(Object qty);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

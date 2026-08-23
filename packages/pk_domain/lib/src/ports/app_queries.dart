@@ -270,4 +270,62 @@ abstract interface class AppQueries {
   /// catalogue on an Android Go handset is the thing this product cannot
   /// afford.
   Future<List<UnitEdge>> unitConversions(String firmId);
+
+  /// Where one item's stock went, newest first.
+  ///
+  /// The question a shopkeeper actually asks is never "what is the balance" —
+  /// they can see the shelf. It is "there should be forty and there are
+  /// thirty-one, where did nine go", and the only honest answer is the list of
+  /// movements. `stock_ledger` is append-only and every row names the document
+  /// or the reason that caused it, so this is a read of history rather than a
+  /// reconstruction of it.
+  ///
+  /// Keyset-paged on `(occurred_at_utc, id)` to match `idx_stock_position`. An
+  /// OFFSET would get slower the further back a shopkeeper scrolled, and the
+  /// interesting rows are usually the old ones.
+  Future<List<StockMovement>> stockMovements(
+    String firmId,
+    String itemId, {
+    String? afterId,
+    int limit = 50,
+  });
+}
+
+/// One line of an item's stock history.
+final class StockMovement {
+  const StockMovement({
+    required this.id,
+    required this.txnType,
+    required this.qtyDelta,
+    required this.occurredOnLocal,
+    required this.balanceAfter,
+    this.docNo,
+    this.reason,
+  });
+
+  final String id;
+
+  /// `opening`, `sale`, `adjustment`, `wastage`, and the rest of the closed
+  /// set the schema's CHECK constraint admits.
+  final String txnType;
+
+  /// In the item's base unit. Negative is stock leaving.
+  final Qty qtyDelta;
+
+  /// The shopkeeper's day, not UTC. A sale at eight in the evening in Lahore
+  /// belongs to that evening, and grouping on UTC would file it under tomorrow.
+  final String occurredOnLocal;
+
+  /// The cached running balance at this row, or null where it was never
+  /// stamped. Derived, verified by the health check, never authoritative.
+  final Qty? balanceAfter;
+
+  /// The bill this came from, where there was one. An opening balance and a
+  /// stock correction have no document, which is exactly why [reason] exists.
+  final String? docNo;
+
+  /// Why, for the movements a person made rather than a sale.
+  final String? reason;
+
+  bool get isOut => qtyDelta.isNegative;
 }

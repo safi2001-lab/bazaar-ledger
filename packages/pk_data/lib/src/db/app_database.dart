@@ -39,76 +39,76 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onCreate: (m) async {
-          await m.createAll();
-        },
-        onUpgrade: (m, from, to) async {
-          // Every version has a committed dump under drift_schemas/ and a test
-          // that migrates realistically seeded data into it. There is nothing
-          // to upgrade from at v1, so this path does not run yet — but the
-          // machinery lands before the first table is added rather than being
-          // built under pressure once a shop's database already depends on it.
-          //
-          // Foreign keys are deliberately deferred for the duration. SQLite's
-          // twelve-step table rebuild -- which is what any CHECK constraint
-          // change requires -- moves rows through a temporary table, and with
-          // enforcement on it trips `foreign_key_check` halfway. That failure
-          // does not show up on an empty test database. It shows up on a shop
-          // with three years of history.
-          await customStatement('PRAGMA defer_foreign_keys = ON');
-          try {
-            await stepByStep(
-              // v1 → v2: print_jobs, so that "was this bill already printed?"
-              // survives Android reclaiming the app. Purely additive — one new
-              // table and its indexes, no existing table touched, so there is
-              // no twelve-step rebuild and nothing to lose.
-              from1To2: (migrator, schema) async {
-                await migrator.createTable(schema.printJobs);
-                await migrator.create(schema.idxPrintjobsKey);
-                await migrator.create(schema.idxPrintjobsDoc);
-                await migrator.create(schema.idxPrintjobsOpen);
-              },
-            )(m, from, to);
-          } on ArgumentError {
-            throw StateError(
-              'No migration from schema v$from to v$to is registered. '
-              'A build that can open a database it cannot migrate is how data '
-              'gets silently mangled.',
-            );
-          }
-          // Re-checked before the transaction closes, so a step that broke a
-          // reference fails the migration instead of leaving a database that
-          // opens and is quietly wrong.
-          await customStatement('PRAGMA foreign_key_check');
-        },
-        beforeOpen: (details) async {
-          // Referential integrity is not optional and is not the ORM's job.
-          // This pragma is per-connection, so it is set here rather than once
-          // at creation — and `ddl_invariants_test` asserts the test harness
-          // sets it too, because an integrity rule that only holds in
-          // production is a rule nobody ever tests.
-          await customStatement('PRAGMA foreign_keys = ON');
+    onCreate: (m) async {
+      await m.createAll();
+    },
+    onUpgrade: (m, from, to) async {
+      // Every version has a committed dump under drift_schemas/ and a test
+      // that migrates realistically seeded data into it. There is nothing
+      // to upgrade from at v1, so this path does not run yet — but the
+      // machinery lands before the first table is added rather than being
+      // built under pressure once a shop's database already depends on it.
+      //
+      // Foreign keys are deliberately deferred for the duration. SQLite's
+      // twelve-step table rebuild -- which is what any CHECK constraint
+      // change requires -- moves rows through a temporary table, and with
+      // enforcement on it trips `foreign_key_check` halfway. That failure
+      // does not show up on an empty test database. It shows up on a shop
+      // with three years of history.
+      await customStatement('PRAGMA defer_foreign_keys = ON');
+      try {
+        await stepByStep(
+          // v1 → v2: print_jobs, so that "was this bill already printed?"
+          // survives Android reclaiming the app. Purely additive — one new
+          // table and its indexes, no existing table touched, so there is
+          // no twelve-step rebuild and nothing to lose.
+          from1To2: (migrator, schema) async {
+            await migrator.createTable(schema.printJobs);
+            await migrator.create(schema.idxPrintjobsKey);
+            await migrator.create(schema.idxPrintjobsDoc);
+            await migrator.create(schema.idxPrintjobsOpen);
+          },
+        )(m, from, to);
+      } on ArgumentError {
+        throw StateError(
+          'No migration from schema v$from to v$to is registered. '
+          'A build that can open a database it cannot migrate is how data '
+          'gets silently mangled.',
+        );
+      }
+      // Re-checked before the transaction closes, so a step that broke a
+      // reference fails the migration instead of leaving a database that
+      // opens and is quietly wrong.
+      await customStatement('PRAGMA foreign_key_check');
+    },
+    beforeOpen: (details) async {
+      // Referential integrity is not optional and is not the ORM's job.
+      // This pragma is per-connection, so it is set here rather than once
+      // at creation — and `ddl_invariants_test` asserts the test harness
+      // sets it too, because an integrity rule that only holds in
+      // production is a rule nobody ever tests.
+      await customStatement('PRAGMA foreign_keys = ON');
 
-          // Load-shedding is the requirement, not an edge case. NORMAL loses
-          // the last transactions when the power cuts mid-write, and the last
-          // transaction is the sale the customer is standing there paying for.
-          await customStatement('PRAGMA journal_mode = WAL');
-          await customStatement('PRAGMA synchronous = FULL');
+      // Load-shedding is the requirement, not an edge case. NORMAL loses
+      // the last transactions when the power cuts mid-write, and the last
+      // transaction is the sale the customer is standing there paying for.
+      await customStatement('PRAGMA journal_mode = WAL');
+      await customStatement('PRAGMA synchronous = FULL');
 
-          // A cashier holding up the queue is worse than a query waiting.
-          await customStatement('PRAGMA busy_timeout = 5000');
-          // Temp tables in RAM: report aggregations should not touch the eMMC
-          // on a Rs 19,000 handset.
-          await customStatement('PRAGMA temp_store = MEMORY');
-          // ~8 MB of page cache. Deliberately modest — the floor device has
-          // 4 GB of RAM shared with an Android Go ROM that kills eagerly.
-          await customStatement('PRAGMA cache_size = -8000');
+      // A cashier holding up the queue is worse than a query waiting.
+      await customStatement('PRAGMA busy_timeout = 5000');
+      // Temp tables in RAM: report aggregations should not touch the eMMC
+      // on a Rs 19,000 handset.
+      await customStatement('PRAGMA temp_store = MEMORY');
+      // ~8 MB of page cache. Deliberately modest — the floor device has
+      // 4 GB of RAM shared with an Android Go ROM that kills eagerly.
+      await customStatement('PRAGMA cache_size = -8000');
 
-          if (details.wasCreated) {
-            await customStatement('PRAGMA foreign_key_check');
-          }
-        },
-      );
+      if (details.wasCreated) {
+        await customStatement('PRAGMA foreign_key_check');
+      }
+    },
+  );
 
   /// Asserts that the whole ledger balances, for every firm in the database.
   ///
@@ -184,8 +184,7 @@ class AppDatabase extends _$AppDatabase {
   /// not exceed the whole" as a CHECK. It is the most likely way a khata
   /// balance goes quietly wrong, so it is checked rather than assumed.
   Future<List<String>> findOverAllocatedPayments() async {
-    final rows = await customSelect(
-      '''
+    final rows = await customSelect('''
       SELECT p.id AS id,
              p.amount_paisa AS amount,
              SUM(pa.amount_paisa) AS allocated
@@ -194,8 +193,7 @@ class AppDatabase extends _$AppDatabase {
       WHERE p.deleted_at_utc IS NULL AND pa.deleted_at_utc IS NULL
       GROUP BY p.id, p.amount_paisa
       HAVING SUM(pa.amount_paisa) > p.amount_paisa
-      ''',
-    ).get();
+      ''').get();
     return rows.map((r) {
       final id = r.read<String>('id');
       final allocated = r.read<int>('allocated');
@@ -231,8 +229,7 @@ class AppDatabase extends _$AppDatabase {
     // value the next sale immediately contradicted. `TxRunner.softDelete` now
     // refuses the table outright, and any deleted row still in there is
     // reported below as the corruption it is.
-    final rows = await customSelect(
-      '''
+    final rows = await customSelect('''
       SELECT id, item_id, cached, actual FROM (
         SELECT sl.id AS id,
                sl.item_id AS item_id,
@@ -246,8 +243,7 @@ class AppDatabase extends _$AppDatabase {
         WHERE sl.deleted_at_utc IS NULL
       )
       WHERE cached IS NOT NULL AND cached <> actual
-      ''',
-    ).get();
+      ''').get();
     return rows.map((r) {
       final id = r.read<String>('id');
       final item = r.read<String>('item_id');

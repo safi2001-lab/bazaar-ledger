@@ -6,6 +6,8 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'item_history_screen.dart';
+import 'label_print_sheet.dart';
 import 'stock_adjust_sheet.dart';
 
 /// Add an item, or change one.
@@ -270,6 +272,40 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                   itemName: widget.item!.name,
                   onHand: widget.item!.stockOnHand,
                   unitCode: widget.item!.unitCode,
+                ),
+              ),
+            ),
+          // "There should be forty and there are thirty-one" is a question
+          // the shelf cannot answer and the append-only ledger can.
+          if (_isEdit && widget.item!.tracksStock)
+            BlIconButton(
+              icon: Icons.history,
+              label: s.historyTitle,
+              onPressed: () => Navigator.of(context).push<void>(
+                MaterialPageRoute(
+                  builder: (_) => ItemHistoryScreen(
+                    itemId: widget.item!.id,
+                    itemName: widget.item!.name,
+                    unitCode: widget.item!.unitCode,
+                  ),
+                ),
+              ),
+            ),
+          // The other half of a barcode workflow. Without it a shopkeeper can
+          // scan what a manufacturer printed and nothing they packed
+          // themselves.
+          if (_isEdit)
+            BlIconButton(
+              icon: Icons.qr_code_2_outlined,
+              label: s.labelTitle,
+              onPressed: () => showModalBottomSheet<void>(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                builder: (_) => LabelPrintSheet(
+                  name: widget.item!.name,
+                  code: widget.item!.barcode ?? widget.item!.code,
+                  priceLabel: widget.item!.saleRate.amountOnly,
                 ),
               ),
             ),

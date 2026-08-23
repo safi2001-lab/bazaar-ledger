@@ -39,10 +39,11 @@ void main() {
     runner = TxRunner(database: db, ids: ids, hlc: hlc);
     catalogue = DriftCatalogueWriter(runner);
 
-    pcsUnitId = (await db
-            .customSelect("SELECT id FROM units WHERE code = 'pcs'")
-            .getSingle())
-        .read<String>('id');
+    pcsUnitId =
+        (await db
+                .customSelect("SELECT id FROM units WHERE code = 'pcs'")
+                .getSingle())
+            .read<String>('id');
 
     // Twenty tins on the shelf, bought at Rs 300 each.
     oilId = await catalogue.addItem(
@@ -60,16 +61,17 @@ void main() {
   tearDown(() async => db.close());
 
   Future<Qty> onHand() async {
-    final row = await db.customSelect(
-      'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q FROM stock_ledger '
-      'WHERE deleted_at_utc IS NULL',
-    ).getSingle();
+    final row = await db
+        .customSelect(
+          'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q FROM stock_ledger '
+          'WHERE deleted_at_utc IS NULL',
+        )
+        .getSingle();
     return Qty.raw(row.read<int>('q'));
   }
 
   Future<Map<String, (int, int)>> journalByAccountCode() async {
-    final rows = await db.customSelect(
-      '''
+    final rows = await db.customSelect('''
       SELECT a.code AS code,
              SUM(jl.debit_paisa) AS dr,
              SUM(jl.credit_paisa) AS cr
@@ -78,8 +80,7 @@ void main() {
       JOIN journal_entries je ON je.id = jl.journal_entry_id
       WHERE je.source_type = 'adjustment'
       GROUP BY a.code
-      ''',
-    ).get();
+      ''').get();
     return {
       for (final r in rows)
         r.read<String>('code'): (r.read<int>('dr'), r.read<int>('cr')),
@@ -115,14 +116,12 @@ void main() {
       ),
     );
 
-    final row = await db.customSelect(
-      '''
+    final row = await db.customSelect('''
       SELECT txn_type, reason, qty_delta_thousandths q, created_by,
              balance_after_thousandths b
       FROM stock_ledger
       WHERE txn_type IN ('adjustment', 'wastage')
-      ''',
-    ).getSingle();
+      ''').getSingle();
 
     expect(row.read<String>('txn_type'), 'adjustment');
     expect(row.read<String>('reason'), 'Mahana ginti');
@@ -130,12 +129,10 @@ void main() {
     expect(row.read<int>('b'), 17000);
     expect(row.read<String>('created_by'), firm.ownerUserId);
 
-    final audit = await db.customSelect(
-      '''
+    final audit = await db.customSelect('''
       SELECT action_code, summary FROM audit_log
       WHERE action_code = 'STOCK_ADJUSTED'
-      ''',
-    ).getSingle();
+      ''').getSingle();
     expect(audit.read<String>('summary'), contains('Mahana ginti'));
   });
 
@@ -152,9 +149,11 @@ void main() {
     );
 
     expect(await onHand(), Qty.units(17));
-    final row = await db.customSelect(
-      "SELECT txn_type FROM stock_ledger WHERE reason = 'Toot gaye'",
-    ).getSingle();
+    final row = await db
+        .customSelect(
+          "SELECT txn_type FROM stock_ledger WHERE reason = 'Toot gaye'",
+        )
+        .getSingle();
     expect(row.read<String>('txn_type'), 'wastage');
   });
 
@@ -197,24 +196,28 @@ void main() {
     expect(await onHand(), Qty.units(20), reason: 'nothing moved');
   });
 
-  test('a stock take that agrees with the ledger is not a correction',
-      () async {
-    await expectLater(
-      catalogue.adjustStock(
-        actor,
-        StockAdjustmentDraft.counted(
-          itemId: oilId,
-          counted: Qty.units(20),
-          reason: 'Ginti',
+  test(
+    'a stock take that agrees with the ledger is not a correction',
+    () async {
+      await expectLater(
+        catalogue.adjustStock(
+          actor,
+          StockAdjustmentDraft.counted(
+            itemId: oilId,
+            counted: Qty.units(20),
+            reason: 'Ginti',
+          ),
         ),
-      ),
-      throwsA(isA<StateError>()),
-    );
-    final count = await db.customSelect(
-      "SELECT COUNT(*) c FROM stock_ledger WHERE txn_type = 'adjustment'",
-    ).getSingle();
-    expect(count.read<int>('c'), 0, reason: 'no empty row was written');
-  });
+        throwsA(isA<StateError>()),
+      );
+      final count = await db
+          .customSelect(
+            "SELECT COUNT(*) c FROM stock_ledger WHERE txn_type = 'adjustment'",
+          )
+          .getSingle();
+      expect(count.read<int>('c'), 0, reason: 'no empty row was written');
+    },
+  );
 
   test('the books still balance afterwards', () async {
     await catalogue.adjustStock(
@@ -288,6 +291,83 @@ void main() {
       reason: 'worst first, and only the lines with a floor set',
     );
   });
+
+  test(
+    'the tenth correction of the year is as ordinary as the first',
+    () async {
+      // A real bug, found by a paging test that happened to make twenty-five
+      // corrections. `entry_no` is TEXT -- it holds `JV-2627-0001`, a document
+      // number a person quotes -- and the adjustment writer computed the next
+      // one with `MAX(entry_no) + 1`.
+      //
+      // MAX over TEXT compares lexicographically, so after the ninth entry the
+      // maximum stayed '9' forever ('10' sorts below '9') and the tenth
+      // correction died on a UNIQUE constraint with a raw SQLite error. Ten
+      // corrections in a fiscal year is an ordinary Tuesday for a kiryana.
+      //
+      // Nothing caught it because no test had ever made more than two.
+      for (var i = 1; i <= 12; i++) {
+        await catalogue.adjustStock(
+          actor,
+          StockAdjustmentDraft.counted(
+            itemId: oilId,
+            counted: Qty.units(20 - i),
+            reason: 'Ginti $i',
+          ),
+        );
+      }
+
+      final numbers = await db
+          .customSelect(
+            'SELECT entry_no FROM journal_entries WHERE source_type = ? '
+            'ORDER BY rowid',
+            variables: [Variable<String>('adjustment')],
+          )
+          .get();
+      expect(numbers, hasLength(12));
+      expect(
+        numbers.map((r) => r.read<String>('entry_no')).toSet(),
+        hasLength(12),
+        reason: 'two corrections were given the same voucher number',
+      );
+      // The same shape as every other document in the system, not a bare count.
+      expect(numbers.first.read<String>('entry_no'), startsWith('JV-'));
+    },
+  );
+
+  test(
+    'a correction and a sale draw voucher numbers from one series',
+    () async {
+      // The worse half of the same bug. With a sale already posted, MAX over
+      // `entry_no` returned 'JV-2627-0001', SQLite coerced that to 0 for the
+      // addition, and the very first stock correction tried to write 1 -- a
+      // number in a different format from every other voucher in the book.
+      final before = await db
+          .customSelect('SELECT COUNT(*) AS n FROM journal_entries')
+          .getSingle();
+
+      await catalogue.adjustStock(
+        actor,
+        StockAdjustmentDraft.counted(
+          itemId: oilId,
+          counted: Qty.units(19),
+          reason: 'Ek gum',
+        ),
+      );
+
+      final all = await db
+          .customSelect('SELECT entry_no FROM journal_entries ORDER BY rowid')
+          .get();
+      expect(all, hasLength(before.read<int>('n') + 1));
+      for (final row in all) {
+        expect(
+          row.read<String>('entry_no'),
+          startsWith('JV-'),
+          reason: 'a voucher number that is not a voucher number',
+        );
+      }
+    },
+  );
 
   test('an item that carries no stock has nothing to correct', () async {
     final serviceId = await catalogue.addItem(

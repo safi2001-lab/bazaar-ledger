@@ -23,8 +23,7 @@ final class DriftSaleWriter implements SaleWriter {
   Future<T> inTransaction<T>(
     ActorContext actor,
     Future<T> Function(SaleWriteContext write) body,
-  ) =>
-      runner.run(actor, (tx) => body(_DriftSaleWriteContext(tx, sequences)));
+  ) => runner.run(actor, (tx) => body(_DriftSaleWriteContext(tx, sequences)));
 }
 
 final class _DriftSaleWriteContext implements SaleWriteContext {
@@ -264,7 +263,8 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
         '  AND deleted_at_utc IS NULL',
         [actor.firmId, movement.itemId, movement.locationCode],
       );
-      final balanceAfter = (running?.read<int>('balance') ?? 0) +
+      final balanceAfter =
+          (running?.read<int>('balance') ?? 0) +
           movement.qtyDelta.inThousandths;
 
       await _tx.insert('stock_ledger', {
@@ -353,8 +353,7 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
     };
   }
 
-  static String _placeholders(int count) =>
-      List.filled(count, '?').join(', ');
+  static String _placeholders(int count) => List.filled(count, '?').join(', ');
 }
 
 /// Wires a [SaleWriter] onto an open database.
@@ -362,7 +361,6 @@ DriftSaleWriter saleWriterFor(
   AppDatabase database, {
   required IdGenerator ids,
   required HlcClock hlc,
-}) =>
-    DriftSaleWriter(
-      runner: TxRunner(database: database, ids: ids, hlc: hlc),
-    );
+}) => DriftSaleWriter(
+  runner: TxRunner(database: database, ids: ids, hlc: hlc),
+);

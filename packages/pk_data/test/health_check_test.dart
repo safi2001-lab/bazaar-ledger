@@ -189,8 +189,7 @@ void _falsePositiveTests() {
           'rate_milli_paisa': 0,
           'value_delta_paisa': 0,
           // Yesterday.
-          'occurred_at_utc':
-              clock.nowUtc().millisecondsSinceEpoch - 86400000,
+          'occurred_at_utc': clock.nowUtc().millisecondsSinceEpoch - 86400000,
           'occurred_on_local': '2026-08-22',
         });
       },
@@ -230,15 +229,14 @@ void _falsePositiveTests() {
       "WHERE txn_type = 'opening'",
     );
 
-    expect(
-      await db.findDeletedLedgerRows(),
-      contains(contains('append-only')),
-    );
+    expect(await db.findDeletedLedgerRows(), contains(contains('append-only')));
     expect((await db.checkHealth()).isHealthy, isFalse);
   });
 
-  test('a payment allocated to exactly its own value is not over-allocated',
-      () async {
-    expect(await db.findOverAllocatedPayments(), isEmpty);
-  });
+  test(
+    'a payment allocated to exactly its own value is not over-allocated',
+    () async {
+      expect(await db.findOverAllocatedPayments(), isEmpty);
+    },
+  );
 }

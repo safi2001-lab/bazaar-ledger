@@ -31,7 +31,7 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           firmId == null
               ? 'SELECT * FROM firms WHERE deleted_at_utc IS NULL '
-                  'ORDER BY created_at_utc LIMIT 1'
+                    'ORDER BY created_at_utc LIMIT 1'
               : 'SELECT * FROM firms WHERE id = ? AND deleted_at_utc IS NULL',
           variables: firmId == null ? const [] : [Variable<String>(firmId)],
         )
@@ -50,8 +50,9 @@ final class DriftAppQueries implements AppQueries {
       roundInvoiceToRupee: row.read<int>('round_invoice_to_rupee') == 1,
       raastAlias: _blankToNull(row.readNullable<String>('raast_alias')),
       bankName: _blankToNull(row.readNullable<String>('bank_name')),
-      bankAccountTitle:
-          _blankToNull(row.readNullable<String>('bank_account_title')),
+      bankAccountTitle: _blankToNull(
+        row.readNullable<String>('bank_account_title'),
+      ),
       bankIban: _blankToNull(row.readNullable<String>('bank_iban')),
     );
   }
@@ -156,10 +157,7 @@ final class DriftAppQueries implements AppQueries {
             AND i.is_active = 1
           LIMIT 1
           ''',
-          variables: [
-            Variable<String>(firmId),
-            Variable<String>(barcode),
-          ],
+          variables: [Variable<String>(firmId), Variable<String>(barcode)],
         )
         .get();
     return rows.isEmpty ? null : _itemFrom(rows.single);
@@ -281,7 +279,9 @@ final class DriftAppQueries implements AppQueries {
           docNo: r.read<String>('doc_no'),
           dateLocal: r.read<String>('doc_date_local'),
           timeLabel: _timeLabel(r.read<int>('doc_date_utc')),
-          partyName: _blankToNull(r.readNullable<String>('party_name_snapshot')),
+          partyName: _blankToNull(
+            r.readNullable<String>('party_name_snapshot'),
+          ),
           total: Money.paisa(r.read<int>('total_paisa')),
           balance: Money.paisa(r.read<int>('balance_paisa')),
           lineCount: r.read<int>('line_count'),
@@ -304,10 +304,7 @@ final class DriftAppQueries implements AppQueries {
             AND doc_date_local = ? AND status = 'posted'
             AND deleted_at_utc IS NULL
           ''',
-          variables: [
-            Variable<String>(firmId),
-            Variable<String>(dateLocal),
-          ],
+          variables: [Variable<String>(firmId), Variable<String>(dateLocal)],
         )
         .getSingle();
     return DayTotals(
@@ -328,10 +325,7 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           'SELECT * FROM documents WHERE id = ? AND firm_id = ? '
           'AND deleted_at_utc IS NULL',
-          variables: [
-            Variable<String>(documentId),
-            Variable<String>(firmId),
-          ],
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
         )
         .getSingleOrNull();
     if (doc == null) return null;
@@ -499,6 +493,76 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<StockMovement>> stockMovements(
+    String firmId,
+    String itemId, {
+    String? afterId,
+    int limit = 50,
+  }) async {
+    // Keyset, not OFFSET. The cursor is the (occurred_at_utc, id) pair of the
+    // last row shown, which is the tail of `idx_stock_position` — so page
+    // fifty costs what page one costs. An OFFSET would get slower the further
+    // back a shopkeeper scrolled, and the interesting rows in a stock history
+    // are usually the old ones.
+    //
+    // The tuple comparison is spelled out rather than written as a row value.
+    // SQLite accepts `(a, b) < (?, ?)` but does not reliably use an index for
+    // it, and using the index is the entire point of this shape.
+    const cursor =
+        ' AND (sl.occurred_at_utc < (SELECT occurred_at_utc FROM stock_ledger'
+        ' WHERE id = ?)'
+        ' OR (sl.occurred_at_utc = (SELECT occurred_at_utc FROM stock_ledger'
+        ' WHERE id = ?) AND sl.id < ?))';
+
+    final rows = await _db
+        .customSelect(
+          'SELECT sl.id, sl.txn_type, sl.qty_delta_thousandths, '
+          'sl.occurred_on_local, sl.balance_after_thousandths, sl.reason, '
+          'd.doc_no '
+          'FROM stock_ledger sl '
+          'LEFT JOIN documents d ON d.id = sl.document_id '
+          'WHERE sl.firm_id = ? AND sl.item_id = ? '
+          // The stock ledger is append-only and TxRunner refuses to tombstone
+          // a row in it, so this should never exclude anything. It is here
+          // because a history that quietly dropped a movement would be worse
+          // than one that showed a strange one.
+          'AND sl.deleted_at_utc IS NULL'
+          '${afterId == null ? '' : cursor} '
+          'ORDER BY sl.occurred_at_utc DESC, sl.id DESC '
+          'LIMIT ?',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(itemId),
+            if (afterId != null) ...[
+              Variable<String>(afterId),
+              Variable<String>(afterId),
+              Variable<String>(afterId),
+            ],
+            Variable<int>(limit),
+          ],
+        )
+        .get();
+
+    return [
+      for (final r in rows)
+        StockMovement(
+          id: r.read<String>('id'),
+          txnType: r.read<String>('txn_type'),
+          qtyDelta: Qty.raw(r.read<int>('qty_delta_thousandths')),
+          occurredOnLocal: r.read<String>('occurred_on_local'),
+          balanceAfter: switch (r.readNullable<int>(
+            'balance_after_thousandths',
+          )) {
+            final int t => Qty.raw(t),
+            null => null,
+          },
+          docNo: r.readNullable<String>('doc_no'),
+          reason: r.readNullable<String>('reason'),
+        ),
+    ];
+  }
+
+  @override
   Future<List<UnitEdge>> unitConversions(String firmId) async {
     final rows = await _db
         .customSelect(
@@ -520,24 +584,24 @@ final class DriftAppQueries implements AppQueries {
   }
 
   static ItemSummary _itemFrom(QueryRow r) => ItemSummary(
-        id: r.read<String>('id'),
-        name: r.read<String>('name'),
-        code: _blankToNull(r.readNullable<String>('code')),
-        barcode: _blankToNull(r.readNullable<String>('barcode')),
-        category: _blankToNull(r.readNullable<String>('category')),
-        description: _blankToNull(r.readNullable<String>('description')),
-        purchaseRate: _rateOrNull(r, 'purchase_rate_milli_paisa'),
-        wholesaleRate: _rateOrNull(r, 'wholesale_rate_milli_paisa'),
-        mrp: _moneyOrNull(r, 'mrp_paisa'),
-        hsCode: _blankToNull(r.readNullable<String>('hs_code')),
-        unitId: r.read<String>('base_unit_id'),
-        unitCode: r.read<String>('unit_code'),
-        unitDecimals: r.read<int>('unit_decimals'),
-        saleRate: Rate.raw(r.read<int>('sale_rate_milli_paisa')),
-        stockOnHand: Qty.raw(r.read<int>('stock_thousandths')),
-        minStock: Qty.raw(r.read<int>('min_stock_thousandths')),
-        tracksStock: r.read<int>('track_stock') == 1,
-      );
+    id: r.read<String>('id'),
+    name: r.read<String>('name'),
+    code: _blankToNull(r.readNullable<String>('code')),
+    barcode: _blankToNull(r.readNullable<String>('barcode')),
+    category: _blankToNull(r.readNullable<String>('category')),
+    description: _blankToNull(r.readNullable<String>('description')),
+    purchaseRate: _rateOrNull(r, 'purchase_rate_milli_paisa'),
+    wholesaleRate: _rateOrNull(r, 'wholesale_rate_milli_paisa'),
+    mrp: _moneyOrNull(r, 'mrp_paisa'),
+    hsCode: _blankToNull(r.readNullable<String>('hs_code')),
+    unitId: r.read<String>('base_unit_id'),
+    unitCode: r.read<String>('unit_code'),
+    unitDecimals: r.read<int>('unit_decimals'),
+    saleRate: Rate.raw(r.read<int>('sale_rate_milli_paisa')),
+    stockOnHand: Qty.raw(r.read<int>('stock_thousandths')),
+    minStock: Qty.raw(r.read<int>('min_stock_thousandths')),
+    tracksStock: r.read<int>('track_stock') == 1,
+  );
 
   /// Null stays null rather than becoming zero.
   ///
@@ -570,27 +634,31 @@ final class DriftAppQueries implements AppQueries {
       s == null || s.trim().isEmpty ? null : s;
 
   static String _modeLabel(String mode) => switch (mode) {
-        'cash' => 'Cash',
-        'bank_transfer' => 'Bank Transfer',
-        'jazzcash' => 'JazzCash',
-        'easypaisa' => 'EasyPaisa',
-        'raast' => 'Raast',
-        'card' => 'Card',
-        'cheque' => 'Cheque',
-        _ => 'Adjustment',
-      };
+    'cash' => 'Cash',
+    'bank_transfer' => 'Bank Transfer',
+    'jazzcash' => 'JazzCash',
+    'easypaisa' => 'EasyPaisa',
+    'raast' => 'Raast',
+    'card' => 'Card',
+    'cheque' => 'Cheque',
+    _ => 'Adjustment',
+  };
 
   static String _dateTimeLabel(int millisUtc) {
-    final local = DateTime.fromMillisecondsSinceEpoch(millisUtc, isUtc: true)
-        .add(pakistanStandardTime);
+    final local = DateTime.fromMillisecondsSinceEpoch(
+      millisUtc,
+      isUtc: true,
+    ).add(pakistanStandardTime);
     final d = '${_two(local.day)}-${_two(local.month)}-${local.year}';
     return '$d  ${_clockLabel(local)}';
   }
 
   static String _timeLabel(int millisUtc) => _clockLabel(
-        DateTime.fromMillisecondsSinceEpoch(millisUtc, isUtc: true)
-            .add(pakistanStandardTime),
-      );
+    DateTime.fromMillisecondsSinceEpoch(
+      millisUtc,
+      isUtc: true,
+    ).add(pakistanStandardTime),
+  );
 
   static String _clockLabel(DateTime local) {
     final hour24 = local.hour;

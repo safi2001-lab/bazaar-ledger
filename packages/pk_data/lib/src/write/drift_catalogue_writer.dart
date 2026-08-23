@@ -1,5 +1,6 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import '../write/sequence_allocator.dart';
 import '../write/tx_runner.dart';
 
 /// The drift implementation of [CatalogueWriter].
@@ -30,8 +31,9 @@ final class DriftCatalogueWriter implements CatalogueWriter {
           'txn_type': 'opening',
           'qty_delta_thousandths': draft.openingStock.inThousandths,
           'rate_milli_paisa': draft.openingRate.inMilliPaisa,
-          'value_delta_paisa':
-              draft.openingRate.amountFor(draft.openingStock).inPaisa,
+          'value_delta_paisa': draft.openingRate
+              .amountFor(draft.openingStock)
+              .inPaisa,
           'balance_after_thousandths': draft.openingStock.inThousandths,
           'occurred_at_utc': actor.epochMillis,
           'occurred_on_local': actor.businessDate.value,
@@ -43,7 +45,8 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         action: 'ITEM_CREATED',
         entityTable: 'items',
         entityId: itemId,
-        summary: '${draft.name} added at ${draft.saleRate.amountOnly} '
+        summary:
+            '${draft.name} added at ${draft.saleRate.amountOnly} '
             'per unit',
       );
       return itemId;
@@ -51,11 +54,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
   }
 
   @override
-  Future<void> updateItem(
-    ActorContext actor,
-    String itemId,
-    ItemDraft draft,
-  ) {
+  Future<void> updateItem(ActorContext actor, String itemId, ItemDraft draft) {
     _validateItem(draft);
     return _runner.run(actor, (tx) async {
       final before = await tx.selectOne(
@@ -102,7 +101,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         summary: oldRate == draft.saleRate
             ? '${draft.name} edited'
             : '${draft.name} repriced from ${oldRate.amountOnly} to '
-                '${draft.saleRate.amountOnly}',
+                  '${draft.saleRate.amountOnly}',
         before: {
           'name': before.read<String>('name'),
           'sale_rate_milli_paisa': oldRate.inMilliPaisa,
@@ -216,10 +215,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       });
 
   @override
-  Future<String> adjustStock(
-    ActorContext actor,
-    StockAdjustmentDraft draft,
-  ) {
+  Future<String> adjustStock(ActorContext actor, StockAdjustmentDraft draft) {
     final reason = draft.reason.trim();
     if (reason.isEmpty) {
       // Required, not optional. A stock figure that can be changed without
@@ -262,7 +258,8 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       );
       final onHand = Qty.raw(current?.read<int>('q') ?? 0);
 
-      final delta = draft.delta ??
+      final delta =
+          draft.delta ??
           Qty.raw(draft.countedQty!.inThousandths - onHand.inThousandths);
       if (delta.isZero) {
         // A stock take that agrees with the ledger is not a correction, and
@@ -290,8 +287,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         'txn_type': draft.isWriteOff ? 'wastage' : 'adjustment',
         'qty_delta_thousandths': delta.inThousandths,
         'rate_milli_paisa': cost.inMilliPaisa,
-        'value_delta_paisa':
-            delta.isNegative ? -value.inPaisa : value.inPaisa,
+        'value_delta_paisa': delta.isNegative ? -value.inPaisa : value.inPaisa,
         'balance_after_thousandths': balanceAfter,
         'occurred_at_utc': actor.epochMillis,
         'occurred_on_local': actor.businessDate.value,
@@ -314,7 +310,8 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         action: 'STOCK_ADJUSTED',
         entityTable: 'stock_ledger',
         entityId: ledgerId,
-        summary: '$itemName: ${onHand.display} to '
+        summary:
+            '$itemName: ${onHand.display} to '
             '${Qty.raw(balanceAfter).display} — $reason',
         amountPaisa: value.inPaisa,
       );
@@ -355,7 +352,11 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     }
 
     final entryId = await tx.insert('journal_entries', {
-      'entry_no': await _nextJournalNo(tx, actor),
+      'entry_no': (await const SequenceAllocator().allocate(
+        tx,
+        docType: 'journal_entry',
+        fiscalYear: actor.businessDate.fiscalYear,
+      )).formatted,
       'entry_date_utc': actor.epochMillis,
       'entry_date_local': actor.businessDate.value,
       'fiscal_year': actor.businessDate.fiscalYear,
@@ -386,54 +387,63 @@ final class DriftCatalogueWriter implements CatalogueWriter {
   }
 
   /// The next journal number for this firm and fiscal year.
-  Future<int> _nextJournalNo(Tx tx, ActorContext actor) async {
-    final row = await tx.selectOne(
-      'SELECT COALESCE(MAX(entry_no), 0) + 1 AS n FROM journal_entries '
-      'WHERE firm_id = ? AND fiscal_year = ?',
-      [actor.firmId, actor.businessDate.fiscalYear],
-    );
-    return row?.read<int>('n') ?? 1;
-  }
+  // What used to be here, and why it is gone.
+  //
+  //   SELECT COALESCE(MAX(entry_no), 0) + 1 FROM journal_entries
+  //   WHERE firm_id = ? AND fiscal_year = ?
+  //
+  // `entry_no` is TEXT. It holds a formatted number -- `JV-2627-0001` -- which
+  // is what every other writer puts there, because a journal voucher number is
+  // a document number a person reads and quotes, not a row counter.
+  //
+  // So that query did arithmetic on text. MAX over TEXT compares
+  // lexicographically, which means after the ninth entry the maximum stays
+  // '9' forever ('10' sorts below '9'), and the tenth stock correction of a
+  // fiscal year failed with a raw UNIQUE constraint error from SQLite. In a
+  // shop that had also posted a sale it was worse: MAX returns 'JV-2627-0001',
+  // SQLite coerces that to 0 for the addition, and the FIRST correction tried
+  // to write 1.
+  //
+  // Ten corrections in a year is an ordinary Tuesday. Nothing caught it
+  // because no test made more than two.
 
   // -----------------------------------------------------------------------
 
   static Map<String, Object?> _itemColumns(ItemDraft d) => {
-        'name': d.name.trim(),
-        'name_search': d.searchKey,
-        'code': _blank(d.code),
-        'barcode': _blank(d.barcode),
-        'category': _blank(d.category),
-        'description': _blank(d.description),
-        'base_unit_id': d.baseUnitId,
-        'sale_rate_milli_paisa': d.saleRate.inMilliPaisa,
-        'wholesale_rate_milli_paisa': d.wholesaleRate?.inMilliPaisa,
-        'purchase_rate_milli_paisa': d.purchaseRate?.inMilliPaisa,
-        'mrp_paisa': d.mrp?.inPaisa,
-        'hs_code': _blank(d.hsCode),
-        'min_stock_thousandths': d.minStock.inThousandths,
-        'opening_stock_thousandths': d.openingStock.inThousandths,
-        'opening_rate_milli_paisa': d.openingRate.inMilliPaisa,
-        // The weighted average of one purchase is that purchase. Opening
-        // stock is the shop's first consignment — the goods are already on
-        // the shelf and the shopkeeper types what they cost — so the average
-        // starts there and the M4 purchase rule moves it from there.
-        //
-        // Leaving it at the schema default meant `averageCostFor` returned
-        // zero, the sale posted no COGS line, `documents.cost_paisa` was
-        // stamped 0, and bill-wise profit reported the whole selling price as
-        // margin: Rs 500 of profit on a tin bought for Rs 300. Every shop
-        // hits this, because entering what is on the shelf is the last field
-        // of the item quick-add form.
-        'avg_cost_milli_paisa':
-            d.openingStock.isZero ? 0 : d.openingRate.inMilliPaisa,
-        'track_stock': d.tracksStock ? 1 : 0,
-        'is_active': d.isActive ? 1 : 0,
-      };
+    'name': d.name.trim(),
+    'name_search': d.searchKey,
+    'code': _blank(d.code),
+    'barcode': _blank(d.barcode),
+    'category': _blank(d.category),
+    'description': _blank(d.description),
+    'base_unit_id': d.baseUnitId,
+    'sale_rate_milli_paisa': d.saleRate.inMilliPaisa,
+    'wholesale_rate_milli_paisa': d.wholesaleRate?.inMilliPaisa,
+    'purchase_rate_milli_paisa': d.purchaseRate?.inMilliPaisa,
+    'mrp_paisa': d.mrp?.inPaisa,
+    'hs_code': _blank(d.hsCode),
+    'min_stock_thousandths': d.minStock.inThousandths,
+    'opening_stock_thousandths': d.openingStock.inThousandths,
+    'opening_rate_milli_paisa': d.openingRate.inMilliPaisa,
+    // The weighted average of one purchase is that purchase. Opening
+    // stock is the shop's first consignment — the goods are already on
+    // the shelf and the shopkeeper types what they cost — so the average
+    // starts there and the M4 purchase rule moves it from there.
+    //
+    // Leaving it at the schema default meant `averageCostFor` returned
+    // zero, the sale posted no COGS line, `documents.cost_paisa` was
+    // stamped 0, and bill-wise profit reported the whole selling price as
+    // margin: Rs 500 of profit on a tin bought for Rs 300. Every shop
+    // hits this, because entering what is on the shelf is the last field
+    // of the item quick-add form.
+    'avg_cost_milli_paisa': d.openingStock.isZero
+        ? 0
+        : d.openingRate.inMilliPaisa,
+    'track_stock': d.tracksStock ? 1 : 0,
+    'is_active': d.isActive ? 1 : 0,
+  };
 
-  static Map<String, Object?> _partyColumns(
-    PartyDraft d,
-    ActorContext actor,
-  ) =>
+  static Map<String, Object?> _partyColumns(PartyDraft d, ActorContext actor) =>
       {
         'name': d.name.trim(),
         'name_search': d.searchKey,

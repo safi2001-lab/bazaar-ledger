@@ -399,5 +399,25 @@
     "description": "Shown when a print job row is still `sending`: the app was killed mid-print and paper may already have moved."
   },
   "printerPrintAgain": "Phir bhi print karein",
-  "printerAlreadyPrinted": "Yeh bill pehle print ho chuka hai."
+  "printerAlreadyPrinted": "Yeh bill pehle print ho chuka hai.",
+  "labelTitle": "Sticker chhapein",
+  "labelCopies": "Kitne sticker",
+  "labelPrint": "Sticker chhapein",
+  "labelNoCode": "Is cheez ka koi code nahi. Pehle barcode ya code likhein.",
+  "@labelNoCode": {
+    "description": "A label needs something a scanner can read back; without a code there is nothing to print."
+  },
+  "labelNoPrinter": "Pehle printer set karein.",
+  "labelSent": "Sticker printer par bhej diye.",
+  "labelPreview": "Sticker par yeh aayega",
+  "historyTitle": "Stock ki tafseel",
+  "historyNone": "Abhi tak koi harkat nahi",
+  "historyOpening": "Shuruaati stock",
+  "historySale": "Bika",
+  "historySaleReturn": "Wapas aaya",
+  "historyPurchase": "Khareeda",
+  "historyAdjustment": "Durusti",
+  "historyWastage": "Zaya",
+  "historyOther": "Aur",
+  "historyBalance": "Baqi: {qty}"
 }

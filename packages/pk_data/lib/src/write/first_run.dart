@@ -144,17 +144,17 @@ final class FirstRunSeeder {
       // construct. TxRunner records the whole row for exactly this reason,
       // and these three have to match it.
       Map<String, Object?> envelope(String id, String hlc) => {
-            'id': id,
-            'firm_id': firmId,
-            'created_at_utc': millis,
-            'updated_at_utc': millis,
-            'created_by': userId,
-            'updated_by': userId,
-            'deleted_at_utc': null,
-            'origin_device_id': deviceId,
-            'hlc': hlc,
-            'rev': 1,
-          };
+        'id': id,
+        'firm_id': firmId,
+        'created_at_utc': millis,
+        'updated_at_utc': millis,
+        'created_by': userId,
+        'updated_by': userId,
+        'deleted_at_utc': null,
+        'origin_device_id': deviceId,
+        'hlc': hlc,
+        'rev': 1,
+      };
 
       var bootstrapSeq = 0;
       for (final row in <(String, String, Map<String, Object?>)>[
@@ -217,8 +217,7 @@ final class FirstRunSeeder {
       );
 
       // --- Everything else through the one write path. -------------------
-      final runner =
-          TxRunner(database: database, ids: ids, hlc: hlcClock);
+      final runner = TxRunner(database: database, ids: ids, hlc: hlcClock);
       await runner.run(actor, (tx) async {
         final accountIdsByCode = <String, String>{};
         // Two passes: parents must exist before children can reference them.
@@ -378,11 +377,7 @@ final class FirstRunSeeder {
     );
   }
 
-  Future<String> _insertAccount(
-    Tx tx,
-    AccountSpec spec,
-    String? parentId,
-  ) =>
+  Future<String> _insertAccount(Tx tx, AccountSpec spec, String? parentId) =>
       tx.insert('accounts', {
         'code': spec.code,
         'name': spec.nameEn,
@@ -394,18 +389,19 @@ final class FirstRunSeeder {
       });
 }
 
-const String _env = 'id, firm_id, created_at_utc, updated_at_utc, created_by, '
+const String _env =
+    'id, firm_id, created_at_utc, updated_at_utc, created_by, '
     'updated_by, deleted_at_utc, origin_device_id, hlc, rev';
 
 /// Convenience for callers that already have a database and want a runner and
 /// a context wired to whatever first run produced.
 extension FirstRunWiring on FirstRunResult {
   ActorContext actorAt(DateTime instant) => ActorContext(
-        firmId: firmId,
-        userId: ownerUserId,
-        deviceId: deviceId,
-        startedAtUtc: instant,
-      );
+    firmId: firmId,
+    userId: ownerUserId,
+    deviceId: deviceId,
+    startedAtUtc: instant,
+  );
 }
 
 /// Rebuilds this device's HLC from everything it has ever stamped.
@@ -441,10 +437,7 @@ Future<HlcClock> resumeHlcClock(
         '  UNION ALL'
         '  SELECT hlc FROM audit_log WHERE origin_device_id = ?'
         ')',
-        variables: [
-          Variable<String>(deviceId),
-          Variable<String>(deviceId),
-        ],
+        variables: [Variable<String>(deviceId), Variable<String>(deviceId)],
       )
       .getSingleOrNull();
   final raw = row?.readNullable<String>('last_hlc');

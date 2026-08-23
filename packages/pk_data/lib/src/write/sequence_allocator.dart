@@ -79,8 +79,7 @@ final class SequenceAllocator {
     final devicePrefix = device?.read<String>('doc_prefix') ?? '';
 
     final series = row.read<String>('prefix');
-    final padded =
-        next.toString().padLeft(row.read<int>('pad_width'), '0');
+    final padded = next.toString().padLeft(row.read<int>('pad_width'), '0');
     final formatted = '$series-$fiscalYear-$devicePrefix$padded';
 
     await tx.update('numbering_sequences', row.read<String>('id'), {

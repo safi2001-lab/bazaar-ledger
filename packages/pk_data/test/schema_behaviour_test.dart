@@ -17,21 +17,23 @@ void main() {
 
   tearDown(() async => db.close());
 
-  test('first run seeds a firm, a device and an owner with foreign keys on',
-      () async {
-    final firms = await db.customSelect('SELECT * FROM firms').get();
-    expect(firms, hasLength(1));
-    expect(firms.single.read<String>('name'), 'Chishti Kiryana Store');
-    // The firm scopes itself. This is what lets every other table declare a
-    // real foreign key to firms(id) with no cycle anywhere in the schema.
-    expect(
-      firms.single.read<String>('firm_id'),
-      firms.single.read<String>('id'),
-    );
+  test(
+    'first run seeds a firm, a device and an owner with foreign keys on',
+    () async {
+      final firms = await db.customSelect('SELECT * FROM firms').get();
+      expect(firms, hasLength(1));
+      expect(firms.single.read<String>('name'), 'Chishti Kiryana Store');
+      // The firm scopes itself. This is what lets every other table declare a
+      // real foreign key to firms(id) with no cycle anywhere in the schema.
+      expect(
+        firms.single.read<String>('firm_id'),
+        firms.single.read<String>('id'),
+      );
 
-    final orphans = await db.customSelect('PRAGMA foreign_key_check').get();
-    expect(orphans, isEmpty);
-  });
+      final orphans = await db.customSelect('PRAGMA foreign_key_check').get();
+      expect(orphans, isEmpty);
+    },
+  );
 
   test('a firm whose firm_id is not its own id is rejected', () {
     expect(
@@ -74,24 +76,26 @@ void main() {
     );
   });
 
-  test('the same invoice number cannot be issued twice in one firm and year',
-      () async {
-    await db.customStatement('''
+  test(
+    'the same invoice number cannot be issued twice in one firm and year',
+    () async {
+      await db.customStatement('''
       INSERT INTO documents ($_env, doc_type, doc_no, doc_series, doc_seq,
         fiscal_year, doc_date_utc, doc_date_local)
       VALUES ('X3', 'F1', 1, 1, 'U1', 'U1', NULL, 'D1', 'h', 1,
         'sale_invoice', 'INV-2627-0003', 'INV', 3, 2627, 1, '2026-08-23')
     ''');
-    expect(
-      db.customStatement('''
+      expect(
+        db.customStatement('''
         INSERT INTO documents ($_env, doc_type, doc_no, doc_series, doc_seq,
           fiscal_year, doc_date_utc, doc_date_local)
         VALUES ('X4', 'F1', 1, 1, 'U1', 'U1', NULL, 'D1', 'h', 1,
           'sale_invoice', 'INV-2627-0003', 'INV', 3, 2627, 1, '2026-08-23')
       '''),
-      _throwsSqlite('UNIQUE constraint failed'),
-    );
-  });
+        _throwsSqlite('UNIQUE constraint failed'),
+      );
+    },
+  );
 
   test('the database itself refuses an unbalanced journal entry', () {
     // Belt and braces with assertBooksBalance(). The application check catches
@@ -128,7 +132,10 @@ void main() {
 
     // Both sides filled: a bug someone would spend a week finding six months
     // from now.
-    expect(insertLine(100, 100, 'L1'), _throwsSqlite('CHECK constraint failed'));
+    expect(
+      insertLine(100, 100, 'L1'),
+      _throwsSqlite('CHECK constraint failed'),
+    );
     // Both sides zero: noise in the ledger.
     expect(insertLine(0, 0, 'L2'), _throwsSqlite('CHECK constraint failed'));
   });
@@ -190,61 +197,67 @@ void main() {
     );
   });
 
-  test('a deferred foreign key lets a transaction insert in any order',
-      () async {
-    // Lines before their document. This is why the envelope keys are
-    // DEFERRABLE INITIALLY DEFERRED: a batched write should not have to be
-    // topologically sorted to succeed.
-    await db.transaction(() async {
-      await db.customStatement('''
+  test(
+    'a deferred foreign key lets a transaction insert in any order',
+    () async {
+      // Lines before their document. This is why the envelope keys are
+      // DEFERRABLE INITIALLY DEFERRED: a batched write should not have to be
+      // topologically sorted to succeed.
+      await db.transaction(() async {
+        await db.customStatement('''
         INSERT INTO document_lines ($_env, document_id, line_no,
           item_name_snapshot, qty_thousandths, unit_code_snapshot,
           base_qty_thousandths, rate_milli_paisa)
         VALUES ('DL1', 'F1', 1, 1, 'U1', 'U1', NULL, 'D1', 'h', 1,
           'X9', 1, 'Atta 10kg', 1000, 'bag', 1000, 132000000)
       ''');
-      await db.customStatement('''
+        await db.customStatement('''
         INSERT INTO documents ($_env, doc_type, doc_no, doc_series, doc_seq,
           fiscal_year, doc_date_utc, doc_date_local)
         VALUES ('X9', 'F1', 1, 1, 'U1', 'U1', NULL, 'D1', 'h', 1,
           'sale_invoice', 'INV-2627-0009', 'INV', 9, 2627, 1, '2026-08-23')
       ''');
-    });
+      });
 
-    final lines = await db
-        .customSelect("SELECT * FROM document_lines WHERE document_id = 'X9'")
-        .get();
-    expect(lines, hasLength(1));
-  });
+      final lines = await db
+          .customSelect("SELECT * FROM document_lines WHERE document_id = 'X9'")
+          .get();
+      expect(lines, hasLength(1));
+    },
+  );
 
-  test('a deferred foreign key still fails the whole transaction at commit',
-      () async {
-    // Deferred is not lenient. It is later.
-    await expectLater(
-      db.transaction(() async {
-        await db.customStatement('''
+  test(
+    'a deferred foreign key still fails the whole transaction at commit',
+    () async {
+      // Deferred is not lenient. It is later.
+      await expectLater(
+        db.transaction(() async {
+          await db.customStatement('''
           INSERT INTO document_lines ($_env, document_id, line_no,
             item_name_snapshot, qty_thousandths, unit_code_snapshot,
             base_qty_thousandths, rate_milli_paisa)
           VALUES ('DL2', 'F1', 1, 1, 'U1', 'U1', NULL, 'D1', 'h', 1,
             'never-inserted', 1, 'Atta 10kg', 1000, 'bag', 1000, 132000000)
         ''');
-      }),
-      _throwsSqlite('FOREIGN KEY constraint failed'),
-    );
+        }),
+        _throwsSqlite('FOREIGN KEY constraint failed'),
+      );
 
-    final leftovers =
-        await db.customSelect('SELECT * FROM document_lines').get();
-    expect(
-      leftovers,
-      isEmpty,
-      reason: 'a failed commit must leave nothing behind',
-    );
-  });
+      final leftovers = await db
+          .customSelect('SELECT * FROM document_lines')
+          .get();
+      expect(
+        leftovers,
+        isEmpty,
+        reason: 'a failed commit must leave nothing behind',
+      );
+    },
+  );
 }
 
 /// The universal row envelope, as a column list for raw INSERTs.
-const _env = 'id, firm_id, created_at_utc, updated_at_utc, created_by, '
+const _env =
+    'id, firm_id, created_at_utc, updated_at_utc, created_by, '
     'updated_by, deleted_at_utc, origin_device_id, hlc, rev';
 
 /// The minimum rows first run must write before anything else can exist.
@@ -290,8 +303,8 @@ Future<void> _seedFirstRun(AppDatabase db) async {
 }
 
 Matcher _throwsSqlite(String fragment) => throwsA(
-      predicate<Object>(
-        (e) => e.toString().contains(fragment),
-        'a SQLite error mentioning "$fragment"',
-      ),
-    );
+  predicate<Object>(
+    (e) => e.toString().contains(fragment),
+    'a SQLite error mentioning "$fragment"',
+  ),
+);

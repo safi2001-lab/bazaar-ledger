@@ -75,7 +75,11 @@ void main() {
           )
           .get();
       final keys = [for (final r in rows) r.read<String>('system_key')];
-      expect(keys.toSet().length, keys.length, reason: 'system keys are unique');
+      expect(
+        keys.toSet().length,
+        keys.length,
+        reason: 'system keys are unique',
+      );
       expect(keys, contains('cash_in_hand'));
       expect(keys, contains('sales'));
       expect(keys, contains('accounts_receivable'));
@@ -85,20 +89,21 @@ void main() {
 
       // Children resolved to a real parent id, not a dangling code.
       for (final r in rows) {
-        expect(r.readNullable<String>('parent_id'), isNotNull,
-            reason: '${r.read<String>('code')} should sit under a root');
+        expect(
+          r.readNullable<String>('parent_id'),
+          isNotNull,
+          reason: '${r.read<String>('code')} should sit under a root',
+        );
       }
     });
 
     test('a maund is forty kilos', () async {
-      final row = await db
-          .customSelect('''
+      final row = await db.customSelect('''
             SELECT uc.factor_thousandths AS factor
             FROM unit_conversions uc
             JOIN units u ON u.id = uc.from_unit_id
             WHERE u.code = 'maund'
-          ''')
-          .getSingle();
+          ''').getSingle();
       // Base unit is the kilo, so one maund is 40 kg — not the historic
       // British-Indian 37.324 kg, which is not what anybody in the wheat trade
       // means by the word.
@@ -185,9 +190,7 @@ void main() {
       final later = firm.actorAt(clock.nowUtc());
       await runner.run(
         later,
-        (tx) => tx.update('parties', partyId, {
-          'credit_limit_paisa': 5000000,
-        }),
+        (tx) => tx.update('parties', partyId, {'credit_limit_paisa': 5000000}),
       );
 
       final row = await db
@@ -199,52 +202,58 @@ void main() {
       expect(row.read<int>('rev'), 2);
       expect(row.read<int>('credit_limit_paisa'), 5000000);
       expect(row.read<int>('updated_at_utc'), later.epochMillis);
-      expect(row.read<int>('created_at_utc'), actor.epochMillis,
-          reason: 'creation time is history and does not move');
-    });
-
-    test('a resumed clock never re-issues a timestamp it already used',
-        () async {
-      // The obvious version of `resumeHlcClock` reads `change_log` alone, on
-      // the reasoning that the single write path guarantees the outbox is
-      // complete. The outbox IS complete, for entities — but every audit row
-      // is stamped with an HLC too, audit rows never reach the outbox, and
-      // they are minted LAST, so the highest audit timestamp of the last
-      // transaction is always strictly above the highest one in `change_log`.
-      // Resuming from `change_log` alone therefore handed back a timestamp
-      // the device had already spent, reproducibly, on the very next write.
-      //
-      // The clock here is fixed, which is the honest case: it is what a
-      // shopkeeper produces by correcting the handset date backwards, and
-      // what the wall clock does anyway inside a single millisecond.
-      final highest = await db
-          .customSelect(
-            'SELECT MAX(hlc) AS h FROM ('
-            '  SELECT hlc FROM change_log WHERE origin_device_id = ?'
-            '  UNION ALL'
-            '  SELECT hlc FROM audit_log WHERE origin_device_id = ?'
-            ')',
-            variables: [
-              Variable<String>(firm.deviceId),
-              Variable<String>(firm.deviceId),
-            ],
-          )
-          .getSingle();
-      final spent = highest.read<String>('h');
-
-      final resumed = await resumeHlcClock(
-        db,
-        deviceId: firm.deviceId,
-        clock: clock,
-      );
-
       expect(
-        resumed.next().value.compareTo(spent) > 0,
-        isTrue,
-        reason: 'the resumed clock handed back $spent, which this device has '
-            'already stamped on a row',
+        row.read<int>('created_at_utc'),
+        actor.epochMillis,
+        reason: 'creation time is history and does not move',
       );
     });
+
+    test(
+      'a resumed clock never re-issues a timestamp it already used',
+      () async {
+        // The obvious version of `resumeHlcClock` reads `change_log` alone, on
+        // the reasoning that the single write path guarantees the outbox is
+        // complete. The outbox IS complete, for entities — but every audit row
+        // is stamped with an HLC too, audit rows never reach the outbox, and
+        // they are minted LAST, so the highest audit timestamp of the last
+        // transaction is always strictly above the highest one in `change_log`.
+        // Resuming from `change_log` alone therefore handed back a timestamp
+        // the device had already spent, reproducibly, on the very next write.
+        //
+        // The clock here is fixed, which is the honest case: it is what a
+        // shopkeeper produces by correcting the handset date backwards, and
+        // what the wall clock does anyway inside a single millisecond.
+        final highest = await db
+            .customSelect(
+              'SELECT MAX(hlc) AS h FROM ('
+              '  SELECT hlc FROM change_log WHERE origin_device_id = ?'
+              '  UNION ALL'
+              '  SELECT hlc FROM audit_log WHERE origin_device_id = ?'
+              ')',
+              variables: [
+                Variable<String>(firm.deviceId),
+                Variable<String>(firm.deviceId),
+              ],
+            )
+            .getSingle();
+        final spent = highest.read<String>('h');
+
+        final resumed = await resumeHlcClock(
+          db,
+          deviceId: firm.deviceId,
+          clock: clock,
+        );
+
+        expect(
+          resumed.next().value.compareTo(spent) > 0,
+          isTrue,
+          reason:
+              'the resumed clock handed back $spent, which this device has '
+              'already stamped on a row',
+        );
+      },
+    );
 
     test('an append-only ledger refuses an update', () async {
       // The more dangerous of the two, and the one that had no guard.
@@ -393,8 +402,11 @@ void main() {
             variables: [Variable<String>(firm.deviceId)],
           )
           .getSingle();
-      expect(device.read<int>('change_seq'), after.last,
-          reason: 'the device counter must survive to the next transaction');
+      expect(
+        device.read<int>('change_seq'),
+        after.last,
+        reason: 'the device counter must survive to the next transaction',
+      );
     });
 
     test('carries a payload a peer can apply', () async {
@@ -673,45 +685,48 @@ void main() {
         ),
       );
 
-      final entries =
-          await db.customSelect('SELECT * FROM journal_entries').get();
+      final entries = await db
+          .customSelect('SELECT * FROM journal_entries')
+          .get();
       expect(entries, isEmpty);
     });
 
-    test('refuses an entry whose declared total contradicts its lines',
-        () async {
-      final cash = await account('cash_in_hand');
-      final sales = await account('sales');
+    test(
+      'refuses an entry whose declared total contradicts its lines',
+      () async {
+        final cash = await account('cash_in_hand');
+        final sales = await account('sales');
 
-      await expectLater(
-        runner.run(actor, (tx) async {
-          final entryId = await tx.insert('journal_entries', {
-            'entry_no': 'JV-00003',
-            'entry_date_utc': actor.epochMillis,
-            'entry_date_local': actor.businessDate.value,
-            'fiscal_year': 2627,
-            'source_type': 'sale',
-            'total_debit_paisa': 999900,
-            'total_credit_paisa': 999900,
-          });
-          await tx.insert('journal_lines', {
-            'journal_entry_id': entryId,
-            'line_no': 1,
-            'account_id': cash,
-            'debit_paisa': 552500,
-            'credit_paisa': 0,
-          });
-          await tx.insert('journal_lines', {
-            'journal_entry_id': entryId,
-            'line_no': 2,
-            'account_id': sales,
-            'debit_paisa': 0,
-            'credit_paisa': 552500,
-          });
-        }),
-        throwsA(isA<BooksDoNotBalance>()),
-      );
-    });
+        await expectLater(
+          runner.run(actor, (tx) async {
+            final entryId = await tx.insert('journal_entries', {
+              'entry_no': 'JV-00003',
+              'entry_date_utc': actor.epochMillis,
+              'entry_date_local': actor.businessDate.value,
+              'fiscal_year': 2627,
+              'source_type': 'sale',
+              'total_debit_paisa': 999900,
+              'total_credit_paisa': 999900,
+            });
+            await tx.insert('journal_lines', {
+              'journal_entry_id': entryId,
+              'line_no': 1,
+              'account_id': cash,
+              'debit_paisa': 552500,
+              'credit_paisa': 0,
+            });
+            await tx.insert('journal_lines', {
+              'journal_entry_id': entryId,
+              'line_no': 2,
+              'account_id': sales,
+              'debit_paisa': 0,
+              'credit_paisa': 552500,
+            });
+          }),
+          throwsA(isA<BooksDoNotBalance>()),
+        );
+      },
+    );
   });
 
   group('HLC recovery', () {
@@ -746,8 +761,9 @@ void main() {
 }
 
 Future<List<int>> _seqs(AppDatabase db) async {
-  final rows =
-      await db.customSelect('SELECT seq FROM change_log ORDER BY seq').get();
+  final rows = await db
+      .customSelect('SELECT seq FROM change_log ORDER BY seq')
+      .get();
   return [for (final r in rows) r.read<int>('seq')];
 }
 
@@ -765,8 +781,9 @@ Future<Map<String, int>> _rowCounts(AppDatabase db) async {
   ];
   final counts = <String, int>{};
   for (final t in tables) {
-    final row =
-        await db.customSelect('SELECT COUNT(*) AS n FROM $t').getSingle();
+    final row = await db
+        .customSelect('SELECT COUNT(*) AS n FROM $t')
+        .getSingle();
     counts[t] = row.read<int>('n');
   }
   return counts;

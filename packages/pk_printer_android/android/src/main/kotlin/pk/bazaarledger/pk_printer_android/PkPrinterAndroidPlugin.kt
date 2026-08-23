@@ -39,8 +39,10 @@ class PkPrinterAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
 
-    /** All Bluetooth I/O, off the main thread and one job at a time. */
+    /** All printer I/O, off the main thread and one job at a time. */
     private val io = Executors.newSingleThreadExecutor()
+
+    private val usb: UsbPrinter by lazy { UsbPrinter(context) }
 
     override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         context = binding.applicationContext
@@ -59,7 +61,47 @@ class PkPrinterAndroidPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             "hasPermission" -> result.success(hasConnectPermission())
             "bondedPrinters" -> bondedPrinters(result)
             "send" -> send(call, result)
+
+            // The cabled printer. Same channel, separate methods: the two
+            // transports share nothing but a wire format, and a single `send`
+            // switching on a string would make the bytes-written contract --
+            // the thing the whole no-double-print design rests on -- depend on
+            // which branch a caller happened to take.
+            "usbIsAvailable" -> result.success(usb.isAvailable())
+            "usbDevices" -> result.success(usb.devices())
+            "usbSend" -> usbSend(call, result)
+
             else -> result.notImplemented()
+        }
+    }
+
+    private fun usbSend(call: MethodCall, result: MethodChannel.Result) {
+        val address = call.argument<String>("address")
+        val bytes = call.argument<ByteArray>("bytes")
+        val chunkDelayMs = call.argument<Int>("chunkDelayMs") ?: 0
+        val settleMs = call.argument<Int>("settleMs") ?: 0
+
+        if (address == null || bytes == null) {
+            result.error("args", "address and bytes are required.", null)
+            return
+        }
+
+        io.execute {
+            try {
+                usb.send(address, bytes, chunkDelayMs)
+                // Held open briefly for the same reason as Bluetooth: closing
+                // straight after the last byte truncates the tail, and the tail
+                // is the cut command.
+                if (settleMs > 0) Thread.sleep(settleMs.toLong())
+                result.success(null)
+            } catch (partial: PartialWrite) {
+                result.error("send", partial.message ?: partial.toString(), partial.bytesWritten)
+            } catch (error: Throwable) {
+                // Nothing told us paper did not move, so it is reported as
+                // though it did and a person decides. `null` details rather
+                // than 0: absent is not zero, and zero means "safe to retry".
+                result.error("send", error.message ?: error.toString(), null)
+            }
         }
     }
 

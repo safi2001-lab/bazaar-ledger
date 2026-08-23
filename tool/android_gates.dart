@@ -263,12 +263,28 @@ List<String> _checkMergedPermissions(String buildTools, File apk) {
 /// scaffolding, verbose logging, mockito, and a green tick over nothing. The
 /// exit code is not enough here; the report has to be counted.
 Future<List<String>> _pluginUnitTests() async {
-  final gradlew = Platform.isWindows ? 'gradlew.bat' : './gradlew';
+  // An absolute path. `gradlew.bat` alone is not on PATH, and `./gradlew` is
+  // not a thing cmd understands -- so this reported "not recognized as an
+  // internal or external command" and counted as a failed gate rather than as
+  // a gate that could not run, which is a different and much more confusing
+  // message to read.
+  final wrapper = File(
+    Platform.isWindows ? 'android/gradlew.bat' : 'android/gradlew',
+  ).absolute;
+  if (!wrapper.existsSync()) {
+    return ['no Gradle wrapper at ${wrapper.path}.'];
+  }
+
   final result = await Process.run(
-    gradlew,
+    wrapper.path,
     const [':pk_printer_android:testDebugUnitTest'],
     workingDirectory: 'android',
-    runInShell: true,
+    // NOT through a shell. This repository lives at a path with a space in it
+    // ("D:\Project Working DIrectory\..."), and cmd splits an unquoted
+    // executable at the first one — so the gate reported "'D:\Project' is not
+    // recognized as an internal or external command" and counted it as the
+    // plugin's tests FAILING rather than as the gate being unable to run.
+    // Those are different problems and only one of them is the plugin's.
     stdoutEncoding: utf8,
     stderrEncoding: utf8,
   );
@@ -280,9 +296,12 @@ Future<List<String>> _pluginUnitTests() async {
     return [failed];
   }
 
-  final reports = Directory(
-    'packages/pk_printer_android/android/build/test-results',
-  );
+  // Flutter's Gradle setup gives every plugin module a build directory under
+  // the APP's build root, not inside the package. Looking in the package
+  // reported "no report directory at all" for a run whose nine tests had all
+  // just passed -- a gate failing for the wrong reason, which erodes trust in
+  // it exactly as fast as one passing for the wrong reason.
+  final reports = Directory('build/pk_printer_android/test-results');
   if (!reports.existsSync()) {
     return ['the plugin test task produced no report directory at all.'];
   }
