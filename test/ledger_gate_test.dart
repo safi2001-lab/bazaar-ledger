@@ -232,18 +232,28 @@ features:
         buffer.writeln('      - never/matches/anything/m$i/**');
       }
 
-      // `open` rather than `planned`, so R5 has no complaint about a real
-      // commit subject naming one — and one row each, so R2 has none about a
-      // milestone nobody is measuring. Both rules are doing exactly what they
-      // should here; the fixture just has to be a ledger that holds together
-      // in every respect except the one under test.
-      buffer.write(goodFeatures);
-      for (var i = 2; i <= 14; i++) {
+      // Every declared milestone is `open`, has a row, and that row is `done`.
+      //
+      // All three are needed and each closes a different rule. `open` so R5
+      // does not object to a real commit subject naming the milestone. A row
+      // so R2 does not object to a milestone nobody is measuring. And `done`
+      // so R5 does not object when a real commit subject says a milestone is
+      // COMPLETE — which is exactly what happened the first time M1 reached
+      // 20/20 and the commit said so: this test failed against a fixture that
+      // deliberately held M1 at zero, while the real ledger was perfectly
+      // fine.
+      //
+      // Every one of those was the rule working. The fixture simply has to be
+      // a ledger that holds together in every respect except the one under
+      // test.
+      buffer.writeln('features:');
+      for (var i = 0; i <= 14; i++) {
         buffer.writeln('  - id: M$i-A-01');
         buffer.writeln('    milestone: M$i');
         buffer.writeln('    title: A row so the milestone is measurable');
-        buffer.writeln('    status: todo');
-        buffer.writeln('    proof: []');
+        buffer.writeln('    status: done');
+        buffer.writeln('    proof:');
+        buffer.writeln('      - a test that exists');
       }
       return buffer.toString();
     }
