@@ -61,3 +61,7 @@ build/
 *.db
 *.db-wal
 *.db-shm
+
+# Melos workspace: leaf packages resolve through the workspace, so their
+# lockfiles are noise. The app's lockfile at the root is committed.
+packages/*/pubspec.lock
