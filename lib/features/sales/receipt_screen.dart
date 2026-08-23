@@ -10,6 +10,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/pdf_font.dart';
 import '../printing/printing_providers.dart';
 
 /// One bill, exactly as it will print.
@@ -144,7 +145,14 @@ class _ActionsState extends ConsumerState<_Actions> {
     setState(() => _busy = true);
     try {
       final services = ref.read(appServicesProvider);
-      final bytes = await services.receipts.toPdf(widget.data);
+      final bytes = await services.receipts.toPdf(
+        widget.data,
+        // A PDF carries its own fonts: it is read on the customer's phone,
+        // not this one, so there is no system fallback to fall back to.
+        // Without this the shop's name is simply absent from the copy they
+        // are handed.
+        unicodeFont: await PdfUnicodeFont.bytes(),
+      );
       final dir = await getTemporaryDirectory();
       final file = File(
         '${dir.path}${Platform.pathSeparator}'

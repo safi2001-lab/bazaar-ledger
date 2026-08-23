@@ -1368,24 +1368,80 @@ features:
   - id: M2-URDU-02
     milestone: M2
     title: A shared PDF renders Urdu instead of dropping it
-    status: todo
+    status: done
     # Found while proving M2-URDU-01, and not fixed by it.
     #
-    # `toPdf` builds its text from Courier and Helvetica, which are Type 1
-    # base fonts: they need no embedding, their figures are tabular, and they
-    # have no Unicode support at all. The `pdf` package says so on stderr on
-    # every render and carries on. An Urdu shop name therefore does not become
-    # question marks in the PDF — it becomes nothing.
+    # The two paths fail differently and the PDF fails worse. The thermal one
+    # degrades to question marks, which is visible and complainable. The PDF
+    # degraded to nothing: Courier and Helvetica are Type 1 base fonts with no
+    # Unicode at all, so an Urdu shop name was not substituted, it was
+    # skipped. The pdf package prints `Unable to find a font to draw` on
+    # stderr and carries on. That is the copy a customer receives over
+    # WhatsApp, arriving with the shop's own name missing from the top of it.
     #
-    # That is the worse half of the two paths. The thermal copy stays behind
-    # the counter; the PDF is what goes to a customer over WhatsApp, and it
-    # arrives with the shop's own name missing from the top of it.
+    # A PDF is read on somebody else's phone, so unlike the thermal path this
+    # cannot be solved with this device's fonts. The face travels inside the
+    # file, which means it has to be in the APK.
     #
-    # A PDF has no system font fallback, so unlike the thermal path this
-    # cannot be solved on the device: the face has to be embedded in the file.
-    # Two routes, and the choice is a size decision rather than a technical
-    # one — embed a subset of Noto Naskh Arabic (the `pdf` package bundles
-    # bidi and shaping for exactly this), or reuse the bitmaps M2-URDU-01
-    # already produces and place them as images, which costs no bytes and
-    # loses selectable text.
+    # A font alone is not enough, and this is the part that would have shipped
+    # broken. Arabic script is cursive: a word is one connected run and every
+    # letter has up to four contextual forms. The pdf package applies its bidi
+    # and joining pass only when the text direction is RTL, and text left at
+    # the default comes out as isolated, unjoined letters in logical order —
+    # unreadable, and it reads as a missing font rather than as a direction
+    # nobody set. So the proof does not check that a font was embedded; it
+    # inflates the file's own ToUnicode map and checks the glyphs are
+    # presentation forms in U+FB50..U+FEFF and that no bare letter from
+    # U+0600..U+06FF got through. Mutation-tested by removing the direction:
+    # the file then embeds only bare letters and the proof fails.
+    #
+    # Per string, not per document. The labels and every money column are
+    # Latin and stay that way — Courier is here because its figures are
+    # fixed-width, which is the entire reason a column of amounts lines up,
+    # and flipping the document for the sake of a shop name would make every
+    # total on the page crooked.
+    #
+    # Cost, measured rather than estimated: Noto Naskh Arabic Regular is a
+    # 178 KB file that deflates to 92 KB in the APK, against release builds at
+    # 27 MB under a 30 MB ceiling. Per document it is far less, because the
+    # pdf package embeds only the glyphs used — about 2.6 KB on a bill with
+    # Urdu on it, and nothing at all on a bill without.
+    proof:
+      - without a font, no face is embedded at all
+      - with one, it is embedded and named in the file
+      - the letters are joined, not printed one by one
+      - an all-Latin receipt carries no embedded face
+      - one Urdu bill costs kilobytes, not the whole face
+      - the money columns keep their tabular font
+
+  - id: M2-RUN-01
+    milestone: M2
+    title: A receipt comes out of a real thermal printer
+    status: wip
+    # The milestone is called "a receipt reaches paper, once, on hardware a
+    # shop owns", and until this row passes no paper has moved. Every other M2
+    # row is a host proof: the byte stream is asserted command by command, the
+    # queue survives a simulated process kill, the USB writer's short-write
+    # handling is tested against a fake, and the label renderer is measured in
+    # modules. All of that is real and none of it is a printer.
+    #
+    # Added because M2 read 100% without it, which was an overclaim the gate
+    # could not catch — no row asserted the thing the title promises, so
+    # nothing failed. That is the same shape as the blind spot M0 had when
+    # every row said M0 and M1 through M14 were invisible.
+    #
+    # Held at `wip` and deliberately NOT deferred, for the same reason as
+    # M0-RUN-03: a deferral is for a proof that would pass if a device
+    # existed, and this one has never been observed passing at all. There is
+    # no thermal printer on this bench.
+    #
+    # What it has to show, on hardware and not in a log: an 80mm and a 58mm
+    # machine, the column count read off a printed ruler rather than assumed,
+    # a bill whose totals line up, a Code128 label a scanner actually reads
+    # back, an Urdu shop name legible as joined script, and a cut that lands
+    # below the last line instead of through it.
+    device_proof:
+      - a bill printed on an 80mm machine is readable and cut below the total
+      - a Code128 label printed at the declared width scans back to its code
+      - an Urdu shop name prints as joined script, not as question marks
     proof: []

@@ -8,6 +8,23 @@ import 'escpos.dart';
 import 'printable.dart';
 import 'receipt_layout.dart';
 
+/// A run of text in the PDF, laid out right to left when it is not Latin.
+///
+/// The pdf package applies the bidirectional algorithm only when the
+/// direction is RTL, and that is also where its Arabic joining lives. A
+/// string left at the default prints as isolated, unjoined letters in logical
+/// order — unreadable, and it reads as a missing font rather than as a
+/// direction that was never set.
+///
+/// Per string rather than per document, because a receipt is mixed: the
+/// labels and every money column are Latin and have to stay that way, and
+/// only the shop's own words are not.
+pw.Widget _pdfText(String value, {required pw.TextStyle style}) => pw.Text(
+  value,
+  style: style,
+  textDirection: isPrintableLatin(value) ? null : pw.TextDirection.rtl,
+);
+
 /// Renders receipts to thermal bytes and to PDF.
 ///
 /// Pure Dart with no Flutter dependency, so the whole of it is testable
@@ -143,10 +160,34 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   Future<Uint8List> toPdf(
     ReceiptData data, {
     PdfPageFormat format = PdfPageFormat.a5,
+    Uint8List? unicodeFont,
   }) async {
+    // Without a face that has the glyphs, Urdu in the PDF does not become
+    // question marks — it becomes nothing. Courier and Helvetica are Type 1
+    // base fonts: no embedding, tabular figures, and no Unicode at all. The
+    // pdf package says so on stderr and carries on with a blank where the
+    // shop's name should be.
+    //
+    // A PDF has no system font fallback to lean on the way the thermal path
+    // does, because the file is read on somebody else's phone. The face has
+    // to travel inside it.
+    //
+    // Handed in as bytes rather than loaded here, because this package has no
+    // Flutter and therefore no asset bundle — and keeping it that way is what
+    // makes the receipt path testable headless.
+    final fallback = unicodeFont == null
+        ? null
+        : pw.Font.ttf(ByteData.view(unicodeFont.buffer));
+
     final doc = pw.Document(
       title: 'Invoice ${data.docNo}',
       author: data.shop.name,
+      // A fallback, not a replacement. Every Latin run keeps Courier's
+      // tabular figures — which is the whole reason a column of money is
+      // readable — and only the glyphs Helvetica cannot draw come from here.
+      theme: fallback == null
+          ? null
+          : pw.ThemeData.withFont(fontFallback: [fallback]),
     );
 
     // Courier throughout the numeric columns: it is a Type 1 base font, so it
@@ -202,7 +243,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                 child: pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.stretch,
                   children: [
-                    pw.Text(
+                    _pdfText(
                       data.shop.name.toUpperCase(),
                       style: pw.TextStyle(
                         font: pw.Font.helveticaBold(),
@@ -229,14 +270,14 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
         ),
         build: (context) => [
           pw.Center(
-            child: pw.Text(
+            child: _pdfText(
               data.shop.name.toUpperCase(),
               style: pw.TextStyle(font: sansBold, fontSize: 16),
             ),
           ),
           pw.SizedBox(height: 2),
           pw.Center(
-            child: pw.Text(
+            child: _pdfText(
               [
                 data.shop.addressLine1,
                 data.shop.city,
@@ -284,7 +325,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
                   if (data.customerName != null)
-                    pw.Text(
+                    _pdfText(
                       data.customerName!,
                       style: pw.TextStyle(font: sansBold, fontSize: 10),
                     ),
@@ -327,8 +368,11 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
               for (var i = 0; i < data.lines.length; i++)
                 [
                   '${i + 1}',
-                  data.lines[i].name +
-                      (data.lines[i].isFreeItem ? '  (free)' : ''),
+                  _pdfText(
+                    data.lines[i].name +
+                        (data.lines[i].isFreeItem ? '  (free)' : ''),
+                    style: pw.TextStyle(font: sans, fontSize: 9),
+                  ),
                   '${data.lines[i].qtyDisplay} ${data.lines[i].unitCode}',
                   data.lines[i].rate.amountOnly,
                   data.lines[i].amount.amountOnly,

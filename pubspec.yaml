@@ -76,3 +76,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  assets:
+    # Carried into shared PDFs, not used for anything on screen: Android's own
+    # fonts already render Urdu in the app. A PDF is read on somebody else's
+    # phone and has no system fallback, so the face has to travel inside the
+    # file. A 178 KB face that deflates to 92 KB in the APK, and the pdf
+    # package embeds only the glyphs a given receipt uses — about 2.6 KB per
+    # bill, and nothing at all on a bill with no Urdu in it.
+    - assets/fonts/NotoNaskhArabic-Regular.ttf

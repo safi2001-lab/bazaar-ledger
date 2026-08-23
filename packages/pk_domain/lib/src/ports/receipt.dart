@@ -251,5 +251,11 @@ abstract interface class ReceiptRenderer {
   List<String> toPreview(ReceiptData data, {ReceiptPaper paper});
 
   /// A PDF, for sharing over WhatsApp or saving.
-  Future<Uint8List> toPdf(ReceiptData data);
+  ///
+  /// [unicodeFont] is a TrueType face for the glyphs the PDF base fonts do
+  /// not have. A PDF carries its own fonts — the file is read on somebody
+  /// else's phone, with no system fallback to lean on — so without one, Urdu
+  /// does not degrade to question marks the way the thermal path does. It
+  /// simply is not there.
+  Future<Uint8List> toPdf(ReceiptData data, {Uint8List? unicodeFont});
 }
