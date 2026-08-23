@@ -12,6 +12,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../printing/pdf_font.dart';
 import '../printing/printing_providers.dart';
+import 'receipt_file_name.dart';
 
 /// One bill, exactly as it will print.
 ///
@@ -156,7 +157,7 @@ class _ActionsState extends ConsumerState<_Actions> {
       final dir = await getTemporaryDirectory();
       final file = File(
         '${dir.path}${Platform.pathSeparator}'
-        '${widget.data.docNo.replaceAll(RegExp(r'[^A-Za-z0-9-]'), '_')}.pdf',
+        '${receiptFileName(widget.data.docNo)}',
       );
       await file.writeAsBytes(bytes, flush: true);
 

@@ -580,8 +580,54 @@ features:
   - id: M0-UI-10
     milestone: M0
     title: The receipt can be shared as a PDF from the app
-    status: wip
-    proof: []
+    status: done
+    # The half of the receipt most shops in this bracket will use more than
+    # the printer, because a phone is free and a thermal printer is four
+    # thousand rupees. A wholesaler messaging a bill to a retailer forty
+    # kilometres away is the normal case, not the exception.
+    #
+    # The share sheet is a system surface and cannot be driven from a host
+    # test, so these prove everything either side of it. Three things had to
+    # be got right before any of it ran at all, and each is the kind of thing
+    # that makes a test pass while proving nothing:
+    #
+    #  * `pumpAndSettle` never returns on this screen. The button shows a
+    #    progress indicator while the PDF renders, and a progress indicator is
+    #    a continuous animation.
+    #  * Pumping frames is not enough either. Rendering the document and
+    #    writing it to a temporary file is real work on a real disk, and a
+    #    widget test's clock is fake, so no amount of pumping advances the
+    #    world that work lives in. `runAsync` is what hands it back.
+    #  * The share had to be faked at the platform seam, not at the method
+    #    channel. On a host run there is no Android to talk to: share_plus
+    #    resolves to its desktop implementation and the Android channel is
+    #    never called. The first version stubbed the channel and recorded
+    #    nothing while asserting it had.
+    #
+    # A fourth: the first pass asserted "some SnackBar is on screen" for the
+    # failure case, and passed because the "bill saved" SnackBar from the sale
+    # before it was still up — covering the share button, which was therefore
+    # never pressed. It proved the previous screen still worked.
+    #
+    # The filename rule was extracted out of the widget so it could be
+    # asserted against input a widget test cannot produce. A document number
+    # is shop-controlled: the numbering format is a setting, and a shop that
+    # has always written `INV/26-27/0001` on its pad will type that. A slash
+    # goes straight into a path, and on Android the write then lands in a
+    # directory that does not exist and throws — on the share path, with a
+    # customer waiting, and only for the shops that use one. Asserted against
+    # the default series alone it was a test that could not fail.
+    proof:
+      - the bill reaches the share sheet as a readable PDF
+      - the file is named after the bill
+      - a document number is shop-controlled, and goes into a path a slash never becomes a directory separator
+      - a document number is shop-controlled, and goes into a path a backslash does not either
+      - a document number is shop-controlled, and goes into a path a parent-directory hop cannot escape the temp folder
+      - a document number is shop-controlled, and goes into a path Urdu in a series survives the trip as something nameable
+      - a document number is shop-controlled, and goes into a path a number that reduces to nothing still gets a name
+      - a document number is shop-controlled, and goes into a path an ordinary number is left exactly alone
+      - asking twice shares one file, not two
+      - a share that fails says so instead of going quiet
 
   - id: M0-RUN-01
     milestone: M0
