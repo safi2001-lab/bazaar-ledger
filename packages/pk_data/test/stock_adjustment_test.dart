@@ -116,9 +116,12 @@ void main() {
     );
 
     final row = await db.customSelect(
-      "SELECT txn_type, reason, qty_delta_thousandths q, created_by, "
-      "balance_after_thousandths b FROM stock_ledger "
-      "WHERE txn_type IN ('adjustment', 'wastage')",
+      '''
+      SELECT txn_type, reason, qty_delta_thousandths q, created_by,
+             balance_after_thousandths b
+      FROM stock_ledger
+      WHERE txn_type IN ('adjustment', 'wastage')
+      ''',
     ).getSingle();
 
     expect(row.read<String>('txn_type'), 'adjustment');
@@ -128,8 +131,10 @@ void main() {
     expect(row.read<String>('created_by'), firm.ownerUserId);
 
     final audit = await db.customSelect(
-      "SELECT action_code, summary FROM audit_log "
-      "WHERE action_code = 'STOCK_ADJUSTED'",
+      '''
+      SELECT action_code, summary FROM audit_log
+      WHERE action_code = 'STOCK_ADJUSTED'
+      ''',
     ).getSingle();
     expect(audit.read<String>('summary'), contains('Mahana ginti'));
   });
@@ -221,6 +226,67 @@ void main() {
       ),
     );
     expect((await db.checkHealth()).isHealthy, isTrue);
+  });
+
+  test('what is about to run out, worst first', () async {
+    final queries = DriftAppQueries(db);
+
+    // A floor of five on the oil, which has twenty. Not low.
+    await catalogue.updateItem(
+      actor,
+      oilId,
+      ItemDraft(
+        name: 'Cooking Oil 5L',
+        baseUnitId: pcsUnitId,
+        saleRate: const Rate.rupees(500),
+        minStock: Qty.units(5),
+      ),
+    );
+
+    // Rice: floor of ten, only two left. 20% of the floor.
+    final riceId = await catalogue.addItem(
+      actor,
+      ItemDraft(
+        name: 'Chawal Basmati',
+        baseUnitId: pcsUnitId,
+        saleRate: const Rate.rupees(525),
+        minStock: Qty.units(10),
+        openingStock: Qty.units(2),
+        openingRate: const Rate.rupees(400),
+      ),
+    );
+
+    // Sugar: floor of ten, nine left. 90% of the floor — short, but not the
+    // emergency the rice is.
+    final sugarId = await catalogue.addItem(
+      actor,
+      ItemDraft(
+        name: 'Cheeni',
+        baseUnitId: pcsUnitId,
+        saleRate: const Rate.rupees(180),
+        minStock: Qty.units(10),
+        openingStock: Qty.units(9),
+        openingRate: const Rate.rupees(150),
+      ),
+    );
+
+    // And a line the shop has never set a floor for, sold out. It must not
+    // appear: an alert list that is always full is a list nobody reads.
+    await catalogue.addItem(
+      actor,
+      ItemDraft(
+        name: 'Special Order Cloth',
+        baseUnitId: pcsUnitId,
+        saleRate: const Rate.rupees(900),
+      ),
+    );
+
+    final low = await queries.lowStockItems(firm.firmId);
+    expect(
+      low.map((i) => i.id),
+      [riceId, sugarId],
+      reason: 'worst first, and only the lines with a floor set',
+    );
   });
 
   test('an item that carries no stock has nothing to correct', () async {

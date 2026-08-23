@@ -238,6 +238,13 @@ abstract interface class AppQueries {
     String firmId,
   );
 
+  /// What is about to run out, worst first.
+  ///
+  /// Only items the shop has actually set a floor for. A default of zero
+  /// would make every item the shop has ever sold out of into an alert, and
+  /// an alert list that is always full is a list nobody reads.
+  Future<List<ItemSummary>> lowStockItems(String firmId, {int limit = 50});
+
   /// Which unit is the same thing as which other, and by how much.
   ///
   /// Loaded whole rather than queried per line: a shop has a couple of dozen

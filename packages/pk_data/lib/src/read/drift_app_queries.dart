@@ -453,6 +453,44 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<ItemSummary>> lowStockItems(
+    String firmId, {
+    int limit = 50,
+  }) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT i.*, u.code AS unit_code, u.decimals AS unit_decimals,
+                 COALESCE((
+                   SELECT SUM(sl.qty_delta_thousandths)
+                   FROM stock_ledger sl
+                   WHERE sl.item_id = i.id AND sl.deleted_at_utc IS NULL
+                 ), 0) AS stock_thousandths
+          FROM items i
+          JOIN units u ON u.id = i.base_unit_id
+          WHERE i.firm_id = ?
+            AND i.deleted_at_utc IS NULL
+            AND i.is_active = 1
+            AND i.track_stock = 1
+            -- Only where the shop has set a floor. Defaulting to zero would
+            -- turn every item that has ever sold out into a permanent alert,
+            -- and a list that is always full is a list nobody reads.
+            AND i.min_stock_thousandths > 0
+            AND stock_thousandths <= i.min_stock_thousandths
+          -- Worst first: how far below the floor, as a fraction of it, so a
+          -- staple that is 90% gone outranks a slow-moving line that is one
+          -- unit short.
+          ORDER BY (stock_thousandths * 1000) / i.min_stock_thousandths,
+                   i.name_search
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+        )
+        .get();
+    return [for (final r in rows) _itemFrom(r)];
+  }
+
+  @override
   Future<List<UnitEdge>> unitConversions(String firmId) async {
     final rows = await _db
         .customSelect(
