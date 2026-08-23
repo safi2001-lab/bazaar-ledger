@@ -239,6 +239,14 @@ abstract interface class AppQueries {
     int limit = 40,
   });
 
+  /// One customer, by id.
+  ///
+  /// Exists because the khata screen needs exactly one and was filtering the
+  /// result of an unfiltered `searchParties` to get it — which loads every
+  /// customer in the shop to display one of them, and a wholesaler has
+  /// thousands.
+  Future<PartySummary?> partyById(String firmId, String partyId);
+
   /// Every bill this party still owes on, oldest first.
   ///
   /// The same rows, in the same order, that `PaymentWriteContext` reads

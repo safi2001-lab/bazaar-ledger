@@ -1003,4 +1003,15 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get wasooliChequeNoRequired => 'Enter the cheque number';
+
+  @override
+  String get tenderOverLimit => 'Over the credit limit';
+
+  @override
+  String tenderOverLimitDetail(String limit, String after) {
+    return 'The limit is $limit. After this bill it would be $after.';
+  }
+
+  @override
+  String get tenderOverLimitAllow => 'Give credit anyway';
 }

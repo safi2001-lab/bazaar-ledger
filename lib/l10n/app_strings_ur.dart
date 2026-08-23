@@ -1005,4 +1005,15 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get wasooliChequeNoRequired => 'Cheque number likhein';
+
+  @override
+  String get tenderOverLimit => 'Udhaar ki hadd se ziyada';
+
+  @override
+  String tenderOverLimitDetail(String limit, String after) {
+    return 'Hadd $limit hai. Is bill ke baad $after ho jayega.';
+  }
+
+  @override
+  String get tenderOverLimitAllow => 'Phir bhi udhaar dein';
 }

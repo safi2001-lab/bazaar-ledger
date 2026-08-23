@@ -1915,6 +1915,24 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Cheque number likhein'**
   String get wasooliChequeNoRequired;
+
+  /// A credit limit that blocks nothing is decoration. Shown at the tender sheet, where the shop is about to hand over goods, and overridable by name because it is their shop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ki hadd se ziyada'**
+  String get tenderOverLimit;
+
+  /// No description provided for @tenderOverLimitDetail.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hadd {limit} hai. Is bill ke baad {after} ho jayega.'**
+  String tenderOverLimitDetail(String limit, String after);
+
+  /// No description provided for @tenderOverLimitAllow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phir bhi udhaar dein'**
+  String get tenderOverLimitAllow;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -479,5 +479,21 @@
     }
   },
   "wasooliAmountRequired": "Raqam likhein",
-  "wasooliChequeNoRequired": "Cheque number likhein"
+  "wasooliChequeNoRequired": "Cheque number likhein",
+  "tenderOverLimit": "Udhaar ki hadd se ziyada",
+  "@tenderOverLimit": {
+    "description": "A credit limit that blocks nothing is decoration. Shown at the tender sheet, where the shop is about to hand over goods, and overridable by name because it is their shop."
+  },
+  "tenderOverLimitDetail": "Hadd {limit} hai. Is bill ke baad {after} ho jayega.",
+  "@tenderOverLimitDetail": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "tenderOverLimitAllow": "Phir bhi udhaar dein"
 }

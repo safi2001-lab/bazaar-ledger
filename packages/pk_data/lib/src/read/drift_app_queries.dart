@@ -217,25 +217,15 @@ final class DriftAppQueries implements AppQueries {
     final term = _normalise(query);
     final rows = await _db
         .customSelect(
-          '''
-          SELECT p.id, p.name, p.phone, p.party_type, p.credit_limit_paisa,
-                 p.opening_balance_paisa
-                   + COALESCE((
-                       SELECT SUM(d.balance_paisa) FROM documents d
-                       WHERE d.party_id = p.id
-                         AND d.firm_id = p.firm_id
-                         AND d.doc_type = 'sale_invoice'
-                         AND d.status = 'posted'
-                         AND d.deleted_at_utc IS NULL
-                     ), 0) AS balance_paisa
-          FROM parties p
+          """
+          $_partySelect
           WHERE p.firm_id = ?
             AND p.deleted_at_utc IS NULL
             AND p.is_active = 1
             AND (? = '' OR p.name_search LIKE ? OR p.phone LIKE ?)
           ORDER BY p.name_search
           LIMIT ?
-          ''',
+          """,
           variables: [
             Variable<String>(firmId),
             Variable<String>(term),
@@ -245,19 +235,71 @@ final class DriftAppQueries implements AppQueries {
           ],
         )
         .get();
-    return [
-      for (final r in rows)
-        PartySummary(
-          id: r.read<String>('id'),
-          name: r.read<String>('name'),
-          phone: _blankToNull(r.readNullable<String>('phone')),
-          partyType: r.read<String>('party_type'),
-          balance: Money.paisa(r.read<int>('balance_paisa')),
-          creditLimit: r.readNullable<int>('credit_limit_paisa') == null
-              ? null
-              : Money.paisa(r.read<int>('credit_limit_paisa')),
-        ),
-    ];
+    return [for (final r in rows) _party(r)];
+  }
+
+  /// What a customer owes, in one place.
+  ///
+  /// Two expressions for this would be two answers to the shop's only
+  /// question, and the one on screen would eventually disagree with the one
+  /// the credit limit is checked against.
+  static const _partySelect = '''
+    SELECT p.id, p.name, p.phone, p.party_type, p.credit_limit_paisa,
+           p.opening_balance_paisa
+             + COALESCE((
+                 SELECT SUM(d.balance_paisa) FROM documents d
+                 WHERE d.party_id = p.id
+                   AND d.firm_id = p.firm_id
+                   AND d.doc_type = 'sale_invoice'
+                   AND d.status = 'posted'
+                   AND d.deleted_at_utc IS NULL
+               ), 0)
+             -- Money the shop is holding for them comes off what they owe.
+             -- Without this a customer who paid Rs 5,000 against Rs 3,000 of
+             -- bills reads as settled, and the Rs 2,000 the shop owes them is
+             -- invisible in the one place anybody would look for it.
+             --
+             -- Read from the ledger rather than a cached column, because the
+             -- ledger is what the advance actually is. Rides idx_jl_party.
+             - COALESCE((
+                 SELECT SUM(jl.credit_paisa - jl.debit_paisa)
+                 FROM journal_lines jl
+                 JOIN accounts a ON a.id = jl.account_id
+                 WHERE jl.party_id = p.id
+                   AND jl.firm_id = p.firm_id
+                   AND a.system_key = 'customer_advances'
+                   AND jl.deleted_at_utc IS NULL
+               ), 0) AS balance_paisa
+    FROM parties p
+''';
+
+  static PartySummary _party(QueryRow r) => PartySummary(
+    id: r.read<String>('id'),
+    name: r.read<String>('name'),
+    phone: _blankToNull(r.readNullable<String>('phone')),
+    partyType: r.read<String>('party_type'),
+    balance: Money.paisa(r.read<int>('balance_paisa')),
+    creditLimit: r.readNullable<int>('credit_limit_paisa') == null
+        ? null
+        : Money.paisa(r.read<int>('credit_limit_paisa')),
+  );
+
+  @override
+  Future<PartySummary?> partyById(String firmId, String partyId) async {
+    // The same SELECT as searchParties, with a different WHERE. Shared as a
+    // string rather than by calling the other method and filtering: two
+    // expressions for what a customer owes is two answers to the shop's only
+    // question, and the one on screen would eventually disagree with the one
+    // the credit limit is checked against. Filtering the other method's rows
+    // would keep them in step and load every customer in the shop to show
+    // one of them.
+    final rows = await _db
+        .customSelect(
+          '$_partySelect WHERE p.id = ? AND p.firm_id = ?',
+          variables: [Variable<String>(partyId), Variable<String>(firmId)],
+        )
+        .get();
+    return rows.isEmpty ? null : _party(rows.first);
   }
 
   @override

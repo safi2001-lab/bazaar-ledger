@@ -35,6 +35,15 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   bool _busy = false;
   String? _failure;
 
+  /// Set once the shopkeeper has been shown the limit and chosen to go past
+  /// it. Their shop, their call — but they get to make it knowingly, and it
+  /// is not remembered beyond this bill.
+  bool _creditLimitOverridden = false;
+
+  /// The limit and what this bill would take the customer to, while the
+  /// shopkeeper is being asked. Null the rest of the time.
+  ({Money limit, Money after})? _overLimit;
+
   @override
   void dispose() {
     _tendered.dispose();
@@ -71,6 +80,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     setState(() {
       _busy = true;
       _failure = null;
+      _overLimit = null;
     });
 
     final s = AppStrings.of(context);
@@ -99,6 +109,36 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         _busy = false;
       });
       return;
+    }
+
+    // A credit limit that blocks nothing is decoration. It was being set in
+    // the party editor, shown as a chip on two screens, and enforced nowhere:
+    // a shop could put a customer on Rs 50,000 and watch them reach Rs
+    // 200,000 without the app ever mentioning it.
+    //
+    // Checked here rather than at the cart, because this is the moment before
+    // the goods leave — and against the balance as it stands right now rather
+    // than the copy the picker handed over, which may be minutes old and is
+    // exactly the figure a second till has been changing.
+    if (leavesBalance && !_creditLimitOverridden) {
+      final party = await ref
+          .read(appServicesProvider)
+          .queries
+          .partyById(firm.id, cart.partyId!);
+      final limit = party?.creditLimit;
+      if (party != null && limit != null) {
+        final after = party.balance + preview.balance;
+        if (after > limit) {
+          if (mounted) {
+            setState(() {
+              _failure = null;
+              _overLimit = (limit: limit, after: after);
+              _busy = false;
+            });
+          }
+          return;
+        }
+      }
     }
 
     // Held rather than reached for through `ref` after the write. A sheet that
@@ -386,6 +426,70 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                 padding: const EdgeInsets.only(top: BlTokens.space3),
                 child: BlOfflineNote(message: s.tenderCashThresholdWarning),
               ),
+
+            // The limit, and the way past it. Not a dialog: a shopkeeper with
+            // a customer waiting should see the number and the button in the
+            // same place they were already looking.
+            if (_overLimit case final over?) ...[
+              const SizedBox(height: BlTokens.space3),
+              Container(
+                padding: const EdgeInsets.all(BlTokens.space3),
+                decoration: BoxDecoration(
+                  color: t.warningSurface,
+                  borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.warning_amber_outlined,
+                          size: 18,
+                          color: t.warning,
+                        ),
+                        const SizedBox(width: BlTokens.space2),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                s.tenderOverLimit,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: t.warning,
+                                ),
+                              ),
+                              Text(
+                                s.tenderOverLimitDetail(
+                                  over.limit.amountOnly,
+                                  over.after.amountOnly,
+                                ),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: t.warning,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: BlTokens.space2),
+                    BlButton(
+                      label: s.tenderOverLimitAllow,
+                      kind: BlButtonKind.secondary,
+                      onPressed: () => setState(() {
+                        _creditLimitOverridden = true;
+                        _overLimit = null;
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
 
             if (_failure != null) ...[
               const SizedBox(height: BlTokens.space3),

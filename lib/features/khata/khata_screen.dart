@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
-import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
@@ -34,12 +33,7 @@ class KhataScreen extends ConsumerWidget {
 
     // Re-read rather than trusting what was passed in: the caller's copy was
     // fetched when its list was drawn, and a payment taken here changes it.
-    final live = ref
-        .watch(partySearchProvider(''))
-        .valueOrNull
-        ?.where((p) => p.id == party.id)
-        .firstOrNull;
-    final current = live ?? party;
+    final current = ref.watch(partyProvider(party.id)).valueOrNull ?? party;
 
     return Scaffold(
       backgroundColor: t.paper,

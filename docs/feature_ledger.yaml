@@ -1806,3 +1806,54 @@ features:
       - a customer with nothing owed can still be paid on account
       - an amount of nothing is refused in words
       - a cheque with no number is refused in words
+
+  - id: M3-LIMIT-01
+    milestone: M3
+    title: A credit limit actually stops a sale, and can be overridden by name
+    status: done
+    # It was set in the party editor, shown as a chip on two screens, and
+    # enforced nowhere. A shop could put a customer on Rs 50,000 and watch
+    # them reach Rs 200,000 without the app mentioning it once.
+    #
+    # A limit that stops nothing is decoration, and decoration that looks like
+    # a control is worse than nothing: the shopkeeper believes they set
+    # something. `PartySummary.isOverCreditLimit` was already computed — only
+    # displayed.
+    #
+    # It stops the sale at the tender sheet, which is the moment before the
+    # goods leave, and against the balance read right then rather than the
+    # copy the picker handed over — which may be minutes old and is exactly
+    # the figure a second till has been changing.
+    #
+    # Overridable by name, in the same place the warning appears rather than
+    # behind a dialog. It is their shop, and a cashier with a customer waiting
+    # should not have to find a second surface. The override is not remembered
+    # past the bill.
+    #
+    # Only when the bill leaves a balance. A cash sale owes nothing, so there
+    # is nothing to be over, and a customer with no limit is never checked.
+    #
+    # Found and fixed alongside: what a customer owes ignored advances
+    # entirely, so somebody who paid Rs 5,000 against Rs 3,000 of bills read
+    # as settled and the Rs 2,000 the shop was holding was invisible in the
+    # one place anybody would look — and the limit was checked against that
+    # same wrong figure. The balance now subtracts the ledger's
+    # `customer_advances` position for the party, riding idx_jl_party.
+    #
+    # `partyById` was added in the same pass. The khata screen was filtering
+    # an unfiltered `searchParties` to find one customer, which loads every
+    # customer in the shop to display one of them, and a wholesaler has
+    # thousands. The SELECT is shared as a string rather than by filtering the
+    # other method's rows, because two expressions for what a customer owes
+    # would be two answers to the shop's only question.
+    #
+    # Mutation-tested: removing the check fails three of these, and dropping
+    # the advance from the balance fails one.
+    proof:
+      - a sale that would cross the limit is stopped
+      - it names the limit and where the bill would land
+      - the shopkeeper can go past it, deliberately
+      - a sale inside the limit is never interrupted
+      - a customer with no limit is never interrupted
+      - a cash sale is never checked against a credit limit
+      - what the shop is holding comes off what is owed

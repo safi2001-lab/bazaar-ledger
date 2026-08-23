@@ -397,5 +397,21 @@
     }
   },
   "wasooliAmountRequired": "Enter an amount",
-  "wasooliChequeNoRequired": "Enter the cheque number"
+  "wasooliChequeNoRequired": "Enter the cheque number",
+  "tenderOverLimit": "Over the credit limit",
+  "@tenderOverLimit": {
+    "description": "A credit limit that blocks nothing is decoration. Shown at the tender sheet, where the shop is about to hand over goods, and overridable by name because it is their shop."
+  },
+  "tenderOverLimitDetail": "The limit is {limit}. After this bill it would be {after}.",
+  "@tenderOverLimitDetail": {
+    "placeholders": {
+      "limit": {
+        "type": "String"
+      },
+      "after": {
+        "type": "String"
+      }
+    }
+  },
+  "tenderOverLimitAllow": "Give credit anyway"
 }

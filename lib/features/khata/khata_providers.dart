@@ -17,3 +17,21 @@ final openBillsProvider = FutureProvider.autoDispose
       if (firm == null) return const [];
       return services.queries.openBillsFor(firm.id, partyId);
     });
+
+/// One customer, live.
+///
+/// The khata screen was handed a `PartySummary` by the list that drew it, and
+/// a payment taken on the khata changes it. Re-read rather than trusted, and
+/// by id rather than by filtering an unfiltered search — a wholesaler has
+/// thousands of customers and loading all of them to show one is the shape of
+/// bug this project keeps finding in its own lists.
+final partyProvider = FutureProvider.autoDispose.family<PartySummary?, String>((
+  ref,
+  partyId,
+) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return null;
+  return services.queries.partyById(firm.id, partyId);
+});
