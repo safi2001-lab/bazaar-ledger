@@ -1351,6 +1351,48 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Hadd: {floor}'**
   String stockLowFloor(String floor);
+
+  /// No description provided for @itemWholesalePrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Thok ki qeemat'**
+  String get itemWholesalePrice;
+
+  /// No description provided for @itemMrp.
+  ///
+  /// In ur, this message translates to:
+  /// **'MRP (chhapi qeemat)'**
+  String get itemMrp;
+
+  /// No description provided for @itemHsCode.
+  ///
+  /// In ur, this message translates to:
+  /// **'HS code'**
+  String get itemHsCode;
+
+  /// No description provided for @itemDescription.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tafseel'**
+  String get itemDescription;
+
+  /// No description provided for @itemTracksStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ka stock rakhna hai'**
+  String get itemTracksStock;
+
+  /// No description provided for @itemTracksStockOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Service ya kharcha — stock nahi'**
+  String get itemTracksStockOff;
+
+  /// No description provided for @itemMoreFields.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur tafseel'**
+  String get itemMoreFields;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -284,5 +284,12 @@
         "type": "String"
       }
     }
-  }
+  },
+  "itemWholesalePrice": "Wholesale price",
+  "itemMrp": "MRP (printed price)",
+  "itemHsCode": "HS code",
+  "itemDescription": "Description",
+  "itemTracksStock": "Keep stock for this",
+  "itemTracksStockOff": "A service or charge — no stock",
+  "itemMoreFields": "More detail"
 }

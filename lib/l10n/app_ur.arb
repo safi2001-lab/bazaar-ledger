@@ -354,5 +354,12 @@
         "type": "String"
       }
     }
-  }
+  },
+  "itemWholesalePrice": "Thok ki qeemat",
+  "itemMrp": "MRP (chhapi qeemat)",
+  "itemHsCode": "HS code",
+  "itemDescription": "Tafseel",
+  "itemTracksStock": "Is ka stock rakhna hai",
+  "itemTracksStockOff": "Service ya kharcha — stock nahi",
+  "itemMoreFields": "Aur tafseel"
 }

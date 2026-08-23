@@ -45,6 +45,26 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     text: widget.item == null ? '' : widget.item!.saleRate.amountOnly,
   );
   final _purchaseRate = TextEditingController();
+  late final TextEditingController _wholesaleRate = TextEditingController(
+    text: widget.item?.wholesaleRate?.amountOnly ?? '',
+  );
+  late final TextEditingController _mrp = TextEditingController(
+    text: widget.item?.mrp?.amountOnly ?? '',
+  );
+  late final TextEditingController _hsCode = TextEditingController(
+    text: widget.item?.hsCode ?? '',
+  );
+  late final TextEditingController _description = TextEditingController(
+    text: widget.item?.description ?? '',
+  );
+
+  /// Whether the shelf is counted for this at all.
+  ///
+  /// Off for a service or a charge — home delivery, a repair, a bag. Those
+  /// belong on a bill and do not belong on a stock ledger, and an item that
+  /// carries stock it can never have is an item permanently at minus
+  /// something.
+  late bool _tracksStock = widget.item?.tracksStock ?? true;
   late final TextEditingController _openingStock = TextEditingController(
     text: widget.item == null ? '' : widget.item!.stockOnHand.display,
   );
@@ -74,6 +94,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     _category.dispose();
     _saleRate.dispose();
     _purchaseRate.dispose();
+    _wholesaleRate.dispose();
+    _mrp.dispose();
+    _hsCode.dispose();
+    _description.dispose();
     _openingStock.dispose();
     _minStock.dispose();
     super.dispose();
@@ -110,11 +134,21 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         barcode: _blank(_barcode.text),
         category: _blank(_category.text),
         purchaseRate: Rate.tryParse(_purchaseRate.text),
+        // A wholesaler quotes two prices and a pharmacy has a third printed
+        // on the box. Neither is the retail price, and neither can be
+        // derived from it.
+        wholesaleRate: Rate.tryParse(_wholesaleRate.text),
+        mrp: Money.tryParse(_mrp.text),
+        // The FBR invoice needs it, and it is per item rather than per bill,
+        // so it is captured where the item is.
+        hsCode: _blank(_hsCode.text),
+        description: _blank(_description.text),
+        tracksStock: _tracksStock,
         // Opening stock is an opening balance, not an edit. Changing an
         // existing item's stock happens through a stock adjustment with a
         // reason, which lands in M1 — the ledger is append-only and must
         // never be silently overwritten from a form.
-        openingStock: _isEdit
+        openingStock: _isEdit || !_tracksStock
             ? Qty.zero
             : Qty.tryParse(_openingStock.text) ?? Qty.zero,
         openingRate: Rate.tryParse(_purchaseRate.text) ?? Rate.zero,
@@ -367,6 +401,33 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                           ],
                         ),
                         const SizedBox(height: BlTokens.space4),
+
+                        // Whether the shelf is counted for this at all. Off
+                        // for a service or a charge — home delivery, a
+                        // repair, a carrier bag. Those belong on a bill and
+                        // do not belong on a stock ledger, and an item
+                        // carrying stock it can never have is an item
+                        // permanently at minus something.
+                        SwitchListTile.adaptive(
+                          value: _tracksStock,
+                          onChanged: (value) =>
+                              setState(() => _tracksStock = value),
+                          contentPadding: EdgeInsets.zero,
+                          title: Text(
+                            s.itemTracksStock,
+                            style: TextStyle(fontSize: 15, color: t.ink),
+                          ),
+                          subtitle: _tracksStock
+                              ? null
+                              : Text(
+                                  s.itemTracksStockOff,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: t.inkMuted,
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(height: BlTokens.space4),
                         BlField(
                           controller: _barcode,
                           label: s.itemBarcode,
@@ -387,14 +448,68 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                               child: BlField(
                                 controller: _category,
                                 label: s.itemCategory,
-                                textInputAction: TextInputAction.done,
-                                // The button is disabled while busy;
-                                // Enter has to check the same flag or a
-                                // double tap on the keyboard writes twice.
-                                onSubmitted: (_) {
-                                  if (!_busy) _save();
-                                },
+                                textInputAction: TextInputAction.next,
                               ),
+                            ),
+                          ],
+                        ),
+
+                        // Folded away, because most of a kiryana catalogue
+                        // needs none of it. A wholesaler needs the trade
+                        // price, a pharmacy needs the printed one, and a
+                        // sales-tax-registered shop needs the HS code on
+                        // every line of its invoice — but making all three
+                        // of them the first thing everyone else scrolls past
+                        // would slow down the common case to serve the rare.
+                        const SizedBox(height: BlTokens.space3),
+                        ExpansionTile(
+                          title: Text(
+                            s.itemMoreFields,
+                            style: TextStyle(fontSize: 14, color: t.inkMuted),
+                          ),
+                          tilePadding: EdgeInsets.zero,
+                          childrenPadding: const EdgeInsets.only(
+                            bottom: BlTokens.space3,
+                          ),
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: BlField(
+                                    controller: _wholesaleRate,
+                                    label: s.itemWholesalePrice,
+                                    numeric: true,
+                                    textInputAction: TextInputAction.next,
+                                  ),
+                                ),
+                                const SizedBox(width: BlTokens.space3),
+                                Expanded(
+                                  child: BlField(
+                                    controller: _mrp,
+                                    label: s.itemMrp,
+                                    numeric: true,
+                                    textInputAction: TextInputAction.next,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: BlTokens.space4),
+                            BlField(
+                              controller: _hsCode,
+                              label: s.itemHsCode,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: BlTokens.space4),
+                            BlField(
+                              controller: _description,
+                              label: s.itemDescription,
+                              textInputAction: TextInputAction.done,
+                              // The button is disabled while busy; Enter has
+                              // to check the same flag or a double tap on the
+                              // keyboard writes twice.
+                              onSubmitted: (_) {
+                                if (!_busy) _save();
+                              },
                             ),
                           ],
                         ),

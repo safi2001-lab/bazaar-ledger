@@ -524,6 +524,11 @@ final class DriftAppQueries implements AppQueries {
         code: _blankToNull(r.readNullable<String>('code')),
         barcode: _blankToNull(r.readNullable<String>('barcode')),
         category: _blankToNull(r.readNullable<String>('category')),
+        description: _blankToNull(r.readNullable<String>('description')),
+        purchaseRate: _rateOrNull(r, 'purchase_rate_milli_paisa'),
+        wholesaleRate: _rateOrNull(r, 'wholesale_rate_milli_paisa'),
+        mrp: _moneyOrNull(r, 'mrp_paisa'),
+        hsCode: _blankToNull(r.readNullable<String>('hs_code')),
         unitId: r.read<String>('base_unit_id'),
         unitCode: r.read<String>('unit_code'),
         unitDecimals: r.read<int>('unit_decimals'),
@@ -532,6 +537,21 @@ final class DriftAppQueries implements AppQueries {
         minStock: Qty.raw(r.read<int>('min_stock_thousandths')),
         tracksStock: r.read<int>('track_stock') == 1,
       );
+
+  /// Null stays null rather than becoming zero.
+  ///
+  /// A wholesale price of nothing and no wholesale price at all are different
+  /// facts, and the editor has to be able to tell them apart or it will show
+  /// a shopkeeper a price of Rs 0.00 they never typed.
+  static Rate? _rateOrNull(QueryRow r, String column) {
+    final raw = r.readNullable<int>(column);
+    return raw == null ? null : Rate.raw(raw);
+  }
+
+  static Money? _moneyOrNull(QueryRow r, String column) {
+    final raw = r.readNullable<int>(column);
+    return raw == null ? null : Money.paisa(raw);
+  }
 
   /// Lowercased, punctuation-stripped, space-collapsed.
   ///

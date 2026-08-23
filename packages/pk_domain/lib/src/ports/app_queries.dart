@@ -65,7 +65,12 @@ final class ItemSummary {
     this.code,
     this.barcode,
     this.category,
+    this.description,
     this.minStock = Qty.zero,
+    this.purchaseRate,
+    this.wholesaleRate,
+    this.mrp,
+    this.hsCode,
   });
 
   final String id;
@@ -73,6 +78,7 @@ final class ItemSummary {
   final String? code;
   final String? barcode;
   final String? category;
+  final String? description;
 
   final String unitId;
   final String unitCode;
@@ -82,6 +88,18 @@ final class ItemSummary {
   final int unitDecimals;
 
   final Rate saleRate;
+
+  /// What the shop pays, what it charges a trade customer, and what the box
+  /// says. None of the three can be derived from the retail price: a
+  /// wholesaler quotes two, and a pharmacy has a third printed on the pack
+  /// that it may not legally exceed.
+  final Rate? purchaseRate;
+  final Rate? wholesaleRate;
+  final Money? mrp;
+
+  /// For the FBR invoice, which wants it per line rather than per bill.
+  final String? hsCode;
+
   final Qty stockOnHand;
   final Qty minStock;
   final bool tracksStock;

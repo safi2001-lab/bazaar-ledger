@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
 
@@ -59,6 +60,79 @@ void main() {
       isNotNull,
       reason: 'goods off the shelf are an expense whether or not anyone '
           'noticed; without the entry the Trial Balance is quietly wrong',
+    );
+  });
+
+  testWidgets('the full item master round-trips through the editor',
+      (tester) async {
+    final app = await Harness.startWithShop(tester);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Maal').first);
+    await tester.pumpAndSettle();
+    await tapButton(tester, 'Naya maal');
+    await tester.pumpAndSettle();
+
+    await typeInto(tester, 'Naam', 'Panadol 500mg');
+    await typeInto(tester, 'Farokht ki qeemat', '45');
+    await typeInto(tester, 'Khareed ki qeemat', '38');
+    await typeInto(tester, 'Mojooda stock', '200');
+
+    // The rest is folded away, because most of a kiryana catalogue needs none
+    // of it. A pharmacy needs the printed price it may not legally exceed,
+    // and a registered shop needs the HS code on every invoice line.
+    await tester.tap(find.text('Aur tafseel'));
+    await tester.pumpAndSettle();
+    await typeInto(tester, 'Thok ki qeemat', '40');
+    await typeInto(tester, 'MRP (chhapi qeemat)', '50');
+    await typeInto(tester, 'HS code', '3004.9099');
+    await typeInto(tester, 'Tafseel', 'Paracetamol tablets');
+
+    await tapButton(tester, 'Save karein');
+    await tester.pumpAndSettle();
+
+    final row = await app.rowsOf(
+      'SELECT wholesale_rate_milli_paisa w, mrp_paisa m, hs_code h, '
+      'description d, track_stock t FROM items',
+    );
+    expect(row.single['w'], const Rate.rupees(40).inMilliPaisa);
+    expect(row.single['m'], const Money.rupees(50).inPaisa);
+    expect(row.single['h'], '3004.9099');
+    expect(row.single['d'], 'Paracetamol tablets');
+    expect(row.single['t'], 1);
+  });
+
+  testWidgets('a service carries no stock and no opening balance',
+      (tester) async {
+    // Home delivery, a repair, a carrier bag. These belong on a bill and do
+    // not belong on a stock ledger, and an item carrying stock it can never
+    // have is an item permanently at minus something.
+    final app = await Harness.startWithShop(tester);
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Maal').first);
+    await tester.pumpAndSettle();
+    await tapButton(tester, 'Naya maal');
+    await tester.pumpAndSettle();
+
+    await typeInto(tester, 'Naam', 'Home delivery');
+    await typeInto(tester, 'Farokht ki qeemat', '100');
+    await typeInto(tester, 'Mojooda stock', '5');
+
+    await tester.tap(find.byType(SwitchListTile).first);
+    await tester.pumpAndSettle();
+
+    await tapButton(tester, 'Save karein');
+    await tester.pumpAndSettle();
+
+    expect(await app.countIn('items'), 1);
+    final tracks = await app.scalar<int>('SELECT track_stock FROM items');
+    expect(tracks, 0);
+    expect(
+      await app.countIn('stock_ledger'),
+      0,
+      reason: 'a service that carries no stock must not open a stock ledger, '
+          'whatever was left in the opening-stock box',
     );
   });
 

@@ -704,4 +704,25 @@ class AppStringsEn extends AppStrings {
   String stockLowFloor(String floor) {
     return 'Floor: $floor';
   }
+
+  @override
+  String get itemWholesalePrice => 'Wholesale price';
+
+  @override
+  String get itemMrp => 'MRP (printed price)';
+
+  @override
+  String get itemHsCode => 'HS code';
+
+  @override
+  String get itemDescription => 'Description';
+
+  @override
+  String get itemTracksStock => 'Keep stock for this';
+
+  @override
+  String get itemTracksStockOff => 'A service or charge — no stock';
+
+  @override
+  String get itemMoreFields => 'More detail';
 }

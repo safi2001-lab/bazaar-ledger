@@ -705,4 +705,25 @@ class AppStringsUr extends AppStrings {
   String stockLowFloor(String floor) {
     return 'Hadd: $floor';
   }
+
+  @override
+  String get itemWholesalePrice => 'Thok ki qeemat';
+
+  @override
+  String get itemMrp => 'MRP (chhapi qeemat)';
+
+  @override
+  String get itemHsCode => 'HS code';
+
+  @override
+  String get itemDescription => 'Tafseel';
+
+  @override
+  String get itemTracksStock => 'Is ka stock rakhna hai';
+
+  @override
+  String get itemTracksStockOff => 'Service ya kharcha — stock nahi';
+
+  @override
+  String get itemMoreFields => 'Aur tafseel';
 }
