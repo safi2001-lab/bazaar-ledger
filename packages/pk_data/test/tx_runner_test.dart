@@ -195,6 +195,34 @@ void main() {
           reason: 'creation time is history and does not move');
     });
 
+    test('an append-only ledger refuses a soft delete', () async {
+      // A stock movement or a journal line is evidence, and a balance is
+      // derived by summing it in order. Striking one out leaves every running
+      // total stamped after it unreproducible: the writer sums live rows, so
+      // the next sale caches a figure computed without it, while any check
+      // that counted it disagrees forever. The correction for a wrong
+      // movement is an opposing movement, which leaves a trail.
+      for (final table in const [
+        'stock_ledger',
+        'journal_entries',
+        'journal_lines',
+        'audit_log',
+        'change_log',
+      ]) {
+        await expectLater(
+          runner.run(actor, (tx) => tx.softDelete(table, 'any-id')),
+          throwsA(
+            isA<StateError>().having(
+              (e) => e.message,
+              'message',
+              allOf(contains(table), contains('append-only')),
+            ),
+          ),
+          reason: '$table must not be strikeable',
+        );
+      }
+    });
+
     test('a soft delete leaves the row where it was', () async {
       // Six-year retention under s.24 STA is a legal obligation, and a
       // shopkeeper who deletes a bill by accident wants it back tomorrow.

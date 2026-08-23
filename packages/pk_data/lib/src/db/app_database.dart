@@ -188,9 +188,19 @@ class AppDatabase extends _$AppDatabase {
     // ordering by id means ordering by ULID, which is insertion order, and a
     // backdated entry (opening stock, or yesterday's purchase keyed in this
     // morning) legitimately arrives later and would have made every
-    // subsequent row on that item look wrong. And soft-deleted rows are
-    // included, because they were included when the cache was written; voiding
-    // one would otherwise report every row after it as drifted.
+    // subsequent row on that item look wrong.
+    //
+    // Soft-deleted rows are excluded, because that is what the writer sums
+    // when it stamps the cache and what every read sums when it shows stock
+    // on hand. This check used to include them, on the stated grounds that
+    // "they were included when the cache was written" — which was simply not
+    // true of the writer. The two definitions could not be reconciled: a
+    // voided row is invisible to the sale that comes after it and visible to
+    // the checker, so the shopkeeper saw negative stock while Data Health
+    // reported a different number, and `rebuildStockBalances` wrote back a
+    // value the next sale immediately contradicted. `TxRunner.softDelete` now
+    // refuses the table outright, and any deleted row still in there is
+    // reported below as the corruption it is.
     final rows = await customSelect(
       '''
       SELECT id, item_id, cached, actual FROM (
@@ -203,6 +213,7 @@ class AppDatabase extends _$AppDatabase {
                  ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
                ) AS actual
         FROM stock_ledger sl
+        WHERE sl.deleted_at_utc IS NULL
       )
       WHERE cached IS NOT NULL AND cached <> actual
       ''',
@@ -240,6 +251,7 @@ class AppDatabase extends _$AppDatabase {
         WHERE prior.firm_id = stock_ledger.firm_id
           AND prior.item_id = stock_ledger.item_id
           AND prior.location_code = stock_ledger.location_code
+          AND prior.deleted_at_utc IS NULL
           AND (
             prior.occurred_at_utc < stock_ledger.occurred_at_utc
             OR (prior.occurred_at_utc = stock_ledger.occurred_at_utc
@@ -247,9 +259,38 @@ class AppDatabase extends _$AppDatabase {
           )
       )
       WHERE balance_after_thousandths IS NOT NULL
+        AND deleted_at_utc IS NULL
     ''');
     final remaining = await findStockLedgerDrift();
     return remaining.length;
+  }
+
+  /// Rows struck out of a ledger that may only be appended to.
+  ///
+  /// `TxRunner.softDelete` refuses these tables, so a row here did not come
+  /// from this app's write path — it came from an older build, a hand-edited
+  /// file, or a restore that went wrong. Either way a running balance stamped
+  /// on top of it can no longer be reproduced, so it is reported rather than
+  /// quietly absorbed.
+  Future<List<String>> findDeletedLedgerRows() async {
+    final findings = <String>[];
+    for (final table in const [
+      'stock_ledger',
+      'journal_entries',
+      'journal_lines',
+    ]) {
+      final rows = await customSelect(
+        'SELECT COUNT(*) c FROM $table WHERE deleted_at_utc IS NOT NULL',
+      ).getSingle();
+      final count = rows.read<int>('c');
+      if (count > 0) {
+        findings.add(
+          '$count row(s) struck out of $table, which is append-only: a '
+          'balance cannot be recomputed across them',
+        );
+      }
+    }
+    return findings;
   }
 
   Future<DatabaseHealth> checkHealth() async {
@@ -276,6 +317,7 @@ class AppDatabase extends _$AppDatabase {
       findings.add('foreign_keys pragma is OFF on this connection');
     }
 
+    findings.addAll(await findDeletedLedgerRows());
     findings.addAll(await findLedgerImbalances());
     findings.addAll(await findOverAllocatedPayments());
     findings.addAll(await findStockLedgerDrift());

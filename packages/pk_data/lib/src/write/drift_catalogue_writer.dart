@@ -79,7 +79,16 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         // an editor that has no control for it. ItemDraft.isActive defaults to
         // true, so leaving it in meant correcting an archived item's price
         // silently put it back on sale.
-        ..remove('is_active');
+        ..remove('is_active')
+        // And the base unit is the unit every integer already written against
+        // this item is counted in: `stock_ledger.qty_delta_thousandths` and
+        // `document_lines.base_qty_thousandths` are both thousandths of it.
+        // Editing the column reinterprets all of them at once, with no ledger
+        // row and no conversion — twenty pieces of cooking oil become twenty
+        // grams, and every posted invoice line for the item is redenominated
+        // behind reports that have already been printed. Changing what an item
+        // is measured in is a new item, or a conversion that leaves a trail.
+        ..remove('base_unit_id');
       await tx.update('items', itemId, columns);
 
       final oldRate = Rate.raw(before.read<int>('sale_rate_milli_paisa'));
@@ -146,7 +155,14 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       // whole khata.
       final columns = _partyColumns(draft, actor)
         ..remove('opening_balance_paisa')
-        ..remove('opening_balance_as_of_local');
+        ..remove('opening_balance_as_of_local')
+        // Same reason the item path strips it, and this path was missed.
+        // `_partyColumns` hardcodes `is_active: 1` — there is no field for it
+        // on PartyDraft at all — so correcting an archived customer's phone
+        // number put them back in the khata list, silently, without passing
+        // the "nothing owed" guard archiveParty makes them pass. The audit row
+        // said only "edited".
+        ..remove('is_active');
       await tx.update('parties', partyId, columns);
       tx.audit(
         action: 'PARTY_UPDATED',

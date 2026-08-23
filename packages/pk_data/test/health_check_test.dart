@@ -212,15 +212,29 @@ void _falsePositiveTests() {
     expect((await db.checkHealth()).isHealthy, isTrue);
   });
 
-  test('a voided stock row is not drift on every row after it', () async {
+  test('a struck-out stock row is reported, not absorbed', () async {
+    // Raw SQL, because the write path no longer permits this at all. A row
+    // like this can only reach the file from an older build or a restore that
+    // went wrong, and it is unrecoverable rather than merely untidy: the
+    // running balance stamped on every row after it was computed with this
+    // one counted, and it can never be computed that way again.
+    //
+    // The previous contract was to include deleted rows in the drift sum, on
+    // the grounds that the cache had counted them. The writer did not agree —
+    // it sums live rows only — so the next sale after a void cached a total
+    // the checker called wrong, `rebuildStockBalances` wrote back a total the
+    // sale after that called wrong, and Data Health could never go green
+    // again. Saying so out loud is the only honest option.
     await db.customStatement(
       'UPDATE stock_ledger SET deleted_at_utc = 1 '
       "WHERE txn_type = 'opening'",
     );
 
-    // The cache was written when that row counted, so it still counts here.
-    // Excluding it would report the whole tail of the ledger as damaged.
-    expect(await db.findStockLedgerDrift(), isEmpty);
+    expect(
+      await db.findDeletedLedgerRows(),
+      contains(contains('append-only')),
+    );
+    expect((await db.checkHealth()).isHealthy, isFalse);
   });
 
   test('a payment allocated to exactly its own value is not over-allocated',

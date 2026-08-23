@@ -257,12 +257,41 @@ final class Tx {
     );
   }
 
+  /// Ledgers that may only ever be appended to.
+  ///
+  /// Everything whose rows are evidence: the stock ledger and the double-entry
+  /// journal because a balance is derived by summing them in order, and the
+  /// audit and outbox logs because their whole purpose is that nothing can be
+  /// taken out of them.
+  static const _appendOnly = {
+    'stock_ledger',
+    'journal_entries',
+    'journal_lines',
+    'audit_log',
+    'change_log',
+  };
+
   /// Marks a row deleted without destroying it.
   ///
   /// Six-year retention under s.24 STA and s.174(3) ITO is a legal obligation,
   /// not a preference, and a shopkeeper who deletes a bill by accident on a
   /// Tuesday will want it back on the Wednesday.
   Future<void> softDelete(String table, String id) async {
+    if (_appendOnly.contains(table)) {
+      // A financial ledger is corrected by a reversing row, never by hiding
+      // one. `stock_ledger.balance_after_thousandths` is a running total
+      // stamped at the moment the row was written, so a row removed from
+      // underneath it can never be recomputed: the writer sums only live
+      // rows, every caller reads only live rows, and the health check summed
+      // deleted ones too in the belief that the cache had counted them. Void
+      // one row and the three disagree permanently — the shopkeeper is shown
+      // negative stock, Data Health goes red, and the rebuild writes back a
+      // number the next sale contradicts again.
+      throw StateError(
+        '$table is append-only: correct it with a reversing entry, not a '
+        'delete.',
+      );
+    }
     // Read first. Deleting a journal line unbalances its entry, and
     // `assertBooksBalance` only inspects entries this transaction touched —
     // so a delete that does not register the touch escapes the pre-commit
