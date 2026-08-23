@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 /// The M0 demo script, on the handset, against the file the app really uses.
@@ -31,6 +30,28 @@ import 'package:pk_bootstrap/pk_bootstrap.dart';
 /// runs the shop up from nothing.
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  testWidgets('the books are kept where Android cannot copy them off the phone',
+      (tester) async {
+    // `android:allowBackup="false"` stops Auto Backup uploading the database
+    // to a Google account the shopkeeper never asked for. It is not enough on
+    // its own: Android's own documentation says that for apps targeting 12 or
+    // higher, "on devices from some device manufacturers, you can't disable
+    // device-to-device migration of your app's files" — and the manufacturers
+    // this ships to are exactly the ones that sentence is about.
+    //
+    // `no_backup` is excluded by the platform, whatever the manifest says and
+    // whatever the OEM has done to it. The first screen of this app promises
+    // in Roman Urdu that the shopkeeper's hisaab stays on this phone with no
+    // account and no server; this is what makes that true rather than stated.
+    final dir = await AppServices.booksDirectory();
+    expect(
+      dir.path.split(Platform.pathSeparator).last,
+      'no_backup',
+      reason: 'the books are in a directory Android will copy to a new phone',
+    );
+    expect(dir.existsSync(), isTrue);
+  });
 
   testWidgets('a shopkeeper sets up, stocks two items and rings a cash sale',
       (tester) async {
@@ -139,7 +160,7 @@ void main() {
 /// exercises the actual Android sandbox path and the actual permissions on
 /// it, not a temporary directory that happens to be writable.
 Future<String> _freshDatabasePath() async {
-  final dir = await getApplicationSupportDirectory();
+  final dir = await AppServices.booksDirectory();
   final path = '${dir.path}${Platform.pathSeparator}bazaar_ledger.sqlite';
   for (final suffix in const ['', '-wal', '-shm', '-journal']) {
     final f = File('$path$suffix');

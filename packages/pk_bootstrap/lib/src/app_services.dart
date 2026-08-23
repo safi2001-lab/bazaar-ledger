@@ -279,9 +279,44 @@ final class AppServices {
 
   Future<void> close() => database.close();
 
-  static Future<String> _defaultDatabasePath() async {
-    final dir = await getApplicationSupportDirectory();
-    return p.join(dir.path, 'bazaar_ledger.sqlite');
+  static Future<String> _defaultDatabasePath() async =>
+      p.join((await booksDirectory()).path, 'bazaar_ledger.sqlite');
+
+  /// Where the books live: the one directory Android will not copy off the
+  /// phone.
+  ///
+  /// `android:allowBackup="false"` already stops Auto Backup uploading the
+  /// database to a Google account the shopkeeper never asked for — the first
+  /// screen of this app promises, in Roman Urdu, that their hisaab stays on
+  /// this phone with no account and no server, and a silent nightly upload
+  /// would make that a lie.
+  ///
+  /// But the manifest flag is not the whole story. Android's own
+  /// documentation says that for apps targeting 12 or higher, "on devices
+  /// from some device manufacturers, you can't disable device-to-device
+  /// migration of your app's files" — and the manufacturers this ships to are
+  /// exactly the ones that phrase is about: Transsion is roughly 44% of the
+  /// Pakistani market at the bottom end.
+  ///
+  /// `getNoBackupFilesDir()` is excluded from backup and from transfer by the
+  /// platform itself, whatever the manifest says and whatever the OEM has
+  /// done to it. `path_provider` does not expose it, but it is a documented,
+  /// stable part of the app data layout: `files` and `no_backup` are siblings
+  /// under the app's data directory.
+  ///
+  /// If it cannot be created for any reason, the support directory is used
+  /// instead. A shopkeeper who cannot open their books at all is worse off
+  /// than one whose books might survive a phone-to-phone transfer.
+  static Future<Directory> booksDirectory() async {
+    final support = await getApplicationSupportDirectory();
+    if (!Platform.isAndroid) return support;
+    try {
+      final noBackup = Directory(p.join(p.dirname(support.path), 'no_backup'));
+      if (!noBackup.existsSync()) noBackup.createSync(recursive: true);
+      return noBackup;
+    } on Object {
+      return support;
+    }
   }
 
   static String _platformName() {

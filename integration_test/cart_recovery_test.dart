@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 /// A bill half-rung, on the handset, across a real reopen.
@@ -119,7 +118,7 @@ String _dirOf(String path) =>
     path.substring(0, path.lastIndexOf(Platform.pathSeparator));
 
 Future<String> _freshDatabasePath() async {
-  final dir = await getApplicationSupportDirectory();
+  final dir = await AppServices.booksDirectory();
   final path = '${dir.path}${Platform.pathSeparator}bazaar_ledger.sqlite';
   for (final suffix in const ['', '-wal', '-shm', '-journal']) {
     final f = File('$path$suffix');
