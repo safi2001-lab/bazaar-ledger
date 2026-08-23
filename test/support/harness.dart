@@ -71,11 +71,12 @@ final class Harness {
     required int rupees,
     int openingStock = 100,
     String? barcode,
+    String unitCode = 'pcs',
   }) async {
     final firm = await services.queries.currentFirm();
     final units = await services.queries.units(firm!.id);
     final pieces = units.firstWhere(
-      (u) => u.code == 'pcs',
+      (u) => u.code == unitCode,
       orElse: () => units.first,
     );
     return services.catalogue.addItem(

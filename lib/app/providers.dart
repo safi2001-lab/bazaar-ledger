@@ -115,6 +115,20 @@ final unitsProvider = FutureProvider<
   return services.queries.units(firm.id);
 });
 
+/// The shop's unit conversions, as an engine rather than a list of rows.
+///
+/// Loaded whole and kept: a shop has a couple of dozen of these at most, and
+/// the counter consults them on every unit change to decide what it may
+/// offer. A query per keystroke against a 20,000-SKU catalogue on an Android
+/// Go handset is exactly what this product cannot afford.
+final unitConverterProvider = FutureProvider<UnitConverter>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return UnitConverter(const []);
+  return UnitConverter(await services.queries.unitConversions(firm.id));
+});
+
 /// Item search, keyed by the query the counter typed.
 ///
 /// Auto-disposed, and that matters more here than anywhere else. A family

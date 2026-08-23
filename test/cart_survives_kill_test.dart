@@ -65,7 +65,30 @@ void main() {
 
     test('a draft from another build is dropped, not guessed at', () {
       final encoded = CartDraft.encode(const Cart());
-      expect(CartDraft.decode(encoded.replaceFirst('"v":1', '"v":99')), isNull);
+      expect(
+        CartDraft.decode(encoded.replaceFirst('"v":2', '"v":99')),
+        isNull,
+      );
+    });
+
+    test('the unit the line is sold in survives too', () {
+      // A restored bill that quietly reverted two maunds of atta to two kilos
+      // would be a bill for a fortieth of the goods.
+      final cart = Cart(
+        lines: [
+          CartLine(
+            item: oil(),
+            qty: Qty.units(2),
+            rate: const Rate.rupees(30000),
+            unitId: 'unit-maund',
+            unitCode: 'maund',
+          ),
+        ],
+      );
+      final restored = CartDraft.decode(CartDraft.encode(cart))!;
+      expect(restored.lines.single.sellingUnitCode, 'maund');
+      expect(restored.lines.single.sellingUnitId, 'unit-maund');
+      expect(restored.lines.single.isConverted, isTrue);
     });
 
     test('the entered rate survives a price change made in between', () {

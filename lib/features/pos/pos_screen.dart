@@ -35,11 +35,12 @@ final posQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
   final cart = ref.watch(cartProvider);
   final firm = ref.watch(firmProvider).valueOrNull;
+  final units = ref.watch(unitConverterProvider).valueOrNull;
   if (firm == null || cart.isEmpty) return null;
 
   return const SaleCalculator().calculate(
     SaleDraft(
-      lines: [for (final l in cart.lines) l.toDraft()],
+      lines: [for (final l in cart.lines) l.toDraft(units)],
       partyId: cart.partyId,
       partyName: cart.partyName,
       billDiscount: cart.billDiscount,
@@ -618,6 +619,75 @@ class _CartLineTile extends ConsumerWidget {
   }
 }
 
+/// The units this line may be sold in.
+///
+/// Only what the shop has said is the same thing measured differently, and
+/// only where the price carries across exactly. A unit that would need a
+/// rounded price is not offered at all rather than offered and refused at the
+/// moment of saving the bill — the counter should never present a choice it
+/// is going to take back.
+///
+/// Nothing is shown when there is no choice to make, which is the ordinary
+/// case: a kiryana counter sells pieces of what it stocks in pieces.
+class _UnitChoice extends ConsumerWidget {
+  const _UnitChoice({required this.line});
+
+  final CartLine line;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final units = ref.watch(unitConverterProvider).valueOrNull;
+    final all = ref.watch(unitsProvider).valueOrNull;
+    if (units == null || all == null) return const SizedBox.shrink();
+
+    final reachable = units.reachableFrom(
+      line.item.unitId,
+      itemId: line.item.id,
+    );
+    final offered = [
+      for (final u in all)
+        if (reachable.contains(u.id) &&
+            (u.id == line.sellingUnitId ||
+                units.canConvert(
+                  Qty.one,
+                  fromUnitId: u.id,
+                  toUnitId: line.item.unitId,
+                  itemId: line.item.id,
+                )))
+          u,
+    ];
+    if (offered.length < 2) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: BlTokens.space2),
+      child: Wrap(
+        spacing: BlTokens.space2,
+        runSpacing: BlTokens.space2,
+        children: [
+          for (final u in offered)
+            ChoiceChip(
+              label: Text(u.code),
+              selected: u.id == line.sellingUnitId,
+              onSelected: (_) {
+                if (u.id == line.sellingUnitId) return;
+                ref.read(cartProvider.notifier).setUnit(
+                      line.item.id,
+                      units,
+                      unitId: u.id,
+                      unitCode: u.code,
+                    );
+                // The sheet is rebuilt from the cart, so it closes and the
+                // cashier taps the line again. Simpler than keeping two
+                // copies of the same line in step, and one tap either way.
+                Navigator.of(context).pop();
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _StepButton extends StatelessWidget {
   const _StepButton({
     required this.icon,
@@ -725,11 +795,12 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
           const SizedBox(height: BlTokens.space4),
           BlField(
             controller: _qty,
-            label: '${s.posQty} (${widget.line.item.unitCode})',
+            label: '${s.posQty} (${widget.line.sellingUnitCode})',
             numeric: true,
             decimals: widget.line.item.unitDecimals,
             autofocus: true,
           ),
+          _UnitChoice(line: widget.line),
           const SizedBox(height: BlTokens.space3),
           BlField(controller: _rate, label: s.posRate, numeric: true),
           const SizedBox(height: BlTokens.space3),

@@ -18,13 +18,39 @@ final class CartLine {
     required this.rate,
     this.discountBp = 0,
     this.explicitDiscount,
+    this.unitId,
+    this.unitCode,
   });
 
   final ItemSummary item;
+
+  /// The quantity as the cashier typed it, in [sellingUnitCode].
   final Qty qty;
+
+  /// The price per [sellingUnitCode], not per the item's base unit.
+  ///
+  /// A shop that stocks atta in kilos and sells it by the maund quotes a
+  /// price per maund, and that is the number that belongs on the bill.
   final Rate rate;
+
   final int discountBp;
   final Money? explicitDiscount;
+
+  /// The unit this line is being sold in, when it is not the item's own.
+  ///
+  /// Null means the item's base unit, which is the overwhelming case: a
+  /// kiryana counter sells pieces of what it stocks in pieces. It is null
+  /// rather than a copy of the base unit so that a line the cashier never
+  /// touched cannot drift out of step with the item it names.
+  final String? unitId;
+  final String? unitCode;
+
+  String get sellingUnitId => unitId ?? item.unitId;
+  String get sellingUnitCode => unitCode ?? item.unitCode;
+
+  /// True when this line is priced and counted in something other than what
+  /// the shelf is counted in.
+  bool get isConverted => unitId != null && unitId != item.unitId;
 
   Money get gross => rate.amountFor(qty);
 
@@ -39,27 +65,46 @@ final class CartLine {
     int? discountBp,
     Money? explicitDiscount,
     bool clearExplicitDiscount = false,
+    String? unitId,
+    String? unitCode,
   }) =>
       CartLine(
         item: item,
         qty: qty ?? this.qty,
         rate: rate ?? this.rate,
         discountBp: discountBp ?? this.discountBp,
-        explicitDiscount:
-            clearExplicitDiscount ? null : explicitDiscount ?? this.explicitDiscount,
+        explicitDiscount: clearExplicitDiscount
+            ? null
+            : explicitDiscount ?? this.explicitDiscount,
+        unitId: unitId ?? this.unitId,
+        unitCode: unitCode ?? this.unitCode,
       );
 
-  SaleLineDraft toDraft() => SaleLineDraft(
+  /// The line as the write path wants it.
+  ///
+  /// [units] converts the entered quantity into the item's base unit, which
+  /// is the only thing stock moves in. A line sold in the item's own unit
+  /// needs no converter at all, which is why one is optional — the counter
+  /// must not stop selling pieces because the conversion table failed to
+  /// load.
+  SaleLineDraft toDraft([UnitConverter? units]) => SaleLineDraft(
         itemId: item.id,
         itemName: item.name,
         itemCode: item.code,
-        // M0 sells in the item's own base unit, so the entered quantity and
-        // the stock movement are the same number. Multi-unit selling arrives
-        // in M1 with the conversion table, and only `baseQty` changes.
         qty: qty,
-        baseQty: qty,
-        unitId: item.unitId,
-        unitCode: item.unitCode,
+        // Stock moves in the item's base unit and nothing else. A bill for
+        // two maunds of atta takes eighty kilos off the shelf, and the
+        // conversion is exact or the sale does not post.
+        baseQty: isConverted && units != null
+            ? units.convert(
+                qty,
+                fromUnitId: sellingUnitId,
+                toUnitId: item.unitId,
+                itemId: item.id,
+              )
+            : qty,
+        unitId: sellingUnitId,
+        unitCode: sellingUnitCode,
         rate: rate,
         discountBp: discountBp,
         explicitDiscount: explicitDiscount,
@@ -73,11 +118,12 @@ final class CartLine {
       other.qty == qty &&
       other.rate == rate &&
       other.discountBp == discountBp &&
-      other.explicitDiscount == explicitDiscount;
+      other.explicitDiscount == explicitDiscount &&
+      other.unitId == unitId;
 
   @override
   int get hashCode =>
-      Object.hash(item.id, qty, rate, discountBp, explicitDiscount);
+      Object.hash(item.id, qty, rate, discountBp, explicitDiscount, unitId);
 }
 
 /// The bill in progress.
@@ -234,6 +280,43 @@ class CartNotifier extends Notifier<Cart> {
     // that customer's party_id — and if it was taken on udhaar, the debt
     // landed in the wrong khata for real. An empty counter is a new bill.
     state = lines.isEmpty ? const Cart() : state.copyWith(lines: lines);
+  }
+
+  /// Sells this line in a different unit, carrying the price with it.
+  ///
+  /// The quantity is NOT converted: a cashier who switches from pieces to
+  /// dozens means "one dozen", not "one twelfth of a dozen". What has to
+  /// follow is the price — a hundred rupees a piece is twelve hundred a
+  /// dozen — because otherwise the bill silently charges a dozen at the
+  /// price of one.
+  ///
+  /// Refused if the price cannot be carried exactly, which is the same rule
+  /// the quantities live by: a unit price that has been rounded will not
+  /// reconcile with the line total printed beside it.
+  void setUnit(
+    String itemId,
+    UnitConverter units, {
+    required String unitId,
+    required String unitCode,
+  }) {
+    state = state.copyWith(
+      lines: [
+        for (final l in state.lines)
+          if (l.item.id != itemId)
+            l
+          else
+            l.copyWith(
+              unitId: unitId,
+              unitCode: unitCode,
+              rate: units.convertRate(
+                l.rate,
+                fromUnitId: l.sellingUnitId,
+                toUnitId: unitId,
+                itemId: itemId,
+              ),
+            ),
+      ],
+    );
   }
 
   void setBillDiscount(Money amount) =>

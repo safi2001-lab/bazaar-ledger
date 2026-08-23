@@ -23,7 +23,7 @@ abstract final class CartDraft {
   /// dropped rather than guessed at: the cost of dropping one is that the
   /// cashier re-rings a bill, and the cost of misreading one is a wrong bill
   /// they cannot see is wrong.
-  static const version = 1;
+  static const version = 2;
 
   static String encode(Cart cart) => jsonEncode({
         'v': version,
@@ -49,6 +49,12 @@ abstract final class CartDraft {
               'rateMilliPaisa': line.rate.inMilliPaisa,
               'discountBp': line.discountBp,
               'explicitDiscountPaisa': line.explicitDiscount?.inPaisa,
+              // The unit the line is being SOLD in, which is not always the
+              // unit the item is stocked in. A restored bill that quietly
+              // reverted two maunds of atta to two kilos would be a bill for
+              // a fortieth of the goods.
+              'sellingUnitId': line.unitId,
+              'sellingUnitCode': line.unitCode,
             },
         ],
       });
@@ -104,6 +110,8 @@ abstract final class CartDraft {
     final rate = raw['rateMilliPaisa'];
     final discountBp = raw['discountBp'];
     final explicit = raw['explicitDiscountPaisa'];
+    final sellingUnitId = raw['sellingUnitId'];
+    final sellingUnitCode = raw['sellingUnitCode'];
 
     if (itemId is! String ||
         name is! String ||
@@ -117,7 +125,9 @@ abstract final class CartDraft {
         qty is! int ||
         rate is! int ||
         discountBp is! int ||
-        (explicit != null && explicit is! int)) {
+        (explicit != null && explicit is! int) ||
+        (sellingUnitId != null && sellingUnitId is! String) ||
+        (sellingUnitCode != null && sellingUnitCode is! String)) {
       return null;
     }
 
@@ -139,8 +149,9 @@ abstract final class CartDraft {
       qty: Qty.raw(qty),
       rate: Rate.raw(rate),
       discountBp: discountBp,
-      explicitDiscount:
-          explicit == null ? null : Money.paisa(explicit as int),
+      explicitDiscount: explicit == null ? null : Money.paisa(explicit as int),
+      unitId: sellingUnitId as String?,
+      unitCode: sellingUnitCode as String?,
     );
   }
 }

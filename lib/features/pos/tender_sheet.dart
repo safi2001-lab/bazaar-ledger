@@ -77,6 +77,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     final s = AppStrings.of(context);
     final preview = ref.read(cartPreviewProvider);
     final cart = ref.read(cartProvider);
+    // Read before the write, not through `ref` afterwards: this is what turns
+    // "two maunds" into the eighty kilos that actually leave the shelf.
+    final units = ref.read(unitConverterProvider).valueOrNull;
     final firm = ref.read(firmProvider).valueOrNull;
     if (preview == null || firm == null) {
       setState(() => _busy = false);
@@ -192,7 +195,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       final posted = await services.postSale(
         services.actorNow(),
         SaleDraft(
-          lines: [for (final l in cart.lines) l.toDraft()],
+          lines: [for (final l in cart.lines) l.toDraft(units)],
           partyId: cart.partyId,
           partyName: cart.partyName,
           tenders: tenders,
