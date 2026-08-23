@@ -214,6 +214,94 @@ void main() {
     expectNothingPaintsOffScreen(tester);
   });
 
+  testWidgets('a cart line can be corrected sideways', (tester) async {
+    // The counter is autofocused for the barcode scanner, so the soft
+    // keyboard is up the moment the screen opens. Letting it shrink the body
+    // sideways left about 100dp for a search field, a bill and a totals
+    // panel — and the cart line was laid out BELOW the fold, so the tap to
+    // correct a quantity did not land on it at all. Nothing overflowed and
+    // nothing threw; the line was simply not reachable.
+    tester.view
+      ..physicalSize = const Size(1600, 720)
+      ..devicePixelRatio = 2
+      ..viewInsets = const FakeViewPadding(bottom: 400);
+    addTearDown(() {
+      tester.view.resetPhysicalSize();
+      tester.view.resetDevicePixelRatio();
+      tester.view.resetViewInsets();
+    });
+
+    final app = await Harness.startWithShop(tester);
+    await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
+
+    await tester.tap(find.text('Naya Bill').first);
+    await tester.pumpAndSettle();
+    await _addToCart(tester, 'Cooking Oil');
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Talash karein').first,
+      '',
+    );
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.pumpAndSettle();
+
+    // With the keyboard up, the money path is what has to be reachable. A
+    // 360dp-tall phone minus a 200dp keyboard, an app bar and a search field
+    // leaves about 14dp: that does not fit a bill, and no layout can make it.
+    // What it must fit is the total and the button that takes the money.
+    final visibleBottom = tester.view.physicalSize.height /
+            tester.view.devicePixelRatio -
+        tester.view.viewInsets.bottom / tester.view.devicePixelRatio;
+    final charge = find
+        .ancestor(
+          of: find.textContaining('Paisay lein'),
+          matching: find.byType(BlButton),
+        )
+        .first;
+    expect(
+      tester.getRect(charge).bottom,
+      lessThanOrEqualTo(visibleBottom),
+      reason: 'the Charge button is behind the keyboard at '
+          '${tester.getRect(charge)}',
+    );
+
+    // Now the shopkeeper puts the keyboard away to look at the bill, which is
+    // what anyone does. The line has to be reachable then.
+    tester.view.viewInsets = const FakeViewPadding();
+    await tester.pumpAndSettle();
+
+    final line = find
+        .ancestor(of: find.byType(BlQty), matching: find.byType(InkWell))
+        .first;
+    expect(
+      tester.getRect(line).bottom,
+      lessThanOrEqualTo(
+        tester.view.physicalSize.height / tester.view.devicePixelRatio,
+      ),
+      reason: 'the cart line is off the bottom of the screen at '
+          '${tester.getRect(line)}',
+    );
+
+    await tester.tap(line);
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Ho gaya'),
+      findsOneWidget,
+      reason: 'the line editor did not open',
+    );
+
+    // And it can be confirmed: the sheet scrolls, so the buttons are
+    // reachable even with the keyboard over them.
+    await tester.dragUntilVisible(
+      find.text('Ho gaya'),
+      find.byType(SingleChildScrollView).last,
+      const Offset(0, -60),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ho gaya'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ho gaya'), findsNothing);
+  });
+
   testWidgets('a six-figure bill still fits at 200%', (tester) async {
     useASmallPhone(tester);
     final app = await Harness.startWithShop(tester);

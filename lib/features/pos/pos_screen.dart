@@ -176,6 +176,10 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final cart = ref.watch(cartProvider);
     final query = ref.watch(posQueryProvider);
 
+    // Wide means sideways: a phone turned over, or the tablet that is the
+    // standard Pakistani counter setup.
+    final wide = MediaQuery.sizeOf(context).width >= 600;
+
     return Scaffold(
       backgroundColor: t.paper,
       appBar: AppBar(
@@ -241,7 +245,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             // Side by side, the button is simply always on screen. This is
             // also what every real point-of-sale does in landscape, for the
             // same reason.
-            if (box.maxWidth >= 600) {
+            if (wide) {
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -868,15 +872,24 @@ class _Stack extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final totals = Column(mainAxisSize: MainAxisSize.min, children: rows);
+    if (!scrollable) {
+      return Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [totals, const SizedBox(height: BlTokens.space3), action],
+      );
+    }
+    // Sideways the button goes FIRST, at the top of the panel.
+    //
+    // The keyboard overlays the bottom of the screen there, so anything below
+    // the fold is behind it. Putting the total and the Charge button in the
+    // band the keyboard never reaches is what makes the counter usable with
+    // one hand and a customer waiting; the itemised rows can scroll, because
+    // nobody is blocked by not seeing the tax line.
     return Column(
-      mainAxisSize: scrollable ? MainAxisSize.max : MainAxisSize.min,
       children: [
-        if (scrollable)
-          Flexible(child: SingleChildScrollView(child: totals))
-        else
-          totals,
-        const SizedBox(height: BlTokens.space3),
         action,
+        const SizedBox(height: BlTokens.space3),
+        Flexible(child: SingleChildScrollView(child: totals)),
       ],
     );
   }
