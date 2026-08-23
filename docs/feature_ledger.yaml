@@ -390,7 +390,8 @@ features:
     status: done
     proof:
       - ESC/POS byte stream opens with a reset so the last job cannot bleed into this one
-      - ESC/POS byte stream ends with a full cut
+      - ESC/POS byte stream ends with a cut that feeds the paper past the blade first
+      - ESC/POS byte stream selects a font rather than trusting the printer default
       - ESC/POS byte stream emits GS v 0 when there is a raster to print
       - ESC/POS byte stream is pure Latin, so no printer renders a random glyph
       - ESC/POS byte stream kicks the drawer only when asked
