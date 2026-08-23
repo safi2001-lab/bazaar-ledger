@@ -946,21 +946,36 @@ features:
 
   - id: M2-PRINT-01
     milestone: M2
-    title: A bill prints from the receipt screen and from the counter
-    status: wip
-    # The button exists on the receipt screen, says Print or Reprint depending
-    # on what the log holds, and asks a person what happened when a job comes
-    # back `unknown`. What is missing is a test that rings a real sale and
-    # prints THAT, rather than a test print — so it stays wip.
+    title: A bill prints from the receipt screen
+    status: done
+    # A real sale, rung through the counter, printed from the receipt screen,
+    # asserted on the bytes that reached the transport: the invoice number, the
+    # items, the total the customer paid and the shop's own name.
     #
-    # The counter half (auto-print after a tender) is not built.
-    proof: []
+    # Deliberately separate from the setup screen's test print, which goes
+    # through none of the renderer, the layout, the document query or the log.
+    proof:
+      - the bill a customer just paid comes out of the printer
+      - asking twice hands the customer one receipt
 
   - id: M2-SCAN-01
     milestone: M2
     title: A hardware scanner puts the right item on the bill
-    status: todo
-    proof: []
+    status: done
+    # A wedge scanner is a keyboard that types fast and presses Enter, so the
+    # search field stays focused and Enter arrives as a submit. Built in M1 and
+    # never tested until now.
+    #
+    # The ambiguity case is the one that matters and the one the first draft of
+    # these tests missed: it checked an UNKNOWN code, which matches nothing by
+    # barcode and nothing by name, so a scanner that fell back to "the first
+    # search result" passed it. Two items sharing a word is where that
+    # fallback actually fires and silently bills the wrong thing.
+    proof:
+      - a scanned barcode puts that exact item on the bill
+      - scanning the same packet twice makes it two
+      - an unknown code leaves the bill exactly as it was
+      - an AMBIGUOUS term adds nothing, rather than guessing
 
   - id: M2-SCAN-02
     milestone: M2
@@ -977,8 +992,16 @@ features:
   - id: M2-DRAWER-01
     milestone: M2
     title: The cash drawer opens on a cash sale, and only then
-    status: todo
-    proof: []
+    status: done
+    # Off by default: most shops in this bracket have no drawer, and a printer
+    # that clicks on every sale is a printer somebody unplugs.
+    #
+    # The cash test is `ReceiptTender.isCash`, not the printed label. The label
+    # is display text that changes with the language, so deciding on it would
+    # have stopped a shop switched to English from opening its drawer.
+    proof:
+      - a cash sale kicks the drawer, and only when asked to
+      - with the drawer switched on, a cash sale opens it
 
   - id: M2-URDU-01
     milestone: M2

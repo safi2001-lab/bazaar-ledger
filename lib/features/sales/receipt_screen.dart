@@ -214,6 +214,10 @@ class _ActionsState extends ConsumerState<_Actions> {
       );
       if (!mounted) return;
 
+      // Re-read the log, or the button keeps saying Print after a successful
+      // one and a shopkeeper has no way to tell the first attempt worked.
+      ref.invalidate(printHistoryProvider(widget.documentId));
+
       switch (result.outcome) {
         case PrintOutcome.printed:
           messenger.showSnackBar(SnackBar(content: Text(s.printerDone)));
