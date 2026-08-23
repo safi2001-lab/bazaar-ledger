@@ -84,7 +84,7 @@ final class Money implements Comparable<Money> {
     if (rupees == null) return null;
     final paisa = frac.isEmpty ? 0 : int.parse(frac.padRight(2, '0'));
 
-    final total = rupees * 100 + paisa;
+    final total = scaleOrThrow(rupees, 100, 'amount') + paisa;
     return Money._(negative ? -total : total);
   }
 
@@ -189,13 +189,7 @@ final class Money implements Comparable<Money> {
     final rupees = magnitude ~/ 100;
     final paisa = magnitude % 100;
 
-    final digits = rupees.toString();
-    final grouped = StringBuffer();
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) grouped.write(',');
-      grouped.write(digits[i]);
-    }
-
+    final grouped = groupSouthAsian(rupees.toString());
     final sign = negative ? '-' : '';
     return '$sign$grouped.${paisa.toString().padLeft(2, '0')}';
   }

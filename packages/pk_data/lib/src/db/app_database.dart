@@ -181,27 +181,33 @@ class AppDatabase extends _$AppDatabase {
   /// that has drifted from the append-only rows beneath it is how a shop finds
   /// out its stock figures are fiction — usually while counting.
   Future<List<String>> findStockLedgerDrift() async {
+    // One ordered window pass, not a correlated subquery.
+    //
+    // Two things had to change beyond the cost. The running sum is ordered by
+    // `occurred_at_utc`, which is what the cache was computed against —
+    // ordering by id means ordering by ULID, which is insertion order, and a
+    // backdated entry (opening stock, or yesterday's purchase keyed in this
+    // morning) legitimately arrives later and would have made every
+    // subsequent row on that item look wrong. And soft-deleted rows are
+    // included, because they were included when the cache was written; voiding
+    // one would otherwise report every row after it as drifted.
     final rows = await customSelect(
       '''
-      SELECT sl.id AS id,
-             sl.item_id AS item_id,
-             sl.balance_after_thousandths AS cached,
-             (
-               SELECT SUM(prior.qty_delta_thousandths)
-               FROM stock_ledger prior
-               WHERE prior.item_id = sl.item_id
-                 AND prior.location_code = sl.location_code
-                 AND prior.deleted_at_utc IS NULL
-                 AND prior.id <= sl.id
-             ) AS actual
-      FROM stock_ledger sl
-      WHERE sl.deleted_at_utc IS NULL
-        AND sl.balance_after_thousandths IS NOT NULL
+      SELECT id, item_id, cached, actual FROM (
+        SELECT sl.id AS id,
+               sl.item_id AS item_id,
+               sl.balance_after_thousandths AS cached,
+               SUM(sl.qty_delta_thousandths) OVER (
+                 PARTITION BY sl.firm_id, sl.item_id, sl.location_code
+                 ORDER BY sl.occurred_at_utc, sl.id
+                 ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+               ) AS actual
+        FROM stock_ledger sl
+      )
+      WHERE cached IS NOT NULL AND cached <> actual
       ''',
     ).get();
-    return rows
-        .where((r) => r.read<int>('cached') != r.read<int>('actual'))
-        .map((r) {
+    return rows.map((r) {
       final id = r.read<String>('id');
       final item = r.read<String>('item_id');
       final cached = r.read<int>('cached');
@@ -209,6 +215,40 @@ class AppDatabase extends _$AppDatabase {
       return 'stock row $id on item $item caches $cached where the ledger '
           'says $actual';
     }).toList();
+  }
+
+  /// Recomputes every cached stock balance from the ledger beneath it.
+  ///
+  /// The counterpart to [findStockLedgerDrift], and the reason that check is
+  /// worth having: a report with no remedy is half a feature. Drift is normal
+  /// and expected — a purchase keyed in the morning after it happened is
+  /// backdated, and correctly changes the running balance of every row after
+  /// it — so the answer is to rebuild, not to panic.
+  ///
+  /// Writes the cache column only. It touches no financial value, invents no
+  /// row and moves no stock, which is why it is allowed to go straight to the
+  /// database instead of through the write path: there is nothing here for an
+  /// audit trail to record and nothing for a peer to receive.
+  Future<int> rebuildStockBalances() async {
+    // arch_check: allow one_write_path — a derived cache, not a fact.
+    await customStatement('''
+      UPDATE stock_ledger
+      SET balance_after_thousandths = (
+        SELECT SUM(prior.qty_delta_thousandths)
+        FROM stock_ledger prior
+        WHERE prior.firm_id = stock_ledger.firm_id
+          AND prior.item_id = stock_ledger.item_id
+          AND prior.location_code = stock_ledger.location_code
+          AND (
+            prior.occurred_at_utc < stock_ledger.occurred_at_utc
+            OR (prior.occurred_at_utc = stock_ledger.occurred_at_utc
+                AND prior.id <= stock_ledger.id)
+          )
+      )
+      WHERE balance_after_thousandths IS NOT NULL
+    ''');
+    final remaining = await findStockLedgerDrift();
+    return remaining.length;
   }
 
   Future<DatabaseHealth> checkHealth() async {

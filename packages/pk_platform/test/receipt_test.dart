@@ -111,8 +111,10 @@ void main() {
           ],
         ),
       );
+      // Grouped the way this market reads it: lakhs and crores, not
+      // thousands. Nine crore, eighty-seven lakh.
       expect(
-        lines.any((l) => l.contains('98,765,432.10')),
+        lines.any((l) => l.contains('9,87,65,432.10')),
         isTrue,
       );
       for (final line in lines) {

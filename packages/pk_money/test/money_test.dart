@@ -4,6 +4,7 @@ import 'package:pk_money/pk_money.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('South Asian grouping', _groupingTests);
   group('construction', () {
     test('rupees and paisa compose', () {
       expect(Money.rupees(55, 25).inPaisa, 5525);
@@ -177,7 +178,8 @@ void main() {
       expect(Money.rupees(5525, 25).amountOnly, '5,525.25');
       expect(Money.rupees(0, 5).amountOnly, '0.05');
       expect(Money.zero.amountOnly, '0.00');
-      expect(Money.rupees(1234567, 89).amountOnly, '1,234,567.89');
+      // Lakh grouping, not Western. See the "South Asian grouping" group.
+      expect(Money.rupees(1234567, 89).amountOnly, '12,34,567.89');
       expect(Money.rupees(999).amountOnly, '999.00');
       expect(Money.rupees(1000).amountOnly, '1,000.00');
     });
@@ -205,5 +207,51 @@ void main() {
 
   test('sum of nothing is zero', () {
     expect(Money.sum(const []), Money.zero);
+  });
+}
+
+/// How a Pakistani shopkeeper reads a number.
+///
+/// CLDR gives `en-PK` and `ur-PK` the pattern `#,##,##0.###` — the last three
+/// digits, then twos. Twelve lakh is `12,34,567`. Western grouping reads as
+/// `1,234,567` and has to be counted rather than recognised, which on a
+/// counter is the difference between a glance and a pause.
+void _groupingTests() {
+  test('thousands group in threes, as everywhere', () {
+    expect(Money.rupees(1).amountOnly, '1.00');
+    expect(Money.rupees(999).amountOnly, '999.00');
+    expect(Money.rupees(1000).amountOnly, '1,000.00');
+    expect(Money.rupees(99999).amountOnly, '99,999.00');
+  });
+
+  test('a lakh groups in twos above the thousand', () {
+    expect(Money.rupees(100000).amountOnly, '1,00,000.00');
+    expect(Money.rupees(1234567).amountOnly, '12,34,567.00');
+    expect(
+      Money.rupees(200000).amountOnly,
+      '2,00,000.00',
+      reason: 'the s.21(s) threshold, as a shopkeeper writes it',
+    );
+  });
+
+  test('a crore keeps grouping in twos', () {
+    expect(Money.rupees(10000000).amountOnly, '1,00,00,000.00');
+    expect(Money.rupees(123456789).amountOnly, '12,34,56,789.00');
+  });
+
+  test('the sign survives grouping', () {
+    expect((-Money.rupees(1234567)).amountOnly, '-12,34,567.00');
+  });
+
+  test('rates group the same way', () {
+    expect(Rate.rupees(1234567).amountOnly, '12,34,567.00');
+  });
+
+  test('digits are always Latin, never Arabic-Indic', () {
+    // CLDR: ur.xml inherits latn, ur_PK.xml is an empty stub, and only
+    // ur_IN.xml selects arabext. A price in Eastern Arabic numerals is a
+    // price this market cannot read.
+    final rendered = Money.rupees(1234567).amountOnly;
+    expect(RegExp(r'^[-0-9,.]+$').hasMatch(rendered), isTrue);
   });
 }

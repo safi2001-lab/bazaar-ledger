@@ -4,8 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'app/app.dart';
+import 'app/localisation.dart';
 import 'app/preferences.dart';
 import 'app/providers.dart';
+import 'design/components.dart';
+import 'design/theme.dart';
+import 'design/tokens.dart';
+import 'l10n/app_strings.dart';
 
 /// Opens the books, then draws the counter.
 ///
@@ -21,8 +26,24 @@ Future<void> main() async {
   // both are the standard Pakistani retail setup. Nothing is locked.
   await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
 
-  final services = await AppServices.open();
+  // Preferences first, and they cannot fail: a corrupt file returns defaults.
+  // So whatever happens next is at least readable in the right language.
   final prefs = await AppPreferences.load();
+
+  final AppServices services;
+  try {
+    services = await AppServices.open();
+  } on Object catch (error, stack) {
+    // The database would not open: a corrupt file, a full disk, a schema from
+    // a newer build. Before this, that was a black screen — the app died
+    // before the first frame with nothing on it.
+    //
+    // A shopkeeper who opens the app to a crash has lost their business day.
+    // One who is told what happened, in their own language, still has a phone
+    // they can hand to someone who can help, and — from M5 — a restore button.
+    runApp(_StartupFailureApp(prefs: prefs, error: error, stack: stack));
+    return;
+  }
 
   runApp(
     ProviderScope(
@@ -33,4 +54,63 @@ Future<void> main() async {
       child: const BazaarLedgerApp(),
     ),
   );
+}
+
+/// The app when there is no database to run it against.
+///
+/// Deliberately its own MaterialApp with no ProviderScope: everything above
+/// this point failed, so nothing below it may depend on anything that could
+/// also fail. It needs the localisations and the tokens, and nothing else.
+class _StartupFailureApp extends StatelessWidget {
+  const _StartupFailureApp({
+    required this.prefs,
+    required this.error,
+    required this.stack,
+  });
+
+  final AppPreferences prefs;
+  final Object error;
+  final StackTrace stack;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Bazaar Ledger',
+      debugShowCheckedModeBanner: false,
+      theme: blTheme(dark: false),
+      darkTheme: blTheme(dark: true),
+      themeMode: prefs.themeMode,
+      locale: prefs.locale,
+      supportedLocales: supportedLocales,
+      localizationsDelegates: const [
+        AppStrings.delegate,
+        ...chromeDelegates,
+      ],
+      home: Builder(
+        builder: (context) {
+          final s = AppStrings.of(context);
+          final t = context.bl;
+          return Scaffold(
+            backgroundColor: t.paper,
+            body: SafeArea(
+              child: Center(
+                child: BlError(
+                  title: s.errorStartupTitle,
+                  message: '$error',
+                  reassurance: s.errorStartupBody,
+                  // No retry: whatever stopped the database opening will stop
+                  // it again a second later, and a button that does nothing is
+                  // worse than no button. The honest action is the one below.
+                  retryLabel: s.errorStartupRecover,
+                  onRetry: () => ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(s.errorStartupNotReady)),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
 }

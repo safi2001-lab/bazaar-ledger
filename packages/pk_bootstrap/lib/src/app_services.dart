@@ -27,31 +27,44 @@ final class AppServices {
   AppServices._({
     required this.database,
     required this.queries,
-    required this.catalogue,
-    required this.postSale,
     required this.receipts,
     required this.clock,
     required this.ids,
-    required HlcClock hlc,
     required TxRunner runner,
-  })  : _hlc = hlc,
-        _runner = runner;
+  }) : _runner = runner;
+
+  /// Rebuilt, not merged, once first run has registered this device.
+  ///
+  /// `HlcClock.deviceId` is final and every timestamp it renders carries it,
+  /// so merging a resumed clock into one built before the device existed
+  /// catches up the millisecond and leaves the node id as the placeholder.
+  /// Every row written for the rest of that session then reads
+  /// `...-unregistered`, two freshly set-up tills mint byte-identical
+  /// timestamps on a tie — exactly what the HLC exists to break — and 'u'
+  /// sorts above every hex digit, so those rows win every conflict forever.
+  void _adoptDevice(HlcClock resumed) {
+    _runner = TxRunner(database: database, ids: ids, hlc: resumed);
+  }
 
   final AppDatabase database;
   final AppQueries queries;
-  final CatalogueWriter catalogue;
-  final PostSaleUseCase postSale;
   final ReceiptRenderer receipts;
   final Clock clock;
   final IdGenerator ids;
 
-  final HlcClock _hlc;
-  final TxRunner _runner;
+  TxRunner _runner;
 
   /// Who is signed in. Null until first run has produced a firm and an owner.
   ActorIdentity? _identity;
 
   ActorIdentity? get identity => _identity;
+
+  /// Built from the current runner every time, so a writer handed out before
+  /// first run cannot keep writing through the clock that predates the device.
+  CatalogueWriter get catalogue => DriftCatalogueWriter(_runner);
+
+  PostSaleUseCase get postSale =>
+      PostSaleUseCase(writer: DriftSaleWriter(runner: _runner));
 
   bool get isSetUp => _identity != null;
 
@@ -117,12 +130,9 @@ final class AppServices {
     final services = AppServices._(
       database: database,
       queries: queries,
-      catalogue: DriftCatalogueWriter(runner),
-      postSale: PostSaleUseCase(writer: DriftSaleWriter(runner: runner)),
       receipts: const ThermalReceiptRenderer(),
       clock: clock,
       ids: ids,
-      hlc: hlc,
       runner: runner,
     );
 
@@ -179,14 +189,16 @@ final class AppServices {
       deviceId: result.deviceId,
     );
 
-    // The HLC now has a device to belong to; catch it up to what first run
-    // wrote so the next timestamp cannot sort before it.
-    final resumed = await resumeHlcClock(
-      database,
-      deviceId: result.deviceId,
-      clock: clock,
+    // The HLC now has a device to belong to. It is replaced rather than
+    // merged: the node id is part of every timestamp and cannot be changed
+    // after construction.
+    _adoptDevice(
+      await resumeHlcClock(
+        database,
+        deviceId: result.deviceId,
+        clock: clock,
+      ),
     );
-    _hlc.merge(resumed.last);
 
     final firm = await queries.currentFirm();
     return firm!;

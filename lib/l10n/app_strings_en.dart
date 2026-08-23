@@ -642,4 +642,22 @@ class AppStringsEn extends AppStrings {
   @override
   String get receiptPrintNotReady =>
       'Printing arrives in M2. For now you can check the bill and send the PDF.';
+
+  @override
+  String get errorStartupRecover => 'Restore from a backup';
+
+  @override
+  String get errorStartupNotReady =>
+      'Restoring from a backup arrives in M5. For now, close the app and open it again.';
+
+  @override
+  String healthWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count problems',
+      one: '1 problem',
+    );
+    return '$_temp0 found in your data. Check Settings.';
+  }
 }

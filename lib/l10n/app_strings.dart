@@ -1249,6 +1249,24 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.'**
   String get receiptPrintNotReady;
+
+  /// Button on the startup failure screen that opens the restore flow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup se wapas layein'**
+  String get errorStartupRecover;
+
+  /// Honest note that restore is not built yet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup se wapas lana M5 mein aayega. Abhi ke liye app band kar ke dobara kholein.'**
+  String get errorStartupNotReady;
+
+  /// Shown once at startup when the health check found something.
+  ///
+  /// In ur, this message translates to:
+  /// **'Data mein {count, plural, =1{1 masla} other{{count} masle}} mila. Settings mein dekh lein.'**
+  String healthWarning(int count);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

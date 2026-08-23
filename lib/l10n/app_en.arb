@@ -260,5 +260,8 @@
   "settingsAddress": "Address",
   "settingsTaxRegistered": "I am registered for sales tax",
   "settingsTaxRegisteredNote": "Most kiryana shops are not registered - sales tax is collected through the electricity bill instead. Only turn this on if you hold an STRN.",
-  "receiptPrintNotReady": "Printing arrives in M2. For now you can check the bill and send the PDF."
+  "receiptPrintNotReady": "Printing arrives in M2. For now you can check the bill and send the PDF.",
+  "errorStartupRecover": "Restore from a backup",
+  "errorStartupNotReady": "Restoring from a backup arrives in M5. For now, close the app and open it again.",
+  "healthWarning": "{count, plural, =1{1 problem} other{{count} problems}} found in your data. Check Settings."
 }

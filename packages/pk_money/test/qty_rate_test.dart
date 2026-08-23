@@ -110,11 +110,60 @@ void main() {
 
     test('pro-rata loose sale never exceeds the pack MRP', () {
       // Drug Pricing Policy: a strip cut may not exceed the pro-rata printed
-      // MRP. Ten tablets at Rs 137.00 the pack.
+      // MRP. Ten tablets at Rs 137.00 the pack divides exactly, so this case
+      // alone proves nothing — the second assertion below is entailed by the
+      // first and could never fail on its own.
       final perTablet = Rate.fromPack(Money.rupees(137), Qty.units(10));
-      final wholePack = perTablet.amountFor(Qty.units(10));
-      expect(wholePack, Money.rupees(137));
-      expect(wholePack <= Money.rupees(137), isTrue);
+      expect(perTablet.amountFor(Qty.units(10)), Money.rupees(137));
+
+      // The case that matters is a pack that does NOT divide exactly. The
+      // milli-paisa rate carries a thousand times the resolution of the
+      // amount, so most packs divide cleanly and prove nothing; the ones that
+      // do not are large. Half-up on a 3-paisa pack of five thousand units
+      // rounds each unit up and comes back to 5 paisa for a 3-paisa pack.
+      final overpriced =
+          Rate.fromPack(Money.paisa(3), Qty.units(5000), mode: RoundingMode.halfUp);
+      expect(
+        overpriced.amountFor(Qty.units(5000)) > Money.paisa(3),
+        isTrue,
+        reason: 'this is the behaviour the default must not have',
+      );
+
+      // The default truncates, and then the pack never costs more than the
+      // pack. The policy says a loose sale "shall not exceed the pro-rata MRP
+      // printed on the pack", so the fraction of a paisa the shop cannot
+      // charge is the shop's to lose.
+      final safe = Rate.fromPack(Money.paisa(3), Qty.units(5000));
+      expect(safe.amountFor(Qty.units(5000)) <= Money.paisa(3), isTrue);
+
+      // And it holds everywhere, not only there.
+      for (var pack = 1; pack <= 60; pack++) {
+        for (final size in const [2, 3, 7, 11, 13, 97, 250, 1000, 3000, 5000]) {
+          final rate = Rate.fromPack(Money.paisa(pack), Qty.units(size));
+          expect(
+            rate.amountFor(Qty.units(size)) <= Money.paisa(pack),
+            isTrue,
+            reason: 'a $size-unit pack at $pack paisa priced above itself',
+          );
+        }
+      }
+    });
+
+    test('a figure too large to represent is refused, never wrapped', () {
+      // Dart does not throw on integer overflow; it wraps, and the sign
+      // flips. A pasted figure used to come back as a NEGATIVE amount on a
+      // screen where the shopkeeper had just typed a positive one.
+      expect(() => Money.parse('92233720368547759'), throwsFormatException);
+      expect(() => Qty.parse('9223372036854776'), throwsFormatException);
+      expect(() => Rate.parse('92233720368548'), throwsFormatException);
+
+      // The largest value that IS representable still parses, so the guard is
+      // a boundary and not a blanket refusal.
+      expect(Money.parse('92233720368547758'), isNotNull);
+
+      // And an amount a real shop could plausibly reach still parses.
+      expect(Money.parse('99999999.99'), Money.paisa(9999999999));
+      expect(Rate.parse('99999999.99'), isNotNull);
     });
 
     test('rounding is half-up and symmetric about zero', () {

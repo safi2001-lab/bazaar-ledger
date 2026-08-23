@@ -69,7 +69,7 @@ final class Qty implements Comparable<Qty> {
     if (units == null) return null;
     final thousandths = frac.isEmpty ? 0 : int.parse(frac.padRight(3, '0'));
 
-    final total = units * 1000 + thousandths;
+    final total = scaleOrThrow(units, 1000, 'quantity') + thousandths;
     return Qty._(negative ? -total : total);
   }
 

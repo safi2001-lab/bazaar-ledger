@@ -12,6 +12,7 @@ import 'support/test_db.dart';
 /// plants a specific kind of damage — the kinds that keep the books balanced
 /// while the numbers stop being true — and requires the check to name it.
 void main() {
+  group('no false positives', _falsePositiveTests);
   late AppDatabase db;
 
   setUp(() async {
@@ -132,4 +133,98 @@ Future<void> _seedShop(AppDatabase db) async {
       roundToRupee: false,
     ),
   );
+}
+
+/// Drift detection must not cry wolf.
+///
+/// A check that reports a healthy database as damaged is worse than one that
+/// reports nothing: the shopkeeper learns to ignore it, and then it is
+/// useless on the day it is right.
+void _falsePositiveTests() {
+  late AppDatabase db;
+
+  setUp(() async {
+    db = await openTestDatabase();
+    await _seedShop(db);
+  });
+
+  tearDown(() => db.close());
+
+  test('a backdated entry is drift, and a rebuild clears it', () async {
+    // A purchase keyed in the morning after it happened. Its ULID is later
+    // than the sale's; its `occurred_at_utc` is earlier. That genuinely
+    // changes the running balance of every row after it — the cache is stale,
+    // the check should say so, and the answer is to rebuild rather than to
+    // panic. A check with no remedy is half a feature.
+    final firm = (await DriftAppQueries(db).currentFirm())!;
+    final item = (await DriftAppQueries(db).searchItems(firm.id)).single;
+
+    final ids = UlidGenerator();
+    const clock = SystemClock();
+    final device = await db
+        .customSelect('SELECT id FROM devices WHERE is_this_device = 1')
+        .getSingle();
+    final hlc = await resumeHlcClock(
+      db,
+      deviceId: device.read<String>('id'),
+      clock: clock,
+    );
+    final owner = await db
+        .customSelect("SELECT id FROM users WHERE role = 'owner'")
+        .getSingle();
+
+    await TxRunner(database: db, ids: ids, hlc: hlc).run(
+      ActorContext(
+        firmId: firm.id,
+        userId: owner.read<String>('id'),
+        deviceId: device.read<String>('id'),
+        startedAtUtc: clock.nowUtc(),
+      ),
+      (tx) async {
+        await tx.insert('stock_ledger', {
+          'item_id': item.id,
+          'location_code': 'MAIN',
+          'txn_type': 'purchase',
+          'qty_delta_thousandths': 5000,
+          'rate_milli_paisa': 0,
+          'value_delta_paisa': 0,
+          // Yesterday.
+          'occurred_at_utc':
+              clock.nowUtc().millisecondsSinceEpoch - 86400000,
+          'occurred_on_local': '2026-08-22',
+        });
+      },
+    );
+
+    final drifted = await db.findStockLedgerDrift();
+    expect(
+      drifted,
+      isNotEmpty,
+      reason: 'a backdated row restates every balance after it',
+    );
+
+    expect(
+      await db.rebuildStockBalances(),
+      0,
+      reason: 'a rebuild recomputes from the ledger and leaves nothing over',
+    );
+    expect(await db.findStockLedgerDrift(), isEmpty);
+    expect((await db.checkHealth()).isHealthy, isTrue);
+  });
+
+  test('a voided stock row is not drift on every row after it', () async {
+    await db.customStatement(
+      'UPDATE stock_ledger SET deleted_at_utc = 1 '
+      "WHERE txn_type = 'opening'",
+    );
+
+    // The cache was written when that row counted, so it still counts here.
+    // Excluding it would report the whole tail of the ledger as damaged.
+    expect(await db.findStockLedgerDrift(), isEmpty);
+  });
+
+  test('a payment allocated to exactly its own value is not over-allocated',
+      () async {
+    expect(await db.findOverAllocatedPayments(), isEmpty);
+  });
 }

@@ -643,4 +643,22 @@ class AppStringsUr extends AppStrings {
   @override
   String get receiptPrintNotReady =>
       'Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.';
+
+  @override
+  String get errorStartupRecover => 'Backup se wapas layein';
+
+  @override
+  String get errorStartupNotReady =>
+      'Backup se wapas lana M5 mein aayega. Abhi ke liye app band kar ke dobara kholein.';
+
+  @override
+  String healthWarning(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count masle',
+      one: '1 masla',
+    );
+    return 'Data mein $_temp0 mila. Settings mein dekh lein.';
+  }
 }

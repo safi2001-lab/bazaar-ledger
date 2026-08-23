@@ -197,8 +197,28 @@ final class SaleCalculator {
           line.isFreeItem ? Money.zero : line.rate.amountFor(line.qty, mode: mode);
       gross.add(lineGross);
 
+      if (line.qty.isNegative) {
+        throw ArgumentError.value(
+          line.qty.display,
+          'qty',
+          'a sale line cannot carry a negative quantity; a return is a '
+              'credit note against the original bill',
+        );
+      }
       final discount = line.explicitDiscount ??
           lineGross.percentBp(line.discountBp, mode: mode);
+      // A negative discount is a surcharge that never appears on the bill.
+      // It made `taxable` exceed `subtotal`, so the printed lines stopped
+      // adding up to the printed total with nothing on the paper explaining
+      // the gap — and the customer is the one holding that paper.
+      if (discount.isNegative) {
+        throw ArgumentError.value(
+          discount.amountOnly,
+          'discount',
+          'a discount cannot be negative on "${line.itemName}"; a surcharge '
+              'is an extra charge and belongs in its own field',
+        );
+      }
       if (discount > lineGross) {
         throw ArgumentError.value(
           discount,
@@ -399,11 +419,25 @@ final class SaleCalculator {
     if (amount.isZero) {
       return List<Money>.filled(weights.length, Money.zero);
     }
+    if (amount.isNegative) {
+      throw ArgumentError.value(
+        amount.amountOnly,
+        'billDiscount',
+        'a bill discount cannot be negative',
+      );
+    }
     final total = Money.sum(weights);
     if (total.isZero) {
-      // Nothing to weight against — an all-free bill with a discount typed on
-      // it. Spread it evenly rather than losing it.
-      return amount.split(weights.length);
+      // A discount against a bill worth nothing. Spreading it evenly, which is
+      // what this used to do, made every line's taxable value negative — a
+      // negative tax base and a negative invoice total, and it slipped past
+      // the "discount exceeds the bill" guard below because there was no bill
+      // to exceed. It is an input error, and it says so.
+      throw ArgumentError.value(
+        amount.amountOnly,
+        'billDiscount',
+        'a discount of ${amount.amountOnly} against a bill worth nothing',
+      );
     }
     if (amount > total) {
       throw ArgumentError.value(

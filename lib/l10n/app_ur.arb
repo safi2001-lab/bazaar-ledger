@@ -316,5 +316,22 @@
   "receiptPrintNotReady": "Printer M2 mein aayega. Abhi bill dekh sakte hain aur PDF bhej sakte hain.",
   "@receiptPrintNotReady": {
     "description": "Honest note on a print button that cannot print yet."
+  },
+  "errorStartupRecover": "Backup se wapas layein",
+  "@errorStartupRecover": {
+    "description": "Button on the startup failure screen that opens the restore flow."
+  },
+  "errorStartupNotReady": "Backup se wapas lana M5 mein aayega. Abhi ke liye app band kar ke dobara kholein.",
+  "@errorStartupNotReady": {
+    "description": "Honest note that restore is not built yet."
+  },
+  "healthWarning": "Data mein {count, plural, =1{1 masla} other{{count} masle}} mila. Settings mein dekh lein.",
+  "@healthWarning": {
+    "description": "Shown once at startup when the health check found something.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

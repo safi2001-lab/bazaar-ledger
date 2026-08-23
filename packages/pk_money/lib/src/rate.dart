@@ -98,7 +98,7 @@ final class Rate implements Comparable<Rate> {
     if (rupees == null) return null;
     final sub = frac.isEmpty ? 0 : int.parse(frac.padRight(5, '0'));
 
-    final total = rupees * _milliPaisaPerRupee + sub;
+    final total = scaleOrThrow(rupees, _milliPaisaPerRupee, 'rate') + sub;
     return Rate._(negative ? -total : total);
   }
 
@@ -157,12 +157,7 @@ final class Rate implements Comparable<Rate> {
     final rupees = magnitude ~/ _milliPaisaPerRupee;
     final sub = magnitude % _milliPaisaPerRupee;
 
-    final digits = rupees.toString();
-    final grouped = StringBuffer();
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) grouped.write(',');
-      grouped.write(digits[i]);
-    }
+    final grouped = groupSouthAsian(rupees.toString());
 
     var tail = sub.toString().padLeft(5, '0');
     while (tail.length > 2 && tail.endsWith('0')) {

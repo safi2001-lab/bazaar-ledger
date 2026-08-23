@@ -45,6 +45,11 @@ class PreferencesNotifier extends Notifier<AppPreferences> {
 /// Everything downstream keys off this: there is no login, no account and no
 /// server, so "is there a firm row" is the whole of the app's session state.
 final firmProvider = FutureProvider<FirmProfile?>((ref) async {
+  // Watches the tick like every other read. `updateFirm` is the only writer
+  // of this row, and without this a shopkeeper who corrects their shop name,
+  // NTN or IBAN in Settings sees no change on screen — or on the receipt —
+  // until they restart the app, and reasonably concludes it did not save.
+  ref.watch(refreshTickProvider);
   final services = ref.watch(appServicesProvider);
   return services.queries.currentFirm();
 });
@@ -95,8 +100,15 @@ final unitsProvider = FutureProvider<
 });
 
 /// Item search, keyed by the query the counter typed.
+///
+/// Auto-disposed, and that matters more here than anywhere else. A family
+/// without it keeps one provider instance per distinct key for the life of
+/// the app, so every keystroke at the counter permanently retains a provider
+/// and the item list it fetched — unbounded growth on the one screen that
+/// must never stutter, on the handset least able to afford it.
 final itemSearchProvider =
-    FutureProvider.family<List<ItemSummary>, String>((ref, query) async {
+    FutureProvider.autoDispose.family<List<ItemSummary>, String>(
+        (ref, query) async {
   ref.watch(refreshTickProvider);
   final services = ref.watch(appServicesProvider);
   final firm = await ref.watch(firmProvider.future);
@@ -105,7 +117,8 @@ final itemSearchProvider =
 });
 
 final partySearchProvider =
-    FutureProvider.family<List<PartySummary>, String>((ref, query) async {
+    FutureProvider.autoDispose.family<List<PartySummary>, String>(
+        (ref, query) async {
   ref.watch(refreshTickProvider);
   final services = ref.watch(appServicesProvider);
   final firm = await ref.watch(firmProvider.future);
@@ -114,14 +127,22 @@ final partySearchProvider =
 });
 
 final receiptProvider =
-    FutureProvider.family<ReceiptData?, String>((ref, documentId) async {
+    FutureProvider.autoDispose.family<ReceiptData?, String>(
+        (ref, documentId) async {
   final services = ref.watch(appServicesProvider);
   final firm = await ref.watch(firmProvider.future);
   if (firm == null) return null;
   return services.queries.receiptFor(firm.id, documentId);
 });
 
-final dataHealthProvider = FutureProvider<DatabaseHealth>((ref) async {
-  ref.watch(refreshTickProvider);
+/// The integrity check, on demand only.
+///
+/// Deliberately does NOT watch the refresh tick. It runs `PRAGMA quick_check`
+/// over every page of the file plus a full foreign-key sweep; re-running that
+/// after every write while the Settings screen happens to be open would turn
+/// a diagnostic into a background job on a phone that cannot spare one. The
+/// screen has an explicit "check now" button, and that is the trigger.
+final dataHealthProvider =
+    FutureProvider.autoDispose<DatabaseHealth>((ref) async {
   return ref.watch(appServicesProvider).checkHealth();
 });

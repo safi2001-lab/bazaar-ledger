@@ -64,3 +64,41 @@ int divideRounded(int numerator, int denominator, RoundingMode mode) {
 
   return negative ? -result : result;
 }
+
+/// Refuses a value that would wrap a 64-bit integer.
+///
+/// A pasted figure that overflows does not throw in Dart; it wraps, and the
+/// sign flips. `Money.parse('92233720368547758.07')` used to return a
+/// NEGATIVE amount, silently, on a screen where the shopkeeper had just typed
+/// a number. Every scaling multiplication in this package goes through here.
+int scaleOrThrow(int value, int factor, String what) {
+  const maxSafe = 9223372036854775807;
+  if (value != 0 && value.abs() > maxSafe ~/ factor) {
+    throw FormatException(
+      '$what is too large to represent exactly: $value x $factor overflows',
+    );
+  }
+  return value * factor;
+}
+
+/// Groups a run of digits the way this market reads them.
+///
+/// CLDR gives `en-PK` and `ur-PK` the pattern `#,##,##0.###`: the last three
+/// digits, then twos. A shopkeeper reads `12,34,567` — twelve lakh — and has
+/// to stop and count `1,234,567`. Western grouping here would be the one
+/// localisation decision in this package made by default rather than on
+/// purpose, in a file that goes out of its way to get Latin digits right.
+///
+/// Crore and above keep grouping in twos: `1,00,00,000`.
+String groupSouthAsian(String digits) {
+  if (digits.length <= 3) return digits;
+  final head = digits.substring(0, digits.length - 3);
+  final tail = digits.substring(digits.length - 3);
+
+  final buffer = StringBuffer();
+  for (var i = 0; i < head.length; i++) {
+    if (i > 0 && (head.length - i) % 2 == 0) buffer.write(',');
+    buffer.write(head[i]);
+  }
+  return '$buffer,$tail';
+}

@@ -201,22 +201,48 @@ void main() {
     });
 
     test('two devices converge on the same order after exchanging', () {
+      // The claim is convergence, so the test has to compare the two devices'
+      // orderings — not merely that each moved forward, which follows from
+      // monotonicity alone and would pass with the merge deleted.
       final clockB = FixedClock(DateTime.utc(2026, 8, 23, 9, 0, 0, 400));
       final counter2 = HlcClock(deviceId: 'DEVICE-TWO', clock: clockB);
 
+      // Two counters trading events with no coordination: each writes, hears
+      // about the other's write, and writes again.
+      final events = <Hlc>[];
       final a1 = counter1.next();
       final b1 = counter2.next();
-
       counter1.merge(b1);
       counter2.merge(a1);
-
       final a2 = counter1.next();
       final b2 = counter2.next();
+      counter1.merge(b2);
+      counter2.merge(a2);
+      final a3 = counter1.next();
+      final b3 = counter2.next();
+      events.addAll([a1, b1, a2, b2, a3, b3]);
 
-      // Whatever each device does next is ordered after everything it has
-      // seen, on both sides.
-      expect(a2 > b1, isTrue);
-      expect(b2 > a1, isTrue);
+      // Each device sorts the same set of events by the HLC string alone.
+      // Sorting is what a merge does with a conflict, so if the two disagree
+      // the shops end up with different books.
+      final onCounterOne = [...events]..shuffle(Random(1));
+      final onCounterTwo = [...events]..shuffle(Random(2));
+      onCounterOne.sort((x, y) => x.value.compareTo(y.value));
+      onCounterTwo.sort((x, y) => x.value.compareTo(y.value));
+
+      expect(
+        onCounterOne.map((e) => e.value),
+        onCounterTwo.map((e) => e.value),
+        reason: 'two counters must agree on the order of the same events',
+      );
+
+      // And causality is respected: nothing a device wrote after hearing
+      // about an event sorts before it.
+      final order = onCounterOne.map((e) => e.value).toList();
+      expect(order.indexOf(a2.value), greaterThan(order.indexOf(b1.value)));
+      expect(order.indexOf(b2.value), greaterThan(order.indexOf(a1.value)));
+      expect(order.indexOf(a3.value), greaterThan(order.indexOf(b2.value)));
+      expect(order.indexOf(b3.value), greaterThan(order.indexOf(a2.value)));
     });
 
     test('refuses a peer whose clock is implausibly far ahead', () {
