@@ -106,6 +106,11 @@ class BlQty extends StatelessWidget {
       excludeSemantics: true,
       child: Text(
         label,
+        // One line, always. Wrapped onto two inside a fixed-height row this
+        // paints straight over whatever is beneath it, and a quantity broken
+        // across lines is a quantity the cashier misreads.
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontSize: size,
           fontWeight: FontWeight.w500,
@@ -114,6 +119,71 @@ class BlQty extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// A label on the left and a figure hard against the right margin.
+///
+/// Every screen that shows a total was building this by hand as
+/// `Row(children: [Text(label), Spacer(), FittedBox(child: BlMoney(...))])`,
+/// and every one of them was broken in the same way. A non-flex child of a
+/// `Row` is laid out with UNBOUNDED width, so the `FittedBox` sized itself to
+/// the figure's natural width and `BoxFit.scaleDown` never scaled anything.
+/// The protection those call sites were written to provide did not exist.
+///
+/// At 200% text on a 360dp screen the bill total was painted 93dp past the
+/// right edge of the display. `BlCard` does not clip, and `Text` raises no
+/// overflow assertion, so in release there was no ellipsis and no stripe —
+/// "Rs 12,500.00" simply read as "Rs 12,500." and the cashier said the wrong
+/// number out loud to the customer.
+///
+/// Two `Flexible` children give the figure a bounded width, so `scaleDown`
+/// does its job: the number shrinks but is never cut. It is given twice the
+/// label's share because it is the part that must survive — a label may
+/// ellipsis, an amount may not.
+class BlAmountRow extends StatelessWidget {
+  const BlAmountRow({
+    super.key,
+    required this.label,
+    required this.child,
+    this.labelStyle,
+    this.padding,
+  });
+
+  final String label;
+
+  /// The figure. Usually a [BlMoney], but a [BlQty] or a chip works too.
+  final Widget child;
+
+  final TextStyle? labelStyle;
+  final EdgeInsetsGeometry? padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final row = Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(
+            label,
+            style: labelStyle,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(width: BlTokens.space2),
+        Flexible(
+          flex: 2,
+          child: FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerRight,
+            child: child,
+          ),
+        ),
+      ],
+    );
+    return padding == null ? row : Padding(padding: padding!, child: row);
   }
 }
 

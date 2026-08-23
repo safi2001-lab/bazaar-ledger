@@ -137,15 +137,30 @@ class _DayCard extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  s.homeTodaySales,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: t.inkMuted,
-                    fontWeight: FontWeight.w600,
+                // Both flexible. At 200% the label and the bill-count chip
+                // together are wider than a 360dp screen, and the chip — which
+                // in the zero-sales state reads "Koi bill nahi", the first
+                // thing every morning — was cut off at the edge.
+                Flexible(
+                  child: Text(
+                    s.homeTodaySales,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: t.inkMuted,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-                BlChip(s.homeBillCount(day.billCount)),
+                const SizedBox(width: BlTokens.space2),
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerRight,
+                    child: BlChip(s.homeBillCount(day.billCount)),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: BlTokens.space2),

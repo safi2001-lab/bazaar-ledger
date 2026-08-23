@@ -471,10 +471,22 @@ class _CartLineTile extends ConsumerWidget {
                         child: Container(
                           height: BlTokens.touchKeypad,
                           alignment: Alignment.center,
-                          child: BlQty(
-                            line.qty,
-                            unit: line.item.unitCode,
-                            size: 16,
+                          // Scaled down rather than wrapped. At 200% "1 pcs"
+                          // laid out on two lines inside a 56dp box and
+                          // painted over the plus and minus buttons and the
+                          // row beneath — silently, because a Container does
+                          // not clip and Text raises no overflow assertion.
+                          // A decimal quantity like "0.750 kg" is a single
+                          // unbreakable token far wider than the box, and the
+                          // quantity is the number the cashier is checking
+                          // against what is on the counter.
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: BlQty(
+                              line.qty,
+                              unit: line.item.unitCode,
+                              size: 16,
+                            ),
                           ),
                         ),
                       ),
@@ -487,12 +499,22 @@ class _CartLineTile extends ConsumerWidget {
                         notifier.setQty(line.item.id, line.qty + step),
                   ),
                   const SizedBox(width: BlTokens.space2),
-                  Text(
-                    '× ${line.rate.amountOnly}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: t.inkMuted,
-                      fontFeatures: BlTokens.tabular,
+                  // Flexible, so the rate gives way to the quantity rather
+                  // than claiming its full natural width first and squeezing
+                  // the quantity into what is left.
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        '× ${line.rate.amountOnly}',
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: t.inkMuted,
+                          fontFeatures: BlTokens.tabular,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -711,28 +733,20 @@ class _TotalsBar extends ConsumerWidget {
             if (!preview.roundOff.isZero)
               _TotalRow(label: s.posRoundOff, amount: preview.roundOff),
             const SizedBox(height: BlTokens.space2),
-            Row(
-              children: [
-                Text(
-                  s.posTotal,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                    color: t.ink,
-                  ),
-                ),
-                const Spacer(),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  child: BlMoney(
-                    preview.total,
-                    size: 28,
-                    weight: FontWeight.w700,
-                    withSymbol: true,
-                    semanticPrefix: s.posTotal,
-                  ),
-                ),
-              ],
+            BlAmountRow(
+              label: s.posTotal,
+              labelStyle: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: t.ink,
+              ),
+              child: BlMoney(
+                preview.total,
+                size: 28,
+                weight: FontWeight.w700,
+                withSymbol: true,
+                semanticPrefix: s.posTotal,
+              ),
             ),
             const SizedBox(height: BlTokens.space3),
             BlButton(
@@ -763,20 +777,16 @@ class _TotalRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = context.bl;
-    return Padding(
+    return BlAmountRow(
       padding: const EdgeInsets.symmetric(vertical: 2),
-      child: Row(
-        children: [
-          Text(label, style: TextStyle(fontSize: 13, color: t.inkMuted)),
-          const Spacer(),
-          BlMoney(
-            amount,
-            size: 13,
-            weight: FontWeight.w500,
-            colour: colour ?? t.inkMuted,
-            semanticPrefix: label,
-          ),
-        ],
+      label: label,
+      labelStyle: TextStyle(fontSize: 13, color: t.inkMuted),
+      child: BlMoney(
+        amount,
+        size: 13,
+        weight: FontWeight.w500,
+        colour: colour ?? t.inkMuted,
+        semanticPrefix: label,
       ),
     );
   }

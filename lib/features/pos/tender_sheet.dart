@@ -275,12 +275,18 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           children: [
             Row(
               children: [
-                Text(
-                  s.tenderTitle,
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: t.ink,
+                // Flexible, so a long title at 200% ellipsises instead of
+                // shouldering the close button off the right of the sheet.
+                Flexible(
+                  child: Text(
+                    s.tenderTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: t.ink,
+                    ),
                   ),
                 ),
                 const Spacer(),
@@ -434,63 +440,45 @@ class _DueCard extends StatelessWidget {
       accent: true,
       child: Column(
         children: [
-          Row(
-            children: [
-              Text(
-                s.tenderDue,
-                style: TextStyle(fontSize: 14, color: t.inkMuted),
-              ),
-              const Spacer(),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: BlMoney(
-                  due,
-                  size: 30,
-                  weight: FontWeight.w700,
-                  withSymbol: true,
-                  semanticPrefix: s.tenderDue,
-                ),
-              ),
-            ],
+          BlAmountRow(
+            label: s.tenderDue,
+            labelStyle: TextStyle(fontSize: 14, color: t.inkMuted),
+            child: BlMoney(
+              due,
+              size: 30,
+              weight: FontWeight.w700,
+              withSymbol: true,
+              semanticPrefix: s.tenderDue,
+            ),
           ),
           if (!change.isZero) ...[
             const Divider(height: BlTokens.space5),
-            Row(
-              children: [
-                Text(
-                  s.tenderChange,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: t.money,
-                  ),
-                ),
-                const Spacer(),
-                BlMoney(
-                  change,
-                  size: 24,
-                  weight: FontWeight.w700,
-                  colour: t.money,
-                  semanticPrefix: s.tenderChange,
-                ),
-              ],
+            BlAmountRow(
+              label: s.tenderChange,
+              labelStyle: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: t.money,
+              ),
+              child: BlMoney(
+                change,
+                size: 24,
+                weight: FontWeight.w700,
+                colour: t.money,
+                semanticPrefix: s.tenderChange,
+              ),
             ),
           ] else if (!short.isZero) ...[
             const Divider(height: BlTokens.space5),
-            Row(
-              children: [
-                Text(
-                  s.tenderRemaining,
-                  style: TextStyle(fontSize: 14, color: t.warning),
-                ),
-                const Spacer(),
-                BlMoney(
-                  short,
-                  size: 18,
-                  colour: t.warning,
-                  semanticPrefix: s.tenderRemaining,
-                ),
-              ],
+            BlAmountRow(
+              label: s.tenderRemaining,
+              labelStyle: TextStyle(fontSize: 14, color: t.warning),
+              child: BlMoney(
+                short,
+                size: 18,
+                colour: t.warning,
+                semanticPrefix: s.tenderRemaining,
+              ),
             ),
           ],
         ],
