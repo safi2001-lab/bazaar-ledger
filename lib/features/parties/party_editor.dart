@@ -46,6 +46,12 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   }
 
   Future<void> _save() async {
+    // The very first thing, before the validate and before any await.
+    // `onPressed: _busy ? null : _save` only takes effect once a frame has
+    // been built, so two taps inside one frame both reach here — and this
+    // writes a row. The tender sheet documents and guards the same hazard;
+    // that guard was never copied to the editors.
+    if (_busy) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() {
       _busy = true;

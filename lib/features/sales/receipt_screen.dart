@@ -132,6 +132,10 @@ class _ActionsState extends ConsumerState<_Actions> {
   bool _busy = false;
 
   Future<void> _sharePdf() async {
+    // First statement. Setting `_busy` inside the `setState` below let two
+    // taps in one frame both through, and each one renders a PDF and opens
+    // its own share sheet.
+    if (_busy) return;
     final s = AppStrings.of(context);
     setState(() => _busy = true);
     try {

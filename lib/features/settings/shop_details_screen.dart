@@ -40,6 +40,10 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
   }
 
   Future<void> _save() async {
+    // First statement, before the validate and before any await. A disabled
+    // button only disables on the next build, so two taps in one frame both
+    // reach here.
+    if (_busy) return;
     final s = AppStrings.of(context);
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() {

@@ -42,6 +42,11 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
   }
 
   Future<void> _finish() async {
+    // First statement. `setUpShop` happens to be idempotent, so a double tap
+    // does not currently create two shops — but nothing in the signature says
+    // so, and a wizard that writes a firm, a user, a device, a chart of
+    // accounts and twelve units is not a place to rely on that holding.
+    if (_busy) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() {
       _busy = true;

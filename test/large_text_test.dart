@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bazaar_ledger/design/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -110,14 +111,19 @@ void main() {
     expectNothingPaintsOffScreen(tester);
   });
 
-  testWidgets('the counter is usable sideways with the keyboard up',
-      (tester) async {
-    // A tablet on the counter is the standard Pakistani retail setup, and
-    // main.dart unlocks every orientation on purpose. Sideways on a phone
-    // with the keyboard up there are about 160dp of body left; the search
-    // field and the totals bar together are taller than that. The list
-    // collapsed to nothing and the Charge button was laid out below the top
-    // of the keyboard, untappable, on the one screen this product exists for.
+  testWidgets('the counter can take money sideways, without a scroll a '
+      'finger cannot perform', (tester) async {
+    // A tablet on the counter is the standard Pakistani retail setup and
+    // main.dart unlocks every orientation on purpose. Sideways with the
+    // keyboard up there are about 160dp of body left.
+    //
+    // This test previously passed against a layout where the Charge button
+    // was genuinely unreachable. It used the harness `tapButton`, which calls
+    // `ensureVisible` first — performing programmatically a scroll no finger
+    // could perform, because the cart list filled the fold and won every
+    // gesture so the scroll view underneath it never moved. So this one never
+    // calls `ensureVisible`: it asserts the button is inside the viewport and
+    // then taps it where it is.
     tester.view
       ..physicalSize = const Size(1600, 720)
       ..devicePixelRatio = 2
@@ -129,16 +135,45 @@ void main() {
     });
 
     final app = await Harness.startWithShop(tester);
-    await app.seedItem(name: 'Cooking Oil 5L Tin', rupees: 2500);
+    for (var i = 0; i < 8; i++) {
+      await app.seedItem(name: 'Cooking Oil 5L Tin $i', rupees: 2500);
+    }
 
     await tester.tap(find.text('Naya Bill').first);
     await tester.pumpAndSettle();
-    await _addToCart(tester, 'Cooking Oil');
+    for (var i = 0; i < 8; i++) {
+      await _addToCart(tester, 'Cooking Oil 5L Tin $i');
+    }
 
     expect(tester.takeException(), isNull, reason: 'the body overflowed');
 
-    // And the button is not merely laid out — it is reachable and it works.
-    await tapButton(tester, 'Paisay lein');
+    final charge = find
+        .ancestor(
+          of: find.textContaining('Paisay lein'),
+          matching: find.byType(BlButton),
+        )
+        .first;
+
+    final rect = tester.getRect(charge);
+    final screen =
+        tester.view.physicalSize / tester.view.devicePixelRatio;
+    expect(
+      rect.bottom,
+      lessThanOrEqualTo(screen.height),
+      reason: 'the Charge button is laid out below the bottom of the screen, '
+          'at $rect on a $screen display',
+    );
+    expect(
+      rect.right,
+      lessThanOrEqualTo(screen.width),
+      reason: 'the Charge button is off the right of the screen at $rect',
+    );
+
+    // Tapped where it is. No ensureVisible, no scrolling, nothing a person
+    // with one hand and a customer waiting could not do.
+    await tester.tap(charge);
+    await tester.pumpAndSettle();
+
     expect(
       find.widgetWithText(TextFormField, 'Diye gaye'),
       findsOneWidget,

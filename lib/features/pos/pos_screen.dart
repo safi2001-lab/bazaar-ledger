@@ -193,77 +193,84 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, box) {
-            // Below this there is not room for a search field, a list and a
-            // pinned totals bar at once. Landscape with a keyboard is the
-            // case that matters; a very large font in portrait reaches it too.
-            final tight = box.maxHeight < 420;
+            final search = Padding(
+              padding: const EdgeInsets.fromLTRB(
+                BlTokens.space4,
+                BlTokens.space3,
+                BlTokens.space4,
+                BlTokens.space2,
+              ),
+              child: BlField(
+                controller: _search,
+                focusNode: _searchFocus,
+                label: s.actionSearch,
+                hint: s.posSearchHint,
+                autofocus: true,
+                textInputAction: TextInputAction.search,
+                onChanged: _onQueryChanged,
+                onSubmitted: _onSubmitted,
+                prefix: const Icon(Icons.search, size: 20),
+                suffix: query.isEmpty
+                    ? null
+                    : BlIconButton(
+                        icon: Icons.close,
+                        label: s.actionClose,
+                        onPressed: _clearSearch,
+                      ),
+              ),
+            );
+
+            final list = query.isEmpty
+                ? _CartList(onEmptyTapped: () => _searchFocus.requestFocus())
+                : _SearchResults(query: query, onPick: _addToCart);
+
+            // Wide means sideways, and sideways the counter is two columns.
+            //
+            // Stacking them was wrong twice over. A tablet on the counter is
+            // the standard Pakistani retail setup and `main.dart` unlocks
+            // every orientation on purpose, but landscape on a phone leaves
+            // about 160dp of body once the keyboard is up — and the search
+            // field and the totals bar together are taller than that. The
+            // first attempt at a fix moved the totals bar into a scroll view
+            // and was worse than useless: the cart list filled the fold and
+            // won every gesture, so the outer scroll never moved and the
+            // Charge button could not be reached by any finger. The test that
+            // was supposed to catch it called `ensureVisible` first, which
+            // scrolled programmatically what a person cannot scroll at all.
+            //
+            // Side by side, the button is simply always on screen. This is
+            // also what every real point-of-sale does in landscape, for the
+            // same reason.
+            if (box.maxWidth >= 600) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      children: [
+                        search,
+                        Expanded(child: list),
+                      ],
+                    ),
+                  ),
+                  const VerticalDivider(width: 1),
+                  SizedBox(
+                    width: box.maxWidth < 900 ? 300 : 360,
+                    // The totals scroll if they must; the Charge button never
+                    // does. Whatever else is squeezed, taking the money is
+                    // reachable.
+                    child: const _TotalsBar(scrollable: true),
+                  ),
+                ],
+              );
+            }
+
             return Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    BlTokens.space4,
-                    BlTokens.space3,
-                    BlTokens.space4,
-                    BlTokens.space2,
-                  ),
-                  child: BlField(
-                    controller: _search,
-                    focusNode: _searchFocus,
-                    label: s.actionSearch,
-                    hint: s.posSearchHint,
-                    autofocus: true,
-                    textInputAction: TextInputAction.search,
-                    onChanged: _onQueryChanged,
-                    onSubmitted: _onSubmitted,
-                    prefix: const Icon(Icons.search, size: 20),
-                    suffix: query.isEmpty
-                        ? null
-                        : BlIconButton(
-                            icon: Icons.close,
-                            label: s.actionClose,
-                            onPressed: _clearSearch,
-                          ),
-                  ),
-                ),
-                // In a tight viewport the totals bar joins the scroll instead of
-                // being pinned under it.
-                //
-                // The counter is used in landscape — a tablet on the counter is
-                // the standard Pakistani retail setup, and `main.dart` unlocks
-                // every orientation deliberately. Sideways on a phone with the
-                // keyboard up there are about 160dp of body left, and the search
-                // field and the totals bar together are taller than that. The
-                // `Expanded` list collapsed to nothing and the Charge button was
-                // laid out 57dp below the top of the keyboard: untappable, on the
-                // one screen this product exists for.
-                Expanded(
-                  child: tight
-                      ? SingleChildScrollView(
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 240,
-                                child: query.isEmpty
-                                    ? _CartList(
-                                        onEmptyTapped: () =>
-                                            _searchFocus.requestFocus(),
-                                      )
-                                    : _SearchResults(
-                                        query: query,
-                                        onPick: _addToCart,
-                                      ),
-                              ),
-                              const _TotalsBar(),
-                            ],
-                          ),
-                        )
-                      : query.isEmpty
-                      ? _CartList(
-                          onEmptyTapped: () => _searchFocus.requestFocus(),
-                        )
-                      : _SearchResults(query: query, onPick: _addToCart),
-                ),
-                if (!tight) const _TotalsBar(),
+                search,
+                Expanded(child: list),
+                const _TotalsBar(),
               ],
             );
           },
@@ -738,7 +745,15 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
 // ---------------------------------------------------------------------------
 
 class _TotalsBar extends ConsumerWidget {
-  const _TotalsBar();
+  const _TotalsBar({this.scrollable = false});
+
+  /// True in the two-column landscape layout, where this is a side panel
+  /// rather than a strip along the bottom.
+  ///
+  /// The itemised rows scroll if the panel is short — a keyboard sideways
+  /// leaves very little of it — and the Charge button is pinned below them so
+  /// that whatever else is squeezed out, taking the money is still reachable.
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -762,9 +777,9 @@ class _TotalsBar extends ConsumerWidget {
       ),
       child: SafeArea(
         top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
+        child: _Stack(
+          scrollable: scrollable,
+          rows: [
             _TotalRow(label: s.posSubtotal, amount: preview.subtotal),
             if (!preview.lineDiscountTotal.isZero ||
                 !preview.billDiscount.isZero)
@@ -795,21 +810,55 @@ class _TotalsBar extends ConsumerWidget {
                 semanticPrefix: s.posTotal,
               ),
             ),
-            const SizedBox(height: BlTokens.space3),
-            BlButton(
-              label: '${s.posCharge} · ${s.posItemsInCart(cart.lines.length)}',
-              icon: Icons.payments_outlined,
-              big: true,
-              onPressed: () => showModalBottomSheet<void>(
-                context: context,
-                isScrollControlled: true,
-                useSafeArea: true,
-                builder: (_) => const TenderSheet(),
-              ),
-            ),
           ],
+          action: BlButton(
+            label: '${s.posCharge} · ${s.posItemsInCart(cart.lines.length)}',
+            icon: Icons.payments_outlined,
+            big: true,
+            onPressed: () => showModalBottomSheet<void>(
+              context: context,
+              isScrollControlled: true,
+              useSafeArea: true,
+              builder: (_) => const TenderSheet(),
+            ),
+          ),
         ),
       ),
+    );
+  }
+}
+
+/// The totals, and under them the one button that must never be out of reach.
+///
+/// Pinned rather than scrolled with the rest, because a Charge button a
+/// shopkeeper has to find by scrolling is a Charge button they cannot use with
+/// a customer waiting — and, in the layout this replaced, one they could not
+/// reach at all: the cart list filled the fold and won every gesture, so the
+/// scroll view underneath it never moved.
+class _Stack extends StatelessWidget {
+  const _Stack({
+    required this.scrollable,
+    required this.rows,
+    required this.action,
+  });
+
+  final bool scrollable;
+  final List<Widget> rows;
+  final Widget action;
+
+  @override
+  Widget build(BuildContext context) {
+    final totals = Column(mainAxisSize: MainAxisSize.min, children: rows);
+    return Column(
+      mainAxisSize: scrollable ? MainAxisSize.max : MainAxisSize.min,
+      children: [
+        if (scrollable)
+          Flexible(child: SingleChildScrollView(child: totals))
+        else
+          totals,
+        const SizedBox(height: BlTokens.space3),
+        action,
+      ],
     );
   }
 }
