@@ -88,7 +88,7 @@ final class PrintQueue {
   /// thing this class exists to prevent, arriving through the one door the
   /// finished-jobs map cannot see. A second ask for a job already on its way
   /// waits for that job rather than starting another.
-  final _pending = <String, Future<PrintResult>>{};
+  final _pending = <String, Completer<PrintResult>>{};
 
   /// The job currently on the wire, so the next one waits.
   Future<void> _busy = Future<void>.value();
@@ -113,17 +113,22 @@ final class PrintQueue {
     }
 
     final pending = _pending[jobId];
-    if (pending != null) return pending;
+    if (pending != null) return pending.future;
 
     // Chained rather than run: whatever is on the wire finishes first.
     final completer = Completer<PrintResult>();
-    _pending[jobId] = completer.future;
-    _busy = _busy.then((_) async {
+    _pending[jobId] = completer;
+    // Deliberately not awaited here. `_busy` IS the chain — awaiting it would
+    // make every caller wait for every earlier job before even being told
+    // theirs was accepted, and the caller already has its own future.
+    final chained = _busy.then((_) async {
       final result = await _run(jobId, target, bytes);
       _finished[jobId] = result;
       _pending.remove(jobId);
       completer.complete(result);
     });
+    _busy = chained;
+    unawaited(chained);
     return completer.future;
   }
 
