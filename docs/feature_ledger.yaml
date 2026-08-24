@@ -2426,6 +2426,15 @@ features:
     # shopkeeper who took Rs 40,000 of returns in a month needs to see that
     # number and netting it into Sales hides it.
     #
+    # The credit is SPLIT against what the bill can still absorb, exactly as a
+    # receipt is. Crediting Receivables for the whole amount would be wrong
+    # whenever the customer had already paid: the ledger would say their
+    # udhaar came down while `documents.balance_paisa` — which is what the
+    # khata screen sums — had nothing left to come down from. The two would
+    # disagree by exactly the returned amount, and the khata is the one the
+    # shopkeeper reads. Found by thinking about what the writer would have to
+    # do, before there was a writer to get it wrong.
+    #
     # A walk-in return has to be paid back over the counter, refused in words
     # rather than discovered as an unbalanced entry: there is no khata to put
     # the credit on.
@@ -2443,6 +2452,8 @@ features:
       - the cost the goods come back at and the pro-rating never loses a paisa
       - the cost the goods come back at a zero-cost line comes back at zero, not at a divide by zero
       - the money goes back on the khata when nothing is handed over
+      - the money goes on account when the bill is already settled
+      - the money splits when the bill can absorb only part of it
       - the money comes out of the drawer when it is handed over
       - the money splits between the two when only some is handed over
       - the money is a debit to Sales Returns, never a debit to Sales

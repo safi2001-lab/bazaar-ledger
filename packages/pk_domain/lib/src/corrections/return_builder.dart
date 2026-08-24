@@ -116,6 +116,8 @@ final class ReturnPosting {
     required this.journal,
     required this.originalDocumentId,
     required this.refund,
+    required this.againstBill,
+    required this.onAccount,
     required this.auditSummary,
   });
 
@@ -129,6 +131,13 @@ final class ReturnPosting {
   final String originalDocumentId;
 
   final Money refund;
+
+  /// How much of the credit the original bill could absorb, and how much the
+  /// shop is now holding for the customer. Stated so the writer applies these
+  /// rather than working them out again from a different starting point.
+  final Money againstBill;
+  final Money onAccount;
+
   final String auditSummary;
 
   void assertBalanced() {
@@ -162,6 +171,7 @@ final class ReturnBuilder {
     required List<SoldLine> soldLines,
     required String originalDocNo,
     required String? partyId,
+    required Money originalOutstanding,
     required AllocatedNumber returnNumber,
     required AllocatedNumber journalNumber,
     String? refundLedgerAccountId,
@@ -328,8 +338,10 @@ final class ReturnBuilder {
 
     // The rest comes off what the customer owes. With no party there is
     // nobody to credit, which is why a walk-in return has to be refunded in
-    // full — checked below rather than discovered as an unbalanced entry.
+    // full — checked here rather than discovered as an unbalanced entry.
     final credited = goods - draft.refundNow;
+    var againstBill = Money.zero;
+    var onAccount = Money.zero;
     if (credited.isPositive) {
       if (partyId == null) {
         throw const ReturnRefused(
@@ -337,11 +349,34 @@ final class ReturnBuilder {
           'khata to put the credit on.',
         );
       }
+
+      // Split against what is actually still owed on that bill.
+      //
+      // Crediting Receivables for the whole amount would be wrong whenever
+      // the customer had already paid: the ledger would say their udhaar came
+      // down while `documents.balance_paisa` — which is what the khata screen
+      // sums — had nothing left to come down from. The two would disagree by
+      // exactly the returned amount, and the khata is the one the shopkeeper
+      // reads.
+      //
+      // The same shape as a receipt: what a bill can absorb goes against the
+      // bill, and the remainder is money the shop is holding.
+      againstBill = credited < originalOutstanding
+          ? credited
+          : originalOutstanding;
+      onAccount = credited - againstBill;
+
       post(
         key: 'accounts_receivable',
-        credit: credited,
+        credit: againstBill,
         party: partyId,
         narration: 'Credit on ${returnNumber.formatted}',
+      );
+      post(
+        key: 'customer_advances',
+        credit: onAccount,
+        party: partyId,
+        narration: 'On account from ${returnNumber.formatted}',
       );
     }
 
@@ -395,6 +430,8 @@ final class ReturnBuilder {
       ),
       originalDocumentId: draft.originalDocumentId,
       refund: draft.refundNow,
+      againstBill: againstBill,
+      onAccount: onAccount,
       auditSummary:
           'Return ${returnNumber.formatted} against $originalDocNo for '
           '${goods.amountOnly}: ${draft.reason.trim()}',

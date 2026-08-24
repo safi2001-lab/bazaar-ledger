@@ -17,6 +17,7 @@ void main() {
     Money refundNow = Money.zero,
     String? partyId = 'party-1',
     String? refundAccount = 'ledger-cash',
+    Money outstanding = const Money.rupees(100000),
   }) => builder.build(
     actor: _actor(),
     draft: ReturnDraft(
@@ -30,6 +31,7 @@ void main() {
     soldLines: sold ?? [_sold()],
     originalDocNo: 'INV-2627-0001',
     partyId: partyId,
+    originalOutstanding: outstanding,
     returnNumber: _number('SRN-2627-0001', 'SRN'),
     journalNumber: _number('JV-2627-00007', 'JV'),
     refundLedgerAccountId: refundAccount,
@@ -193,6 +195,44 @@ void main() {
             .credit,
         const Money.rupees(100),
       );
+    });
+
+    test('goes on account when the bill is already settled', () {
+      // Crediting Receivables for the whole amount would say the customer's
+      // udhaar came down while `documents.balance_paisa` — which is what the
+      // khata screen sums — had nothing left to come down from. The two would
+      // disagree by exactly the returned amount, and the khata is the one the
+      // shopkeeper reads.
+      final posting = build(
+        sold: [_sold(qty: 1, rateRupees: 150)],
+        outstanding: Money.zero,
+      );
+
+      expect(posting.againstBill, Money.zero);
+      expect(posting.onAccount, const Money.rupees(150));
+      expect(
+        posting.journal.lines
+            .singleWhere((l) => l.accountSystemKey == 'customer_advances')
+            .credit,
+        const Money.rupees(150),
+      );
+      expect(
+        posting.journal.lines.any(
+          (l) => l.accountSystemKey == 'accounts_receivable',
+        ),
+        isFalse,
+      );
+    });
+
+    test('splits when the bill can absorb only part of it', () {
+      final posting = build(
+        sold: [_sold(qty: 1, rateRupees: 150)],
+        outstanding: const Money.rupees(40),
+      );
+
+      expect(posting.againstBill, const Money.rupees(40));
+      expect(posting.onAccount, const Money.rupees(110));
+      expect(debits(posting), credits(posting));
     });
 
     test('is a debit to Sales Returns, never a debit to Sales', () {
