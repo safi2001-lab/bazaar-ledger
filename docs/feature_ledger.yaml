@@ -88,7 +88,10 @@ milestones:
 
   - id: M5
     title: Corrections, returns and data safety
-    state: planned
+    # Opened 24 Aug 2026. A shop that cannot fix a mistake has a permanent
+    # wrong number in its books, and the wrong number is the one an auditor
+    # finds.
+    state: open
     owns:
       - lib/features/backup/**
       - lib/features/recycle/**
@@ -2231,3 +2234,64 @@ features:
       - a delivery with nothing on it is refused in words
       - paying more than the bill is refused in words
       - what is still owed reaches the supplier khata
+
+  # ---- M5 · Corrections, returns and data safety ------------------------
+
+  - id: M5-VOID-01
+    milestone: M5
+    title: A posted bill is undone by a reversal, never by an edit
+    status: done
+    # A posted document is immutable, and not as a preference: the shopkeeper
+    # has already printed it and handed the paper to a customer. A number that
+    # changes underneath somebody holding the receipt is what makes them stop
+    # trusting the app.
+    #
+    # `journal_entries`, `journal_lines` and `stock_ledger` are append-only
+    # and TxRunner refuses to update them. Only `documents` moves, and only
+    # its status — which is what the schema was built for and what nothing
+    # had used until now.
+    #
+    # NEVER a minus sign. The reversal swaps the sides; no amount is negated.
+    # Negating looks equivalent and is not: a Trial Balance built by summing a
+    # column cannot tell a negative debit from a credit, so the report
+    # balances while the accounts are wrong. Mutation-tested — negating
+    # instead of swapping fails thirteen of these.
+    #
+    # Dated TODAY, never backdated to what it undoes. A reversal backdated
+    # into a period that has been closed, reported or filed changes a number
+    # somebody has already acted on. Dated today it nets to zero and leaves
+    # both halves visible, which is what a day book should show.
+    #
+    # Stock goes back at the cost it left at, never at today's average. A void
+    # means the goods never left; putting them back at a cost they were never
+    # carried at would change the shop's inventory value because somebody
+    # corrected a typo, and the difference would land in no account at all.
+    # It is an `adjustment`, not a `sale_return` — a return is a customer
+    # bringing goods back, a different event with its own tax treatment.
+    #
+    # The refusal that matters: a bill with payments allocated against it
+    # CANNOT be voided. The naive void leaves allocation rows pointing at a
+    # document no report considers real, and `findOverAllocatedPayments()`
+    # cannot catch it because the sum still fits — verified by reading it,
+    # it compares SUM(allocations) against the payment and knows nothing
+    # about document status. The customer's khata would quietly gain money
+    # nobody returned. The refusal names the receipts, because "deal with the
+    # payments first" is only actionable if the shopkeeper is told which.
+    proof:
+      - the sides swap every debit becomes a credit and back
+      - the sides swap nothing is ever negated
+      - the sides swap and the totals swap with them
+      - the sides swap the party stays on the line it was on
+      - when it happened the reversal is dated today, never backdated
+      - when it happened and says what it undid, in its own narration
+      - when it happened and points at the entry it reverses
+      - the stock goes back at the cost it left at, not at today
+      - the stock goes back as an adjustment, never as a return
+      - the stock goes back dated today, like the entry
+      - the stock goes back a document that moved no stock reverses none
+      - what it refuses a void with no reason
+      - what it refuses a bill that has been paid against
+      - what it refuses and names the receipts standing in the way
+      - what it refuses an entry with no lines, because nothing happened
+      - the audit line says what was voided and why, in words
+      - the audit line and the reason is trimmed rather than stored ragged
