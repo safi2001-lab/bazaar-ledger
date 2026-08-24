@@ -17,6 +17,7 @@ export 'src/write/drift_payment_writer.dart';
 export 'src/write/drift_printer_settings.dart';
 export 'src/write/drift_purchase_writer.dart';
 export 'src/write/drift_sale_writer.dart';
+export 'src/write/drift_void_writer.dart';
 export 'src/write/first_run.dart';
 export 'src/write/sequence_allocator.dart';
 export 'src/write/tx_runner.dart';

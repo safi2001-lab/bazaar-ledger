@@ -7,3 +7,4 @@ library;
 export 'src/post_sale_use_case.dart';
 export 'src/record_purchase_use_case.dart';
 export 'src/record_receipt_use_case.dart';
+export 'src/void_document_use_case.dart';

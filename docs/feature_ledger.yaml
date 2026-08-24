@@ -2295,3 +2295,62 @@ features:
       - what it refuses an entry with no lines, because nothing happened
       - the audit line says what was voided and why, in words
       - the audit line and the reason is trimmed rather than stored ragged
+
+  - id: M5-VOID-02
+    milestone: M5
+    title: A bill can be undone in the database, and its tender with it
+    status: done
+    # Reads what was actually written, mirrors it, appends. Nothing in the
+    # ledger is edited — the only rows that change are the document's status
+    # and its own tender's.
+    #
+    # The reversal is built from the ENTRY, not from the draft. Prices, costs
+    # and tax rules all move; the entry that exists is the only thing worth
+    # undoing, and rebuilding from a draft would produce today's numbers for
+    # yesterday's bill.
+    #
+    # Journal lines name their account by resolved id rather than by system
+    # key, so the reversal points at the same account rows the original did.
+    # Going back through a key would re-resolve, and an account renamed or
+    # re-keyed since would send the reversal somewhere else entirely.
+    #
+    # The thing that made the first version wrong: a cash sale writes its own
+    # tender and allocates it to itself, so treating every allocation as an
+    # obstacle made EVERY cash sale unvoidable. Found immediately, because
+    # five proofs failed at once.
+    #
+    # A counter tender and a receipt taken later are different events. The
+    # tender is part of the sale — cancelling the bill means handing the money
+    # straight back, and both records go together. A receipt is money the
+    # customer really did hand over against a khata, and voiding the bill
+    # underneath it would either lose that money or leave an allocation
+    # pointing at a document no report considers real.
+    #
+    # The discriminator is `allocation_mode`: DriftSaleWriter writes `exact`,
+    # ReceiptDraft defaults to `fifo`. That is a real coupling between two
+    # files, so it is named in the code and asserted from both sides — a
+    # receipt against a single bill still refuses, and a cash sale still
+    # voids with its tender.
+    #
+    # The allocation row is left where it is. `amount_paisa > 0` is a CHECK
+    # and `deleted_at_utc` is an envelope column TxRunner refuses to let
+    # anything set by hand, both correctly. A row pointing from a void payment
+    # at a void document is inert, and it stays as evidence.
+    #
+    # Mutation-tested: blocking every allocation fails eight, and leaving the
+    # tender standing fails one.
+    proof:
+      - the books net to zero after a void
+      - the stock comes back
+      - nothing in the ledger is edited, only appended
+      - the reversal points at what it undid
+      - the bill is marked void and keeps its reason
+      - a voided udhaar bill leaves the khata clear
+      - what it refuses a bill that has been paid against, naming the receipt
+      - what it refuses a receipt refuses even when it touches this bill alone
+      - what it refuses a cash sale can still be voided, tender and all
+      - what it refuses a bill that is already void
+      - what it refuses a bill that does not exist
+      - what it refuses a void with no reason, before anything is written
+      - a failed void burns no journal number
+      - the void is recorded in the audit trail

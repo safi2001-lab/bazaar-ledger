@@ -28,6 +28,7 @@ export 'src/ports/printer_settings.dart';
 export 'src/ports/purchase_writer.dart';
 export 'src/ports/receipt.dart';
 export 'src/ports/sale_writer.dart';
+export 'src/ports/void_writer.dart';
 export 'src/receivables/aging.dart';
 export 'src/receivables/fifo_allocator.dart';
 export 'src/receivables/receipt_builder.dart';
