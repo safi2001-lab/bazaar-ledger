@@ -2467,3 +2467,51 @@ features:
       - what it refuses a refund with no account for it to come out of
       - the entry balances across every shape of return
       - the entry balances and the return points at the bill it came off
+
+  - id: M5-RETURN-02
+    milestone: M5
+    title: A return reaches the database, and the limit holds across visits
+    status: done
+    # The return is its own document with its own number, linked to the bill
+    # it came off. Nothing on the original changes except how much of it is
+    # still owed — the bill the customer is holding still says what it always
+    # said.
+    #
+    # The limit counts what earlier returns took THROUGH `doc_links`, read
+    # inside the transaction. Counted rather than cached on the line, because
+    # a cache is a second answer and the whole point of the limit is that it
+    # cannot be walked past. Without it a customer returns the same tin every
+    # day and walks a shop out of its stock one bill at a time — and that is
+    # the half of this that needs a database to be true at all.
+    #
+    # The cost snapshot survives a delivery. A proof sells at Rs 90, buys at
+    # Rs 200 so the average moves, then returns: the tin comes back at Rs 90.
+    # At Rs 200 the shop would have booked a profit on a customer changing
+    # their mind.
+    #
+    # The credit splits exactly as the builder computed it — what the bill can
+    # absorb comes off `documents.balance_paisa`, the rest is already credited
+    # to Customer Advances by the journal. A proof settles the bill first and
+    # checks the khata reads minus Rs 150 afterwards, because that is the
+    # figure a shopkeeper argues from.
+    #
+    # Two of these proofs were rewritten because they did not test their own
+    # names. One asserted a row count was `isNotNull`, which a count always
+    # is — a test that could not fail dressed as one that could. The other was
+    # called "becomes credit" while asserting the credit was zero.
+    #
+    # Mutation-tested: ignoring earlier returns fails two, never reducing the
+    # bill fails one, losing the cost snapshot fails one.
+    proof:
+      - one tin off a bill for five comes back
+      - the books balance afterwards
+      - the credit comes off the khata
+      - a cash sale returned for cash owes nobody anything
+      - a return against a settled bill becomes credit, not a refund
+      - the stock comes back at what it left at, not at today
+      - the return is linked to the bill it came off
+      - the limit holds across visits a second return can only take what the first left
+      - the limit holds across visits and a third finds nothing left
+      - what it refuses a bill that does not exist
+      - what it refuses a failure leaves nothing behind
+      - the return is recorded in the audit trail
