@@ -2395,3 +2395,64 @@ features:
       - a cancel with no reason is refused in words
       - a bill paid against is refused, naming the receipt
       - the sheet says the bill is not deleted
+
+  - id: M5-RETURN-01
+    milestone: M5
+    title: Part of a bill can come back, at the cost it left at
+    status: done
+    # Distinct from a void, and the distinction is the whole reason it exists.
+    # A void says the bill should never have happened; a return says it did
+    # and then some of it came back. A shopkeeper who sold five things and had
+    # one returned cannot void the bill — the other four were sold, the
+    # customer keeps them, and the tax on them is owed.
+    #
+    # THE COST IS THE SNAPSHOT. Goods come back at what they left at, read off
+    # `document_lines.cost_paisa`, never at today's average. Stock has moved
+    # since: deliveries have landed and the average has shifted. Bringing a
+    # tin back at today's cost would create or destroy inventory value out of
+    # nothing — the shop would book a profit or a loss on a customer changing
+    # their mind — and the difference would land in no account at all.
+    #
+    # A part return pro-rates that snapshot through `Money.allocate`, which
+    # cannot lose a paisa. Taking the whole line's cost back for one unit of
+    # five fails two proofs.
+    #
+    # The limit counts what EARLIER returns already took, not just what this
+    # visit asks for. Without it a customer can return three tins from a bill
+    # for two across three visits, and a shop can be walked out of its stock
+    # one bill at a time.
+    #
+    # Dr Sales Returns, never Dr Sales. A contra-revenue account, because a
+    # shopkeeper who took Rs 40,000 of returns in a month needs to see that
+    # number and netting it into Sales hides it.
+    #
+    # A walk-in return has to be paid back over the counter, refused in words
+    # rather than discovered as an unbalanced entry: there is no khata to put
+    # the credit on.
+    #
+    # Tax on a return lands in M12 with the rest of the tax pack. A return of
+    # a taxed sale currently gives back the goods value and nothing else,
+    # which is visibly incomplete rather than quietly wrong, and it is said in
+    # the code so it is not mistaken for done.
+    proof:
+      - part of a bill can come back one unit off a line of five
+      - part of a bill can come back the whole line at once
+      - part of a bill can come back several lines in one visit
+      - the cost the goods come back at is what they left at, not what stock costs today
+      - the cost the goods come back at is pro-rated when only some of a line comes back
+      - the cost the goods come back at and the pro-rating never loses a paisa
+      - the cost the goods come back at a zero-cost line comes back at zero, not at a divide by zero
+      - the money goes back on the khata when nothing is handed over
+      - the money comes out of the drawer when it is handed over
+      - the money splits between the two when only some is handed over
+      - the money is a debit to Sales Returns, never a debit to Sales
+      - what it refuses more than was sold
+      - what it refuses more than is LEFT after an earlier return
+      - what it refuses a line that is not on that bill
+      - what it refuses a return of nothing, and a return with no lines
+      - what it refuses a return with no reason
+      - what it refuses handing back more than the goods were sold for
+      - what it refuses a walk-in return that is not paid back in full
+      - what it refuses a refund with no account for it to come out of
+      - the entry balances across every shape of return
+      - the entry balances and the return points at the bill it came off

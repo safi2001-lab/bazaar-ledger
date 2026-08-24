@@ -11,6 +11,7 @@ export 'src/accounting/chart_of_accounts.dart';
 export 'src/catalogue/barcode_key.dart';
 export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';
+export 'src/corrections/return_builder.dart';
 export 'src/corrections/reversal.dart';
 export 'src/costing/moving_average.dart';
 export 'src/costing/purchase_builder.dart';
