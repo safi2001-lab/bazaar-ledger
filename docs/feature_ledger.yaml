@@ -2145,3 +2145,45 @@ features:
       - the rest of the rows the supplier is named on the payable line
       - the rest of the rows the audit line carries the supplier own bill number
       - the rest of the rows the document is a purchase bill dated today
+
+  - id: M4-COST-03
+    milestone: M4
+    title: A delivery moves the average in the database, or nothing does
+    status: done
+    # The first thing in this repository that ever writes
+    # `items.avg_cost_milli_paisa` after item creation. `DriftCatalogueWriter`
+    # explicitly strips it from every update, so until this existed a shop
+    # that opened rice at Rs 90 and had been buying at Rs 120 for six months
+    # still read a Rs 30 profit on every sale.
+    #
+    # The costing position is read INSIDE the transaction. A second till
+    # selling the same item between the bill being typed and being saved
+    # changes the balance the new average is weighted against, and an average
+    # computed from a stale balance is wrong for every sale that follows it.
+    #
+    # The carried VALUE is derived from the item's average and the stock
+    # ledger's balance, never stored. A column for it would be a second answer
+    # to the same question, and the two would disagree the first time one of
+    # them was written by a path that forgot the other — the invariant is
+    # `value == round(avg x qty)` and deriving it is what makes that true
+    # rather than hoped for.
+    #
+    # The writer does no arithmetic. Every figure it writes was computed by
+    # the pure builder, so there is no room for this layer to do it
+    # differently from the layer that was tested.
+    #
+    # Mutation-tested, and the numbers say what the milestone is worth: never
+    # writing the average — the state this repository has been in from the
+    # start — fails five of these, and reading the position from the item row
+    # while ignoring the shelf fails two.
+    proof:
+      - a delivery moves the average, which nothing did before
+      - a second delivery weights against what is on the shelf
+      - freight lands in the cost, because the shop paid it
+      - the books balance after a delivery
+      - what is still owed reaches the supplier khata
+      - a sale after a delivery costs what the delivery cost
+      - a delivery covering a shortfall writes the difference off
+      - a failure part-way through leaves nothing behind
+      - the delivery is recorded in the audit trail
+      - the new average is reported back, not left to be read

@@ -110,6 +110,9 @@ final class AppServices {
   RecordReceiptUseCase get recordReceipt =>
       RecordReceiptUseCase(writer: DriftPaymentWriter(runner: _runner));
 
+  RecordPurchaseUseCase get recordPurchase =>
+      RecordPurchaseUseCase(writer: DriftPurchaseWriter(runner: _runner));
+
   bool get isSetUp => _identity != null;
 
   /// Opens the database and works out whether this device has a shop yet.
