@@ -2137,6 +2137,48 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Jo maal aaye us ka bill yahan likhein'**
   String get purchasesEmptyHint;
+
+  /// No description provided for @voidTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill mansookh karein'**
+  String get voidTitle;
+
+  /// No description provided for @voidAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill mansookh'**
+  String get voidAction;
+
+  /// No description provided for @voidReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah'**
+  String get voidReason;
+
+  /// No description provided for @voidReasonRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah likhna zaroori hai'**
+  String get voidReasonRequired;
+
+  /// No description provided for @voidConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haan, mansookh karein'**
+  String get voidConfirm;
+
+  /// Said plainly, because a shopkeeper who thinks a bill vanished will be surprised to find it in a report. Nothing is deleted; the opposite is written.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill mit-ta nahi. Ulta ijraa likha jayega aur maal wapas shumar hoga.'**
+  String get voidExplain;
+
+  /// No description provided for @voidDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} mansookh ho gaya'**
+  String voidDone(String docNo);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

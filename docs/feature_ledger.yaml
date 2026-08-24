@@ -2354,3 +2354,44 @@ features:
       - what it refuses a void with no reason, before anything is written
       - a failed void burns no journal number
       - the void is recorded in the audit trail
+
+  - id: M5-VOID-03
+    milestone: M5
+    title: A shopkeeper can cancel a bill, and is told when they cannot
+    status: done
+    # The sales list has struck void bills through and badged them since M0,
+    # waiting for something in `lib/` that could produce one. Nothing could.
+    # The badge and the strike-through were already there and already right;
+    # only the button was missing.
+    #
+    # The sheet says plainly that the bill is NOT deleted. A shopkeeper who
+    # believes a bill vanished will be surprised to find it in a report, and
+    # being surprised by your own books is how you stop trusting them.
+    #
+    # The refusal is shown as words. A guard that names the receipts standing
+    # in the way is the whole point of the guard, and dropping it into a stack
+    # trace would waste it — so `VoidRefused` is caught separately from every
+    # other error and its own sentence is what the shopkeeper reads.
+    #
+    # The action is offered only while the bill is still standing. An action
+    # that can only fail is one a shopkeeper learns to distrust the whole
+    # screen for.
+    #
+    # `documentStatus` was added for that, and written twice. The first
+    # version scanned five hundred recent sales to find one row — the same
+    # mistake as the first `partyById`, made again three commits later. It is
+    # a lookup now.
+    #
+    # A duplicate string was written and deleted in the same pass:
+    # `salesVoided` already existed and was already on screen.
+    #
+    # Mutation-tested: a Cancel that pops without writing fails five.
+    proof:
+      - a posted bill offers to be cancelled
+      - cancelling writes the reversal and marks the bill
+      - the stock comes back on the shelf
+      - the list strikes it through afterwards
+      - and stops offering to cancel it again
+      - a cancel with no reason is refused in words
+      - a bill paid against is refused, naming the receipt
+      - the sheet says the bill is not deleted

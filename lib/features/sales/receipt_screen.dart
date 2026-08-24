@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,6 +15,7 @@ import '../../l10n/app_strings.dart';
 import '../printing/pdf_font.dart';
 import '../printing/printing_providers.dart';
 import 'receipt_file_name.dart';
+import 'void_bill_sheet.dart';
 
 /// One bill, exactly as it will print.
 ///
@@ -38,10 +41,30 @@ class ReceiptScreen extends ConsumerWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
     final receipt = ref.watch(receiptProvider(documentId));
+    final status = ref.watch(documentStatusProvider(documentId));
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.receiptTitle(docNo))),
+      appBar: AppBar(
+        title: Text(s.receiptTitle(docNo)),
+        actions: [
+          // Offered only while the bill is still standing. A cancel button on
+          // a cancelled bill is an action that can only fail, and a shopkeeper
+          // who taps it learns to distrust the whole screen.
+          if (status.valueOrNull == 'posted')
+            BlIconButton(
+              icon: Icons.block,
+              label: s.voidAction,
+              onPressed: () => unawaited(
+                showVoidBillSheet(
+                  context,
+                  documentId: documentId,
+                  docNo: docNo,
+                ),
+              ),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: receipt.when(
           loading: () => const Padding(

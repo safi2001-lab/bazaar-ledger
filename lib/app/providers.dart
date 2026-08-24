@@ -155,6 +155,21 @@ final partySearchProvider = FutureProvider.autoDispose
       return services.queries.searchParties(firm.id, query: query);
     });
 
+/// Whether one bill is still standing.
+///
+/// A separate lookup rather than a field on [ReceiptData], because the
+/// receipt payload is what gets printed and a void bill prints exactly as it
+/// did — the paper a customer is holding must keep matching the shop's copy.
+/// This is for the screen, which has to hide an action and show a badge.
+final documentStatusProvider = FutureProvider.autoDispose
+    .family<String?, String>((ref, documentId) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return null;
+      return services.queries.documentStatus(firm.id, documentId);
+    });
+
 final receiptProvider = FutureProvider.autoDispose.family<ReceiptData?, String>(
   (ref, documentId) async {
     final services = ref.watch(appServicesProvider);

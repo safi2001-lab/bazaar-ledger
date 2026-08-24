@@ -330,6 +330,13 @@ abstract interface class AppQueries {
     int limit = 200,
   });
 
+  /// Whether one document is still standing: `posted`, `void` or `draft`.
+  ///
+  /// Null when there is no such document. A lookup rather than a scan of the
+  /// recent list, because a shop with three years of bills has tens of
+  /// thousands and the screen wants exactly one.
+  Future<String?> documentStatus(String firmId, String documentId);
+
   /// One customer, by id.
   ///
   /// Exists because the khata screen needs exactly one and was filtering the

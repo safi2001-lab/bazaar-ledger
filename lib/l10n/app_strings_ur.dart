@@ -1126,4 +1126,28 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get purchasesEmptyHint => 'Jo maal aaye us ka bill yahan likhein';
+
+  @override
+  String get voidTitle => 'Bill mansookh karein';
+
+  @override
+  String get voidAction => 'Bill mansookh';
+
+  @override
+  String get voidReason => 'Wajah';
+
+  @override
+  String get voidReasonRequired => 'Wajah likhna zaroori hai';
+
+  @override
+  String get voidConfirm => 'Haan, mansookh karein';
+
+  @override
+  String get voidExplain =>
+      'Bill mit-ta nahi. Ulta ijraa likha jayega aur maal wapas shumar hoga.';
+
+  @override
+  String voidDone(String docNo) {
+    return '$docNo mansookh ho gaya';
+  }
 }

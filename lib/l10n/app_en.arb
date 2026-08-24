@@ -481,5 +481,22 @@
   "purchasePaidTooMuch": "Cannot pay more than the bill",
   "purchasesTitle": "Purchases",
   "purchasesEmpty": "No purchases yet",
-  "purchasesEmptyHint": "Enter the bill for what arrives"
+  "purchasesEmptyHint": "Enter the bill for what arrives",
+  "voidTitle": "Cancel this bill",
+  "voidAction": "Cancel bill",
+  "voidReason": "Reason",
+  "voidReasonRequired": "A reason is required",
+  "voidConfirm": "Yes, cancel it",
+  "voidExplain": "The bill is not deleted. A reversing entry is written and the stock comes back.",
+  "@voidExplain": {
+    "description": "Said plainly, because a shopkeeper who thinks a bill vanished will be surprised to find it in a report. Nothing is deleted; the opposite is written."
+  },
+  "voidDone": "{docNo} cancelled",
+  "@voidDone": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  }
 }

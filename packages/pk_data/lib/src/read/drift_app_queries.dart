@@ -462,6 +462,19 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<String?> documentStatus(String firmId, String documentId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT status FROM documents '
+          'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.documents},
+        )
+        .getSingleOrNull();
+    return row?.read<String>('status');
+  }
+
+  @override
   Future<PartySummary?> partyById(String firmId, String partyId) async {
     // The same SELECT as searchParties, with a different WHERE. Shared as a
     // string rather than by calling the other method and filtering: two

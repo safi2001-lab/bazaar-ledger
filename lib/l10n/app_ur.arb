@@ -563,5 +563,22 @@
   "purchasePaidTooMuch": "Bill se ziyada nahi de sakte",
   "purchasesTitle": "Kharidari",
   "purchasesEmpty": "Abhi koi kharidari nahi",
-  "purchasesEmptyHint": "Jo maal aaye us ka bill yahan likhein"
+  "purchasesEmptyHint": "Jo maal aaye us ka bill yahan likhein",
+  "voidTitle": "Bill mansookh karein",
+  "voidAction": "Bill mansookh",
+  "voidReason": "Wajah",
+  "voidReasonRequired": "Wajah likhna zaroori hai",
+  "voidConfirm": "Haan, mansookh karein",
+  "voidExplain": "Bill mit-ta nahi. Ulta ijraa likha jayega aur maal wapas shumar hoga.",
+  "@voidExplain": {
+    "description": "Said plainly, because a shopkeeper who thinks a bill vanished will be surprised to find it in a report. Nothing is deleted; the opposite is written."
+  },
+  "voidDone": "{docNo} mansookh ho gaya",
+  "@voidDone": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  }
 }

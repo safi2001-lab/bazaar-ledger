@@ -1124,4 +1124,28 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get purchasesEmptyHint => 'Enter the bill for what arrives';
+
+  @override
+  String get voidTitle => 'Cancel this bill';
+
+  @override
+  String get voidAction => 'Cancel bill';
+
+  @override
+  String get voidReason => 'Reason';
+
+  @override
+  String get voidReasonRequired => 'A reason is required';
+
+  @override
+  String get voidConfirm => 'Yes, cancel it';
+
+  @override
+  String get voidExplain =>
+      'The bill is not deleted. A reversing entry is written and the stock comes back.';
+
+  @override
+  String voidDone(String docNo) {
+    return '$docNo cancelled';
+  }
 }
