@@ -155,6 +155,16 @@ final partySearchProvider = FutureProvider.autoDispose
       return services.queries.searchParties(firm.id, query: query);
     });
 
+/// The lines of one bill, with what earlier returns already took back.
+final returnableLinesProvider = FutureProvider.autoDispose
+    .family<List<SoldLine>, String>((ref, documentId) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return const [];
+      return services.queries.returnableLines(firm.id, documentId);
+    });
+
 /// Whether one bill is still standing.
 ///
 /// A separate lookup rather than a field on [ReceiptData], because the

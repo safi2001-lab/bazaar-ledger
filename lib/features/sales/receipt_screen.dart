@@ -15,6 +15,7 @@ import '../../l10n/app_strings.dart';
 import '../printing/pdf_font.dart';
 import '../printing/printing_providers.dart';
 import 'receipt_file_name.dart';
+import 'return_sheet.dart';
 import 'void_bill_sheet.dart';
 
 /// One bill, exactly as it will print.
@@ -51,6 +52,17 @@ class ReceiptScreen extends ConsumerWidget {
           // Offered only while the bill is still standing. A cancel button on
           // a cancelled bill is an action that can only fail, and a shopkeeper
           // who taps it learns to distrust the whole screen.
+          // Offered before Cancel, because it is the commoner of the two by
+          // a long way: a customer bringing one thing back is an everyday
+          // event, and a bill that should never have existed is not.
+          if (status.valueOrNull == 'posted')
+            BlIconButton(
+              icon: Icons.assignment_return_outlined,
+              label: s.returnAction,
+              onPressed: () => unawaited(
+                showReturnSheet(context, documentId: documentId, docNo: docNo),
+              ),
+            ),
           if (status.valueOrNull == 'posted')
             BlIconButton(
               icon: Icons.block,

@@ -580,5 +580,31 @@
         "type": "String"
       }
     }
-  }
+  },
+  "returnTitle": "Maal wapas",
+  "returnAction": "Wapas lein",
+  "returnNothingLeft": "Is bill se sab kuch wapas ho chuka",
+  "returnReason": "Wajah",
+  "returnReasonRequired": "Wajah likhna zaroori hai",
+  "returnPickSomething": "Kam az kam ek cheez chunein",
+  "returnRefundNow": "Abhi wapas diye",
+  "returnLeft": "{qty} baqi",
+  "@returnLeft": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "returnTotal": "Wapsi ki raqam",
+  "returnSave": "Wapsi save karein",
+  "returnDone": "{docNo} save ho gaya",
+  "@returnDone": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "returnOnAccount": "Gahak ke khate mein jama"
 }

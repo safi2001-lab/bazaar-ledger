@@ -462,6 +462,62 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<SoldLine>> returnableLines(
+    String firmId,
+    String documentId,
+  ) async {
+    // Deliberately the same query as `DriftReturnWriter.billFor`, down to the
+    // subquery that counts earlier returns. Two different counts of what is
+    // left would let the screen offer a quantity the writer then refuses,
+    // which is the worst of both — the shopkeeper picks, taps, and is told no.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.unit_id,
+                 dl.unit_code_snapshot, dl.base_qty_thousandths,
+                 dl.rate_milli_paisa, dl.cost_paisa,
+                 COALESCE((
+                   SELECT SUM(rl.base_qty_thousandths)
+                   FROM doc_links link
+                   JOIN documents r ON r.id = link.to_document_id
+                   JOIN document_lines rl ON rl.document_id = r.id
+                   WHERE link.from_document_id = dl.document_id
+                     AND link.link_type = 'returns'
+                     AND link.deleted_at_utc IS NULL
+                     AND r.status = 'posted'
+                     AND r.deleted_at_utc IS NULL
+                     AND rl.item_id = dl.item_id
+                     AND rl.deleted_at_utc IS NULL
+                 ), 0) AS returned
+          FROM document_lines dl
+          JOIN documents d ON d.id = dl.document_id
+          WHERE dl.document_id = ? AND d.firm_id = ?
+            AND d.status = 'posted'
+            AND dl.deleted_at_utc IS NULL
+          ORDER BY dl.line_no
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.documentLines, _db.documents, _db.docLinks},
+        )
+        .get();
+
+    return [
+      for (final r in rows)
+        SoldLine(
+          documentLineId: r.read<String>('id'),
+          itemId: r.read<String>('item_id'),
+          itemName: r.read<String>('item_name_snapshot'),
+          unitId: r.readNullable<String>('unit_id') ?? '',
+          unitCode: r.read<String>('unit_code_snapshot'),
+          soldQty: Qty.raw(r.read<int>('base_qty_thousandths')),
+          alreadyReturned: Qty.raw(r.read<int>('returned')),
+          rate: Rate.raw(r.read<int>('rate_milli_paisa')),
+          cost: Money.paisa(r.read<int>('cost_paisa')),
+        ),
+    ];
+  }
+
+  @override
   Future<String?> documentStatus(String firmId, String documentId) async {
     final row = await _db
         .customSelect(

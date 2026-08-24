@@ -2179,6 +2179,78 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{docNo} mansookh ho gaya'**
   String voidDone(String docNo);
+
+  /// No description provided for @returnTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal wapas'**
+  String get returnTitle;
+
+  /// No description provided for @returnAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas lein'**
+  String get returnAction;
+
+  /// No description provided for @returnNothingLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill se sab kuch wapas ho chuka'**
+  String get returnNothingLeft;
+
+  /// No description provided for @returnReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah'**
+  String get returnReason;
+
+  /// No description provided for @returnReasonRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah likhna zaroori hai'**
+  String get returnReasonRequired;
+
+  /// No description provided for @returnPickSomething.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam ek cheez chunein'**
+  String get returnPickSomething;
+
+  /// No description provided for @returnRefundNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi wapas diye'**
+  String get returnRefundNow;
+
+  /// No description provided for @returnLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'{qty} baqi'**
+  String returnLeft(String qty);
+
+  /// No description provided for @returnTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi ki raqam'**
+  String get returnTotal;
+
+  /// No description provided for @returnSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi save karein'**
+  String get returnSave;
+
+  /// No description provided for @returnDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} save ho gaya'**
+  String returnDone(String docNo);
+
+  /// No description provided for @returnOnAccount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ke khate mein jama'**
+  String get returnOnAccount;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

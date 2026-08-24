@@ -498,5 +498,31 @@
         "type": "String"
       }
     }
-  }
+  },
+  "returnTitle": "Return goods",
+  "returnAction": "Take back",
+  "returnNothingLeft": "Everything on this bill has already come back",
+  "returnReason": "Reason",
+  "returnReasonRequired": "A reason is required",
+  "returnPickSomething": "Choose at least one item",
+  "returnRefundNow": "Refunded now",
+  "returnLeft": "{qty} left",
+  "@returnLeft": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      }
+    }
+  },
+  "returnTotal": "Return value",
+  "returnSave": "Save return",
+  "returnDone": "{docNo} saved",
+  "@returnDone": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "returnOnAccount": "Credited to the customer"
 }

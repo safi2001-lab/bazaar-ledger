@@ -1,6 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
 import '../catalogue/unit_converter.dart';
+import '../corrections/return_builder.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
 import 'receipt.dart';
@@ -329,6 +330,16 @@ abstract interface class AppQueries {
     String partyId, {
     int limit = 200,
   });
+
+  /// The lines of one bill, with what earlier returns already took back.
+  ///
+  /// The same rows the writer reads inside its own transaction, so a
+  /// shopkeeper picking quantities is picking against what is actually left.
+  /// It can still go stale between the screen and the save — a second till
+  /// taking the same tin back — and the writer re-reads, so the write is
+  /// right and the screen was optimistic. That is the correct direction for
+  /// that error to run.
+  Future<List<SoldLine>> returnableLines(String firmId, String documentId);
 
   /// Whether one document is still standing: `posted`, `void` or `draft`.
   ///

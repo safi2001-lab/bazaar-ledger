@@ -1148,4 +1148,45 @@ class AppStringsEn extends AppStrings {
   String voidDone(String docNo) {
     return '$docNo cancelled';
   }
+
+  @override
+  String get returnTitle => 'Return goods';
+
+  @override
+  String get returnAction => 'Take back';
+
+  @override
+  String get returnNothingLeft =>
+      'Everything on this bill has already come back';
+
+  @override
+  String get returnReason => 'Reason';
+
+  @override
+  String get returnReasonRequired => 'A reason is required';
+
+  @override
+  String get returnPickSomething => 'Choose at least one item';
+
+  @override
+  String get returnRefundNow => 'Refunded now';
+
+  @override
+  String returnLeft(String qty) {
+    return '$qty left';
+  }
+
+  @override
+  String get returnTotal => 'Return value';
+
+  @override
+  String get returnSave => 'Save return';
+
+  @override
+  String returnDone(String docNo) {
+    return '$docNo saved';
+  }
+
+  @override
+  String get returnOnAccount => 'Credited to the customer';
 }

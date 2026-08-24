@@ -1150,4 +1150,44 @@ class AppStringsUr extends AppStrings {
   String voidDone(String docNo) {
     return '$docNo mansookh ho gaya';
   }
+
+  @override
+  String get returnTitle => 'Maal wapas';
+
+  @override
+  String get returnAction => 'Wapas lein';
+
+  @override
+  String get returnNothingLeft => 'Is bill se sab kuch wapas ho chuka';
+
+  @override
+  String get returnReason => 'Wajah';
+
+  @override
+  String get returnReasonRequired => 'Wajah likhna zaroori hai';
+
+  @override
+  String get returnPickSomething => 'Kam az kam ek cheez chunein';
+
+  @override
+  String get returnRefundNow => 'Abhi wapas diye';
+
+  @override
+  String returnLeft(String qty) {
+    return '$qty baqi';
+  }
+
+  @override
+  String get returnTotal => 'Wapsi ki raqam';
+
+  @override
+  String get returnSave => 'Wapsi save karein';
+
+  @override
+  String returnDone(String docNo) {
+    return '$docNo save ho gaya';
+  }
+
+  @override
+  String get returnOnAccount => 'Gahak ke khate mein jama';
 }

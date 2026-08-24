@@ -2515,3 +2515,42 @@ features:
       - what it refuses a bill that does not exist
       - what it refuses a failure leaves nothing behind
       - the return is recorded in the audit trail
+
+  - id: M5-RETURN-03
+    milestone: M5
+    title: A shopkeeper can take goods back, one line at a time
+    status: done
+    # Offered before Cancel on the same screen, because it is the commoner of
+    # the two by a long way: a customer bringing one thing back is an everyday
+    # event and a bill that should never have existed is not.
+    #
+    # What is still returnable is shown next to every line, counted through
+    # the returns already recorded against that bill. A shopkeeper should
+    # never be able to choose a quantity the save then refuses — being told no
+    # after choosing is how a counter queue turns into an argument.
+    #
+    # The screen's count is the SAME query the writer runs inside its
+    # transaction, down to the subquery. Two different counts of what is left
+    # would let the sheet offer a quantity the writer rejects, which is the
+    # worst of both.
+    #
+    # It can still go stale — a second till taking the same tin back between
+    # the sheet opening and Save — and the writer re-reads, so the write is
+    # right and the screen was optimistic. That is the correct direction for
+    # that error to run.
+    #
+    # Plus and minus rather than a keyboard. A kiryana return is a tin or a
+    # packet; a text field would be four taps where two will do, and would let
+    # a shopkeeper type past what is left.
+    #
+    # Mutation-tested: a Save that pops without writing fails four, and a
+    # sheet that ignores earlier returns fails two.
+    proof:
+      - a posted bill offers to take goods back
+      - one tin off a bill for five reaches the database
+      - the sheet shows what is still returnable
+      - and counts down after an earlier visit
+      - a return with nothing chosen is refused in words
+      - a return with no reason is refused in words
+      - a bill with nothing left to return says so
+      - the credit comes off the khata
