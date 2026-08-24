@@ -443,5 +443,43 @@
   },
   "chaseAll": "All",
   "khataHistory": "History",
-  "khataHistoryEmpty": "Nothing has happened yet"
+  "khataHistoryEmpty": "Nothing has happened yet",
+  "homePurchases": "Purchases",
+  "purchaseTitle": "New purchase",
+  "purchaseSupplier": "Choose a supplier",
+  "purchaseSupplierRequired": "A supplier is required",
+  "purchaseAddItem": "Add an item",
+  "purchaseNoLines": "Nothing added yet",
+  "purchaseNoLinesHint": "Add what arrived",
+  "purchaseCost": "Cost price",
+  "purchaseFreight": "Freight and labour",
+  "@purchaseFreight": {
+    "description": "Delivery, labour, the rickshaw. Apportioned across the lines by value, because a margin computed against the invoice alone has never paid for delivery."
+  },
+  "purchasePaid": "Paid now",
+  "purchaseBillNo": "Supplier's bill number",
+  "purchaseGoods": "Goods",
+  "purchaseTotal": "Total",
+  "purchaseOwing": "Owing",
+  "purchaseSave": "Save purchase",
+  "purchaseSaved": "Purchase {docNo} saved",
+  "@purchaseSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "purchaseNewAverage": "New cost {rate}",
+  "@purchaseNewAverage": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "purchasePaidTooMuch": "Cannot pay more than the bill",
+  "purchasesTitle": "Purchases",
+  "purchasesEmpty": "No purchases yet",
+  "purchasesEmptyHint": "Enter the bill for what arrives"
 }

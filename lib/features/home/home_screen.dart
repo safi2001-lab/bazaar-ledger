@@ -10,6 +10,7 @@ import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
+import '../purchases/purchase_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
 
@@ -75,6 +76,14 @@ class HomeScreen extends ConsumerWidget {
                     label: s.homeCustomers,
                     icon: Icons.people_alt_outlined,
                     onTap: () => _open(context, const PartiesScreen()),
+                  ),
+                  // Where every margin figure in this app becomes true. Until
+                  // this tile existed, avg_cost_milli_paisa was written once
+                  // when an item was created and never moved again.
+                  _NavTile(
+                    label: s.homePurchases,
+                    icon: Icons.local_shipping_outlined,
+                    onTap: () => _open(context, const PurchaseScreen()),
                   ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

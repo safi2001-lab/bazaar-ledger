@@ -1059,4 +1059,71 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get khataHistoryEmpty => 'Abhi koi len-den nahi';
+
+  @override
+  String get homePurchases => 'Kharidari';
+
+  @override
+  String get purchaseTitle => 'Nayi kharidari';
+
+  @override
+  String get purchaseSupplier => 'Supplier chunein';
+
+  @override
+  String get purchaseSupplierRequired => 'Supplier chunna zaroori hai';
+
+  @override
+  String get purchaseAddItem => 'Cheez shamil karein';
+
+  @override
+  String get purchaseNoLines => 'Abhi koi cheez nahi';
+
+  @override
+  String get purchaseNoLinesHint => 'Jo maal aaya hai woh shamil karein';
+
+  @override
+  String get purchaseCost => 'Kharid qeemat';
+
+  @override
+  String get purchaseFreight => 'Kiraya aur mazdoori';
+
+  @override
+  String get purchasePaid => 'Abhi diye';
+
+  @override
+  String get purchaseBillNo => 'Supplier ka bill number';
+
+  @override
+  String get purchaseGoods => 'Maal';
+
+  @override
+  String get purchaseTotal => 'Kul';
+
+  @override
+  String get purchaseOwing => 'Baqi';
+
+  @override
+  String get purchaseSave => 'Kharidari save karein';
+
+  @override
+  String purchaseSaved(String docNo) {
+    return 'Kharidari $docNo save ho gayi';
+  }
+
+  @override
+  String purchaseNewAverage(String rate) {
+    return 'Nayi lagat $rate';
+  }
+
+  @override
+  String get purchasePaidTooMuch => 'Bill se ziyada nahi de sakte';
+
+  @override
+  String get purchasesTitle => 'Kharidari';
+
+  @override
+  String get purchasesEmpty => 'Abhi koi kharidari nahi';
+
+  @override
+  String get purchasesEmptyHint => 'Jo maal aaye us ka bill yahan likhein';
 }

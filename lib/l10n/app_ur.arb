@@ -525,5 +525,43 @@
   },
   "chaseAll": "Sab",
   "khataHistory": "Purana hisaab",
-  "khataHistoryEmpty": "Abhi koi len-den nahi"
+  "khataHistoryEmpty": "Abhi koi len-den nahi",
+  "homePurchases": "Kharidari",
+  "purchaseTitle": "Nayi kharidari",
+  "purchaseSupplier": "Supplier chunein",
+  "purchaseSupplierRequired": "Supplier chunna zaroori hai",
+  "purchaseAddItem": "Cheez shamil karein",
+  "purchaseNoLines": "Abhi koi cheez nahi",
+  "purchaseNoLinesHint": "Jo maal aaya hai woh shamil karein",
+  "purchaseCost": "Kharid qeemat",
+  "purchaseFreight": "Kiraya aur mazdoori",
+  "@purchaseFreight": {
+    "description": "Delivery, labour, the rickshaw. Apportioned across the lines by value, because a margin computed against the invoice alone has never paid for delivery."
+  },
+  "purchasePaid": "Abhi diye",
+  "purchaseBillNo": "Supplier ka bill number",
+  "purchaseGoods": "Maal",
+  "purchaseTotal": "Kul",
+  "purchaseOwing": "Baqi",
+  "purchaseSave": "Kharidari save karein",
+  "purchaseSaved": "Kharidari {docNo} save ho gayi",
+  "@purchaseSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "purchaseNewAverage": "Nayi lagat {rate}",
+  "@purchaseNewAverage": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "purchasePaidTooMuch": "Bill se ziyada nahi de sakte",
+  "purchasesTitle": "Kharidari",
+  "purchasesEmpty": "Abhi koi kharidari nahi",
+  "purchasesEmptyHint": "Jo maal aaye us ka bill yahan likhein"
 }

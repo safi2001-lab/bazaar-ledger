@@ -2011,6 +2011,132 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Abhi koi len-den nahi'**
   String get khataHistoryEmpty;
+
+  /// No description provided for @homePurchases.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharidari'**
+  String get homePurchases;
+
+  /// No description provided for @purchaseTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi kharidari'**
+  String get purchaseTitle;
+
+  /// No description provided for @purchaseSupplier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier chunein'**
+  String get purchaseSupplier;
+
+  /// No description provided for @purchaseSupplierRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier chunna zaroori hai'**
+  String get purchaseSupplierRequired;
+
+  /// No description provided for @purchaseAddItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez shamil karein'**
+  String get purchaseAddItem;
+
+  /// No description provided for @purchaseNoLines.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi cheez nahi'**
+  String get purchaseNoLines;
+
+  /// No description provided for @purchaseNoLinesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo maal aaya hai woh shamil karein'**
+  String get purchaseNoLinesHint;
+
+  /// No description provided for @purchaseCost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharid qeemat'**
+  String get purchaseCost;
+
+  /// Delivery, labour, the rickshaw. Apportioned across the lines by value, because a margin computed against the invoice alone has never paid for delivery.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kiraya aur mazdoori'**
+  String get purchaseFreight;
+
+  /// No description provided for @purchasePaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi diye'**
+  String get purchasePaid;
+
+  /// No description provided for @purchaseBillNo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier ka bill number'**
+  String get purchaseBillNo;
+
+  /// No description provided for @purchaseGoods.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal'**
+  String get purchaseGoods;
+
+  /// No description provided for @purchaseTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul'**
+  String get purchaseTotal;
+
+  /// No description provided for @purchaseOwing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi'**
+  String get purchaseOwing;
+
+  /// No description provided for @purchaseSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharidari save karein'**
+  String get purchaseSave;
+
+  /// No description provided for @purchaseSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharidari {docNo} save ho gayi'**
+  String purchaseSaved(String docNo);
+
+  /// No description provided for @purchaseNewAverage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi lagat {rate}'**
+  String purchaseNewAverage(String rate);
+
+  /// No description provided for @purchasePaidTooMuch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill se ziyada nahi de sakte'**
+  String get purchasePaidTooMuch;
+
+  /// No description provided for @purchasesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharidari'**
+  String get purchasesTitle;
+
+  /// No description provided for @purchasesEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi kharidari nahi'**
+  String get purchasesEmpty;
+
+  /// No description provided for @purchasesEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo maal aaye us ka bill yahan likhein'**
+  String get purchasesEmptyHint;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

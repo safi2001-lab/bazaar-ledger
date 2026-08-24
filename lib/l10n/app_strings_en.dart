@@ -1057,4 +1057,71 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get khataHistoryEmpty => 'Nothing has happened yet';
+
+  @override
+  String get homePurchases => 'Purchases';
+
+  @override
+  String get purchaseTitle => 'New purchase';
+
+  @override
+  String get purchaseSupplier => 'Choose a supplier';
+
+  @override
+  String get purchaseSupplierRequired => 'A supplier is required';
+
+  @override
+  String get purchaseAddItem => 'Add an item';
+
+  @override
+  String get purchaseNoLines => 'Nothing added yet';
+
+  @override
+  String get purchaseNoLinesHint => 'Add what arrived';
+
+  @override
+  String get purchaseCost => 'Cost price';
+
+  @override
+  String get purchaseFreight => 'Freight and labour';
+
+  @override
+  String get purchasePaid => 'Paid now';
+
+  @override
+  String get purchaseBillNo => 'Supplier\'s bill number';
+
+  @override
+  String get purchaseGoods => 'Goods';
+
+  @override
+  String get purchaseTotal => 'Total';
+
+  @override
+  String get purchaseOwing => 'Owing';
+
+  @override
+  String get purchaseSave => 'Save purchase';
+
+  @override
+  String purchaseSaved(String docNo) {
+    return 'Purchase $docNo saved';
+  }
+
+  @override
+  String purchaseNewAverage(String rate) {
+    return 'New cost $rate';
+  }
+
+  @override
+  String get purchasePaidTooMuch => 'Cannot pay more than the bill';
+
+  @override
+  String get purchasesTitle => 'Purchases';
+
+  @override
+  String get purchasesEmpty => 'No purchases yet';
+
+  @override
+  String get purchasesEmptyHint => 'Enter the bill for what arrives';
 }

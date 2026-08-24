@@ -2187,3 +2187,47 @@ features:
       - a failure part-way through leaves nothing behind
       - the delivery is recorded in the audit trail
       - the new average is reported back, not left to be read
+
+  - id: M4-BUY-01
+    milestone: M4
+    title: A shopkeeper can enter a delivery, and the cost follows
+    status: done
+    # The costing engine had no screen, and a costing engine with no screen is
+    # the same failure as a printer with no button. This repository has
+    # shipped that twice.
+    #
+    # Cost, never price. The sale rate is not asked for and not touched: a
+    # delivery arriving is not an instruction to reprice the shelf, and a
+    # screen that changed both at once would make it impossible to tell which
+    # decision the shopkeeper actually made.
+    #
+    # The cost field is prefilled from the catalogue's purchase rate, because
+    # most deliveries come in at the price the shop expects and retyping it is
+    # where a wrong cost gets entered. Blank when there is none, NEVER
+    # inferred from the sale rate — a cost taken from a price is a margin of
+    # zero, and a margin of zero that looks like a real number is worse than
+    # no number at all.
+    #
+    # The Save button is pinned below the list rather than being the last
+    # thing in it. Whatever the keyboard or a long delivery squeezes out,
+    # saving stays reachable — the rule the counter already follows with its
+    # Charge button. This was found by a test that could not reach the button
+    # at all, which is what a shopkeeper with a keyboard up would also have
+    # found.
+    #
+    # Two things the test got wrong before the code did. It typed the quantity
+    # into the supplier's bill number, because it addressed fields by index
+    # and the purchase screen underneath the sheet has three of its own. And
+    # it asserted against the empty state after scrolling to the Save button,
+    # which a lazy ListView had already unmounted — asserting against a widget
+    # that is not there is asserting against nothing.
+    #
+    # Mutation-tested: a Save that pops without writing fails three proofs.
+    proof:
+      - the shopkeeper can reach it from the home screen
+      - a delivery entered on the screen moves the average
+      - freight typed on the screen lands in the cost
+      - a delivery with no supplier is refused in words
+      - a delivery with nothing on it is refused in words
+      - paying more than the bill is refused in words
+      - what is still owed reaches the supplier khata
