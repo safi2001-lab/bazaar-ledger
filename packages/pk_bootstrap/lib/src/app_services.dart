@@ -119,6 +119,9 @@ final class AppServices {
   RecordReturnUseCase get recordReturn =>
       RecordReturnUseCase(writer: DriftReturnWriter(runner: _runner));
 
+  RecordExpenseUseCase get recordExpense =>
+      RecordExpenseUseCase(writer: DriftExpenseWriter(runner: _runner));
+
   bool get isSetUp => _identity != null;
 
   /// Opens the database and works out whether this device has a shop yet.

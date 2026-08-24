@@ -2554,3 +2554,61 @@ features:
       - a return with no reason is refused in words
       - a bill with nothing left to return says so
       - the credit comes off the khata
+
+  - id: M3-EXPENSE-01
+    milestone: M3
+    title: Rent, bijli and wages reach the books
+    status: done
+    # The chart has carried rent, salaries, utilities, freight and misc since
+    # M0 and nothing has ever posted to them. A shop that records only what it
+    # sells and what it buys has a P&L that is fiction: the cash book will not
+    # reconcile, the margin will look like profit, and the shopkeeper will
+    # believe they made more than they did every single month.
+    #
+    # The expense head lives on the JOURNAL LINE, as `account_id`, and nowhere
+    # else. A denormalised column on `documents` would be a second answer to a
+    # question the ledger already holds, and the two would disagree the first
+    # time one was written by a path that forgot the other — which is exactly
+    # how a shop ends up with a Trial Balance and an expense report that do
+    # not match. A proof reads it back through the join that column would have
+    # replaced.
+    #
+    # A CLOSED list of heads. Free text produces "Bijli", "bijli",
+    # "Electricity" and "Light bill" as four lines that add up to nothing
+    # anybody can read, and the whole point of an expense report is comparing
+    # this month with last.
+    #
+    # The note is required. "Misc — Rs 4,000" six months later is a number
+    # nobody can defend, and misc is where every unlabelled expense ends up.
+    #
+    # An unpaid expense has to name who it is owed to — the mirror of a bill
+    # left part-paid having to name a customer. Money the shop can never
+    # settle, sitting in a total it can never explain, is the same defect
+    # pointing the other way.
+    #
+    # Mutation-tested at the layer each rule belongs to. Opening the head list
+    # fails a domain proof but NOT a database one, because the writer refuses
+    # an unknown account anyway — the rule is a domain rule and the domain
+    # test is what holds it.
+    proof:
+      - a bill paid at the counter debits the head and credits the drawer
+      - a bill paid at the counter and the document says it is settled
+      - a bill not paid yet is owed to somebody by name
+      - the head is on the journal line, not on a column of its own
+      - the head is named by key, so renaming the account cannot break it
+      - the head comes from a closed list
+      - what it refuses an expense of nothing
+      - what it refuses an expense with no note
+      - what it refuses money paid with no account it came out of
+      - what it refuses an unpaid expense with nobody to pay
+      - the entry balances paid and unpaid alike
+      - the entry balances and the audit line says head, amount and what it was for
+      - a bijli bill lands on the utilities head
+      - and comes out of the drawer
+      - the books balance
+      - an unpaid expense sits on the payable, by name
+      - the head is read back off the journal, not off a column
+      - the note is kept, because the amount alone defends nothing
+      - a head this shop does not keep is refused
+      - a failed expense burns no number
+      - the expense is recorded in the audit trail
