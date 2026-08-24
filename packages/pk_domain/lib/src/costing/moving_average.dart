@@ -60,27 +60,35 @@ final class CostPosition {
 final class CostChange {
   const CostChange({
     required this.after,
-    required this.residue,
-    required this.writeOff,
+    required this.adjustment,
+    required this.fromShortfall,
   });
 
   final CostPosition after;
 
-  /// The paisa that induction lost or gained on this movement.
+  /// What the Inventory account has to give up for the invariant to hold.
   ///
-  /// Posted as one extra journal line against COGS. Without it, Inventory
-  /// drifts a paisa at a time away from `round(avg x qty)` and after a year
-  /// nobody can say when it started; with it, the tie-out is an exact
-  /// equality a test can assert. Usually zero.
-  final Money residue;
+  /// Exactly `(valueBefore + landedCost) - valueAfter`, and it is always one
+  /// of two things:
+  ///
+  ///  * a paisa, because the division did not come out. Posted to COGS.
+  ///    Without a line for it Inventory drifts a paisa at a time away from
+  ///    `round(avg x qty)` and after a year nobody can say when it started.
+  ///  * a real loss, when [fromShortfall] is set. The shop sold goods it had
+  ///    never recorded receiving, so the books carried them out at the old
+  ///    average; the delivery reveals what they actually cost, and the
+  ///    difference was never anybody's profit. Posted to wastage.
+  ///
+  /// One quantity rather than two, because they are the same subtraction and
+  /// computing them separately is how the journal stopped balancing the first
+  /// time this was written.
+  final Money adjustment;
 
-  /// Stock that was owed and has now been supplied.
+  /// Whether this movement covered a negative balance.
   ///
-  /// A negative balance means the shop sold something it never recorded
-  /// receiving. When the delivery lands, that shortfall is written off to
-  /// wastage in the same entry rather than being carried into the average —
-  /// where it would make the new stock look cheaper than it was, forever.
-  final Money writeOff;
+  /// Decides which account [adjustment] belongs to, and nothing else. The
+  /// arithmetic does not care.
+  final bool fromShortfall;
 }
 
 /// Applies a receipt of [qtyIn] at [landedCost] to [before].
@@ -112,12 +120,7 @@ CostChange receiveStock({
   }
 
   final qtyAfter = Qty.raw(before.qty.inThousandths + qtyIn.inThousandths);
-
-  // A shortfall the delivery has just covered. Written off rather than
-  // averaged in: the shop sold goods it never recorded receiving, and letting
-  // that absence dilute the new cost would make everything on the shelf look
-  // cheaper than it was.
-  final writeOff = before.qty.inThousandths < 0 ? before.value.abs : Money.zero;
+  final fromShortfall = before.qty.inThousandths < 0;
 
   final Rate avgAfter;
   if (before.qty.isPositive) {
@@ -151,14 +154,20 @@ CostChange receiveStock({
     );
   }
 
-  final valueBefore = before.qty.isPositive ? before.value : Money.zero;
+  // The REAL carried value, negative included. The average deliberately
+  // ignores a negative balance so the shortfall cannot dilute the new cost;
+  // the Inventory account cannot, because that money is really in it.
+  //
+  // Computing the two separately is what made the journal stop balancing the
+  // first time this was written: the debit assumed Inventory started at zero
+  // while the credit knew it did not.
   final valueAfter = avgAfter.amountFor(qtyAfter);
-  final residue = valueBefore + landedCost - valueAfter;
+  final adjustment = before.value + landedCost - valueAfter;
 
   return CostChange(
     after: CostPosition(qty: qtyAfter, value: valueAfter, avg: avgAfter),
-    residue: residue,
-    writeOff: writeOff,
+    adjustment: adjustment,
+    fromShortfall: fromShortfall,
   );
 }
 
@@ -189,11 +198,11 @@ CostChange issueStock({required CostPosition before, required Qty qtyOut}) {
       ? Money.zero
       : avgAfter.amountFor(qtyAfter);
   final issuedAt = avgAfter.amountFor(qtyOut);
-  final residue = before.value - issuedAt - valueAfter;
+  final adjustment = before.value - issuedAt - valueAfter;
 
   return CostChange(
     after: CostPosition(qty: qtyAfter, value: valueAfter, avg: avgAfter),
-    residue: residue,
-    writeOff: Money.zero,
+    adjustment: adjustment,
+    fromShortfall: false,
   );
 }

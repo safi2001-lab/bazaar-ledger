@@ -2086,3 +2086,62 @@ features:
       - 'the invariant property: value always equals round(avg x qty), 5000 movements'
       - 'the invariant property: an issue never changes the average, 2000 times'
       - overflow is refused, never wrapped an absurd carried value throws rather than going negative
+
+  - id: M4-COST-02
+    milestone: M4
+    title: A delivery is described in full, and the entry balances every time
+    status: done
+    # Dr Inventory by what the shelf is worth now minus what it was worth
+    # before, Cr the supplier and whatever was paid at the door, and put the
+    # difference where it belongs.
+    #
+    # The first version debited Inventory by the landed cost, and the entry
+    # did not balance when a delivery landed on a NEGATIVE balance: the debit
+    # assumed the account started at zero while the credit knew it did not.
+    # Found by working the journal out on paper rather than by a failing test,
+    # because the test fixture had never put a bill against negative stock.
+    #
+    # Fixing it collapsed two fields into one. `residue` and `writeOff` were
+    # the same subtraction computed two different ways — the first with the
+    # negative carried value zeroed out, the second with it kept — and having
+    # both is precisely what let the journal come apart. There is now one
+    # `adjustment` and a flag saying which account it belongs to:
+    #
+    #   * COGS, when it is the paisa a division could not place.
+    #   * Wastage, when the delivery covered a shortfall. Inventory held
+    #     -Rs 300, the bill adds Rs 1,300, the shelf is worth Rs 910 — the
+    #     Rs 90 is what the three missing units really cost beyond what the
+    #     books took them out at, and it was never anybody's profit.
+    #
+    # Freight is apportioned by VALUE through `Money.allocate`, which cannot
+    # lose a paisa. Splitting it evenly would put as much delivery cost on a
+    # Rs 50 packet as on a Rs 5,000 sack, and the margin on the packet would
+    # be nonsense.
+    #
+    # The costing position is carried between lines of the same bill, so a
+    # wholesale delivery listing the same item twice averages the second line
+    # against the first rather than against the shelf as it was this morning.
+    #
+    # A fully paid bill posts NO payable line. A zero one claims the supplier
+    # is owed nothing and is owed it by somebody.
+    #
+    # Mutation-tested: debiting the landed cost, splitting freight evenly, and
+    # not carrying the position between lines each fail a proof.
+    proof:
+      - what a delivery does to the cost the first delivery sets the average
+      - what a delivery does to the cost a second delivery weights against the shelf
+      - what a delivery does to the cost the same item twice on one bill averages against itself
+      - freight is in the cost, apportioned by value
+      - freight never loses a paisa, however awkward the split
+      - the entry balances on an ordinary credit purchase
+      - the entry balances when some was paid at the door
+      - the entry balances when the whole bill was paid, with no payable line at all
+      - the entry balances when the delivery lands on a negative balance
+      - the entry balances when a paisa cannot land in either place
+      - what it refuses a bill with no lines
+      - what it refuses paying more than the bill is for
+      - what it refuses paying with no account for it to come out of
+      - the rest of the rows stock moves in, in base units
+      - the rest of the rows the supplier is named on the payable line
+      - the rest of the rows the audit line carries the supplier own bill number
+      - the rest of the rows the document is a purchase bill dated today

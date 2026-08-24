@@ -23,7 +23,7 @@ void main() {
       expect(change.after.qty, Qty.units(20));
       expect(change.after.avg, const Rate.rupees(105));
       expect(change.after.value, const Money.rupees(2100));
-      expect(change.residue, Money.zero);
+      expect(change.adjustment, Money.zero);
     });
 
     test('freight is in the cost, because the shop paid it', () {
@@ -116,7 +116,7 @@ void main() {
       expect(change.after.avg, const Rate.rupees(105));
       expect(change.after.qty, Qty.units(12));
       expect(change.after.value, const Money.rupees(1260));
-      expect(change.residue, Money.zero);
+      expect(change.adjustment, Money.zero);
     });
 
     test('selling out keeps the average, never clears it', () {
@@ -167,8 +167,15 @@ void main() {
       );
 
       expect(change.after.avg, const Rate.rupees(130));
-      expect(change.writeOff, const Money.rupees(300));
+      expect(change.fromShortfall, isTrue);
       expect(change.after.qty, Qty.units(7));
+
+      // Inventory held -Rs 300 and the bill adds Rs 1,300, so the account is
+      // at Rs 1,000 — but the seven units on the shelf are worth Rs 910. The
+      // Rs 90 difference is what the three missing units really cost beyond
+      // what the books took them out at, and it was never anybody's profit.
+      expect(change.after.value, const Money.rupees(910));
+      expect(change.adjustment, const Money.rupees(90));
     });
 
     test('an ordinary delivery writes nothing off', () {
@@ -178,7 +185,7 @@ void main() {
         landedCost: const Money.rupees(1200),
       );
 
-      expect(change.writeOff, Money.zero);
+      expect(change.fromShortfall, isFalse);
     });
   });
 
@@ -207,10 +214,11 @@ void main() {
       );
 
       expect(
-        change.residue,
+        change.adjustment,
         const Money.paisa(1),
         reason: 'the paisa that cannot land in either place went missing',
       );
+      expect(change.fromShortfall, isFalse);
       expect(change.after.value, const Money.paisa(25580));
       expect(
         change.after.value,
@@ -219,7 +227,7 @@ void main() {
       );
       expect(
         before.value + const Money.rupees(100),
-        change.after.value + change.residue,
+        change.after.value + change.adjustment,
         reason: 'what the shop paid is not what it is carrying',
       );
     });
@@ -245,8 +253,8 @@ void main() {
             landedCost: cost,
           );
           position = change.after;
-          residues += change.residue;
-          if (!change.residue.isZero) residueCount++;
+          residues += change.adjustment;
+          if (!change.adjustment.isZero) residueCount++;
           paidIn += cost;
         } else {
           final available = position.qty.inThousandths;
@@ -254,8 +262,8 @@ void main() {
           final atCost = position.avg.amountFor(qtyOut);
           final change = issueStock(before: position, qtyOut: qtyOut);
           position = change.after;
-          residues += change.residue;
-          if (!change.residue.isZero) residueCount++;
+          residues += change.adjustment;
+          if (!change.adjustment.isZero) residueCount++;
           issued += atCost;
         }
 
@@ -276,6 +284,13 @@ void main() {
         paidIn,
         position.value + issued + residues,
         reason: 'money entered or left the costing without a line for it',
+      );
+      expect(
+        residues.abs.inPaisa,
+        lessThan(paidIn.inPaisa),
+        reason:
+            'the adjustment is the size of the trade, so it is not a '
+            'rounding step and not a shortfall — it is a bug',
       );
 
       // And residues really do occur, or the assertion above proves nothing.
