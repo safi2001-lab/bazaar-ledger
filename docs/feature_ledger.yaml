@@ -2851,6 +2851,13 @@ features:
       - books from a newer build are refused before anything is replaced
       - a sealed file that is not a database is refused
       - a database that is not a shop is refused
+    # And on Android itself, in CI's Tier C job: the real no-backup books
+    # directory, Android's SQLite writing the VACUUM INTO copy, the seal in a
+    # background isolate on the device runtime, and the time it took printed
+    # to the job log. An emulator is not an Android Go handset; the figure is
+    # evidence, not a promise about one.
+    device_proof:
+      - a backup made on the phone brings the books back after a wipe
 
   - id: M5-BACKUP-03
     milestone: M5
