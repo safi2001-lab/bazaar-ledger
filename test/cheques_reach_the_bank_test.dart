@@ -94,6 +94,37 @@ void main() {
     expect(reason, contains('Funds insufficient'));
   });
 
+  testWidgets('the bank fee on a bounce is booked against the bank', (
+    tester,
+  ) async {
+    final app = await Harness.startWithShop(tester);
+    final rashid = await app.seedParty(
+      name: 'Rashid Traders',
+      owedRupees: 45000,
+    );
+    await _takeCheque(
+      app,
+      rashid,
+      no: '004512',
+      due: BusinessDate.now(app.services.clock),
+    );
+
+    await tapText(tester, 'Cheque');
+    await tapText(tester, 'Rashid Traders');
+    await tapButton(tester, 'Bounce ho gaya');
+    await typeInto(tester, 'Bank ki fee, agar kaati (marzi se)', '500');
+    await tapButton(tester, 'Bounce ho gaya');
+
+    final fee = await app.rowsOf(
+      "SELECT d.total_paisa, d.notes FROM documents d WHERE d.doc_type = 'expense'",
+    );
+    expect(fee.single['total_paisa'], 50000);
+    expect(fee.single['notes'], contains('004512'));
+    expect(await _net(app, 'bank'), -50000);
+    expect(await _net(app, 'misc'), 50000);
+    expect(await _net(app, 'cheques_in_hand'), 0);
+  });
+
   testWidgets('a post-dated cheque cannot be banked before its date', (
     tester,
   ) async {

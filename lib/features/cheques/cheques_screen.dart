@@ -254,6 +254,7 @@ enum _Step { choose, clear, bounce }
 
 class _ChequeActionsState extends ConsumerState<_ChequeActions> {
   final _reason = TextEditingController();
+  final _fee = TextEditingController();
   _Step _step = _Step.choose;
   String? _bankAccountId;
   bool _busy = false;
@@ -262,12 +263,17 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
   @override
   void dispose() {
     _reason.dispose();
+    _fee.dispose();
     super.dispose();
   }
 
+  /// Runs [step], and once it has stood, [then]. A failure in [then] does
+  /// not undo [step]: it is said, and the sheet closes on what was saved.
   Future<void> _run(
-    Future<void> Function(MoveChequeUseCase cheques, ActorContext actor) step,
-  ) async {
+    Future<void> Function(MoveChequeUseCase cheques, ActorContext actor) step, {
+    Future<void> Function(AppServices services)? then,
+    String Function(Object error)? thenFailed,
+  }) async {
     if (_busy) return;
     setState(() {
       _busy = true;
@@ -276,8 +282,18 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
     final services = ref.read(appServicesProvider);
     final container = ProviderScope.containerOf(context, listen: false);
     final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
     try {
       await step(services.cheques, services.actorNow());
+      if (then != null) {
+        try {
+          await then(services);
+        } on Object catch (error) {
+          messenger.showSnackBar(
+            SnackBar(content: Text(thenFailed?.call(error) ?? '$error')),
+          );
+        }
+      }
       container.bumpRefresh();
       navigator.pop();
     } on ChequeRefused catch (refused) {
@@ -312,6 +328,7 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
               const <PaymentAccountSummary>[])
         if (a.modeLabel != 'cash' && a.modeLabel != 'cheque') a,
     ];
+    final fee = Money.tryParse(_fee.text);
     final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
     // A bank will not take a post-dated cheque early, so neither does this.
     final due = cheque.isDueBy(today);
@@ -433,6 +450,37 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
               ),
               const SizedBox(height: BlTokens.space3),
               BlField(controller: _reason, label: s.chequeBounceReason),
+              const SizedBox(height: BlTokens.space3),
+              // What the bank took from the shop for it. Booked as a bank
+              // charge from the account it came out of, so the bank balance
+              // in the books still matches the statement.
+              BlField(
+                controller: _fee,
+                label: s.chequeBounceFee,
+                numeric: true,
+                onChanged: (_) => setState(() {}),
+              ),
+              if (fee != null && fee.isPositive) ...[
+                const SizedBox(height: BlTokens.space2),
+                Text(
+                  s.chequeBounceFeeFrom,
+                  style: TextStyle(fontSize: 13, color: t.inkMuted),
+                ),
+                const SizedBox(height: BlTokens.space2),
+                Wrap(
+                  spacing: BlTokens.space2,
+                  runSpacing: BlTokens.space2,
+                  children: [
+                    for (final a in accounts)
+                      ChoiceChip(
+                        selected: a.id == bankId,
+                        label: Text(a.name),
+                        onSelected: (_) =>
+                            setState(() => _bankAccountId = a.id),
+                      ),
+                  ],
+                ),
+              ],
               const SizedBox(height: BlTokens.space4),
               BlButton(
                 label: s.chequeBounce,
@@ -449,6 +497,24 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
                             cheque.paymentId,
                             reason: _reason.text,
                           ),
+                          then: fee == null || !fee.isPositive || bankId == null
+                              ? null
+                              : (services) => services.recordExpense(
+                                  services.actorNow(),
+                                  ExpenseDraft(
+                                    // No head of its own yet; misc, with
+                                    // the cheque named, is findable.
+                                    accountSystemKey: 'misc',
+                                    amount: fee,
+                                    note: s.chequeBounceFeeNote(
+                                      cheque.chequeNo,
+                                      cheque.partyName,
+                                    ),
+                                    paymentAccountId: bankId,
+                                  ),
+                                ),
+                          thenFailed: (error) =>
+                              s.chequeBounceFeeFailed('$error'),
                         ),
                       ),
               ),

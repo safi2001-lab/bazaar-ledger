@@ -2852,6 +2852,30 @@ abstract class AppStrings {
   /// **'{count, plural, =1{1 cheque bounce hua} other{{count} cheque bounce hue}}'**
   String khataChequeBounced(int count);
 
+  /// No description provided for @chequeBounceFee.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ki fee, agar kaati (marzi se)'**
+  String get chequeBounceFee;
+
+  /// No description provided for @chequeBounceFeeFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Fee kis account se gayi'**
+  String get chequeBounceFeeFrom;
+
+  /// No description provided for @chequeBounceFeeNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque {chequeNo} ({name}) bounce ki bank fee'**
+  String chequeBounceFeeNote(String chequeNo, String name);
+
+  /// No description provided for @chequeBounceFeeFailed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bounce save ho gaya, lekin bank fee save nahi hui: {error}'**
+  String chequeBounceFeeFailed(String error);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

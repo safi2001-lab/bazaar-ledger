@@ -1561,5 +1561,21 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get chequeBounceFee => 'Bank fee, if charged (optional)';
+
+  @override
+  String get chequeBounceFeeFrom => 'Which account it came out of';
+
+  @override
+  String chequeBounceFeeNote(String chequeNo, String name) {
+    return 'Bank fee on bounced cheque $chequeNo ($name)';
+  }
+
+  @override
+  String chequeBounceFeeFailed(String error) {
+    return 'The bounce is saved, but the bank fee was not: $error';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

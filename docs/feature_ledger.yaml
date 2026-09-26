@@ -3143,3 +3143,19 @@ features:
       - cash from them is never interrupted
       - once they have paid up they are not asked
       - the khata carries the bounce
+
+  - id: M6-FEE-01
+    milestone: M6
+    title: The bank's fee on a bounced cheque is booked against the bank
+    status: done
+    # A bank charges the shop for a cheque it returns, and takes it from the
+    # shop's account. Unrecorded, the bank balance in the books drifts off the
+    # statement by a few hundred rupees a bounce. The bounce step takes the
+    # fee, if there was one, and the account it came out of, and books it as
+    # an expense paid from that account, naming the cheque and the customer.
+    #
+    # Booked as the shop's cost only. Putting it on the customer's khata is a
+    # charge with no sale behind it, which needs a debit note, and debit notes
+    # are sales documents: M7.
+    proof:
+      - the bank fee on a bounce is booked against the bank

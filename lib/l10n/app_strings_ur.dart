@@ -1561,5 +1561,21 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get chequeBounceFee => 'Bank ki fee, agar kaati (marzi se)';
+
+  @override
+  String get chequeBounceFeeFrom => 'Fee kis account se gayi';
+
+  @override
+  String chequeBounceFeeNote(String chequeNo, String name) {
+    return 'Cheque $chequeNo ($name) bounce ki bank fee';
+  }
+
+  @override
+  String chequeBounceFeeFailed(String error) {
+    return 'Bounce save ho gaya, lekin bank fee save nahi hui: $error';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

@@ -870,5 +870,26 @@
       }
     }
   },
+  "chequeBounceFee": "Bank ki fee, agar kaati (marzi se)",
+  "chequeBounceFeeFrom": "Fee kis account se gayi",
+  "chequeBounceFeeNote": "Cheque {chequeNo} ({name}) bounce ki bank fee",
+  "@chequeBounceFeeNote": {
+    "placeholders": {
+      "chequeNo": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeBounceFeeFailed": "Bounce save ho gaya, lekin bank fee save nahi hui: {error}",
+  "@chequeBounceFeeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

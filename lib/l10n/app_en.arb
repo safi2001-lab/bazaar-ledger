@@ -791,5 +791,26 @@
       }
     }
   },
+  "chequeBounceFee": "Bank fee, if charged (optional)",
+  "chequeBounceFeeFrom": "Which account it came out of",
+  "chequeBounceFeeNote": "Bank fee on bounced cheque {chequeNo} ({name})",
+  "@chequeBounceFeeNote": {
+    "placeholders": {
+      "chequeNo": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeBounceFeeFailed": "The bounce is saved, but the bank fee was not: {error}",
+  "@chequeBounceFeeFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }
