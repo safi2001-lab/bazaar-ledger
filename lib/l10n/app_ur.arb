@@ -849,5 +849,26 @@
       }
     }
   },
+  "tenderChequeBounced": "Is gahak ka cheque bounce ho chuka hai",
+  "tenderChequeBouncedDetail": "{count, plural, =1{1 cheque wapas aaya} other{{count} cheque wapas aaye}}, aur {owed} ab bhi baqi hain. Naqad lein, ya soch kar udhaar dein.",
+  "@tenderChequeBouncedDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "owed": {
+        "type": "String"
+      }
+    }
+  },
+  "tenderChequeBouncedAllow": "Phir bhi dein",
+  "khataChequeBounced": "{count, plural, =1{1 cheque bounce hua} other{{count} cheque bounce hue}}",
+  "@khataChequeBounced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

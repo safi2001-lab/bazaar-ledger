@@ -235,7 +235,9 @@ class PartyRowTile extends StatelessWidget {
                   child: owes
                       ? BlChip(
                           s.partyOwes(party.balance.amountOnly),
-                          tone: party.isOverCreditLimit
+                          tone:
+                              party.isOverCreditLimit ||
+                                  party.hasUnsettledBounce
                               ? BlChipTone.bad
                               : BlChipTone.warn,
                         )

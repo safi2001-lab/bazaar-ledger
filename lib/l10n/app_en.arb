@@ -770,5 +770,26 @@
       }
     }
   },
+  "tenderChequeBounced": "This customer has had a cheque bounce",
+  "tenderChequeBouncedDetail": "{count, plural, =1{1 cheque came back} other{{count} cheques came back}} and {owed} is still owed. Take cash, or give credit knowingly.",
+  "@tenderChequeBouncedDetail": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "owed": {
+        "type": "String"
+      }
+    }
+  },
+  "tenderChequeBouncedAllow": "Give it anyway",
+  "khataChequeBounced": "{count, plural, =1{1 bounced cheque} other{{count} bounced cheques}}",
+  "@khataChequeBounced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

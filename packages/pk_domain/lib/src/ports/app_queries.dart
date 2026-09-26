@@ -280,12 +280,16 @@ final class PartySummary {
     this.phone,
     this.creditLimit,
     this.payable = Money.zero,
+    this.bouncedCheques = 0,
   });
 
   final String id;
   final String name;
   final String? phone;
   final String partyType;
+
+  /// How many of their cheques the bank has returned, ever.
+  final int bouncedCheques;
 
   /// Positive means they owe the shop.
   final Money balance;
@@ -308,6 +312,12 @@ final class PartySummary {
   bool get isCustomer => partyType != 'supplier' || !balance.isZero;
 
   bool get isOverCreditLimit => creditLimit != null && balance > creditLimit!;
+
+  /// A cheque of theirs has bounced and they still owe the shop. More credit
+  /// — udhaar, or another cheque, which is only credit with a date on it —
+  /// is asked about at the counter before it is given. Paid up, and the flag
+  /// lifts; the bounce itself stays on the khata.
+  bool get hasUnsettledBounce => bouncedCheques > 0 && balance.isPositive;
 }
 
 /// One thing that happened on a customer's khata.

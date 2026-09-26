@@ -51,6 +51,14 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   /// shopkeeper is being asked. Null the rest of the time.
   ({Money limit, Money after})? _overLimit;
 
+  /// Set once the shopkeeper has been told this customer's cheque bounced
+  /// and chosen to give credit anyway. Not remembered beyond this bill.
+  bool _bounceOverridden = false;
+
+  /// The bounced cheques and what is still owed, while the shopkeeper is
+  /// being asked. Null the rest of the time.
+  ({int count, Money owed})? _bounced;
+
   @override
   void dispose() {
     _tendered.dispose();
@@ -137,6 +145,26 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         _busy = false;
       });
       return;
+    }
+
+    // A customer whose cheque bounced and who still owes is asked about
+    // before more credit goes out: udhaar, or another cheque, which is only
+    // credit with a date on it. Their shop, their call, but made knowingly.
+    if ((leavesBalance || byCheque) && !_bounceOverridden) {
+      final party = await ref
+          .read(appServicesProvider)
+          .queries
+          .partyById(firm.id, cart.partyId!);
+      if (party != null && party.hasUnsettledBounce) {
+        if (mounted) {
+          setState(() {
+            _failure = null;
+            _bounced = (count: party.bouncedCheques, owed: party.balance);
+            _busy = false;
+          });
+        }
+        return;
+      }
     }
 
     // A credit limit that blocks nothing is decoration. It was being set in
@@ -483,6 +511,65 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                 padding: const EdgeInsets.only(top: BlTokens.space3),
                 child: BlOfflineNote(message: s.tenderCashThresholdWarning),
               ),
+
+            // The bounce, and the way past it, where the limit's would be.
+            if (_bounced case final bounced?) ...[
+              const SizedBox(height: BlTokens.space3),
+              Container(
+                padding: const EdgeInsets.all(BlTokens.space3),
+                decoration: BoxDecoration(
+                  color: t.dangerSurface,
+                  borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.report_gmailerrorred_outlined,
+                          size: 18,
+                          color: t.danger,
+                        ),
+                        const SizedBox(width: BlTokens.space2),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                s.tenderChequeBounced,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                  color: t.danger,
+                                ),
+                              ),
+                              Text(
+                                s.tenderChequeBouncedDetail(
+                                  bounced.count,
+                                  bounced.owed.amountOnly,
+                                ),
+                                style: TextStyle(fontSize: 13, color: t.danger),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: BlTokens.space2),
+                    BlButton(
+                      label: s.tenderChequeBouncedAllow,
+                      kind: BlButtonKind.secondary,
+                      onPressed: () => setState(() {
+                        _bounceOverridden = true;
+                        _bounced = null;
+                      }),
+                    ),
+                  ],
+                ),
+              ),
+            ],
 
             // The limit, and the way past it. Not a dialog: a shopkeeper with
             // a customer waiting should see the number and the button in the

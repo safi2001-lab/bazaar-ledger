@@ -3123,3 +3123,23 @@ features:
       - a demand notice with an Urdu name carries the face to draw it
       - a demand notice file is named after the cheque, safely
       - a bounced cheque shares its demand notice as a PDF
+
+  - id: M6-FLAG-01
+    milestone: M6
+    title: A customer whose cheque bounced is asked about before more credit
+    status: done
+    # The bounce put the udhaar back on the khata and changed nothing else:
+    # the same customer could take another Rs 50,000 on udhaar the next
+    # morning and pay with another cheque on the same account. Now, while a
+    # customer has a bounced cheque and still owes, the counter stops an
+    # udhaar sale or a cheque from them, says how many came back and what is
+    # owed, and lets the shopkeeper go ahead by name, like the credit limit.
+    # Cash is never interrupted. Paid up, and the flag lifts; the khata keeps
+    # the count, quieter, for the next time they offer a cheque.
+    proof:
+      - udhaar for a customer whose cheque bounced is asked about
+      - credit can still be given to them, knowingly
+      - another cheque from them is asked about too
+      - cash from them is never interrupted
+      - once they have paid up they are not asked
+      - the khata carries the bounce

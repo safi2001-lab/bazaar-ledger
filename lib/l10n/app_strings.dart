@@ -2828,6 +2828,30 @@ abstract class AppStrings {
   /// **'Notice ki muddat {date} ko guzar gayi'**
   String chequeNoticeLate(String date);
 
+  /// No description provided for @tenderChequeBounced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ka cheque bounce ho chuka hai'**
+  String get tenderChequeBounced;
+
+  /// No description provided for @tenderChequeBouncedDetail.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 cheque wapas aaya} other{{count} cheque wapas aaye}}, aur {owed} ab bhi baqi hain. Naqad lein, ya soch kar udhaar dein.'**
+  String tenderChequeBouncedDetail(int count, String owed);
+
+  /// No description provided for @tenderChequeBouncedAllow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phir bhi dein'**
+  String get tenderChequeBouncedAllow;
+
+  /// No description provided for @khataChequeBounced.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 cheque bounce hua} other{{count} cheque bounce hue}}'**
+  String khataChequeBounced(int count);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

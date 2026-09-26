@@ -1533,5 +1533,33 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get tenderChequeBounced => 'Is gahak ka cheque bounce ho chuka hai';
+
+  @override
+  String tenderChequeBouncedDetail(int count, String owed) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cheque wapas aaye',
+      one: '1 cheque wapas aaya',
+    );
+    return '$_temp0, aur $owed ab bhi baqi hain. Naqad lein, ya soch kar udhaar dein.';
+  }
+
+  @override
+  String get tenderChequeBouncedAllow => 'Phir bhi dein';
+
+  @override
+  String khataChequeBounced(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cheque bounce hue',
+      one: '1 cheque bounce hua',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

@@ -1533,5 +1533,33 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get tenderChequeBounced => 'This customer has had a cheque bounce';
+
+  @override
+  String tenderChequeBouncedDetail(int count, String owed) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cheques came back',
+      one: '1 cheque came back',
+    );
+    return '$_temp0 and $owed is still owed. Take cash, or give credit knowingly.';
+  }
+
+  @override
+  String get tenderChequeBouncedAllow => 'Give it anyway';
+
+  @override
+  String khataChequeBounced(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bounced cheques',
+      one: '1 bounced cheque',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

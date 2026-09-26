@@ -277,6 +277,17 @@ class _BalanceCard extends StatelessWidget {
               icon: Icons.warning_amber_outlined,
             ),
           ],
+          // Kept after the money is paid back, and quieter then: a customer
+          // whose cheques bounce is worth knowing about the next time one is
+          // offered.
+          if (party.bouncedCheques > 0) ...[
+            const SizedBox(height: BlTokens.space2),
+            BlChip(
+              s.khataChequeBounced(party.bouncedCheques),
+              tone: party.hasUnsettledBounce ? BlChipTone.bad : BlChipTone.warn,
+              icon: Icons.report_gmailerrorred_outlined,
+            ),
+          ],
         ],
       ),
     );

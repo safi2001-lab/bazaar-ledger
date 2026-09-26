@@ -284,7 +284,16 @@ final class DriftAppQueries implements AppQueries {
                  AND d.doc_type IN ('purchase_bill', 'expense')
                  AND d.status = 'posted'
                  AND d.deleted_at_utc IS NULL
-             ), 0) AS payable_paisa
+             ), 0) AS payable_paisa,
+           -- Cheques of theirs the bank sent back. A customer whose cheque
+           -- bounced and who still owes is one the counter asks about before
+           -- giving more credit.
+           (SELECT COUNT(*) FROM payments pm
+             WHERE pm.party_id = p.id
+               AND pm.firm_id = p.firm_id
+               AND pm.mode = 'cheque'
+               AND pm.status = 'bounced'
+               AND pm.deleted_at_utc IS NULL) AS bounced_cheques
     FROM parties p
 ''';
 
@@ -295,6 +304,7 @@ final class DriftAppQueries implements AppQueries {
     partyType: r.read<String>('party_type'),
     balance: Money.paisa(r.read<int>('balance_paisa')),
     payable: Money.paisa(r.read<int>('payable_paisa')),
+    bouncedCheques: r.read<int>('bounced_cheques'),
     creditLimit: r.readNullable<int>('credit_limit_paisa') == null
         ? null
         : Money.paisa(r.read<int>('credit_limit_paisa')),
