@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
+import 'generated/schema_v2.dart' as v2;
 
 /// Migrations, and the machinery that makes them testable at all.
 ///
@@ -74,8 +75,14 @@ void main() {
         // The case that matters: not an empty database, but one that has been
         // used. A migration tested only against a fresh schema is a migration
         // tested against the one database nobody has.
-        final connection = await verifier.startAt(1);
-        final old = v1.DatabaseAtV1(connection);
+        //
+        // One schema, two connections onto the same database. This test used
+        // to call `startAt` twice, which hands back a fresh, empty database
+        // each time — so the row below went into one database and a different,
+        // empty one was migrated, and the test proved nothing about data at
+        // all while its name said it did.
+        final schema = await verifier.schemaAt(1);
+        final old = v1.DatabaseAtV1(schema.newConnection());
 
         const firmId = 'FIRM0000000000000000000001';
         const userId = 'USER0000000000000000000001';
@@ -107,9 +114,17 @@ void main() {
         await old.close();
 
         // Migrate.
-        final db = AppDatabase(await verifier.startAt(1));
+        final db = AppDatabase(schema.newConnection());
         addTearDown(db.close);
         await verifier.migrateAndValidate(db, 2);
+
+        final firm = await db
+            .customSelect(
+              'SELECT name FROM firms WHERE id = ?',
+              variables: [Variable<String>(firmId)],
+            )
+            .getSingle();
+        expect(firm.data['name'], 'Test Kiryana');
       },
     );
 
@@ -182,6 +197,59 @@ void main() {
     );
   });
 
+  group('v2 to v3 — the supplier\'s own bill number', () {
+    test(
+      'a v2 purchase comes through whole, with room for the number',
+      () async {
+        // A shop that has already entered deliveries under v2. The column is
+        // added in place, so every existing row must come through untouched
+        // and simply have no supplier number.
+        final schema = await verifier.schemaAt(2);
+        final old = v2.DatabaseAtV2(schema.newConnection());
+
+        const firmId = 'FIRM0000000000000000000001';
+        const userId = 'USER0000000000000000000001';
+        const deviceId = 'DEV00000000000000000000001';
+        await old.customStatement('PRAGMA foreign_keys = OFF');
+        await old.customStatement(
+          'INSERT INTO documents (id, firm_id, created_at_utc, updated_at_utc, '
+          'created_by, updated_by, origin_device_id, hlc, rev, doc_type, '
+          'doc_no, doc_series, doc_seq, fiscal_year, doc_date_utc, '
+          'doc_date_local, status, posted_at_utc, total_paisa) '
+          'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, ?, ?, 1, 2627, 1, ?, ?, 1, ?)',
+          [
+            'DOC00000000000000000000001',
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'a-0000-$deviceId',
+            'purchase_bill',
+            'PUR-2627-0001',
+            'PUR',
+            '2026-08-23',
+            'posted',
+            120000,
+          ],
+        );
+        await old.close();
+
+        final db = AppDatabase(schema.newConnection());
+        addTearDown(db.close);
+        await verifier.migrateAndValidate(db, 3);
+
+        final row = await db
+            .customSelect(
+              'SELECT doc_no, total_paisa, supplier_bill_no FROM documents',
+            )
+            .getSingle();
+        expect(row.data['doc_no'], 'PUR-2627-0001');
+        expect(row.data['total_paisa'], 120000);
+        expect(row.data['supplier_bill_no'], isNull);
+      },
+    );
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -210,4 +278,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 2;
+const _currentVersion = 3;

@@ -97,6 +97,11 @@ CREATE TABLE documents (
   bilty_no TEXT,
   transporter TEXT,
   ship_to TEXT,
+  -- The number on the supplier's own paper, on a purchase bill. Added in v3:
+  -- the purchase screen had asked for it since M4 and it was written only
+  -- into an audit sentence, so the one number a supplier quotes when they
+  -- ring about an unpaid delivery could not be found or shown anywhere.
+  supplier_bill_no TEXT,
 
   -- s.21(s), Finance Act 2025: 50% of the expenditure is disallowed where a
   -- single invoice above Rs 200,000 is settled otherwise than through a

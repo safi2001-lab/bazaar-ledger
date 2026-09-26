@@ -39,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 2;
+  static const currentSchemaVersion = 3;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -87,6 +87,15 @@ class AppDatabase extends _$AppDatabase {
             await migrator.create(schema.idxPrintjobsKey);
             await migrator.create(schema.idxPrintjobsDoc);
             await migrator.create(schema.idxPrintjobsOpen);
+          },
+          // v2 → v3: documents.supplier_bill_no. One nullable column added
+          // at the end, which SQLite does in place — no rebuild, no row
+          // touched, and every existing purchase simply has none.
+          from2To3: (migrator, schema) async {
+            await migrator.addColumn(
+              schema.documents,
+              schema.documents.supplierBillNo,
+            );
           },
         )(m, from, to);
       } on ArgumentError {

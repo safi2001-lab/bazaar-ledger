@@ -11285,6 +11285,17 @@ class Documents extends Table with TableInfo<Documents, Document> {
     requiredDuringInsert: false,
     $customConstraints: '',
   );
+  static const VerificationMeta _supplierBillNoMeta = const VerificationMeta(
+    'supplierBillNo',
+  );
+  late final GeneratedColumn<String> supplierBillNo = GeneratedColumn<String>(
+    'supplier_bill_no',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
   static const VerificationMeta _cashThresholdBreachedMeta =
       const VerificationMeta('cashThresholdBreached');
   late final GeneratedColumn<int> cashThresholdBreached = GeneratedColumn<int>(
@@ -11362,6 +11373,7 @@ class Documents extends Table with TableInfo<Documents, Document> {
     biltyNo,
     transporter,
     shipTo,
+    supplierBillNo,
     cashThresholdBreached,
     postedAtUtc,
   ];
@@ -11797,6 +11809,15 @@ class Documents extends Table with TableInfo<Documents, Document> {
         shipTo.isAcceptableOrUnknown(data['ship_to']!, _shipToMeta),
       );
     }
+    if (data.containsKey('supplier_bill_no')) {
+      context.handle(
+        _supplierBillNoMeta,
+        supplierBillNo.isAcceptableOrUnknown(
+          data['supplier_bill_no']!,
+          _supplierBillNoMeta,
+        ),
+      );
+    }
     if (data.containsKey('cash_threshold_breached')) {
       context.handle(
         _cashThresholdBreachedMeta,
@@ -12032,6 +12053,10 @@ class Documents extends Table with TableInfo<Documents, Document> {
         DriftSqlType.string,
         data['${effectivePrefix}ship_to'],
       ),
+      supplierBillNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}supplier_bill_no'],
+      ),
       cashThresholdBreached: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}cash_threshold_breached'],
@@ -12137,6 +12162,12 @@ class Document extends DataClass implements Insertable<Document> {
   final String? transporter;
   final String? shipTo;
 
+  /// The number on the supplier's own paper, on a purchase bill. Added in v3:
+  /// the purchase screen had asked for it since M4 and it was written only
+  /// into an audit sentence, so the one number a supplier quotes when they
+  /// ring about an unpaid delivery could not be found or shown anywhere.
+  final String? supplierBillNo;
+
   /// s.21(s), Finance Act 2025: 50% of the expenditure is disallowed where a
   /// single invoice above Rs 200,000 is settled otherwise than through a
   /// banking or digital channel. Set at post time so the report never has to
@@ -12196,6 +12227,7 @@ class Document extends DataClass implements Insertable<Document> {
     this.biltyNo,
     this.transporter,
     this.shipTo,
+    this.supplierBillNo,
     required this.cashThresholdBreached,
     this.postedAtUtc,
   });
@@ -12289,6 +12321,9 @@ class Document extends DataClass implements Insertable<Document> {
     }
     if (!nullToAbsent || shipTo != null) {
       map['ship_to'] = Variable<String>(shipTo);
+    }
+    if (!nullToAbsent || supplierBillNo != null) {
+      map['supplier_bill_no'] = Variable<String>(supplierBillNo);
     }
     map['cash_threshold_breached'] = Variable<int>(cashThresholdBreached);
     if (!nullToAbsent || postedAtUtc != null) {
@@ -12387,6 +12422,9 @@ class Document extends DataClass implements Insertable<Document> {
       shipTo: shipTo == null && nullToAbsent
           ? const Value.absent()
           : Value(shipTo),
+      supplierBillNo: supplierBillNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(supplierBillNo),
       cashThresholdBreached: Value(cashThresholdBreached),
       postedAtUtc: postedAtUtc == null && nullToAbsent
           ? const Value.absent()
@@ -12460,6 +12498,7 @@ class Document extends DataClass implements Insertable<Document> {
       biltyNo: serializer.fromJson<String?>(json['bilty_no']),
       transporter: serializer.fromJson<String?>(json['transporter']),
       shipTo: serializer.fromJson<String?>(json['ship_to']),
+      supplierBillNo: serializer.fromJson<String?>(json['supplier_bill_no']),
       cashThresholdBreached: serializer.fromJson<int>(
         json['cash_threshold_breached'],
       ),
@@ -12524,6 +12563,7 @@ class Document extends DataClass implements Insertable<Document> {
       'bilty_no': serializer.toJson<String?>(biltyNo),
       'transporter': serializer.toJson<String?>(transporter),
       'ship_to': serializer.toJson<String?>(shipTo),
+      'supplier_bill_no': serializer.toJson<String?>(supplierBillNo),
       'cash_threshold_breached': serializer.toJson<int>(cashThresholdBreached),
       'posted_at_utc': serializer.toJson<int?>(postedAtUtc),
     };
@@ -12582,6 +12622,7 @@ class Document extends DataClass implements Insertable<Document> {
     Value<String?> biltyNo = const Value.absent(),
     Value<String?> transporter = const Value.absent(),
     Value<String?> shipTo = const Value.absent(),
+    Value<String?> supplierBillNo = const Value.absent(),
     int? cashThresholdBreached,
     Value<int?> postedAtUtc = const Value.absent(),
   }) => Document(
@@ -12649,6 +12690,9 @@ class Document extends DataClass implements Insertable<Document> {
     biltyNo: biltyNo.present ? biltyNo.value : this.biltyNo,
     transporter: transporter.present ? transporter.value : this.transporter,
     shipTo: shipTo.present ? shipTo.value : this.shipTo,
+    supplierBillNo: supplierBillNo.present
+        ? supplierBillNo.value
+        : this.supplierBillNo,
     cashThresholdBreached: cashThresholdBreached ?? this.cashThresholdBreached,
     postedAtUtc: postedAtUtc.present ? postedAtUtc.value : this.postedAtUtc,
   );
@@ -12766,6 +12810,9 @@ class Document extends DataClass implements Insertable<Document> {
           ? data.transporter.value
           : this.transporter,
       shipTo: data.shipTo.present ? data.shipTo.value : this.shipTo,
+      supplierBillNo: data.supplierBillNo.present
+          ? data.supplierBillNo.value
+          : this.supplierBillNo,
       cashThresholdBreached: data.cashThresholdBreached.present
           ? data.cashThresholdBreached.value
           : this.cashThresholdBreached,
@@ -12830,6 +12877,7 @@ class Document extends DataClass implements Insertable<Document> {
           ..write('biltyNo: $biltyNo, ')
           ..write('transporter: $transporter, ')
           ..write('shipTo: $shipTo, ')
+          ..write('supplierBillNo: $supplierBillNo, ')
           ..write('cashThresholdBreached: $cashThresholdBreached, ')
           ..write('postedAtUtc: $postedAtUtc')
           ..write(')'))
@@ -12890,6 +12938,7 @@ class Document extends DataClass implements Insertable<Document> {
     biltyNo,
     transporter,
     shipTo,
+    supplierBillNo,
     cashThresholdBreached,
     postedAtUtc,
   ]);
@@ -12949,6 +12998,7 @@ class Document extends DataClass implements Insertable<Document> {
           other.biltyNo == this.biltyNo &&
           other.transporter == this.transporter &&
           other.shipTo == this.shipTo &&
+          other.supplierBillNo == this.supplierBillNo &&
           other.cashThresholdBreached == this.cashThresholdBreached &&
           other.postedAtUtc == this.postedAtUtc);
 }
@@ -13006,6 +13056,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
   final Value<String?> biltyNo;
   final Value<String?> transporter;
   final Value<String?> shipTo;
+  final Value<String?> supplierBillNo;
   final Value<int> cashThresholdBreached;
   final Value<int?> postedAtUtc;
   final Value<int> rowid;
@@ -13062,6 +13113,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     this.biltyNo = const Value.absent(),
     this.transporter = const Value.absent(),
     this.shipTo = const Value.absent(),
+    this.supplierBillNo = const Value.absent(),
     this.cashThresholdBreached = const Value.absent(),
     this.postedAtUtc = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -13119,6 +13171,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     this.biltyNo = const Value.absent(),
     this.transporter = const Value.absent(),
     this.shipTo = const Value.absent(),
+    this.supplierBillNo = const Value.absent(),
     this.cashThresholdBreached = const Value.absent(),
     this.postedAtUtc = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -13190,6 +13243,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     Expression<String>? biltyNo,
     Expression<String>? transporter,
     Expression<String>? shipTo,
+    Expression<String>? supplierBillNo,
     Expression<int>? cashThresholdBreached,
     Expression<int>? postedAtUtc,
     Expression<int>? rowid,
@@ -13248,6 +13302,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
       if (biltyNo != null) 'bilty_no': biltyNo,
       if (transporter != null) 'transporter': transporter,
       if (shipTo != null) 'ship_to': shipTo,
+      if (supplierBillNo != null) 'supplier_bill_no': supplierBillNo,
       if (cashThresholdBreached != null)
         'cash_threshold_breached': cashThresholdBreached,
       if (postedAtUtc != null) 'posted_at_utc': postedAtUtc,
@@ -13308,6 +13363,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     Value<String?>? biltyNo,
     Value<String?>? transporter,
     Value<String?>? shipTo,
+    Value<String?>? supplierBillNo,
     Value<int>? cashThresholdBreached,
     Value<int?>? postedAtUtc,
     Value<int>? rowid,
@@ -13365,6 +13421,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
       biltyNo: biltyNo ?? this.biltyNo,
       transporter: transporter ?? this.transporter,
       shipTo: shipTo ?? this.shipTo,
+      supplierBillNo: supplierBillNo ?? this.supplierBillNo,
       cashThresholdBreached:
           cashThresholdBreached ?? this.cashThresholdBreached,
       postedAtUtc: postedAtUtc ?? this.postedAtUtc,
@@ -13533,6 +13590,9 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     if (shipTo.present) {
       map['ship_to'] = Variable<String>(shipTo.value);
     }
+    if (supplierBillNo.present) {
+      map['supplier_bill_no'] = Variable<String>(supplierBillNo.value);
+    }
     if (cashThresholdBreached.present) {
       map['cash_threshold_breached'] = Variable<int>(
         cashThresholdBreached.value,
@@ -13602,6 +13662,7 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
           ..write('biltyNo: $biltyNo, ')
           ..write('transporter: $transporter, ')
           ..write('shipTo: $shipTo, ')
+          ..write('supplierBillNo: $supplierBillNo, ')
           ..write('cashThresholdBreached: $cashThresholdBreached, ')
           ..write('postedAtUtc: $postedAtUtc, ')
           ..write('rowid: $rowid')
@@ -46617,6 +46678,7 @@ typedef $DocumentsCreateCompanionBuilder =
       Value<String?> biltyNo,
       Value<String?> transporter,
       Value<String?> shipTo,
+      Value<String?> supplierBillNo,
       Value<int> cashThresholdBreached,
       Value<int?> postedAtUtc,
       Value<int> rowid,
@@ -46675,6 +46737,7 @@ typedef $DocumentsUpdateCompanionBuilder =
       Value<String?> biltyNo,
       Value<String?> transporter,
       Value<String?> shipTo,
+      Value<String?> supplierBillNo,
       Value<int> cashThresholdBreached,
       Value<int?> postedAtUtc,
       Value<int> rowid,
@@ -47156,6 +47219,11 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
 
   ColumnFilters<String> get shipTo => $composableBuilder(
     column: $table.shipTo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get supplierBillNo => $composableBuilder(
+    column: $table.supplierBillNo,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -47696,6 +47764,11 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get supplierBillNo => $composableBuilder(
+    column: $table.supplierBillNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get cashThresholdBreached => $composableBuilder(
     column: $table.cashThresholdBreached,
     builder: (column) => ColumnOrderings(column),
@@ -48046,6 +48119,11 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
 
   GeneratedColumn<String> get shipTo =>
       $composableBuilder(column: $table.shipTo, builder: (column) => column);
+
+  GeneratedColumn<String> get supplierBillNo => $composableBuilder(
+    column: $table.supplierBillNo,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get cashThresholdBreached => $composableBuilder(
     column: $table.cashThresholdBreached,
@@ -48439,6 +48517,7 @@ class $DocumentsTableManager
                 Value<String?> biltyNo = const Value.absent(),
                 Value<String?> transporter = const Value.absent(),
                 Value<String?> shipTo = const Value.absent(),
+                Value<String?> supplierBillNo = const Value.absent(),
                 Value<int> cashThresholdBreached = const Value.absent(),
                 Value<int?> postedAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -48495,6 +48574,7 @@ class $DocumentsTableManager
                 biltyNo: biltyNo,
                 transporter: transporter,
                 shipTo: shipTo,
+                supplierBillNo: supplierBillNo,
                 cashThresholdBreached: cashThresholdBreached,
                 postedAtUtc: postedAtUtc,
                 rowid: rowid,
@@ -48553,6 +48633,7 @@ class $DocumentsTableManager
                 Value<String?> biltyNo = const Value.absent(),
                 Value<String?> transporter = const Value.absent(),
                 Value<String?> shipTo = const Value.absent(),
+                Value<String?> supplierBillNo = const Value.absent(),
                 Value<int> cashThresholdBreached = const Value.absent(),
                 Value<int?> postedAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -48609,6 +48690,7 @@ class $DocumentsTableManager
                 biltyNo: biltyNo,
                 transporter: transporter,
                 shipTo: shipTo,
+                supplierBillNo: supplierBillNo,
                 cashThresholdBreached: cashThresholdBreached,
                 postedAtUtc: postedAtUtc,
                 rowid: rowid,
