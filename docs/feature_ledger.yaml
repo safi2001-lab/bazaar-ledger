@@ -154,7 +154,17 @@ milestones:
     title: Sales documents, the conversion chain and pricing
     # Opened 26 Sep 2026, pricing first: items had carried a wholesale price
     # since M1 and parties a standing discount, and the counter used neither.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 7/7. A customer is charged their own price and
+    # discount; a price is given as a quotation and billed from later; goods
+    # go out on a challan and are billed from it without leaving the shelf
+    # twice; and a charge that is not a sale goes on the khata as a debit
+    # note. Not built, and said here rather than left to be discovered: a
+    # sale order as a document of its own (a quotation the customer has
+    # accepted is billed or sent on a challan directly), a proforma invoice,
+    # a challan made from a quotation, billing part of a challan or several
+    # challans on one bill, and cancelling a debit note.
+    state: sealed
     owns:
       - lib/features/documents/**
       - packages/pk_domain/lib/src/documents/**
