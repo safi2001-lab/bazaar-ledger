@@ -1,3 +1,6 @@
+import 'package:bazaar_ledger/app/providers.dart';
+import 'package:bazaar_ledger/features/home/home_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
@@ -110,6 +113,35 @@ void main() {
     expect(await _net(app, 'cheques_in_hand'), 4500000);
     expect(await _net(app, 'bank'), 0);
   });
+
+  testWidgets('the first screen says when a cheque is due at the bank', (
+    tester,
+  ) async {
+    final app = await Harness.startWithShop(tester);
+    final rashid = await app.seedParty(
+      name: 'Rashid Traders',
+      owedRupees: 45000,
+    );
+    final today = BusinessDate.now(app.services.clock);
+    await _takeCheque(app, rashid, no: 'LATER', due: today.addDays(10));
+    await _reopenHome(tester);
+    expect(find.textContaining('bank le jane ka din'), findsNothing);
+
+    await _takeCheque(app, rashid, no: 'TODAY', due: today);
+    await _reopenHome(tester);
+    await tapText(tester, '1 cheque bank le jane ka din aa gaya');
+
+    expect(find.text('Aaj jama karein'), findsOneWidget);
+  });
+}
+
+/// The home screen as it is when the shop opens the app in the morning, with
+/// whatever was recorded since it last looked.
+Future<void> _reopenHome(WidgetTester tester) async {
+  ProviderScope.containerOf(
+    tester.element(find.byType(HomeScreen)),
+  ).bumpRefresh();
+  await tester.pumpAndSettle();
 }
 
 Future<void> _takeCheque(

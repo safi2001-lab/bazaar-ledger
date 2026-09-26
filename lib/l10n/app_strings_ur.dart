@@ -1507,5 +1507,16 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String homeChequesDue(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cheque bank le jane ka din aa gaya',
+      one: '1 cheque bank le jane ka din aa gaya',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

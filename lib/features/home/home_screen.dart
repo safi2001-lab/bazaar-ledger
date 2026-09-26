@@ -53,6 +53,7 @@ class HomeScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(BlTokens.space4),
             children: [
               const _DayCard(),
+              const _ChequesDue(),
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.homeTitle),
               const SizedBox(height: BlTokens.space3),
@@ -314,6 +315,62 @@ class _NavGrid extends StatelessWidget {
       ),
       itemCount: tiles.length,
       itemBuilder: (context, i) => tiles[i],
+    );
+  }
+}
+
+/// How many cheques in the drawer can go to the bank today and have not.
+///
+/// Its own provider rather than the drawer's list, so the drawer still reads
+/// afresh each time it is opened instead of inheriting the home screen's copy.
+final _chequesDueProvider = FutureProvider.autoDispose<int>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return 0;
+  final today = BusinessDate.now(services.clock);
+  final inHand = await services.queries.chequesInHand(firm.id);
+  return inHand.where((c) => !c.deposited && c.isDueBy(today)).length;
+});
+
+/// Cheques whose day has come, said on the first screen of the morning.
+///
+/// A post-dated cheque is only good for six months from its date, and one
+/// that sits in the drawer past its day is one the customer has had longer
+/// to empty the account behind. So the shop is told when one is due rather
+/// than having to go and look.
+class _ChequesDue extends ConsumerWidget {
+  const _ChequesDue();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final due = ref.watch(_chequesDueProvider).valueOrNull ?? 0;
+    if (due == 0) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.only(top: BlTokens.space3),
+      child: BlCard(
+        onTap: () => HomeScreen._open(context, const ChequesScreen()),
+        child: Row(
+          children: [
+            Icon(Icons.notifications_active_outlined, color: t.warning),
+            const SizedBox(width: BlTokens.space3),
+            Expanded(
+              child: Text(
+                s.homeChequesDue(due),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: t.ink,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: t.inkMuted),
+          ],
+        ),
+      ),
     );
   }
 }

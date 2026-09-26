@@ -3078,3 +3078,15 @@ features:
       - a cheque cleared from the drawer puts the money in the bank
       - a bounced cheque reopens the khata and names the notice date
       - a post-dated cheque cannot be banked before its date
+
+  - id: M6-ALERT-01
+    milestone: M6
+    title: The home screen says when a cheque is due at the bank
+    status: done
+    # A post-dated cheque is only good for six months from its date, and one
+    # left in the drawer past its day gives the customer longer to empty the
+    # account behind it. So the first screen of the morning says how many
+    # have come due and not yet gone to the bank, and one tap opens the
+    # drawer on them. Nothing is said about a cheque whose day has not come.
+    proof:
+      - the first screen says when a cheque is due at the bank

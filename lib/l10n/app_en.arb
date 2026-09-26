@@ -751,5 +751,13 @@
       }
     }
   },
+  "homeChequesDue": "{count, plural, =1{1 cheque is due at the bank} other{{count} cheques are due at the bank}}",
+  "@homeChequesDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

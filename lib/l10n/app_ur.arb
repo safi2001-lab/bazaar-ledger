@@ -830,5 +830,13 @@
       }
     }
   },
+  "homeChequesDue": "{count, plural, =1{1 cheque bank le jane ka din aa gaya} other{{count} cheque bank le jane ka din aa gaya}}",
+  "@homeChequesDue": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

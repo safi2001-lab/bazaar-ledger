@@ -2798,6 +2798,12 @@ abstract class AppStrings {
   /// **'Bank ise {date} se pehle nahi lega'**
   String chequeNotYet(String date);
 
+  /// No description provided for @homeChequesDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 cheque bank le jane ka din aa gaya} other{{count} cheque bank le jane ka din aa gaya}}'**
+  String homeChequesDue(int count);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:
