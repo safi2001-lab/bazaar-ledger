@@ -148,6 +148,29 @@ final class SalePostingBuilder {
     for (var i = 0; i < calculated.tenders.length; i++) {
       final settlement = calculated.tenders[i];
       final tender = settlement.draft;
+      if (tender.mode == 'cheque') {
+        // Said here in words. The schema refuses a cheque with no number
+        // too, and the counter used to meet that as a constraint error: the
+        // tender sheet offered Cheque and never asked for the number, so
+        // every cheque sale failed with nothing written.
+        if (tender.chequeNo?.trim().isEmpty ?? true) {
+          throw ArgumentError.value(
+            tender.chequeNo,
+            'chequeNo',
+            'a cheque with no number cannot be chased when it bounces',
+          );
+        }
+        // A cheque that bounces reopens the bill, and a reopened bill is
+        // somebody's udhaar. A walk-in has no khata to put it back on.
+        if (draft.partyId == null) {
+          throw ArgumentError.value(
+            null,
+            'partyId',
+            'a cheque has to name the customer who wrote it, or a bounce '
+                'leaves money nobody can be asked for',
+          );
+        }
+      }
       final ledgerAccount =
           ledgerAccountByPaymentAccount[tender.paymentAccountId];
       if (ledgerAccount == null) {

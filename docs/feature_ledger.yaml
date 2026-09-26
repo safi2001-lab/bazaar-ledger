@@ -124,7 +124,13 @@ milestones:
 
   - id: M6
     title: Post-dated cheques
-    state: planned
+    # Opened 26 Sep 2026. In the wholesale markets this is built for, most of
+    # the volume is settled by cheques dated fifteen to sixty days ahead. A
+    # cheque is a promise with a date on it, and it can bounce: until it
+    # clears it is not money in the bank, and until the shop can see which
+    # cheques are due, which are late and which bounced, it cannot chase any
+    # of them.
+    state: open
     owns:
       - lib/features/cheques/**
       - packages/pk_domain/lib/src/cheques/**
@@ -2984,3 +2990,37 @@ features:
       - a refused return writes nothing and burns no number
       - a return to a supplier is recorded in the audit trail
       - a delivery entered wrong can be sent back from the list
+
+  # ---- M6 · Post-dated cheques ------------------------------------------
+
+  - id: M6-TAKE-01
+    milestone: M6
+    title: A cheque can be taken, at the counter or on a khata, with its date
+    status: done
+    # A live defect first. The counter's payment sheet offered Cheque and
+    # asked for nothing, and the schema refuses a cheque with no number — so
+    # every cheque sale at the counter failed with "Bill save nahi hua", and
+    # nothing in the test suite had ever tried one. The khata asked for a
+    # number and a bank but never the date, and a post-dated cheque without
+    # its date is one nobody can bank on time or call late.
+    #
+    # Both now use one set of fields: number, bank, and the day it can be
+    # banked, with the trade's usual terms — today, 15, 30, 45 and 60 days —
+    # one tap each. The date is stored as 00:00 PKT so "due today" means the
+    # shopkeeper's today whatever the phone's timezone says.
+    #
+    # And two rules, in the builder and on the screen: a cheque with no number
+    # is refused in words before the schema has to, and a cheque from a
+    # walk-in is refused outright. A cheque can bounce, a bounce reopens the
+    # bill, and a reopened bill with no customer is money nobody can be asked
+    # for.
+    proof:
+      - the day a cheque can be banked a date survives being stored, whatever side of midnight
+      - the day a cheque can be banked days until it is due count calendar days, and go negative
+      - a cheque at the counter goes to Cheques in Hand, not the bank
+      - a cheque at the counter with no number is refused before the schema has to
+      - a cheque at the counter from a walk-in is refused, since a bounce would have nobody to chase
+      - a cheque sale at the counter is saved, dated for banking
+      - a cheque from a walk-in is refused in words
+      - a cheque with no number is refused in words
+      - a cheque taken against udhaar carries its due date

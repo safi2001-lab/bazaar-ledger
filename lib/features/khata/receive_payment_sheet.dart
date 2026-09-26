@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../cheques/cheque_fields.dart';
 import 'khata_providers.dart';
 
 /// Taking money against a customer's khata.
@@ -60,6 +61,9 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
 
   String _mode = 'cash';
   String? _accountId;
+
+  /// When the cheque can be banked. Today unless a term is picked.
+  BusinessDate? _chequeDue;
   bool _busy = false;
   String? _error;
 
@@ -125,6 +129,13 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
           chequeNo: _mode == 'cheque' ? _chequeNo.text.trim() : null,
           chequeBank: _mode == 'cheque' && _chequeBank.text.trim().isNotEmpty
               ? _chequeBank.text.trim()
+              : null,
+          // The day it can be banked. Without it a post-dated cheque is a
+          // number and a bank, and nobody can say when it is due or late.
+          chequeDateUtcMillis: _mode == 'cheque'
+              ? chequeDueUtcMillis(
+                  _chequeDue ?? BusinessDate.now(services.clock),
+                )
               : null,
         ),
       );
@@ -215,9 +226,16 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
 
             if (_mode == 'cheque') ...[
               const SizedBox(height: BlTokens.space3),
-              BlField(controller: _chequeNo, label: s.wasooliChequeNo),
-              const SizedBox(height: BlTokens.space2),
-              BlField(controller: _chequeBank, label: s.wasooliChequeBank),
+              ChequeFields(
+                number: _chequeNo,
+                bank: _chequeBank,
+                today: BusinessDate.now(ref.read(appServicesProvider).clock),
+                due:
+                    _chequeDue ??
+                    BusinessDate.now(ref.read(appServicesProvider).clock),
+                onDueChanged: (d) => setState(() => _chequeDue = d),
+                onChanged: () => setState(() => _error = null),
+              ),
             ] else ...[
               const SizedBox(height: BlTokens.space3),
               BlField(controller: _reference, label: s.wasooliReference),

@@ -666,5 +666,25 @@
     }
   },
   "purchaseReturnTitle": "Send goods back to the supplier",
-  "purchaseReturnRefund": "Refunded by the supplier now"
+  "purchaseReturnRefund": "Refunded by the supplier now",
+  "chequeDue": "Can be banked on",
+  "chequeDueToday": "Today",
+  "chequeDueInDays": "In {days} days",
+  "@chequeDueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeDuePick": "Pick a date",
+  "chequeDueOn": "Date: {date}",
+  "@chequeDueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNeedsCustomer": "Take a cheque only from a named customer — if it bounces, who would you ask?"
 }

@@ -1412,4 +1412,27 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get purchaseReturnRefund => 'Refunded by the supplier now';
+
+  @override
+  String get chequeDue => 'Can be banked on';
+
+  @override
+  String get chequeDueToday => 'Today';
+
+  @override
+  String chequeDueInDays(String days) {
+    return 'In $days days';
+  }
+
+  @override
+  String get chequeDuePick => 'Pick a date';
+
+  @override
+  String chequeDueOn(String date) {
+    return 'Date: $date';
+  }
+
+  @override
+  String get chequeNeedsCustomer =>
+      'Take a cheque only from a named customer — if it bounces, who would you ask?';
 }

@@ -745,5 +745,25 @@
     }
   },
   "purchaseReturnTitle": "Supplier ko maal wapas",
-  "purchaseReturnRefund": "Supplier ne abhi wapas diye"
+  "purchaseReturnRefund": "Supplier ne abhi wapas diye",
+  "chequeDue": "Kab jama ho sakta hai",
+  "chequeDueToday": "Aaj",
+  "chequeDueInDays": "{days} din baad",
+  "@chequeDueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeDuePick": "Tareekh chunein",
+  "chequeDueOn": "Tareekh: {date}",
+  "@chequeDueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNeedsCustomer": "Cheque sirf naam wale gahak se lein — bounce hua to kis se mangenge?"
 }

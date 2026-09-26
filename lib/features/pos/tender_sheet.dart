@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../cheques/cheque_fields.dart';
 import '../parties/party_picker.dart';
 import '../sales/receipt_screen.dart';
 import 'cart.dart';
@@ -29,6 +30,12 @@ class TenderSheet extends ConsumerStatefulWidget {
 class _TenderSheetState extends ConsumerState<TenderSheet> {
   final _tendered = TextEditingController();
   final _reference = TextEditingController();
+  final _chequeNo = TextEditingController();
+  final _chequeBank = TextEditingController();
+
+  /// The day the cheque can be banked. Null until the sheet first draws with
+  /// a clock, then today unless the shopkeeper picks a term.
+  BusinessDate? _chequeDue;
 
   String _mode = 'cash';
   bool _onUdhaar = false;
@@ -48,6 +55,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   void dispose() {
     _tendered.dispose();
     _reference.dispose();
+    _chequeNo.dispose();
+    _chequeBank.dispose();
     super.dispose();
   }
 
@@ -106,6 +115,25 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     if (leavesBalance && cart.partyId == null) {
       setState(() {
         _failure = s.tenderUdhaarNeedsCustomer;
+        _busy = false;
+      });
+      return;
+    }
+
+    // A cheque is a promise to pay on a day, and the promise can bounce. The
+    // sheet used to offer Cheque and ask for nothing, so the schema refused
+    // every cheque sale and the counter showed "nothing was written".
+    final byCheque = !_onUdhaar && _mode == 'cheque';
+    if (byCheque && cart.partyId == null) {
+      setState(() {
+        _failure = s.chequeNeedsCustomer;
+        _busy = false;
+      });
+      return;
+    }
+    if (byCheque && _chequeNo.text.trim().isEmpty) {
+      setState(() {
+        _failure = s.wasooliChequeNoRequired;
         _busy = false;
       });
       return;
@@ -217,9 +245,27 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               // "Bank transfer" and then switched to "Cash" was being saved
               // onto the cash payment, where it names a transfer that never
               // happened.
-              reference: _mode == 'cash' || _reference.text.trim().isEmpty
+              reference:
+                  _mode == 'cash' ||
+                      _mode == 'cheque' ||
+                      _reference.text.trim().isEmpty
                   ? null
                   : _reference.text.trim(),
+              chequeNo: byCheque ? _chequeNo.text.trim() : null,
+              chequeBank: byCheque && _chequeBank.text.trim().isNotEmpty
+                  ? _chequeBank.text.trim()
+                  : null,
+              chequeDateUtc: byCheque
+                  ? DateTime.fromMillisecondsSinceEpoch(
+                      chequeDueUtcMillis(
+                        _chequeDue ??
+                            BusinessDate.now(
+                              ref.read(appServicesProvider).clock,
+                            ),
+                      ),
+                      isUtc: true,
+                    )
+                  : null,
             ),
           ];
 
@@ -398,7 +444,18 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                     setState(() {});
                   },
                 ),
-              ] else
+              ] else if (_mode == 'cheque')
+                ChequeFields(
+                  number: _chequeNo,
+                  bank: _chequeBank,
+                  today: BusinessDate.now(ref.read(appServicesProvider).clock),
+                  due:
+                      _chequeDue ??
+                      BusinessDate.now(ref.read(appServicesProvider).clock),
+                  onDueChanged: (d) => setState(() => _chequeDue = d),
+                  onChanged: () => setState(() => _failure = null),
+                )
+              else
                 BlField(controller: _reference, label: s.tenderReference),
               const SizedBox(height: BlTokens.space3),
               Row(

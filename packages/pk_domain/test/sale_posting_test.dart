@@ -273,6 +273,9 @@ void main() {
       // it is taken is how a shop believes it has been paid twice.
       final posting = post(
         SaleDraft(
+          // Named: a cheque can bounce, and a bounce reopens the bill against
+          // whoever wrote it. A walk-in cheque is refused (M6-TAKE-01).
+          partyId: 'P-RASHID',
           lines: [item(rate: Rate.rupees(5000))],
           tenders: [
             TenderDraft(

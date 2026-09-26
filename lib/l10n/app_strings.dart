@@ -2647,6 +2647,42 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Supplier ne abhi wapas diye'**
   String get purchaseReturnRefund;
+
+  /// No description provided for @chequeDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab jama ho sakta hai'**
+  String get chequeDue;
+
+  /// No description provided for @chequeDueToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj'**
+  String get chequeDueToday;
+
+  /// No description provided for @chequeDueInDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din baad'**
+  String chequeDueInDays(String days);
+
+  /// No description provided for @chequeDuePick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh chunein'**
+  String get chequeDuePick;
+
+  /// No description provided for @chequeDueOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh: {date}'**
+  String chequeDueOn(String date);
+
+  /// No description provided for @chequeNeedsCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque sirf naam wale gahak se lein — bounce hua to kis se mangenge?'**
+  String get chequeNeedsCustomer;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
