@@ -48,11 +48,7 @@ final receiptBytesProvider = FutureProvider.family<List<int>?, String>((
   return services.receipts.toThermalBytes(
     receipt,
     paper: settings.paper,
-    drawn: await _drawUnprintable(
-      services.receipts,
-      receipt,
-      settings.paper,
-    ),
+    drawn: await _drawUnprintable(services.receipts, receipt, settings.paper),
     // Only on a sale that actually took cash. A drawer that clicks on a
     // card payment is a drawer somebody unplugs.
     openDrawer:

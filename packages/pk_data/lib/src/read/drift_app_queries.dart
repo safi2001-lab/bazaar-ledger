@@ -269,7 +269,18 @@ final class DriftAppQueries implements AppQueries {
                    AND jl.firm_id = p.firm_id
                    AND a.system_key = 'customer_advances'
                    AND jl.deleted_at_utc IS NULL
-               ), 0) AS balance_paisa
+               ), 0) AS balance_paisa,
+           -- What the shop owes them, as its own figure and never netted
+           -- against the above: the two debts are settled separately, each
+           -- against its own bills.
+           COALESCE((
+               SELECT SUM(d.balance_paisa) FROM documents d
+               WHERE d.party_id = p.id
+                 AND d.firm_id = p.firm_id
+                 AND d.doc_type IN ('purchase_bill', 'expense')
+                 AND d.status = 'posted'
+                 AND d.deleted_at_utc IS NULL
+             ), 0) AS payable_paisa
     FROM parties p
 ''';
 
@@ -279,6 +290,7 @@ final class DriftAppQueries implements AppQueries {
     phone: _blankToNull(r.readNullable<String>('phone')),
     partyType: r.read<String>('party_type'),
     balance: Money.paisa(r.read<int>('balance_paisa')),
+    payable: Money.paisa(r.read<int>('payable_paisa')),
     creditLimit: r.readNullable<int>('credit_limit_paisa') == null
         ? null
         : Money.paisa(r.read<int>('credit_limit_paisa')),
@@ -363,6 +375,100 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<LedgerEntry>> payablesLedger(
+    String firmId,
+    String partyId, {
+    int limit = 200,
+  }) async {
+    // The supplier side of [partyLedger], shaped the same way for the same
+    // reasons: one UNION so the database decides the order, oldest first so
+    // the running figure is computed forwards, never stored.
+    //
+    // Positive is what the shop took on — a delivery, an expense left on
+    // account. Negative is money the shop paid them.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT id, kind, reference, date_local, amount_paisa FROM (
+            SELECT d.id AS id,
+                   CASE d.doc_type WHEN 'expense' THEN 'expense'
+                                   ELSE 'purchase' END AS kind,
+                   d.doc_no AS reference,
+                   d.doc_date_local AS date_local,
+                   -- What went onto the account, read off the payable line
+                   -- the bill posted, not its total: a delivery half-paid at
+                   -- the door put only the other half on the supplier's
+                   -- khata, and `paid_paisa` has since moved with every
+                   -- payment against it.
+                   COALESCE((
+                     SELECT SUM(jl.credit_paisa - jl.debit_paisa)
+                     FROM journal_entries je
+                     JOIN journal_lines jl ON jl.journal_entry_id = je.id
+                     JOIN accounts a ON a.id = jl.account_id
+                     WHERE je.document_id = d.id
+                       AND a.system_key = 'accounts_payable'
+                   ), 0) AS amount_paisa,
+                   d.doc_seq AS seq
+            FROM documents d
+            WHERE d.firm_id = ? AND d.party_id = ?
+              AND d.doc_type IN ('purchase_bill', 'expense')
+              AND d.status NOT IN ('void', 'draft')
+              AND d.deleted_at_utc IS NULL
+
+            UNION ALL
+
+            SELECT p.id AS id,
+                   'payment' AS kind,
+                   p.payment_no AS reference,
+                   p.payment_date_local AS date_local,
+                   -p.amount_paisa AS amount_paisa,
+                   0 AS seq
+            FROM payments p
+            WHERE p.firm_id = ? AND p.party_id = ?
+              AND p.direction = 'out'
+              AND p.status <> 'void'
+              AND p.deleted_at_utc IS NULL
+          )
+          WHERE amount_paisa <> 0
+          ORDER BY date_local, seq, id
+          LIMIT ?
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<String>(partyId),
+            Variable<int>(limit),
+          ],
+          readsFrom: {
+            _db.documents,
+            _db.payments,
+            _db.journalEntries,
+            _db.journalLines,
+            _db.accounts,
+          },
+        )
+        .get();
+
+    var running = Money.zero;
+    return [
+      for (final r in rows)
+        () {
+          final amount = Money.paisa(r.read<int>('amount_paisa'));
+          running += amount;
+          return LedgerEntry(
+            id: r.read<String>('id'),
+            kind: r.read<String>('kind'),
+            reference: r.read<String>('reference'),
+            dateLocal: r.read<String>('date_local'),
+            amount: amount,
+            balanceAfter: running,
+          );
+        }(),
+    ];
+  }
+
+  @override
   Future<Aging> aging(String firmId, {required String asOfDateLocal}) async {
     // Bucketed in SQL rather than by pulling every open bill into Dart. A
     // wholesaler with three years of udhaar has tens of thousands, and the
@@ -382,6 +488,11 @@ final class DriftAppQueries implements AppQueries {
             SUM(d.balance_paisa) AS owed
           FROM documents d
           WHERE d.firm_id = ?
+            -- Udhaar is what customers owe. Without this, every delivery
+            -- the shop has not finished paying for aged here as though a
+            -- customer owed it, and the 90-day bucket filled with the
+            -- shop's own debts.
+            AND d.doc_type = 'sale_invoice'
             AND d.balance_paisa > 0
             AND d.party_id IS NOT NULL
             AND d.status NOT IN ('void', 'draft')
@@ -425,6 +536,9 @@ final class DriftAppQueries implements AppQueries {
           FROM documents d
           JOIN parties p ON p.id = d.party_id
           WHERE d.firm_id = ?
+            -- Sale invoices only, or a party the shop also buys from is
+            -- chased from the date of a delivery the shop owes on.
+            AND d.doc_type = 'sale_invoice'
             AND d.balance_paisa > 0
             AND d.status NOT IN ('void', 'draft')
             AND d.deleted_at_utc IS NULL
@@ -549,12 +663,27 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
-  Future<List<OpenBill>> openBillsFor(String firmId, String partyId) async {
-    // Deliberately the same WHERE and the same ORDER BY as
-    // `_DriftPaymentWriteContext.openBillsFor`. The preview a shopkeeper
-    // approves has to be what the write actually does, and two orderings
-    // would make it a guess.
-    //
+  Future<List<OpenBill>> openBillsFor(String firmId, String partyId) =>
+      // Deliberately the same WHERE and the same ORDER BY as
+      // `_DriftPaymentWriteContext.openBillsFor`. The preview a shopkeeper
+      // approves has to be what the write actually does, and two orderings
+      // would make it a guess.
+      _openDocuments(firmId, partyId, "doc_type = 'sale_invoice'");
+
+  @override
+  Future<List<OpenBill>> openPayablesFor(String firmId, String partyId) =>
+      // And the same again for `openPayablesFor`, for the same reason.
+      _openDocuments(
+        firmId,
+        partyId,
+        "doc_type IN ('purchase_bill', 'expense')",
+      );
+
+  Future<List<OpenBill>> _openDocuments(
+    String firmId,
+    String partyId,
+    String typeFilter,
+  ) async {
     // Rides idx_documents_open_balance:
     // (firm_id, party_id, doc_date_local) WHERE balance_paisa <> 0.
     final rows = await _db
@@ -563,6 +692,7 @@ final class DriftAppQueries implements AppQueries {
           SELECT id, doc_date_local, doc_seq, balance_paisa
           FROM documents
           WHERE firm_id = ? AND party_id = ?
+            AND $typeFilter
             AND balance_paisa > 0
             AND status NOT IN ('void', 'draft')
             AND deleted_at_utc IS NULL

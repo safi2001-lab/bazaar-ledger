@@ -2383,6 +2383,72 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{name} ko dena hai'**
   String expenseOwedTo(String name);
+
+  /// No description provided for @partyWeOwe.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} dena hai'**
+  String partyWeOwe(String amount);
+
+  /// No description provided for @khataPayable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna dena hai'**
+  String get khataPayable;
+
+  /// No description provided for @khataPay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay dein'**
+  String get khataPay;
+
+  /// No description provided for @khataOpenPayables.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jin ka dena baqi hai'**
+  String get khataOpenPayables;
+
+  /// No description provided for @khataNoPayables.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is supplier ka sab chuka diya'**
+  String get khataNoPayables;
+
+  /// No description provided for @payTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier ko paisay dein'**
+  String get payTitle;
+
+  /// No description provided for @payAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne diye'**
+  String get payAmount;
+
+  /// No description provided for @paySettles.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill chuk jayenge'**
+  String get paySettles;
+
+  /// No description provided for @payTooMuch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf {amount} dena hai'**
+  String payTooMuch(String amount);
+
+  /// No description provided for @paySave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Payment save karein'**
+  String get paySave;
+
+  /// No description provided for @paySaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} de diye'**
+  String paySaved(String amount);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

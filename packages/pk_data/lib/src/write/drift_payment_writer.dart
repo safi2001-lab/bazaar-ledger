@@ -57,11 +57,28 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
     //
     // Rides idx_documents_open_balance, which is already
     // (firm_id, party_id, doc_date_local) WHERE balance_paisa <> 0.
+    //
+    // Sale invoices only. Without the type filter a party who is both a
+    // customer and a supplier had their payment to the shop settle the
+    // shop's own purchase bills from them: money in, applied to money out,
+    // and the payable quietly vanished while the udhaar stayed.
+    return _open(partyId, "doc_type = 'sale_invoice'");
+  }
+
+  @override
+  Future<List<OpenBill>> openPayablesFor(String partyId) =>
+      // What the shop owes: deliveries not yet paid for, and expenses left
+      // on account. The same WHERE otherwise, so a void purchase is never
+      // paid against either.
+      _open(partyId, "doc_type IN ('purchase_bill', 'expense')");
+
+  Future<List<OpenBill>> _open(String partyId, String typeFilter) async {
     final rows = await _tx.select(
       '''
       SELECT id, doc_date_local, doc_seq, balance_paisa
       FROM documents
       WHERE firm_id = ? AND party_id = ?
+        AND $typeFilter
         AND balance_paisa > 0
         AND status NOT IN ('void', 'draft')
         AND deleted_at_utc IS NULL
@@ -186,7 +203,7 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
     }
 
     _tx.audit(
-      action: 'PAYMENT_RECEIVED',
+      action: payment.direction == 'out' ? 'PAYMENT_MADE' : 'PAYMENT_RECEIVED',
       entityTable: 'payments',
       entityId: paymentId,
       summary: posting.auditSummary,

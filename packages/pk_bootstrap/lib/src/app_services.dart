@@ -110,6 +110,9 @@ final class AppServices {
   RecordReceiptUseCase get recordReceipt =>
       RecordReceiptUseCase(writer: DriftPaymentWriter(runner: _runner));
 
+  PaySupplierUseCase get paySupplier =>
+      PaySupplierUseCase(writer: DriftPaymentWriter(runner: _runner));
+
   RecordPurchaseUseCase get recordPurchase =>
       RecordPurchaseUseCase(writer: DriftPurchaseWriter(runner: _runner));
 

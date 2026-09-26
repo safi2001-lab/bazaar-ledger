@@ -560,5 +560,37 @@
         "type": "String"
       }
     }
+  },
+  "partyWeOwe": "you owe {amount}",
+  "@partyWeOwe": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "khataPayable": "You owe them",
+  "khataPay": "Pay",
+  "khataOpenPayables": "Not yet paid for",
+  "khataNoPayables": "Nothing owed to this supplier",
+  "payTitle": "Pay supplier",
+  "payAmount": "Amount paid",
+  "paySettles": "This pays off",
+  "payTooMuch": "Only {amount} is owed",
+  "@payTooMuch": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paySave": "Save payment",
+  "paySaved": "{amount} paid",
+  "@paySaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

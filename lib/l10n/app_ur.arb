@@ -642,5 +642,37 @@
         "type": "String"
       }
     }
+  },
+  "partyWeOwe": "{amount} dena hai",
+  "@partyWeOwe": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "khataPayable": "Kitna dena hai",
+  "khataPay": "Paisay dein",
+  "khataOpenPayables": "Jin ka dena baqi hai",
+  "khataNoPayables": "Is supplier ka sab chuka diya",
+  "payTitle": "Supplier ko paisay dein",
+  "payAmount": "Kitne diye",
+  "paySettles": "Yeh bill chuk jayenge",
+  "payTooMuch": "Sirf {amount} dena hai",
+  "@payTooMuch": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "paySave": "Payment save karein",
+  "paySaved": "{amount} de diye",
+  "@paySaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
   }
 }

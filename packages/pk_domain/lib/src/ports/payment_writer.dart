@@ -64,7 +64,16 @@ abstract interface class PaymentWriteContext {
   /// read before the transaction opened is a balance another till may have
   /// changed — and the whole point of allocating is that it is against what
   /// is actually outstanding now.
+  ///
+  /// Sale invoices only. A party can be a customer and a supplier at once,
+  /// and a list that also held their purchase bills would let a customer's
+  /// payment settle a debt the SHOP owes — money in, applied to money out.
   Future<List<OpenBill>> openBillsFor(String partyId);
+
+  /// Everything the shop still owes this party, oldest first: purchase bills
+  /// and unpaid expenses. The payable side of [openBillsFor], and read inside
+  /// the transaction for the same reason.
+  Future<List<OpenBill>> openPayablesFor(String partyId);
 
   /// The account in the chart that a payment account posts to.
   Future<String?> ledgerAccountFor(String paymentAccountId);

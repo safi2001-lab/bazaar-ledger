@@ -76,3 +76,27 @@ final partyLedgerProvider = FutureProvider.autoDispose
       final entries = await services.queries.partyLedger(firm.id, partyId);
       return entries.reversed.toList();
     });
+
+/// What the shop still owes one party, oldest first.
+///
+/// The same rows, in the same order, that the payment writer reads inside its
+/// transaction, so the "this pays off" preview is what actually happens.
+final openPayablesProvider = FutureProvider.autoDispose
+    .family<List<OpenBill>, String>((ref, partyId) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return const [];
+      return services.queries.openPayablesFor(firm.id, partyId);
+    });
+
+/// Deliveries, unpaid expenses and payments made to one party, newest first.
+final payablesLedgerProvider = FutureProvider.autoDispose
+    .family<List<LedgerEntry>, String>((ref, partyId) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return const [];
+      final entries = await services.queries.payablesLedger(firm.id, partyId);
+      return entries.reversed.toList();
+    });

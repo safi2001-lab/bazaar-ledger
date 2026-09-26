@@ -10,6 +10,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_editor.dart';
 import 'khata_providers.dart';
+import 'pay_supplier_sheet.dart';
+import 'payables_section.dart';
 import 'receive_payment_sheet.dart';
 import 'send_reminder.dart';
 
@@ -36,6 +38,12 @@ class KhataScreen extends ConsumerWidget {
     // Re-read rather than trusting what was passed in: the caller's copy was
     // fetched when its list was drawn, and a payment taken here changes it.
     final current = ref.watch(partyProvider(party.id)).valueOrNull ?? party;
+
+    // A supplier's khata is what the shop owes them; a customer's is what
+    // they owe the shop. A party who is both gets both, each against its own
+    // bills, and never one netted figure neither side agreed to.
+    final receivable = current.isCustomer;
+    final payable = current.isSupplier;
 
     return Scaffold(
       backgroundColor: t.paper,
@@ -69,94 +77,123 @@ class KhataScreen extends ConsumerWidget {
             BlTokens.space10 * 2,
           ),
           children: [
-            _BalanceCard(party: current),
-            const SizedBox(height: BlTokens.space4),
-            Text(
-              s.khataOpenBills,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: t.inkMuted,
+            if (receivable) ..._receivable(context, ref, current, bills),
+            if (receivable && payable) const SizedBox(height: BlTokens.space5),
+            if (payable)
+              PayablesSection(
+                party: current,
+                showHistory: !receivable,
+                // The floating button receives when this is also a customer,
+                // so paying needs a button of its own.
+                offerPay: receivable,
               ),
-            ),
-            const SizedBox(height: BlTokens.space2),
-            bills.when(
-              loading: () => const BlSkeletonList(rows: 3),
-              error: (error, _) => BlError(
-                title: s.commonSomethingWentWrong,
-                message: '$error',
-                retryLabel: s.actionRetry,
-                onRetry: () => ref.invalidate(openBillsProvider(party.id)),
-              ),
-              data: (rows) => rows.isEmpty
-                  ? BlEmpty(
-                      icon: Icons.check_circle_outline,
-                      title: s.khataNoBills,
-                      message: s.khataNoBillsHint,
-                    )
-                  : Column(
-                      children: [
-                        for (final bill in rows)
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              bottom: BlTokens.space2,
-                            ),
-                            child: BlCard(
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          bill.dateLocal,
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: t.ink,
-                                          ),
-                                        ),
-                                        Text(
-                                          bill.documentId,
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: t.inkMuted,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  BlMoney(bill.outstanding, size: 16),
-                                ],
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-            ),
-            const SizedBox(height: BlTokens.space5),
-            Text(
-              s.khataHistory,
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-                color: t.inkMuted,
-              ),
-            ),
-            const SizedBox(height: BlTokens.space2),
-            _History(partyId: party.id),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () =>
-            unawaited(showReceivePaymentSheet(context, party: current)),
-        icon: const Icon(Icons.payments_outlined),
-        label: Text(s.khataReceive),
-      ),
+      floatingActionButton: receivable
+          ? FloatingActionButton.extended(
+              onPressed: () =>
+                  unawaited(showReceivePaymentSheet(context, party: current)),
+              icon: const Icon(Icons.payments_outlined),
+              label: Text(s.khataReceive),
+            )
+          : current.payable.isPositive
+          ? FloatingActionButton.extended(
+              onPressed: () =>
+                  unawaited(showPaySupplierSheet(context, party: current)),
+              icon: const Icon(Icons.outbound_outlined),
+              label: Text(s.khataPay),
+            )
+          : null,
     );
+  }
+
+  /// What this customer owes, on which bills, and what has moved it.
+  List<Widget> _receivable(
+    BuildContext context,
+    WidgetRef ref,
+    PartySummary current,
+    AsyncValue<List<OpenBill>> bills,
+  ) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    return [
+      _BalanceCard(party: current),
+      const SizedBox(height: BlTokens.space4),
+      Text(
+        s.khataOpenBills,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: t.inkMuted,
+        ),
+      ),
+      const SizedBox(height: BlTokens.space2),
+      bills.when(
+        loading: () => const BlSkeletonList(rows: 3),
+        error: (error, _) => BlError(
+          title: s.commonSomethingWentWrong,
+          message: '$error',
+          retryLabel: s.actionRetry,
+          onRetry: () => ref.invalidate(openBillsProvider(party.id)),
+        ),
+        data: (rows) => rows.isEmpty
+            ? BlEmpty(
+                icon: Icons.check_circle_outline,
+                title: s.khataNoBills,
+                message: s.khataNoBillsHint,
+              )
+            : Column(
+                children: [
+                  for (final bill in rows)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: BlTokens.space2),
+                      child: BlCard(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    bill.dateLocal,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: t.ink,
+                                    ),
+                                  ),
+                                  Text(
+                                    bill.documentId,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: t.inkMuted,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            BlMoney(bill.outstanding, size: 16),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+      ),
+      const SizedBox(height: BlTokens.space5),
+      Text(
+        s.khataHistory,
+        style: TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w600,
+          color: t.inkMuted,
+        ),
+      ),
+      const SizedBox(height: BlTokens.space2),
+      _History(partyId: party.id),
+    ];
   }
 }
 

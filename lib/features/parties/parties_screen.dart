@@ -239,6 +239,11 @@ class PartyRowTile extends StatelessWidget {
                               ? BlChipTone.bad
                               : BlChipTone.warn,
                         )
+                      // A supplier the shop owes is not "settled". Before
+                      // this, every mill with an unpaid delivery read as
+                      // Hisaab saaf in the one list anybody looks at.
+                      : party.payable.isPositive
+                      ? BlChip(s.partyWeOwe(party.payable.amountOnly))
                       : BlChip(s.partySettled, tone: BlChipTone.good),
                 ),
               ),

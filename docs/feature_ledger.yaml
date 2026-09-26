@@ -2643,3 +2643,99 @@ features:
       - an unpaid expense has to say who it is owed to
       - an unpaid expense sits on the payable, by name
       - an expense entered on screen leaves the books balanced
+
+  - id: M3-PAYOUT-01
+    milestone: M3
+    title: A payment to a supplier is described in full before it is written
+    status: done
+    # The receipt turned around. Until this there was a way to owe a
+    # supplier — any delivery not fully paid at the door — and no way to stop
+    # owing them: Accounts Payable only ever went up.
+    #
+    # Oldest first through `allocateFifo`, the function the customer side
+    # runs, and settlements carry each bill's new totals rather than deltas,
+    # for the same lost-update reason.
+    #
+    # One rule goes the other way on purpose. A customer who overpays leaves
+    # credit, which is a liability the shop holds. The shop overpaying a
+    # supplier is money owed BACK — an asset — and the chart has no
+    # advances-to-suppliers account. Crediting it to the payable would hide an
+    # asset inside a liability, the netting the receipt side was built to
+    # avoid, so it is refused in words with the figure that is owed.
+    #
+    # A cheque is refused too: a cheque the shop writes is a post-dated
+    # liability with a lifecycle, and that is M6.
+    proof:
+      - which deliveries a payment settles the oldest delivery is paid first, whatever order they arrive in
+      - which deliveries a payment settles each delivery is told its new balance, not a delta
+      - which deliveries a payment settles nothing is ever left over as an advance
+      - the journal entry a payment writes debits the payable by name and credits where the money came from
+      - the journal entry a payment writes the payment is money going out
+      - the journal entry a payment writes debits equal credits, exactly
+      - what a supplier payment refuses a payment of nothing
+      - what a supplier payment refuses paying more than is owed
+      - what a supplier payment refuses paying a supplier who is owed nothing
+      - what a supplier payment refuses a cheque, which belongs to the post-dated cheque book
+
+  - id: M3-PAYOUT-02
+    milestone: M3
+    title: A payment to a supplier reaches the database, or nothing does
+    status: done
+    # Through the same writer as a receipt — `payments` has carried a
+    # direction column since schema v1 — so the allocations, the settled
+    # bills, the journal, the audit row and the outbox commit together. The
+    # audit action says PAYMENT_MADE, not PAYMENT_RECEIVED.
+    #
+    # What is owed is read inside the transaction: purchase bills and
+    # expenses left on account, never void, never draft. The supplier's khata
+    # reads what each bill put on the account off the payable line it posted,
+    # not off `paid_paisa`, which moves with every payment against the bill.
+    proof:
+      - a payment clears the oldest delivery first
+      - what the shop owes the supplier comes down, by name
+      - paying a supplier leaves the books balanced
+      - the payment is money going out, under its own number
+      - an expense left on account is paid off the same way
+      - paying more than is owed writes nothing and burns no number
+      - the supplier khata runs from deliveries to payments
+
+  - id: M3-PAYOUT-03
+    milestone: M3
+    title: A shopkeeper can pay a supplier, from the app
+    status: done
+    # Driven through the real khata. A party the shop buys from gets what it
+    # owes them, the deliveries not yet paid for, and a Pay sheet that shows
+    # which deliveries the money clears before it leaves the drawer. A party
+    # who is both customer and supplier gets both halves, each against its
+    # own bills, and never one netted figure neither side agreed to.
+    #
+    # The party list used to read Hisaab saaf for every mill with an unpaid
+    # delivery, because it only knew one direction of debt.
+    proof:
+      - a supplier the shop owes does not read as settled
+      - a supplier is paid from their khata and the debt comes down
+      - the preview names the delivery before the money leaves
+      - paying more than is owed is refused in words
+      - a paid-off supplier shows nothing left to pay
+
+  - id: M3-RECEIPT-03
+    milestone: M3
+    title: A customer's money never lands on a bill the shop owes
+    status: done
+    # Two live defects, found while building supplier payments and both from
+    # one missing `doc_type` filter.
+    #
+    # Open bills were read with no document type. Since M4 a delivery left
+    # part-paid has a balance, so a party who is both customer and supplier —
+    # the mill that buys the shop's bran — had their payment to the shop
+    # settle the shop's own purchase bill from them. The payable vanished and
+    # the udhaar stayed. The receipt preview ran the same query and showed it.
+    #
+    # The ageing summary and the chase list had the same hole: a delivery not
+    # yet paid for aged as though a customer owed it, filling the 90-day
+    # bucket with the shop's own debts.
+    #
+    # Mutation-tested: removing either filter fails its proof.
+    proof:
+      - a customer payment never settles a bill the shop owes
+      - what the shop owes a supplier is not udhaar

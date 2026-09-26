@@ -1,4 +1,3 @@
-
 import 'package:flutter/services.dart';
 
 /// The face a shared PDF carries so it can say Urdu.

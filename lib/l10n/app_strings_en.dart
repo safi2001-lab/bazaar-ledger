@@ -1260,4 +1260,43 @@ class AppStringsEn extends AppStrings {
   String expenseOwedTo(String name) {
     return 'Owed to $name';
   }
+
+  @override
+  String partyWeOwe(String amount) {
+    return 'you owe $amount';
+  }
+
+  @override
+  String get khataPayable => 'You owe them';
+
+  @override
+  String get khataPay => 'Pay';
+
+  @override
+  String get khataOpenPayables => 'Not yet paid for';
+
+  @override
+  String get khataNoPayables => 'Nothing owed to this supplier';
+
+  @override
+  String get payTitle => 'Pay supplier';
+
+  @override
+  String get payAmount => 'Amount paid';
+
+  @override
+  String get paySettles => 'This pays off';
+
+  @override
+  String payTooMuch(String amount) {
+    return 'Only $amount is owed';
+  }
+
+  @override
+  String get paySave => 'Save payment';
+
+  @override
+  String paySaved(String amount) {
+    return '$amount paid';
+  }
 }

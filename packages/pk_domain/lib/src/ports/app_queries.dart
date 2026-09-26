@@ -223,6 +223,7 @@ final class PartySummary {
     required this.balance,
     this.phone,
     this.creditLimit,
+    this.payable = Money.zero,
   });
 
   final String id;
@@ -233,6 +234,22 @@ final class PartySummary {
   /// Positive means they owe the shop.
   final Money balance;
   final Money? creditLimit;
+
+  /// What the shop owes them: deliveries not yet paid for and expenses left
+  /// on account.
+  ///
+  /// Kept apart from [balance] rather than netted into it. A wholesaler who
+  /// buys from a mill and sells it bran is owed Rs 40,000 and owes Rs 25,000,
+  /// and "owes the shop Rs 15,000" is a number neither of them agreed to —
+  /// the two debts are settled separately, in cash, and each has its own
+  /// bills behind it.
+  final Money payable;
+
+  /// Somebody the shop buys from, whatever else they are.
+  bool get isSupplier => partyType != 'customer' || payable.isPositive;
+
+  /// Somebody the shop sells to, whatever else they are.
+  bool get isCustomer => partyType != 'supplier' || !balance.isZero;
 
   bool get isOverCreditLimit => creditLimit != null && balance > creditLimit!;
 }
@@ -250,7 +267,8 @@ final class LedgerEntry {
 
   final String id;
 
-  /// `sale` or `payment`. A return and a note join them in M5.
+  /// `sale` or `payment` on a customer's khata; `purchase`, `expense` or
+  /// `payment` on what the shop owes a supplier.
   final String kind;
 
   /// The invoice or receipt number, which is what a customer holding a piece
@@ -396,7 +414,23 @@ abstract interface class AppQueries {
   /// these three bills" is looking at what will actually happen, computed by
   /// the same function. Two different orderings here would make the preview a
   /// guess, and a preview that is sometimes wrong is worse than none.
+  ///
+  /// Sale invoices only: a customer's money never lands on a bill the shop
+  /// owes them.
   Future<List<OpenBill>> openBillsFor(String firmId, String partyId);
+
+  /// What the shop still owes one party, oldest first — the same rows
+  /// `PaymentWriteContext.openPayablesFor` reads inside its transaction.
+  Future<List<OpenBill>> openPayablesFor(String firmId, String partyId);
+
+  /// Everything that moved what the shop owes one party, oldest first, with
+  /// the running figure. Positive amounts are deliveries and unpaid
+  /// expenses, negative ones are payments made.
+  Future<List<LedgerEntry>> payablesLedger(
+    String firmId,
+    String partyId, {
+    int limit = 200,
+  });
 
   Future<List<SaleListRow>> recentSales(
     String firmId, {

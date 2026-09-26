@@ -1261,4 +1261,43 @@ class AppStringsUr extends AppStrings {
   String expenseOwedTo(String name) {
     return '$name ko dena hai';
   }
+
+  @override
+  String partyWeOwe(String amount) {
+    return '$amount dena hai';
+  }
+
+  @override
+  String get khataPayable => 'Kitna dena hai';
+
+  @override
+  String get khataPay => 'Paisay dein';
+
+  @override
+  String get khataOpenPayables => 'Jin ka dena baqi hai';
+
+  @override
+  String get khataNoPayables => 'Is supplier ka sab chuka diya';
+
+  @override
+  String get payTitle => 'Supplier ko paisay dein';
+
+  @override
+  String get payAmount => 'Kitne diye';
+
+  @override
+  String get paySettles => 'Yeh bill chuk jayenge';
+
+  @override
+  String payTooMuch(String amount) {
+    return 'Sirf $amount dena hai';
+  }
+
+  @override
+  String get paySave => 'Payment save karein';
+
+  @override
+  String paySaved(String amount) {
+    return '$amount de diye';
+  }
 }
