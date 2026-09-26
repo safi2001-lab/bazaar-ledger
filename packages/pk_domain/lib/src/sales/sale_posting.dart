@@ -36,6 +36,7 @@ final class DocumentPosting {
     this.salespersonId,
     this.notes,
     this.supplierBillNo,
+    this.terms,
   });
 
   final String docType;
@@ -75,6 +76,9 @@ final class DocumentPosting {
   /// The number on the supplier's own paper, on a purchase bill. What they
   /// quote when they ring about an unpaid delivery.
   final String? supplierBillNo;
+
+  /// Printed terms: how long a quotation's prices hold, and the like.
+  final String? terms;
 }
 
 /// A row to be written to `document_lines`, with its taxes.

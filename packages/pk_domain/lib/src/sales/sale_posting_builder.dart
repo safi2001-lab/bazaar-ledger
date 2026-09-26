@@ -76,7 +76,7 @@ final class SalePostingBuilder {
       paid: calculated.paid,
       balance: calculated.balance,
       cost: calculated.cost,
-      roundingMode: _roundingModeCode(draft.roundingMode),
+      roundingMode: roundingModeCode(draft.roundingMode),
       taxRuleVersion: calculated.ruleVersion,
       cashThresholdBreached: calculated.cashThresholdBreached,
       salespersonId: draft.salespersonId,
@@ -86,32 +86,7 @@ final class SalePostingBuilder {
     final lines = <DocumentLinePosting>[];
     final stock = <StockMovementPosting>[];
     for (final l in calculated.lines) {
-      lines.add(
-        DocumentLinePosting(
-          lineNo: l.lineNo,
-          itemId: l.draft.itemId,
-          itemNameSnapshot: l.draft.itemName,
-          itemCodeSnapshot: l.draft.itemCode,
-          hsCodeSnapshot: l.draft.hsCode,
-          description: l.draft.description,
-          qty: l.draft.qty,
-          baseQty: l.draft.baseQty,
-          unitId: l.draft.unitId,
-          unitCodeSnapshot: l.draft.unitCode,
-          rate: l.draft.rate,
-          mrp: l.draft.mrp,
-          lotId: l.draft.lotId,
-          gross: l.gross,
-          discountBp: l.draft.discountBp,
-          discount: l.totalDiscount,
-          taxable: l.taxable,
-          tax: l.tax,
-          lineTotal: l.lineTotal,
-          cost: l.cost,
-          isFreeItem: l.draft.isFreeItem,
-          taxes: l.taxes,
-        ),
-      );
+      lines.add(documentLineFor(l));
 
       if (l.draft.tracksStock && !l.draft.baseQty.isZero) {
         stock.add(
@@ -339,13 +314,6 @@ final class SalePostingBuilder {
     return '$docNo to $who — $items, ${sale.total.amountOnly}, $settled';
   }
 
-  static String _roundingModeCode(RoundingMode mode) => switch (mode) {
-    RoundingMode.halfUp => 'half_up',
-    RoundingMode.halfEven => 'half_even',
-    RoundingMode.truncate => 'truncate',
-    RoundingMode.ceilAbs => 'ceil_abs',
-  };
-
   /// Tender accounts are already resolved to an account id, so they are passed
   /// through with a marker the writer recognises rather than a system key.
   static String _accountIdKey(String accountId) => '#$accountId';
@@ -358,3 +326,39 @@ extension JournalAccountLookup on JournalLinePosting {
   /// The account id, when [isResolvedAccountId].
   String get accountId => accountSystemKey.substring(1);
 }
+
+/// The stored code for a rounding mode.
+String roundingModeCode(RoundingMode mode) => switch (mode) {
+  RoundingMode.halfUp => 'half_up',
+  RoundingMode.halfEven => 'half_even',
+  RoundingMode.truncate => 'truncate',
+  RoundingMode.ceilAbs => 'ceil_abs',
+};
+
+/// One calculated line as the row `document_lines` stores. Shared by every
+/// document priced by the sale calculator, so a quotation and the bill made
+/// from it cannot store the same line two ways.
+DocumentLinePosting documentLineFor(CalculatedLine l) => DocumentLinePosting(
+  lineNo: l.lineNo,
+  itemId: l.draft.itemId,
+  itemNameSnapshot: l.draft.itemName,
+  itemCodeSnapshot: l.draft.itemCode,
+  hsCodeSnapshot: l.draft.hsCode,
+  description: l.draft.description,
+  qty: l.draft.qty,
+  baseQty: l.draft.baseQty,
+  unitId: l.draft.unitId,
+  unitCodeSnapshot: l.draft.unitCode,
+  rate: l.draft.rate,
+  mrp: l.draft.mrp,
+  lotId: l.draft.lotId,
+  gross: l.gross,
+  discountBp: l.draft.discountBp,
+  discount: l.totalDiscount,
+  taxable: l.taxable,
+  tax: l.tax,
+  lineTotal: l.lineTotal,
+  cost: l.cost,
+  isFreeItem: l.draft.isFreeItem,
+  taxes: l.taxes,
+);
