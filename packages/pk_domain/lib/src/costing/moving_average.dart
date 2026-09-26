@@ -219,3 +219,80 @@ CostChange issueStock({required CostPosition before, required Qty qtyOut}) {
     fromShortfall: false,
   );
 }
+
+/// Sends [qtyOut] back to the supplier at [valueOut] — the cost it came in
+/// at, not today's average.
+///
+/// The one movement that moves the average going OUT. A sale must not, see
+/// [issueStock]; but a delivery that goes back never belonged in the average
+/// at all, so what it added has to come out again. Taking it out at today's
+/// average would leave the delivery's cost blended into every unit still on
+/// the shelf, and the shop's margins would rest on goods it no longer has.
+///
+/// What is left is re-averaged over what stays. Two edges fall back to the
+/// issue rule, keeping the average and sending the difference to
+/// [CostChange.adjustment]: the shelf emptied, where there is nothing left to
+/// carry a cost; and a remainder worth nothing or less, which happens when
+/// the goods going back cost more than everything else on the shelf is
+/// carried at. Averaging a negative value would make every later sale look
+/// free.
+///
+/// The caller refuses a return of more than the shelf holds. Goods already
+/// sold cannot go back to the supplier, and this does not pretend they can.
+CostChange returnStock({
+  required CostPosition before,
+  required Qty qtyOut,
+  required Money valueOut,
+}) {
+  if (!qtyOut.isPositive) {
+    throw ArgumentError.value(
+      qtyOut.inThousandths,
+      'qtyOut',
+      'a return of nothing is not a return',
+    );
+  }
+  if (valueOut.isNegative) {
+    throw ArgumentError.value(
+      valueOut.inPaisa,
+      'valueOut',
+      'goods going back cannot have cost less than nothing',
+    );
+  }
+  if (qtyOut.inThousandths > before.qty.inThousandths) {
+    throw ArgumentError.value(
+      qtyOut.inThousandths,
+      'qtyOut',
+      'more is going back than the shelf holds',
+    );
+  }
+
+  final qtyAfter = Qty.raw(before.qty.inThousandths - qtyOut.inThousandths);
+  final remaining = before.value - valueOut;
+
+  final Rate avgAfter;
+  if (qtyAfter.inThousandths == 0 || !remaining.isPositive) {
+    avgAfter = before.avg;
+  } else {
+    avgAfter = Rate.raw(
+      divideRounded(
+        scaleOrThrow(remaining.inPaisa, 1000000, 'remaining value'),
+        qtyAfter.inThousandths,
+        RoundingMode.halfUp,
+      ),
+    );
+  }
+
+  final valueAfter = qtyAfter.inThousandths == 0
+      ? Money.zero
+      : avgAfter.amountFor(qtyAfter);
+  // What Inventory gives up beyond [valueOut] for `value == round(avg x qty)`
+  // to hold afterwards: a paisa of rounding, or the whole difference on the
+  // two edges above.
+  final adjustment = before.value - valueOut - valueAfter;
+
+  return CostChange(
+    after: CostPosition(qty: qtyAfter, value: valueAfter, avg: avgAfter),
+    adjustment: adjustment,
+    fromShortfall: false,
+  );
+}
