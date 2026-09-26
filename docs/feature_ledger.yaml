@@ -172,7 +172,11 @@ milestones:
 
   - id: M8
     title: The reports engine and the report pack
-    state: planned
+    # Opened 26 Sep 2026. Every figure the app showed was a day's takings or
+    # one party's balance; the question a shop owner asks at the end of the
+    # month -- did I make money, and where did it go -- had no answer on the
+    # phone at all.
+    state: open
     owns:
       - packages/pk_reports/**
       - packages/pk_export/**
@@ -3371,3 +3375,52 @@ features:
       - a charge is put on the khata from the customer screen
       - a charge with no reason is not saved
       - a bounce fee is put back on the customer who caused it
+
+  # ---- M8 · The reports engine and the report pack ----------------------
+
+  - id: M8-ENGINE-01
+    milestone: M8
+    title: The report pack is computed from the books, and a void earns nothing on it
+    status: done
+    # pk_reports holds each report as a pure builder over rows a
+    # ReportSource reads; pk_data reads them as indexed SQL aggregates on
+    # the business date. Profit and Loss, Expenses by head, the Cash Book
+    # and the Day Book come off the journal, so a void, a return, a debit
+    # note and an expense land where the double entry put them; Sales by
+    # item comes off the posted bills and returns; Stock value puts the
+    # shelf at average cost beside the Inventory balance and says when they
+    # differ. Every total is on the table before a screen or an export
+    # sees it.
+    proof:
+      - profit and loss gross and net profit come from the ledger
+      - profit and loss a discount given reads as a reduction of sales
+      - profit and loss a month that lost money says so
+      - expenses by head largest first, with each head as a share, and no cost of goods
+      - cash book runs from the opening balance to the closing one
+      - day book lists every entry and counts them
+      - sales by item returns come off, and the best seller is first
+      - stock value values the shelf at average cost beside the books
+      - periods a month ends on its last day, February included
+      - periods the fiscal year runs July to June
+      - periods a row that does not fit its columns is refused
+      - profit and loss ties to the postings, and a void earns nothing
+      - the cash book closes on the cash in the books
+      - the day book lists every entry, the reversal included
+      - sales by item counts only bills that stand
+      - expenses by head shows the rent
+      - stock value reads the shelf and the books
+
+  - id: M8-CSV-01
+    milestone: M8
+    title: A report goes to the accountant as a spreadsheet that adds up
+    status: done
+    # pk_export writes a finished table as CSV: money as plain numbers with
+    # two places so a spreadsheet's SUM agrees with the report's total, a
+    # byte-order mark so Excel keeps Urdu names, and a text cell that starts
+    # like a formula written as text.
+    proof:
+      - csv money is a plain number a spreadsheet can add up
+      - csv a name that looks like a formula stays text
+      - csv the notes come after the table
+      - csv the file opens in Excel with Urdu intact
+      - csv the file is named for the report and its dates

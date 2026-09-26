@@ -362,6 +362,33 @@ final rules = <Rule>[
   ),
 
   Rule(
+    name: 'reports_hold_no_sql',
+    why:
+        'A report is a pure builder over rows a ReportSource reads, and an '
+        'export is a pure encoding of the finished table. The SQL lives in '
+        'pk_data behind the port, so every total on every report can be '
+        'tested without a database, and no screen can add a figure up itself.',
+    include: ['packages/pk_reports/lib', 'packages/pk_export/lib'],
+    reads: Reads.raw,
+    forbid: [
+      RegExp('''^\\s*import\\s+['"]package:drift'''),
+      RegExp('''^\\s*import\\s+['"]package:flutter'''),
+      RegExp('''^\\s*import\\s+['"]package:pk_data'''),
+      RegExp('''^\\s*import\\s+['"]dart:io'''),
+      RegExp(r'\bSELECT\b.*\bFROM\b'),
+    ],
+    mustFlag: [
+      "import 'package:pk_data/pk_data.dart';",
+      "import 'package:flutter/material.dart';",
+      "  final rows = await db.select('SELECT id FROM items');",
+    ],
+    mustAllow: [
+      "import 'package:pk_domain/pk_domain.dart';",
+      "import 'dart:convert';",
+    ],
+  ),
+
+  Rule(
     name: 'money_has_no_dependencies',
     why:
         'pk_money is the bottom of the stack. Everything else may depend on '
@@ -421,6 +448,8 @@ final rules = <Rule>[
       'packages/pk_domain/lib',
       'packages/pk_application/lib',
       'packages/pk_data/lib',
+      'packages/pk_reports/lib',
+      'packages/pk_export/lib',
     ],
     reads: Reads.code,
     forbid: [

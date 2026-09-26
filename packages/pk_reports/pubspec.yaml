@@ -1,0 +1,20 @@
+name: pk_reports
+description: >-
+  The reports engine for Bazaar Ledger: what each report shows, computed by
+  pure builders from rows a ReportSource reads. No SQL, no Flutter, so every
+  total on every report can be tested without a database.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  pk_domain:
+    path: ../pk_domain
+  pk_money:
+    path: ../pk_money
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0

@@ -19,6 +19,8 @@ dependencies:
     path: ../pk_domain
   pk_money:
     path: ../pk_money
+  pk_reports:
+    path: ../pk_reports
 
 dev_dependencies:
   build_runner: ^2.4.15
