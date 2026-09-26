@@ -157,6 +157,11 @@ final class AppServices {
   VoidDocumentUseCase get voidDocument =>
       VoidDocumentUseCase(writer: DriftVoidWriter(runner: _runner));
 
+  RecordPurchaseReturnUseCase get recordPurchaseReturn =>
+      RecordPurchaseReturnUseCase(
+        writer: DriftPurchaseReturnWriter(runner: _runner),
+      );
+
   RecordReturnUseCase get recordReturn =>
       RecordReturnUseCase(writer: DriftReturnWriter(runner: _runner));
 

@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
+import '../write/drift_purchase_return_writer.dart'
+    show boughtLineFrom, returnedOffDeliveryLine;
 
 /// Every read the app performs, as indexed SQL.
 ///
@@ -392,6 +394,7 @@ final class DriftAppQueries implements AppQueries {
           SELECT id, kind, reference, date_local, amount_paisa FROM (
             SELECT d.id AS id,
                    CASE d.doc_type WHEN 'expense' THEN 'expense'
+                                   WHEN 'purchase_return' THEN 'return'
                                    ELSE 'purchase' END AS kind,
                    d.doc_no AS reference,
                    d.doc_date_local AS date_local,
@@ -411,7 +414,7 @@ final class DriftAppQueries implements AppQueries {
                    d.doc_seq AS seq
             FROM documents d
             WHERE d.firm_id = ? AND d.party_id = ?
-              AND d.doc_type IN ('purchase_bill', 'expense')
+              AND d.doc_type IN ('purchase_bill', 'expense', 'purchase_return')
               AND d.status NOT IN ('void', 'draft')
               AND d.deleted_at_utc IS NULL
 
@@ -830,6 +833,48 @@ final class DriftAppQueries implements AppQueries {
           avg: Rate.raw(r.read<int>('avg_cost_milli_paisa')),
         ),
     };
+  }
+
+  @override
+  Future<ReturnableDelivery?> returnableDelivery(
+    String firmId,
+    String documentId,
+  ) async {
+    // The same reads as `DriftPurchaseReturnWriter.deliveryFor`, down to the
+    // shared subquery, so the screen cannot offer what the writer refuses.
+    final doc = await _db
+        .customSelect(
+          'SELECT id, doc_no, party_id, balance_paisa FROM documents '
+          "WHERE id = ? AND firm_id = ? AND doc_type = 'purchase_bill' "
+          "  AND status = 'posted' AND deleted_at_utc IS NULL",
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+        )
+        .getSingleOrNull();
+    if (doc == null) return null;
+
+    final lines = await _db
+        .customSelect(
+          '''
+          SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.unit_id,
+                 dl.unit_code_snapshot, dl.base_qty_thousandths,
+                 dl.line_total_paisa, dl.cost_paisa,
+                 $returnedOffDeliveryLine AS returned
+          FROM document_lines dl
+          WHERE dl.document_id = ? AND dl.deleted_at_utc IS NULL
+          ORDER BY dl.line_no
+          ''',
+          variables: [Variable<String>(documentId)],
+          readsFrom: {_db.documentLines, _db.documents, _db.docLinks},
+        )
+        .get();
+
+    return ReturnableDelivery(
+      documentId: documentId,
+      docNo: doc.read<String>('doc_no'),
+      partyId: doc.read<String>('party_id'),
+      outstanding: Money.paisa(doc.read<int>('balance_paisa')),
+      lines: [for (final r in lines) boughtLineFrom(r)],
+    );
   }
 
   @override

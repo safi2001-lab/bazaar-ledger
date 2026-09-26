@@ -19,10 +19,7 @@ final class PaySupplierUseCase {
   final PaymentWriter writer;
   final SupplierPaymentBuilder builder;
 
-  Future<RecordedReceipt> call(
-    ActorContext actor,
-    SupplierPaymentDraft draft,
-  ) {
+  Future<RecordedReceipt> call(ActorContext actor, SupplierPaymentDraft draft) {
     return writer.inTransaction(actor, (write) async {
       final ledgerAccountId = await write.ledgerAccountFor(
         draft.paymentAccountId,

@@ -5,6 +5,7 @@ import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
+import 'purchase_return_writer.dart';
 import 'receipt.dart';
 
 /// The shop, as the app needs it on screen.
@@ -475,6 +476,13 @@ abstract interface class AppQueries {
   Future<Map<String, CostPosition>> costPositions(
     String firmId,
     Iterable<String> itemIds,
+  );
+
+  /// One delivery with what can still go back on it, or null if there is no
+  /// such posted delivery. The same read `PurchaseReturnWriteContext` makes.
+  Future<ReturnableDelivery?> returnableDelivery(
+    String firmId,
+    String documentId,
   );
 
   /// Deliveries, newest first.

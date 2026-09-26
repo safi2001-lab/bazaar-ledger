@@ -16,6 +16,8 @@ export 'src/write/drift_catalogue_writer.dart';
 export 'src/write/drift_expense_writer.dart';
 export 'src/write/drift_payment_writer.dart';
 export 'src/write/drift_printer_settings.dart';
+export 'src/write/drift_purchase_return_writer.dart'
+    show DriftPurchaseReturnWriter;
 export 'src/write/drift_purchase_writer.dart';
 export 'src/write/drift_return_writer.dart';
 export 'src/write/drift_sale_writer.dart';
