@@ -521,6 +521,8 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         'opening_balance_as_of_local': actor.businessDate.value,
         'credit_limit_paisa': d.creditLimit?.inPaisa,
         'credit_days': d.creditDays,
+        'price_tier': d.priceTier.code,
+        'default_discount_bp': d.defaultDiscountBp,
         'is_active': 1,
       };
 
@@ -577,6 +579,13 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     const allowed = {'customer', 'supplier', 'both'};
     if (!allowed.contains(d.partyType)) {
       throw ArgumentError.value(d.partyType, 'partyType', 'unknown type');
+    }
+    if (d.defaultDiscountBp < 0 || d.defaultDiscountBp > 10000) {
+      throw ArgumentError.value(
+        d.defaultDiscountBp,
+        'defaultDiscountBp',
+        'a discount is between nothing and everything',
+      );
     }
   }
 

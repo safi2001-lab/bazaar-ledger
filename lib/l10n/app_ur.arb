@@ -918,5 +918,13 @@
       }
     }
   },
+  "partyPriceTier": "Kis rate par bechna hai",
+  "partyTierRetail": "Parchoon (retail)",
+  "partyTierWholesale": "Thok (wholesale)",
+  "partyDiscount": "Har cheez par discount % (marzi se)",
+  "partyDiscountInvalid": "0 se 100 ke darmiyan likhein",
+  "partyAddress": "Pata",
+  "partyCity": "Shehar",
+  "partyCnic": "CNIC (marzi se)",
   "chequeDone": "Ho gaya"
 }

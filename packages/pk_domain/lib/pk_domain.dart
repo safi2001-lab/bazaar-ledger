@@ -38,6 +38,7 @@ export 'src/ports/receipt.dart';
 export 'src/ports/return_writer.dart';
 export 'src/ports/sale_writer.dart';
 export 'src/ports/void_writer.dart';
+export 'src/pricing/price_tier.dart';
 export 'src/receivables/aging.dart';
 export 'src/receivables/expense_builder.dart';
 export 'src/receivables/fifo_allocator.dart';

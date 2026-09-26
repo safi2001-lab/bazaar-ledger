@@ -1,6 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
 import '../identity/actor_context.dart';
+import '../pricing/price_tier.dart';
 
 /// An item as the quick-add and edit screens describe it.
 final class ItemDraft {
@@ -69,10 +70,18 @@ final class PartyDraft {
     this.openingBalance = Money.zero,
     this.creditLimit,
     this.creditDays,
+    this.priceTier = PriceTier.retail,
+    this.defaultDiscountBp = 0,
   });
 
   final String name;
   final String partyType;
+
+  /// Which of an item's prices they are sold at.
+  final PriceTier priceTier;
+
+  /// A discount on every line they buy, in basis points. 0 to 10000.
+  final int defaultDiscountBp;
   final String? phone;
   final String? whatsapp;
   final String? addressLine1;

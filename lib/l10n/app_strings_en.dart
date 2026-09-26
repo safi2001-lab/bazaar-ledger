@@ -1602,5 +1602,29 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get partyPriceTier => 'Which price they pay';
+
+  @override
+  String get partyTierRetail => 'Retail';
+
+  @override
+  String get partyTierWholesale => 'Wholesale';
+
+  @override
+  String get partyDiscount => 'Discount on every item % (optional)';
+
+  @override
+  String get partyDiscountInvalid => 'Enter a number from 0 to 100';
+
+  @override
+  String get partyAddress => 'Address';
+
+  @override
+  String get partyCity => 'City';
+
+  @override
+  String get partyCnic => 'CNIC (optional)';
+
+  @override
   String get chequeDone => 'Done';
 }

@@ -765,7 +765,12 @@ class _CustomerRow extends ConsumerWidget {
           builder: (_) => const PartyPicker(),
         );
         if (party != null) {
-          ref.read(cartProvider.notifier).setParty(party.id, party.name);
+          ref
+              .read(cartProvider.notifier)
+              .setParty(
+                party,
+                units: ref.read(unitConverterProvider).valueOrNull,
+              );
         }
       },
       borderRadius: BorderRadius.circular(BlTokens.radiusMd),
@@ -793,8 +798,12 @@ class _CustomerRow extends ConsumerWidget {
               BlIconButton(
                 icon: Icons.close,
                 label: s.actionClose,
-                onPressed: () =>
-                    ref.read(cartProvider.notifier).setParty(null, null),
+                onPressed: () => ref
+                    .read(cartProvider.notifier)
+                    .setParty(
+                      null,
+                      units: ref.read(unitConverterProvider).valueOrNull,
+                    ),
               )
             else
               Text(

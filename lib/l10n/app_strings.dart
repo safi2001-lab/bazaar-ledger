@@ -2918,6 +2918,54 @@ abstract class AppStrings {
   /// **'Rs {amount} ke apne cheque {days} din mein pesh ho sakte hain — bank mein paisay rakhein'**
   String homeChequesIssuedDue(String amount, String days);
 
+  /// No description provided for @partyPriceTier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis rate par bechna hai'**
+  String get partyPriceTier;
+
+  /// No description provided for @partyTierRetail.
+  ///
+  /// In ur, this message translates to:
+  /// **'Parchoon (retail)'**
+  String get partyTierRetail;
+
+  /// No description provided for @partyTierWholesale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Thok (wholesale)'**
+  String get partyTierWholesale;
+
+  /// No description provided for @partyDiscount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez par discount % (marzi se)'**
+  String get partyDiscount;
+
+  /// No description provided for @partyDiscountInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'0 se 100 ke darmiyan likhein'**
+  String get partyDiscountInvalid;
+
+  /// No description provided for @partyAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pata'**
+  String get partyAddress;
+
+  /// No description provided for @partyCity.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shehar'**
+  String get partyCity;
+
+  /// No description provided for @partyCnic.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC (marzi se)'**
+  String get partyCnic;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

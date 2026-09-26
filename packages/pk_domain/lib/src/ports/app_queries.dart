@@ -5,9 +5,11 @@ import '../cheques/cheque_lifecycle.dart';
 import '../cheques/demand_notice.dart';
 import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
+import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
 import '../time/clock.dart';
+import 'catalogue_writer.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
 
@@ -281,7 +283,15 @@ final class PartySummary {
     this.creditLimit,
     this.payable = Money.zero,
     this.bouncedCheques = 0,
+    this.priceTier = PriceTier.retail,
+    this.defaultDiscountBp = 0,
   });
+
+  /// Which of an item's prices they are sold at.
+  final PriceTier priceTier;
+
+  /// A discount they get on every line, in basis points: 250 is 2.5%.
+  final int defaultDiscountBp;
 
   final String id;
   final String name;
@@ -525,6 +535,10 @@ abstract interface class AppQueries {
   /// Cheques the shop is holding, soonest due first. Deposited ones included:
   /// they are still not money until the bank says so.
   Future<List<ChequeInHand>> chequesInHand(String firmId);
+
+  /// Everything the party editor can change about one party, as it stands,
+  /// so an edit writes back what it did not show instead of blanking it.
+  Future<PartyDraft?> partyDraft(String firmId, String partyId);
 
   /// Cheques the shop has written that the bank has not yet paid or
   /// returned, soonest to be presented first.

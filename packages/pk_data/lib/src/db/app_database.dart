@@ -39,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 3;
+  static const currentSchemaVersion = 4;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -96,6 +96,12 @@ class AppDatabase extends _$AppDatabase {
               schema.documents,
               schema.documents.supplierBillNo,
             );
+          },
+          // v3 → v4: parties.price_tier. Added in place with its default, so
+          // every existing customer is a retail customer, which is what the
+          // counter already charged them.
+          from3To4: (migrator, schema) async {
+            await migrator.addColumn(schema.parties, schema.parties.priceTier);
           },
         )(m, from, to);
       } on ArgumentError {

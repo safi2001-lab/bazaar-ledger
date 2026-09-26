@@ -32,6 +32,21 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   late final TextEditingController _creditLimit = TextEditingController(
     text: widget.party?.creditLimit?.amountOnly ?? '',
   );
+  final _address = TextEditingController();
+  final _city = TextEditingController();
+  final _cnic = TextEditingController();
+  late final TextEditingController _discount = TextEditingController(
+    text: _percent(widget.party?.defaultDiscountBp ?? 0),
+  );
+  late PriceTier _tier = widget.party?.priceTier ?? PriceTier.retail;
+
+  /// The party as saved, for an edit. Everything this form does not show —
+  /// their type, NTN, WhatsApp number — is written back from here. The
+  /// editor used to send only what it showed, and the writer stores the
+  /// whole row, so correcting a supplier's phone number turned them into a
+  /// customer and wiped their NTN.
+  PartyDraft? _saved;
+  bool _loading = false;
 
   bool _busy = false;
   String? _failure;
@@ -39,11 +54,56 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   bool get _isEdit => widget.party != null;
 
   @override
+  void initState() {
+    super.initState();
+    if (_isEdit) {
+      _loading = true;
+      unawaited(_load());
+    }
+  }
+
+  Future<void> _load() async {
+    final services = ref.read(appServicesProvider);
+    final firm = await ref.read(firmProvider.future);
+    final saved = firm == null
+        ? null
+        : await services.queries.partyDraft(firm.id, widget.party!.id);
+    if (!mounted) return;
+    setState(() {
+      _saved = saved;
+      _loading = false;
+      _address.text = saved?.addressLine1 ?? '';
+      _city.text = saved?.city ?? '';
+      _cnic.text = saved?.cnic ?? '';
+    });
+  }
+
+  static String _percent(int bp) =>
+      bp == 0 ? '' : Money.paisa(bp).amountOnly.replaceAll('.00', '');
+
+  /// A percentage as basis points: "2.5" is 250. Parsed the way money is,
+  /// because a percentage to two places is exactly that shape, and never
+  /// through a double.
+  static int? _bp(String text) {
+    final raw = text.trim();
+    if (raw.isEmpty) return 0;
+    final parsed = Money.tryParse(raw);
+    if (parsed == null || parsed.isNegative || parsed.inPaisa > 10000) {
+      return null;
+    }
+    return parsed.inPaisa;
+  }
+
+  @override
   void dispose() {
     _name.dispose();
     _phone.dispose();
     _opening.dispose();
     _creditLimit.dispose();
+    _address.dispose();
+    _city.dispose();
+    _cnic.dispose();
+    _discount.dispose();
     super.dispose();
   }
 
@@ -62,9 +122,21 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
 
     try {
       final services = ref.read(appServicesProvider);
+      final saved = _saved;
+      String? text(TextEditingController c) =>
+          c.text.trim().isEmpty ? null : c.text.trim();
       final draft = PartyDraft(
         name: _name.text.trim(),
-        phone: _phone.text.trim().isEmpty ? null : _phone.text.trim(),
+        partyType: saved?.partyType ?? widget.party?.partyType ?? 'customer',
+        phone: text(_phone),
+        whatsapp: saved?.whatsapp,
+        addressLine1: text(_address),
+        city: text(_city),
+        ntn: saved?.ntn,
+        strn: saved?.strn,
+        cnic: text(_cnic),
+        buyerRegistrationType: saved?.buyerRegistrationType ?? 'unregistered',
+        isOnAtl: saved?.isOnAtl,
         // An opening balance is what they already owed before the shop
         // started using this app. Set once, at creation; afterwards the
         // balance is whatever the documents say it is, and no form may
@@ -73,6 +145,9 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
             ? Money.zero
             : Money.tryParse(_opening.text) ?? Money.zero,
         creditLimit: Money.tryParse(_creditLimit.text),
+        creditDays: saved?.creditDays,
+        priceTier: _tier,
+        defaultDiscountBp: _bp(_discount.text) ?? 0,
       );
 
       final actor = services.actorNow();
@@ -169,81 +244,142 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(BlTokens.space4),
-          child: Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 560),
-              child: Form(
-                // Re-validated as the shopkeeper types, once they have
-                // touched the form. Without this a field validated on Save
-                // keeps its red border and its error message after the text
-                // is corrected — the message only refreshes on the next
-                // `validate()` call. Found by hand on the handset: "Aap ka
-                // naam" read "Yeh khana zaroori hai" in red while holding
-                // "Malik Sahib". For an audience where 60% national and 52%
-                // rural literacy is the design constraint, an error that
-                // will not go away is a dead end.
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    BlField(
-                      controller: _name,
-                      label: s.partyName,
-                      autofocus: !_isEdit,
-                      textInputAction: TextInputAction.next,
-                      validator: (v) =>
-                          (v ?? '').trim().isEmpty ? s.commonRequired : null,
-                    ),
-                    const SizedBox(height: BlTokens.space4),
-                    BlField(
-                      controller: _phone,
-                      label: s.partyPhone,
-                      keyboardType: TextInputType.phone,
-                      textInputAction: TextInputAction.next,
-                    ),
-                    const SizedBox(height: BlTokens.space4),
-                    if (!_isEdit) ...[
-                      BlField(
-                        controller: _opening,
-                        label: s.partyOpeningBalance,
-                        numeric: true,
-                        textInputAction: TextInputAction.next,
+        child: _loading
+            ? const Padding(
+                padding: EdgeInsets.all(BlTokens.space4),
+                child: BlSkeletonList(rows: 4),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(BlTokens.space4),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 560),
+                    child: Form(
+                      // Re-validated as the shopkeeper types, once they have
+                      // touched the form. Without this a field validated on Save
+                      // keeps its red border and its error message after the text
+                      // is corrected — the message only refreshes on the next
+                      // `validate()` call. Found by hand on the handset: "Aap ka
+                      // naam" read "Yeh khana zaroori hai" in red while holding
+                      // "Malik Sahib". For an audience where 60% national and 52%
+                      // rural literacy is the design constraint, an error that
+                      // will not go away is a dead end.
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          BlField(
+                            controller: _name,
+                            label: s.partyName,
+                            autofocus: !_isEdit,
+                            textInputAction: TextInputAction.next,
+                            validator: (v) => (v ?? '').trim().isEmpty
+                                ? s.commonRequired
+                                : null,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          BlField(
+                            controller: _phone,
+                            label: s.partyPhone,
+                            keyboardType: TextInputType.phone,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          if (!_isEdit) ...[
+                            BlField(
+                              controller: _opening,
+                              label: s.partyOpeningBalance,
+                              numeric: true,
+                              textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: BlTokens.space4),
+                          ],
+                          BlField(
+                            controller: _creditLimit,
+                            label: s.partyCreditLimit,
+                            numeric: true,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          // Which of an item's two prices they are sold at. A
+                          // wholesaler's regular retailers pay the trade price and
+                          // the counter used to charge them the shelf price.
+                          Text(
+                            s.partyPriceTier,
+                            style: TextStyle(fontSize: 13, color: t.inkMuted),
+                          ),
+                          const SizedBox(height: BlTokens.space2),
+                          Wrap(
+                            spacing: BlTokens.space2,
+                            children: [
+                              for (final (tier, label) in [
+                                (PriceTier.retail, s.partyTierRetail),
+                                (PriceTier.wholesale, s.partyTierWholesale),
+                              ])
+                                ChoiceChip(
+                                  selected: _tier == tier,
+                                  label: Text(label),
+                                  onSelected: (_) =>
+                                      setState(() => _tier = tier),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          BlField(
+                            controller: _discount,
+                            label: s.partyDiscount,
+                            numeric: true,
+                            textInputAction: TextInputAction.next,
+                            validator: (v) => _bp(v ?? '') == null
+                                ? s.partyDiscountInvalid
+                                : null,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          // What a legal notice, a delivery challan and a proper
+                          // invoice need, and what the khata had nowhere to keep.
+                          BlField(
+                            controller: _address,
+                            label: s.partyAddress,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          BlField(
+                            controller: _city,
+                            label: s.partyCity,
+                            textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          BlField(
+                            controller: _cnic,
+                            label: s.partyCnic,
+                            keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (_) {
+                              if (!_busy) unawaited(_save());
+                            },
+                          ),
+                          if (_failure != null) ...[
+                            const SizedBox(height: BlTokens.space4),
+                            Text(
+                              _failure!,
+                              style: TextStyle(fontSize: 13, color: t.danger),
+                            ),
+                          ],
+                          const SizedBox(height: BlTokens.space6),
+                          BlButton(
+                            label: s.actionSave,
+                            icon: Icons.check,
+                            big: true,
+                            busy: _busy,
+                            onPressed: _busy ? null : _save,
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: BlTokens.space4),
-                    ],
-                    BlField(
-                      controller: _creditLimit,
-                      label: s.partyCreditLimit,
-                      numeric: true,
-                      textInputAction: TextInputAction.done,
-                      onSubmitted: (_) {
-                        if (!_busy) _save();
-                      },
                     ),
-                    if (_failure != null) ...[
-                      const SizedBox(height: BlTokens.space4),
-                      Text(
-                        _failure!,
-                        style: TextStyle(fontSize: 13, color: t.danger),
-                      ),
-                    ],
-                    const SizedBox(height: BlTokens.space6),
-                    BlButton(
-                      label: s.actionSave,
-                      icon: Icons.check,
-                      big: true,
-                      busy: _busy,
-                      onPressed: _busy ? null : _save,
-                    ),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ),
       ),
     );
   }

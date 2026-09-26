@@ -839,5 +839,13 @@
       }
     }
   },
+  "partyPriceTier": "Which price they pay",
+  "partyTierRetail": "Retail",
+  "partyTierWholesale": "Wholesale",
+  "partyDiscount": "Discount on every item % (optional)",
+  "partyDiscountInvalid": "Enter a number from 0 to 100",
+  "partyAddress": "Address",
+  "partyCity": "City",
+  "partyCnic": "CNIC (optional)",
   "chequeDone": "Done"
 }

@@ -9301,6 +9301,19 @@ class Parties extends Table with TableInfo<Parties, Party> {
     $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
+  static const VerificationMeta _priceTierMeta = const VerificationMeta(
+    'priceTier',
+  );
+  late final GeneratedColumn<String> priceTier = GeneratedColumn<String>(
+    'price_tier',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT \'retail\' CHECK (price_tier IN (\'retail\', \'wholesale\'))',
+    defaultValue: const CustomExpression('\'retail\''),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -9335,6 +9348,7 @@ class Parties extends Table with TableInfo<Parties, Party> {
     creditDays,
     defaultDiscountBp,
     isActive,
+    priceTier,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -9590,6 +9604,12 @@ class Parties extends Table with TableInfo<Parties, Party> {
         isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
       );
     }
+    if (data.containsKey('price_tier')) {
+      context.handle(
+        _priceTierMeta,
+        priceTier.isAcceptableOrUnknown(data['price_tier']!, _priceTierMeta),
+      );
+    }
     return context;
   }
 
@@ -9727,6 +9747,10 @@ class Parties extends Table with TableInfo<Parties, Party> {
         DriftSqlType.int,
         data['${effectivePrefix}is_active'],
       )!,
+      priceTier: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}price_tier'],
+      )!,
     );
   }
 
@@ -9783,6 +9807,13 @@ class Party extends DataClass implements Insertable<Party> {
   final int? creditDays;
   final int defaultDiscountBp;
   final int isActive;
+
+  /// Which of an item's prices this party is sold at. Added in v4: items have
+  /// carried a wholesale rate since M1 and the counter charged every buyer
+  /// the retail one, so a wholesaler's regular retailers were overcharged
+  /// unless the cashier remembered to retype every line. Last in the table
+  /// because SQLite adds a column where it adds it: at the end.
+  final String priceTier;
   const Party({
     required this.id,
     required this.firmId,
@@ -9816,6 +9847,7 @@ class Party extends DataClass implements Insertable<Party> {
     this.creditDays,
     required this.defaultDiscountBp,
     required this.isActive,
+    required this.priceTier,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -9886,6 +9918,7 @@ class Party extends DataClass implements Insertable<Party> {
     }
     map['default_discount_bp'] = Variable<int>(defaultDiscountBp);
     map['is_active'] = Variable<int>(isActive);
+    map['price_tier'] = Variable<String>(priceTier);
     return map;
   }
 
@@ -9947,6 +9980,7 @@ class Party extends DataClass implements Insertable<Party> {
           : Value(creditDays),
       defaultDiscountBp: Value(defaultDiscountBp),
       isActive: Value(isActive),
+      priceTier: Value(priceTier),
     );
   }
 
@@ -9994,6 +10028,7 @@ class Party extends DataClass implements Insertable<Party> {
       creditDays: serializer.fromJson<int?>(json['credit_days']),
       defaultDiscountBp: serializer.fromJson<int>(json['default_discount_bp']),
       isActive: serializer.fromJson<int>(json['is_active']),
+      priceTier: serializer.fromJson<String>(json['price_tier']),
     );
   }
   @override
@@ -10036,6 +10071,7 @@ class Party extends DataClass implements Insertable<Party> {
       'credit_days': serializer.toJson<int?>(creditDays),
       'default_discount_bp': serializer.toJson<int>(defaultDiscountBp),
       'is_active': serializer.toJson<int>(isActive),
+      'price_tier': serializer.toJson<String>(priceTier),
     };
   }
 
@@ -10072,6 +10108,7 @@ class Party extends DataClass implements Insertable<Party> {
     Value<int?> creditDays = const Value.absent(),
     int? defaultDiscountBp,
     int? isActive,
+    String? priceTier,
   }) => Party(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
@@ -10109,6 +10146,7 @@ class Party extends DataClass implements Insertable<Party> {
     creditDays: creditDays.present ? creditDays.value : this.creditDays,
     defaultDiscountBp: defaultDiscountBp ?? this.defaultDiscountBp,
     isActive: isActive ?? this.isActive,
+    priceTier: priceTier ?? this.priceTier,
   );
   Party copyWithCompanion(PartiesCompanion data) {
     return Party(
@@ -10172,6 +10210,7 @@ class Party extends DataClass implements Insertable<Party> {
           ? data.defaultDiscountBp.value
           : this.defaultDiscountBp,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      priceTier: data.priceTier.present ? data.priceTier.value : this.priceTier,
     );
   }
 
@@ -10209,7 +10248,8 @@ class Party extends DataClass implements Insertable<Party> {
           ..write('creditLimitPaisa: $creditLimitPaisa, ')
           ..write('creditDays: $creditDays, ')
           ..write('defaultDiscountBp: $defaultDiscountBp, ')
-          ..write('isActive: $isActive')
+          ..write('isActive: $isActive, ')
+          ..write('priceTier: $priceTier')
           ..write(')'))
         .toString();
   }
@@ -10248,6 +10288,7 @@ class Party extends DataClass implements Insertable<Party> {
     creditDays,
     defaultDiscountBp,
     isActive,
+    priceTier,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -10284,7 +10325,8 @@ class Party extends DataClass implements Insertable<Party> {
           other.creditLimitPaisa == this.creditLimitPaisa &&
           other.creditDays == this.creditDays &&
           other.defaultDiscountBp == this.defaultDiscountBp &&
-          other.isActive == this.isActive);
+          other.isActive == this.isActive &&
+          other.priceTier == this.priceTier);
 }
 
 class PartiesCompanion extends UpdateCompanion<Party> {
@@ -10320,6 +10362,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
   final Value<int?> creditDays;
   final Value<int> defaultDiscountBp;
   final Value<int> isActive;
+  final Value<String> priceTier;
   final Value<int> rowid;
   const PartiesCompanion({
     this.id = const Value.absent(),
@@ -10354,6 +10397,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
     this.creditDays = const Value.absent(),
     this.defaultDiscountBp = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.priceTier = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   PartiesCompanion.insert({
@@ -10389,6 +10433,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
     this.creditDays = const Value.absent(),
     this.defaultDiscountBp = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.priceTier = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -10433,6 +10478,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
     Expression<int>? creditDays,
     Expression<int>? defaultDiscountBp,
     Expression<int>? isActive,
+    Expression<String>? priceTier,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -10471,6 +10517,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
       if (creditDays != null) 'credit_days': creditDays,
       if (defaultDiscountBp != null) 'default_discount_bp': defaultDiscountBp,
       if (isActive != null) 'is_active': isActive,
+      if (priceTier != null) 'price_tier': priceTier,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -10508,6 +10555,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
     Value<int?>? creditDays,
     Value<int>? defaultDiscountBp,
     Value<int>? isActive,
+    Value<String>? priceTier,
     Value<int>? rowid,
   }) {
     return PartiesCompanion(
@@ -10545,6 +10593,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
       creditDays: creditDays ?? this.creditDays,
       defaultDiscountBp: defaultDiscountBp ?? this.defaultDiscountBp,
       isActive: isActive ?? this.isActive,
+      priceTier: priceTier ?? this.priceTier,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -10652,6 +10701,9 @@ class PartiesCompanion extends UpdateCompanion<Party> {
     if (isActive.present) {
       map['is_active'] = Variable<int>(isActive.value);
     }
+    if (priceTier.present) {
+      map['price_tier'] = Variable<String>(priceTier.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -10693,6 +10745,7 @@ class PartiesCompanion extends UpdateCompanion<Party> {
           ..write('creditDays: $creditDays, ')
           ..write('defaultDiscountBp: $defaultDiscountBp, ')
           ..write('isActive: $isActive, ')
+          ..write('priceTier: $priceTier, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -45179,6 +45232,7 @@ typedef $PartiesCreateCompanionBuilder =
       Value<int?> creditDays,
       Value<int> defaultDiscountBp,
       Value<int> isActive,
+      Value<String> priceTier,
       Value<int> rowid,
     });
 typedef $PartiesUpdateCompanionBuilder =
@@ -45215,6 +45269,7 @@ typedef $PartiesUpdateCompanionBuilder =
       Value<int?> creditDays,
       Value<int> defaultDiscountBp,
       Value<int> isActive,
+      Value<String> priceTier,
       Value<int> rowid,
     });
 
@@ -45518,6 +45573,11 @@ class $PartiesFilterComposer extends Composer<_$AppDatabase, Parties> {
 
   ColumnFilters<int> get isActive => $composableBuilder(
     column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get priceTier => $composableBuilder(
+    column: $table.priceTier,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -45862,6 +45922,11 @@ class $PartiesOrderingComposer extends Composer<_$AppDatabase, Parties> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get priceTier => $composableBuilder(
+    column: $table.priceTier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $FirmsOrderingComposer get firmId {
     final $FirmsOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -46072,6 +46137,9 @@ class $PartiesAnnotationComposer extends Composer<_$AppDatabase, Parties> {
 
   GeneratedColumn<int> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<String> get priceTier =>
+      $composableBuilder(column: $table.priceTier, builder: (column) => column);
 
   $FirmsAnnotationComposer get firmId {
     final $FirmsAnnotationComposer composer = $composerBuilder(
@@ -46335,6 +46403,7 @@ class $PartiesTableManager
                 Value<int?> creditDays = const Value.absent(),
                 Value<int> defaultDiscountBp = const Value.absent(),
                 Value<int> isActive = const Value.absent(),
+                Value<String> priceTier = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PartiesCompanion(
                 id: id,
@@ -46369,6 +46438,7 @@ class $PartiesTableManager
                 creditDays: creditDays,
                 defaultDiscountBp: defaultDiscountBp,
                 isActive: isActive,
+                priceTier: priceTier,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -46405,6 +46475,7 @@ class $PartiesTableManager
                 Value<int?> creditDays = const Value.absent(),
                 Value<int> defaultDiscountBp = const Value.absent(),
                 Value<int> isActive = const Value.absent(),
+                Value<String> priceTier = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => PartiesCompanion.insert(
                 id: id,
@@ -46439,6 +46510,7 @@ class $PartiesTableManager
                 creditDays: creditDays,
                 defaultDiscountBp: defaultDiscountBp,
                 isActive: isActive,
+                priceTier: priceTier,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

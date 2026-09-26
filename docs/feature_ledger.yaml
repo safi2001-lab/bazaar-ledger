@@ -152,10 +152,13 @@ milestones:
 
   - id: M7
     title: Sales documents, the conversion chain and pricing
-    state: planned
+    # Opened 26 Sep 2026, pricing first: items had carried a wholesale price
+    # since M1 and parties a standing discount, and the counter used neither.
+    state: open
     owns:
       - lib/features/documents/**
       - packages/pk_domain/lib/src/documents/**
+      - packages/pk_domain/lib/src/pricing/**
 
   - id: M8
     title: The reports engine and the report pack
@@ -3218,3 +3221,60 @@ features:
       - a cheque we wrote is marked paid from the drawer
       - a cheque we wrote that bounces is owed to the supplier again
       - the first screen warns when our cheques can be presented
+
+  # ---- M7 · Sales documents, the conversion chain and pricing -------------
+
+  - id: M7-PRICE-01
+    milestone: M7
+    title: A wholesale customer is sold at the wholesale price
+    status: done
+    # Items have had a wholesale price since M1, set in the item editor and
+    # used nowhere: the counter charged every buyer the shelf price, so a
+    # wholesaler's regular retailers were overcharged unless the cashier
+    # retyped every line. A party now says which price they pay (schema v4,
+    # parties.price_tier, added in place with every existing party retail,
+    # which is what they were charged). The customer is picked last, at the
+    # payment sheet, so the lines follow them there; a price the cashier
+    # typed is left exactly as typed. A cart killed mid-bill comes back with
+    # its customer's prices, and one saved by the build before is read as
+    # retail rather than dropped.
+    proof:
+      - the price a buyer pays a retail buyer pays the shelf price
+      - the price a buyer pays a wholesale buyer pays the trade price
+      - the price a buyer pays an item with no trade price is sold to everybody at one price
+      - the price a buyer pays a tier nobody recognises is retail
+      - v3 to v4 — the price a party is sold at a v3 customer comes through whole, as a retail customer
+      - v3 to v4 — the price a party is sold at a price tier the counter does not know is refused
+      - a wholesale customer is charged the wholesale price
+      - a retail customer is charged the shelf price
+      - a walk-in after a wholesale customer pays retail again
+      - the cart round trip the customer prices survive it
+      - the cart round trip a draft from the build before price tiers is read as retail
+      - a customer is set to wholesale from the editor
+
+  - id: M7-PRICE-02
+    milestone: M7
+    title: A customer's standing discount comes off every line
+    status: done
+    # parties.default_discount_bp has been in the schema since M0 with no
+    # way to set it and nothing reading it. The party editor now takes it as
+    # a percentage, and every line rung for that customer carries it unless
+    # the cashier set a discount of their own.
+    proof:
+      - a standing discount comes off every line
+      - a customer is set to wholesale from the editor
+
+  - id: M7-PARTY-01
+    milestone: M7
+    title: Editing a party keeps what the form does not show, and asks for an address
+    status: done
+    # A live defect. The party editor sent only the name, phone and credit
+    # limit, and the writer stores the whole row, so correcting a supplier's
+    # phone number turned them into a customer and wiped their NTN, CNIC and
+    # address. The editor now loads the party as saved and writes back
+    # everything it does not show. It also asks for the address, city and
+    # CNIC, which the khata had nowhere to keep and a demand notice or a
+    # delivery challan needs.
+    proof:
+      - editing a supplier keeps them a supplier
+      - a customer is set to wholesale from the editor

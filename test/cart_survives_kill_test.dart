@@ -22,16 +22,16 @@ import 'support/harness.dart';
 void main() {
   group('the cart round trip', () {
     ItemSummary oil({int rupees = 2500}) => ItemSummary(
-          id: 'item-oil',
-          name: 'Cooking Oil 5L',
-          code: 'OIL5',
-          unitId: 'unit-pcs',
-          unitCode: 'pcs',
-          unitDecimals: 0,
-          saleRate: Rate.rupees(rupees),
-          stockOnHand: Qty.units(20),
-          tracksStock: true,
-        );
+      id: 'item-oil',
+      name: 'Cooking Oil 5L',
+      code: 'OIL5',
+      unitId: 'unit-pcs',
+      unitCode: 'pcs',
+      unitDecimals: 0,
+      saleRate: Rate.rupees(rupees),
+      stockOnHand: Qty.units(20),
+      tracksStock: true,
+    );
 
     test('every paisa and every thousandth survives it', () {
       final cart = Cart(
@@ -54,8 +54,10 @@ void main() {
       final restored = CartDraft.decode(CartDraft.encode(cart))!;
 
       expect(restored.lines.single.qty.inThousandths, 750);
-      expect(restored.lines.single.rate.inMilliPaisa,
-          const Rate.rupees(2500).inMilliPaisa);
+      expect(
+        restored.lines.single.rate.inMilliPaisa,
+        const Rate.rupees(2500).inMilliPaisa,
+      );
       expect(restored.lines.single.discountBp, 250);
       expect(restored.billDiscount.inPaisa, 1537);
       expect(restored.partyId, 'party-1');
@@ -65,10 +67,29 @@ void main() {
 
     test('a draft from another build is dropped, not guessed at', () {
       final encoded = CartDraft.encode(const Cart());
-      expect(
-        CartDraft.decode(encoded.replaceFirst('"v":2', '"v":99')),
-        isNull,
+      expect(CartDraft.decode(encoded.replaceFirst('"v":3', '"v":99')), isNull);
+    });
+
+    test('the customer prices survive it', () {
+      const cart = Cart(
+        partyId: 'party-1',
+        partyName: 'Bilal General Store',
+        priceTier: PriceTier.wholesale,
+        partyDiscountBp: 250,
       );
+      final restored = CartDraft.decode(CartDraft.encode(cart))!;
+      expect(restored.priceTier, PriceTier.wholesale);
+      expect(restored.partyDiscountBp, 250);
+    });
+
+    test('a draft from the build before price tiers is read as retail', () {
+      // Every v2 cart was priced retail, so that is what it is read as.
+      final v2 = CartDraft.encode(
+        const Cart(partyId: 'party-1', partyName: 'Bilal General Store'),
+      ).replaceFirst('"v":3', '"v":2');
+      final restored = CartDraft.decode(v2)!;
+      expect(restored.priceTier, PriceTier.retail);
+      expect(restored.partyId, 'party-1');
     });
 
     test('the unit the line is sold in survives too', () {
@@ -97,11 +118,7 @@ void main() {
       // fail because the item was renamed or archived while the app was dead.
       final cart = Cart(
         lines: [
-          CartLine(
-            item: oil(),
-            qty: Qty.one,
-            rate: const Rate.rupees(2400),
-          ),
+          CartLine(item: oil(), qty: Qty.one, rate: const Rate.rupees(2400)),
         ],
       );
       final restored = CartDraft.decode(CartDraft.encode(cart))!;
@@ -112,8 +129,9 @@ void main() {
     });
   });
 
-  testWidgets('a killed app comes back with the bill still on the counter',
-      (tester) async {
+  testWidgets('a killed app comes back with the bill still on the counter', (
+    tester,
+  ) async {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
     await app.seedItem(name: 'Chawal Basmati', rupees: 525);

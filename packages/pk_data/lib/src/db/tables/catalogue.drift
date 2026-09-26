@@ -186,7 +186,15 @@ CREATE TABLE parties (
   default_discount_bp INTEGER NOT NULL DEFAULT 0
     CHECK (default_discount_bp BETWEEN 0 AND 10000),
 
-  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+
+  -- Which of an item's prices this party is sold at. Added in v4: items have
+  -- carried a wholesale rate since M1 and the counter charged every buyer
+  -- the retail one, so a wholesaler's regular retailers were overcharged
+  -- unless the cashier remembered to retype every line. Last in the table
+  -- because SQLite adds a column where it adds it: at the end.
+  price_tier TEXT NOT NULL DEFAULT 'retail'
+    CHECK (price_tier IN ('retail', 'wholesale'))
 ) STRICT;
 
 CREATE INDEX idx_parties_firm_name ON parties (firm_id, name_search);

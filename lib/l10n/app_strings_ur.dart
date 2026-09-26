@@ -1602,5 +1602,29 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get partyPriceTier => 'Kis rate par bechna hai';
+
+  @override
+  String get partyTierRetail => 'Parchoon (retail)';
+
+  @override
+  String get partyTierWholesale => 'Thok (wholesale)';
+
+  @override
+  String get partyDiscount => 'Har cheez par discount % (marzi se)';
+
+  @override
+  String get partyDiscountInvalid => '0 se 100 ke darmiyan likhein';
+
+  @override
+  String get partyAddress => 'Pata';
+
+  @override
+  String get partyCity => 'Shehar';
+
+  @override
+  String get partyCnic => 'CNIC (marzi se)';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

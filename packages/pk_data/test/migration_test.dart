@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
+import 'generated/schema_v3.dart' as v3;
 
 /// Migrations, and the machinery that makes them testable at all.
 ///
@@ -250,6 +251,70 @@ void main() {
     );
   });
 
+  group('v3 to v4 — the price a party is sold at', () {
+    test('a v3 customer comes through whole, as a retail customer', () async {
+      // Every customer a shop has entered was charged the retail price, so
+      // that is what the new column must say for each of them.
+      final schema = await verifier.schemaAt(3);
+      final old = v3.DatabaseAtV3(schema.newConnection());
+
+      const firmId = 'FIRM0000000000000000000001';
+      const userId = 'USER0000000000000000000001';
+      const deviceId = 'DEV00000000000000000000001';
+      await old.customStatement('PRAGMA foreign_keys = OFF');
+      await old.customStatement(
+        'INSERT INTO parties (id, firm_id, created_at_utc, updated_at_utc, '
+        'created_by, updated_by, origin_device_id, hlc, rev, name, '
+        'name_search, party_type, opening_balance_paisa, credit_limit_paisa) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)',
+        [
+          'PTY00000000000000000000001',
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'a-0000-$deviceId',
+          'Rashid Traders',
+          'rashid traders',
+          'customer',
+          4500000,
+          10000000,
+        ],
+      );
+      await old.close();
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 4);
+
+      final row = await db
+          .customSelect(
+            'SELECT name, opening_balance_paisa, credit_limit_paisa, '
+            'price_tier FROM parties',
+          )
+          .getSingle();
+      expect(row.data['name'], 'Rashid Traders');
+      expect(row.data['opening_balance_paisa'], 4500000);
+      expect(row.data['credit_limit_paisa'], 10000000);
+      expect(row.data['price_tier'], 'retail');
+    });
+
+    test('a price tier the counter does not know is refused', () async {
+      final db = AppDatabase(NativeDatabase.memory());
+      addTearDown(db.close);
+      await db.customStatement('PRAGMA foreign_keys = OFF');
+      await expectLater(
+        db.customStatement(
+          'INSERT INTO parties (id, firm_id, created_at_utc, updated_at_utc, '
+          'created_by, updated_by, origin_device_id, hlc, rev, name, '
+          "name_search, price_tier) VALUES ('P', 'F', 1, 1, 'U', 'U', 'D', "
+          "'h', 1, 'X', 'x', 'vip')",
+        ),
+        throwsA(anything),
+      );
+    });
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -278,4 +343,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 3;
+const _currentVersion = 4;

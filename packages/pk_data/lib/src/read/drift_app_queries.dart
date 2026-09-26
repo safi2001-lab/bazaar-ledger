@@ -253,6 +253,7 @@ final class DriftAppQueries implements AppQueries {
   /// the credit limit is checked against.
   static const _partySelect = '''
     SELECT p.id, p.name, p.phone, p.party_type, p.credit_limit_paisa,
+           p.price_tier, p.default_discount_bp,
            p.opening_balance_paisa
              + COALESCE((
                  SELECT SUM(d.balance_paisa) FROM documents d
@@ -310,6 +311,8 @@ final class DriftAppQueries implements AppQueries {
     balance: Money.paisa(r.read<int>('balance_paisa')),
     payable: Money.paisa(r.read<int>('payable_paisa')),
     bouncedCheques: r.read<int>('bounced_cheques'),
+    priceTier: PriceTier.parse(r.read<String>('price_tier')),
+    defaultDiscountBp: r.read<int>('default_discount_bp'),
     creditLimit: r.readNullable<int>('credit_limit_paisa') == null
         ? null
         : Money.paisa(r.read<int>('credit_limit_paisa')),
@@ -893,6 +896,38 @@ final class DriftAppQueries implements AppQueries {
         )
         .get();
     return [for (final r in rows) chequeInHandFrom(r)];
+  }
+
+  @override
+  Future<PartyDraft?> partyDraft(String firmId, String partyId) async {
+    final r = await _db
+        .customSelect(
+          'SELECT * FROM parties WHERE id = ? AND firm_id = ?',
+          variables: [Variable<String>(partyId), Variable<String>(firmId)],
+          readsFrom: {_db.parties},
+        )
+        .getSingleOrNull();
+    if (r == null) return null;
+    final atl = r.readNullable<int>('is_on_atl');
+    final limit = r.readNullable<int>('credit_limit_paisa');
+    return PartyDraft(
+      name: r.read<String>('name'),
+      partyType: r.read<String>('party_type'),
+      phone: r.readNullable<String>('phone'),
+      whatsapp: r.readNullable<String>('whatsapp'),
+      addressLine1: r.readNullable<String>('address_line1'),
+      city: r.readNullable<String>('city'),
+      ntn: r.readNullable<String>('ntn'),
+      strn: r.readNullable<String>('strn'),
+      cnic: r.readNullable<String>('cnic'),
+      buyerRegistrationType: r.read<String>('buyer_registration_type'),
+      isOnAtl: atl == null ? null : atl == 1,
+      openingBalance: Money.paisa(r.read<int>('opening_balance_paisa')),
+      creditLimit: limit == null ? null : Money.paisa(limit),
+      creditDays: r.readNullable<int>('credit_days'),
+      priceTier: PriceTier.parse(r.read<String>('price_tier')),
+      defaultDiscountBp: r.read<int>('default_discount_bp'),
+    );
   }
 
   @override

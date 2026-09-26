@@ -133,12 +133,20 @@ final class Cart {
     this.partyId,
     this.partyName,
     this.billDiscount = Money.zero,
+    this.priceTier = PriceTier.retail,
+    this.partyDiscountBp = 0,
   });
 
   final List<CartLine> lines;
   final String? partyId;
   final String? partyName;
   final Money billDiscount;
+
+  /// The customer's prices. Retail for a walk-in.
+  final PriceTier priceTier;
+
+  /// The customer's standing discount on every line, in basis points.
+  final int partyDiscountBp;
 
   bool get isEmpty => lines.isEmpty;
 
@@ -156,12 +164,16 @@ final class Cart {
     String? partyId,
     String? partyName,
     Money? billDiscount,
+    PriceTier? priceTier,
+    int? partyDiscountBp,
     bool clearParty = false,
   }) => Cart(
     lines: lines ?? this.lines,
     partyId: clearParty ? null : partyId ?? this.partyId,
     partyName: clearParty ? null : partyName ?? this.partyName,
     billDiscount: billDiscount ?? this.billDiscount,
+    priceTier: priceTier ?? this.priceTier,
+    partyDiscountBp: partyDiscountBp ?? this.partyDiscountBp,
   );
 }
 
@@ -223,7 +235,14 @@ class CartNotifier extends Notifier<Cart> {
     if (index >= 0) {
       lines[index] = lines[index].copyWith(qty: lines[index].qty + step);
     } else {
-      lines.add(CartLine(item: item, qty: step, rate: item.saleRate));
+      lines.add(
+        CartLine(
+          item: item,
+          qty: step,
+          rate: priceFor(item, state.priceTier),
+          discountBp: state.partyDiscountBp,
+        ),
+      );
     }
     state = state.copyWith(lines: lines);
   }
@@ -321,9 +340,73 @@ class CartNotifier extends Notifier<Cart> {
   void setBillDiscount(Money amount) =>
       state = state.copyWith(billDiscount: amount);
 
-  void setParty(String? id, String? name) => state = id == null
-      ? state.copyWith(clearParty: true)
-      : state.copyWith(partyId: id, partyName: name);
+  /// Sells this bill to [party], at their prices; null is a walk-in.
+  ///
+  /// The customer is usually picked last, at the payment sheet, after every
+  /// line is rung. So the lines follow: each one still at the price the
+  /// counter set moves to this customer's price and standing discount. A
+  /// line whose price or discount the cashier typed is left exactly as
+  /// typed — they meant it, and a price that changed under their thumb is
+  /// the one they would never notice.
+  ///
+  /// [units] carries a price into a line sold in another unit. Without it
+  /// such a line keeps its price rather than being given a wrong one.
+  void setParty(PartySummary? party, {UnitConverter? units}) {
+    final tier = party?.priceTier ?? PriceTier.retail;
+    final bp = party?.defaultDiscountBp ?? 0;
+    final lines = [
+      for (final l in state.lines) _follow(l, tier, bp, units),
+    ];
+    state = party == null
+        ? state.copyWith(
+            lines: lines,
+            clearParty: true,
+            priceTier: tier,
+            partyDiscountBp: bp,
+          )
+        : state.copyWith(
+            lines: lines,
+            partyId: party.id,
+            partyName: party.name,
+            priceTier: tier,
+            partyDiscountBp: bp,
+          );
+  }
+
+  CartLine _follow(
+    CartLine line,
+    PriceTier tier,
+    int discountBp,
+    UnitConverter? units,
+  ) {
+    Rate? priced(PriceTier t) {
+      final base = priceFor(line.item, t);
+      if (!line.isConverted) return base;
+      if (units == null) return null;
+      try {
+        return units.convertRate(
+          base,
+          fromUnitId: line.item.unitId,
+          toUnitId: line.sellingUnitId,
+          itemId: line.item.id,
+        );
+      } on Object {
+        return null;
+      }
+    }
+
+    var out = line;
+    final was = priced(state.priceTier);
+    final now = priced(tier);
+    if (was != null && now != null && line.rate == was) {
+      out = out.copyWith(rate: now);
+    }
+    if (line.explicitDiscount == null &&
+        line.discountBp == state.partyDiscountBp) {
+      out = out.copyWith(discountBp: discountBp);
+    }
+    return out;
+  }
 
   void clear() => state = const Cart();
 }

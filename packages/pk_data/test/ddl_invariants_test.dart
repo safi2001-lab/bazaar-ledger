@@ -323,6 +323,8 @@ const _tablesByVersion = <int, List<String>>{
   2: _tablesV2,
   // v3 added a column, not a table.
   3: _tablesV2,
+  // v4 added a column, not a table.
+  4: _tablesV2,
 };
 
 const _tablesV1 = <String>[

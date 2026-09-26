@@ -23,13 +23,19 @@ abstract final class CartDraft {
   /// dropped rather than guessed at: the cost of dropping one is that the
   /// cashier re-rings a bill, and the cost of misreading one is a wrong bill
   /// they cannot see is wrong.
-  static const version = 2;
+  static const version = 3;
+
+  /// A v2 draft is a v3 one with no price tier: every v2 cart was priced
+  /// retail, so it is read as exactly that rather than thrown away.
+  static const _readable = {2, 3};
 
   static String encode(Cart cart) => jsonEncode({
     'v': version,
     'partyId': cart.partyId,
     'partyName': cart.partyName,
     'billDiscountPaisa': cart.billDiscount.inPaisa,
+    'priceTier': cart.priceTier.code,
+    'partyDiscountBp': cart.partyDiscountBp,
     'lines': [
       for (final line in cart.lines)
         {
@@ -42,6 +48,7 @@ abstract final class CartDraft {
           'unitCode': line.item.unitCode,
           'unitDecimals': line.item.unitDecimals,
           'saleRateMilliPaisa': line.item.saleRate.inMilliPaisa,
+          'wholesaleRateMilliPaisa': line.item.wholesaleRate?.inMilliPaisa,
           'stockOnHandThousandths': line.item.stockOnHand.inThousandths,
           'minStockThousandths': line.item.minStock.inThousandths,
           'tracksStock': line.item.tracksStock,
@@ -69,7 +76,7 @@ abstract final class CartDraft {
     try {
       final root = jsonDecode(source);
       if (root is! Map<String, Object?>) return null;
-      if (root['v'] != version) return null;
+      if (!_readable.contains(root['v'])) return null;
 
       final rawLines = root['lines'];
       if (rawLines is! List) return null;
@@ -84,12 +91,16 @@ abstract final class CartDraft {
 
       final discount = root['billDiscountPaisa'];
       if (discount is! int) return null;
+      final partyDiscountBp = root['partyDiscountBp'] ?? 0;
+      if (partyDiscountBp is! int) return null;
 
       return Cart(
         lines: lines,
         partyId: root['partyId'] as String?,
         partyName: root['partyName'] as String?,
         billDiscount: Money.paisa(discount),
+        priceTier: PriceTier.parse(root['priceTier'] as String?),
+        partyDiscountBp: partyDiscountBp,
       );
     } on Object {
       return null;
@@ -103,6 +114,7 @@ abstract final class CartDraft {
     final unitCode = raw['unitCode'];
     final unitDecimals = raw['unitDecimals'];
     final saleRate = raw['saleRateMilliPaisa'];
+    final wholesaleRate = raw['wholesaleRateMilliPaisa'];
     final stock = raw['stockOnHandThousandths'];
     final minStock = raw['minStockThousandths'];
     final tracksStock = raw['tracksStock'];
@@ -119,6 +131,7 @@ abstract final class CartDraft {
         unitCode is! String ||
         unitDecimals is! int ||
         saleRate is! int ||
+        (wholesaleRate != null && wholesaleRate is! int) ||
         stock is! int ||
         minStock is! int ||
         tracksStock is! bool ||
@@ -142,6 +155,9 @@ abstract final class CartDraft {
         unitCode: unitCode,
         unitDecimals: unitDecimals,
         saleRate: Rate.raw(saleRate),
+        wholesaleRate: wholesaleRate == null
+            ? null
+            : Rate.raw(wholesaleRate as int),
         stockOnHand: Qty.raw(stock),
         minStock: Qty.raw(minStock),
         tracksStock: tracksStock,
