@@ -9,6 +9,8 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  # Pure Dart, and already in the app for receipts and notices.
+  pdf: ^3.11.0
   pk_domain:
     path: ../pk_domain
   pk_money:

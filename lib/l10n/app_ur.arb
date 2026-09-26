@@ -1041,5 +1041,6 @@
   "reportSalesByDayHint": "Har din kitne bill, kitni bikri, kitna udhaar",
   "reportReceivables": "Udhaar kitna purana",
   "reportReceivablesHint": "Kis par kitna baqi hai, aur kab se",
+  "reportSharePdf": "PDF bhejein",
   "chequeDone": "Ho gaya"
 }

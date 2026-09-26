@@ -1827,5 +1827,8 @@ class AppStringsEn extends AppStrings {
   String get reportReceivablesHint => 'Who owes what, and for how long';
 
   @override
+  String get reportSharePdf => 'Send PDF';
+
+  @override
   String get chequeDone => 'Done';
 }

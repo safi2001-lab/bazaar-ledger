@@ -60,6 +60,22 @@ void main() {
     expect(csv, contains('Net profit,500.00'));
   });
 
+  testWidgets('a report goes out as a PDF headed with the shop', (
+    tester,
+  ) async {
+    final app = await Harness.startWithShop(tester);
+    await _aDayOfTrade(app);
+
+    await tapText(tester, 'Report');
+    await tapText(tester, 'Nafa nuqsan');
+    await tester.tap(find.byTooltip('PDF bhejein'));
+    await settleReal(tester, done: () => _sheet.paths.isNotEmpty);
+
+    expect(_sheet.paths.single, endsWith('.pdf'));
+    final bytes = File(_sheet.paths.single).readAsBytesSync();
+    expect(String.fromCharCodes(bytes.take(4)), '%PDF');
+  });
+
   testWidgets('stock value is as of now and lists the shelf', (tester) async {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500, openingStock: 12);

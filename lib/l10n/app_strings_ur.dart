@@ -1829,5 +1829,8 @@ class AppStringsUr extends AppStrings {
   String get reportReceivablesHint => 'Kis par kitna baqi hai, aur kab se';
 
   @override
+  String get reportSharePdf => 'PDF bhejein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

@@ -962,5 +962,6 @@
   "reportSalesByDayHint": "Each day's bills, sales and udhaar",
   "reportReceivables": "Udhaar by age",
   "reportReceivablesHint": "Who owes what, and for how long",
+  "reportSharePdf": "Send PDF",
   "chequeDone": "Done"
 }

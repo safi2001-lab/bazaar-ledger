@@ -2,3 +2,4 @@
 library;
 
 export 'src/csv.dart';
+export 'src/pdf.dart';

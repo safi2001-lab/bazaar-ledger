@@ -3456,3 +3456,17 @@ features:
       - udhaar by age owes what the khata says
       - udhaar by age is as of now and lists who owes
       - sales by day shows the day the bill was rung
+
+  - id: M8-PDF-01
+    milestone: M8
+    title: A report goes out as a PDF for WhatsApp or the printer
+    status: done
+    # Most figures in this market travel as a picture or a PDF on WhatsApp,
+    # not as a spreadsheet. pk_export sets the finished table on an A4 page
+    # (landscape when it is wide) headed with the shop's name, the report
+    # and the period, with page numbers, the Urdu font as a fallback so a
+    # name in Urdu survives, and the notes under the table.
+    proof:
+      - pdf a report is a page headed with the shop and the period
+      - pdf the file is named for the report and its dates
+      - a report goes out as a PDF headed with the shop

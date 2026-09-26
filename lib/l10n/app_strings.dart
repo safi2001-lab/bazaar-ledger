@@ -3320,6 +3320,12 @@ abstract class AppStrings {
   /// **'Kis par kitna baqi hai, aur kab se'**
   String get reportReceivablesHint;
 
+  /// No description provided for @reportSharePdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'PDF bhejein'**
+  String get reportSharePdf;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

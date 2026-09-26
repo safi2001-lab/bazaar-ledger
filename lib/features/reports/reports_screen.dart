@@ -11,6 +11,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/pdf_font.dart';
 
 /// The report pack: did the shop make money this month, and where did it go.
 ///
@@ -153,19 +154,32 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     _Span.thisYear => ReportPeriod.fiscalYearOf(today),
   };
 
-  Future<void> _share(ReportTable table) async {
+  /// Sends [table] on as a CSV, or as a PDF when [pdf].
+  Future<void> _share(ReportTable table, {required bool pdf}) async {
     if (_sharing) return;
     setState(() => _sharing = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
+      final List<int> bytes;
+      if (pdf) {
+        final firm = await ref.read(firmProvider.future);
+        bytes = await reportToPdf(
+          table,
+          shopName: firm?.name ?? '',
+          unicodeFont: await PdfUnicodeFont.bytes(),
+        );
+      } else {
+        bytes = reportToCsvBytes(table);
+      }
       final dir = await getTemporaryDirectory();
-      final file = File(
-        '${dir.path}${Platform.pathSeparator}${reportFileName(table)}',
-      );
-      await file.writeAsBytes(reportToCsvBytes(table), flush: true);
+      final name = reportFileName(table, extension: pdf ? 'pdf' : 'csv');
+      final file = File('${dir.path}${Platform.pathSeparator}$name');
+      await file.writeAsBytes(bytes, flush: true);
       await SharePlus.instance.share(
         ShareParams(
-          files: [XFile(file.path, mimeType: 'text/csv')],
+          files: [
+            XFile(file.path, mimeType: pdf ? 'application/pdf' : 'text/csv'),
+          ],
           subject: '${table.title}, ${table.period.label}',
         ),
       );
@@ -191,12 +205,22 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       appBar: AppBar(
         title: Text(reportName(s, widget.kind)),
         actions: [
-          if (report.valueOrNull case final table?)
+          if (report.valueOrNull case final table?) ...[
             BlIconButton(
-              icon: Icons.ios_share,
-              label: s.reportShareCsv,
-              onPressed: _sharing ? null : () => unawaited(_share(table)),
+              icon: Icons.picture_as_pdf_outlined,
+              label: s.reportSharePdf,
+              onPressed: _sharing
+                  ? null
+                  : () => unawaited(_share(table, pdf: true)),
             ),
+            BlIconButton(
+              icon: Icons.table_view_outlined,
+              label: s.reportShareCsv,
+              onPressed: _sharing
+                  ? null
+                  : () => unawaited(_share(table, pdf: false)),
+            ),
+          ],
         ],
       ),
       body: SafeArea(
