@@ -70,7 +70,12 @@ milestones:
     # Opened 24 Aug 2026. The reason the app exists: a kiryana shop's book of
     # who owes what is the thing it keeps on paper today, and the thing it
     # would actually pay to stop keeping on paper.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 14/14. Money comes in against udhaar and goes out
+    # to suppliers and as expenses, each from a screen and each proved by
+    # driving it; the two doc_type defects that let a customer's money land
+    # on the shop's own purchase bills were found and closed on the way.
+    state: sealed
     owns:
       - lib/features/khata/**
       - lib/features/expenses/**
@@ -81,7 +86,12 @@ milestones:
     # Opened 24 Aug 2026. `avg_cost_milli_paisa` is written once at item
     # creation and never moves, so until this milestone lands every margin
     # figure in the app is a guess.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 5/5. The average moves with every delivery, the
+    # screen shows where each line leaves it before Save, and a delivery can
+    # be found again by the supplier's own bill number. Correcting a delivery
+    # entered wrong is a correction, and waits in M5.
+    state: sealed
     owns:
       - lib/features/purchases/**
       - packages/pk_domain/lib/src/costing/**
@@ -91,6 +101,15 @@ milestones:
     # Opened 24 Aug 2026. A shop that cannot fix a mistake has a permanent
     # wrong number in its books, and the wrong number is the one an auditor
     # finds.
+    #
+    # Still open, at 10/10, on purpose: two things it owns have no rows yet
+    # and are not built. A delivery entered wrong cannot be corrected — the
+    # void writer now refuses one rather than reverse its stock without its
+    # cost — and the live database is not encrypted at rest
+    # (`encrypted_database.dart`). The backup file is; the books on the phone
+    # are protected by Android's app sandbox and the no-backup directory
+    # alone. Both are real work with real risk, and 100% of the rows that
+    # exist is not the milestone.
     state: open
     owns:
       - lib/features/backup/**
