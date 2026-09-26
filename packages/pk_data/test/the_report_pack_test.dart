@@ -228,4 +228,17 @@ void main() {
     expect(t.rows.first.cells[2], const Money.rupees(700));
     expect(t.totals.single.cells.last, const Money.rupees(700));
   });
+
+  test('the trial balance agrees and the balance sheet balances', () async {
+    final tb = await run(ReportKind.trialBalance);
+    final sides = tb.totals.single.cells.sublist(2);
+    expect(sides.first, sides.last);
+    final bs = await run(ReportKind.balanceSheet);
+    final assets = bs.rows
+        .firstWhere((r) => r.cells.first == 'Total assets')
+        .cells
+        .last;
+    expect(bs.totals.single.cells.last, assets);
+    expect(bs.notes.first, startsWith('What the shop has equals'));
+  });
 }

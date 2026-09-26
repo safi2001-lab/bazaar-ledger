@@ -45,6 +45,9 @@ enum Permission {
   /// Read the activity log.
   audit,
 
+  /// Write journal vouchers by hand.
+  journal,
+
   /// Add staff, change their roles and PINs.
   manageUsers,
 
@@ -110,6 +113,7 @@ enum Role {
       Permission.audit,
     },
     accountant => {
+      Permission.journal,
       Permission.takePayments,
       Permission.purchases,
       Permission.expenses,

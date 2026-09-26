@@ -12,8 +12,9 @@ import 'support/harness.dart';
 /// a bug, they report that the app is wrong about the day's takings, six weeks
 /// later, with no idea which bill.
 void main() {
-  testWidgets('tapping charge twice in one frame writes one invoice',
-      (tester) async {
+  testWidgets('tapping charge twice in one frame writes one invoice', (
+    tester,
+  ) async {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
@@ -48,7 +49,13 @@ void main() {
       reason: 'one cart is one invoice, however fast the cashier taps',
     );
     expect(await app.countIn('payments'), 1);
-    expect(await app.countIn('journal_entries'), 1);
+    // The sale's entry; the harness's opening stock has its own since M10.
+    expect(
+      await app.scalar<int>(
+        "SELECT COUNT(*) FROM journal_entries WHERE source_type = 'sale'",
+      ),
+      1,
+    );
   });
 
   testWidgets('a committed sale always empties the cart', (tester) async {
@@ -141,16 +148,19 @@ void main() {
     // assertion read 500000 for as long as `items.avg_cost_milli_paisa` was
     // never populated and the sale posted no cost line at all — a test that
     // passed because of the defect underneath it.
+    // The sale's lines only: since M10 the harness's opening stock is in
+    // the books too, as an entry of its own.
     final balance = await app.rowsOf(
-      'SELECT SUM(debit_paisa) d, SUM(credit_paisa) c FROM journal_lines',
+      'SELECT SUM(jl.debit_paisa) d, SUM(jl.credit_paisa) c '
+      'FROM journal_lines jl '
+      'JOIN journal_entries je ON je.id = jl.journal_entry_id '
+      "WHERE je.source_type = 'sale'",
     );
     expect(balance.single['d'], 800000);
     expect(balance.single['c'], 800000);
 
     // And the cost really is the cost, not a plug that happens to balance.
-    final cost = await app.scalar<int>(
-      'SELECT cost_paisa FROM documents',
-    );
+    final cost = await app.scalar<int>('SELECT cost_paisa FROM documents');
     expect(
       cost,
       300000,
@@ -177,8 +187,9 @@ void main() {
     expect(await app.countIn('documents'), 0);
   });
 
-  testWidgets('an archived item cannot be scanned back onto a bill',
-      (tester) async {
+  testWidgets('an archived item cannot be scanned back onto a bill', (
+    tester,
+  ) async {
     final app = await Harness.startWithShop(tester);
     final itemId = await app.seedItem(
       name: 'Cooking Oil 5L',
@@ -186,8 +197,7 @@ void main() {
       barcode: '8964000112233',
     );
 
-    await app.services.catalogue
-        .archiveItem(app.services.actorNow(), itemId);
+    await app.services.catalogue.archiveItem(app.services.actorNow(), itemId);
 
     final scanned = await app.services.queries.itemByBarcode(
       (await app.services.queries.currentFirm())!.id,
@@ -200,15 +210,15 @@ void main() {
     );
   });
 
-  testWidgets('editing an archived item does not put it back on the counter',
-      (tester) async {
+  testWidgets('editing an archived item does not put it back on the counter', (
+    tester,
+  ) async {
     final app = await Harness.startWithShop(tester);
     final firm = (await app.services.queries.currentFirm())!;
     final itemId = await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
     final units = await app.services.queries.units(firm.id);
 
-    await app.services.catalogue
-        .archiveItem(app.services.actorNow(), itemId);
+    await app.services.catalogue.archiveItem(app.services.actorNow(), itemId);
 
     // A price correction on an archived item is a legitimate thing to do; it
     // must not silently restock the shelf.
@@ -222,9 +232,7 @@ void main() {
       ),
     );
 
-    final active = await app.scalar<int>(
-      'SELECT is_active FROM items LIMIT 1',
-    );
+    final active = await app.scalar<int>('SELECT is_active FROM items LIMIT 1');
     expect(active, 0);
     expect(
       await app.services.queries.searchItems(firm.id, query: 'Cooking'),
@@ -232,8 +240,9 @@ void main() {
     );
   });
 
-  testWidgets('a customer with only an opening balance cannot be hidden',
-      (tester) async {
+  testWidgets('a customer with only an opening balance cannot be hidden', (
+    tester,
+  ) async {
     final app = await Harness.startWithShop(tester);
     final partyId = await app.services.catalogue.addParty(
       app.services.actorNow(),
@@ -247,8 +256,7 @@ void main() {
     // carrying pre-app udhaar was told they "owe 0" and hidden along with
     // their balance.
     await expectLater(
-      app.services.catalogue
-          .archiveParty(app.services.actorNow(), partyId),
+      app.services.catalogue.archiveParty(app.services.actorNow(), partyId),
       throwsA(isA<StateError>()),
     );
   });

@@ -1967,5 +1967,80 @@ class AppStringsUr extends AppStrings {
   String get auditEmpty => 'Abhi kuch nahi hua';
 
   @override
+  String get reportTrialBalance => 'Trial balance';
+
+  @override
+  String get reportTrialBalanceHint =>
+      'Har khata apni taraf, dono taraf barabar';
+
+  @override
+  String get reportBalanceSheet => 'Balance sheet';
+
+  @override
+  String get reportBalanceSheetHint =>
+      'Dukaan ke paas kya hai, kis ka dena hai, malik ka kya hai';
+
+  @override
+  String get homeAccounts => 'Hisaab kitaab';
+
+  @override
+  String get accountsTitle => 'Hisaab kitaab';
+
+  @override
+  String get accountsWriteVoucher => 'Voucher likhein';
+
+  @override
+  String get accountTypeAsset => 'Jo dukaan ke paas hai';
+
+  @override
+  String get accountTypeLiability => 'Jo dena hai';
+
+  @override
+  String get accountTypeEquity => 'Malik ka';
+
+  @override
+  String get accountTypeIncome => 'Aamdani';
+
+  @override
+  String get accountTypeExpense => 'Kharchay';
+
+  @override
+  String get accountLedgerEmpty => 'Is khate mein abhi kuch nahi';
+
+  @override
+  String get journalTitle => 'Journal voucher';
+
+  @override
+  String get journalNarration => 'Kis liye (zaroori)';
+
+  @override
+  String get journalDebit => 'Debit';
+
+  @override
+  String get journalCredit => 'Credit';
+
+  @override
+  String get journalAddLine => 'Aur line';
+
+  @override
+  String get journalSave => 'Voucher save karein';
+
+  @override
+  String journalSaved(String entryNo) {
+    return 'Voucher $entryNo save ho gaya';
+  }
+
+  @override
+  String journalDifference(String amount) {
+    return 'Farq: $amount';
+  }
+
+  @override
+  String get journalBalanced => 'Dono taraf barabar';
+
+  @override
+  String get journalPickAccount => 'Khata chunein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

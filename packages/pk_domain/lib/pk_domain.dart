@@ -8,7 +8,9 @@ library;
 export 'package:pk_money/pk_money.dart';
 
 export 'src/accounting/chart_of_accounts.dart';
+export 'src/accounting/chart_view.dart';
 export 'src/accounting/day_close.dart';
+export 'src/accounting/journal_voucher.dart';
 export 'src/catalogue/barcode_key.dart';
 export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';
@@ -39,6 +41,7 @@ export 'src/ports/debit_note_writer.dart';
 export 'src/ports/draft_store.dart';
 export 'src/ports/expense_writer.dart';
 export 'src/ports/health.dart';
+export 'src/ports/journal_writer.dart';
 export 'src/ports/payment_writer.dart';
 export 'src/ports/printer.dart';
 export 'src/ports/printer_settings.dart';

@@ -19,6 +19,7 @@ export 'src/write/drift_cheque_writer.dart' show DriftChequeWriter;
 export 'src/write/drift_day_close_writer.dart';
 export 'src/write/drift_debit_note_writer.dart';
 export 'src/write/drift_expense_writer.dart';
+export 'src/write/drift_journal_writer.dart';
 export 'src/write/drift_payment_writer.dart';
 export 'src/write/drift_printer_settings.dart';
 export 'src/write/drift_purchase_return_writer.dart'
@@ -30,5 +31,6 @@ export 'src/write/drift_sale_writer.dart';
 export 'src/write/drift_staff_store.dart';
 export 'src/write/drift_void_writer.dart';
 export 'src/write/first_run.dart';
+export 'src/write/opening_entries.dart' show postMissingOpenings;
 export 'src/write/sequence_allocator.dart';
 export 'src/write/tx_runner.dart';

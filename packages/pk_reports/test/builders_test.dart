@@ -325,6 +325,53 @@ void main() {
     });
   });
 
+  group('trial balance', () {
+    test('each account on its side, and the two sides agree', () {
+      final t = trialBalance(const BusinessDate('2026-09-26'), [
+        _account('1010', 'Cash in Hand', 'asset', debit: 7000, credit: 1000),
+        _account('4100', 'Sales', 'income', credit: 5000, key: 'sales'),
+        _account('3050', 'Opening Balances', 'equity', credit: 1000),
+        _account('6100', 'Rent', 'expense', debit: 0),
+      ]);
+      expect(t.rows.first.cells, [
+        '1010',
+        'Cash in Hand',
+        const Money.rupees(6000),
+        null,
+      ]);
+      expect(t.rows, hasLength(4), reason: 'the empty account is left out');
+      expect(t.totals.single.cells.sublist(2), [
+        const Money.rupees(6000),
+        const Money.rupees(6000),
+      ]);
+      expect(t.notes.single, 'Debits and credits agree.');
+    });
+  });
+
+  group('balance sheet', () {
+    test('what the shop has equals what it owes and what is the owner\'s', () {
+      final t = balanceSheet(const BusinessDate('2026-09-26'), [
+        _account('1010', 'Cash in Hand', 'asset', debit: 6000),
+        _account('1200', 'Inventory', 'asset', debit: 3000),
+        _account('2100', 'Payables', 'liability', credit: 2000),
+        _account('3050', 'Opening Balances', 'equity', credit: 5000),
+        _account('4100', 'Sales', 'income', credit: 5000, key: 'sales'),
+        _account(
+          '5100',
+          'Cost of Goods Sold',
+          'expense',
+          debit: 3000,
+          direct: true,
+        ),
+      ]);
+      expect(_cell(t, 'Total assets'), const Money.rupees(9000));
+      expect(_cell(t, 'Total liabilities'), const Money.rupees(2000));
+      expect(_cell(t, 'Profit to date'), const Money.rupees(2000));
+      expect(t.totals.single.cells.last, const Money.rupees(9000));
+      expect(t.notes.first, startsWith('What the shop has equals'));
+    });
+  });
+
   group('periods', () {
     test('a month ends on its last day, February included', () {
       final feb = ReportPeriod.monthOf(const BusinessDate('2028-02-10'));

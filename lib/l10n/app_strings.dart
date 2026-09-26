@@ -3578,6 +3578,144 @@ abstract class AppStrings {
   /// **'Abhi kuch nahi hua'**
   String get auditEmpty;
 
+  /// No description provided for @reportTrialBalance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Trial balance'**
+  String get reportTrialBalance;
+
+  /// No description provided for @reportTrialBalanceHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har khata apni taraf, dono taraf barabar'**
+  String get reportTrialBalanceHint;
+
+  /// No description provided for @reportBalanceSheet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Balance sheet'**
+  String get reportBalanceSheet;
+
+  /// No description provided for @reportBalanceSheetHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ke paas kya hai, kis ka dena hai, malik ka kya hai'**
+  String get reportBalanceSheetHint;
+
+  /// No description provided for @homeAccounts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab kitaab'**
+  String get homeAccounts;
+
+  /// No description provided for @accountsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab kitaab'**
+  String get accountsTitle;
+
+  /// No description provided for @accountsWriteVoucher.
+  ///
+  /// In ur, this message translates to:
+  /// **'Voucher likhein'**
+  String get accountsWriteVoucher;
+
+  /// No description provided for @accountTypeAsset.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo dukaan ke paas hai'**
+  String get accountTypeAsset;
+
+  /// No description provided for @accountTypeLiability.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo dena hai'**
+  String get accountTypeLiability;
+
+  /// No description provided for @accountTypeEquity.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik ka'**
+  String get accountTypeEquity;
+
+  /// No description provided for @accountTypeIncome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aamdani'**
+  String get accountTypeIncome;
+
+  /// No description provided for @accountTypeExpense.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchay'**
+  String get accountTypeExpense;
+
+  /// No description provided for @accountLedgerEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is khate mein abhi kuch nahi'**
+  String get accountLedgerEmpty;
+
+  /// No description provided for @journalTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Journal voucher'**
+  String get journalTitle;
+
+  /// No description provided for @journalNarration.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis liye (zaroori)'**
+  String get journalNarration;
+
+  /// No description provided for @journalDebit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Debit'**
+  String get journalDebit;
+
+  /// No description provided for @journalCredit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Credit'**
+  String get journalCredit;
+
+  /// No description provided for @journalAddLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur line'**
+  String get journalAddLine;
+
+  /// No description provided for @journalSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Voucher save karein'**
+  String get journalSave;
+
+  /// No description provided for @journalSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Voucher {entryNo} save ho gaya'**
+  String journalSaved(String entryNo);
+
+  /// No description provided for @journalDifference.
+  ///
+  /// In ur, this message translates to:
+  /// **'Farq: {amount}'**
+  String journalDifference(String amount);
+
+  /// No description provided for @journalBalanced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dono taraf barabar'**
+  String get journalBalanced;
+
+  /// No description provided for @journalPickAccount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khata chunein'**
+  String get journalPickAccount;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

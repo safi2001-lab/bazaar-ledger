@@ -48,8 +48,9 @@ void main() {
       // that reads the same constant the seeder iterates says only that
       // the loop ran; empty the list and it becomes 0 == 0.
       // 38 since M6 added Cheques Issued, 39 since M7 added Goods on Challan,
-      // 40 since M9 added Cash Short and Over.
-      expect(await count('accounts'), 40);
+      // 40 since M9 added Cash Short and Over, 41 since M10 added Opening
+      // Balances.
+      expect(await count('accounts'), 41);
       // pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz.
       expect(await count('units'), 12);
       // dozen→pcs, g→kg, maund→kg, seer→kg, tola→g, ml→l, m→cm, gaz→cm.

@@ -1966,5 +1966,80 @@ class AppStringsEn extends AppStrings {
   String get auditEmpty => 'Nothing has happened yet';
 
   @override
+  String get reportTrialBalance => 'Trial balance';
+
+  @override
+  String get reportTrialBalanceHint =>
+      'Every account on its side, and the two sides agreeing';
+
+  @override
+  String get reportBalanceSheet => 'Balance sheet';
+
+  @override
+  String get reportBalanceSheetHint =>
+      'What the shop has, what it owes, and what is the owner\'s';
+
+  @override
+  String get homeAccounts => 'Accounts';
+
+  @override
+  String get accountsTitle => 'Accounts';
+
+  @override
+  String get accountsWriteVoucher => 'Write a voucher';
+
+  @override
+  String get accountTypeAsset => 'What the shop has';
+
+  @override
+  String get accountTypeLiability => 'What it owes';
+
+  @override
+  String get accountTypeEquity => 'The owner\'s';
+
+  @override
+  String get accountTypeIncome => 'Income';
+
+  @override
+  String get accountTypeExpense => 'Expenses';
+
+  @override
+  String get accountLedgerEmpty => 'Nothing posted to this account yet';
+
+  @override
+  String get journalTitle => 'Journal voucher';
+
+  @override
+  String get journalNarration => 'What it is for (required)';
+
+  @override
+  String get journalDebit => 'Debit';
+
+  @override
+  String get journalCredit => 'Credit';
+
+  @override
+  String get journalAddLine => 'Another line';
+
+  @override
+  String get journalSave => 'Save voucher';
+
+  @override
+  String journalSaved(String entryNo) {
+    return 'Voucher $entryNo saved';
+  }
+
+  @override
+  String journalDifference(String amount) {
+    return 'Difference: $amount';
+  }
+
+  @override
+  String get journalBalanced => 'Both sides agree';
+
+  @override
+  String get journalPickAccount => 'Pick an account';
+
+  @override
   String get chequeDone => 'Done';
 }

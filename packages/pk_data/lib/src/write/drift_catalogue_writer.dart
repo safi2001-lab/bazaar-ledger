@@ -1,5 +1,6 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import '../write/opening_entries.dart';
 import '../write/sequence_allocator.dart';
 import '../write/tx_runner.dart';
 
@@ -39,6 +40,12 @@ final class DriftCatalogueWriter implements CatalogueWriter {
           'occurred_on_local': actor.businessDate.value,
           'reason': 'Opening stock',
         });
+        await postOpeningStock(
+          tx,
+          itemId: itemId,
+          itemName: draft.name,
+          value: draft.openingRate.amountFor(draft.openingStock),
+        );
       }
 
       tx.audit(
@@ -131,6 +138,12 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     _validateParty(draft);
     return _runner.run(actor, (tx) async {
       final partyId = await tx.insert('parties', _partyColumns(draft, actor));
+      await postOpeningBalance(
+        tx,
+        partyId: partyId,
+        partyName: draft.name,
+        owed: draft.openingBalance,
+      );
       tx.audit(
         action: 'PARTY_CREATED',
         entityTable: 'parties',

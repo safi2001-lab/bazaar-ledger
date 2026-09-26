@@ -217,7 +217,11 @@ milestones:
 
   - id: M10
     title: Multi-firm and full accounting
-    state: planned
+    # Opened 26 Sep 2026. The double entry has been complete under every
+    # screen since M0, and nothing let anybody read it as books: no chart
+    # with balances, no trial balance, no balance sheet, no way to write the
+    # owner's own money in or out.
+    state: open
     owns:
       - lib/features/accounting/**
       - lib/features/firms/**
@@ -3608,3 +3612,64 @@ features:
     proof:
       - the activity log names who did what, newest first
       - the activity log says who did what
+
+  # ---- M10 · Multi-firm and full accounting ------------------------------
+
+  - id: M10-OPEN-01
+    milestone: M10
+    title: What the shop had on its first day is in the books
+    status: done
+    # A live defect found building the balance sheet. Opening stock was a
+    # stock-ledger row and a customer's opening balance a column on the
+    # party, and neither ever reached the journal: Inventory and Receivables
+    # in the books left them out, so no balance sheet could agree with the
+    # shelf or the khata. Each is now posted against a new equity account,
+    # Opening Balances (3050), when it is entered, and the app posts the ones
+    # entered before, once, the next time it opens.
+    proof:
+      - opening stock is in Inventory at what it cost
+      - what a customer already owed is in Receivables
+      - openings entered before are posted once, and only once
+
+  - id: M10-TB-01
+    milestone: M10
+    title: The trial balance and the balance sheet, read from the books
+    status: done
+    # Two more reports in the pack, as of today. The trial balance puts every
+    # account on its side and says the sides agree, or by how much they do
+    # not. The balance sheet sets what the shop has against what it owes and
+    # what is the owner's, with profit to date on its own line until a year
+    # is closed into capital, and says whether the two sides meet.
+    proof:
+      - trial balance each account on its side, and the two sides agree
+      - balance sheet what the shop has equals what it owes and what is the owner's
+      - the trial balance agrees and the balance sheet balances
+      - the balance sheet balances on the phone
+
+  - id: M10-JV-01
+    milestone: M10
+    title: The accountant writes a journal voucher by hand
+    status: done
+    # Capital brought in, drawings, a bank's charge, cash banked: a reason
+    # and two or more lines that agree to the paisa. Accounts with a book of
+    # their own beneath them (the khatas, the shelf, the cheque and challan
+    # accounts) are refused, by key in the builder and by id in the writer,
+    # because a hand entry there moves the total without the book under it.
+    # Owner and accountant only.
+    proof:
+      - the owner puts money into the shop, and the chart shows it
+      - a voucher that does not balance is refused
+      - a voucher cannot touch an account with a book beneath it
+      - a voucher says what it is for and has two lines
+      - a voucher moves cash from the drawer to the bank
+      - a voucher that does not agree is refused in words
+
+  - id: M10-CHART-01
+    milestone: M10
+    title: Every account with its balance, and every entry that moved one
+    status: done
+    # Hisaab kitaab on the first screen lists the chart grouped as the books
+    # group it, each balance on its own side, and opens any account on every
+    # entry that moved it with the balance after each.
+    proof:
+      - an account shows every entry that moved it

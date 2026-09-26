@@ -67,6 +67,44 @@ final class DriftReportSource implements ReportSource {
   }
 
   @override
+  Future<List<AccountMovement>> accountBalances(
+    String firmId,
+    BusinessDate asOf,
+  ) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT a.code, a.name, a.account_type, a.system_key, a.is_direct,
+                 SUM(jl.debit_paisa) AS debit, SUM(jl.credit_paisa) AS credit
+          FROM journal_lines jl
+          JOIN journal_entries je ON je.id = jl.journal_entry_id
+          JOIN accounts a ON a.id = jl.account_id
+          WHERE je.firm_id = ?1
+            AND je.entry_date_local <= ?2
+            AND je.deleted_at_utc IS NULL
+            AND jl.deleted_at_utc IS NULL
+          GROUP BY a.id
+          ORDER BY a.code
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(asOf.value)],
+          readsFrom: {_db.journalLines, _db.journalEntries, _db.accounts},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        AccountMovement(
+          code: r.read<String>('code'),
+          name: r.read<String>('name'),
+          type: r.read<String>('account_type'),
+          systemKey: r.readNullable<String>('system_key'),
+          isDirect: r.read<int>('is_direct') == 1,
+          debit: Money.paisa(r.read<int>('debit')),
+          credit: Money.paisa(r.read<int>('credit')),
+        ),
+    ];
+  }
+
+  @override
   Future<Money> cashBefore(String firmId, BusinessDate day) async {
     final row = await _db
         .customSelect(

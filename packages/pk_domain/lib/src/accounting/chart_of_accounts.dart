@@ -218,6 +218,19 @@ const List<AccountSpec> defaultChartOfAccounts = [
     type: AccountType.equity,
     normalSide: NormalSide.credit,
   ),
+  // Where what the shop already had on the day it started using the app is
+  // balanced: the goods on the shelf and what customers already owed. An
+  // accountant moves it into capital at the first year end; until then it
+  // says, on the balance sheet, exactly what it is.
+  AccountSpec(
+    code: '3050',
+    nameEn: 'Opening Balances',
+    nameUr: 'Shuru ka hisaab',
+    type: AccountType.equity,
+    normalSide: NormalSide.credit,
+    systemKey: 'opening_balances',
+    parentCode: '3000',
+  ),
   AccountSpec(
     code: '3100',
     nameEn: "Owner's Capital",

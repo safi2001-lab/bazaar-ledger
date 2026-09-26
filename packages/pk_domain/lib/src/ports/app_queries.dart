@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../accounting/chart_view.dart';
 import '../catalogue/unit_converter.dart';
 import '../cheques/cheque_lifecycle.dart';
 import '../cheques/demand_notice.dart';
@@ -551,6 +552,16 @@ abstract interface class AppQueries {
 
   /// The last time the day was closed, if it ever has been.
   Future<ActivityEntry?> lastDayClose(String firmId);
+
+  /// Every account in the chart with its balance now, by code.
+  Future<List<ChartAccount>> chartOfAccounts(String firmId);
+
+  /// Every posting to [accountId], oldest first, with the running balance.
+  Future<List<AccountLedgerLine>> accountLedger(
+    String firmId,
+    String accountId, {
+    int limit = 500,
+  });
 
   /// The cash the books say is in the drawer now.
   Future<Money> cashInDrawer(String firmId);

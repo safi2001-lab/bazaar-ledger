@@ -211,6 +211,13 @@ final class AppServices {
     return RecordReturnUseCase(writer: DriftReturnWriter(runner: _runner));
   }
 
+  PostJournalVoucherUseCase get postJournal {
+    require(Permission.journal);
+    return PostJournalVoucherUseCase(
+      writer: DriftJournalWriter(runner: _runner),
+    );
+  }
+
   CloseDayUseCase get closeDay {
     require(Permission.closeDay);
     return CloseDayUseCase(writer: DriftDayCloseWriter(runner: _runner));
@@ -276,6 +283,22 @@ final class AppServices {
     final everyone = await staffStore.staff(id.firmId);
     _signedIn = everyone.where((m) => m.id == id.userId).firstOrNull;
     _locked = everyone.any((m) => m.isActive && m.hasPin);
+  }
+
+  /// Puts into the books any opening stock or opening balance entered before
+  /// M10 posted them, once, as the owner who entered them.
+  Future<void> _postMissingOpenings() async {
+    final id = _identity;
+    if (id == null) return;
+    await _runner.run(
+      ActorContext(
+        firmId: id.firmId,
+        userId: id.userId,
+        deviceId: id.deviceId,
+        startedAtUtc: clock.nowUtc(),
+      ),
+      postMissingOpenings,
+    );
   }
 
   /// Locks the app until somebody signs in. Does nothing in a shop where
@@ -520,6 +543,7 @@ final class AppServices {
           deviceId: deviceId,
         );
         await services._resumeSession();
+        await services._postMissingOpenings();
       }
     }
 

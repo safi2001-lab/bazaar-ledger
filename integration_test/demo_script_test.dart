@@ -123,7 +123,11 @@ void main() {
 
     final balance = await _rows(
       services,
-      'SELECT SUM(debit_paisa) d, SUM(credit_paisa) c FROM journal_lines',
+      // The sale's lines: opening stock has an entry of its own since M10.
+      'SELECT SUM(jl.debit_paisa) d, SUM(jl.credit_paisa) c '
+      'FROM journal_lines jl '
+      'JOIN journal_entries je ON je.id = jl.journal_entry_id '
+      "WHERE je.source_type = 'sale'",
     );
     expect(balance.single['d'], 552500);
     expect(

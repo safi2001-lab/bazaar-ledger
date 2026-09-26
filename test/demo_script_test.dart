@@ -17,8 +17,9 @@ import 'support/harness.dart';
 /// the app's own buttons were pressed, so a checkout that shows a message and
 /// writes nothing fails here on the first assertion.
 void main() {
-  testWidgets('a shopkeeper sets up, stocks two items and rings a cash sale',
-      (tester) async {
+  testWidgets('a shopkeeper sets up, stocks two items and rings a cash sale', (
+    tester,
+  ) async {
     // ---- 1. First run -----------------------------------------------------
     final app = await Harness.start(tester);
 
@@ -72,7 +73,8 @@ void main() {
     expect(
       find.text('2 pcs'),
       findsOneWidget,
-      reason: 'a rescan is a second, and a new item defaults to pieces rather '
+      reason:
+          'a rescan is a second, and a new item defaults to pieces rather '
           'than to whatever unit happens to sort first',
     );
 
@@ -102,13 +104,11 @@ void main() {
     expect(await app.countIn('payments'), 1);
     expect(await app.countIn('payment_allocations'), 1);
 
-    final movements = await app.rowsOf(
-      '''
+    final movements = await app.rowsOf('''
       SELECT qty_delta_thousandths q FROM stock_ledger
       WHERE txn_type = 'sale'
       ORDER BY q
-      ''',
-    );
+      ''');
     expect(movements, hasLength(2), reason: 'one movement per stocked line');
     expect(
       movements.map((m) => m['q']),
@@ -117,12 +117,10 @@ void main() {
       reason: 'stock left the shop, in the item base unit',
     );
 
-    final balance = await app.rowsOf(
-      '''
+    final balance = await app.rowsOf('''
       SELECT SUM(debit_paisa) d, SUM(credit_paisa) c
       FROM journal_lines
-      ''',
-    );
+      ''');
     expect(balance.single['d'], 552500);
     expect(
       balance.single['c'],
@@ -133,27 +131,24 @@ void main() {
     // Both tables already hold rows from first run and from adding the two
     // items, so `greaterThan(0)` was true before the sale was rung. What has
     // to be true is that the SALE wrote its own.
-    final saleAudits = await app.rowsOf(
-      '''
+    final saleAudits = await app.rowsOf('''
       SELECT action_code FROM audit_log
       WHERE entity_table = 'documents'
-      ''',
-    );
+      ''');
     expect(saleAudits, hasLength(1));
     expect(saleAudits.single['action_code'], 'SALE_POSTED');
 
-    final saleOutbox = await app.rowsOf(
-      '''
+    final saleOutbox = await app.rowsOf('''
       SELECT entity_table FROM change_log
       WHERE entity_table IN ('documents', 'document_lines', 'payments',
                              'payment_allocations', 'journal_entries',
                              'journal_lines', 'stock_ledger')
-      ''',
-    );
+      ''');
     expect(
       saleOutbox.length,
       greaterThanOrEqualTo(10),
-      reason: 'every row the sale wrote is offered to the next counter: '
+      reason:
+          'every row the sale wrote is offered to the next counter: '
           'one document, two lines, one payment, one allocation, one entry, '
           'its lines, and two stock movements',
     );
@@ -176,12 +171,10 @@ void main() {
     // been archived, so the failure happens partway through the transaction —
     // after the document row, after the lines, after the invoice number has
     // been drawn.
-    await app.services.database.customStatement(
-      '''
+    await app.services.database.customStatement('''
       UPDATE accounts SET deleted_at_utc = 1
       WHERE id IN (SELECT ledger_account_id FROM payment_accounts)
-      ''',
-    );
+      ''');
 
     await tapButton(tester, 'Paisay lein');
     await tapButton(tester, 'Save karein');
@@ -192,8 +185,6 @@ void main() {
       'document_line_taxes',
       'payments',
       'payment_allocations',
-      'journal_entries',
-      'journal_lines',
     ]) {
       expect(
         await app.countIn(table),
@@ -201,14 +192,30 @@ void main() {
         reason: '$table must be empty after a failed post',
       );
     }
-
+    // Since M10 the harness's opening stock has an entry of its own; the
+    // failed sale must have added nothing beside it.
     expect(
       await app.scalar<int>(
-        '''
+        "SELECT COUNT(*) FROM journal_entries WHERE source_type <> 'opening'",
+      ),
+      0,
+      reason: 'journal_entries must hold no sale after a failed post',
+    );
+    expect(
+      await app.scalar<int>(
+        'SELECT COUNT(*) FROM journal_lines jl '
+        'JOIN journal_entries je ON je.id = jl.journal_entry_id '
+        "WHERE je.source_type <> 'opening'",
+      ),
+      0,
+      reason: 'journal_lines must hold no sale after a failed post',
+    );
+
+    expect(
+      await app.scalar<int>('''
         SELECT next_value FROM numbering_sequences
         WHERE doc_type = 'sale_invoice'
-        ''',
-      ),
+        '''),
       1,
       reason: 'a rolled-back sale must not burn an invoice number',
     );

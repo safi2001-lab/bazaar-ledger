@@ -1118,5 +1118,42 @@
   "auditTitle": "Kaun ne kya kiya",
   "auditEveryone": "Sab",
   "auditEmpty": "Abhi kuch nahi hua",
+  "reportTrialBalance": "Trial balance",
+  "reportTrialBalanceHint": "Har khata apni taraf, dono taraf barabar",
+  "reportBalanceSheet": "Balance sheet",
+  "reportBalanceSheetHint": "Dukaan ke paas kya hai, kis ka dena hai, malik ka kya hai",
+  "homeAccounts": "Hisaab kitaab",
+  "accountsTitle": "Hisaab kitaab",
+  "accountsWriteVoucher": "Voucher likhein",
+  "accountTypeAsset": "Jo dukaan ke paas hai",
+  "accountTypeLiability": "Jo dena hai",
+  "accountTypeEquity": "Malik ka",
+  "accountTypeIncome": "Aamdani",
+  "accountTypeExpense": "Kharchay",
+  "accountLedgerEmpty": "Is khate mein abhi kuch nahi",
+  "journalTitle": "Journal voucher",
+  "journalNarration": "Kis liye (zaroori)",
+  "journalDebit": "Debit",
+  "journalCredit": "Credit",
+  "journalAddLine": "Aur line",
+  "journalSave": "Voucher save karein",
+  "journalSaved": "Voucher {entryNo} save ho gaya",
+  "@journalSaved": {
+    "placeholders": {
+      "entryNo": {
+        "type": "String"
+      }
+    }
+  },
+  "journalDifference": "Farq: {amount}",
+  "@journalDifference": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "journalBalanced": "Dono taraf barabar",
+  "journalPickAccount": "Khata chunein",
   "chequeDone": "Ho gaya"
 }

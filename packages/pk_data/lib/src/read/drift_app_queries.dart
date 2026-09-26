@@ -970,6 +970,83 @@ final class DriftAppQueries implements AppQueries {
   );
 
   @override
+  Future<List<ChartAccount>> chartOfAccounts(String firmId) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT a.id, a.code, a.name, a.account_type, a.system_key,
+                 COALESCE((SELECT SUM(jl.debit_paisa - jl.credit_paisa)
+                             FROM journal_lines jl
+                            WHERE jl.account_id = a.id
+                              AND jl.deleted_at_utc IS NULL), 0) AS balance
+          FROM accounts a
+          WHERE a.firm_id = ? AND a.deleted_at_utc IS NULL AND a.is_active = 1
+          ORDER BY a.code
+          ''',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.accounts, _db.journalLines},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        ChartAccount(
+          id: r.read<String>('id'),
+          code: r.read<String>('code'),
+          name: r.read<String>('name'),
+          type: r.read<String>('account_type'),
+          systemKey: r.readNullable<String>('system_key'),
+          balance: Money.paisa(r.read<int>('balance')),
+        ),
+    ];
+  }
+
+  @override
+  Future<List<AccountLedgerLine>> accountLedger(
+    String firmId,
+    String accountId, {
+    int limit = 500,
+  }) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT je.entry_date_local, je.entry_no,
+                 COALESCE(jl.narration, je.narration, '') AS narration,
+                 jl.debit_paisa, jl.credit_paisa
+          FROM journal_lines jl
+          JOIN journal_entries je ON je.id = jl.journal_entry_id
+          WHERE jl.account_id = ?1 AND je.firm_id = ?2
+            AND jl.deleted_at_utc IS NULL AND je.deleted_at_utc IS NULL
+          ORDER BY je.entry_date_local, je.created_at_utc, je.id, jl.line_no
+          LIMIT ?3
+          ''',
+          variables: [
+            Variable<String>(accountId),
+            Variable<String>(firmId),
+            Variable<int>(limit),
+          ],
+          readsFrom: {_db.journalLines, _db.journalEntries},
+        )
+        .get();
+    var running = Money.zero;
+    return [
+      for (final r in rows)
+        () {
+          final debit = Money.paisa(r.read<int>('debit_paisa'));
+          final credit = Money.paisa(r.read<int>('credit_paisa'));
+          running = running + debit - credit;
+          return AccountLedgerLine(
+            date: BusinessDate(r.read<String>('entry_date_local')),
+            entryNo: r.read<String>('entry_no'),
+            narration: r.read<String>('narration'),
+            debit: debit,
+            credit: credit,
+            balanceAfter: running,
+          );
+        }(),
+    ];
+  }
+
+  @override
   Future<Money> cashInDrawer(String firmId) async {
     final row = await _db
         .customSelect(

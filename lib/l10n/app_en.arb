@@ -1039,5 +1039,42 @@
   "auditTitle": "Activity",
   "auditEveryone": "Everyone",
   "auditEmpty": "Nothing has happened yet",
+  "reportTrialBalance": "Trial balance",
+  "reportTrialBalanceHint": "Every account on its side, and the two sides agreeing",
+  "reportBalanceSheet": "Balance sheet",
+  "reportBalanceSheetHint": "What the shop has, what it owes, and what is the owner's",
+  "homeAccounts": "Accounts",
+  "accountsTitle": "Accounts",
+  "accountsWriteVoucher": "Write a voucher",
+  "accountTypeAsset": "What the shop has",
+  "accountTypeLiability": "What it owes",
+  "accountTypeEquity": "The owner's",
+  "accountTypeIncome": "Income",
+  "accountTypeExpense": "Expenses",
+  "accountLedgerEmpty": "Nothing posted to this account yet",
+  "journalTitle": "Journal voucher",
+  "journalNarration": "What it is for (required)",
+  "journalDebit": "Debit",
+  "journalCredit": "Credit",
+  "journalAddLine": "Another line",
+  "journalSave": "Save voucher",
+  "journalSaved": "Voucher {entryNo} saved",
+  "@journalSaved": {
+    "placeholders": {
+      "entryNo": {
+        "type": "String"
+      }
+    }
+  },
+  "journalDifference": "Difference: {amount}",
+  "@journalDifference": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "journalBalanced": "Both sides agree",
+  "journalPickAccount": "Pick an account",
   "chequeDone": "Done"
 }

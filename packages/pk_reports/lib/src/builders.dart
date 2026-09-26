@@ -478,3 +478,120 @@ const _openingHasNoDate =
 const _advanceComesOff =
     'Advance is money the shop is holding for the customer, and comes off '
     'what they owe.';
+
+/// The trial balance on [asOf]: every account's balance on the side it
+/// falls, and the two sides summed. They agree, because every entry the
+/// app writes is proved to balance before it commits; the report says so,
+/// or says by how much they do not.
+ReportTable trialBalance(BusinessDate asOf, List<AccountMovement> accounts) {
+  final rows = _byCode(accounts.where((a) => !a.net.isZero));
+  final debits = Money.sum([
+    for (final a in rows)
+      if (a.net.isPositive) a.net,
+  ]);
+  final credits = Money.sum([
+    for (final a in rows)
+      if (a.net.isNegative) -a.net,
+  ]);
+  return ReportTable(
+    id: 'trial_balance',
+    title: 'Trial Balance',
+    period: ReportPeriod.day(asOf),
+    columns: const [
+      ReportColumn('Code', CellKind.text),
+      ReportColumn('Account', CellKind.text),
+      ReportColumn('Debit', CellKind.money),
+      ReportColumn('Credit', CellKind.money),
+    ],
+    rows: [
+      for (final a in rows)
+        ReportRow([
+          a.code,
+          a.name,
+          a.net.isPositive ? a.net : null,
+          a.net.isNegative ? -a.net : null,
+        ]),
+      ReportRow(['', 'Total', debits, credits], style: RowStyle.total),
+    ],
+    notes: [
+      if (debits == credits)
+        'Debits and credits agree.'
+      else
+        _sidesDiffer('Debits and credits', debits - credits),
+    ],
+  );
+}
+
+/// The balance sheet on [asOf]: what the shop has, what it owes, and what
+/// is the owner's, with the profit earned so far shown as its own line
+/// until a year is closed into the owner's capital.
+ReportTable balanceSheet(BusinessDate asOf, List<AccountMovement> accounts) {
+  final assets = _byCode(
+    accounts.where((a) => a.type == 'asset' && !a.net.isZero),
+  );
+  final liabilities = _byCode(
+    accounts.where((a) => a.type == 'liability' && !a.net.isZero),
+  );
+  final equity = _byCode(
+    accounts.where((a) => a.type == 'equity' && !a.net.isZero),
+  );
+  final profit =
+      Money.sum([
+        for (final a in accounts)
+          if (a.type == 'income') -a.net,
+      ]) -
+      Money.sum([
+        for (final a in accounts)
+          if (a.type == 'expense') a.net,
+      ]);
+
+  final totalAssets = Money.sum(assets.map((a) => a.net));
+  final totalLiabilities = Money.sum(liabilities.map((a) => -a.net));
+  final totalEquity = Money.sum(equity.map((a) => -a.net)) + profit;
+  final gap = totalAssets - totalLiabilities - totalEquity;
+
+  const width = 2;
+  return ReportTable(
+    id: 'balance_sheet',
+    title: 'Balance Sheet',
+    period: ReportPeriod.day(asOf),
+    columns: const [
+      ReportColumn('Account', CellKind.text),
+      ReportColumn('Amount', CellKind.money),
+    ],
+    rows: [
+      ReportRow.heading('Assets', width),
+      for (final a in assets) ReportRow([a.name, a.net]),
+      ReportRow(['Total assets', totalAssets], style: RowStyle.subtotal),
+      ReportRow.heading('Liabilities', width),
+      for (final a in liabilities) ReportRow([a.name, -a.net]),
+      ReportRow([
+        'Total liabilities',
+        totalLiabilities,
+      ], style: RowStyle.subtotal),
+      ReportRow.heading("Owner's equity", width),
+      for (final a in equity) ReportRow([a.name, -a.net]),
+      ReportRow(['Profit to date', profit]),
+      ReportRow(['Total equity', totalEquity], style: RowStyle.subtotal),
+      ReportRow([
+        'Total liabilities and equity',
+        totalLiabilities + totalEquity,
+      ], style: RowStyle.total),
+    ],
+    notes: [
+      if (gap.isZero)
+        "What the shop has equals what it owes plus what is the owner's."
+      else
+        _sidesDiffer('The two sides', gap),
+      _profitToDate,
+    ],
+  );
+}
+
+const _profitToDate =
+    'Profit to date is every sale less every cost since the books began, '
+    "until a year is closed into the owner's capital.";
+
+String _sidesDiffer(String what, Money by) =>
+    '$what differ by Rs ${by.abs.amountOnly}. Run the data health check in '
+    'Settings.';

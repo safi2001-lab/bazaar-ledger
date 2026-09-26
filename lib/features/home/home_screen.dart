@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../accounting/accounts_screen.dart';
 import '../cheques/cheques_screen.dart';
 import '../day_close/day_close_screen.dart';
 import '../documents/quotations_screen.dart';
@@ -152,6 +153,14 @@ class HomeScreen extends ConsumerWidget {
                       label: s.homeReports,
                       icon: Icons.bar_chart_outlined,
                       onTap: () => _open(context, const ReportsScreen()),
+                    ),
+                  // The books themselves: every account, its entries, and
+                  // the vouchers an accountant writes by hand.
+                  if (services.can(Permission.reports))
+                    _NavTile(
+                      label: s.homeAccounts,
+                      icon: Icons.account_tree_outlined,
+                      onTap: () => _open(context, const AccountsScreen()),
                     ),
                   // The evening count of the golak against the books.
                   if (services.can(Permission.closeDay))
