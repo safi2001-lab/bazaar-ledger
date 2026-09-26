@@ -2,6 +2,8 @@ import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
+import '../write/drift_cheque_writer.dart'
+    show chequeInHandFrom, chequeInHandSelect;
 import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
 
@@ -320,7 +322,7 @@ final class DriftAppQueries implements AppQueries {
                    d.doc_no AS reference,
                    d.doc_date_local AS date_local,
                    d.total_paisa AS amount_paisa,
-                   d.doc_seq AS seq
+                   d.created_at_utc AS recorded
             FROM documents d
             WHERE d.firm_id = ? AND d.party_id = ?
               AND d.doc_type = 'sale_invoice'
@@ -334,14 +336,39 @@ final class DriftAppQueries implements AppQueries {
                    p.payment_no AS reference,
                    p.payment_date_local AS date_local,
                    -p.amount_paisa AS amount_paisa,
-                   0 AS seq
+                   p.created_at_utc AS recorded
             FROM payments p
             WHERE p.firm_id = ? AND p.party_id = ?
               AND p.direction = 'in'
               AND p.status <> 'void'
               AND p.deleted_at_utc IS NULL
+
+            UNION ALL
+
+            -- A cheque that bounced. The payment above stays on the khata as
+            -- what happened, and this puts the money back as what happened
+            -- next, on the day it happened; the two together net to nothing.
+            -- Dropping the payment instead would leave the customer asking
+            -- where the cheque they remember handing over has gone.
+            SELECT je.id AS id,
+                   'bounce' AS kind,
+                   p.payment_no AS reference,
+                   je.entry_date_local AS date_local,
+                   p.amount_paisa AS amount_paisa,
+                   je.created_at_utc AS recorded
+            FROM journal_entries je
+            JOIN payments p ON p.id = je.payment_id
+            WHERE p.firm_id = ? AND p.party_id = ?
+              AND p.direction = 'in'
+              AND p.status = 'bounced'
+              AND je.source_type = 'reversal'
+              AND je.deleted_at_utc IS NULL
           )
-          ORDER BY date_local, seq, id
+          -- Within a day, in the order things were recorded. Sorting by a
+          -- per-type sequence put every payment ahead of the bill it paid on
+          -- the same day, so the running balance showed the customer in
+          -- credit for one line before the bill caught up.
+          ORDER BY date_local, recorded, id
           LIMIT ?
           ''',
           variables: [
@@ -349,9 +376,11 @@ final class DriftAppQueries implements AppQueries {
             Variable<String>(partyId),
             Variable<String>(firmId),
             Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<String>(partyId),
             Variable<int>(limit),
           ],
-          readsFrom: {_db.documents, _db.payments},
+          readsFrom: {_db.documents, _db.payments, _db.journalEntries},
         )
         .get();
 
@@ -833,6 +862,63 @@ final class DriftAppQueries implements AppQueries {
           avg: Rate.raw(r.read<int>('avg_cost_milli_paisa')),
         ),
     };
+  }
+
+  @override
+  Future<List<ChequeInHand>> chequesInHand(String firmId) async {
+    // The writer's own select, so "in hand" means one thing. A cheque with no
+    // date — taken before M6 asked for one — sorts last rather than first.
+    final rows = await _db
+        .customSelect(
+          '$chequeInHandSelect AND p.firm_id = ? '
+          'ORDER BY p.cheque_date_utc IS NULL, p.cheque_date_utc, '
+          '         p.payment_no',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.payments, _db.parties},
+        )
+        .get();
+    return [for (final r in rows) chequeInHandFrom(r)];
+  }
+
+  @override
+  Future<List<BouncedCheque>> bouncedCheques(
+    String firmId, {
+    int limit = 50,
+  }) async {
+    // The bounce date is the reversal entry's, found by the payment it points
+    // at — a date the payment row itself does not carry.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT p.id, p.party_id, pa.name AS party_name, p.amount_paisa,
+                 p.cheque_no, p.cheque_bank,
+                 (SELECT MIN(je.entry_date_local) FROM journal_entries je
+                  WHERE je.payment_id = p.id
+                    AND je.source_type = 'reversal'
+                    AND je.deleted_at_utc IS NULL) AS bounced_on
+          FROM payments p
+          JOIN parties pa ON pa.id = p.party_id
+          WHERE p.firm_id = ? AND p.mode = 'cheque' AND p.status = 'bounced'
+            AND p.deleted_at_utc IS NULL
+          ORDER BY bounced_on DESC, p.payment_no DESC
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+          readsFrom: {_db.payments, _db.parties, _db.journalEntries},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        BouncedCheque(
+          paymentId: r.read<String>('id'),
+          partyId: r.read<String>('party_id'),
+          partyName: r.read<String>('party_name'),
+          amount: Money.paisa(r.read<int>('amount_paisa')),
+          chequeNo: r.read<String>('cheque_no'),
+          bank: r.readNullable<String>('cheque_bank'),
+          bouncedOn: BusinessDate(r.read<String>('bounced_on')),
+        ),
+    ];
   }
 
   @override

@@ -1,10 +1,12 @@
 import 'package:pk_money/pk_money.dart';
 
 import '../catalogue/unit_converter.dart';
+import '../cheques/cheque_lifecycle.dart';
 import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
+import '../time/clock.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
 
@@ -111,6 +113,30 @@ final class ItemSummary {
 
   bool get isLowOnStock =>
       tracksStock && !minStock.isZero && stockOnHand <= minStock;
+}
+
+/// A cheque the bank returned, and what the shop has to do about it.
+final class BouncedCheque {
+  const BouncedCheque({
+    required this.paymentId,
+    required this.partyId,
+    required this.partyName,
+    required this.amount,
+    required this.chequeNo,
+    required this.bouncedOn,
+    this.bank,
+  });
+
+  final String paymentId;
+  final String partyId;
+  final String partyName;
+  final Money amount;
+  final String chequeNo;
+  final String? bank;
+  final BusinessDate bouncedOn;
+
+  /// The last day to serve the Section 489-F notice.
+  BusinessDate get noticeBy => bouncedOn.addDays(noticeDaysAfterBounce);
 }
 
 /// One delivery, as the purchases list shows it.
@@ -484,6 +510,13 @@ abstract interface class AppQueries {
     String firmId,
     String documentId,
   );
+
+  /// Cheques the shop is holding, soonest due first. Deposited ones included:
+  /// they are still not money until the bank says so.
+  Future<List<ChequeInHand>> chequesInHand(String firmId);
+
+  /// Cheques the bank returned, most recent first.
+  Future<List<BouncedCheque>> bouncedCheques(String firmId, {int limit = 50});
 
   /// Deliveries, newest first.
   Future<List<PurchaseListRow>> recentPurchases(
