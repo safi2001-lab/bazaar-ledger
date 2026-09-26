@@ -812,5 +812,32 @@
       }
     }
   },
+  "payByCheque": "Paid by cheque",
+  "payChequeDrawnOn": "Drawn on which bank account",
+  "chequesIssued": "Cheques we wrote",
+  "chequeIssuedPresentable": "Can be presented",
+  "chequeIssuedPaid": "Paid by the bank",
+  "chequeIssuedBounceWarning": "{amount} will be owed to {name} again.",
+  "@chequeIssuedBounceWarning": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "homeChequesIssuedDue": "Rs {amount} of our cheques can be presented within {days} days — keep it in the bank",
+  "@homeChequesIssuedDue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "days": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

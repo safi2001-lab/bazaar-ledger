@@ -20,7 +20,7 @@ class ChequeFields extends StatelessWidget {
   const ChequeFields({
     super.key,
     required this.number,
-    required this.bank,
+    this.bank,
     required this.today,
     required this.due,
     required this.onDueChanged,
@@ -28,7 +28,10 @@ class ChequeFields extends StatelessWidget {
   });
 
   final TextEditingController number;
-  final TextEditingController bank;
+
+  /// Null for a cheque the shop writes itself: the bank is the account it
+  /// is drawn on, already chosen.
+  final TextEditingController? bank;
 
   /// The shop's business date now. Due dates are offered relative to it.
   final BusinessDate today;
@@ -52,8 +55,10 @@ class ChequeFields extends StatelessWidget {
           label: s.wasooliChequeNo,
           onChanged: (_) => onChanged?.call(),
         ),
-        const SizedBox(height: BlTokens.space2),
-        BlField(controller: bank, label: s.wasooliChequeBank),
+        if (bank case final bank?) ...[
+          const SizedBox(height: BlTokens.space2),
+          BlField(controller: bank, label: s.wasooliChequeBank),
+        ],
         const SizedBox(height: BlTokens.space3),
         Text(s.chequeDue, style: TextStyle(fontSize: 13, color: t.inkMuted)),
         const SizedBox(height: BlTokens.space2),

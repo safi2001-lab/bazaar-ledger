@@ -24,6 +24,17 @@ final chequesInHandProvider = FutureProvider.autoDispose<List<ChequeInHand>>((
   return services.queries.chequesInHand(firm.id);
 });
 
+/// Cheques the shop wrote that the bank has not yet paid, soonest first.
+final chequesIssuedProvider = FutureProvider.autoDispose<List<IssuedCheque>>((
+  ref,
+) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return const [];
+  return services.queries.chequesIssued(firm.id);
+});
+
 /// Cheques the bank returned, most recent first.
 final bouncedChequesProvider = FutureProvider.autoDispose<List<BouncedCheque>>((
   ref,
@@ -52,6 +63,7 @@ class ChequesScreen extends ConsumerWidget {
     final t = context.bl;
     final inHand = ref.watch(chequesInHandProvider);
     final bounced = ref.watch(bouncedChequesProvider).valueOrNull ?? const [];
+    final issued = ref.watch(chequesIssuedProvider).valueOrNull ?? const [];
     final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
 
     return Scaffold(
@@ -89,6 +101,19 @@ class ChequesScreen extends ConsumerWidget {
                       ],
                     ),
             ),
+            // The other side of the drawer: the shop's own cheques, which
+            // the supplier can present from their date, and which need the
+            // money in the bank when they are.
+            if (issued.isNotEmpty) ...[
+              const SizedBox(height: BlTokens.space5),
+              BlSectionHeader(s.chequesIssued),
+              const SizedBox(height: BlTokens.space2),
+              for (final c in issued)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: BlTokens.space2),
+                  child: _IssuedTile(cheque: c, today: today),
+                ),
+            ],
             if (bounced.isNotEmpty) ...[
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.chequesBounced),
@@ -227,6 +252,219 @@ class _BouncedTile extends StatelessWidget {
           const SizedBox(width: BlTokens.space2),
           BlMoney(cheque.amount, size: 16, colour: t.danger),
         ],
+      ),
+    );
+  }
+}
+
+class _IssuedTile extends StatelessWidget {
+  const _IssuedTile({required this.cheque, required this.today});
+
+  final IssuedCheque cheque;
+  final BusinessDate today;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final due = cheque.due;
+    final days = due == null ? null : daysUntil(today, due);
+
+    final (String label, BlChipTone tone) = switch (days) {
+      null => (s.chequeNoDate, BlChipTone.neutral),
+      <= 0 => (s.chequeIssuedPresentable, BlChipTone.warn),
+      _ => (s.chequeDueInChip('$days'), BlChipTone.neutral),
+    };
+
+    return BlCard(
+      onTap: () => unawaited(
+        showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          builder: (_) => _IssuedActions(cheque: cheque),
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  cheque.partyName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: t.ink,
+                  ),
+                ),
+                Text(
+                  [
+                    cheque.chequeNo,
+                    cheque.bankAccountName,
+                    if (due != null) due.value,
+                  ].join(' · '),
+                  style: TextStyle(fontSize: 12, color: t.inkMuted),
+                ),
+                const SizedBox(height: BlTokens.space1),
+                BlChip(label, tone: tone),
+              ],
+            ),
+          ),
+          const SizedBox(width: BlTokens.space2),
+          BlMoney(cheque.amount, size: 16),
+        ],
+      ),
+    );
+  }
+}
+
+/// A cheque the shop wrote: paid by the bank, or returned.
+class _IssuedActions extends ConsumerStatefulWidget {
+  const _IssuedActions({required this.cheque});
+
+  final IssuedCheque cheque;
+
+  @override
+  ConsumerState<_IssuedActions> createState() => _IssuedActionsState();
+}
+
+class _IssuedActionsState extends ConsumerState<_IssuedActions> {
+  final _reason = TextEditingController();
+  bool _bouncing = false;
+  bool _busy = false;
+  String? _failure;
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    super.dispose();
+  }
+
+  Future<void> _run(
+    Future<void> Function(MoveChequeUseCase cheques, ActorContext actor) step,
+  ) async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    final services = ref.read(appServicesProvider);
+    final container = ProviderScope.containerOf(context, listen: false);
+    final navigator = Navigator.of(context);
+    try {
+      await step(services.cheques, services.actorNow());
+      container.bumpRefresh();
+      navigator.pop();
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _failure = error is ChequeRefused ? error.reason : '$error';
+        });
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final cheque = widget.cheque;
+    final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
+    final due = cheque.isDueBy(today);
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: BlTokens.space4,
+        right: BlTokens.space4,
+        top: BlTokens.space4,
+        bottom:
+            MediaQuery.viewInsetsOf(context).bottom +
+            MediaQuery.viewPaddingOf(context).bottom +
+            BlTokens.space4,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              cheque.partyName,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: t.ink,
+              ),
+            ),
+            Text(
+              '${cheque.chequeNo} · ${cheque.bankAccountName} · '
+              '${cheque.amount.amountOnly}',
+              style: TextStyle(fontSize: 14, color: t.inkMuted),
+            ),
+            const SizedBox(height: BlTokens.space4),
+            if (!_bouncing) ...[
+              if (!due) ...[
+                BlOfflineNote(message: s.chequeNotYet(cheque.due!.value)),
+                const SizedBox(height: BlTokens.space3),
+              ],
+              BlButton(
+                label: s.chequeIssuedPaid,
+                icon: Icons.check_circle_outline,
+                busy: _busy,
+                onPressed: _busy || !due
+                    ? null
+                    : () => unawaited(
+                        _run((c, a) => c.clearIssued(a, cheque.paymentId)),
+                      ),
+              ),
+              const SizedBox(height: BlTokens.space2),
+              BlButton(
+                label: s.chequeBounce,
+                icon: Icons.report_gmailerrorred_outlined,
+                kind: BlButtonKind.danger,
+                onPressed: _busy
+                    ? null
+                    : () => setState(() => _bouncing = true),
+              ),
+            ] else ...[
+              BlOfflineNote(
+                message: s.chequeIssuedBounceWarning(
+                  cheque.amount.amountOnly,
+                  cheque.partyName,
+                ),
+              ),
+              const SizedBox(height: BlTokens.space3),
+              BlField(controller: _reason, label: s.chequeBounceReason),
+              const SizedBox(height: BlTokens.space4),
+              BlButton(
+                label: s.chequeBounce,
+                icon: Icons.report_gmailerrorred_outlined,
+                kind: BlButtonKind.danger,
+                big: true,
+                busy: _busy,
+                onPressed: _busy
+                    ? null
+                    : () => unawaited(
+                        _run(
+                          (c, a) => c.bounceIssued(
+                            a,
+                            cheque.paymentId,
+                            reason: _reason.text,
+                          ),
+                        ),
+                      ),
+              ),
+            ],
+            if (_failure != null) ...[
+              const SizedBox(height: BlTokens.space3),
+              Text(_failure!, style: TextStyle(color: t.danger, fontSize: 14)),
+            ],
+          ],
+        ),
       ),
     );
   }

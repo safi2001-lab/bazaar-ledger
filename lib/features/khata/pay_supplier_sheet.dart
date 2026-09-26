@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../cheques/cheque_fields.dart';
 import 'khata_providers.dart';
 
 /// Paying a supplier against what the shop owes them.
@@ -42,8 +43,15 @@ class _PaySupplierSheet extends ConsumerStatefulWidget {
 class _SheetState extends ConsumerState<_PaySupplierSheet> {
   final _amount = TextEditingController();
   final _reference = TextEditingController();
+  final _chequeNo = TextEditingController();
 
   String? _accountId;
+
+  /// Paid by a cheque drawn on one of the shop's bank accounts.
+  bool _byCheque = false;
+
+  /// The day the supplier can present it. Today until the shopkeeper says.
+  BusinessDate? _due;
   bool _busy = false;
   String? _error;
 
@@ -61,6 +69,7 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
   void dispose() {
     _amount.dispose();
     _reference.dispose();
+    _chequeNo.dispose();
     super.dispose();
   }
 
@@ -92,6 +101,11 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
       setState(() => _error = s.tenderNoAccount);
       return;
     }
+    if (_byCheque && _chequeNo.text.trim().isEmpty) {
+      setState(() => _error = s.wasooliChequeNoRequired);
+      return;
+    }
+    final due = _due ?? BusinessDate.now(ref.read(appServicesProvider).clock);
 
     setState(() {
       _busy = true;
@@ -106,11 +120,13 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
         SupplierPaymentDraft(
           partyId: widget.party.id,
           amount: _entered,
-          mode: account.modeLabel,
+          mode: _byCheque ? 'cheque' : account.modeLabel,
           paymentAccountId: account.id,
           reference: _reference.text.trim().isEmpty
               ? null
               : _reference.text.trim(),
+          chequeNo: _byCheque ? _chequeNo.text.trim() : null,
+          chequeDateUtcMillis: _byCheque ? chequeDueUtcMillis(due) : null,
         ),
       );
       container.bumpRefresh();
@@ -135,13 +151,17 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
     final bills = ref.watch(openPayablesProvider(widget.party.id));
     final accounts = ref.watch(paymentAccountsProvider);
 
-    // Every account except the cheque one: a cheque the shop writes is a
-    // post-dated liability, and paying from Cheques in Hand is endorsing a
-    // customer's paper over. Both are the M6 lifecycle's to record.
+    // Every account except the cheque one: paying from Cheques in Hand is
+    // endorsing a customer's paper over, which is not this. A cheque the
+    // shop writes is drawn on one of its bank accounts, so with Cheque on
+    // only those are offered.
     final available = [
       for (final a in accounts.valueOrNull ?? const <PaymentAccountSummary>[])
-        if (a.modeLabel != 'cheque') a,
+        if (a.modeLabel != 'cheque' &&
+            (!_byCheque || a.modeLabel == 'bank_transfer'))
+          a,
     ];
+    final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
     final account = available.isEmpty
         ? null
         : available.firstWhere(
@@ -187,9 +207,19 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
               autofocus: true,
               onChanged: (_) => setState(() => _error = null),
             ),
-            const SizedBox(height: BlTokens.space3),
+            const SizedBox(height: BlTokens.space2),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(s.payByCheque),
+              value: _byCheque,
+              onChanged: (on) => setState(() {
+                _byCheque = on;
+                _accountId = null;
+                _error = null;
+              }),
+            ),
             Text(
-              s.expensePaidFrom,
+              _byCheque ? s.payChequeDrawnOn : s.expensePaidFrom,
               style: TextStyle(fontSize: 13, color: t.inkMuted),
             ),
             const SizedBox(height: BlTokens.space2),
@@ -208,6 +238,16 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
                   ),
               ],
             ),
+            if (_byCheque) ...[
+              const SizedBox(height: BlTokens.space3),
+              ChequeFields(
+                number: _chequeNo,
+                today: today,
+                due: _due ?? today,
+                onDueChanged: (d) => setState(() => _due = d),
+                onChanged: () => setState(() => _error = null),
+              ),
+            ],
             const SizedBox(height: BlTokens.space3),
             BlField(controller: _reference, label: s.wasooliReference),
             const SizedBox(height: BlTokens.space4),

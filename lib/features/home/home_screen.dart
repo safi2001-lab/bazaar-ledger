@@ -323,15 +323,29 @@ class _NavGrid extends StatelessWidget {
 ///
 /// Its own provider rather than the drawer's list, so the drawer still reads
 /// afresh each time it is opened instead of inheriting the home screen's copy.
-final _chequesDueProvider = FutureProvider.autoDispose<int>((ref) async {
-  ref.watch(refreshTickProvider);
-  final services = ref.watch(appServicesProvider);
-  final firm = await ref.watch(firmProvider.future);
-  if (firm == null) return 0;
-  final today = BusinessDate.now(services.clock);
-  final inHand = await services.queries.chequesInHand(firm.id);
-  return inHand.where((c) => !c.deposited && c.isDueBy(today)).length;
-});
+final _chequesDueProvider =
+    FutureProvider.autoDispose<({int toBank, Money ours})>((ref) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return (toBank: 0, ours: Money.zero);
+      final today = BusinessDate.now(services.clock);
+      final inHand = await services.queries.chequesInHand(firm.id);
+      final issued = await services.queries.chequesIssued(firm.id);
+      return (
+        toBank: inHand.where((c) => !c.deposited && c.isDueBy(today)).length,
+        // The shop's own cheques a supplier can present within the next few
+        // days, and what the bank needs to hold for them.
+        ours: Money.sum([
+          for (final c in issued)
+            if (c.isDueBy(today.addDays(_oursWarningDays))) c.amount,
+        ]),
+      );
+    });
+
+/// How far ahead the shop is warned about its own cheques: long enough to
+/// move money into the account, short enough not to cry wolf.
+const _oursWarningDays = 3;
 
 /// Cheques whose day has come, said on the first screen of the morning.
 ///
@@ -346,20 +360,20 @@ class _ChequesDue extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final due = ref.watch(_chequesDueProvider).valueOrNull ?? 0;
-    if (due == 0) return const SizedBox.shrink();
+    final due = ref.watch(_chequesDueProvider).valueOrNull;
+    if (due == null) return const SizedBox.shrink();
 
-    return Padding(
+    Widget line(String text, Color colour) => Padding(
       padding: const EdgeInsets.only(top: BlTokens.space3),
       child: BlCard(
         onTap: () => HomeScreen._open(context, const ChequesScreen()),
         child: Row(
           children: [
-            Icon(Icons.notifications_active_outlined, color: t.warning),
+            Icon(Icons.notifications_active_outlined, color: colour),
             const SizedBox(width: BlTokens.space3),
             Expanded(
               child: Text(
-                s.homeChequesDue(due),
+                text,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
@@ -371,6 +385,18 @@ class _ChequesDue extends ConsumerWidget {
           ],
         ),
       ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (due.toBank > 0) line(s.homeChequesDue(due.toBank), t.warning),
+        if (due.ours.isPositive)
+          line(
+            s.homeChequesIssuedDue(due.ours.amountOnly, '$_oursWarningDays'),
+            t.danger,
+          ),
+      ],
     );
   }
 }

@@ -2876,6 +2876,48 @@ abstract class AppStrings {
   /// **'Bounce save ho gaya, lekin bank fee save nahi hui: {error}'**
   String chequeBounceFeeFailed(String error);
 
+  /// No description provided for @payByCheque.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque se diya'**
+  String get payByCheque;
+
+  /// No description provided for @payChequeDrawnOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis bank account ka cheque'**
+  String get payChequeDrawnOn;
+
+  /// No description provided for @chequesIssued.
+  ///
+  /// In ur, this message translates to:
+  /// **'Humare diye hue cheque'**
+  String get chequesIssued;
+
+  /// No description provided for @chequeIssuedPresentable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pesh ho sakta hai'**
+  String get chequeIssuedPresentable;
+
+  /// No description provided for @chequeIssuedPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ne ada kar diya'**
+  String get chequeIssuedPaid;
+
+  /// No description provided for @chequeIssuedBounceWarning.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} phir se {name} ko dene honge.'**
+  String chequeIssuedBounceWarning(String amount, String name);
+
+  /// No description provided for @homeChequesIssuedDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} ke apne cheque {days} din mein pesh ho sakte hain — bank mein paisay rakhein'**
+  String homeChequesIssuedDue(String amount, String days);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

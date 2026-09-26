@@ -1577,5 +1577,30 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get payByCheque => 'Paid by cheque';
+
+  @override
+  String get payChequeDrawnOn => 'Drawn on which bank account';
+
+  @override
+  String get chequesIssued => 'Cheques we wrote';
+
+  @override
+  String get chequeIssuedPresentable => 'Can be presented';
+
+  @override
+  String get chequeIssuedPaid => 'Paid by the bank';
+
+  @override
+  String chequeIssuedBounceWarning(String amount, String name) {
+    return '$amount will be owed to $name again.';
+  }
+
+  @override
+  String homeChequesIssuedDue(String amount, String days) {
+    return 'Rs $amount of our cheques can be presented within $days days — keep it in the bank';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

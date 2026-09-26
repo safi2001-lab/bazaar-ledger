@@ -3159,3 +3159,48 @@ features:
     # are sales documents: M7.
     proof:
       - the bank fee on a bounce is booked against the bank
+
+  - id: M6-ISSUE-01
+    milestone: M6
+    title: The shop can pay a supplier by cheque, and follow it until the bank pays it
+    status: done
+    # M3 refused a cheque to a supplier and left it here: a cheque the shop
+    # writes is a post-dated liability with a lifecycle of its own. In the
+    # wholesale trade the shop pays the mill the way its customers pay it,
+    # with a cheque dated a month ahead.
+    #
+    # The supplier sheet takes a cheque drawn on one of the shop's bank
+    # accounts, with its number and the day it can be presented. The
+    # deliveries are settled that day, as they would be on paper; the credit
+    # goes to Cheques Issued, a new liability, and the money leaves the bank
+    # only when the cheque is paid. A cheque the bank will not pay puts the
+    # deliveries back to what they owed. The drawer lists the shop's own
+    # cheques beside the customers', and the home screen warns three days
+    # ahead how much the bank needs to hold for them.
+    #
+    # Shops set up before the account existed get it the first time it is
+    # needed, in that posting's transaction and in the audit trail. And a
+    # cheque the shop wrote that bounced is never shown as a 489-F case or a
+    # flag against the supplier: that case, if any, is brought against the
+    # shop.
+    proof:
+      - a cheque the shop writes settles the deliveries the day it is handed over
+      - a cheque the shop writes credits Cheques Issued by name, not the bank
+      - a cheque the shop writes carries its number and the day it can be presented
+      - what a supplier payment refuses a cheque with no number
+      - a cheque the shop wrote when it clears, the money leaves the account it was drawn on
+      - a cheque the shop wrote cannot have cleared before its date
+      - a cheque the shop wrote drawn on an account no longer in the books is refused
+      - a cheque the shop wrote when it bounces, the deliveries it paid are owed again
+      - a cheque the shop wrote a cheque not wholly on deliveries is a corrupt record
+      - a cheque to a supplier settles the delivery and leaves the bank alone
+      - when the supplier presents it, the money leaves the bank
+      - when it bounces, the shop owes the supplier again
+      - the shop bouncing its own cheque is not a 489-F case against the mill
+      - a shop set up before Cheques Issued existed gets it when first needed
+      - a cheque to a supplier needs its number
+      - a supplier can be paid by a cheque dated ahead
+      - a cheque to a supplier with no number is refused in words
+      - a cheque we wrote is marked paid from the drawer
+      - a cheque we wrote that bounces is owed to the supplier again
+      - the first screen warns when our cheques can be presented

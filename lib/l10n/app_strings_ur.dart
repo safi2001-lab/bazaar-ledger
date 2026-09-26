@@ -1577,5 +1577,30 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get payByCheque => 'Cheque se diya';
+
+  @override
+  String get payChequeDrawnOn => 'Kis bank account ka cheque';
+
+  @override
+  String get chequesIssued => 'Humare diye hue cheque';
+
+  @override
+  String get chequeIssuedPresentable => 'Pesh ho sakta hai';
+
+  @override
+  String get chequeIssuedPaid => 'Bank ne ada kar diya';
+
+  @override
+  String chequeIssuedBounceWarning(String amount, String name) {
+    return '$amount phir se $name ko dene honge.';
+  }
+
+  @override
+  String homeChequesIssuedDue(String amount, String days) {
+    return 'Rs $amount ke apne cheque $days din mein pesh ho sakte hain — bank mein paisay rakhein';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }
