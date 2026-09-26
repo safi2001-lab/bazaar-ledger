@@ -20,9 +20,17 @@ void main() {
     // "Vertical viewport was given unbounded height" and red-screens the very
     // first thing a new user ever sees.
     expect(tester.takeException(), isNull);
+    expect(find.text('Rs 0.00'), findsWidgets, reason: 'the day starts at nil');
+    // Below the tiles, which grew past one screen with Quotations and
+    // Cheques; the list builds it only once it is scrolled to.
+    await tester.scrollUntilVisible(
+      find.byType(BlEmpty),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(tester.takeException(), isNull);
     expect(find.byType(BlEmpty), findsOneWidget);
     expect(find.text('Aaj abhi koi bill nahi bana'), findsOneWidget);
-    expect(find.text('Rs 0.00'), findsWidgets, reason: 'the day starts at nil');
   });
 
   testWidgets('every empty state renders in the list it lives in',
