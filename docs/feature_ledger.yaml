@@ -653,27 +653,29 @@ features:
   - id: M0-RUN-03
     milestone: M0
     title: The acceptance suite runs on an emulator
-    status: wip
-    # First actual execution, 23 Aug 2026. integration_test/ had existed for
-    # the life of this project and had never run anywhere.
+    status: done
+    # First actual execution, 23 Aug 2026, on the bench: cart_recovery_test
+    # passed on an API 36 emulator, and demo_script_test died with
+    # `zone.cc: 96: error: Out of memory` inside the Dart compiler because
+    # Gradle had been given 12.5 GB on a machine with 3.7 GB free. That figure
+    # became 4 GB, and the bench emulator then refused to finish booting.
     #
-    # cart_recovery_test PASSED on an API 36 emulator: a bill left on the
-    # counter really is still there after a cold start, against the app's own
-    # on-disk database rather than an in-memory one.
+    # Observed passing since, on CI's Tier C job — an API 36 x86_64 Pixel 6
+    # image under KVM — on the first push that reached a runner (run 1,
+    # 23 Sep 2026, d6d6808) and again on run 3 (26 Sep 2026, fff7c5c):
+    # both demo_script_test cases, and cart_recovery_test against the app's
+    # own on-disk database after a cold start. The same job then runs
+    # `verify_ledger --device`, which fails if the device proofs below did not
+    # pass in that run.
     #
-    # demo_script_test did NOT complete. It died with
-    # `zone.cc: 96: error: Out of memory` inside the Dart compiler, because
-    # Gradle was configured to take 12.5 GB for a single JVM and the machine
-    # was down to 3.7 GB free with the emulator running. That figure is now
-    # 4 GB (android/gradle.properties), but the emulator on this host has since
-    # refused to finish booting, so the run has not been repeated.
-    #
-    # Held at `wip` rather than `done`, and deliberately NOT deferred: a
-    # deferral is for a proof that would pass if a device existed, and this one
-    # has not been observed passing at all.
+    # The host proof is the one a host can honestly give: that the workflow
+    # runs this suite at all. What the suite proves is checked where it runs.
+    proof:
+      - the acceptance suite is actually run somewhere
     device_proof:
       - a bill left on the counter is there after a cold start
-    proof: []
+      - a shopkeeper sets up, stocks two items and rings a cash sale
+      - the books are kept where Android cannot copy them off the phone
 
   - id: M0-NUM-02
     milestone: M0
@@ -776,19 +778,23 @@ features:
     milestone: M0
     title: CI has run green on a push
     status: wip
-    # Blocked, and not by anything in the code: `git remote -v` is empty and
-    # `.git/refs/remotes` does not exist. There is nowhere to push, so the
-    # workflow has never been executed by a runner and cannot be.
+    # The first blocker is gone: the repository has a remote and the workflow
+    # runs on every push to master. Run 3 (26 Sep 2026, fff7c5c) was the first
+    # with every job green:
+    # https://github.com/safi2001-lab/bazaar-ledger/actions/runs/36236161740
     #
-    # Held separately from M0-CI-01 rather than folded into it, because the
-    # two claims fail differently. A chain that runs locally proves the gates
-    # work; it does not prove the runner has the Android SDK, the Java
-    # version, the emulator image or the secrets the workflow assumes. Those
-    # are exactly the things that are wrong the first time a workflow runs,
-    # and finding out is one push away whenever a remote exists.
+    # Held at `wip` anyway, because one of those greens is partial. Tier B's
+    # artefact gates — release signing, the MERGED permission set, 16 KB
+    # alignment and size — are skipped when the `UPLOAD_KEYSTORE_BASE64`
+    # secret is absent, and it is. The job records that it skipped them, which
+    # is the honest behaviour, but "green" there means the plugin unit tests
+    # ran, not that a release APK was ever checked. Those tests had never run
+    # either until run 3: `android/gradlew` was committed without its execute
+    # bit, and every earlier Tier B died on "Permission denied".
     #
-    # Not deferred: a deferral is for a proof that would pass if the machine
-    # existed, and this one has never been observed passing at all.
+    # Done when a push to master runs the artefact gates and they pass. That
+    # needs the secret added in the repository's Actions settings, which is
+    # the owner's to do.
     proof: []
 
   - id: M0-GOLDEN-01
