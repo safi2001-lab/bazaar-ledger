@@ -66,6 +66,55 @@ final class MoveChequeUseCase {
     );
   });
 
+  /// The supplier presented a cheque the shop wrote, and the bank paid it.
+  Future<void> clearIssued(ActorContext actor, String paymentId) =>
+      writer.inTransaction(actor, (write) async {
+        final cheque = await _issued(write, paymentId);
+        await write.apply(
+          lifecycle.clearIssued(
+            actor: actor,
+            cheque: cheque,
+            journalNumber: await write.nextNumber('journal_entry'),
+          ),
+        );
+      });
+
+  /// The bank would not pay a cheque the shop wrote.
+  Future<void> bounceIssued(
+    ActorContext actor,
+    String paymentId, {
+    String reason = '',
+  }) => writer.inTransaction(actor, (write) async {
+    final cheque = await _issued(write, paymentId);
+    final allocations = await write.allocationsOf(paymentId);
+    await write.apply(
+      lifecycle.bounceIssued(
+        actor: actor,
+        cheque: cheque,
+        allocations: allocations,
+        bills: await write.billsNow([
+          for (final a in allocations) a.documentId,
+        ]),
+        journalNumber: await write.nextNumber('journal_entry'),
+        reason: reason,
+      ),
+    );
+  });
+
+  static Future<IssuedCheque> _issued(
+    ChequeWriteContext write,
+    String paymentId,
+  ) async {
+    final cheque = await write.issuedCheque(paymentId);
+    if (cheque == null) {
+      throw const ChequeRefused(
+        'That cheque is no longer outstanding. The bank has already paid or '
+        'returned it.',
+      );
+    }
+    return cheque;
+  }
+
   static Future<ChequeInHand> _inHand(
     ChequeWriteContext write,
     String paymentId,

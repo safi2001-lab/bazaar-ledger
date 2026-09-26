@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show QueryRow;
 import 'package:pk_domain/pk_domain.dart';
 
+import 'chart_top_up.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -56,6 +57,38 @@ ChequeInHand chequeInHandFrom(QueryRow r) {
   );
 }
 
+/// The columns a cheque the shop wrote is read from, on both sides, so the
+/// register and the writer agree on what "outstanding" means.
+const chequeIssuedSelect = '''
+  SELECT p.id, p.payment_no, p.party_id, pa.name AS party_name,
+         p.amount_paisa, p.cheque_no, p.cheque_date_utc, p.payment_date_local,
+         acct.name AS account_name, acct.ledger_account_id
+  FROM payments p
+  JOIN parties pa ON pa.id = p.party_id
+  JOIN payment_accounts acct ON acct.id = p.payment_account_id
+  WHERE p.mode = 'cheque'
+    AND p.direction = 'out'
+    AND p.status = 'pending'
+    AND p.deleted_at_utc IS NULL
+''';
+
+/// One row of [chequeIssuedSelect], as the domain sees it.
+IssuedCheque chequeIssuedFrom(QueryRow r) {
+  final due = r.readNullable<int>('cheque_date_utc');
+  return IssuedCheque(
+    paymentId: r.read<String>('id'),
+    paymentNo: r.read<String>('payment_no'),
+    partyId: r.read<String>('party_id'),
+    partyName: r.read<String>('party_name'),
+    amount: Money.paisa(r.read<int>('amount_paisa')),
+    chequeNo: r.read<String>('cheque_no'),
+    issuedOn: BusinessDate(r.read<String>('payment_date_local')),
+    bankAccountName: r.read<String>('account_name'),
+    bankLedgerAccountId: r.readNullable<String>('ledger_account_id'),
+    due: due == null ? null : chequeDueDate(due),
+  );
+}
+
 final class _DriftChequeWriteContext implements ChequeWriteContext {
   _DriftChequeWriteContext(this._tx, this._sequences);
 
@@ -86,6 +119,15 @@ final class _DriftChequeWriteContext implements ChequeWriteContext {
       [paymentId, actor.firmId],
     );
     return row == null ? null : chequeInHandFrom(row);
+  }
+
+  @override
+  Future<IssuedCheque?> issuedCheque(String paymentId) async {
+    final row = await _tx.selectOne(
+      '$chequeIssuedSelect AND p.id = ? AND p.firm_id = ?',
+      [paymentId, actor.firmId],
+    );
+    return row == null ? null : chequeIssuedFrom(row);
   }
 
   @override
@@ -168,7 +210,10 @@ final class _DriftChequeWriteContext implements ChequeWriteContext {
         'total_credit_paisa': entry.totalCredit.inPaisa,
       });
 
-      final accountsByKey = await _accountsBySystemKey();
+      final accountsByKey = await accountsBySystemKey(_tx, {
+        for (final line in entry.lines)
+          if (!line.isResolvedAccountId) line.accountSystemKey,
+      });
       for (final line in entry.lines) {
         final accountId = line.isResolvedAccountId
             ? line.accountId
@@ -198,17 +243,5 @@ final class _DriftChequeWriteContext implements ChequeWriteContext {
       entityId: posting.paymentId,
       summary: posting.auditSummary,
     );
-  }
-
-  Future<Map<String, String>> _accountsBySystemKey() async {
-    final rows = await _tx.select(
-      'SELECT id, system_key FROM accounts '
-      'WHERE firm_id = ? AND system_key IS NOT NULL '
-      '  AND deleted_at_utc IS NULL',
-      [actor.firmId],
-    );
-    return {
-      for (final r in rows) r.read<String>('system_key'): r.read<String>('id'),
-    };
   }
 }

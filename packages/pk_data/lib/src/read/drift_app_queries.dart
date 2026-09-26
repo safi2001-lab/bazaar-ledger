@@ -3,7 +3,11 @@ import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
 import '../write/drift_cheque_writer.dart'
-    show chequeInHandFrom, chequeInHandSelect;
+    show
+        chequeInHandFrom,
+        chequeInHandSelect,
+        chequeIssuedFrom,
+        chequeIssuedSelect;
 import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
 
@@ -292,6 +296,7 @@ final class DriftAppQueries implements AppQueries {
              WHERE pm.party_id = p.id
                AND pm.firm_id = p.firm_id
                AND pm.mode = 'cheque'
+               AND pm.direction = 'in'
                AND pm.status = 'bounced'
                AND pm.deleted_at_utc IS NULL) AS bounced_cheques
     FROM parties p
@@ -891,6 +896,21 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<IssuedCheque>> chequesIssued(String firmId) async {
+    // The writer's own select, as with cheques in hand.
+    final rows = await _db
+        .customSelect(
+          '$chequeIssuedSelect AND p.firm_id = ? '
+          'ORDER BY p.cheque_date_utc IS NULL, p.cheque_date_utc, '
+          '         p.payment_no',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.payments, _db.parties, _db.paymentAccounts},
+        )
+        .get();
+    return [for (final r in rows) chequeIssuedFrom(r)];
+  }
+
+  @override
   Future<List<BouncedCheque>> bouncedCheques(
     String firmId, {
     int limit = 50,
@@ -909,6 +929,9 @@ final class DriftAppQueries implements AppQueries {
           FROM payments p
           JOIN parties pa ON pa.id = p.party_id
           WHERE p.firm_id = ? AND p.mode = 'cheque' AND p.status = 'bounced'
+            -- Customers' cheques only. One of the shop's own that bounced is
+            -- not a 489-F case the shop brings; it is one brought against it.
+            AND p.direction = 'in'
             AND p.deleted_at_utc IS NULL
           ORDER BY bounced_on DESC, p.payment_no DESC
           LIMIT ?
@@ -957,6 +980,7 @@ final class DriftAppQueries implements AppQueries {
               AND deleted_at_utc IS NULL
             ORDER BY entry_date_utc, id LIMIT 1)
           WHERE p.id = ? AND p.firm_id = ? AND p.mode = 'cheque'
+            AND p.direction = 'in'
             AND p.status = 'bounced' AND p.deleted_at_utc IS NULL
           ''',
           variables: [Variable<String>(paymentId), Variable<String>(firmId)],

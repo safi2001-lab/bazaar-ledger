@@ -2739,8 +2739,8 @@ features:
     # asset inside a liability, the netting the receipt side was built to
     # avoid, so it is refused in words with the figure that is owed.
     #
-    # A cheque is refused too: a cheque the shop writes is a post-dated
-    # liability with a lifecycle, and that is M6.
+    # A cheque was refused too until M6 gave the shop's own cheques their
+    # lifecycle (M6-ISSUE-01); now only one with no number is.
     proof:
       - which deliveries a payment settles the oldest delivery is paid first, whatever order they arrive in
       - which deliveries a payment settles each delivery is told its new balance, not a delta
@@ -2751,7 +2751,7 @@ features:
       - what a supplier payment refuses a payment of nothing
       - what a supplier payment refuses paying more than is owed
       - what a supplier payment refuses paying a supplier who is owed nothing
-      - what a supplier payment refuses a cheque, which belongs to the post-dated cheque book
+      - what a supplier payment refuses a cheque with no number
 
   - id: M3-PAYOUT-02
     milestone: M3

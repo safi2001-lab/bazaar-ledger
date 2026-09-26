@@ -84,6 +84,43 @@ final class ChequeInHand {
       due == null || daysUntil(today, due!) <= 0;
 }
 
+/// A cheque the shop wrote to a supplier and the bank has not yet paid.
+final class IssuedCheque {
+  const IssuedCheque({
+    required this.paymentId,
+    required this.paymentNo,
+    required this.partyId,
+    required this.partyName,
+    required this.amount,
+    required this.chequeNo,
+    required this.issuedOn,
+    required this.bankAccountName,
+    this.bankLedgerAccountId,
+    this.due,
+  });
+
+  final String paymentId;
+  final String paymentNo;
+  final String partyId;
+  final String partyName;
+  final Money amount;
+  final String chequeNo;
+  final BusinessDate issuedOn;
+
+  /// The shop's account it is drawn on, as the shop named it.
+  final String bankAccountName;
+
+  /// Where the money leaves from when it is paid. Null only if that account
+  /// has since been unlinked from the books, which the use case refuses.
+  final String? bankLedgerAccountId;
+
+  /// The day the supplier can present it.
+  final BusinessDate? due;
+
+  bool isDueBy(BusinessDate today) =>
+      due == null || daysUntil(today, due!) <= 0;
+}
+
 /// One bill a cheque put money on, and how much.
 final class ChequeAllocation {
   const ChequeAllocation({required this.documentId, required this.amount});
@@ -316,6 +353,145 @@ final class ChequeLifecycle {
           'Cheque ${cheque.chequeNo} from ${cheque.partyName} for '
           '${cheque.amount.amountOnly} bounced on ${bouncedOn.value}'
           '${why.isEmpty ? '' : ' ($why)'}; 489-F notice by ${noticeBy.value}',
+    );
+  }
+
+  /// The supplier presented the shop's cheque and the bank paid it. The
+  /// money leaves the account it was drawn on.
+  ChequeStepPosting clearIssued({
+    required ActorContext actor,
+    required IssuedCheque cheque,
+    required AllocatedNumber journalNumber,
+  }) {
+    final bank = cheque.bankLedgerAccountId;
+    if (bank == null) {
+      throw ChequeRefused(
+        'The account cheque ${cheque.chequeNo} is drawn on is no longer '
+        'linked to the books, so the money would leave from nowhere.',
+      );
+    }
+    if (!cheque.isDueBy(actor.businessDate)) {
+      throw ChequeRefused(
+        'Cheque ${cheque.chequeNo} is dated ${cheque.due!.value}. The bank '
+        'will not pay it before then, so it cannot have cleared yet.',
+      );
+    }
+    return ChequeStepPosting(
+      paymentId: cheque.paymentId,
+      chequeStatus: 'cleared',
+      paymentStatus: 'cleared',
+      journal: JournalEntryPosting(
+        entryNo: journalNumber.formatted,
+        entryDateUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
+        entryDateLocal: actor.businessDate.value,
+        fiscalYear: actor.businessDate.fiscalYear,
+        sourceType: 'payment',
+        totalDebit: cheque.amount,
+        totalCredit: cheque.amount,
+        narration: 'Cheque ${cheque.chequeNo} to ${cheque.partyName} paid',
+        lines: [
+          JournalLinePosting(
+            lineNo: 1,
+            accountSystemKey: 'cheques_issued',
+            debit: cheque.amount,
+            credit: Money.zero,
+            partyId: cheque.partyId,
+            narration: 'Cheque ${cheque.chequeNo} presented',
+          ),
+          JournalLinePosting(
+            lineNo: 2,
+            accountSystemKey: '#$bank',
+            debit: Money.zero,
+            credit: cheque.amount,
+            narration: 'Cheque ${cheque.chequeNo} to ${cheque.partyName}',
+          ),
+        ],
+      ),
+      reopened: const [],
+      auditAction: 'CHEQUE_ISSUED_CLEARED',
+      auditSummary:
+          'Cheque ${cheque.chequeNo} to ${cheque.partyName} for '
+          '${cheque.amount.amountOnly} paid from ${cheque.bankAccountName}',
+    );
+  }
+
+  /// The bank would not pay the shop's cheque. The supplier was never paid,
+  /// so the deliveries it settled are owed again, for exactly what it put on
+  /// them, and the payable comes back by name.
+  ChequeStepPosting bounceIssued({
+    required ActorContext actor,
+    required IssuedCheque cheque,
+    required List<ChequeAllocation> allocations,
+    required Map<String, ({Money paid, Money balance})> bills,
+    required AllocatedNumber journalNumber,
+    required String reason,
+  }) {
+    final applied = Money.sum([for (final a in allocations) a.amount]);
+    // A payment to a supplier is never more than was owed, so every rupee of
+    // the cheque sits on a bill. Anything else is a corrupt record.
+    if (applied != cheque.amount) {
+      throw StateError(
+        'Cheque ${cheque.chequeNo} is allocated ${applied.amountOnly} against '
+        'deliveries, not the ${cheque.amount.amountOnly} it was for.',
+      );
+    }
+    final why = reason.trim();
+    return ChequeStepPosting(
+      paymentId: cheque.paymentId,
+      chequeStatus: 'bounced',
+      paymentStatus: 'bounced',
+      journal: JournalEntryPosting(
+        entryNo: journalNumber.formatted,
+        entryDateUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
+        entryDateLocal: actor.businessDate.value,
+        fiscalYear: actor.businessDate.fiscalYear,
+        sourceType: 'reversal',
+        totalDebit: cheque.amount,
+        totalCredit: cheque.amount,
+        narration:
+            'Cheque ${cheque.chequeNo} to ${cheque.partyName} bounced'
+            '${why.isEmpty ? '' : ': $why'}',
+        lines: [
+          JournalLinePosting(
+            lineNo: 1,
+            accountSystemKey: 'cheques_issued',
+            debit: cheque.amount,
+            credit: Money.zero,
+            partyId: cheque.partyId,
+            narration: 'Cheque ${cheque.chequeNo} returned unpaid',
+          ),
+          JournalLinePosting(
+            lineNo: 2,
+            accountSystemKey: 'accounts_payable',
+            debit: Money.zero,
+            credit: cheque.amount,
+            partyId: cheque.partyId,
+            narration: 'Cheque ${cheque.chequeNo} bounced, owed again',
+          ),
+        ],
+      ),
+      reopened: [
+        for (final a in allocations)
+          () {
+            final bill = bills[a.documentId];
+            if (bill == null) {
+              throw StateError(
+                'Delivery ${a.documentId} was paid by cheque '
+                '${cheque.chequeNo} and cannot be found to reopen.',
+              );
+            }
+            return BillSettlement(
+              documentId: a.documentId,
+              paid: bill.paid - a.amount,
+              balance: bill.balance + a.amount,
+            );
+          }(),
+      ],
+      auditAction: 'CHEQUE_ISSUED_BOUNCED',
+      auditSummary:
+          'Cheque ${cheque.chequeNo} to ${cheque.partyName} for '
+          '${cheque.amount.amountOnly} bounced on ${actor.businessDate.value}'
+          '${why.isEmpty ? '' : ' ($why)'}',
     );
   }
 

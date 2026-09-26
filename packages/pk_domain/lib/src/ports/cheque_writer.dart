@@ -23,6 +23,9 @@ abstract interface class ChequeWriteContext {
   /// twice by two tills.
   Future<ChequeInHand?> chequeInHand(String paymentId);
 
+  /// A cheque the shop wrote, if the bank has not yet paid or returned it.
+  Future<IssuedCheque?> issuedCheque(String paymentId);
+
   /// The bills this cheque paid, as recorded when it was taken.
   Future<List<ChequeAllocation>> allocationsOf(String paymentId);
 

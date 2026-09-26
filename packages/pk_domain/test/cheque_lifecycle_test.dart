@@ -170,4 +170,105 @@ void main() {
       );
     });
   });
+
+  group('a cheque the shop wrote', () {
+    IssuedCheque ours({String? bankLedger = 'L-MEEZAN'}) => IssuedCheque(
+      paymentId: 'PAY-9',
+      paymentNo: 'PAY-2627-0003',
+      partyId: 'P-MILL',
+      partyName: 'Faisal Flour Mills',
+      amount: const Money.rupees(80000),
+      chequeNo: '118830',
+      issuedOn: const BusinessDate('2026-09-20'),
+      bankAccountName: 'Meezan current',
+      bankLedgerAccountId: bankLedger,
+      due: const BusinessDate('2026-10-05'),
+    );
+
+    test('when it clears, the money leaves the account it was drawn on', () {
+      final p = lifecycle.clearIssued(
+        actor: on('2026-10-06'),
+        cheque: ours(),
+        journalNumber: journalNo,
+      );
+
+      expect(side(p, 'cheques_issued'), const Money.rupees(80000));
+      expect(side(p, '#L-MEEZAN', debit: false), const Money.rupees(80000));
+      expect(p.chequeStatus, 'cleared');
+      expect(p.reopened, isEmpty);
+    });
+
+    test('cannot have cleared before its date', () {
+      expect(
+        () => lifecycle.clearIssued(
+          actor: on('2026-10-04'),
+          cheque: ours(),
+          journalNumber: journalNo,
+        ),
+        throwsA(isA<ChequeRefused>()),
+      );
+    });
+
+    test('drawn on an account no longer in the books is refused', () {
+      expect(
+        () => lifecycle.clearIssued(
+          actor: on('2026-10-06'),
+          cheque: ours(bankLedger: null),
+          journalNumber: journalNo,
+        ),
+        throwsA(isA<ChequeRefused>()),
+      );
+    });
+
+    test('when it bounces, the deliveries it paid are owed again', () {
+      final p = lifecycle.bounceIssued(
+        actor: on('2026-10-06'),
+        cheque: ours(),
+        allocations: const [
+          ChequeAllocation(documentId: 'PUR-A', amount: Money.rupees(50000)),
+          ChequeAllocation(documentId: 'PUR-B', amount: Money.rupees(30000)),
+        ],
+        bills: const {
+          'PUR-A': (paid: Money.rupees(50000), balance: Money.zero),
+          'PUR-B': (paid: Money.rupees(30000), balance: Money.rupees(10000)),
+        },
+        journalNumber: journalNo,
+        reason: 'Funds insufficient',
+      );
+
+      expect(side(p, 'cheques_issued'), const Money.rupees(80000));
+      expect(
+        side(p, 'accounts_payable', debit: false),
+        const Money.rupees(80000),
+      );
+      expect(
+        p.journal!.lines.every((l) => l.partyId == 'P-MILL'),
+        isTrue,
+        reason: 'the payable comes back against the supplier by name',
+      );
+      expect(p.reopened.map((b) => (b.documentId, b.paid, b.balance)), [
+        ('PUR-A', Money.zero, const Money.rupees(50000)),
+        ('PUR-B', Money.zero, const Money.rupees(40000)),
+      ]);
+      expect(p.auditAction, 'CHEQUE_ISSUED_BOUNCED');
+    });
+
+    test('a cheque not wholly on deliveries is a corrupt record', () {
+      expect(
+        () => lifecycle.bounceIssued(
+          actor: on('2026-10-06'),
+          cheque: ours(),
+          allocations: const [
+            ChequeAllocation(documentId: 'PUR-A', amount: Money.rupees(50000)),
+          ],
+          bills: const {
+            'PUR-A': (paid: Money.rupees(50000), balance: Money.zero),
+          },
+          journalNumber: journalNo,
+          reason: '',
+        ),
+        throwsStateError,
+      );
+    });
+  });
 }

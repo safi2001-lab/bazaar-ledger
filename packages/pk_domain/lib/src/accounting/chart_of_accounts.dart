@@ -145,6 +145,19 @@ const List<AccountSpec> defaultChartOfAccounts = [
     systemKey: 'accounts_payable',
     parentCode: '2000',
   ),
+  // Cheques the shop has written and the bank has not yet paid. The payable
+  // is settled the day the cheque is handed over, but the money is still in
+  // the bank until the supplier presents it; this is where the difference
+  // sits, so the bank balance in the books is what the bank would say.
+  AccountSpec(
+    code: '2150',
+    nameEn: 'Cheques Issued',
+    nameUr: 'Diye hue Cheque',
+    type: AccountType.liability,
+    normalSide: NormalSide.credit,
+    systemKey: 'cheques_issued',
+    parentCode: '2000',
+  ),
   AccountSpec(
     code: '2200',
     nameEn: 'Output Sales Tax',

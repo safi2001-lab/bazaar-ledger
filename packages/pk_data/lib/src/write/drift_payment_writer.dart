@@ -1,5 +1,6 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'chart_top_up.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -178,7 +179,10 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
       'total_credit_paisa': entry.totalCredit.inPaisa,
     });
 
-    final accountsByKey = await _accountsBySystemKey();
+    final accountsByKey = await accountsBySystemKey(_tx, {
+      for (final line in entry.lines)
+        if (!line.isResolvedAccountId) line.accountSystemKey,
+    });
     for (final line in entry.lines) {
       final accountId = line.isResolvedAccountId
           ? line.accountId
@@ -219,17 +223,5 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
       journalEntryId: journalEntryId,
       settledDocumentIds: [for (final a in posting.allocations) a.documentId],
     );
-  }
-
-  Future<Map<String, String>> _accountsBySystemKey() async {
-    final rows = await _tx.select(
-      'SELECT id, system_key FROM accounts '
-      'WHERE firm_id = ? AND system_key IS NOT NULL '
-      '  AND deleted_at_utc IS NULL',
-      [actor.firmId],
-    );
-    return {
-      for (final r in rows) r.read<String>('system_key'): r.read<String>('id'),
-    };
   }
 }

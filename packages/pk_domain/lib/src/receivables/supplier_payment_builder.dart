@@ -20,12 +20,15 @@
 /// receipt side was built to avoid. So it is refused in words until that
 /// account exists.
 ///
-/// ## Why a cheque is refused
+/// ## A cheque the shop writes
 ///
-/// A cheque the shop writes is a post-dated liability with a lifecycle of its
-/// own — issued, presented, cleared, bounced — and paying from the Cheque
-/// account would credit Cheques in Hand, which is paper customers gave the
-/// shop. Both are M6's to record properly.
+/// Drawn on one of the shop's bank accounts and usually dated ahead. The
+/// supplier's bills are settled the day it is handed over, as they would be
+/// on paper; the money, though, stays in the bank until the supplier presents
+/// it. So the credit goes to Cheques Issued, a liability, and moves to the
+/// bank only when the cheque is paid — the mirror of Cheques in Hand on the
+/// receiving side. Never from the Cheque payment account: that is paper
+/// customers gave the shop.
 library;
 
 import 'package:pk_money/pk_money.dart';
@@ -55,6 +58,8 @@ final class SupplierPaymentDraft {
     required this.mode,
     required this.paymentAccountId,
     this.reference,
+    this.chequeNo,
+    this.chequeDateUtcMillis,
   });
 
   /// Always a party. Money going out to nobody in particular is an expense,
@@ -63,14 +68,23 @@ final class SupplierPaymentDraft {
 
   final Money amount;
 
-  /// `cash`, `bank_transfer`, `jazzcash`, `easypaisa`, `raast`, `card`. A
-  /// label on a ledger row, never an integration.
+  /// `cash`, `bank_transfer`, `jazzcash`, `easypaisa`, `raast`, `card`, or
+  /// `cheque`. A label on a ledger row, never an integration.
   final String mode;
 
+  /// Where the money leaves from. For a cheque, the bank account it is drawn
+  /// on.
   final String paymentAccountId;
 
   /// A bank slip number, a JazzCash TID, nothing at all.
   final String? reference;
+
+  /// For a cheque: its number, and the day the supplier can present it,
+  /// stored as 00:00 PKT like every other cheque date.
+  final String? chequeNo;
+  final int? chequeDateUtcMillis;
+
+  bool get isCheque => mode == 'cheque';
 }
 
 /// Builds the rows one payment to a supplier writes.
@@ -92,10 +106,9 @@ final class SupplierPaymentBuilder {
         'A payment of nothing is not a payment.',
       );
     }
-    if (draft.mode == 'cheque') {
+    if (draft.isCheque && (draft.chequeNo?.trim() ?? '').isEmpty) {
       throw const SupplierPaymentRefused(
-        'A cheque the shop writes is recorded with post-dated cheques, not '
-        'here. Pay by cash, bank or wallet, or wait for the cheque book.',
+        'A cheque needs its number, or nobody can tell which one cleared.',
       );
     }
 
@@ -163,14 +176,25 @@ final class SupplierPaymentBuilder {
         narration: 'Against ${allocations.length} bill(s)',
       ),
       // And the money leaves the account it was paid from, resolved by id so
-      // renaming "Golak" cannot break a payment.
-      JournalLinePosting(
-        lineNo: 2,
-        accountSystemKey: '#$ledgerAccountId',
-        debit: Money.zero,
-        credit: draft.amount,
-        narration: 'Payment ${paymentNumber.formatted}',
-      ),
+      // renaming "Golak" cannot break a payment. A cheque leaves nothing yet:
+      // it is owed by the bank until the supplier presents it.
+      if (draft.isCheque)
+        JournalLinePosting(
+          lineNo: 2,
+          accountSystemKey: 'cheques_issued',
+          debit: Money.zero,
+          credit: draft.amount,
+          partyId: draft.partyId,
+          narration: 'Cheque ${draft.chequeNo!.trim()} issued',
+        )
+      else
+        JournalLinePosting(
+          lineNo: 2,
+          accountSystemKey: '#$ledgerAccountId',
+          debit: Money.zero,
+          credit: draft.amount,
+          narration: 'Payment ${paymentNumber.formatted}',
+        ),
     ];
 
     final posting = ReceiptPosting(
@@ -186,6 +210,8 @@ final class SupplierPaymentBuilder {
         reference: draft.reference,
         paymentDateUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
         paymentDateLocal: actor.businessDate.value,
+        chequeNo: draft.isCheque ? draft.chequeNo!.trim() : null,
+        chequeDateUtcMillis: draft.isCheque ? draft.chequeDateUtcMillis : null,
       ),
       allocations: allocations,
       settlements: settlements,
@@ -203,7 +229,8 @@ final class SupplierPaymentBuilder {
       ),
       auditSummary:
           'Payment ${paymentNumber.formatted} of ${draft.amount.amountOnly} '
-          'by ${draft.mode} to a supplier, against '
+          'by ${draft.isCheque ? 'cheque ${draft.chequeNo!.trim()}' : draft.mode} '
+          'to a supplier, against '
           '${allocations.length} bill(s)',
     );
 

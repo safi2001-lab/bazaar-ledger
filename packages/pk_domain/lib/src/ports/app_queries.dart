@@ -526,6 +526,10 @@ abstract interface class AppQueries {
   /// they are still not money until the bank says so.
   Future<List<ChequeInHand>> chequesInHand(String firmId);
 
+  /// Cheques the shop has written that the bank has not yet paid or
+  /// returned, soonest to be presented first.
+  Future<List<IssuedCheque>> chequesIssued(String firmId);
+
   /// Cheques the bank returned, most recent first.
   Future<List<BouncedCheque>> bouncedCheques(String firmId, {int limit = 50});
 

@@ -14,6 +14,7 @@ void main() {
     Money amount = const Money.rupees(4000),
     List<OpenBill>? bills,
     String mode = 'cash',
+    String? chequeNo,
   }) => builder.build(
     actor: _actor(),
     draft: SupplierPaymentDraft(
@@ -21,6 +22,10 @@ void main() {
       amount: amount,
       mode: mode,
       paymentAccountId: 'acct-cash',
+      chequeNo: chequeNo,
+      chequeDateUtcMillis: chequeNo == null
+          ? null
+          : chequeDueUtcMillis(const BusinessDate('2026-09-22')),
     ),
     openBills:
         bills ??
@@ -132,10 +137,39 @@ void main() {
       );
     });
 
-    test('a cheque, which belongs to the post-dated cheque book', () {
+    test('a cheque with no number', () {
       expect(
-        () => build(mode: 'cheque'),
+        () => build(mode: 'cheque', chequeNo: '  '),
         throwsA(isA<SupplierPaymentRefused>()),
+      );
+    });
+  });
+
+  group('a cheque the shop writes', () {
+    test('settles the deliveries the day it is handed over', () {
+      final posting = build(mode: 'cheque', chequeNo: '118830');
+
+      expect(posting.settlements[0].balance, Money.zero);
+      expect(posting.settlements[1].balance, const Money.rupees(1500));
+    });
+
+    test('credits Cheques Issued by name, not the bank', () {
+      final lines = build(mode: 'cheque', chequeNo: '118830').journal.lines;
+
+      expect(lines[0].accountSystemKey, 'accounts_payable');
+      expect(lines[1].accountSystemKey, 'cheques_issued');
+      expect(lines[1].credit, const Money.rupees(4000));
+      expect(lines[1].partyId, 'mill-1');
+    });
+
+    test('carries its number and the day it can be presented', () {
+      final payment = build(mode: 'cheque', chequeNo: ' 118830 ').payment;
+
+      expect(payment.isCheque, isTrue);
+      expect(payment.chequeNo, '118830');
+      expect(
+        chequeDueDate(payment.chequeDateUtcMillis!),
+        const BusinessDate('2026-09-22'),
       );
     });
   });
