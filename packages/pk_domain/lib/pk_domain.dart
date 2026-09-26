@@ -13,6 +13,7 @@ export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';
 export 'src/cheques/cheque_dates.dart';
 export 'src/cheques/cheque_lifecycle.dart';
+export 'src/cheques/demand_notice.dart';
 export 'src/corrections/purchase_return_builder.dart';
 export 'src/corrections/return_builder.dart';
 export 'src/corrections/reversal.dart';

@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/pdf_font.dart';
 
 /// Cheques the shop is holding, soonest due first.
 final chequesInHandProvider = FutureProvider.autoDispose<List<ChequeInHand>>((
@@ -184,6 +188,14 @@ class _BouncedTile extends StatelessWidget {
     final late = daysUntil(today, cheque.noticeBy) < 0;
 
     return BlCard(
+      onTap: () => unawaited(
+        showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          useSafeArea: true,
+          builder: (_) => _NoticeSheet(cheque: cheque, today: today),
+        ),
+      ),
       child: Row(
         children: [
           Expanded(
@@ -447,6 +459,127 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// The 489-F demand notice for one bounced cheque, drawn up and shared.
+class _NoticeSheet extends ConsumerStatefulWidget {
+  const _NoticeSheet({required this.cheque, required this.today});
+
+  final BouncedCheque cheque;
+  final BusinessDate today;
+
+  @override
+  ConsumerState<_NoticeSheet> createState() => _NoticeSheetState();
+}
+
+class _NoticeSheetState extends ConsumerState<_NoticeSheet> {
+  bool _busy = false;
+  String? _failure;
+
+  Future<void> _share() async {
+    // First statement, so two taps in one frame make one notice.
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    try {
+      final services = ref.read(appServicesProvider);
+      final firm = await ref.read(firmProvider.future);
+      final notice = await services.queries.demandNotice(
+        firm!.id,
+        widget.cheque.paymentId,
+        issuedOn: widget.today,
+      );
+      if (notice == null) throw StateError('cheque ${widget.cheque.chequeNo}');
+      final bytes = await demandNoticePdf(
+        notice,
+        // The names on it may be in Urdu, and the file is printed on some
+        // other machine with no fonts of this phone's to fall back on.
+        unicodeFont: await PdfUnicodeFont.bytes(),
+      );
+      final dir = await getTemporaryDirectory();
+      final file = File(
+        '${dir.path}${Platform.pathSeparator}${demandNoticeFileName(notice)}',
+      );
+      await file.writeAsBytes(bytes, flush: true);
+      if (!mounted) return;
+      await SharePlus.instance.share(
+        ShareParams(
+          files: [XFile(file.path, mimeType: 'application/pdf')],
+          subject: notice.title,
+        ),
+      );
+    } on Object catch (error) {
+      if (mounted) setState(() => _failure = '$error');
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final cheque = widget.cheque;
+    final late = daysUntil(widget.today, cheque.noticeBy) < 0;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: BlTokens.space4,
+        right: BlTokens.space4,
+        top: BlTokens.space4,
+        bottom: MediaQuery.viewPaddingOf(context).bottom + BlTokens.space4,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            s.chequeNoticeTitle,
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: t.ink,
+            ),
+          ),
+          Text(
+            '${cheque.partyName} · ${cheque.chequeNo} · '
+            '${cheque.amount.amountOnly}',
+            style: TextStyle(fontSize: 14, color: t.inkMuted),
+          ),
+          const SizedBox(height: BlTokens.space3),
+          Text(
+            late
+                ? s.chequeNoticeLate(cheque.noticeBy.value)
+                : s.chequeNoticeBy(cheque.noticeBy.value),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: late ? t.danger : t.ink,
+            ),
+          ),
+          const SizedBox(height: BlTokens.space3),
+          BlOfflineNote(message: s.chequeNoticeHint),
+          const SizedBox(height: BlTokens.space4),
+          BlButton(
+            label: s.chequeNoticeShare,
+            icon: Icons.picture_as_pdf_outlined,
+            big: true,
+            busy: _busy,
+            onPressed: _busy ? null : () => unawaited(_share()),
+          ),
+          if (_failure != null) ...[
+            const SizedBox(height: BlTokens.space3),
+            Text(
+              '${s.commonSomethingWentWrong}: $_failure',
+              style: TextStyle(color: t.danger, fontSize: 14),
+            ),
+          ],
+        ],
       ),
     );
   }

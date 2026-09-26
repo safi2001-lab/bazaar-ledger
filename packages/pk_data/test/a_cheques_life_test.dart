@@ -68,6 +68,9 @@ void main() {
         'name': 'Rashid Traders',
         'name_search': 'rashid traders',
         'party_type': 'customer',
+        'phone': '0300 1234567',
+        'address_line1': 'Shop 14, Shah Alam Market',
+        'city': 'Lahore',
       });
       oilId = await tx.insert('items', {
         'name': 'Cooking Oil 5L',
@@ -226,6 +229,49 @@ void main() {
     expect(bounced.chequeNo, '004512');
     expect(bounced.bouncedOn, const BusinessDate('2026-10-12'));
     expect(bounced.noticeBy, const BusinessDate('2026-11-11'));
+  });
+
+  test('a bounced cheque draws up its demand notice from the books', () async {
+    await udhaarBill();
+    final cheque = await takeCheque();
+    await cheques.bounce(
+      on('2026-10-12'),
+      cheque,
+      reason: 'Funds insufficient',
+    );
+
+    final notice = (await queries.demandNotice(
+      firm.firmId,
+      cheque,
+      issuedOn: const BusinessDate('2026-10-14'),
+    ))!;
+    expect(notice.shopName, 'Chishti Kiryana Store');
+    expect(notice.to, [
+      'Rashid Traders',
+      'Shop 14, Shah Alam Market',
+      'Lahore',
+      'Phone: 0300 1234567',
+    ]);
+    expect(notice.chequeNo, '004512');
+    expect(notice.bank, 'Meezan');
+    expect(notice.chequeDate, const BusinessDate(due));
+    expect(notice.amount, const Money.rupees(50000));
+    expect(notice.bouncedOn, const BusinessDate('2026-10-12'));
+    expect(notice.returnReason, 'Funds insufficient');
+    expect(notice.serveBy, const BusinessDate('2026-11-11'));
+  });
+
+  test('a cheque that has not bounced has no demand notice', () async {
+    await udhaarBill();
+    final cheque = await takeCheque();
+    expect(
+      await queries.demandNotice(
+        firm.firmId,
+        cheque,
+        issuedOn: const BusinessDate(due),
+      ),
+      isNull,
+    );
   });
 
   test('a cheque cannot clear twice, or clear after it bounced', () async {

@@ -13,6 +13,8 @@ export 'package:pk_platform/pk_platform.dart'
         BackupHeader,
         BackupProblem,
         BackupRefused,
+        demandNoticeFileName,
+        demandNoticePdf,
         EscPos,
         EscPosAlign,
         EscPosFont,

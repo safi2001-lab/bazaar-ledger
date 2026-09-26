@@ -2,6 +2,7 @@ import 'package:pk_money/pk_money.dart';
 
 import '../catalogue/unit_converter.dart';
 import '../cheques/cheque_lifecycle.dart';
+import '../cheques/demand_notice.dart';
 import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
 import '../receivables/aging.dart';
@@ -517,6 +518,15 @@ abstract interface class AppQueries {
 
   /// Cheques the bank returned, most recent first.
   Future<List<BouncedCheque>> bouncedCheques(String firmId, {int limit = 50});
+
+  /// The demand notice for one bounced cheque, drawn up on [issuedOn] from
+  /// the shop's details, the customer's khata, the cheque and the bank's
+  /// return memo. Null if the payment is not a bounced cheque of this firm.
+  Future<DemandNotice?> demandNotice(
+    String firmId,
+    String paymentId, {
+    required BusinessDate issuedOn,
+  });
 
   /// Deliveries, newest first.
   Future<List<PurchaseListRow>> recentPurchases(

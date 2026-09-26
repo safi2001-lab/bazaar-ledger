@@ -7,6 +7,7 @@ library;
 
 export 'package:pdf/pdf.dart' show PdfPageFormat;
 export 'src/backup/backup_archive.dart';
+export 'src/cheques/demand_notice_pdf.dart';
 
 export 'src/media/image_shrinker.dart';
 export 'src/printing/print_queue.dart';

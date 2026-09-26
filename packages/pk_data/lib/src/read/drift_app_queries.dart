@@ -922,6 +922,69 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<DemandNotice?> demandNotice(
+    String firmId,
+    String paymentId, {
+    required BusinessDate issuedOn,
+  }) async {
+    final firm = await _firm(firmId);
+    if (firm == null) return null;
+    // The return memo's words are the ones the shop typed at the bounce, and
+    // live in the bounce entry's narration after "bounced: " — the one place
+    // they were ever written.
+    final r = await _db
+        .customSelect(
+          '''
+          SELECT p.amount_paisa, p.cheque_no, p.cheque_bank, p.cheque_date_utc,
+                 pa.name AS party_name, pa.phone, pa.address_line1,
+                 pa.address_line2, pa.city, pa.cnic,
+                 je.entry_date_local AS bounced_on, je.narration
+          FROM payments p
+          JOIN parties pa ON pa.id = p.party_id
+          JOIN journal_entries je ON je.id = (
+            SELECT id FROM journal_entries
+            WHERE payment_id = p.id AND source_type = 'reversal'
+              AND deleted_at_utc IS NULL
+            ORDER BY entry_date_utc, id LIMIT 1)
+          WHERE p.id = ? AND p.firm_id = ? AND p.mode = 'cheque'
+            AND p.status = 'bounced' AND p.deleted_at_utc IS NULL
+          ''',
+          variables: [Variable<String>(paymentId), Variable<String>(firmId)],
+          readsFrom: {_db.payments, _db.parties, _db.journalEntries},
+        )
+        .getSingleOrNull();
+    if (r == null) return null;
+
+    final narration = r.readNullable<String>('narration') ?? '';
+    const marker = 'bounced: ';
+    final at = narration.indexOf(marker);
+    final due = r.readNullable<int>('cheque_date_utc');
+    final address = [
+      _blankToNull(r.readNullable<String>('address_line1')),
+      _blankToNull(r.readNullable<String>('address_line2')),
+    ].nonNulls.join(', ');
+
+    return DemandNotice(
+      shopName: firm.name,
+      shopAddress: firm.addressLine1,
+      shopCity: firm.city,
+      shopPhone: firm.phone,
+      partyName: r.read<String>('party_name'),
+      partyAddress: address.isEmpty ? null : address,
+      partyCity: _blankToNull(r.readNullable<String>('city')),
+      partyPhone: _blankToNull(r.readNullable<String>('phone')),
+      partyCnic: _blankToNull(r.readNullable<String>('cnic')),
+      chequeNo: r.read<String>('cheque_no'),
+      bank: _blankToNull(r.readNullable<String>('cheque_bank')),
+      chequeDate: due == null ? null : chequeDueDate(due),
+      amount: Money.paisa(r.read<int>('amount_paisa')),
+      bouncedOn: BusinessDate(r.read<String>('bounced_on')),
+      returnReason: at < 0 ? null : narration.substring(at + marker.length),
+      issuedOn: issuedOn,
+    );
+  }
+
+  @override
   Future<ReturnableDelivery?> returnableDelivery(
     String firmId,
     String documentId,

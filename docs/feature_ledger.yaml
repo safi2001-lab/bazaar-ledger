@@ -134,6 +134,7 @@ milestones:
     owns:
       - lib/features/cheques/**
       - packages/pk_domain/lib/src/cheques/**
+      - packages/pk_platform/lib/src/cheques/**
 
   - id: M7
     title: Sales documents, the conversion chain and pricing
@@ -3090,3 +3091,35 @@ features:
     # drawer on them. Nothing is said about a cheque whose day has not come.
     proof:
       - the first screen says when a cheque is due at the bank
+
+  - id: M6-NOTICE-01
+    milestone: M6
+    title: A bounced cheque's 489-F demand notice is drawn up from the books
+    status: done
+    # The bounce told the shop the date by which the notice had to go and
+    # then left it to find a munshi to type one. Everything the notice says
+    # is already recorded: the shop, the customer's name and address from
+    # the khata, the cheque's number, bank and date, the amount in figures
+    # and in words counted in lakhs and crores, the day it came back and the
+    # bank's own remarks. So it is drawn up from those, set as an A4 page with
+    # numbered paragraphs and a line to sign, and handed to the share sheet.
+    #
+    # A draft, and the screen says so: have an advocate check it before it
+    # is served. The app sends nothing to anybody; the shop does.
+    proof:
+      - an amount in words counts in thousands, lakhs and crores
+      - an amount in words says the paisa when there are any
+      - an amount in words says round figures without stray words
+      - an amount in words above a hundred crore the crores are counted again
+      - the notice names the cheque, the bank, the date and the amount
+      - the notice carries the return memo in the bank own words
+      - the notice gives the drawer fifteen days to pay
+      - the notice must be served within thirty days of the bounce
+      - the notice leaves out what the books do not know rather than printing blanks
+      - the notice addresses the drawer with what the khata holds
+      - a bounced cheque draws up its demand notice from the books
+      - a cheque that has not bounced has no demand notice
+      - a demand notice renders as a PDF naming the cheque
+      - a demand notice with an Urdu name carries the face to draw it
+      - a demand notice file is named after the cheque, safely
+      - a bounced cheque shares its demand notice as a PDF

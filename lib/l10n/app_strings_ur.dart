@@ -1518,5 +1518,20 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get chequeNoticeTitle => '489-F notice';
+
+  @override
+  String get chequeNoticeHint =>
+      'Yeh notice aap ke hisaab se bana hai. Bhejne se pehle wakeel ko zaroor dikhayein.';
+
+  @override
+  String get chequeNoticeShare => 'Notice PDF share karein';
+
+  @override
+  String chequeNoticeLate(String date) {
+    return 'Notice ki muddat $date ko guzar gayi';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

@@ -2804,6 +2804,30 @@ abstract class AppStrings {
   /// **'{count, plural, =1{1 cheque bank le jane ka din aa gaya} other{{count} cheque bank le jane ka din aa gaya}}'**
   String homeChequesDue(int count);
 
+  /// No description provided for @chequeNoticeTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'489-F notice'**
+  String get chequeNoticeTitle;
+
+  /// No description provided for @chequeNoticeHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh notice aap ke hisaab se bana hai. Bhejne se pehle wakeel ko zaroor dikhayein.'**
+  String get chequeNoticeHint;
+
+  /// No description provided for @chequeNoticeShare.
+  ///
+  /// In ur, this message translates to:
+  /// **'Notice PDF share karein'**
+  String get chequeNoticeShare;
+
+  /// No description provided for @chequeNoticeLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Notice ki muddat {date} ko guzar gayi'**
+  String chequeNoticeLate(String date);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

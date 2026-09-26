@@ -838,5 +838,16 @@
       }
     }
   },
+  "chequeNoticeTitle": "489-F notice",
+  "chequeNoticeHint": "Yeh notice aap ke hisaab se bana hai. Bhejne se pehle wakeel ko zaroor dikhayein.",
+  "chequeNoticeShare": "Notice PDF share karein",
+  "chequeNoticeLate": "Notice ki muddat {date} ko guzar gayi",
+  "@chequeNoticeLate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

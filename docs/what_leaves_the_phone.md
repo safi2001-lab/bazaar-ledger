@@ -147,6 +147,20 @@ says so before the backup is made.
 **Restoring replaces, but never deletes.** The books a restore replaces are
 kept beside it as `bazaar_ledger.sqlite.before-restore`.
 
+## Demand notices for bounced cheques
+
+The cheque drawer can draw up the Section 489-F demand notice for a cheque the
+bank returned. It carries more about a customer than anything else the app
+produces: name, address, phone and CNIC from the khata, the cheque's number,
+bank and amount, and the bank's remarks. So, precisely:
+
+**The app sends it nowhere.** The notice is rendered on the phone into a PDF
+in the app's temporary directory and handed to Android's share sheet, the same
+as a shared bill. Where it goes — a printer, an advocate on WhatsApp, the
+shop's own email — is chosen there, by the shopkeeper. Nothing is filed, served
+or uploaded by the app, and there is no legal-services integration of any
+kind.
+
 ## Permissions, and where each comes from
 
 | Permission | Source | Prompts? | Why |

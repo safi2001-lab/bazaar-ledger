@@ -759,5 +759,16 @@
       }
     }
   },
+  "chequeNoticeTitle": "489-F notice",
+  "chequeNoticeHint": "Drawn up from your books. Have your advocate check it before it is sent.",
+  "chequeNoticeShare": "Share the notice PDF",
+  "chequeNoticeLate": "The time to serve it ended on {date}",
+  "@chequeNoticeLate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

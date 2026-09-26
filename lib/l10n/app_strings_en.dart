@@ -1518,5 +1518,20 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get chequeNoticeTitle => '489-F notice';
+
+  @override
+  String get chequeNoticeHint =>
+      'Drawn up from your books. Have your advocate check it before it is sent.';
+
+  @override
+  String get chequeNoticeShare => 'Share the notice PDF';
+
+  @override
+  String chequeNoticeLate(String date) {
+    return 'The time to serve it ended on $date';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }
