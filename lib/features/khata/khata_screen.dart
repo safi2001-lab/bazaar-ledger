@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_editor.dart';
+import 'charge_sheet.dart';
 import 'khata_providers.dart';
 import 'pay_supplier_sheet.dart';
 import 'payables_section.dart';
@@ -56,6 +57,15 @@ class KhataScreen extends ConsumerWidget {
               label: s.khataRemind,
               onPressed: () =>
                   unawaited(_remind(context, ref, current, bills.valueOrNull)),
+            ),
+          // A charge with no sale behind it: a bank's bounce fee, a
+          // transporter's fare.
+          if (receivable)
+            BlIconButton(
+              icon: Icons.post_add_outlined,
+              label: s.chargeTitle,
+              onPressed: () =>
+                  unawaited(showChargeSheet(context, party: current)),
             ),
           BlIconButton(
             icon: Icons.edit_outlined,

@@ -987,5 +987,35 @@
       }
     }
   },
+  "chargeTitle": "Khate mein charge dalein",
+  "chargeAmount": "Kitne ka charge",
+  "chargeNote": "Kis cheez ka (zaroori)",
+  "chargeSave": "Khate mein dalein",
+  "chargeSaved": "{amount} khate mein daal diya",
+  "@chargeSaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "chargeNeedsAmount": "Raqam likhein",
+  "chargeNeedsNote": "Likhein kis cheez ka charge hai, warna gahak nahi dega",
+  "chargeBounceFee": "Yeh fee {name} ke khate mein bhi dalein",
+  "@chargeBounceFee": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chargeBounceFeeNote": "Cheque {chequeNo} bounce ki bank fee",
+  "@chargeBounceFeeNote": {
+    "placeholders": {
+      "chequeNo": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

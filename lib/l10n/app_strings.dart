@@ -3122,6 +3122,60 @@ abstract class AppStrings {
   /// **'Challan {docNo} ka saara maal wapas shelf par aa jaye ga. Pakka?'**
   String challanCancelConfirm(String docNo);
 
+  /// No description provided for @chargeTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khate mein charge dalein'**
+  String get chargeTitle;
+
+  /// No description provided for @chargeAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne ka charge'**
+  String get chargeAmount;
+
+  /// No description provided for @chargeNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis cheez ka (zaroori)'**
+  String get chargeNote;
+
+  /// No description provided for @chargeSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khate mein dalein'**
+  String get chargeSave;
+
+  /// No description provided for @chargeSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} khate mein daal diya'**
+  String chargeSaved(String amount);
+
+  /// No description provided for @chargeNeedsAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam likhein'**
+  String get chargeNeedsAmount;
+
+  /// No description provided for @chargeNeedsNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Likhein kis cheez ka charge hai, warna gahak nahi dega'**
+  String get chargeNeedsNote;
+
+  /// No description provided for @chargeBounceFee.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh fee {name} ke khate mein bhi dalein'**
+  String chargeBounceFee(String name);
+
+  /// No description provided for @chargeBounceFeeNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque {chequeNo} bounce ki bank fee'**
+  String chargeBounceFeeNote(String chequeNo);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

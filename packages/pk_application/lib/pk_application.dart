@@ -8,6 +8,7 @@ export 'src/issue_challan_use_case.dart';
 export 'src/move_cheque_use_case.dart';
 export 'src/pay_supplier_use_case.dart';
 export 'src/post_sale_use_case.dart';
+export 'src/record_debit_note_use_case.dart';
 export 'src/record_expense_use_case.dart';
 export 'src/record_purchase_return_use_case.dart';
 export 'src/record_purchase_use_case.dart';

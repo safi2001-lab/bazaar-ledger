@@ -193,7 +193,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
                        SELECT SUM(d.balance_paisa) FROM documents d
                        WHERE d.party_id = p.id
                          AND d.firm_id = p.firm_id
-                         AND d.doc_type = 'sale_invoice'
+                         AND d.doc_type IN ('sale_invoice', 'other_income')
                          AND d.status = 'posted'
                          AND d.deleted_at_utc IS NULL
                      ), 0) AS owed,

@@ -1719,5 +1719,39 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get chargeTitle => 'Charge to khata';
+
+  @override
+  String get chargeAmount => 'Amount to charge';
+
+  @override
+  String get chargeNote => 'What it is for (required)';
+
+  @override
+  String get chargeSave => 'Add to khata';
+
+  @override
+  String chargeSaved(String amount) {
+    return '$amount added to the khata';
+  }
+
+  @override
+  String get chargeNeedsAmount => 'Enter an amount';
+
+  @override
+  String get chargeNeedsNote =>
+      'Say what the charge is for, or the customer will not pay it';
+
+  @override
+  String chargeBounceFee(String name) {
+    return 'Charge this fee to $name too';
+  }
+
+  @override
+  String chargeBounceFeeNote(String chequeNo) {
+    return 'Bank fee for bounced cheque $chequeNo';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

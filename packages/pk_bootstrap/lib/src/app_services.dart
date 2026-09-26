@@ -154,6 +154,9 @@ final class AppServices {
   IssueChallanUseCase get issueChallan =>
       IssueChallanUseCase(writer: DriftChallanWriter(runner: _runner));
 
+  RecordDebitNoteUseCase get chargeParty =>
+      RecordDebitNoteUseCase(writer: DriftDebitNoteWriter(runner: _runner));
+
   MoveChequeUseCase get cheques =>
       MoveChequeUseCase(writer: DriftChequeWriter(runner: _runner));
 

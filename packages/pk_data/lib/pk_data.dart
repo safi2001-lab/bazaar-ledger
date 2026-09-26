@@ -15,6 +15,7 @@ export 'src/write/drift_attachments.dart';
 export 'src/write/drift_catalogue_writer.dart';
 export 'src/write/drift_challan_writer.dart';
 export 'src/write/drift_cheque_writer.dart' show DriftChequeWriter;
+export 'src/write/drift_debit_note_writer.dart';
 export 'src/write/drift_expense_writer.dart';
 export 'src/write/drift_payment_writer.dart';
 export 'src/write/drift_printer_settings.dart';

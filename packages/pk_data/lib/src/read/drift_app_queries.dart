@@ -259,7 +259,7 @@ final class DriftAppQueries implements AppQueries {
                  SELECT SUM(d.balance_paisa) FROM documents d
                  WHERE d.party_id = p.id
                    AND d.firm_id = p.firm_id
-                   AND d.doc_type = 'sale_invoice'
+                   AND d.doc_type IN ('sale_invoice', 'other_income')
                    AND d.status = 'posted'
                    AND d.deleted_at_utc IS NULL
                ), 0)
@@ -335,15 +335,20 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           '''
           SELECT id, kind, reference, date_local, amount_paisa FROM (
+            -- Bills, and charges put on the khata with no sale behind
+            -- them, which carry their reason so the customer can be told.
             SELECT d.id AS id,
-                   'sale' AS kind,
-                   d.doc_no AS reference,
+                   CASE d.doc_type WHEN 'other_income' THEN 'charge'
+                        ELSE 'sale' END AS kind,
+                   CASE d.doc_type WHEN 'other_income'
+                        THEN d.doc_no || ' · ' || COALESCE(d.notes, '')
+                        ELSE d.doc_no END AS reference,
                    d.doc_date_local AS date_local,
                    d.total_paisa AS amount_paisa,
                    d.created_at_utc AS recorded
             FROM documents d
             WHERE d.firm_id = ? AND d.party_id = ?
-              AND d.doc_type = 'sale_invoice'
+              AND d.doc_type IN ('sale_invoice', 'other_income')
               AND d.status NOT IN ('void', 'draft')
               AND d.deleted_at_utc IS NULL
 
@@ -542,7 +547,7 @@ final class DriftAppQueries implements AppQueries {
             -- the shop has not finished paying for aged here as though a
             -- customer owed it, and the 90-day bucket filled with the
             -- shop's own debts.
-            AND d.doc_type = 'sale_invoice'
+            AND d.doc_type IN ('sale_invoice', 'other_income')
             AND d.balance_paisa > 0
             AND d.party_id IS NOT NULL
             AND d.status NOT IN ('void', 'draft')
@@ -588,7 +593,7 @@ final class DriftAppQueries implements AppQueries {
           WHERE d.firm_id = ?
             -- Sale invoices only, or a party the shop also buys from is
             -- chased from the date of a delivery the shop owes on.
-            AND d.doc_type = 'sale_invoice'
+            AND d.doc_type IN ('sale_invoice', 'other_income')
             AND d.balance_paisa > 0
             AND d.status NOT IN ('void', 'draft')
             AND d.deleted_at_utc IS NULL
@@ -718,7 +723,11 @@ final class DriftAppQueries implements AppQueries {
       // `_DriftPaymentWriteContext.openBillsFor`. The preview a shopkeeper
       // approves has to be what the write actually does, and two orderings
       // would make it a guess.
-      _openDocuments(firmId, partyId, "doc_type = 'sale_invoice'");
+      _openDocuments(
+        firmId,
+        partyId,
+        "doc_type IN ('sale_invoice', 'other_income')",
+      );
 
   @override
   Future<List<OpenBill>> openPayablesFor(String firmId, String partyId) =>
@@ -1406,6 +1415,7 @@ final class DriftAppQueries implements AppQueries {
     final (docTitle, docLabel) = switch (doc.read<String>('doc_type')) {
       'quotation' => ('Quotation', 'Quotation No'),
       'delivery_challan' => ('Delivery Challan', 'Challan No'),
+      'other_income' => ('Debit Note', 'Note No'),
       _ => ('Invoice', 'Bill No'),
     };
     final terms = _blankToNull(doc.readNullable<String>('terms'));

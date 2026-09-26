@@ -3336,3 +3336,28 @@ features:
       - a bill made from a challan takes nothing more off the shelf
       - goods that came back cancel the challan
       - a challan is shared as a PDF titled Delivery Challan
+
+  - id: M7-DEBIT-01
+    milestone: M7
+    title: A charge goes on a customer's khata without a sale, and a bounce fee goes back to who caused it
+    status: done
+    # A debit note. The bank's fee on a bounced cheque and the transporter's
+    # fare for goods sent are owed by the customer and are not sales; until
+    # now the only way to put either on a khata was a fake bill, which put a
+    # bank fee in the day's takings. The khata screen takes an amount and a
+    # reason; the note is an other_income document with the party on it
+    # (the mirror of an unpaid expense on a supplier's side), posted Dr
+    # Receivables, Cr Other Income, shown on the khata history with its
+    # reason, and settled by receipts exactly as a bill is. Every customer
+    # receivable query now reads it: balance, open bills, the receipt
+    # allocator, aging, who to chase, and the check before a party is
+    # hidden. The bounce sheet can put the bank's fee on the customer as
+    # well, which M6 left here. A debit note cannot yet be cancelled.
+    proof:
+      - a charge is owed on the khata and is income, not a sale
+      - a charge shows on the khata with its reason
+      - a receipt settles a charge like a bill
+      - a charge with no reason is refused
+      - a charge is put on the khata from the customer screen
+      - a charge with no reason is not saved
+      - a bounce fee is put back on the customer who caused it

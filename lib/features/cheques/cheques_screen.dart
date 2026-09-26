@@ -495,6 +495,9 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
   final _fee = TextEditingController();
   _Step _step = _Step.choose;
   String? _bankAccountId;
+
+  /// Whether the bank's fee is put on the customer's khata as well.
+  bool _chargeFee = false;
   bool _busy = false;
   String? _failure;
 
@@ -718,6 +721,12 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
                       ),
                   ],
                 ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  value: _chargeFee,
+                  title: Text(s.chargeBounceFee(cheque.partyName)),
+                  onChanged: (v) => setState(() => _chargeFee = v),
+                ),
               ],
               const SizedBox(height: BlTokens.space4),
               BlButton(
@@ -737,20 +746,37 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
                           ),
                           then: fee == null || !fee.isPositive || bankId == null
                               ? null
-                              : (services) => services.recordExpense(
-                                  services.actorNow(),
-                                  ExpenseDraft(
-                                    // No head of its own yet; misc, with
-                                    // the cheque named, is findable.
-                                    accountSystemKey: 'misc',
-                                    amount: fee,
-                                    note: s.chequeBounceFeeNote(
-                                      cheque.chequeNo,
-                                      cheque.partyName,
+                              : (services) async {
+                                  await services.recordExpense(
+                                    services.actorNow(),
+                                    ExpenseDraft(
+                                      // No head of its own yet; misc, with
+                                      // the cheque named, is findable.
+                                      accountSystemKey: 'misc',
+                                      amount: fee,
+                                      note: s.chequeBounceFeeNote(
+                                        cheque.chequeNo,
+                                        cheque.partyName,
+                                      ),
+                                      paymentAccountId: bankId,
                                     ),
-                                    paymentAccountId: bankId,
-                                  ),
-                                ),
+                                  );
+                                  // And back from the customer who caused
+                                  // it, as a debit note on their khata.
+                                  if (_chargeFee) {
+                                    await services.chargeParty(
+                                      services.actorNow(),
+                                      DebitNoteDraft(
+                                        partyId: cheque.partyId,
+                                        partyName: cheque.partyName,
+                                        amount: fee,
+                                        note: s.chargeBounceFeeNote(
+                                          cheque.chequeNo,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
                           thenFailed: (error) =>
                               s.chequeBounceFeeFailed('$error'),
                         ),

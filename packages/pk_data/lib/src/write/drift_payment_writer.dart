@@ -63,7 +63,10 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
     // customer and a supplier had their payment to the shop settle the
     // shop's own purchase bills from them: money in, applied to money out,
     // and the payable quietly vanished while the udhaar stayed.
-    return _open(partyId, "doc_type = 'sale_invoice'");
+    //
+    // A charge put on the khata with no sale behind it (a debit note) is
+    // owed exactly as a bill is, and settled by the same receipts.
+    return _open(partyId, "doc_type IN ('sale_invoice', 'other_income')");
   }
 
   @override

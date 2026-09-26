@@ -908,5 +908,35 @@
       }
     }
   },
+  "chargeTitle": "Charge to khata",
+  "chargeAmount": "Amount to charge",
+  "chargeNote": "What it is for (required)",
+  "chargeSave": "Add to khata",
+  "chargeSaved": "{amount} added to the khata",
+  "@chargeSaved": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "chargeNeedsAmount": "Enter an amount",
+  "chargeNeedsNote": "Say what the charge is for, or the customer will not pay it",
+  "chargeBounceFee": "Charge this fee to {name} too",
+  "@chargeBounceFee": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chargeBounceFeeNote": "Bank fee for bounced cheque {chequeNo}",
+  "@chargeBounceFeeNote": {
+    "placeholders": {
+      "chequeNo": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

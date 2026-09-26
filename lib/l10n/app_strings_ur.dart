@@ -1719,5 +1719,39 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get chargeTitle => 'Khate mein charge dalein';
+
+  @override
+  String get chargeAmount => 'Kitne ka charge';
+
+  @override
+  String get chargeNote => 'Kis cheez ka (zaroori)';
+
+  @override
+  String get chargeSave => 'Khate mein dalein';
+
+  @override
+  String chargeSaved(String amount) {
+    return '$amount khate mein daal diya';
+  }
+
+  @override
+  String get chargeNeedsAmount => 'Raqam likhein';
+
+  @override
+  String get chargeNeedsNote =>
+      'Likhein kis cheez ka charge hai, warna gahak nahi dega';
+
+  @override
+  String chargeBounceFee(String name) {
+    return 'Yeh fee $name ke khate mein bhi dalein';
+  }
+
+  @override
+  String chargeBounceFeeNote(String chequeNo) {
+    return 'Cheque $chequeNo bounce ki bank fee';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }
