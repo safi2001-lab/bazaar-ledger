@@ -130,7 +130,21 @@ milestones:
     # clears it is not money in the bank, and until the shop can see which
     # cheques are due, which are late and which bounced, it cannot chase any
     # of them.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 8/8. A cheque is taken with its date at the
+    # counter or on a khata, sits in a drawer that lists what is due and
+    # says so on the home screen, and is banked, cleared or bounced from
+    # there. A bounce reopens exactly what the cheque paid, books the bank's
+    # fee, asks before the same customer gets more credit, and draws up the
+    # 489-F demand notice. The shop's own cheques to suppliers have the same
+    # life on the other side of the books, with a warning before they can be
+    # presented.
+    #
+    # Not built here, and said so: recharging a bounce fee to the customer
+    # needs a debit note (M7); the research notes also mention pre-filling an
+    # Order XXXVII summary suit, which the plan never scheduled and which is
+    # an advocate's drafting, not a shop's.
+    state: sealed
     owns:
       - lib/features/cheques/**
       - packages/pk_domain/lib/src/cheques/**
