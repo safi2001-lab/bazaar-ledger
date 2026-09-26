@@ -56,12 +56,27 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
   @override
   Future<PostedDocumentSnapshot?> snapshotOf(String documentId) async {
     final doc = await _tx.selectOne(
-      'SELECT id, doc_no FROM documents '
+      'SELECT id, doc_no, doc_type FROM documents '
       "WHERE id = ? AND firm_id = ? AND status = 'posted' "
       '  AND deleted_at_utc IS NULL',
       [documentId, actor.firmId],
     );
     if (doc == null) return null;
+
+    // Sale bills only. Reversing the journal and the stock is the whole of
+    // undoing a sale, because a sale takes goods out at the average and
+    // leaves the average alone. A delivery is different: it MOVED the
+    // average, and a void that put the stock back out without moving the
+    // cost back would leave every margin in the shop resting on a delivery
+    // that never happened. Nothing on screen offers a void for anything else
+    // yet; this makes sure nothing can, until that arithmetic exists.
+    final docType = doc.read<String>('doc_type');
+    if (docType != 'sale_invoice') {
+      throw VoidRefused(
+        '${doc.read<String>('doc_no')} is not a sale bill, and only a sale '
+        'bill can be cancelled this way.',
+      );
+    }
 
     final entryRow = await _tx.selectOne(
       'SELECT id, entry_no, entry_date_utc, entry_date_local, fiscal_year, '

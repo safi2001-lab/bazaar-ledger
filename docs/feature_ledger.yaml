@@ -2374,6 +2374,11 @@ features:
     #
     # Mutation-tested: blocking every allocation fails eight, and leaving the
     # tender standing fails one.
+    #
+    # Sale bills only, since 26 Sep 2026. The snapshot read had no document
+    # type, so the writer would have voided a delivery if anything asked: the
+    # stock back out and the journal reversed, the cost average left where
+    # the delivery moved it. Nothing on screen asked, but the door was open.
     proof:
       - the books net to zero after a void
       - the stock comes back
@@ -2389,6 +2394,7 @@ features:
       - what it refuses a void with no reason, before anything is written
       - a failed void burns no journal number
       - the void is recorded in the audit trail
+      - what it refuses a delivery, whose cost cannot be undone by reversing it
 
   - id: M5-VOID-03
     milestone: M5

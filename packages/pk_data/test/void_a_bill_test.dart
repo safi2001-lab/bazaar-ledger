@@ -378,6 +378,43 @@ void main() {
       );
     });
 
+    test('a delivery, whose cost cannot be undone by reversing it', () async {
+      // A purchase moved the average. Reversing its journal and stock without
+      // moving the cost back would leave every margin on a delivery that
+      // never happened, so nothing but a sale bill can be voided here.
+      final bought =
+          await RecordPurchaseUseCase(
+            writer: DriftPurchaseWriter(runner: runner),
+          )(
+            actor,
+            PurchaseDraft(
+              partyId: partyId,
+              lines: [
+                PurchaseLineDraft(
+                  itemId: riceId,
+                  itemName: 'Chawal',
+                  qty: Qty.units(10),
+                  baseQty: Qty.units(10),
+                  unitId: pcsUnitId,
+                  unitCode: 'pcs',
+                  rate: Rate.rupees(120),
+                ),
+              ],
+            ),
+          );
+      final entriesBefore = await countOf('journal_entries');
+
+      await expectLater(
+        voidDocument(
+          actor,
+          documentId: bought.documentId,
+          reason: 'Wrong quantity',
+        ),
+        throwsA(isA<VoidRefused>()),
+      );
+      expect(await countOf('journal_entries'), entriesBefore);
+    });
+
     test('a bill that does not exist', () async {
       await expectLater(
         voidDocument(actor, documentId: 'nothing', reason: 'Typo'),
