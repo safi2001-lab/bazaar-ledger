@@ -8,6 +8,7 @@ import 'report_table.dart';
 /// The reports a shop can run.
 enum ReportKind {
   profitAndLoss,
+  salesByDay,
   salesByItem,
   expenses,
   cashBook,
@@ -15,11 +16,18 @@ enum ReportKind {
 
   /// As it stands now; the period is ignored.
   stockValue,
+
+  /// Aged as of today; the period is ignored.
+  receivables,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
 final class ReportEngine {
   const ReportEngine(this.source);
+
+  /// Whether [kind] is as of today rather than over a period.
+  static bool isAsOfToday(ReportKind kind) =>
+      kind == ReportKind.stockValue || kind == ReportKind.receivables;
 
   final ReportSource source;
 
@@ -36,6 +44,14 @@ final class ReportEngine {
     ReportKind.expenses => expensesByHead(
       period,
       await source.accountMovements(firmId, period),
+    ),
+    ReportKind.salesByDay => salesByDay(
+      period,
+      await source.dailySales(firmId, period),
+    ),
+    ReportKind.receivables => receivablesByAge(
+      today,
+      await source.receivables(firmId, today),
     ),
     ReportKind.salesByItem => salesByItem(
       period,

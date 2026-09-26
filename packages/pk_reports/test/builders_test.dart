@@ -230,6 +230,82 @@ void main() {
     });
   });
 
+  group('sales by day', () {
+    test('each day in date order, and the period summed', () {
+      final t = salesByDay(_september, [
+        const DaySales(
+          date: BusinessDate('2026-09-03'),
+          bills: 2,
+          sales: Money.rupees(3000),
+          returns: Money.zero,
+          received: Money.rupees(1000),
+          onUdhaar: Money.rupees(2000),
+        ),
+        const DaySales(
+          date: BusinessDate('2026-09-01'),
+          bills: 5,
+          sales: Money.rupees(7000),
+          returns: Money.rupees(500),
+          received: Money.rupees(7000),
+          onUdhaar: Money.zero,
+        ),
+      ]);
+      expect(t.rows.first.cells.first, '2026-09-01');
+      expect(t.totals.single.cells, [
+        'Total',
+        7,
+        const Money.rupees(10000),
+        const Money.rupees(500),
+        const Money.rupees(8000),
+        const Money.rupees(2000),
+      ]);
+    });
+  });
+
+  group('udhaar by age', () {
+    test('the oldest money first, and each owed matches the khata', () {
+      final t = receivablesByAge(const BusinessDate('2026-09-26'), [
+        const PartyReceivable(
+          name: 'Bilal Store',
+          opening: Money.zero,
+          upTo30: Money.rupees(4000),
+          upTo60: Money.zero,
+          upTo90: Money.zero,
+          over90: Money.zero,
+          advance: Money.zero,
+        ),
+        const PartyReceivable(
+          name: 'Rashid Traders',
+          opening: Money.rupees(1000),
+          upTo30: Money.zero,
+          upTo60: Money.zero,
+          upTo90: Money.zero,
+          over90: Money.rupees(2500),
+          advance: Money.rupees(500),
+        ),
+        const PartyReceivable(
+          name: 'Settled Sahib',
+          opening: Money.zero,
+          upTo30: Money.zero,
+          upTo60: Money.zero,
+          upTo90: Money.zero,
+          over90: Money.zero,
+          advance: Money.zero,
+        ),
+      ]);
+      expect(
+        [for (final r in t.rows) r.cells.first],
+        ['Rashid Traders', 'Bilal Store', 'Total'],
+      );
+      expect(t.rows.first.cells.sublist(6), [
+        const Money.rupees(-500),
+        const Money.rupees(3000),
+      ]);
+      expect(t.totals.single.cells.last, const Money.rupees(7000));
+      expect(t.notes, hasLength(3));
+    });
+  });
+
   group('periods', () {
     test('a month ends on its last day, February included', () {
       final feb = ReportPeriod.monthOf(const BusinessDate('2028-02-10'));

@@ -1037,5 +1037,9 @@
   "reportThisYear": "Is saal",
   "reportAsOfNow": "Abhi tak",
   "reportShareCsv": "CSV bhejein",
+  "reportSalesByDay": "Roz ki bikri",
+  "reportSalesByDayHint": "Har din kitne bill, kitni bikri, kitna udhaar",
+  "reportReceivables": "Udhaar kitna purana",
+  "reportReceivablesHint": "Kis par kitna baqi hai, aur kab se",
   "chequeDone": "Ho gaya"
 }

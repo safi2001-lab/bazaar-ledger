@@ -339,3 +339,112 @@ String _shelfAndBooksDiffer(Money gap) =>
     'The shelf at average cost and the books differ by '
     'Rs ${gap.abs.amountOnly}: the average moves as goods arrive, and the '
     'books keep what each movement cost at the time.';
+
+/// Each day's selling in [period], and the period's total.
+ReportTable salesByDay(ReportPeriod period, List<DaySales> days) {
+  final sorted = days.toList()
+    ..sort((a, b) => a.date.value.compareTo(b.date.value));
+  Money sum(Money Function(DaySales d) f) => Money.sum(sorted.map(f));
+  return ReportTable(
+    id: 'sales_by_day',
+    title: 'Sales by day',
+    period: period,
+    columns: const [
+      ReportColumn('Date', CellKind.text),
+      ReportColumn('Bills', CellKind.count),
+      ReportColumn('Sales', CellKind.money),
+      ReportColumn('Returns', CellKind.money),
+      ReportColumn('Received', CellKind.money),
+      ReportColumn('On udhaar', CellKind.money),
+    ],
+    rows: [
+      for (final d in sorted)
+        ReportRow([
+          d.date.value,
+          d.bills,
+          d.sales,
+          d.returns,
+          d.received,
+          d.onUdhaar,
+        ]),
+      ReportRow([
+        'Total',
+        sorted.fold<int>(0, (n, d) => n + d.bills),
+        sum((d) => d.sales),
+        sum((d) => d.returns),
+        sum((d) => d.received),
+        sum((d) => d.onUdhaar),
+      ], style: RowStyle.total),
+    ],
+    notes: const [_receivedAtTheCounter],
+  );
+}
+
+const _receivedAtTheCounter =
+    "Received is what was paid at the counter on the day's bills. Money "
+    'collected later against udhaar is in the Cash Book on the day it came.';
+
+/// Who owes the shop, and for how long, oldest money on the right.
+ReportTable receivablesByAge(BusinessDate asOf, List<PartyReceivable> parties) {
+  final owing = parties.where((p) => !p.owed.isZero).toList()
+    ..sort((a, b) {
+      final byOld = b.over90.compareTo(a.over90);
+      if (byOld != 0) return byOld;
+      final byOwed = b.owed.compareTo(a.owed);
+      return byOwed != 0 ? byOwed : a.name.compareTo(b.name);
+    });
+  Money sum(Money Function(PartyReceivable p) f) => Money.sum(owing.map(f));
+  final anyOpening = owing.any((p) => !p.opening.isZero);
+  final anyAdvance = owing.any((p) => !p.advance.isZero);
+  return ReportTable(
+    id: 'receivables',
+    title: 'Udhaar by age',
+    period: ReportPeriod.day(asOf),
+    columns: const [
+      ReportColumn('Customer', CellKind.text),
+      ReportColumn('Opening', CellKind.money),
+      ReportColumn('0-30 days', CellKind.money),
+      ReportColumn('31-60 days', CellKind.money),
+      ReportColumn('61-90 days', CellKind.money),
+      ReportColumn('Over 90 days', CellKind.money),
+      ReportColumn('Advance', CellKind.money),
+      ReportColumn('Owed', CellKind.money),
+    ],
+    rows: [
+      for (final p in owing)
+        ReportRow([
+          p.name,
+          p.opening,
+          p.upTo30,
+          p.upTo60,
+          p.upTo90,
+          p.over90,
+          -p.advance,
+          p.owed,
+        ]),
+      ReportRow([
+        'Total',
+        sum((p) => p.opening),
+        sum((p) => p.upTo30),
+        sum((p) => p.upTo60),
+        sum((p) => p.upTo90),
+        sum((p) => p.over90),
+        -sum((p) => p.advance),
+        sum((p) => p.owed),
+      ], style: RowStyle.total),
+    ],
+    notes: [
+      'Aged from the date of each bill or charge still open.',
+      if (anyOpening) _openingHasNoDate,
+      if (anyAdvance) _advanceComesOff,
+    ],
+  );
+}
+
+const _openingHasNoDate =
+    'Opening is the balance brought forward when the khata was started, '
+    'which has no date to age from.';
+
+const _advanceComesOff =
+    'Advance is money the shop is holding for the customer, and comes off '
+    'what they owe.';

@@ -178,4 +178,27 @@ void main() {
     expect(t.totals.single.cells.last, const Money.rupees(-4000));
     expect(t.notes.first, 'Inventory in the books: Rs -4,000.00.');
   });
+
+  test('sales by day counts the bill that stands', () async {
+    final t = await run(ReportKind.salesByDay);
+    expect(t.rows.first.cells, [
+      '2026-09-26',
+      1,
+      const Money.rupees(5000),
+      Money.zero,
+      const Money.rupees(5000),
+      Money.zero,
+    ]);
+  });
+
+  test('udhaar by age owes what the khata says', () async {
+    final t = await run(ReportKind.receivables);
+    final rashid = t.rows.first;
+    expect(rashid.cells.first, 'Rashid Traders');
+    expect(rashid.cells[2], const Money.rupees(500), reason: '0-30 days');
+    final id = (await db.customSelect('SELECT id FROM parties').getSingle())
+        .read<String>('id');
+    final party = await DriftAppQueries(db).partyById(firm.firmId, id);
+    expect(rashid.cells.last, party!.balance);
+  });
 }

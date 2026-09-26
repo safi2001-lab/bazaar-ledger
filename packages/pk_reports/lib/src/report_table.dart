@@ -15,6 +15,9 @@ enum CellKind {
 
   /// A share, in basis points as an [int]: 1250 is 12.50%.
   percent,
+
+  /// A count of things, as an [int]: bills, entries.
+  count,
 }
 
 /// One column of a report.
@@ -73,7 +76,7 @@ final class ReportTable {
           CellKind.text => cell is String,
           CellKind.money => cell is Money,
           CellKind.qty => cell is Qty,
-          CellKind.percent => cell is int,
+          CellKind.percent || CellKind.count => cell is int,
         };
         if (!ok && !(row.style == RowStyle.heading && i == 0)) {
           throw ArgumentError(

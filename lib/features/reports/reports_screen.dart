@@ -75,6 +75,8 @@ class ReportsScreen extends StatelessWidget {
 
   static IconData _icon(ReportKind kind) => switch (kind) {
     ReportKind.profitAndLoss => Icons.trending_up,
+    ReportKind.salesByDay => Icons.calendar_month_outlined,
+    ReportKind.receivables => Icons.hourglass_bottom_outlined,
     ReportKind.salesByItem => Icons.shopping_basket_outlined,
     ReportKind.expenses => Icons.receipt_outlined,
     ReportKind.cashBook => Icons.point_of_sale_outlined,
@@ -84,6 +86,8 @@ class ReportsScreen extends StatelessWidget {
 
   static String _hint(AppStrings s, ReportKind kind) => switch (kind) {
     ReportKind.profitAndLoss => s.reportProfitAndLossHint,
+    ReportKind.salesByDay => s.reportSalesByDayHint,
+    ReportKind.receivables => s.reportReceivablesHint,
     ReportKind.salesByItem => s.reportSalesByItemHint,
     ReportKind.expenses => s.reportExpensesHint,
     ReportKind.cashBook => s.reportCashBookHint,
@@ -95,6 +99,8 @@ class ReportsScreen extends StatelessWidget {
 /// A report's name as the shop reads it.
 String reportName(AppStrings s, ReportKind kind) => switch (kind) {
   ReportKind.profitAndLoss => s.reportProfitAndLoss,
+  ReportKind.salesByDay => s.reportSalesByDay,
+  ReportKind.receivables => s.reportReceivables,
   ReportKind.salesByItem => s.reportSalesByItem,
   ReportKind.expenses => s.reportExpenses,
   ReportKind.cashBook => s.reportCashBook,
@@ -138,7 +144,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   };
   bool _sharing = false;
 
-  bool get _hasPeriod => widget.kind != ReportKind.stockValue;
+  bool get _hasPeriod => !ReportEngine.isAsOfToday(widget.kind);
 
   ReportPeriod _period(BusinessDate today) => switch (_span) {
     _Span.today => ReportPeriod.day(today),

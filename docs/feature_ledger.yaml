@@ -3439,3 +3439,20 @@ features:
       - last month shows nothing earned this month
       - a report goes out as a CSV the accountant can open
       - stock value is as of now and lists the shelf
+
+  - id: M8-DAYS-01
+    milestone: M8
+    title: Each day's selling, and who owes and for how long, on one page each
+    status: done
+    # Sales by day lists every day of the period with its bills, sales,
+    # returns, what was paid at the counter and what went on udhaar. Udhaar
+    # by age splits every customer's balance into the opening balance, open
+    # bills and charges by 0-30, 31-60, 61-90 and over 90 days, less any
+    # advance, so each row ends on the figure on that customer's khata.
+    proof:
+      - sales by day each day in date order, and the period summed
+      - udhaar by age the oldest money first, and each owed matches the khata
+      - sales by day counts the bill that stands
+      - udhaar by age owes what the khata says
+      - udhaar by age is as of now and lists who owes
+      - sales by day shows the day the bill was rung

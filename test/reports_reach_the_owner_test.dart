@@ -71,6 +71,32 @@ void main() {
     expect(find.text('Cooking Oil 5L'), findsOneWidget);
     expect(find.text('Pichla mahina'), findsNothing);
   });
+
+  testWidgets('udhaar by age is as of now and lists who owes', (tester) async {
+    final app = await Harness.startWithShop(tester);
+    await app.seedParty(name: 'Rashid Traders', owedRupees: 4500);
+
+    await tapText(tester, 'Report');
+    // The last report on the list, below the fold on a phone.
+    await tester.scrollUntilVisible(find.text('Udhaar kitna purana'), 200);
+    await tapText(tester, 'Udhaar kitna purana');
+
+    expect(find.text('Abhi tak'), findsOneWidget);
+    expect(find.text('Rashid Traders'), findsOneWidget);
+    expect(find.text('4,500.00'), findsWidgets);
+  });
+
+  testWidgets('sales by day shows the day the bill was rung', (tester) async {
+    final app = await Harness.startWithShop(tester);
+    await _aDayOfTrade(app);
+
+    await tapText(tester, 'Report');
+    await tapText(tester, 'Roz ki bikri');
+
+    final today = BusinessDate.now(app.services.clock).value;
+    expect(find.text(today), findsOneWidget);
+    expect(find.text('2,500.00'), findsWidgets);
+  });
 }
 
 /// A cash sale of Rs 2,500, of goods the harness stocks at Rs 1,500, and

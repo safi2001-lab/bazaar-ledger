@@ -1816,5 +1816,18 @@ class AppStringsUr extends AppStrings {
   String get reportShareCsv => 'CSV bhejein';
 
   @override
+  String get reportSalesByDay => 'Roz ki bikri';
+
+  @override
+  String get reportSalesByDayHint =>
+      'Har din kitne bill, kitni bikri, kitna udhaar';
+
+  @override
+  String get reportReceivables => 'Udhaar kitna purana';
+
+  @override
+  String get reportReceivablesHint => 'Kis par kitna baqi hai, aur kab se';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

@@ -113,6 +113,61 @@ final class StockPosition {
   Money get value => averageCost.amountFor(qty);
 }
 
+/// One day's selling.
+final class DaySales {
+  const DaySales({
+    required this.date,
+    required this.bills,
+    required this.sales,
+    required this.returns,
+    required this.received,
+    required this.onUdhaar,
+  });
+
+  final BusinessDate date;
+  final int bills;
+
+  /// What the day's bills came to, tax included.
+  final Money sales;
+
+  /// What the day's sale returns gave back.
+  final Money returns;
+
+  /// What was paid at the counter against the day's bills.
+  final Money received;
+
+  /// What the day's bills left owing.
+  final Money onUdhaar;
+}
+
+/// What one customer owes, by how long it has been owed.
+final class PartyReceivable {
+  const PartyReceivable({
+    required this.name,
+    required this.opening,
+    required this.upTo30,
+    required this.upTo60,
+    required this.upTo90,
+    required this.over90,
+    required this.advance,
+  });
+
+  final String name;
+
+  /// The balance brought forward when the khata was opened, undated.
+  final Money opening;
+  final Money upTo30;
+  final Money upTo60;
+  final Money upTo90;
+  final Money over90;
+
+  /// Money the shop is holding for them, which comes off what they owe.
+  final Money advance;
+
+  /// The same figure as the khata's balance.
+  Money get owed => opening + upTo30 + upTo60 + upTo90 + over90 - advance;
+}
+
 /// Where the reports read from. Implemented against the database in
 /// pk_data; every method is a read, and none of them adds anything up that a
 /// builder then adds up again.
@@ -140,4 +195,10 @@ abstract interface class ReportSource {
 
   /// The balance of Inventory in the books now.
   Future<Money> inventoryInBooks(String firmId);
+
+  /// Each day in [period] with a bill or a return on it.
+  Future<List<DaySales>> dailySales(String firmId, ReportPeriod period);
+
+  /// Every customer with anything open, aged on [asOf].
+  Future<List<PartyReceivable>> receivables(String firmId, BusinessDate asOf);
 }

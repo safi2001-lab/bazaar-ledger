@@ -958,5 +958,9 @@
   "reportThisYear": "This year",
   "reportAsOfNow": "As of now",
   "reportShareCsv": "Send CSV",
+  "reportSalesByDay": "Sales by day",
+  "reportSalesByDayHint": "Each day's bills, sales and udhaar",
+  "reportReceivables": "Udhaar by age",
+  "reportReceivablesHint": "Who owes what, and for how long",
   "chequeDone": "Done"
 }

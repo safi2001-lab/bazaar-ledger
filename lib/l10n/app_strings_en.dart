@@ -1815,5 +1815,17 @@ class AppStringsEn extends AppStrings {
   String get reportShareCsv => 'Send CSV';
 
   @override
+  String get reportSalesByDay => 'Sales by day';
+
+  @override
+  String get reportSalesByDayHint => 'Each day\'s bills, sales and udhaar';
+
+  @override
+  String get reportReceivables => 'Udhaar by age';
+
+  @override
+  String get reportReceivablesHint => 'Who owes what, and for how long';
+
+  @override
   String get chequeDone => 'Done';
 }

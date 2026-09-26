@@ -3296,6 +3296,30 @@ abstract class AppStrings {
   /// **'CSV bhejein'**
   String get reportShareCsv;
 
+  /// No description provided for @reportSalesByDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roz ki bikri'**
+  String get reportSalesByDay;
+
+  /// No description provided for @reportSalesByDayHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har din kitne bill, kitni bikri, kitna udhaar'**
+  String get reportSalesByDayHint;
+
+  /// No description provided for @reportReceivables.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar kitna purana'**
+  String get reportReceivables;
+
+  /// No description provided for @reportReceivablesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis par kitna baqi hai, aur kab se'**
+  String get reportReceivablesHint;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

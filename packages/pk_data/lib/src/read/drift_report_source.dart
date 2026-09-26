@@ -275,4 +275,121 @@ final class DriftReportSource implements ReportSource {
         .getSingle();
     return Money.paisa(row.read<int>('books'));
   }
+
+  @override
+  Future<List<DaySales>> dailySales(String firmId, ReportPeriod period) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT doc_date_local,
+                 SUM(CASE WHEN doc_type = 'sale_invoice' THEN 1 ELSE 0 END)
+                   AS bills,
+                 SUM(CASE WHEN doc_type = 'sale_invoice'
+                          THEN total_paisa ELSE 0 END) AS sales,
+                 SUM(CASE WHEN doc_type = 'sale_return'
+                          THEN total_paisa ELSE 0 END) AS returns,
+                 SUM(CASE WHEN doc_type = 'sale_invoice'
+                          THEN paid_paisa ELSE 0 END) AS received,
+                 SUM(CASE WHEN doc_type = 'sale_invoice'
+                          THEN total_paisa - paid_paisa ELSE 0 END)
+                   AS on_udhaar
+          FROM documents
+          WHERE firm_id = ?1
+            AND doc_type IN ('sale_invoice', 'sale_return')
+            AND status = 'posted'
+            AND doc_date_local BETWEEN ?2 AND ?3
+            AND deleted_at_utc IS NULL
+          GROUP BY doc_date_local
+          ORDER BY doc_date_local
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(period.from.value),
+            Variable<String>(period.to.value),
+          ],
+          readsFrom: {_db.documents},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        DaySales(
+          date: BusinessDate(r.read<String>('doc_date_local')),
+          bills: r.read<int>('bills'),
+          sales: Money.paisa(r.read<int>('sales')),
+          returns: Money.paisa(r.read<int>('returns')),
+          received: Money.paisa(r.read<int>('received')),
+          onUdhaar: Money.paisa(r.read<int>('on_udhaar')),
+        ),
+    ];
+  }
+
+  @override
+  Future<List<PartyReceivable>> receivables(
+    String firmId,
+    BusinessDate asOf,
+  ) async {
+    // The same three parts as the khata's balance -- opening, open bills and
+    // charges, less advances -- with the open part split by age on the
+    // business date, so each row's total is the figure on that khata.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT p.name, p.opening_balance_paisa AS opening,
+                 COALESCE(SUM(CASE WHEN a.days <= 30 THEN a.owed END), 0)
+                   AS d30,
+                 COALESCE(SUM(CASE WHEN a.days BETWEEN 31 AND 60
+                                   THEN a.owed END), 0) AS d60,
+                 COALESCE(SUM(CASE WHEN a.days BETWEEN 61 AND 90
+                                   THEN a.owed END), 0) AS d90,
+                 COALESCE(SUM(CASE WHEN a.days > 90 THEN a.owed END), 0)
+                   AS over90,
+                 COALESCE((
+                   SELECT SUM(jl.credit_paisa - jl.debit_paisa)
+                   FROM journal_lines jl
+                   JOIN accounts acc ON acc.id = jl.account_id
+                   WHERE jl.party_id = p.id
+                     AND jl.firm_id = p.firm_id
+                     AND acc.system_key = 'customer_advances'
+                     AND jl.deleted_at_utc IS NULL
+                 ), 0) AS advance
+          FROM parties p
+          LEFT JOIN (
+            SELECT d.party_id,
+                   CAST(julianday(?2) - julianday(d.doc_date_local)
+                        AS INTEGER) AS days,
+                   d.balance_paisa AS owed
+            FROM documents d
+            WHERE d.firm_id = ?1
+              AND d.doc_type IN ('sale_invoice', 'other_income')
+              AND d.status = 'posted'
+              AND d.balance_paisa <> 0
+              AND d.deleted_at_utc IS NULL
+          ) a ON a.party_id = p.id
+          WHERE p.firm_id = ?1
+            AND p.party_type IN ('customer', 'both')
+            AND p.deleted_at_utc IS NULL
+          GROUP BY p.id
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(asOf.value)],
+          readsFrom: {
+            _db.parties,
+            _db.documents,
+            _db.journalLines,
+            _db.accounts,
+          },
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PartyReceivable(
+          name: r.read<String>('name'),
+          opening: Money.paisa(r.read<int>('opening')),
+          upTo30: Money.paisa(r.read<int>('d30')),
+          upTo60: Money.paisa(r.read<int>('d60')),
+          upTo90: Money.paisa(r.read<int>('d90')),
+          over90: Money.paisa(r.read<int>('over90')),
+          advance: Money.paisa(r.read<int>('advance')),
+        ),
+    ];
+  }
 }
