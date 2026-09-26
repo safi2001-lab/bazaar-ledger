@@ -20,6 +20,7 @@ export 'src/write/drift_printer_settings.dart';
 export 'src/write/drift_purchase_return_writer.dart'
     show DriftPurchaseReturnWriter;
 export 'src/write/drift_purchase_writer.dart';
+export 'src/write/drift_quotation_writer.dart';
 export 'src/write/drift_return_writer.dart';
 export 'src/write/drift_sale_writer.dart';
 export 'src/write/drift_void_writer.dart';

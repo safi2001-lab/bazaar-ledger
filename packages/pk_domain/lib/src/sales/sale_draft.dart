@@ -131,9 +131,13 @@ final class SaleDraft {
     this.roundingMode = RoundingMode.halfUp,
     this.notes,
     this.salespersonId,
+    this.convertedFromId,
   });
 
   final List<SaleLineDraft> lines;
+
+  /// The quotation (or order) this bill was made from, if any.
+  final String? convertedFromId;
 
   /// A walk-in has no party row at all. That is the common case at a kiryana
   /// counter and must never be an obstacle to billing.

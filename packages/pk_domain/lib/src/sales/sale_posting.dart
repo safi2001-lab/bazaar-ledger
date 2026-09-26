@@ -276,10 +276,14 @@ final class SalePosting {
     required this.stockMovements,
     required this.journal,
     required this.auditSummary,
+    this.convertedFromId,
   });
 
   final DocumentPosting document;
   final List<DocumentLinePosting> lines;
+
+  /// The document this bill was made from, linked `converted_from`.
+  final String? convertedFromId;
   final List<PaymentPosting> payments;
   final List<StockMovementPosting> stockMovements;
   final JournalEntryPosting journal;

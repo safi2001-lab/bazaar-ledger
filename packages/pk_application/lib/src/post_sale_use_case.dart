@@ -38,9 +38,9 @@ final class PostSaleUseCase {
       // now. Bill-wise profit reads what the goods cost on the day they were
       // sold, never a recomputation against today's cost — otherwise last
       // month's margin changes every time a new consignment arrives.
-      final costs = await write.averageCostFor(
-        {for (final l in draft.lines) l.itemId},
-      );
+      final costs = await write.averageCostFor({
+        for (final l in draft.lines) l.itemId,
+      });
       final priced = SaleDraft(
         lines: [
           for (final l in draft.lines)
@@ -60,6 +60,7 @@ final class PostSaleUseCase {
         roundingMode: draft.roundingMode,
         notes: draft.notes,
         salespersonId: draft.salespersonId,
+        convertedFromId: draft.convertedFromId,
       );
 
       final calculated = calculator.calculate(priced, taxContext);
@@ -76,9 +77,9 @@ final class PostSaleUseCase {
           await write.nextNumber('payment_in'),
       ];
 
-      final ledgerAccounts = await write.ledgerAccountsFor(
-        {for (final t in priced.tenders) t.paymentAccountId},
-      );
+      final ledgerAccounts = await write.ledgerAccountsFor({
+        for (final t in priced.tenders) t.paymentAccountId,
+      });
 
       final posting = builder.build(
         actor: actor,
