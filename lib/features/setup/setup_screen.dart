@@ -5,6 +5,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../backup/backup_screen.dart';
 
 /// First run. Three fields, one button, and the shop exists.
 ///
@@ -213,6 +214,23 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                       big: true,
                       busy: _busy,
                       onPressed: _busy ? null : _finish,
+                    ),
+                    const SizedBox(height: BlTokens.space3),
+                    // A new phone is where a lost one's backup comes back.
+                    // Offered here, before a second shop is set up on top of
+                    // nothing, rather than buried in Settings where a
+                    // shopkeeper only arrives after making that mistake.
+                    BlButton(
+                      label: s.setupRestore,
+                      icon: Icons.settings_backup_restore,
+                      kind: BlButtonKind.ghost,
+                      onPressed: _busy
+                          ? null
+                          : () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder: (_) => restoreRoute(ref),
+                              ),
+                            ),
                     ),
                     const SizedBox(height: BlTokens.space5),
                     Row(

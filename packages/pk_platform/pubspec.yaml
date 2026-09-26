@@ -19,6 +19,7 @@ dependencies:
   # queue depends on it directly, and a direct import of a transitive
   # dependency breaks the moment the intermediate package drops it.
   crypto: ^3.0.6
+  cryptography: ^2.9.0
   # Decode and downscale a phone photograph without a platform channel, so the
   # whole path is testable headless and behaves the same on every ROM. Already
   # in the tree transitively via `pdf`; named here because this package imports

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
@@ -93,6 +95,60 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
     }
   }
 
+  /// Hides this customer or supplier from the khata.
+  ///
+  /// There was a writer for this and no button, so a customer who moved away
+  /// sat in the list for ever. The writer refuses while money is owed either
+  /// way; that refusal is shown here as it is, in words.
+  Future<void> _archive() async {
+    if (_busy) return;
+    final s = AppStrings.of(context);
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(s.partyArchive),
+        content: Text(s.partyArchiveConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(s.actionCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(s.commonYes),
+          ),
+        ],
+      ),
+    );
+    if (!(yes ?? false) || !mounted) return;
+
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      final services = ref.read(appServicesProvider);
+      await services.catalogue.archiveParty(
+        services.actorNow(),
+        widget.party!.id,
+      );
+      if (!mounted) return;
+      ref.bumpRefresh();
+      // `true` tells the khata underneath that the party it shows is gone.
+      navigator.pop(true);
+      messenger.showSnackBar(SnackBar(content: Text(s.partyArchived)));
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() {
+          _failure = error is StateError ? error.message : '$error';
+          _busy = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
@@ -100,7 +156,18 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(_isEdit ? s.actionEdit : s.partiesAdd)),
+      appBar: AppBar(
+        title: Text(_isEdit ? s.actionEdit : s.partiesAdd),
+        actions: [
+          if (_isEdit)
+            BlIconButton(
+              icon: Icons.archive_outlined,
+              label: s.partyArchive,
+              colour: t.danger,
+              onPressed: _busy ? null : () => unawaited(_archive()),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(BlTokens.space4),

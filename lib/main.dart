@@ -13,6 +13,8 @@ import 'app/providers.dart';
 import 'design/components.dart';
 import 'design/theme.dart';
 import 'design/tokens.dart';
+import 'features/backup/backup_providers.dart';
+import 'features/backup/restore_screen.dart';
 import 'l10n/app_strings.dart';
 
 /// Opens the books, then draws the counter.
@@ -29,13 +31,33 @@ Future<void> main() async {
   // both are the standard Pakistani retail setup. Nothing is locked.
   await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
 
+  runApp(_Boot(first: await _open()));
+}
+
+/// What opening the books produced: the services, or why there are none.
+final class _Opened {
+  const _Opened.ready(this.prefs, AppServices this.services)
+    : error = null,
+      stack = null;
+
+  const _Opened.failed(this.prefs, Object this.error, StackTrace this.stack)
+    : services = null;
+
+  final AppPreferences prefs;
+  final AppServices? services;
+  final Object? error;
+  final StackTrace? stack;
+}
+
+Future<_Opened> _open() async {
   // Preferences first, and they cannot fail: a corrupt file returns defaults.
   // So whatever happens next is at least readable in the right language.
   final prefs = await AppPreferences.load();
-
-  final AppServices services;
   try {
-    services = await AppServices.open(transports: _printerTransports());
+    return _Opened.ready(
+      prefs,
+      await AppServices.open(transports: _printerTransports()),
+    );
   } on Object catch (error, stack) {
     // The database would not open: a corrupt file, a full disk, a schema from
     // a newer build. Before this, that was a black screen — the app died
@@ -43,20 +65,98 @@ Future<void> main() async {
     //
     // A shopkeeper who opens the app to a crash has lost their business day.
     // One who is told what happened, in their own language, still has a phone
-    // they can hand to someone who can help, and — from M5 — a restore button.
-    runApp(_StartupFailureApp(prefs: prefs, error: error, stack: stack));
-    return;
+    // they can hand to someone who can help, and a restore button.
+    return _Opened.failed(prefs, error, stack);
+  }
+}
+
+/// Holds the open books, and can close and reopen them.
+///
+/// A restore is staged beside the live file and swapped in by
+/// `AppServices.open`, before anything can be holding the database. Asking
+/// the shopkeeper to kill the app and start it again would work, and on an
+/// Android Go handset "close the app" means something different on every
+/// ROM. So the app does it: closes the books, reopens them, and rebuilds
+/// everything above the counter from scratch — a new ProviderScope, so no
+/// provider is left holding a row from the books that were replaced.
+class _Boot extends StatefulWidget {
+  const _Boot({required this.first});
+
+  final _Opened first;
+
+  @override
+  State<_Boot> createState() => _BootState();
+}
+
+class _BootState extends State<_Boot> {
+  late _Opened _opened = widget.first;
+  var _generation = 0;
+  var _reopening = false;
+
+  Future<void> _reopen() async {
+    setState(() => _reopening = true);
+    await _opened.services?.close();
+    final next = await _open();
+    if (!mounted) return;
+    setState(() {
+      _opened = next;
+      _generation++;
+      _reopening = false;
+    });
   }
 
-  runApp(
-    ProviderScope(
+  @override
+  Widget build(BuildContext context) {
+    final opened = _opened;
+    if (_reopening) return _Reopening(prefs: opened.prefs);
+
+    final services = opened.services;
+    if (services == null) {
+      return _StartupFailureApp(
+        key: ValueKey(_generation),
+        prefs: opened.prefs,
+        error: opened.error!,
+        stack: opened.stack!,
+        onRestored: _reopen,
+      );
+    }
+    return ProviderScope(
+      key: ValueKey(_generation),
       overrides: [
         appServicesProvider.overrideWithValue(services),
-        initialPreferencesProvider.overrideWithValue(prefs),
+        initialPreferencesProvider.overrideWithValue(opened.prefs),
+        restartAppProvider.overrideWithValue(_reopen),
       ],
       child: const BazaarLedgerApp(),
-    ),
-  );
+    );
+  }
+}
+
+/// The few hundred milliseconds between closing the books and reopening
+/// them. Nothing may read the database here, so nothing is drawn that could.
+class _Reopening extends StatelessWidget {
+  const _Reopening({required this.prefs});
+
+  final AppPreferences prefs;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: blTheme(dark: false),
+      darkTheme: blTheme(dark: true),
+      themeMode: prefs.themeMode,
+      locale: prefs.locale,
+      supportedLocales: supportedLocales,
+      localizationsDelegates: const [AppStrings.delegate, ...chromeDelegates],
+      home: Builder(
+        builder: (context) => Scaffold(
+          backgroundColor: context.bl.paper,
+          body: Center(child: Text(AppStrings.of(context).restoreRestarting)),
+        ),
+      ),
+    );
+  }
 }
 
 /// The app when there is no database to run it against.
@@ -66,14 +166,17 @@ Future<void> main() async {
 /// also fail. It needs the localisations and the tokens, and nothing else.
 class _StartupFailureApp extends StatelessWidget {
   const _StartupFailureApp({
+    super.key,
     required this.prefs,
     required this.error,
     required this.stack,
+    required this.onRestored,
   });
 
   final AppPreferences prefs;
   final Object error;
   final StackTrace stack;
+  final Future<void> Function() onRestored;
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +203,18 @@ class _StartupFailureApp extends StatelessWidget {
                   reassurance: s.errorStartupBody,
                   // No retry: whatever stopped the database opening will stop
                   // it again a second later, and a button that does nothing is
-                  // worse than no button. The honest action is the one below.
+                  // worse than no button. The honest action is a restore,
+                  // which replaces the file that would not open and keeps it
+                  // aside rather than deleting it.
                   retryLabel: s.errorStartupRecover,
-                  onRetry: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(s.errorStartupNotReady)),
+                  onRetry: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => RestoreScreen(
+                        pickFile: pickBackupFile,
+                        databasePath: AppServices.defaultDatabasePath,
+                        onRestored: onRestored,
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -644,10 +644,6 @@ class AppStringsUr extends AppStrings {
   String get errorStartupRecover => 'Backup se wapas layein';
 
   @override
-  String get errorStartupNotReady =>
-      'Backup se wapas lana M5 mein aayega. Abhi ke liye app band kar ke dobara kholein.';
-
-  @override
   String healthWarning(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1299,5 +1295,115 @@ class AppStringsUr extends AppStrings {
   @override
   String paySaved(String amount) {
     return '$amount de diye';
+  }
+
+  @override
+  String get backupTitle => 'Backup';
+
+  @override
+  String get backupExplain =>
+      'Poora hisaab ek file mein band ho jata hai jo sirf aap ke password se khulti hai. Isay WhatsApp par khud ko, Google Drive ya kisi aur phone par rakh lein. Phone gum ho jaye to isi se sab wapas aayega.';
+
+  @override
+  String backupLast(String when) {
+    return 'Aakhri backup: $when';
+  }
+
+  @override
+  String get backupNever => 'Abhi tak koi backup nahi banaya';
+
+  @override
+  String get backupPassphrase => 'Backup ka password';
+
+  @override
+  String get backupPassphraseAgain => 'Password dobara likhein';
+
+  @override
+  String get backupPassphraseHint =>
+      'Kam az kam 8 huroof. Yeh password bhool gaye to backup kabhi nahi khulega — kahin likh kar rakhein.';
+
+  @override
+  String get backupPassphraseShort => 'Password kam az kam 8 huroof ka ho';
+
+  @override
+  String get backupPassphraseMismatch => 'Dono password ek jaise nahi';
+
+  @override
+  String get backupMake => 'Backup banayein';
+
+  @override
+  String get backupMade => 'Backup ban gaya — ab isay mehfooz jagah bhejein';
+
+  @override
+  String get backupRestore => 'Backup se wapas layein';
+
+  @override
+  String get restoreTitle => 'Backup se wapas layein';
+
+  @override
+  String get restorePick => 'Backup file chunein';
+
+  @override
+  String restoreMadeOn(String when) {
+    return 'Yeh backup $when ko bana tha';
+  }
+
+  @override
+  String get restoreOpen => 'Backup kholein';
+
+  @override
+  String get restoreFound => 'Is backup mein';
+
+  @override
+  String restoreCounts(String bills, String parties, String items) {
+    return '$bills bill · $parties gahak/supplier · $items cheezein';
+  }
+
+  @override
+  String restoreLastEntry(String date) {
+    return 'Aakhri entry: $date';
+  }
+
+  @override
+  String get restoreWarning =>
+      'Is phone par jo hisaab abhi hai us ki jagah yeh aa jayega. Mojooda hisaab mitaya nahi jayega, alag rakh diya jayega.';
+
+  @override
+  String get restoreConfirm => 'Haan, wapas layein';
+
+  @override
+  String get restoreRestarting => 'Hisaab wapas aa raha hai…';
+
+  @override
+  String get setupRestore => 'Pehle se hisaab hai? Backup se wapas layein';
+
+  @override
+  String get partyArchive => 'Khate se hatayein';
+
+  @override
+  String get partyArchiveConfirm =>
+      'Yeh naam khate ki list mein nazar nahi aayega. Purana hisaab jaisa tha waisa rahega, aur Settings mein \'Hatayi hui cheezein\' se wapas laya ja sakta hai.';
+
+  @override
+  String get partyArchived => 'Khate se hata diya gaya';
+
+  @override
+  String get recycleTitle => 'Hatayi hui cheezein';
+
+  @override
+  String get recycleItems => 'Cheezein';
+
+  @override
+  String get recycleParties => 'Gahak aur supplier';
+
+  @override
+  String get recycleEmpty => 'Kuch hataya nahi gaya';
+
+  @override
+  String get recycleRestore => 'Wapas layein';
+
+  @override
+  String recycleRestored(String name) {
+    return '$name wapas aa gaya';
   }
 }

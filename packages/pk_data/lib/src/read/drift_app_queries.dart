@@ -794,6 +794,60 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<ItemSummary>> archivedItems(
+    String firmId, {
+    int limit = 200,
+  }) async {
+    // The same columns the counter's search reads, so a restored item comes
+    // back exactly as it left. Most recently hidden first: the item a
+    // shopkeeper is looking for in here is almost always the one they just
+    // hid by mistake.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT i.*, u.code AS unit_code, u.decimals AS unit_decimals,
+                 COALESCE((
+                   SELECT SUM(sl.qty_delta_thousandths)
+                   FROM stock_ledger sl
+                   WHERE sl.item_id = i.id AND sl.deleted_at_utc IS NULL
+                 ), 0) AS stock_thousandths
+          FROM items i
+          JOIN units u ON u.id = i.base_unit_id
+          WHERE i.firm_id = ?
+            AND i.deleted_at_utc IS NULL
+            AND i.is_active = 0
+          ORDER BY i.updated_at_utc DESC, i.id DESC
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+          readsFrom: {_db.items, _db.units, _db.stockLedger},
+        )
+        .get();
+    return [for (final r in rows) _itemFrom(r)];
+  }
+
+  @override
+  Future<List<PartySummary>> archivedParties(
+    String firmId, {
+    int limit = 200,
+  }) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          $_partySelect
+          WHERE p.firm_id = ?
+            AND p.deleted_at_utc IS NULL
+            AND p.is_active = 0
+          ORDER BY p.updated_at_utc DESC, p.id DESC
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+        )
+        .get();
+    return [for (final r in rows) _party(r)];
+  }
+
+  @override
   Future<List<ExpenseRow>> recentExpenses(
     String firmId, {
     int limit = 60,

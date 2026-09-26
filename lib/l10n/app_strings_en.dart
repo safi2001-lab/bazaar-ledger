@@ -643,10 +643,6 @@ class AppStringsEn extends AppStrings {
   String get errorStartupRecover => 'Restore from a backup';
 
   @override
-  String get errorStartupNotReady =>
-      'Restoring from a backup arrives in M5. For now, close the app and open it again.';
-
-  @override
   String healthWarning(int count) {
     String _temp0 = intl.Intl.pluralLogic(
       count,
@@ -1298,5 +1294,116 @@ class AppStringsEn extends AppStrings {
   @override
   String paySaved(String amount) {
     return '$amount paid';
+  }
+
+  @override
+  String get backupTitle => 'Backup';
+
+  @override
+  String get backupExplain =>
+      'Your whole book is sealed into one file that only opens with your password. Send it to yourself on WhatsApp, to Google Drive, or to another phone. If this phone is lost, this is how everything comes back.';
+
+  @override
+  String backupLast(String when) {
+    return 'Last backup: $when';
+  }
+
+  @override
+  String get backupNever => 'No backup made yet';
+
+  @override
+  String get backupPassphrase => 'Backup password';
+
+  @override
+  String get backupPassphraseAgain => 'Type the password again';
+
+  @override
+  String get backupPassphraseHint =>
+      'At least 8 characters. If you forget it the backup can never be opened — write it down somewhere safe.';
+
+  @override
+  String get backupPassphraseShort =>
+      'The password needs at least 8 characters';
+
+  @override
+  String get backupPassphraseMismatch => 'The two passwords do not match';
+
+  @override
+  String get backupMake => 'Make a backup';
+
+  @override
+  String get backupMade => 'Backup made — now send it somewhere safe';
+
+  @override
+  String get backupRestore => 'Restore from a backup';
+
+  @override
+  String get restoreTitle => 'Restore from a backup';
+
+  @override
+  String get restorePick => 'Choose the backup file';
+
+  @override
+  String restoreMadeOn(String when) {
+    return 'This backup was made on $when';
+  }
+
+  @override
+  String get restoreOpen => 'Open backup';
+
+  @override
+  String get restoreFound => 'In this backup';
+
+  @override
+  String restoreCounts(String bills, String parties, String items) {
+    return '$bills bills · $parties customers/suppliers · $items items';
+  }
+
+  @override
+  String restoreLastEntry(String date) {
+    return 'Last entry: $date';
+  }
+
+  @override
+  String get restoreWarning =>
+      'This replaces the books on this phone now. They are not deleted — they are kept aside.';
+
+  @override
+  String get restoreConfirm => 'Yes, restore';
+
+  @override
+  String get restoreRestarting => 'Bringing your books back…';
+
+  @override
+  String get setupRestore => 'Already have books? Restore from a backup';
+
+  @override
+  String get partyArchive => 'Hide from the khata';
+
+  @override
+  String get partyArchiveConfirm =>
+      'This name will no longer show in the khata list. Their history stays exactly as it was, and they can be brought back from \'Hidden\' in Settings.';
+
+  @override
+  String get partyArchived => 'Hidden from the khata';
+
+  @override
+  String get recycleTitle => 'Hidden';
+
+  @override
+  String get recycleItems => 'Items';
+
+  @override
+  String get recycleParties => 'Customers and suppliers';
+
+  @override
+  String get recycleEmpty => 'Nothing has been hidden';
+
+  @override
+  String get recycleRestore => 'Bring back';
+
+  @override
+  String recycleRestored(String name) {
+    return '$name is back';
   }
 }

@@ -261,7 +261,6 @@
   "settingsTaxRegistered": "I am registered for sales tax",
   "settingsTaxRegisteredNote": "Most kiryana shops are not registered - sales tax is collected through the electricity bill instead. Only turn this on if you hold an STRN.",
   "errorStartupRecover": "Restore from a backup",
-  "errorStartupNotReady": "Restoring from a backup arrives in M5. For now, close the app and open it again.",
   "healthWarning": "{count, plural, =1{1 problem} other{{count} problems}} found in your data. Check Settings.",
   "stockAdjustTitle": "Correct stock",
   "stockAdjustCounted": "Counted on the shelf",
@@ -589,6 +588,79 @@
   "@paySaved": {
     "placeholders": {
       "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "backupTitle": "Backup",
+  "backupExplain": "Your whole book is sealed into one file that only opens with your password. Send it to yourself on WhatsApp, to Google Drive, or to another phone. If this phone is lost, this is how everything comes back.",
+  "backupLast": "Last backup: {when}",
+  "@backupLast": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNever": "No backup made yet",
+  "backupPassphrase": "Backup password",
+  "backupPassphraseAgain": "Type the password again",
+  "backupPassphraseHint": "At least 8 characters. If you forget it the backup can never be opened — write it down somewhere safe.",
+  "backupPassphraseShort": "The password needs at least 8 characters",
+  "backupPassphraseMismatch": "The two passwords do not match",
+  "backupMake": "Make a backup",
+  "backupMade": "Backup made — now send it somewhere safe",
+  "backupRestore": "Restore from a backup",
+  "restoreTitle": "Restore from a backup",
+  "restorePick": "Choose the backup file",
+  "restoreMadeOn": "This backup was made on {when}",
+  "@restoreMadeOn": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreOpen": "Open backup",
+  "restoreFound": "In this backup",
+  "restoreCounts": "{bills} bills · {parties} customers/suppliers · {items} items",
+  "@restoreCounts": {
+    "placeholders": {
+      "bills": {
+        "type": "String"
+      },
+      "parties": {
+        "type": "String"
+      },
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreLastEntry": "Last entry: {date}",
+  "@restoreLastEntry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreWarning": "This replaces the books on this phone now. They are not deleted — they are kept aside.",
+  "restoreConfirm": "Yes, restore",
+  "restoreRestarting": "Bringing your books back…",
+  "setupRestore": "Already have books? Restore from a backup",
+  "partyArchive": "Hide from the khata",
+  "partyArchiveConfirm": "This name will no longer show in the khata list. Their history stays exactly as it was, and they can be brought back from 'Hidden' in Settings.",
+  "partyArchived": "Hidden from the khata",
+  "recycleTitle": "Hidden",
+  "recycleItems": "Items",
+  "recycleParties": "Customers and suppliers",
+  "recycleEmpty": "Nothing has been hidden",
+  "recycleRestore": "Bring back",
+  "recycleRestored": "{name} is back",
+  "@recycleRestored": {
+    "placeholders": {
+      "name": {
         "type": "String"
       }
     }

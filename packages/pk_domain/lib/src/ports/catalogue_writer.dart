@@ -178,7 +178,19 @@ abstract interface class CatalogueWriter {
     PartyDraft draft,
   );
 
+  /// Hides a customer or supplier. Refused while money is still owed either
+  /// way, or the balance disappears from the khata without being settled.
   Future<void> archiveParty(ActorContext actor, String partyId);
+
+  /// Brings an archived item back to the counter.
+  ///
+  /// Archiving was one-way until this: a shopkeeper who hid the wrong item,
+  /// or stopped stocking one and started again, had no way back except
+  /// entering it a second time — a duplicate with none of its history.
+  Future<void> restoreItem(ActorContext actor, String itemId);
+
+  /// Brings an archived customer or supplier back into the khata.
+  Future<void> restoreParty(ActorContext actor, String partyId);
 
   /// Corrects the shelf, and tells the books about it.
   ///

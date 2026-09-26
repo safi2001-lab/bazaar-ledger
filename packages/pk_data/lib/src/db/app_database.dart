@@ -34,8 +34,28 @@ class AppDatabase extends _$AppDatabase {
   /// a repair pass, so `beforeOpen` skips the integrity check it would
   /// otherwise run twice.
 
+  /// The schema this build writes, and the newest it can open.
+  ///
+  /// A constant as well as the override, so a restore can refuse a backup
+  /// made by a newer build before it replaces anything — rather than after,
+  /// when drift finds a database it has no migration down from.
+  static const currentSchemaVersion = 2;
+
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => currentSchemaVersion;
+
+  /// Writes a consistent copy of the whole database to [path].
+  ///
+  /// `VACUUM INTO` reads one snapshot, so a sale committed while it runs is
+  /// either wholly in the copy or wholly out of it — never a bill without its
+  /// journal lines. Copying the file instead would race the WAL: the main
+  /// file alone is missing whatever has not been checkpointed yet, which on a
+  /// busy counter is most of today.
+  ///
+  /// [path] must not exist. SQLite refuses to overwrite, which is the right
+  /// answer for a file that is about to be somebody's only backup.
+  Future<void> snapshotTo(String path) =>
+      customStatement('VACUUM INTO ?', [path]);
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

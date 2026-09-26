@@ -11,6 +11,7 @@ import 'package:pk_data/pk_data.dart';
 import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:sqlite3/open.dart';
+import 'backup_service.dart';
 import 'printing_services.dart';
 
 /// Everything the app can do, wired once.
@@ -36,8 +37,11 @@ final class AppServices {
     required this.restoredCartDraft,
     required this.printing,
     required this.pictures,
+    required this.databasePath,
+    required String appVersion,
     required TxRunner runner,
-  }) : _runner = runner;
+  }) : _runner = runner,
+       _appVersion = appVersion;
 
   /// Rebuilt, not merged, once first run has registered this device.
   ///
@@ -94,6 +98,40 @@ final class AppServices {
   final PictureServices pictures;
 
   TxRunner _runner;
+  final String _appVersion;
+
+  /// Where the books are on disk, or null for a database held in memory.
+  ///
+  /// A restore is staged beside this file and swapped in at the next open,
+  /// so a build with no file has nothing to restore into.
+  final String? databasePath;
+
+  /// Sealing the books into a `.pkbak` the shopkeeper can keep somewhere
+  /// else. Built per call, like the writers, so it writes its audit row
+  /// through whichever runner is current.
+  BackupService get backups => BackupService(
+    database: database,
+    runner: () => _runner,
+    clock: clock,
+    appVersion: _appVersion,
+  );
+
+  /// When this shop last made a backup, or null if it never has.
+  Future<DateTime?> lastBackupAt() async {
+    final id = _identity;
+    if (id == null) return null;
+    final row = await database
+        .customSelect(
+          'SELECT MAX(at_utc) AS at FROM audit_log '
+          "WHERE firm_id = ? AND action_code = 'BACKUP_MADE'",
+          variables: [Variable<String>(id.firmId)],
+        )
+        .getSingle();
+    final at = row.readNullable<int>('at');
+    return at == null
+        ? null
+        : DateTime.fromMillisecondsSinceEpoch(at, isUtc: true);
+  }
 
   /// Who is signed in. Null until first run has produced a firm and an owner.
   ActorIdentity? _identity;
@@ -139,7 +177,13 @@ final class AppServices {
     String appVersion = '0.1.0',
     List<PrinterTransport>? transports,
   }) async {
-    final path = databasePath ?? await _defaultDatabasePath();
+    final path = databasePath ?? await defaultDatabasePath();
+
+    // Before anything opens the file. A restore is only ever swapped in here,
+    // when nothing can be holding the database, so there is no moment at
+    // which a half-replaced file is being written to.
+    final restored = Restore.applyPending(path);
+
     final database = AppDatabase(
       driftDatabase(
         name: p.basenameWithoutExtension(path),
@@ -148,13 +192,28 @@ final class AppServices {
         ),
       ),
     );
-    return _wire(
+    final services = await _wire(
       database,
       clock,
       appVersion,
       FileDraftStore(Directory(p.dirname(path))),
       transports,
+      databasePath: path,
     );
+    if (restored && services._identity != null) {
+      // The first row the restored books hold that the backup did not: when
+      // they came back, and on which device.
+      final actor = services.actorNow();
+      await services._runner.run(actor, (tx) async {
+        tx.audit(
+          action: 'BACKUP_RESTORED',
+          entityTable: 'firms',
+          entityId: actor.firmId,
+          summary: 'Books restored from a backup',
+        );
+      });
+    }
+    return services;
   }
 
   /// Opens against an executor the caller already has. Used by tests.
@@ -179,8 +238,9 @@ final class AppServices {
     Clock clock,
     String appVersion,
     DraftStore drafts,
-    List<PrinterTransport>? transports,
-  ) async {
+    List<PrinterTransport>? transports, {
+    String? databasePath,
+  }) async {
     final ids = UlidGenerator();
     final queries = DriftAppQueries(database);
 
@@ -230,6 +290,8 @@ final class AppServices {
       // late shows the cashier an empty one first, and an empty one is a bill
       // they start ringing again.
       restoredCartDraft: await drafts.read(cartDraftSlot),
+      databasePath: databasePath,
+      appVersion: appVersion,
       runner: runner,
     );
 
@@ -333,7 +395,9 @@ final class AppServices {
 
   Future<void> close() => database.close();
 
-  static Future<String> _defaultDatabasePath() async =>
+  /// Where the books live on this phone. Public so the startup-failure
+  /// screen, which has no services, can stage a restore into it.
+  static Future<String> defaultDatabasePath() async =>
       p.join((await booksDirectory()).path, 'bazaar_ledger.sqlite');
 
   /// Where the books live: the one directory Android will not copy off the

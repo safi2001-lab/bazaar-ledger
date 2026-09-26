@@ -2739,3 +2739,130 @@ features:
     proof:
       - a customer payment never settles a bill the shop owes
       - what the shop owes a supplier is not udhaar
+
+  - id: M5-BACKUP-01
+    milestone: M5
+    title: A backup is sealed so that only its passphrase opens it
+    status: done
+    # The books live in one SQLite file on one phone, and there is no server
+    # by design. A phone dropped, stolen or reset took three years of udhaar
+    # with it, and the startup-failure screen's "restore from backup" button
+    # said "arrives in M5".
+    #
+    # The file is meant to leave the phone — WhatsApp to themselves, Drive, a
+    # USB stick — so it is useless without the passphrase and nothing in it
+    # names the shop. Argon2id at the OWASP minimum (19 MiB, 2 passes) makes
+    # each guess cost real memory; AES-256-GCM makes a flipped byte, a cut-off
+    # download and a wrong passphrase all fail the same tag. The header is
+    # readable without the passphrase, so a restore can show "made on 3 Sept"
+    # first, but it is authenticated: edit it and the file will not open.
+    #
+    # Pure-Dart crypto on purpose: the seal runs in a background isolate,
+    # where no platform channel reaches a native implementation, and a
+    # responsive counter beats a faster backup. Measured at about 160 ms for
+    # the key and 10 MB/s for the data on the CI-class host; a handset is
+    # slower and has not been measured, because none is on this bench.
+    proof:
+      - a backup round trip what comes out is byte for byte what went in
+      - a backup round trip the header can be read before the passphrase is asked for
+      - a backup round trip two backups of the same books never share a key or a nonce
+      - a backup round trip it is compressed, so a big shop fits on WhatsApp
+      - what the file gives away nothing of the database is readable without the passphrase
+      - what a backup refuses a passphrase too short to protect a file that leaves the phone
+      - what a backup refuses the wrong passphrase
+      - what a backup refuses one flipped byte in the sealed data
+      - what a backup refuses an edited header, even though it is not secret
+      - what a backup refuses a download that was cut short
+      - what a backup refuses a photo picked by mistake
+      - what a backup refuses a backup from a newer build
+
+  - id: M5-BACKUP-02
+    milestone: M5
+    title: A backup of the live books comes back whole on another phone
+    status: done
+    # Proved against real files, not memory, because a restore is a file
+    # swapped under a database and only a file can show the WAL left behind
+    # or the old books deleted instead of kept.
+    #
+    # The copy is `VACUUM INTO`, one consistent snapshot: copying the file
+    # would race the WAL and miss whatever today has not checkpointed. The
+    # plain copy is deleted before the call returns.
+    #
+    # A restore is inspected before anything is replaced — decrypted to
+    # scratch, `quick_check`, a schema no newer than this build, a firm row —
+    # and what the shopkeeper confirms is read out of the database inside,
+    # not the header. It is then staged beside the live file and swapped in
+    # only at open, before anything can hold the database. The books it
+    # replaces are kept as `.before-restore`, WAL and all.
+    #
+    # A restored phone carries on AS the phone that made the backup: the same
+    # device id, the same number series. That is right when the old phone is
+    # gone, which is what restore is for. Two phones writing as one would
+    # collide once LAN sync lands; that is M13's to refuse, and it is noted
+    # here rather than discovered there.
+    proof:
+      - the books come back on a phone that has never seen them
+      - a restore is written into the audit trail of the books it restored
+      - the books being replaced are kept, not deleted
+      - the plain copy never outlives the backup
+      - the shop knows when it last made a backup
+      - a wrong passphrase stages nothing
+      - books from a newer build are refused before anything is replaced
+      - a sealed file that is not a database is refused
+      - a database that is not a shop is refused
+
+  - id: M5-BACKUP-03
+    milestone: M5
+    title: A shopkeeper can make a backup and bring one back, from the app
+    status: done
+    # Settings → Backup seals the books and hands the file to the system
+    # share sheet, which is the only way "nothing leaves the phone unless you
+    # send it" stays true: the app has no server and chooses no destination.
+    # The passphrase is typed twice, because a typo is otherwise discovered
+    # on the day the backup is needed.
+    #
+    # Restore is offered in three places: Settings, the setup wizard (a new
+    # phone is where a lost one's backup comes back, and offering it after a
+    # second shop was set up on top of nothing would be too late), and the
+    # startup-failure screen, whose button finally does something. That last
+    # one has no providers above it, so the restore screen takes everything
+    # it needs as arguments.
+    #
+    # After a restore is staged the app closes the books and reopens them in
+    # place — a new ProviderScope, so no provider keeps a row from the books
+    # that were replaced — rather than asking a shopkeeper to kill an app on
+    # a ROM where "close" means something different on every handset.
+    #
+    # Not proved here: the system file picker and share sheet on a handset.
+    # Both are stood in for at the platform seam on the host.
+    proof:
+      - a backup can be reached from Settings
+      - a short password is refused in words
+      - two passwords that differ are refused in words
+      - a backup reaches the share sheet sealed, and opens again
+      - a new phone brings the books back from the setup screen
+      - the wrong password is refused and nothing is staged
+
+  - id: M5-RECYCLE-01
+    milestone: M5
+    title: What was hidden can be brought back, and nothing owed can be hidden
+    status: done
+    # Nothing in this app is deleted — six-year retention is a legal duty and
+    # an old bill must keep pointing at what it sold — but hiding was one-way.
+    # An archived item could only return as a second item with none of the
+    # first one's history and half its stock count, and a customer could not
+    # be hidden at all: the writer existed and no screen called it.
+    #
+    # Settings → Hidden lists both, most recently hidden first, each with a
+    # Bring back button that writes ITEM_RESTORED or PARTY_RESTORED.
+    #
+    # The party archive guard only knew one direction of debt. It now also
+    # refuses while the shop holds the party's money as an advance, or owes
+    # them as a supplier: either one hidden is a liability that vanishes from
+    # every screen while it is still real. The refusal is shown in the
+    # editor, in the writer's own words.
+    proof:
+      - an archived item comes back to the counter
+      - a customer can be hidden from the khata and brought back
+      - a customer who still owes cannot be hidden, and is told why
+      - a supplier the shop still owes cannot be hidden

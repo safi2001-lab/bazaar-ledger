@@ -1250,12 +1250,6 @@ abstract class AppStrings {
   /// **'Backup se wapas layein'**
   String get errorStartupRecover;
 
-  /// Honest note that restore is not built yet.
-  ///
-  /// In ur, this message translates to:
-  /// **'Backup se wapas lana M5 mein aayega. Abhi ke liye app band kar ke dobara kholein.'**
-  String get errorStartupNotReady;
-
   /// Shown once at startup when the health check found something.
   ///
   /// In ur, this message translates to:
@@ -2449,6 +2443,198 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{amount} de diye'**
   String paySaved(String amount);
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup'**
+  String get backupTitle;
+
+  /// No description provided for @backupExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poora hisaab ek file mein band ho jata hai jo sirf aap ke password se khulti hai. Isay WhatsApp par khud ko, Google Drive ya kisi aur phone par rakh lein. Phone gum ho jaye to isi se sab wapas aayega.'**
+  String get backupExplain;
+
+  /// No description provided for @backupLast.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhri backup: {when}'**
+  String backupLast(String when);
+
+  /// No description provided for @backupNever.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi tak koi backup nahi banaya'**
+  String get backupNever;
+
+  /// No description provided for @backupPassphrase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup ka password'**
+  String get backupPassphrase;
+
+  /// No description provided for @backupPassphraseAgain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Password dobara likhein'**
+  String get backupPassphraseAgain;
+
+  /// No description provided for @backupPassphraseHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam 8 huroof. Yeh password bhool gaye to backup kabhi nahi khulega — kahin likh kar rakhein.'**
+  String get backupPassphraseHint;
+
+  /// No description provided for @backupPassphraseShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Password kam az kam 8 huroof ka ho'**
+  String get backupPassphraseShort;
+
+  /// No description provided for @backupPassphraseMismatch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dono password ek jaise nahi'**
+  String get backupPassphraseMismatch;
+
+  /// No description provided for @backupMake.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup banayein'**
+  String get backupMake;
+
+  /// No description provided for @backupMade.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup ban gaya — ab isay mehfooz jagah bhejein'**
+  String get backupMade;
+
+  /// No description provided for @backupRestore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup se wapas layein'**
+  String get backupRestore;
+
+  /// No description provided for @restoreTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup se wapas layein'**
+  String get restoreTitle;
+
+  /// No description provided for @restorePick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup file chunein'**
+  String get restorePick;
+
+  /// No description provided for @restoreMadeOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh backup {when} ko bana tha'**
+  String restoreMadeOn(String when);
+
+  /// No description provided for @restoreOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Backup kholein'**
+  String get restoreOpen;
+
+  /// No description provided for @restoreFound.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is backup mein'**
+  String get restoreFound;
+
+  /// No description provided for @restoreCounts.
+  ///
+  /// In ur, this message translates to:
+  /// **'{bills} bill · {parties} gahak/supplier · {items} cheezein'**
+  String restoreCounts(String bills, String parties, String items);
+
+  /// No description provided for @restoreLastEntry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhri entry: {date}'**
+  String restoreLastEntry(String date);
+
+  /// No description provided for @restoreWarning.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone par jo hisaab abhi hai us ki jagah yeh aa jayega. Mojooda hisaab mitaya nahi jayega, alag rakh diya jayega.'**
+  String get restoreWarning;
+
+  /// No description provided for @restoreConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haan, wapas layein'**
+  String get restoreConfirm;
+
+  /// No description provided for @restoreRestarting.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab wapas aa raha hai…'**
+  String get restoreRestarting;
+
+  /// No description provided for @setupRestore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle se hisaab hai? Backup se wapas layein'**
+  String get setupRestore;
+
+  /// No description provided for @partyArchive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khate se hatayein'**
+  String get partyArchive;
+
+  /// No description provided for @partyArchiveConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh naam khate ki list mein nazar nahi aayega. Purana hisaab jaisa tha waisa rahega, aur Settings mein \'Hatayi hui cheezein\' se wapas laya ja sakta hai.'**
+  String get partyArchiveConfirm;
+
+  /// No description provided for @partyArchived.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khate se hata diya gaya'**
+  String get partyArchived;
+
+  /// No description provided for @recycleTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hatayi hui cheezein'**
+  String get recycleTitle;
+
+  /// No description provided for @recycleItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheezein'**
+  String get recycleItems;
+
+  /// No description provided for @recycleParties.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak aur supplier'**
+  String get recycleParties;
+
+  /// No description provided for @recycleEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch hataya nahi gaya'**
+  String get recycleEmpty;
+
+  /// No description provided for @recycleRestore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas layein'**
+  String get recycleRestore;
+
+  /// No description provided for @recycleRestored.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} wapas aa gaya'**
+  String recycleRestored(String name);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

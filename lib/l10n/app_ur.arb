@@ -317,10 +317,6 @@
   "@errorStartupRecover": {
     "description": "Button on the startup failure screen that opens the restore flow."
   },
-  "errorStartupNotReady": "Backup se wapas lana M5 mein aayega. Abhi ke liye app band kar ke dobara kholein.",
-  "@errorStartupNotReady": {
-    "description": "Honest note that restore is not built yet."
-  },
   "healthWarning": "Data mein {count, plural, =1{1 masla} other{{count} masle}} mila. Settings mein dekh lein.",
   "@healthWarning": {
     "description": "Shown once at startup when the health check found something.",
@@ -671,6 +667,79 @@
   "@paySaved": {
     "placeholders": {
       "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "backupTitle": "Backup",
+  "backupExplain": "Poora hisaab ek file mein band ho jata hai jo sirf aap ke password se khulti hai. Isay WhatsApp par khud ko, Google Drive ya kisi aur phone par rakh lein. Phone gum ho jaye to isi se sab wapas aayega.",
+  "backupLast": "Aakhri backup: {when}",
+  "@backupLast": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "backupNever": "Abhi tak koi backup nahi banaya",
+  "backupPassphrase": "Backup ka password",
+  "backupPassphraseAgain": "Password dobara likhein",
+  "backupPassphraseHint": "Kam az kam 8 huroof. Yeh password bhool gaye to backup kabhi nahi khulega — kahin likh kar rakhein.",
+  "backupPassphraseShort": "Password kam az kam 8 huroof ka ho",
+  "backupPassphraseMismatch": "Dono password ek jaise nahi",
+  "backupMake": "Backup banayein",
+  "backupMade": "Backup ban gaya — ab isay mehfooz jagah bhejein",
+  "backupRestore": "Backup se wapas layein",
+  "restoreTitle": "Backup se wapas layein",
+  "restorePick": "Backup file chunein",
+  "restoreMadeOn": "Yeh backup {when} ko bana tha",
+  "@restoreMadeOn": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreOpen": "Backup kholein",
+  "restoreFound": "Is backup mein",
+  "restoreCounts": "{bills} bill · {parties} gahak/supplier · {items} cheezein",
+  "@restoreCounts": {
+    "placeholders": {
+      "bills": {
+        "type": "String"
+      },
+      "parties": {
+        "type": "String"
+      },
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreLastEntry": "Aakhri entry: {date}",
+  "@restoreLastEntry": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "restoreWarning": "Is phone par jo hisaab abhi hai us ki jagah yeh aa jayega. Mojooda hisaab mitaya nahi jayega, alag rakh diya jayega.",
+  "restoreConfirm": "Haan, wapas layein",
+  "restoreRestarting": "Hisaab wapas aa raha hai…",
+  "setupRestore": "Pehle se hisaab hai? Backup se wapas layein",
+  "partyArchive": "Khate se hatayein",
+  "partyArchiveConfirm": "Yeh naam khate ki list mein nazar nahi aayega. Purana hisaab jaisa tha waisa rahega, aur Settings mein 'Hatayi hui cheezein' se wapas laya ja sakta hai.",
+  "partyArchived": "Khate se hata diya gaya",
+  "recycleTitle": "Hatayi hui cheezein",
+  "recycleItems": "Cheezein",
+  "recycleParties": "Gahak aur supplier",
+  "recycleEmpty": "Kuch hataya nahi gaya",
+  "recycleRestore": "Wapas layein",
+  "recycleRestored": "{name} wapas aa gaya",
+  "@recycleRestored": {
+    "placeholders": {
+      "name": {
         "type": "String"
       }
     }

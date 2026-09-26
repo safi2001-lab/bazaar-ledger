@@ -5,7 +5,9 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../backup/backup_screen.dart';
 import '../printing/printer_setup_screen.dart';
+import '../recycle/recycle_screen.dart';
 import 'payment_details_screen.dart';
 import 'shop_details_screen.dart';
 
@@ -101,6 +103,23 @@ class SettingsScreen extends ConsumerWidget {
 
             BlSectionHeader(s.settingsDataHealth),
             const SizedBox(height: BlTokens.space2),
+            // Beside the health check, because both answer "is my hisaab
+            // safe", and a shopkeeper looking for one is looking for the
+            // other.
+            _Row(
+              icon: Icons.backup_outlined,
+              label: s.backupTitle,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const BackupScreen()),
+              ),
+            ),
+            _Row(
+              icon: Icons.restore_from_trash_outlined,
+              label: s.recycleTitle,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const RecycleScreen()),
+              ),
+            ),
             const _DataHealthCard(),
             const SizedBox(height: BlTokens.space5),
 

@@ -23,14 +23,23 @@ final class Harness {
   final AppServices services;
 
   /// Opens an app with no shop yet, so the wizard is the first screen.
-  static Future<Harness> start(WidgetTester tester) async {
+  ///
+  /// [overrides] stand in for the platform — a file picker, a restart — and
+  /// never for the books.
+  static Future<Harness> start(
+    WidgetTester tester, {
+    List<Override> overrides = const [],
+  }) async {
     _stubPlatformChannels();
     final services = await openInMemoryServices();
     addTearDown(services.close);
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appServicesProvider.overrideWithValue(services)],
+        overrides: [
+          appServicesProvider.overrideWithValue(services),
+          ...overrides,
+        ],
         child: const BazaarLedgerApp(),
       ),
     );
@@ -43,6 +52,7 @@ final class Harness {
     WidgetTester tester, {
     String shopName = 'Chishti Kiryana Store',
     List<PrinterTransport>? transports,
+    List<Override> overrides = const [],
   }) async {
     _stubPlatformChannels();
     final services = await openInMemoryServices(transports: transports);
@@ -57,7 +67,10 @@ final class Harness {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appServicesProvider.overrideWithValue(services)],
+        overrides: [
+          appServicesProvider.overrideWithValue(services),
+          ...overrides,
+        ],
         child: const BazaarLedgerApp(),
       ),
     );
@@ -129,6 +142,29 @@ final class Harness {
     final rows = await services.database.customSelect(sql).get();
     return [for (final r in rows) r.data];
   }
+}
+
+/// Lets work that needs a real clock and a real disk finish.
+///
+/// A widget test's clock is fake, so file IO and an isolate sealing a backup
+/// never complete under `pump` alone; and a spinner is a continuous animation,
+/// so `pumpAndSettle` never returns while one is showing. This alternates the
+/// two until [until] appears or [done] says so, or gives up after [rounds].
+Future<void> settleReal(
+  WidgetTester tester, {
+  Finder? until,
+  bool Function()? done,
+  int rounds = 200,
+}) async {
+  for (var i = 0; i < rounds; i++) {
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 50)),
+    );
+    await tester.pump(const Duration(milliseconds: 16));
+    if (until != null && until.evaluate().isNotEmpty) break;
+    if (done != null && done()) break;
+  }
+  await tester.pump();
 }
 
 /// Taps a button by its label, scrolling it into view first.

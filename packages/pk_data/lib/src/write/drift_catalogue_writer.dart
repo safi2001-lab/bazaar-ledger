@@ -181,6 +181,11 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         // The same arithmetic the khata list shows, opening balance included.
         // Summing only the documents told a shopkeeper that a customer
         // carrying Rs 5,000 of pre-app udhaar "owes 0", and hid the balance.
+        //
+        // And the two debts the first version did not know about: money the
+        // shop is holding for them as an advance, and money the shop owes
+        // them as a supplier. Hiding either is a liability that vanishes from
+        // every screen while it is still real.
         final balance = await tx.selectOne(
           '''
           SELECT p.opening_balance_paisa
@@ -191,7 +196,24 @@ final class DriftCatalogueWriter implements CatalogueWriter {
                          AND d.doc_type = 'sale_invoice'
                          AND d.status = 'posted'
                          AND d.deleted_at_utc IS NULL
-                     ), 0) AS owed
+                     ), 0) AS owed,
+                 COALESCE((
+                   SELECT SUM(jl.credit_paisa - jl.debit_paisa)
+                   FROM journal_lines jl
+                   JOIN accounts a ON a.id = jl.account_id
+                   WHERE jl.party_id = p.id
+                     AND jl.firm_id = p.firm_id
+                     AND a.system_key = 'customer_advances'
+                     AND jl.deleted_at_utc IS NULL
+                 ), 0) AS held,
+                 COALESCE((
+                   SELECT SUM(d.balance_paisa) FROM documents d
+                   WHERE d.party_id = p.id
+                     AND d.firm_id = p.firm_id
+                     AND d.doc_type IN ('purchase_bill', 'expense')
+                     AND d.status = 'posted'
+                     AND d.deleted_at_utc IS NULL
+                 ), 0) AS payable
           FROM parties p
           WHERE p.id = ? AND p.firm_id = ?
           ''',
@@ -205,12 +227,50 @@ final class DriftCatalogueWriter implements CatalogueWriter {
             'the khata without ever being collected.',
           );
         }
+        final held = Money.paisa(balance?.read<int>('held') ?? 0);
+        if (!held.isZero) {
+          throw StateError(
+            'The shop is holding ${held.amountOnly} of their money as an '
+            'advance. Give it back or use it on a bill before hiding them.',
+          );
+        }
+        final payable = Money.paisa(balance?.read<int>('payable') ?? 0);
+        if (!payable.isZero) {
+          throw StateError(
+            'The shop still owes them ${payable.amountOnly}. Pay it before '
+            'hiding them, or the debt disappears from the khata unpaid.',
+          );
+        }
         await tx.update('parties', partyId, {'is_active': 0});
         tx.audit(
           action: 'PARTY_ARCHIVED',
           entityTable: 'parties',
           entityId: partyId,
           summary: 'Customer hidden',
+        );
+      });
+
+  @override
+  Future<void> restoreItem(ActorContext actor, String itemId) =>
+      _runner.run(actor, (tx) async {
+        await tx.update('items', itemId, {'is_active': 1});
+        tx.audit(
+          action: 'ITEM_RESTORED',
+          entityTable: 'items',
+          entityId: itemId,
+          summary: 'Item back on the counter',
+        );
+      });
+
+  @override
+  Future<void> restoreParty(ActorContext actor, String partyId) =>
+      _runner.run(actor, (tx) async {
+        await tx.update('parties', partyId, {'is_active': 1});
+        tx.audit(
+          action: 'PARTY_RESTORED',
+          entityTable: 'parties',
+          entityId: partyId,
+          summary: 'Back in the khata',
         );
       });
 

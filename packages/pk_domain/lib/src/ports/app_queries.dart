@@ -441,6 +441,12 @@ abstract interface class AppQueries {
 
   Future<DayTotals> dayTotals(String firmId, String dateLocal);
 
+  /// Items the shop has hidden from the counter, most recently hidden first.
+  Future<List<ItemSummary>> archivedItems(String firmId, {int limit = 200});
+
+  /// Customers and suppliers the shop has hidden, most recently hidden first.
+  Future<List<PartySummary>> archivedParties(String firmId, {int limit = 200});
+
   /// Rent, bijli and wages, newest first.
   ///
   /// The head comes from the journal line the expense debited, never from a

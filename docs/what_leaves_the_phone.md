@@ -124,6 +124,29 @@ installed WhatsApp is. It is narrow on purpose: `QUERY_ALL_PACKAGES` is a
 Play-restricted permission requiring a declaration review, and this needs to
 see two packages.
 
+## Backups
+
+A backup is the whole database, and it is the one file this app makes
+specifically so that it can leave the phone. So it is worth being exact.
+
+**The app sends it nowhere.** *Settings → Backup* seals the books into a
+`.pkbak` file and hands it to Android's own share sheet. Where it goes next —
+WhatsApp to the shopkeeper's own number, Google Drive, a USB stick — is chosen
+there, by them, exactly as if they had shared a photo. There is no backup
+server, no account, and no automatic upload; `android:allowBackup="false"`
+still keeps the live database out of Google's Auto Backup.
+
+**The file is useless without its passphrase.** Argon2id (19 MiB, two passes)
+turns the passphrase into a key, and AES-256-GCM seals the data. Whoever holds
+the file — Google, WhatsApp, whoever finds the USB stick — sees a date, a
+schema number and an app version, and nothing else: no shop name, no customer,
+no amount. The file name is only a date for the same reason. There is no
+recovery: a forgotten passphrase is a backup nobody can open, and the screen
+says so before the backup is made.
+
+**Restoring replaces, but never deletes.** The books a restore replaces are
+kept beside it as `bazaar_ledger.sqlite.before-restore`.
+
 ## Permissions, and where each comes from
 
 | Permission | Source | Prompts? | Why |

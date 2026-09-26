@@ -60,11 +60,17 @@ class KhataScreen extends ConsumerWidget {
           BlIconButton(
             icon: Icons.edit_outlined,
             label: s.khataDetails,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => PartyEditorScreen(party: current),
-              ),
-            ),
+            onPressed: () async {
+              final archived = await Navigator.of(context).push<bool>(
+                MaterialPageRoute<bool>(
+                  builder: (_) => PartyEditorScreen(party: current),
+                ),
+              );
+              // Hidden from the khata: nothing left to show here.
+              if ((archived ?? false) && context.mounted) {
+                Navigator.of(context).pop();
+              }
+            },
           ),
         ],
       ),
