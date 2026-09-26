@@ -306,6 +306,25 @@ void main() {
     });
   });
 
+  group('owed to suppliers', () {
+    test('the same ageing, headed for suppliers', () {
+      final t = payablesByAge(const BusinessDate('2026-09-26'), [
+        const PartyReceivable(
+          name: 'Dalda Distributors',
+          opening: Money.zero,
+          upTo30: Money.rupees(80000),
+          upTo60: Money.rupees(20000),
+          upTo90: Money.zero,
+          over90: Money.zero,
+          advance: Money.zero,
+        ),
+      ]);
+      expect(t.title, 'Owed to suppliers');
+      expect(t.columns.first.title, 'Supplier');
+      expect(t.totals.single.cells.last, const Money.rupees(100000));
+    });
+  });
+
   group('periods', () {
     test('a month ends on its last day, February included', () {
       final feb = ReportPeriod.monthOf(const BusinessDate('2028-02-10'));

@@ -3326,6 +3326,18 @@ abstract class AppStrings {
   /// **'PDF bhejein'**
   String get reportSharePdf;
 
+  /// No description provided for @reportPayables.
+  ///
+  /// In ur, this message translates to:
+  /// **'Suppliers ka baqi'**
+  String get reportPayables;
+
+  /// No description provided for @reportPayablesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis supplier ka kitna dena hai, aur kab se'**
+  String get reportPayablesHint;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

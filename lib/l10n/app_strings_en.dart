@@ -1830,5 +1830,12 @@ class AppStringsEn extends AppStrings {
   String get reportSharePdf => 'Send PDF';
 
   @override
+  String get reportPayables => 'Owed to suppliers';
+
+  @override
+  String get reportPayablesHint =>
+      'What the shop owes each supplier, and for how long';
+
+  @override
   String get chequeDone => 'Done';
 }

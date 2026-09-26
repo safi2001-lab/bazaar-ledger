@@ -14,6 +14,8 @@ void main() {
   late FirstRunResult firm;
   late ReportEngine reports;
   late ReportPeriod today;
+  late TxRunner runner;
+  late ActorContext actor;
 
   setUp(() async {
     final clock = FixedClock(DateTime.utc(2026, 9, 26, 9, 15));
@@ -26,9 +28,9 @@ void main() {
       platform: 'test',
       city: 'Lahore',
     );
-    final actor = firm.actorAt(clock.nowUtc());
+    actor = firm.actorAt(clock.nowUtc());
     final hlc = await resumeHlcClock(db, deviceId: firm.deviceId, clock: clock);
-    final runner = TxRunner(database: db, ids: ids, hlc: hlc);
+    runner = TxRunner(database: db, ids: ids, hlc: hlc);
     final queries = DriftAppQueries(db);
     reports = ReportEngine(DriftReportSource(db));
     today = ReportPeriod.day(actor.businessDate);
@@ -200,5 +202,30 @@ void main() {
         .read<String>('id');
     final party = await DriftAppQueries(db).partyById(firm.firmId, id);
     expect(rashid.cells.last, party!.balance);
+  });
+
+  test('owed to suppliers shows the bill left on account', () async {
+    late String supplier;
+    await runner.run(actor, (tx) async {
+      supplier = await tx.insert('parties', {
+        'name': 'Malik Property',
+        'name_search': 'malik property',
+        'party_type': 'supplier',
+      });
+    });
+    await RecordExpenseUseCase(writer: DriftExpenseWriter(runner: runner))(
+      actor,
+      ExpenseDraft(
+        accountSystemKey: 'utilities',
+        amount: const Money.rupees(700),
+        note: 'Bijli ka bill, on account',
+        partyId: supplier,
+      ),
+    );
+
+    final t = await run(ReportKind.payables);
+    expect(t.rows.first.cells.first, 'Malik Property');
+    expect(t.rows.first.cells[2], const Money.rupees(700));
+    expect(t.totals.single.cells.last, const Money.rupees(700));
   });
 }

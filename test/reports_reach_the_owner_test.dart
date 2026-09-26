@@ -102,6 +102,30 @@ void main() {
     expect(find.text('4,500.00'), findsWidgets);
   });
 
+  testWidgets('what is owed to suppliers is on its own page', (tester) async {
+    final app = await Harness.startWithShop(tester);
+    final supplier = await app.services.catalogue.addParty(
+      app.services.actorNow(),
+      const PartyDraft(name: 'Malik Property', partyType: 'supplier'),
+    );
+    await app.services.recordExpense(
+      app.services.actorNow(),
+      ExpenseDraft(
+        accountSystemKey: 'utilities',
+        amount: const Money.rupees(700),
+        note: 'Bijli ka bill',
+        partyId: supplier,
+      ),
+    );
+
+    await tapText(tester, 'Report');
+    await tester.scrollUntilVisible(find.text('Suppliers ka baqi'), 200);
+    await tapText(tester, 'Suppliers ka baqi');
+
+    expect(find.text('Malik Property'), findsOneWidget);
+    expect(find.text('700.00'), findsWidgets);
+  });
+
   testWidgets('sales by day shows the day the bill was rung', (tester) async {
     final app = await Harness.startWithShop(tester);
     await _aDayOfTrade(app);

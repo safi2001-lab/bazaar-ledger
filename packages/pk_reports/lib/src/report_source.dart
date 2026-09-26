@@ -201,4 +201,7 @@ abstract interface class ReportSource {
 
   /// Every customer with anything open, aged on [asOf].
   Future<List<PartyReceivable>> receivables(String firmId, BusinessDate asOf);
+
+  /// Every supplier the shop owes, aged on [asOf].
+  Future<List<PartyReceivable>> payables(String firmId, BusinessDate asOf);
 }

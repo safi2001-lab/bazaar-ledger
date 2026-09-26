@@ -385,7 +385,37 @@ const _receivedAtTheCounter =
     'collected later against udhaar is in the Cash Book on the day it came.';
 
 /// Who owes the shop, and for how long, oldest money on the right.
-ReportTable receivablesByAge(BusinessDate asOf, List<PartyReceivable> parties) {
+ReportTable receivablesByAge(
+  BusinessDate asOf,
+  List<PartyReceivable> parties,
+) => _byAge(
+  id: 'receivables',
+  title: 'Udhaar by age',
+  who: 'Customer',
+  asOf: asOf,
+  parties: parties,
+);
+
+/// What the shop owes its suppliers, and for how long.
+///
+/// The same page as udhaar by age, the other way round: deliveries and
+/// expenses left on account, aged from their dates.
+ReportTable payablesByAge(BusinessDate asOf, List<PartyReceivable> parties) =>
+    _byAge(
+      id: 'payables',
+      title: 'Owed to suppliers',
+      who: 'Supplier',
+      asOf: asOf,
+      parties: parties,
+    );
+
+ReportTable _byAge({
+  required String id,
+  required String title,
+  required String who,
+  required BusinessDate asOf,
+  required List<PartyReceivable> parties,
+}) {
   final owing = parties.where((p) => !p.owed.isZero).toList()
     ..sort((a, b) {
       final byOld = b.over90.compareTo(a.over90);
@@ -397,18 +427,18 @@ ReportTable receivablesByAge(BusinessDate asOf, List<PartyReceivable> parties) {
   final anyOpening = owing.any((p) => !p.opening.isZero);
   final anyAdvance = owing.any((p) => !p.advance.isZero);
   return ReportTable(
-    id: 'receivables',
-    title: 'Udhaar by age',
+    id: id,
+    title: title,
     period: ReportPeriod.day(asOf),
-    columns: const [
-      ReportColumn('Customer', CellKind.text),
-      ReportColumn('Opening', CellKind.money),
-      ReportColumn('0-30 days', CellKind.money),
-      ReportColumn('31-60 days', CellKind.money),
-      ReportColumn('61-90 days', CellKind.money),
-      ReportColumn('Over 90 days', CellKind.money),
-      ReportColumn('Advance', CellKind.money),
-      ReportColumn('Owed', CellKind.money),
+    columns: [
+      ReportColumn(who, CellKind.text),
+      const ReportColumn('Opening', CellKind.money),
+      const ReportColumn('0-30 days', CellKind.money),
+      const ReportColumn('31-60 days', CellKind.money),
+      const ReportColumn('61-90 days', CellKind.money),
+      const ReportColumn('Over 90 days', CellKind.money),
+      const ReportColumn('Advance', CellKind.money),
+      const ReportColumn('Owed', CellKind.money),
     ],
     rows: [
       for (final p in owing)
@@ -434,7 +464,7 @@ ReportTable receivablesByAge(BusinessDate asOf, List<PartyReceivable> parties) {
       ], style: RowStyle.total),
     ],
     notes: [
-      'Aged from the date of each bill or charge still open.',
+      'Aged from the date of each bill still open.',
       if (anyOpening) _openingHasNoDate,
       if (anyAdvance) _advanceComesOff,
     ],

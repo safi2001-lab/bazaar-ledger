@@ -1042,5 +1042,7 @@
   "reportReceivables": "Udhaar kitna purana",
   "reportReceivablesHint": "Kis par kitna baqi hai, aur kab se",
   "reportSharePdf": "PDF bhejein",
+  "reportPayables": "Suppliers ka baqi",
+  "reportPayablesHint": "Kis supplier ka kitna dena hai, aur kab se",
   "chequeDone": "Ho gaya"
 }

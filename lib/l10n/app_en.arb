@@ -963,5 +963,7 @@
   "reportReceivables": "Udhaar by age",
   "reportReceivablesHint": "Who owes what, and for how long",
   "reportSharePdf": "Send PDF",
+  "reportPayables": "Owed to suppliers",
+  "reportPayablesHint": "What the shop owes each supplier, and for how long",
   "chequeDone": "Done"
 }

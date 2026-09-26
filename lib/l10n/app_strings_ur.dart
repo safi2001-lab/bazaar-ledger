@@ -1832,5 +1832,11 @@ class AppStringsUr extends AppStrings {
   String get reportSharePdf => 'PDF bhejein';
 
   @override
+  String get reportPayables => 'Suppliers ka baqi';
+
+  @override
+  String get reportPayablesHint => 'Kis supplier ka kitna dena hai, aur kab se';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

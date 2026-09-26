@@ -19,6 +19,9 @@ enum ReportKind {
 
   /// Aged as of today; the period is ignored.
   receivables,
+
+  /// Aged as of today; the period is ignored.
+  payables,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -27,7 +30,9 @@ final class ReportEngine {
 
   /// Whether [kind] is as of today rather than over a period.
   static bool isAsOfToday(ReportKind kind) =>
-      kind == ReportKind.stockValue || kind == ReportKind.receivables;
+      kind == ReportKind.stockValue ||
+      kind == ReportKind.receivables ||
+      kind == ReportKind.payables;
 
   final ReportSource source;
 
@@ -52,6 +57,10 @@ final class ReportEngine {
     ReportKind.receivables => receivablesByAge(
       today,
       await source.receivables(firmId, today),
+    ),
+    ReportKind.payables => payablesByAge(
+      today,
+      await source.payables(firmId, today),
     ),
     ReportKind.salesByItem => salesByItem(
       period,

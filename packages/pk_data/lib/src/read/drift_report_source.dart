@@ -392,4 +392,57 @@ final class DriftReportSource implements ReportSource {
         ),
     ];
   }
+
+  @override
+  Future<List<PartyReceivable>> payables(
+    String firmId,
+    BusinessDate asOf,
+  ) async {
+    // The khata's payable figure -- deliveries and expenses left on account
+    // -- split by age. A supplier's khata has no opening balance or advance
+    // of its own yet, so those columns stay empty.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT p.name,
+                 SUM(CASE WHEN a.days <= 30 THEN a.owed ELSE 0 END) AS d30,
+                 SUM(CASE WHEN a.days BETWEEN 31 AND 60
+                          THEN a.owed ELSE 0 END) AS d60,
+                 SUM(CASE WHEN a.days BETWEEN 61 AND 90
+                          THEN a.owed ELSE 0 END) AS d90,
+                 SUM(CASE WHEN a.days > 90 THEN a.owed ELSE 0 END) AS over90
+          FROM (
+            SELECT d.party_id,
+                   CAST(julianday(?2) - julianday(d.doc_date_local)
+                        AS INTEGER) AS days,
+                   d.balance_paisa AS owed
+            FROM documents d
+            WHERE d.firm_id = ?1
+              AND d.doc_type IN ('purchase_bill', 'expense')
+              AND d.status = 'posted'
+              AND d.balance_paisa <> 0
+              AND d.party_id IS NOT NULL
+              AND d.deleted_at_utc IS NULL
+          ) a
+          JOIN parties p ON p.id = a.party_id
+          WHERE p.deleted_at_utc IS NULL
+          GROUP BY p.id
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(asOf.value)],
+          readsFrom: {_db.parties, _db.documents},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PartyReceivable(
+          name: r.read<String>('name'),
+          opening: Money.zero,
+          upTo30: Money.paisa(r.read<int>('d30')),
+          upTo60: Money.paisa(r.read<int>('d60')),
+          upTo90: Money.paisa(r.read<int>('d90')),
+          over90: Money.paisa(r.read<int>('over90')),
+          advance: Money.zero,
+        ),
+    ];
+  }
 }

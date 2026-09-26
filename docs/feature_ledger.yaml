@@ -176,7 +176,17 @@ milestones:
     # one party's balance; the question a shop owner asks at the end of the
     # month -- did I make money, and where did it go -- had no answer on the
     # phone at all.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 7/7. Nine reports, each a pure builder over
+    # indexed aggregates, read on the phone for a chosen period and sent on
+    # as a CSV or a PDF: Profit and Loss, Sales by day, Sales by item,
+    # Expenses by head, the Cash Book, the Day Book, Stock value, Udhaar by
+    # age and Owed to suppliers. Not in this pack, and owned elsewhere: the
+    # Trial Balance and Balance Sheet (M10, with the rest of full
+    # accounting), and every tax report including the Tajir Dost 1% ledger
+    # (M12). Not built at all yet: a purchase register, and a single
+    # customer's statement as a PDF (the khata screen shows the history).
+    state: sealed
     owns:
       - packages/pk_reports/**
       - packages/pk_export/**
@@ -3470,3 +3480,16 @@ features:
       - pdf a report is a page headed with the shop and the period
       - pdf the file is named for the report and its dates
       - a report goes out as a PDF headed with the shop
+
+  - id: M8-PAY-01
+    milestone: M8
+    title: What the shop owes each supplier, and for how long
+    status: done
+    # The other side of udhaar by age: every delivery and expense left on a
+    # supplier's account, split 0-30, 31-60, 61-90 and over 90 days from its
+    # date, so the owner sees which mill has waited longest before it stops
+    # sending goods on credit.
+    proof:
+      - owed to suppliers the same ageing, headed for suppliers
+      - owed to suppliers shows the bill left on account
+      - what is owed to suppliers is on its own page
