@@ -116,7 +116,8 @@ final class QuotationBuilder {
   }
 }
 
-/// One quotation, as the list shows it.
+/// One quotation or delivery challan, as the list shows it: a document a
+/// bill is made from.
 final class QuotationRow {
   const QuotationRow({
     required this.id,
@@ -127,7 +128,17 @@ final class QuotationRow {
     this.partyName,
     this.validUntil,
     this.billedAs,
+    this.docType = 'quotation',
+    this.isVoid = false,
   });
+
+  /// `quotation` or `delivery_challan`.
+  final String docType;
+
+  bool get isChallan => docType == 'delivery_challan';
+
+  /// A challan cancelled because the goods came back.
+  final bool isVoid;
 
   final String id;
   final String docNo;

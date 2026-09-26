@@ -250,6 +250,9 @@ class _FakeContext implements SaleWriteContext {
       };
 
   @override
+  Future<ChallanGoods?> deliveredOn(String documentId) async => null;
+
+  @override
   Future<PostedSale> apply(SalePosting posting) async {
     if (_writer.failOnApply) {
       throw StateError('the disk is full');

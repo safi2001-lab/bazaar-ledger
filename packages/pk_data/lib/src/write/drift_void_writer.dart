@@ -63,15 +63,34 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
     );
     if (doc == null) return null;
 
-    // Sale bills only. Reversing the journal and the stock is the whole of
+    // Sale bills and challans only. Reversing the journal and the stock is the whole of
     // undoing a sale, because a sale takes goods out at the average and
     // leaves the average alone. A delivery is different: it MOVED the
     // average, and a void that put the stock back out without moving the
     // cost back would leave every margin in the shop resting on a delivery
     // that never happened. Nothing on screen offers a void for anything else
     // yet; this makes sure nothing can, until that arithmetic exists.
+    //
+    // A delivery challan is the other: it took goods out at the average and
+    // left the average alone, exactly as a sale does, and cancelling one is
+    // the goods coming back on the van. Not once it is billed, though: then
+    // the goods are sold, and it is the bill that has to go first.
     final docType = doc.read<String>('doc_type');
-    if (docType != 'sale_invoice') {
+    if (docType == 'delivery_challan') {
+      final billed = await _tx.selectOne(
+        'SELECT bill.doc_no FROM doc_links link '
+        'JOIN documents bill ON bill.id = link.to_document_id '
+        "WHERE link.from_document_id = ? AND link.link_type = 'converted_from' "
+        "  AND link.deleted_at_utc IS NULL AND bill.status <> 'void'",
+        [documentId],
+      );
+      if (billed != null) {
+        throw VoidRefused(
+          '${doc.read<String>('doc_no')} is already billed as '
+          '${billed.read<String>('doc_no')}. Cancel that bill first.',
+        );
+      }
+    } else if (docType != 'sale_invoice') {
       throw VoidRefused(
         '${doc.read<String>('doc_no')} is not a sale bill, and only a sale '
         'bill can be cancelled this way.',

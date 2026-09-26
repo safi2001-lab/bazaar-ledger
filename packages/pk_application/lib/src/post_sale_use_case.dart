@@ -81,6 +81,11 @@ final class PostSaleUseCase {
         for (final t in priced.tenders) t.paymentAccountId,
       });
 
+      // A bill made from a challan sells what the challan already sent.
+      final delivered = draft.convertedFromId == null
+          ? null
+          : await write.deliveredOn(draft.convertedFromId!);
+
       final posting = builder.build(
         actor: actor,
         draft: priced,
@@ -89,6 +94,7 @@ final class PostSaleUseCase {
         journalNumber: journalNumber,
         paymentNumbers: paymentNumbers,
         ledgerAccountByPaymentAccount: ledgerAccounts,
+        delivered: delivered,
       );
 
       return write.apply(posting);

@@ -105,6 +105,43 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
   }
 
   @override
+  Future<ChallanGoods?> deliveredOn(String documentId) async {
+    final doc = await _tx.selectOne(
+      'SELECT doc_no, doc_type, party_id FROM documents '
+      "WHERE id = ? AND firm_id = ? AND status = 'posted' "
+      '  AND deleted_at_utc IS NULL',
+      [documentId, actor.firmId],
+    );
+    if (doc == null) {
+      throw StateError(
+        'The document this bill is made from is no longer standing.',
+      );
+    }
+    if (doc.read<String>('doc_type') != 'delivery_challan') return null;
+    final rows = await _tx.select(
+      'SELECT item_id, SUM(base_qty_thousandths) AS qty, '
+      '       SUM(cost_paisa) AS cost '
+      'FROM document_lines '
+      'WHERE document_id = ? AND item_id IS NOT NULL '
+      '  AND deleted_at_utc IS NULL '
+      'GROUP BY item_id',
+      [documentId],
+    );
+    return ChallanGoods(
+      challanId: documentId,
+      docNo: doc.read<String>('doc_no'),
+      partyId: doc.readNullable<String>('party_id'),
+      byItem: {
+        for (final r in rows)
+          r.read<String>('item_id'): (
+            qty: Qty.raw(r.read<int>('qty')),
+            cost: Money.paisa(r.read<int>('cost')),
+          ),
+      },
+    );
+  }
+
+  @override
   Future<PostedSale> apply(SalePosting posting) async {
     final doc = posting.document;
 
@@ -126,8 +163,15 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
         [sourceId],
       );
       if (billed != null) {
+        final source = await _tx.selectOne(
+          'SELECT doc_type FROM documents WHERE id = ?',
+          [sourceId],
+        );
+        final kind = source?.read<String>('doc_type') == 'delivery_challan'
+            ? 'challan'
+            : 'quotation';
         throw StateError(
-          'That quotation is already billed as '
+          'That $kind is already billed as '
           '${billed.read<String>('doc_no')}.',
         );
       }
@@ -172,71 +216,19 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
     }
 
     // --- Stock ------------------------------------------------------------
-    for (final movement in posting.stockMovements) {
-      final running = await _tx.selectOne(
-        'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS balance '
-        'FROM stock_ledger '
-        'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
-        '  AND deleted_at_utc IS NULL',
-        [actor.firmId, movement.itemId, movement.locationCode],
-      );
-      final balanceAfter =
-          (running?.read<int>('balance') ?? 0) +
-          movement.qtyDelta.inThousandths;
-
-      await _tx.insert('stock_ledger', {
-        'item_id': movement.itemId,
-        'location_code': movement.locationCode,
-        'lot_id': movement.lotId,
-        'document_id': documentId,
-        'document_line_id': lineIdByNo[movement.lineNo],
-        'txn_type': movement.txnType,
-        'qty_delta_thousandths': movement.qtyDelta.inThousandths,
-        'rate_milli_paisa': movement.rate.inMilliPaisa,
-        'value_delta_paisa': movement.valueDelta.inPaisa,
-        'balance_after_thousandths': balanceAfter,
-        'occurred_at_utc': movement.occurredAtUtcMillis,
-        'occurred_on_local': movement.occurredOnLocal,
-      });
-    }
+    await insertStockMovements(
+      _tx,
+      documentId,
+      lineIdByNo,
+      posting.stockMovements,
+    );
 
     // --- Double entry ------------------------------------------------------
-    final entry = posting.journal;
-    final journalEntryId = await _tx.insert('journal_entries', {
-      'entry_no': entry.entryNo,
-      'entry_date_utc': entry.entryDateUtcMillis,
-      'entry_date_local': entry.entryDateLocal,
-      'fiscal_year': entry.fiscalYear,
-      'source_type': entry.sourceType,
-      'document_id': documentId,
-      'narration': entry.narration,
-      'total_debit_paisa': entry.totalDebit.inPaisa,
-      'total_credit_paisa': entry.totalCredit.inPaisa,
-    });
-
-    final accountsByKey = await _accountsBySystemKey();
-    for (final line in entry.lines) {
-      final accountId = line.isResolvedAccountId
-          ? line.accountId
-          : accountsByKey[line.accountSystemKey];
-      if (accountId == null) {
-        throw StateError(
-          'No account with system key "${line.accountSystemKey}" in firm '
-          '${actor.firmId}. The chart of accounts is incomplete, and a sale '
-          'cannot be posted against an account that does not exist.',
-        );
-      }
-      await _tx.insert('journal_lines', {
-        'journal_entry_id': journalEntryId,
-        'line_no': line.lineNo,
-        'account_id': accountId,
-        'debit_paisa': line.debit.inPaisa,
-        'credit_paisa': line.credit.inPaisa,
-        'party_id': line.partyId,
-        'item_id': line.itemId,
-        'narration': line.narration,
-      });
-    }
+    final journalEntryId = await insertJournal(
+      _tx,
+      documentId,
+      posting.journal,
+    );
 
     _tx.audit(
       action: 'SALE_POSTED',
@@ -256,18 +248,6 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       journalEntryId: journalEntryId,
       paymentIds: paymentIds,
     );
-  }
-
-  Future<Map<String, String>> _accountsBySystemKey() async {
-    final rows = await _tx.select(
-      'SELECT id, system_key FROM accounts '
-      'WHERE firm_id = ? AND system_key IS NOT NULL '
-      '  AND deleted_at_utc IS NULL',
-      [actor.firmId],
-    );
-    return {
-      for (final r in rows) r.read<String>('system_key'): r.read<String>('id'),
-    };
   }
 
   static String _placeholders(int count) => List.filled(count, '?').join(', ');

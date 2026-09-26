@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../documents/delivery_challan.dart';
 import '../identity/actor_context.dart';
 import '../sales/sale_posting.dart';
 import '../sales/sale_posting_builder.dart';
@@ -66,6 +67,10 @@ abstract interface class SaleWriteContext {
   Future<Map<String, String>> ledgerAccountsFor(
     Iterable<String> paymentAccountIds,
   );
+
+  /// What the challan [documentId] sent, when it is a delivery challan;
+  /// null for anything else a bill can be made from, such as a quotation.
+  Future<ChallanGoods?> deliveredOn(String documentId);
 
   /// Writes the whole posting: document, lines, line taxes, payments,
   /// allocations, stock movements, journal entry and lines, audit and outbox.

@@ -899,15 +899,23 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
-  Future<List<QuotationRow>> quotations(
-    String firmId, {
-    int limit = 100,
-  }) async {
+  Future<List<QuotationRow>> quotations(String firmId, {int limit = 100}) =>
+      _billableDocuments(firmId, 'quotation', limit);
+
+  @override
+  Future<List<QuotationRow>> challans(String firmId, {int limit = 100}) =>
+      _billableDocuments(firmId, 'delivery_challan', limit);
+
+  Future<List<QuotationRow>> _billableDocuments(
+    String firmId,
+    String docType,
+    int limit,
+  ) async {
     final rows = await _db
         .customSelect(
           '''
           SELECT q.id, q.doc_no, q.doc_date_local, q.total_paisa, q.party_id,
-                 q.party_name_snapshot, q.terms,
+                 q.party_name_snapshot, q.terms, q.status,
                  (SELECT bill.doc_no FROM doc_links link
                     JOIN documents bill ON bill.id = link.to_document_id
                    WHERE link.from_document_id = q.id
@@ -916,12 +924,16 @@ final class DriftAppQueries implements AppQueries {
                      AND bill.status <> 'void'
                    LIMIT 1) AS billed_as
           FROM documents q
-          WHERE q.firm_id = ? AND q.doc_type = 'quotation'
-            AND q.status = 'posted' AND q.deleted_at_utc IS NULL
+          WHERE q.firm_id = ? AND q.doc_type = ?
+            AND q.status IN ('posted', 'void') AND q.deleted_at_utc IS NULL
           ORDER BY q.doc_date_local DESC, q.doc_seq DESC
           LIMIT ?
           ''',
-          variables: [Variable<String>(firmId), Variable<int>(limit)],
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(docType),
+            Variable<int>(limit),
+          ],
           readsFrom: {_db.documents, _db.docLinks},
         )
         .get();
@@ -934,8 +946,12 @@ final class DriftAppQueries implements AppQueries {
           total: Money.paisa(r.read<int>('total_paisa')),
           partyId: r.readNullable<String>('party_id'),
           partyName: r.readNullable<String>('party_name_snapshot'),
-          validUntil: _validUntil(r.readNullable<String>('terms')),
+          validUntil: docType == 'quotation'
+              ? _validUntil(r.readNullable<String>('terms'))
+              : null,
           billedAs: r.readNullable<String>('billed_as'),
+          docType: docType,
+          isVoid: r.read<String>('status') == 'void',
         ),
     ];
   }
@@ -959,7 +975,8 @@ final class DriftAppQueries implements AppQueries {
                  dl.discount_paisa
           FROM document_lines dl
           JOIN documents d ON d.id = dl.document_id
-          WHERE d.id = ? AND d.firm_id = ? AND d.doc_type = 'quotation'
+          WHERE d.id = ? AND d.firm_id = ?
+            AND d.doc_type IN ('quotation', 'delivery_challan')
             AND dl.item_id IS NOT NULL AND dl.deleted_at_utc IS NULL
           ORDER BY dl.line_no
           ''',
@@ -1386,13 +1403,17 @@ final class DriftAppQueries implements AppQueries {
 
     final cashier = await userName(doc.read<String>('created_by'));
 
-    final isQuotation = doc.read<String>('doc_type') == 'quotation';
+    final (docTitle, docLabel) = switch (doc.read<String>('doc_type')) {
+      'quotation' => ('Quotation', 'Quotation No'),
+      'delivery_challan' => ('Delivery Challan', 'Challan No'),
+      _ => ('Invoice', 'Bill No'),
+    };
     final terms = _blankToNull(doc.readNullable<String>('terms'));
     return ReceiptData(
       shop: firm.toReceiptShop(),
       docNo: doc.read<String>('doc_no'),
-      docTitle: isQuotation ? 'Quotation' : 'Invoice',
-      docLabel: isQuotation ? 'Quotation No' : 'Bill No',
+      docTitle: docTitle,
+      docLabel: docLabel,
       dateTimeLabel: _dateTimeLabel(doc.read<int>('doc_date_utc')),
       cashierName: cashier,
       customerName: _blankToNull(

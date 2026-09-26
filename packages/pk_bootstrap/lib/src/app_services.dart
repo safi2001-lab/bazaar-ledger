@@ -151,6 +151,9 @@ final class AppServices {
   SaveQuotationUseCase get saveQuotation =>
       SaveQuotationUseCase(writer: DriftQuotationWriter(runner: _runner));
 
+  IssueChallanUseCase get issueChallan =>
+      IssueChallanUseCase(writer: DriftChallanWriter(runner: _runner));
+
   MoveChequeUseCase get cheques =>
       MoveChequeUseCase(writer: DriftChequeWriter(runner: _runner));
 

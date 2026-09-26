@@ -4,6 +4,7 @@
 /// actually written. None of them can report success without a commit.
 library;
 
+export 'src/issue_challan_use_case.dart';
 export 'src/move_cheque_use_case.dart';
 export 'src/pay_supplier_use_case.dart';
 export 'src/post_sale_use_case.dart';

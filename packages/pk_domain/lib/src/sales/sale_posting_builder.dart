@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../documents/delivery_challan.dart';
 import '../identity/actor_context.dart';
 import 'sale_calculator.dart';
 import 'sale_draft.dart';
@@ -34,6 +35,7 @@ final class SalePostingBuilder {
     required AllocatedNumber journalNumber,
     required List<AllocatedNumber> paymentNumbers,
     required Map<String, String> ledgerAccountByPaymentAccount,
+    ChallanGoods? delivered,
   }) {
     if (calculated.withholding.isPositive) {
       // Not reachable while UntaxedEngine is the only engine. Named rather
@@ -48,6 +50,18 @@ final class SalePostingBuilder {
     final millis = actor.epochMillis;
     final localDate = actor.businessDate.value;
     final fiscalYear = actor.businessDate.fiscalYear;
+
+    // A bill made from a delivery challan sells goods that have already
+    // left. They are not taken off the shelf again, and they are costed at
+    // what they left at, not at today's average.
+    if (delivered != null && delivered.partyId != draft.partyId) {
+      throw ChallanRefused(
+        'The goods on ${delivered.docNo} went to somebody else. The bill '
+        'has to be made out to the customer they went to.',
+      );
+    }
+    final challanCost = delivered?.costOfLines(calculated.lines);
+    final cost = delivered?.cost ?? calculated.cost;
 
     // --- Document and lines ----------------------------------------------
     final document = DocumentPosting(
@@ -75,7 +89,7 @@ final class SalePostingBuilder {
       total: calculated.total,
       paid: calculated.paid,
       balance: calculated.balance,
-      cost: calculated.cost,
+      cost: cost,
       roundingMode: roundingModeCode(draft.roundingMode),
       taxRuleVersion: calculated.ruleVersion,
       cashThresholdBreached: calculated.cashThresholdBreached,
@@ -86,9 +100,9 @@ final class SalePostingBuilder {
     final lines = <DocumentLinePosting>[];
     final stock = <StockMovementPosting>[];
     for (final l in calculated.lines) {
-      lines.add(documentLineFor(l));
+      lines.add(documentLineFor(l, cost: challanCost?[l.lineNo]));
 
-      if (l.draft.tracksStock && !l.draft.baseQty.isZero) {
+      if (delivered == null && l.draft.tracksStock && !l.draft.baseQty.isZero) {
         stock.add(
           StockMovementPosting(
             itemId: l.draft.itemId,
@@ -264,7 +278,7 @@ final class SalePostingBuilder {
       post(key: 'round_off', debit: -calculated.roundOff);
     }
 
-    post(key: 'cogs', debit: calculated.cost);
+    post(key: 'cogs', debit: cost);
 
     post(key: 'sales', credit: calculated.subtotal);
     post(key: 'output_tax', credit: calculated.tax);
@@ -275,7 +289,11 @@ final class SalePostingBuilder {
       post(key: 'round_off', credit: calculated.roundOff);
     }
 
-    post(key: 'inventory', credit: calculated.cost);
+    post(
+      key: delivered == null ? 'inventory' : 'goods_on_challan',
+      credit: cost,
+      partyId: delivered == null ? null : draft.partyId,
+    );
 
     final totalDebit = Money.sum([for (final l in journalLines) l.debit]);
     final totalCredit = Money.sum([for (final l in journalLines) l.credit]);
@@ -339,27 +357,31 @@ String roundingModeCode(RoundingMode mode) => switch (mode) {
 /// One calculated line as the row `document_lines` stores. Shared by every
 /// document priced by the sale calculator, so a quotation and the bill made
 /// from it cannot store the same line two ways.
-DocumentLinePosting documentLineFor(CalculatedLine l) => DocumentLinePosting(
-  lineNo: l.lineNo,
-  itemId: l.draft.itemId,
-  itemNameSnapshot: l.draft.itemName,
-  itemCodeSnapshot: l.draft.itemCode,
-  hsCodeSnapshot: l.draft.hsCode,
-  description: l.draft.description,
-  qty: l.draft.qty,
-  baseQty: l.draft.baseQty,
-  unitId: l.draft.unitId,
-  unitCodeSnapshot: l.draft.unitCode,
-  rate: l.draft.rate,
-  mrp: l.draft.mrp,
-  lotId: l.draft.lotId,
-  gross: l.gross,
-  discountBp: l.draft.discountBp,
-  discount: l.totalDiscount,
-  taxable: l.taxable,
-  tax: l.tax,
-  lineTotal: l.lineTotal,
-  cost: l.cost,
-  isFreeItem: l.draft.isFreeItem,
-  taxes: l.taxes,
-);
+///
+/// [cost] replaces the line's cost when it was settled elsewhere: goods
+/// billed off a challan cost what they left at.
+DocumentLinePosting documentLineFor(CalculatedLine l, {Money? cost}) =>
+    DocumentLinePosting(
+      lineNo: l.lineNo,
+      itemId: l.draft.itemId,
+      itemNameSnapshot: l.draft.itemName,
+      itemCodeSnapshot: l.draft.itemCode,
+      hsCodeSnapshot: l.draft.hsCode,
+      description: l.draft.description,
+      qty: l.draft.qty,
+      baseQty: l.draft.baseQty,
+      unitId: l.draft.unitId,
+      unitCodeSnapshot: l.draft.unitCode,
+      rate: l.draft.rate,
+      mrp: l.draft.mrp,
+      lotId: l.draft.lotId,
+      gross: l.gross,
+      discountBp: l.draft.discountBp,
+      discount: l.totalDiscount,
+      taxable: l.taxable,
+      tax: l.tax,
+      lineTotal: l.lineTotal,
+      cost: cost ?? l.cost,
+      isFreeItem: l.draft.isFreeItem,
+      taxes: l.taxes,
+    );

@@ -554,6 +554,10 @@ class _FaultyContext implements SaleWriteContext {
       _inner.ledgerAccountsFor(ids);
 
   @override
+  Future<ChallanGoods?> deliveredOn(String documentId) =>
+      _inner.deliveredOn(documentId);
+
+  @override
   Future<PostedSale> apply(SalePosting posting) async {
     // Write only the document, then fall over — the exact shape of a crash
     // between two inserts.

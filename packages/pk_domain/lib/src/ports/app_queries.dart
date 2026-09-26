@@ -540,7 +540,11 @@ abstract interface class AppQueries {
   /// Quotations, newest first, each with the bill it became if any.
   Future<List<QuotationRow>> quotations(String firmId, {int limit = 100});
 
-  /// A quotation's lines, as quoted, for making the bill from it.
+  /// Delivery challans, newest first, each with the bill it became if any.
+  Future<List<QuotationRow>> challans(String firmId, {int limit = 100});
+
+  /// A quotation's or a challan's lines, as written, for making the bill
+  /// from it.
   Future<List<QuotedLine>> quotedLines(String firmId, String quotationId);
 
   /// Everything the party editor can change about one party, as it stands,

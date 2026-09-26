@@ -64,6 +64,29 @@ final class SaleLineDraft {
   final bool isFreeItem;
 
   final bool tracksStock;
+
+  /// This line, costed at [cost] per base unit.
+  SaleLineDraft withUnitCost(Rate cost) => SaleLineDraft(
+    itemId: itemId,
+    itemName: itemName,
+    itemCode: itemCode,
+    hsCode: hsCode,
+    description: description,
+    qty: qty,
+    baseQty: baseQty,
+    unitId: unitId,
+    unitCode: unitCode,
+    rate: rate,
+    discountBp: discountBp,
+    explicitDiscount: explicitDiscount,
+    unitCost: cost,
+    mrp: mrp,
+    isThirdSchedule: isThirdSchedule,
+    taxRuleId: taxRuleId,
+    lotId: lotId,
+    isFreeItem: isFreeItem,
+    tracksStock: tracksStock,
+  );
 }
 
 /// One tender against a sale. A label and an amount, and nothing more.
@@ -159,4 +182,22 @@ final class SaleDraft {
 
   final String? notes;
   final String? salespersonId;
+
+  /// The same draft with [lines] in place of its own.
+  SaleDraft withLines(List<SaleLineDraft> lines) => SaleDraft(
+    lines: lines,
+    partyId: partyId,
+    partyName: partyName,
+    partyNtn: partyNtn,
+    partyStrn: partyStrn,
+    partyAddress: partyAddress,
+    tenders: tenders,
+    billDiscount: billDiscount,
+    extraCharges: extraCharges,
+    roundToRupee: roundToRupee,
+    roundingMode: roundingMode,
+    notes: notes,
+    salespersonId: salespersonId,
+    convertedFromId: convertedFromId,
+  );
 }

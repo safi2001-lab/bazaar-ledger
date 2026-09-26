@@ -109,6 +109,18 @@ const List<AccountSpec> defaultChartOfAccounts = [
     systemKey: 'inventory',
     parentCode: '1000',
   ),
+  // Goods that have left on a delivery challan and not yet been billed. They
+  // are no longer on the shelf, so not Inventory, and nobody owes for them
+  // yet, so not Receivables; the bill made from the challan empties this.
+  AccountSpec(
+    code: '1250',
+    nameEn: 'Goods on Challan',
+    nameUr: 'Challan pe Maal',
+    type: AccountType.asset,
+    normalSide: NormalSide.debit,
+    systemKey: 'goods_on_challan',
+    parentCode: '1000',
+  ),
   AccountSpec(
     code: '1300',
     nameEn: 'Input Sales Tax',
