@@ -54,6 +54,19 @@ final class CostPosition {
     value: Money.zero,
     avg: Rate.raw(0),
   );
+
+  /// The position of an item as the shelf and the item row hold it.
+  ///
+  /// The carried value is derived, never read: the invariant is
+  /// `value == round(avg x qty)`, and a stored figure would be a second
+  /// answer to the same question. One constructor, so the writer and the
+  /// screen's preview cannot derive it two ways.
+  factory CostPosition.onShelf({required Qty qty, required Rate avg}) =>
+      CostPosition(
+        qty: qty,
+        value: qty.inThousandths == 0 ? Money.zero : avg.amountFor(qty),
+        avg: avg,
+      );
 }
 
 /// What a receipt of goods does to an item's cost.

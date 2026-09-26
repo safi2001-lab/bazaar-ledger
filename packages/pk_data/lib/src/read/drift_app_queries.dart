@@ -794,6 +794,88 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<Map<String, CostPosition>> costPositions(
+    String firmId,
+    Iterable<String> itemIds,
+  ) async {
+    final ids = itemIds.toSet().toList();
+    if (ids.isEmpty) return const {};
+    // The same read `DriftPurchaseWriter.costPositionsFor` makes inside its
+    // transaction: the balance off the stock ledger, the average off the
+    // item row, and the value derived by `CostPosition.onShelf`.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT i.id,
+                 i.avg_cost_milli_paisa,
+                 COALESCE((
+                   SELECT SUM(s.qty_delta_thousandths) FROM stock_ledger s
+                   WHERE s.item_id = i.id AND s.firm_id = i.firm_id
+                     AND s.deleted_at_utc IS NULL
+                 ), 0) AS balance
+          FROM items i
+          WHERE i.firm_id = ? AND i.id IN (${List.filled(ids.length, '?').join(', ')})
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            for (final id in ids) Variable<String>(id),
+          ],
+          readsFrom: {_db.items, _db.stockLedger},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        r.read<String>('id'): CostPosition.onShelf(
+          qty: Qty.raw(r.read<int>('balance')),
+          avg: Rate.raw(r.read<int>('avg_cost_milli_paisa')),
+        ),
+    };
+  }
+
+  @override
+  Future<List<PurchaseListRow>> recentPurchases(
+    String firmId, {
+    int limit = 60,
+  }) async {
+    // `balance_paisa` is what is still owed now, not at delivery: every
+    // payment to the supplier since has written the bill's new balance.
+    //
+    // Rides idx_documents_list.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT d.id, d.doc_no, d.doc_date_local, d.total_paisa,
+                 d.balance_paisa, p.name AS supplier,
+                 (SELECT COUNT(*) FROM document_lines dl
+                  WHERE dl.document_id = d.id
+                    AND dl.deleted_at_utc IS NULL) AS lines
+          FROM documents d
+          JOIN parties p ON p.id = d.party_id
+          WHERE d.firm_id = ? AND d.doc_type = 'purchase_bill'
+            AND d.status = 'posted'
+            AND d.deleted_at_utc IS NULL
+          ORDER BY d.doc_date_local DESC, d.doc_seq DESC, d.id DESC
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+          readsFrom: {_db.documents, _db.parties, _db.documentLines},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PurchaseListRow(
+          id: r.read<String>('id'),
+          docNo: r.read<String>('doc_no'),
+          dateLocal: r.read<String>('doc_date_local'),
+          supplierName: r.read<String>('supplier'),
+          total: Money.paisa(r.read<int>('total_paisa')),
+          owed: Money.paisa(r.read<int>('balance_paisa')),
+          lineCount: r.read<int>('lines'),
+        ),
+    ];
+  }
+
+  @override
   Future<List<ItemSummary>> archivedItems(
     String firmId, {
     int limit = 200,

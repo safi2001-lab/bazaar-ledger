@@ -46,6 +46,61 @@ final class PurchaseLineDraft {
   Money get lineTotal => rate.amountFor(qty);
 }
 
+/// One line of a delivery, landed: what it cost with its share of the
+/// freight, and what that did to the item's average.
+final class LandedLine {
+  const LandedLine({
+    required this.landed,
+    required this.before,
+    required this.change,
+  });
+
+  final Money landed;
+  final CostPosition before;
+  final CostChange change;
+}
+
+/// What each line of [draft] does to the cost of the goods it carries, in
+/// order.
+///
+/// The one place this is worked out. The builder posts from it, and the
+/// purchase screen shows the new average per line from it, so the figure a
+/// shopkeeper watches move as they type is the figure that gets written.
+List<LandedLine> landLines(
+  PurchaseDraft draft,
+  Map<String, CostPosition> positions,
+) {
+  // Freight across the lines by value, using the allocator that cannot lose
+  // a paisa. Splitting it evenly would put as much delivery cost on a Rs 50
+  // packet as on a Rs 5,000 sack.
+  final shares = draft.freight.isZero || draft.lines.isEmpty
+      ? [for (final _ in draft.lines) Money.zero]
+      : draft.freight.allocate([
+          for (final l in draft.lines) l.lineTotal.inPaisa,
+        ]);
+
+  // Carried between lines, so a bill with the same item twice — a real thing
+  // on a wholesale delivery — averages the second line against the first
+  // rather than against the shelf as it was this morning.
+  final running = <String, CostPosition>{...positions};
+
+  return [
+    for (var i = 0; i < draft.lines.length; i++)
+      () {
+        final line = draft.lines[i];
+        final landed = line.lineTotal + shares[i];
+        final before = running[line.itemId] ?? CostPosition.zero;
+        final change = receiveStock(
+          before: before,
+          qtyIn: line.baseQty,
+          landedCost: landed,
+        );
+        running[line.itemId] = change.after;
+        return LandedLine(landed: landed, before: before, change: change);
+      }(),
+  ];
+}
+
 /// A supplier's bill.
 final class PurchaseDraft {
   const PurchaseDraft({
@@ -130,14 +185,7 @@ final class PurchaseBuilder {
       );
     }
 
-    // Freight across the lines by value, using the allocator that cannot lose
-    // a paisa. Splitting it evenly would put as much delivery cost on a
-    // Rs 50 packet as on a Rs 5,000 sack.
-    final shares = draft.freight.isZero
-        ? [for (final _ in draft.lines) Money.zero]
-        : draft.freight.allocate([
-            for (final l in draft.lines) l.lineTotal.inPaisa,
-          ]);
+    final landedLines = landLines(draft, positions);
 
     final lines = <PurchaseLinePosting>[];
     final movements = <StockMovementPosting>[];
@@ -145,22 +193,9 @@ final class PurchaseBuilder {
     var shortfall = Money.zero;
     var inventoryDelta = Money.zero;
 
-    // Carried between lines, so a bill with the same item twice — a real
-    // thing on a wholesale delivery — averages the second line against the
-    // first rather than against the shelf as it was this morning.
-    final running = <String, CostPosition>{...positions};
-
     for (var i = 0; i < draft.lines.length; i++) {
       final line = draft.lines[i];
-      final landed = line.lineTotal + shares[i];
-      final before = running[line.itemId] ?? CostPosition.zero;
-
-      final change = receiveStock(
-        before: before,
-        qtyIn: line.baseQty,
-        landedCost: landed,
-      );
-      running[line.itemId] = change.after;
+      final LandedLine(:landed, :before, :change) = landedLines[i];
       // Same subtraction, two accounts. A shortfall this delivery covered is
       // a real loss the books never took; anything else is a rounding step.
       if (change.fromShortfall) {

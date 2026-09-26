@@ -2,6 +2,7 @@ import 'package:pk_money/pk_money.dart';
 
 import '../catalogue/unit_converter.dart';
 import '../corrections/return_builder.dart';
+import '../costing/moving_average.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
 import 'receipt.dart';
@@ -109,6 +110,33 @@ final class ItemSummary {
 
   bool get isLowOnStock =>
       tracksStock && !minStock.isZero && stockOnHand <= minStock;
+}
+
+/// One delivery, as the purchases list shows it.
+final class PurchaseListRow {
+  const PurchaseListRow({
+    required this.id,
+    required this.docNo,
+    required this.dateLocal,
+    required this.supplierName,
+    required this.total,
+    required this.owed,
+    required this.lineCount,
+    this.supplierBillNo,
+  });
+
+  final String id;
+  final String docNo;
+  final String dateLocal;
+  final String supplierName;
+  final Money total;
+
+  /// What is still unpaid on this delivery, after every payment since.
+  final Money owed;
+  final int lineCount;
+
+  /// The number on the supplier's own paper, which is what they will quote.
+  final String? supplierBillNo;
 }
 
 /// One expense, as the list shows it.
@@ -440,6 +468,20 @@ abstract interface class AppQueries {
   });
 
   Future<DayTotals> dayTotals(String firmId, String dateLocal);
+
+  /// What the shelf holds of each item and at what average cost — the same
+  /// read the purchase writer makes inside its transaction, so a preview of
+  /// the new average starts from the position the write will.
+  Future<Map<String, CostPosition>> costPositions(
+    String firmId,
+    Iterable<String> itemIds,
+  );
+
+  /// Deliveries, newest first.
+  Future<List<PurchaseListRow>> recentPurchases(
+    String firmId, {
+    int limit = 60,
+  });
 
   /// Items the shop has hidden from the counter, most recently hidden first.
   Future<List<ItemSummary>> archivedItems(String firmId, {int limit = 200});

@@ -82,9 +82,8 @@ final class _DriftPurchaseWriteContext implements PurchaseWriteContext {
     for (final row in rows) {
       final avg = Rate.raw(row.read<int>('avg_cost_milli_paisa'));
       final qty = Qty.raw(row.read<int>('balance'));
-      positions[row.read<String>('id')] = CostPosition(
+      positions[row.read<String>('id')] = CostPosition.onShelf(
         qty: qty,
-        value: qty.inThousandths == 0 ? Money.zero : avg.amountFor(qty),
         avg: avg,
       );
     }
