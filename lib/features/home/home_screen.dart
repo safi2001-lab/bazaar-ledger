@@ -14,6 +14,7 @@ import '../items/low_stock_screen.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
 import '../purchases/purchases_screen.dart';
+import '../reports/reports_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
 
@@ -119,6 +120,12 @@ class HomeScreen extends ConsumerWidget {
                     label: s.homeCheques,
                     icon: Icons.description_outlined,
                     onTap: () => _open(context, const ChequesScreen()),
+                  ),
+                  // Did the shop make money this month, and where did it go.
+                  _NavTile(
+                    label: s.homeReports,
+                    icon: Icons.bar_chart_outlined,
+                    onTap: () => _open(context, const ReportsScreen()),
                   ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

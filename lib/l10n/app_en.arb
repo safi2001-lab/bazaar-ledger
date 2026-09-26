@@ -938,5 +938,25 @@
       }
     }
   },
+  "homeReports": "Reports",
+  "reportsTitle": "Reports",
+  "reportProfitAndLoss": "Profit and loss",
+  "reportProfitAndLossHint": "Sales, cost of goods, expenses and what was left",
+  "reportSalesByItem": "Sales by item",
+  "reportSalesByItemHint": "What sold, how much, and what it made",
+  "reportExpenses": "Expenses",
+  "reportExpensesHint": "Rent, bijli, wages: where the money went",
+  "reportCashBook": "Cash book",
+  "reportCashBookHint": "What came into the drawer, what left, what should be there",
+  "reportDayBook": "Day book",
+  "reportDayBookHint": "Every entry in the books, in order",
+  "reportStockValue": "Stock value",
+  "reportStockValueHint": "What the goods on the shelf cost",
+  "reportToday": "Today",
+  "reportThisMonth": "This month",
+  "reportLastMonth": "Last month",
+  "reportThisYear": "This year",
+  "reportAsOfNow": "As of now",
+  "reportShareCsv": "Send CSV",
   "chequeDone": "Done"
 }

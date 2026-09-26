@@ -10,6 +10,7 @@ import 'package:pk_application/pk_application.dart';
 import 'package:pk_data/pk_data.dart';
 import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_platform/pk_platform.dart';
+import 'package:pk_reports/pk_reports.dart';
 import 'package:sqlite3/open.dart';
 import 'backup_service.dart';
 import 'printing_services.dart';
@@ -153,6 +154,9 @@ final class AppServices {
 
   IssueChallanUseCase get issueChallan =>
       IssueChallanUseCase(writer: DriftChallanWriter(runner: _runner));
+
+  /// The report pack, read from the books as they stand.
+  ReportEngine get reports => ReportEngine(DriftReportSource(database));
 
   RecordDebitNoteUseCase get chargeParty =>
       RecordDebitNoteUseCase(writer: DriftDebitNoteWriter(runner: _runner));

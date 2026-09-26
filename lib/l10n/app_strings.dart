@@ -3176,6 +3176,126 @@ abstract class AppStrings {
   /// **'Cheque {chequeNo} bounce ki bank fee'**
   String chargeBounceFeeNote(String chequeNo);
 
+  /// No description provided for @homeReports.
+  ///
+  /// In ur, this message translates to:
+  /// **'Report'**
+  String get homeReports;
+
+  /// No description provided for @reportsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Report'**
+  String get reportsTitle;
+
+  /// No description provided for @reportProfitAndLoss.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nafa nuqsan'**
+  String get reportProfitAndLoss;
+
+  /// No description provided for @reportProfitAndLossHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri, maal ki laagat, kharchay aur asal nafa'**
+  String get reportProfitAndLossHint;
+
+  /// No description provided for @reportSalesByItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez-war bikri'**
+  String get reportSalesByItem;
+
+  /// No description provided for @reportSalesByItemHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaunsi cheez kitni biki aur kitna nafa diya'**
+  String get reportSalesByItemHint;
+
+  /// No description provided for @reportExpenses.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchay'**
+  String get reportExpenses;
+
+  /// No description provided for @reportExpensesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kiraya, bijli, tankhwa: kahan kitna gaya'**
+  String get reportExpensesHint;
+
+  /// No description provided for @reportCashBook.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cash book'**
+  String get reportCashBook;
+
+  /// No description provided for @reportCashBookHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galle mein kya aaya, kya gaya, kitna hona chahiye'**
+  String get reportCashBookHint;
+
+  /// No description provided for @reportDayBook.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roznamcha'**
+  String get reportDayBook;
+
+  /// No description provided for @reportDayBookHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khaton mein har entry, jis tarteeb se hui'**
+  String get reportDayBookHint;
+
+  /// No description provided for @reportStockValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock ki qeemat'**
+  String get reportStockValue;
+
+  /// No description provided for @reportStockValueHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shelf par kitne ka maal hai'**
+  String get reportStockValueHint;
+
+  /// No description provided for @reportToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj'**
+  String get reportToday;
+
+  /// No description provided for @reportThisMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahina'**
+  String get reportThisMonth;
+
+  /// No description provided for @reportLastMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichla mahina'**
+  String get reportLastMonth;
+
+  /// No description provided for @reportThisYear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is saal'**
+  String get reportThisYear;
+
+  /// No description provided for @reportAsOfNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi tak'**
+  String get reportAsOfNow;
+
+  /// No description provided for @reportShareCsv.
+  ///
+  /// In ur, this message translates to:
+  /// **'CSV bhejein'**
+  String get reportShareCsv;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

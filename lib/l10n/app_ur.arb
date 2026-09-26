@@ -1017,5 +1017,25 @@
       }
     }
   },
+  "homeReports": "Report",
+  "reportsTitle": "Report",
+  "reportProfitAndLoss": "Nafa nuqsan",
+  "reportProfitAndLossHint": "Bikri, maal ki laagat, kharchay aur asal nafa",
+  "reportSalesByItem": "Cheez-war bikri",
+  "reportSalesByItemHint": "Kaunsi cheez kitni biki aur kitna nafa diya",
+  "reportExpenses": "Kharchay",
+  "reportExpensesHint": "Kiraya, bijli, tankhwa: kahan kitna gaya",
+  "reportCashBook": "Cash book",
+  "reportCashBookHint": "Galle mein kya aaya, kya gaya, kitna hona chahiye",
+  "reportDayBook": "Roznamcha",
+  "reportDayBookHint": "Khaton mein har entry, jis tarteeb se hui",
+  "reportStockValue": "Stock ki qeemat",
+  "reportStockValueHint": "Shelf par kitne ka maal hai",
+  "reportToday": "Aaj",
+  "reportThisMonth": "Is mahina",
+  "reportLastMonth": "Pichla mahina",
+  "reportThisYear": "Is saal",
+  "reportAsOfNow": "Abhi tak",
+  "reportShareCsv": "CSV bhejein",
   "chequeDone": "Ho gaya"
 }

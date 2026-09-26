@@ -1753,5 +1753,68 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get homeReports => 'Report';
+
+  @override
+  String get reportsTitle => 'Report';
+
+  @override
+  String get reportProfitAndLoss => 'Nafa nuqsan';
+
+  @override
+  String get reportProfitAndLossHint =>
+      'Bikri, maal ki laagat, kharchay aur asal nafa';
+
+  @override
+  String get reportSalesByItem => 'Cheez-war bikri';
+
+  @override
+  String get reportSalesByItemHint =>
+      'Kaunsi cheez kitni biki aur kitna nafa diya';
+
+  @override
+  String get reportExpenses => 'Kharchay';
+
+  @override
+  String get reportExpensesHint => 'Kiraya, bijli, tankhwa: kahan kitna gaya';
+
+  @override
+  String get reportCashBook => 'Cash book';
+
+  @override
+  String get reportCashBookHint =>
+      'Galle mein kya aaya, kya gaya, kitna hona chahiye';
+
+  @override
+  String get reportDayBook => 'Roznamcha';
+
+  @override
+  String get reportDayBookHint => 'Khaton mein har entry, jis tarteeb se hui';
+
+  @override
+  String get reportStockValue => 'Stock ki qeemat';
+
+  @override
+  String get reportStockValueHint => 'Shelf par kitne ka maal hai';
+
+  @override
+  String get reportToday => 'Aaj';
+
+  @override
+  String get reportThisMonth => 'Is mahina';
+
+  @override
+  String get reportLastMonth => 'Pichla mahina';
+
+  @override
+  String get reportThisYear => 'Is saal';
+
+  @override
+  String get reportAsOfNow => 'Abhi tak';
+
+  @override
+  String get reportShareCsv => 'CSV bhejein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

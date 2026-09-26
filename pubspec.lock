@@ -720,6 +720,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  pk_export:
+    dependency: transitive
+    description:
+      path: "packages/pk_export"
+      relative: true
+    source: path
+    version: "0.1.0"
   pk_money:
     dependency: "direct main"
     description:
@@ -738,6 +745,13 @@ packages:
     dependency: "direct main"
     description:
       path: "packages/pk_printer_android"
+      relative: true
+    source: path
+    version: "0.1.0"
+  pk_reports:
+    dependency: transitive
+    description:
+      path: "packages/pk_reports"
       relative: true
     source: path
     version: "0.1.0"

@@ -1753,5 +1753,67 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get homeReports => 'Reports';
+
+  @override
+  String get reportsTitle => 'Reports';
+
+  @override
+  String get reportProfitAndLoss => 'Profit and loss';
+
+  @override
+  String get reportProfitAndLossHint =>
+      'Sales, cost of goods, expenses and what was left';
+
+  @override
+  String get reportSalesByItem => 'Sales by item';
+
+  @override
+  String get reportSalesByItemHint => 'What sold, how much, and what it made';
+
+  @override
+  String get reportExpenses => 'Expenses';
+
+  @override
+  String get reportExpensesHint => 'Rent, bijli, wages: where the money went';
+
+  @override
+  String get reportCashBook => 'Cash book';
+
+  @override
+  String get reportCashBookHint =>
+      'What came into the drawer, what left, what should be there';
+
+  @override
+  String get reportDayBook => 'Day book';
+
+  @override
+  String get reportDayBookHint => 'Every entry in the books, in order';
+
+  @override
+  String get reportStockValue => 'Stock value';
+
+  @override
+  String get reportStockValueHint => 'What the goods on the shelf cost';
+
+  @override
+  String get reportToday => 'Today';
+
+  @override
+  String get reportThisMonth => 'This month';
+
+  @override
+  String get reportLastMonth => 'Last month';
+
+  @override
+  String get reportThisYear => 'This year';
+
+  @override
+  String get reportAsOfNow => 'As of now';
+
+  @override
+  String get reportShareCsv => 'Send CSV';
+
+  @override
   String get chequeDone => 'Done';
 }

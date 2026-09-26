@@ -3424,3 +3424,18 @@ features:
       - csv the notes come after the table
       - csv the file opens in Excel with Urdu intact
       - csv the file is named for the report and its dates
+
+  - id: M8-SCREEN-01
+    milestone: M8
+    title: The owner reads the report pack on the phone and sends it on
+    status: done
+    # A Report tile on the first screen opens the six reports, each for
+    # today, this month, last month or this fiscal year (stock value is as
+    # of now). The screen lays the finished table out, totals in bold and
+    # losses in red, with the report's notes under it, and sends it as a CSV
+    # through the share sheet. It adds nothing up itself.
+    proof:
+      - this month's profit is on the phone
+      - last month shows nothing earned this month
+      - a report goes out as a CSV the accountant can open
+      - stock value is as of now and lists the shelf

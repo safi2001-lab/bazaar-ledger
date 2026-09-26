@@ -7,6 +7,7 @@ library;
 
 export 'package:pk_application/pk_application.dart';
 export 'package:pk_domain/pk_domain.dart';
+export 'package:pk_export/pk_export.dart';
 export 'package:pk_platform/pk_platform.dart'
     show
         BackupArchive,
@@ -28,6 +29,7 @@ export 'package:pk_platform/pk_platform.dart'
         TcpPrinter,
         ThermalReceiptRenderer,
         isPrintableLatin;
+export 'package:pk_reports/pk_reports.dart';
 
 export 'src/app_config.dart';
 export 'src/app_services.dart';

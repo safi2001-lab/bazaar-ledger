@@ -23,10 +23,14 @@ dependencies:
     path: ../pk_data
   pk_domain:
     path: ../pk_domain
+  pk_export:
+    path: ../pk_export
   pk_money:
     path: ../pk_money
   pk_platform:
     path: ../pk_platform
+  pk_reports:
+    path: ../pk_reports
   sqlite3: ^2.9.0
   sqlite3_flutter_libs: ^0.5.26
 
