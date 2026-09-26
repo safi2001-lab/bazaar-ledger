@@ -137,6 +137,7 @@ final class _DriftPurchaseWriteContext implements PurchaseWriteContext {
       'rounding_mode': doc.roundingMode,
       'tax_rule_version': doc.taxRuleVersion,
       'notes': doc.notes,
+      'supplier_bill_no': doc.supplierBillNo,
     });
 
     final lineIdByNo = <int, String>{};

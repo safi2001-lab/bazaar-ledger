@@ -845,7 +845,7 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           '''
           SELECT d.id, d.doc_no, d.doc_date_local, d.total_paisa,
-                 d.balance_paisa, p.name AS supplier,
+                 d.balance_paisa, d.supplier_bill_no, p.name AS supplier,
                  (SELECT COUNT(*) FROM document_lines dl
                   WHERE dl.document_id = d.id
                     AND dl.deleted_at_utc IS NULL) AS lines
@@ -871,6 +871,7 @@ final class DriftAppQueries implements AppQueries {
           total: Money.paisa(r.read<int>('total_paisa')),
           owed: Money.paisa(r.read<int>('balance_paisa')),
           lineCount: r.read<int>('lines'),
+          supplierBillNo: r.readNullable<String>('supplier_bill_no'),
         ),
     ];
   }

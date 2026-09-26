@@ -164,6 +164,7 @@ void main() {
 
     await tapText(tester, 'Nayi kharidari');
     await _pickSupplier(tester);
+    await typeInto(tester, 'Supplier ka bill number', 'SUP/9912');
     await _addLine(tester, qty: '10', cost: '1200');
     await typeInto(tester, 'Abhi diye', '400');
     await tapText(tester, 'Kharidari save karein');
@@ -171,6 +172,7 @@ void main() {
 
     expect(find.text('Punjab Rice Mills'), findsOneWidget);
     expect(find.text('800.00 dena hai'), findsOneWidget);
+    expect(find.textContaining('SUP/9912'), findsOneWidget);
   });
 
   testWidgets('what is still owed reaches the supplier khata', (tester) async {

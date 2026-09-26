@@ -115,7 +115,13 @@ class _PurchaseTile extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${row.dateLocal} · ${row.docNo}',
+                  // The supplier's own number first when there is one: it is
+                  // the one printed on the paper in the shopkeeper's drawer.
+                  [
+                    row.dateLocal,
+                    ?row.supplierBillNo,
+                    row.docNo,
+                  ].join(' · '),
                   style: TextStyle(fontSize: 12, color: t.inkMuted),
                 ),
                 if (row.owed.isPositive) ...[

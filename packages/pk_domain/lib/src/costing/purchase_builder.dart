@@ -333,6 +333,9 @@ final class PurchaseBuilder {
         cashThresholdBreached: false,
         partyId: draft.partyId,
         notes: draft.notes,
+        supplierBillNo: draft.supplierBillNo?.trim().isEmpty ?? true
+            ? null
+            : draft.supplierBillNo!.trim(),
       ),
       lines: lines,
       stockMovements: movements,

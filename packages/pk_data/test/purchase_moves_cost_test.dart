@@ -132,6 +132,23 @@ void main() {
     expect(await balanceOf(riceId), Qty.units(10));
   });
 
+  test("the supplier's own bill number is kept on the bill", () async {
+    // It used to reach only the audit sentence, so the number a supplier
+    // quotes about an unpaid delivery could not be found anywhere.
+    final posted = await deliver();
+
+    final row = await db
+        .customSelect(
+          'SELECT supplier_bill_no FROM documents WHERE id = ?',
+          variables: [Variable<String>(posted.documentId)],
+        )
+        .getSingle();
+    expect(row.read<String?>('supplier_bill_no'), 'SUP/9912');
+
+    final listed = await queries.recentPurchases(firm.firmId);
+    expect(listed.single.supplierBillNo, 'SUP/9912');
+  });
+
   test('a second delivery weights against what is on the shelf', () async {
     await deliver(qty: 10, rateRupees: 90);
     await deliver(qty: 10, rateRupees: 120);

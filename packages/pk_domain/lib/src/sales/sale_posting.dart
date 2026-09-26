@@ -35,6 +35,7 @@ final class DocumentPosting {
     this.partyAddressSnapshot,
     this.salespersonId,
     this.notes,
+    this.supplierBillNo,
   });
 
   final String docType;
@@ -70,6 +71,10 @@ final class DocumentPosting {
   final bool cashThresholdBreached;
   final String? salespersonId;
   final String? notes;
+
+  /// The number on the supplier's own paper, on a purchase bill. What they
+  /// quote when they ring about an unpaid delivery.
+  final String? supplierBillNo;
 }
 
 /// A row to be written to `document_lines`, with its taxes.

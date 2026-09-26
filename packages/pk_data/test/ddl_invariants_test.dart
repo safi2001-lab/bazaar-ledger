@@ -318,7 +318,12 @@ void main() {
 /// introduced, and a table that arrives without anybody deciding to add it
 /// fails here rather than shipping.
 /// Compared against `sqlite_master` in name order, so each list is sorted.
-const _tablesByVersion = <int, List<String>>{1: _tablesV1, 2: _tablesV2};
+const _tablesByVersion = <int, List<String>>{
+  1: _tablesV1,
+  2: _tablesV2,
+  // v3 added a column, not a table.
+  3: _tablesV2,
+};
 
 const _tablesV1 = <String>[
   'accounts',

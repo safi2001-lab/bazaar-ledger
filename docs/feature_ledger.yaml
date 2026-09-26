@@ -2260,9 +2260,17 @@ features:
     # blank form and nothing else, while `purchasesTitle` and its empty state
     # were also in the ARB with no screen. The tile now opens the list, with
     # what is still owed on each delivery after every payment since.
+    #
+    # The supplier's bill number the form asks for was written only into an
+    # audit sentence. Schema v3 gives it a column, the writer fills it, and
+    # the list shows it first — it is the number printed on the paper in the
+    # shopkeeper's drawer. The migration is proved against a v2 database that
+    # holds a purchase, not an empty one.
     proof:
       - the new average shows on the line before it is saved
       - a saved delivery is on the list, with what is still owed
+      - the supplier's own bill number is kept on the bill
+      - v2 to v3 — the supplier's own bill number a v2 purchase comes through whole, with room for the number
 
   - id: M5-VOID-01
     milestone: M5
