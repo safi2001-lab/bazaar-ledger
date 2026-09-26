@@ -102,23 +102,25 @@ milestones:
     # wrong number in its books, and the wrong number is the one an auditor
     # finds.
     #
-    # Still open on purpose: one thing it owns has no row and is not built.
-    # The live database is not encrypted at rest (`encrypted_database.dart`).
-    # The backup file is; the books on the phone are protected by Android's
-    # app sandbox and the no-backup directory alone. Swapping SQLite for
-    # SQLCipher changes the native library under every install, needs the
-    # existing plaintext books migrated in place, and changes what a backup
-    # snapshot is — real work with real risk to data that already exists, and
-    # 100% of the rows that exist is not the milestone. A delivery entered
-    # wrong can now be corrected (M5-RETURN-04).
-    state: open
+    # Sealed 26 Sep 2026 at 11/11. A sale is voided or returned, a delivery
+    # is corrected by sending goods back, the books are backed up sealed and
+    # brought back on another phone, and nothing hidden is lost.
+    #
+    # Encryption of the live database at rest was planned here and moved to
+    # M14 by the owner's decision, not dropped. Both native SQLite packages
+    # this build can link are end-of-life, so doing it properly starts with
+    # moving the data layer to sqlite3 3.x, and SQLCipher lands in an APK
+    # already at 27 of its 30 MB. That is launch hardening, where the size
+    # budget is managed. Until then the books are protected by Android's app
+    # sandbox and the no-backup directory, and every backup that leaves the
+    # phone is encrypted.
+    state: sealed
     owns:
       - lib/features/backup/**
       - lib/features/recycle/**
       - packages/pk_domain/lib/src/corrections/**
       - packages/pk_platform/lib/src/backup/**
       - packages/pk_bootstrap/lib/src/backup_service.dart
-      - packages/pk_bootstrap/lib/src/encrypted_database.dart
 
   - id: M6
     title: Post-dated cheques
@@ -184,9 +186,14 @@ milestones:
 
   - id: M14
     title: Launch hardening and Excel import
+    # Also owns encryption of the live database at rest, moved here from M5
+    # on 26 Sep 2026: it needs the data layer on sqlite3 3.x first (the 2.x
+    # native packages are end-of-life) and it spends APK size this milestone
+    # is where the budget is managed.
     state: planned
     owns:
       - lib/features/import/**
+      - packages/pk_bootstrap/lib/src/encrypted_database.dart
 
 features:
   # ---------------------------------------------------------------------------
