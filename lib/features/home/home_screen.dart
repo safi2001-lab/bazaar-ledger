@@ -11,7 +11,7 @@ import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
-import '../purchases/purchase_screen.dart';
+import '../purchases/purchases_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
 
@@ -84,7 +84,7 @@ class HomeScreen extends ConsumerWidget {
                   _NavTile(
                     label: s.homePurchases,
                     icon: Icons.local_shipping_outlined,
-                    onTap: () => _open(context, const PurchaseScreen()),
+                    onTap: () => _open(context, const PurchasesScreen()),
                   ),
                   // Rent, bijli and wages. The heads have sat in the chart
                   // since M0 with nothing posting to them, so every margin

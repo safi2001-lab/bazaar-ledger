@@ -126,6 +126,53 @@ void main() {
     expect(await app.rowsOf('SELECT id FROM documents'), isEmpty);
   });
 
+  testWidgets('the new average shows on the line before it is saved', (
+    tester,
+  ) async {
+    // The screen's doc comment promised this from the day it was written, and
+    // the string sat in the ARB with nothing drawing it.
+    final app = await Harness.startWithShop(tester);
+    await _supplier(app);
+    final riceId = await _item(app, purchaseRate: Rate.rupees(90));
+
+    await _openPurchase(tester);
+    await _pickSupplier(tester);
+    await _addLine(tester, qty: '10', cost: '1200');
+    await tester.pumpAndSettle();
+    expect(find.text('Nayi lagat 120.00'), findsOneWidget);
+
+    // Freight is part of what the goods cost, and the preview moves with it.
+    await typeInto(tester, 'Kiraya aur mazdoori', '200');
+    await tester.pumpAndSettle();
+    expect(find.text('Nayi lagat 140.00'), findsOneWidget);
+
+    // And what was shown is what is written.
+    await tapText(tester, 'Kharidari save karein');
+    await tester.pumpAndSettle();
+    expect(await _averageOf(app, riceId), const Rate.rupees(140));
+  });
+
+  testWidgets('a saved delivery is on the list, with what is still owed', (
+    tester,
+  ) async {
+    final app = await Harness.startWithShop(tester);
+    await _supplier(app);
+    await _item(app, purchaseRate: Rate.rupees(90));
+
+    await tapText(tester, 'Kharidari');
+    expect(find.text('Abhi koi kharidari nahi'), findsOneWidget);
+
+    await tapText(tester, 'Nayi kharidari');
+    await _pickSupplier(tester);
+    await _addLine(tester, qty: '10', cost: '1200');
+    await typeInto(tester, 'Abhi diye', '400');
+    await tapText(tester, 'Kharidari save karein');
+    await tester.pumpAndSettle();
+
+    expect(find.text('Punjab Rice Mills'), findsOneWidget);
+    expect(find.text('800.00 dena hai'), findsOneWidget);
+  });
+
   testWidgets('what is still owed reaches the supplier khata', (tester) async {
     final app = await Harness.startWithShop(tester);
     await _supplier(app);
@@ -151,7 +198,8 @@ void main() {
 Future<void> _openPurchase(WidgetTester tester) async {
   await tester.pumpAndSettle();
   await tapText(tester, 'Kharidari');
-  await tester.pumpAndSettle();
+  // The tile opens the list of deliveries; a new one starts from there.
+  await tapText(tester, 'Nayi kharidari');
 }
 
 Future<void> _pickSupplier(WidgetTester tester) async {

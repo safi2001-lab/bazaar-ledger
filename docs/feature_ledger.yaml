@@ -2243,6 +2243,27 @@ features:
 
   # ---- M5 · Corrections, returns and data safety ------------------------
 
+  - id: M4-BUY-02
+    milestone: M4
+    title: The cost moves on screen as it is typed, and a delivery can be found again
+    status: done
+    # Two things the purchase screen promised and did not do.
+    #
+    # Its doc comment said the new average was shown per line, so a
+    # shopkeeper watches the cost move and catches two hundred sacks typed for
+    # twenty. `purchaseNewAverage` sat in the ARB with no caller. It is drawn
+    # now, from `landLines` — the loop the builder posts from, moved out of
+    # it so the preview and the write cannot be two copies of the arithmetic
+    # — over the position the writer itself will read.
+    #
+    # And a saved delivery could not be looked at again: the tile opened a
+    # blank form and nothing else, while `purchasesTitle` and its empty state
+    # were also in the ARB with no screen. The tile now opens the list, with
+    # what is still owed on each delivery after every payment since.
+    proof:
+      - the new average shows on the line before it is saved
+      - a saved delivery is on the list, with what is still owed
+
   - id: M5-VOID-01
     milestone: M5
     title: A posted bill is undone by a reversal, never by an edit

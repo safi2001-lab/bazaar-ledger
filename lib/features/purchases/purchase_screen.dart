@@ -31,6 +31,18 @@ import 'purchase_item_picker.dart';
 /// out in a report a month later. It is also the fastest way to catch a
 /// mistyped quantity: two hundred sacks at Rs 120 makes the average look
 /// wrong immediately.
+/// What the shelf holds of these items, keyed by their ids joined in order.
+///
+/// A string key rather than a list, because a family keyed on a fresh list
+/// is a new provider on every rebuild.
+final _costPositionsProvider = FutureProvider.autoDispose
+    .family<Map<String, CostPosition>, String>((ref, key) async {
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null || key.isEmpty) return const {};
+      return services.queries.costPositions(firm.id, key.split(','));
+    });
+
 class PurchaseScreen extends ConsumerStatefulWidget {
   const PurchaseScreen({super.key});
 
@@ -176,6 +188,28 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
     );
   }
 
+  /// The new average each line leaves its item at, computed by `landLines`
+  /// — the function the builder posts from — over the position the writer
+  /// will read. Null until the positions arrive, or if the draft cannot be
+  /// landed yet; a preview that throws must not take the form down with it.
+  List<Rate>? _newAverages() {
+    if (_lines.isEmpty) return null;
+    final ids = ({for (final l in _lines) l.itemId}.toList()..sort()).join(',');
+    final positions = ref.watch(_costPositionsProvider(ids)).valueOrNull;
+    if (positions == null) return null;
+    try {
+      return [
+        for (final landed in landLines(
+          PurchaseDraft(partyId: '', lines: _lines, freight: _freightAmount),
+          positions,
+        ))
+          landed.change.after.avg,
+      ];
+    } on Object {
+      return null;
+    }
+  }
+
   Widget _form(BuildContext context, AppStrings s, BlTokens t) => ListView(
     padding: EdgeInsets.fromLTRB(
       BlTokens.space4,
@@ -219,6 +253,7 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
             padding: const EdgeInsets.only(bottom: BlTokens.space2),
             child: _LineTile(
               line: _lines[i],
+              newAverage: _newAverages()?[i],
               onRemove: () => setState(() => _lines.removeAt(i)),
             ),
           ),
@@ -320,9 +355,18 @@ class _SaveBar extends StatelessWidget {
 
 /// One line, with what it does to the cost.
 class _LineTile extends StatelessWidget {
-  const _LineTile({required this.line, required this.onRemove});
+  const _LineTile({
+    required this.line,
+    required this.newAverage,
+    required this.onRemove,
+  });
 
   final PurchaseLineDraft line;
+
+  /// What this line leaves the item's cost at, freight included. The fastest
+  /// way to catch a mistyped quantity: two hundred sacks at Rs 120 makes the
+  /// average look wrong at once.
+  final Rate? newAverage;
   final VoidCallback onRemove;
 
   @override
@@ -350,6 +394,13 @@ class _LineTile extends StatelessWidget {
                   'x ${line.rate.amountOnly}',
                   style: TextStyle(fontSize: 13, color: t.inkMuted),
                 ),
+                if (newAverage != null)
+                  Text(
+                    AppStrings.of(
+                      context,
+                    ).purchaseNewAverage(newAverage!.amountOnly),
+                    style: TextStyle(fontSize: 13, color: t.accent),
+                  ),
               ],
             ),
           ),
