@@ -5,6 +5,7 @@ import '../cheques/cheque_lifecycle.dart';
 import '../cheques/demand_notice.dart';
 import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
+import '../documents/quotation.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
@@ -535,6 +536,12 @@ abstract interface class AppQueries {
   /// Cheques the shop is holding, soonest due first. Deposited ones included:
   /// they are still not money until the bank says so.
   Future<List<ChequeInHand>> chequesInHand(String firmId);
+
+  /// Quotations, newest first, each with the bill it became if any.
+  Future<List<QuotationRow>> quotations(String firmId, {int limit = 100});
+
+  /// A quotation's lines, as quoted, for making the bill from it.
+  Future<List<QuotedLine>> quotedLines(String firmId, String quotationId);
 
   /// Everything the party editor can change about one party, as it stands,
   /// so an edit writes back what it did not show instead of blanking it.

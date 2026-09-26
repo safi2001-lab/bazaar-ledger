@@ -180,7 +180,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
         : pw.Font.ttf(ByteData.view(unicodeFont.buffer));
 
     final doc = pw.Document(
-      title: 'Invoice ${data.docNo}',
+      title: '${data.docTitle} ${data.docNo}',
       author: data.shop.name,
       // A fallback, not a replacement. Every Latin run keeps Courier's
       // tabular figures — which is the whole reason a column of money is
@@ -251,7 +251,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                       ),
                     ),
                     pw.Text(
-                      'Bill No: ${data.docNo}   ${data.dateTimeLabel}',
+                      '${data.docLabel}: ${data.docNo}   ${data.dateTimeLabel}',
                       style: pw.TextStyle(
                         font: pw.Font.helvetica(),
                         fontSize: 9,
@@ -308,7 +308,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'Bill No: ${data.docNo}',
+                    '${data.docLabel}: ${data.docNo}',
                     style: pw.TextStyle(font: sansBold, fontSize: 10),
                   ),
                   pw.Text(

@@ -926,5 +926,40 @@
   "partyAddress": "Pata",
   "partyCity": "Shehar",
   "partyCnic": "CNIC (marzi se)",
+  "homeQuotations": "Quotation",
+  "quotationsTitle": "Quotations",
+  "quotationsEmpty": "Abhi koi quotation nahi",
+  "quotationsEmptyHint": "Bill ke payment sheet par \"Quotation banayein\" dabayein",
+  "quotationMake": "Quotation banayein",
+  "quotationSaved": "Quotation {docNo} ban gayi",
+  "@quotationSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "quotationBilledAs": "Bill {docNo} ban gaya",
+  "@quotationBilledAs": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "quotationExpired": "Muddat guzar gayi",
+  "quotationOpen": "Khuli hai",
+  "quotationValidUntil": "{date} tak",
+  "@quotationValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "quotationSharePdf": "PDF bhejein",
+  "quotationBill": "Is se bill banayein",
+  "quotationCounterBusy": "Counter par pehle se ek bill chal raha hai. Pehle usay mukammal ya khali karein.",
+  "quotationItemGone": "Is quotation ki ek cheez ab list mein nahi. Wapas la kar dobara koshish karein.",
   "chequeDone": "Ho gaya"
 }

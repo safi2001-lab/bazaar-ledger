@@ -118,7 +118,16 @@ final class ReceiptData {
     this.footerLines = const [],
     this.bankQr,
     this.isReprint = false,
+    this.docTitle = 'Invoice',
+    this.docLabel = 'Bill No',
   });
+
+  /// What the paper is: Invoice, or Quotation. A quotation printed as an
+  /// invoice is a bill for goods that never left the shop.
+  final String docTitle;
+
+  /// How the number is labelled on paper: "Bill No", "Quotation No".
+  final String docLabel;
 
   final ReceiptShop shop;
   final String docNo;

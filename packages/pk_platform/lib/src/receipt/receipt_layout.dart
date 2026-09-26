@@ -49,7 +49,7 @@ final class ReceiptLayout {
     }
 
     // --- Invoice ---------------------------------------------------------
-    out.add(_row('Bill No', d.docNo));
+    out.add(_row(d.docLabel, d.docNo));
     out.add(_row('Date', d.dateTimeLabel));
     out.add(_row('Cashier', _clip(d.cashierName, width - 10)));
     if (_has(d.customerName)) {

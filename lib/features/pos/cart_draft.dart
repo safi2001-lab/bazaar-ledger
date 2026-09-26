@@ -36,6 +36,8 @@ abstract final class CartDraft {
     'billDiscountPaisa': cart.billDiscount.inPaisa,
     'priceTier': cart.priceTier.code,
     'partyDiscountBp': cart.partyDiscountBp,
+    'sourceId': cart.sourceId,
+    'sourceNo': cart.sourceNo,
     'lines': [
       for (final line in cart.lines)
         {
@@ -101,6 +103,8 @@ abstract final class CartDraft {
         billDiscount: Money.paisa(discount),
         priceTier: PriceTier.parse(root['priceTier'] as String?),
         partyDiscountBp: partyDiscountBp,
+        sourceId: root['sourceId'] as String?,
+        sourceNo: root['sourceNo'] as String?,
       );
     } on Object {
       return null;

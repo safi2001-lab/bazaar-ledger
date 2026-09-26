@@ -1626,5 +1626,56 @@ class AppStringsUr extends AppStrings {
   String get partyCnic => 'CNIC (marzi se)';
 
   @override
+  String get homeQuotations => 'Quotation';
+
+  @override
+  String get quotationsTitle => 'Quotations';
+
+  @override
+  String get quotationsEmpty => 'Abhi koi quotation nahi';
+
+  @override
+  String get quotationsEmptyHint =>
+      'Bill ke payment sheet par \"Quotation banayein\" dabayein';
+
+  @override
+  String get quotationMake => 'Quotation banayein';
+
+  @override
+  String quotationSaved(String docNo) {
+    return 'Quotation $docNo ban gayi';
+  }
+
+  @override
+  String quotationBilledAs(String docNo) {
+    return 'Bill $docNo ban gaya';
+  }
+
+  @override
+  String get quotationExpired => 'Muddat guzar gayi';
+
+  @override
+  String get quotationOpen => 'Khuli hai';
+
+  @override
+  String quotationValidUntil(String date) {
+    return '$date tak';
+  }
+
+  @override
+  String get quotationSharePdf => 'PDF bhejein';
+
+  @override
+  String get quotationBill => 'Is se bill banayein';
+
+  @override
+  String get quotationCounterBusy =>
+      'Counter par pehle se ek bill chal raha hai. Pehle usay mukammal ya khali karein.';
+
+  @override
+  String get quotationItemGone =>
+      'Is quotation ki ek cheez ab list mein nahi. Wapas la kar dobara koshish karein.';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

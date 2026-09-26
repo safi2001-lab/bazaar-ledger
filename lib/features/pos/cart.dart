@@ -135,6 +135,8 @@ final class Cart {
     this.billDiscount = Money.zero,
     this.priceTier = PriceTier.retail,
     this.partyDiscountBp = 0,
+    this.sourceId,
+    this.sourceNo,
   });
 
   final List<CartLine> lines;
@@ -147,6 +149,10 @@ final class Cart {
 
   /// The customer's standing discount on every line, in basis points.
   final int partyDiscountBp;
+
+  /// The quotation this bill is being made from, and its number.
+  final String? sourceId;
+  final String? sourceNo;
 
   bool get isEmpty => lines.isEmpty;
 
@@ -168,6 +174,8 @@ final class Cart {
     int? partyDiscountBp,
     bool clearParty = false,
   }) => Cart(
+    sourceId: sourceId,
+    sourceNo: sourceNo,
     lines: lines ?? this.lines,
     partyId: clearParty ? null : partyId ?? this.partyId,
     partyName: clearParty ? null : partyName ?? this.partyName,
@@ -354,9 +362,7 @@ class CartNotifier extends Notifier<Cart> {
   void setParty(PartySummary? party, {UnitConverter? units}) {
     final tier = party?.priceTier ?? PriceTier.retail;
     final bp = party?.defaultDiscountBp ?? 0;
-    final lines = [
-      for (final l in state.lines) _follow(l, tier, bp, units),
-    ];
+    final lines = [for (final l in state.lines) _follow(l, tier, bp, units)];
     state = party == null
         ? state.copyWith(
             lines: lines,
@@ -409,4 +415,39 @@ class CartNotifier extends Notifier<Cart> {
   }
 
   void clear() => state = const Cart();
+
+  /// Puts a quotation on the counter to be billed: its lines at the prices
+  /// quoted, its customer, and a note of where it came from so the bill is
+  /// linked to it. The quoted prices stand even if the shelf price has moved
+  /// since; that is what a quotation is.
+  void loadQuotation(
+    QuotationRow quotation,
+    List<(ItemSummary, QuotedLine)> lines, {
+    PartySummary? party,
+  }) {
+    state = Cart(
+      lines: [
+        for (final (item, q) in lines)
+          CartLine(
+            item: item,
+            qty: q.qty,
+            rate: q.rate,
+            discountBp: q.discountBp,
+            explicitDiscount: q.explicitDiscount,
+            unitId: q.unitId == null || q.unitId == item.unitId
+                ? null
+                : q.unitId,
+            unitCode: q.unitId == null || q.unitId == item.unitId
+                ? null
+                : q.unitCode,
+          ),
+      ],
+      partyId: quotation.partyId,
+      partyName: quotation.partyName,
+      priceTier: party?.priceTier ?? PriceTier.retail,
+      partyDiscountBp: party?.defaultDiscountBp ?? 0,
+      sourceId: quotation.id,
+      sourceNo: quotation.docNo,
+    );
+  }
 }

@@ -847,5 +847,40 @@
   "partyAddress": "Address",
   "partyCity": "City",
   "partyCnic": "CNIC (optional)",
+  "homeQuotations": "Quotations",
+  "quotationsTitle": "Quotations",
+  "quotationsEmpty": "No quotations yet",
+  "quotationsEmptyHint": "Tap \"Make a quotation\" on a bill's payment sheet",
+  "quotationMake": "Make a quotation",
+  "quotationSaved": "Quotation {docNo} saved",
+  "@quotationSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "quotationBilledAs": "Billed as {docNo}",
+  "@quotationBilledAs": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "quotationExpired": "Expired",
+  "quotationOpen": "Open",
+  "quotationValidUntil": "until {date}",
+  "@quotationValidUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "quotationSharePdf": "Send PDF",
+  "quotationBill": "Make the bill from it",
+  "quotationCounterBusy": "A bill is already on the counter. Finish or clear it first.",
+  "quotationItemGone": "An item on this quotation is no longer in the list. Bring it back and try again.",
   "chequeDone": "Done"
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
@@ -86,6 +88,53 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       if (a.modeLabel == _mode) return a;
     }
     return null;
+  }
+
+  /// Keeps this cart as a quotation instead of billing it.
+  ///
+  /// The customer asked for a price, not for the goods. Nothing leaves the
+  /// shelf, nothing is owed, and the counter is cleared for the next bill.
+  Future<void> _quote() async {
+    if (_busy) return;
+    final s = AppStrings.of(context);
+    final cart = ref.read(cartProvider);
+    final units = ref.read(unitConverterProvider).valueOrNull;
+    final firm = ref.read(firmProvider).valueOrNull;
+    if (firm == null || cart.isEmpty) return;
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final cartNotifier = ref.read(cartProvider.notifier);
+    final container = ProviderScope.containerOf(context, listen: false);
+    try {
+      final services = ref.read(appServicesProvider);
+      final saved = await services.saveQuotation(
+        services.actorNow(),
+        SaleDraft(
+          lines: [for (final l in cart.lines) l.toDraft(units)],
+          partyId: cart.partyId,
+          partyName: cart.partyName,
+          billDiscount: cart.billDiscount,
+          roundToRupee: firm.roundInvoiceToRupee,
+        ),
+      );
+      cartNotifier.clear();
+      container.read(refreshTickProvider.notifier).update((n) => n + 1);
+      messenger.showSnackBar(
+        SnackBar(content: Text(s.quotationSaved(saved.docNo))),
+      );
+      navigator.pop();
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _failure = '$error';
+        });
+      }
+    }
   }
 
   Future<void> _post() async {
@@ -316,6 +365,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           tenders: tenders,
           billDiscount: cart.billDiscount,
           roundToRupee: firm.roundInvoiceToRupee,
+          convertedFromId: cart.sourceId,
         ),
       );
 
@@ -672,6 +722,17 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               busy: _busy,
               onPressed: _busy ? null : _post,
             ),
+            // A price asked for, not goods taken. Not offered while billing
+            // a quotation: that bill is the quotation being kept.
+            if (cart.sourceId == null) ...[
+              const SizedBox(height: BlTokens.space2),
+              BlButton(
+                label: s.quotationMake,
+                icon: Icons.request_quote_outlined,
+                kind: BlButtonKind.secondary,
+                onPressed: _busy ? null : () => unawaited(_quote()),
+              ),
+            ],
           ],
         ),
       ),

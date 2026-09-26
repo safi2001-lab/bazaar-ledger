@@ -2966,6 +2966,90 @@ abstract class AppStrings {
   /// **'CNIC (marzi se)'**
   String get partyCnic;
 
+  /// No description provided for @homeQuotations.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation'**
+  String get homeQuotations;
+
+  /// No description provided for @quotationsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotations'**
+  String get quotationsTitle;
+
+  /// No description provided for @quotationsEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi quotation nahi'**
+  String get quotationsEmpty;
+
+  /// No description provided for @quotationsEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ke payment sheet par \"Quotation banayein\" dabayein'**
+  String get quotationsEmptyHint;
+
+  /// No description provided for @quotationMake.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation banayein'**
+  String get quotationMake;
+
+  /// No description provided for @quotationSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation {docNo} ban gayi'**
+  String quotationSaved(String docNo);
+
+  /// No description provided for @quotationBilledAs.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill {docNo} ban gaya'**
+  String quotationBilledAs(String docNo);
+
+  /// No description provided for @quotationExpired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Muddat guzar gayi'**
+  String get quotationExpired;
+
+  /// No description provided for @quotationOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khuli hai'**
+  String get quotationOpen;
+
+  /// No description provided for @quotationValidUntil.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak'**
+  String quotationValidUntil(String date);
+
+  /// No description provided for @quotationSharePdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'PDF bhejein'**
+  String get quotationSharePdf;
+
+  /// No description provided for @quotationBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is se bill banayein'**
+  String get quotationBill;
+
+  /// No description provided for @quotationCounterBusy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter par pehle se ek bill chal raha hai. Pehle usay mukammal ya khali karein.'**
+  String get quotationCounterBusy;
+
+  /// No description provided for @quotationItemGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is quotation ki ek cheez ab list mein nahi. Wapas la kar dobara koshish karein.'**
+  String get quotationItemGone;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

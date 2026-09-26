@@ -148,6 +148,9 @@ final class AppServices {
   RecordReceiptUseCase get recordReceipt =>
       RecordReceiptUseCase(writer: DriftPaymentWriter(runner: _runner));
 
+  SaveQuotationUseCase get saveQuotation =>
+      SaveQuotationUseCase(writer: DriftQuotationWriter(runner: _runner));
+
   MoveChequeUseCase get cheques =>
       MoveChequeUseCase(writer: DriftChequeWriter(runner: _runner));
 

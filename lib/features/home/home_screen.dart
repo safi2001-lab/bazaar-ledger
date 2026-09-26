@@ -7,6 +7,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheques_screen.dart';
+import '../documents/quotations_screen.dart';
 import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
@@ -95,6 +96,13 @@ class HomeScreen extends ConsumerWidget {
                     label: s.homeExpenses,
                     icon: Icons.receipt_outlined,
                     onTap: () => _open(context, const ExpensesScreen()),
+                  ),
+                  // Prices given on the phone, and billed when the buyer
+                  // rings back.
+                  _NavTile(
+                    label: s.homeQuotations,
+                    icon: Icons.request_quote_outlined,
+                    onTap: () => _open(context, const QuotationsScreen()),
                   ),
                   // The cheque drawer. In wholesale most of what is owed
                   // arrives as post-dated cheques, and one banked late goes

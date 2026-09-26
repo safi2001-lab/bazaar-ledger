@@ -9,6 +9,7 @@ library;
 
 import 'package:pk_money/pk_money.dart';
 
+import '../cheques/cheque_dates.dart';
 import '../identity/actor_context.dart';
 import '../sales/sale_calculator.dart';
 import '../sales/sale_draft.dart';
@@ -113,4 +114,57 @@ final class QuotationBuilder {
           'valid until ${validUntil.value}',
     );
   }
+}
+
+/// One quotation, as the list shows it.
+final class QuotationRow {
+  const QuotationRow({
+    required this.id,
+    required this.docNo,
+    required this.date,
+    required this.total,
+    this.partyId,
+    this.partyName,
+    this.validUntil,
+    this.billedAs,
+  });
+
+  final String id;
+  final String docNo;
+  final BusinessDate date;
+  final Money total;
+  final String? partyId;
+  final String? partyName;
+
+  /// The last day its prices hold, if it says.
+  final BusinessDate? validUntil;
+
+  /// The bill it became, if it has.
+  final String? billedAs;
+
+  bool get isBilled => billedAs != null;
+
+  bool isExpiredOn(BusinessDate today) =>
+      validUntil != null && daysUntil(today, validUntil!) < 0;
+}
+
+/// One line of a quotation, as quoted.
+final class QuotedLine {
+  const QuotedLine({
+    required this.itemId,
+    required this.qty,
+    required this.unitCode,
+    required this.rate,
+    this.unitId,
+    this.discountBp = 0,
+    this.explicitDiscount,
+  });
+
+  final String itemId;
+  final Qty qty;
+  final String? unitId;
+  final String unitCode;
+  final Rate rate;
+  final int discountBp;
+  final Money? explicitDiscount;
 }

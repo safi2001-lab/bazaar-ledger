@@ -1626,5 +1626,56 @@ class AppStringsEn extends AppStrings {
   String get partyCnic => 'CNIC (optional)';
 
   @override
+  String get homeQuotations => 'Quotations';
+
+  @override
+  String get quotationsTitle => 'Quotations';
+
+  @override
+  String get quotationsEmpty => 'No quotations yet';
+
+  @override
+  String get quotationsEmptyHint =>
+      'Tap \"Make a quotation\" on a bill\'s payment sheet';
+
+  @override
+  String get quotationMake => 'Make a quotation';
+
+  @override
+  String quotationSaved(String docNo) {
+    return 'Quotation $docNo saved';
+  }
+
+  @override
+  String quotationBilledAs(String docNo) {
+    return 'Billed as $docNo';
+  }
+
+  @override
+  String get quotationExpired => 'Expired';
+
+  @override
+  String get quotationOpen => 'Open';
+
+  @override
+  String quotationValidUntil(String date) {
+    return 'until $date';
+  }
+
+  @override
+  String get quotationSharePdf => 'Send PDF';
+
+  @override
+  String get quotationBill => 'Make the bill from it';
+
+  @override
+  String get quotationCounterBusy =>
+      'A bill is already on the counter. Finish or clear it first.';
+
+  @override
+  String get quotationItemGone =>
+      'An item on this quotation is no longer in the list. Bring it back and try again.';
+
+  @override
   String get chequeDone => 'Done';
 }
