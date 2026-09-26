@@ -606,5 +606,41 @@
       }
     }
   },
-  "returnOnAccount": "Gahak ke khate mein jama"
+  "returnOnAccount": "Gahak ke khate mein jama",
+  "homeExpenses": "Kharcha",
+  "expensesTitle": "Kharchay",
+  "expensesEmpty": "Abhi koi kharcha nahi",
+  "expensesEmptyHint": "Kiraya, bijli, tankhwah — jo paisa dukaan se bahar gaya yahan likhein",
+  "expenseNew": "Naya kharcha",
+  "expenseHead": "Kis mad mein",
+  "expenseHeadRent": "Dukaan ka kiraya",
+  "expenseHeadSalaries": "Tankhwah",
+  "expenseHeadUtilities": "Bijli, gas, pani",
+  "expenseHeadFreight": "Maal bardari",
+  "expenseHeadMisc": "Mutafarriq",
+  "expenseAmount": "Raqam",
+  "expenseNote": "Kis cheez ke liye",
+  "expenseNoteRequired": "Likhein yeh kharcha kis cheez ka tha",
+  "expensePaidNow": "Abhi diye",
+  "expensePayLater": "Baad mein dena hai",
+  "expensePaidFrom": "Kahan se diye",
+  "expensePayee": "Kis ko dena hai",
+  "expensePayeeRequired": "Batayein yeh kis ko dena hai",
+  "expenseSave": "Kharcha save karein",
+  "expenseSaved": "Kharcha {docNo} save ho gaya",
+  "@expenseSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseOwedTo": "{name} ko dena hai",
+  "@expenseOwedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

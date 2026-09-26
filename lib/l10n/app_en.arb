@@ -524,5 +524,41 @@
       }
     }
   },
-  "returnOnAccount": "Credited to the customer"
+  "returnOnAccount": "Credited to the customer",
+  "homeExpenses": "Expenses",
+  "expensesTitle": "Expenses",
+  "expensesEmpty": "No expenses yet",
+  "expensesEmptyHint": "Rent, bijli, wages — money that left the shop goes here",
+  "expenseNew": "New expense",
+  "expenseHead": "Under",
+  "expenseHeadRent": "Rent",
+  "expenseHeadSalaries": "Wages",
+  "expenseHeadUtilities": "Bijli, gas, water",
+  "expenseHeadFreight": "Freight",
+  "expenseHeadMisc": "Other",
+  "expenseAmount": "Amount",
+  "expenseNote": "What it was for",
+  "expenseNoteRequired": "Say what this expense was for",
+  "expensePaidNow": "Paid now",
+  "expensePayLater": "To pay later",
+  "expensePaidFrom": "Paid from",
+  "expensePayee": "Owed to",
+  "expensePayeeRequired": "Say who this is owed to",
+  "expenseSave": "Save expense",
+  "expenseSaved": "Expense {docNo} saved",
+  "@expenseSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "expenseOwedTo": "Owed to {name}",
+  "@expenseOwedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  }
 }

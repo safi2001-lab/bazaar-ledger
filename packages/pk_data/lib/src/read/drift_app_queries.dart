@@ -664,6 +664,68 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<ExpenseRow>> recentExpenses(
+    String firmId, {
+    int limit = 60,
+  }) async {
+    // The head is the account on the entry's debit line — the same join the
+    // Trial Balance makes. A column on `documents` would be a second answer
+    // to that question, and the list would drift from the books the first
+    // time a path wrote one and not the other.
+    //
+    // Rides idx_documents_list for the outer scan and idx_je_doc for
+    // the head.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT d.id, d.doc_no, d.doc_date_local, d.total_paisa,
+                 d.balance_paisa, d.notes, p.name AS party_name,
+                 (SELECT a.system_key
+                  FROM journal_entries je
+                  JOIN journal_lines jl ON jl.journal_entry_id = je.id
+                  JOIN accounts a ON a.id = jl.account_id
+                  WHERE je.document_id = d.id
+                    AND je.source_type = 'expense'
+                    AND jl.debit_paisa > 0
+                  ORDER BY jl.line_no
+                  LIMIT 1) AS head
+          FROM documents d
+          LEFT JOIN parties p ON p.id = d.party_id
+          WHERE d.firm_id = ? AND d.doc_type = 'expense'
+            AND d.status = 'posted'
+            AND d.deleted_at_utc IS NULL
+          ORDER BY d.doc_date_local DESC, d.doc_seq DESC, d.id DESC
+          LIMIT ?
+          ''',
+          variables: [Variable<String>(firmId), Variable<int>(limit)],
+          readsFrom: {
+            _db.documents,
+            _db.parties,
+            _db.journalEntries,
+            _db.journalLines,
+            _db.accounts,
+          },
+        )
+        .get();
+
+    return [
+      for (final r in rows)
+        ExpenseRow(
+          id: r.read<String>('id'),
+          docNo: r.read<String>('doc_no'),
+          dateLocal: r.read<String>('doc_date_local'),
+          // Read as required. An expense with no debit line is a hole in
+          // the books, and filing it under misc here would hide it.
+          head: r.read<String>('head'),
+          amount: Money.paisa(r.read<int>('total_paisa')),
+          owed: Money.paisa(r.read<int>('balance_paisa')),
+          note: r.readNullable<String>('notes') ?? '',
+          partyName: r.readNullable<String>('party_name'),
+        ),
+    ];
+  }
+
+  @override
   Future<ReceiptData?> receiptFor(String firmId, String documentId) async {
     final firm = await _firm(firmId);
     if (firm == null) return null;

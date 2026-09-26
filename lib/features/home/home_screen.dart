@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../parties/parties_screen.dart';
@@ -84,6 +85,14 @@ class HomeScreen extends ConsumerWidget {
                     label: s.homePurchases,
                     icon: Icons.local_shipping_outlined,
                     onTap: () => _open(context, const PurchaseScreen()),
+                  ),
+                  // Rent, bijli and wages. The heads have sat in the chart
+                  // since M0 with nothing posting to them, so every margin
+                  // this app showed was profit before the shop paid its rent.
+                  _NavTile(
+                    label: s.homeExpenses,
+                    icon: Icons.receipt_outlined,
+                    onTap: () => _open(context, const ExpensesScreen()),
                   ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

@@ -1189,4 +1189,75 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get returnOnAccount => 'Credited to the customer';
+
+  @override
+  String get homeExpenses => 'Expenses';
+
+  @override
+  String get expensesTitle => 'Expenses';
+
+  @override
+  String get expensesEmpty => 'No expenses yet';
+
+  @override
+  String get expensesEmptyHint =>
+      'Rent, bijli, wages — money that left the shop goes here';
+
+  @override
+  String get expenseNew => 'New expense';
+
+  @override
+  String get expenseHead => 'Under';
+
+  @override
+  String get expenseHeadRent => 'Rent';
+
+  @override
+  String get expenseHeadSalaries => 'Wages';
+
+  @override
+  String get expenseHeadUtilities => 'Bijli, gas, water';
+
+  @override
+  String get expenseHeadFreight => 'Freight';
+
+  @override
+  String get expenseHeadMisc => 'Other';
+
+  @override
+  String get expenseAmount => 'Amount';
+
+  @override
+  String get expenseNote => 'What it was for';
+
+  @override
+  String get expenseNoteRequired => 'Say what this expense was for';
+
+  @override
+  String get expensePaidNow => 'Paid now';
+
+  @override
+  String get expensePayLater => 'To pay later';
+
+  @override
+  String get expensePaidFrom => 'Paid from';
+
+  @override
+  String get expensePayee => 'Owed to';
+
+  @override
+  String get expensePayeeRequired => 'Say who this is owed to';
+
+  @override
+  String get expenseSave => 'Save expense';
+
+  @override
+  String expenseSaved(String docNo) {
+    return 'Expense $docNo saved';
+  }
+
+  @override
+  String expenseOwedTo(String name) {
+    return 'Owed to $name';
+  }
 }

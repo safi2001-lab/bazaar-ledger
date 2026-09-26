@@ -1190,4 +1190,75 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get returnOnAccount => 'Gahak ke khate mein jama';
+
+  @override
+  String get homeExpenses => 'Kharcha';
+
+  @override
+  String get expensesTitle => 'Kharchay';
+
+  @override
+  String get expensesEmpty => 'Abhi koi kharcha nahi';
+
+  @override
+  String get expensesEmptyHint =>
+      'Kiraya, bijli, tankhwah — jo paisa dukaan se bahar gaya yahan likhein';
+
+  @override
+  String get expenseNew => 'Naya kharcha';
+
+  @override
+  String get expenseHead => 'Kis mad mein';
+
+  @override
+  String get expenseHeadRent => 'Dukaan ka kiraya';
+
+  @override
+  String get expenseHeadSalaries => 'Tankhwah';
+
+  @override
+  String get expenseHeadUtilities => 'Bijli, gas, pani';
+
+  @override
+  String get expenseHeadFreight => 'Maal bardari';
+
+  @override
+  String get expenseHeadMisc => 'Mutafarriq';
+
+  @override
+  String get expenseAmount => 'Raqam';
+
+  @override
+  String get expenseNote => 'Kis cheez ke liye';
+
+  @override
+  String get expenseNoteRequired => 'Likhein yeh kharcha kis cheez ka tha';
+
+  @override
+  String get expensePaidNow => 'Abhi diye';
+
+  @override
+  String get expensePayLater => 'Baad mein dena hai';
+
+  @override
+  String get expensePaidFrom => 'Kahan se diye';
+
+  @override
+  String get expensePayee => 'Kis ko dena hai';
+
+  @override
+  String get expensePayeeRequired => 'Batayein yeh kis ko dena hai';
+
+  @override
+  String get expenseSave => 'Kharcha save karein';
+
+  @override
+  String expenseSaved(String docNo) {
+    return 'Kharcha $docNo save ho gaya';
+  }
+
+  @override
+  String expenseOwedTo(String name) {
+    return '$name ko dena hai';
+  }
 }

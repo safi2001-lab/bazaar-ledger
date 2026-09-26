@@ -2612,3 +2612,34 @@ features:
       - a head this shop does not keep is refused
       - a failed expense burns no number
       - the expense is recorded in the audit trail
+
+  - id: M3-EXPENSE-02
+    milestone: M3
+    title: A shopkeeper can write down rent, bijli and wages, from the app
+    status: done
+    # M3-EXPENSE-01 put the writer in and nothing in `lib/` called it — the
+    # third time this repository has shipped a feature as a library with no
+    # button, after the printer and the costing engine. This row is the button,
+    # proved by driving the real screens and reading the rows back.
+    #
+    # The head is a chip from `expenseHeads`, the same closed list the builder
+    # refuses anything outside of, so the screen cannot offer a head the books
+    # would reject. The note, the amount and the payee of an unpaid expense
+    # are checked before Save as well as in the builder: the builder's refusal
+    # is the rule, and the screen's is what tells a shopkeeper which field is
+    # empty in their own language.
+    #
+    # The cheque account is not offered as a source. It posts to Cheques in
+    # Hand, which is paper customers gave the shop; paying rent from it is
+    # endorsing somebody's cheque over, and that is M6's lifecycle to record.
+    #
+    # The list reads the head off the journal line through the same join the
+    # Trial Balance makes. There is still no column holding it anywhere else.
+    proof:
+      - expenses can be reached from the home screen
+      - a bijli bill paid from the drawer lands on utilities
+      - an expense with no note is refused in words
+      - an expense of nothing is refused in words
+      - an unpaid expense has to say who it is owed to
+      - an unpaid expense sits on the payable, by name
+      - an expense entered on screen leaves the books balanced

@@ -111,6 +111,39 @@ final class ItemSummary {
       tracksStock && !minStock.isZero && stockOnHand <= minStock;
 }
 
+/// One expense, as the list shows it.
+///
+/// [head] is the system key of the account the expense was debited to, read
+/// back off the journal line. There is no column holding it anywhere else,
+/// so the list and the Trial Balance cannot disagree about where Rs 4,000 of
+/// bijli went.
+final class ExpenseRow {
+  const ExpenseRow({
+    required this.id,
+    required this.docNo,
+    required this.dateLocal,
+    required this.head,
+    required this.amount,
+    required this.owed,
+    required this.note,
+    this.partyName,
+  });
+
+  final String id;
+  final String docNo;
+  final String dateLocal;
+  final String head;
+  final Money amount;
+
+  /// What is still unpaid. Zero for an expense paid at the counter.
+  final Money owed;
+
+  final String note;
+
+  /// Who it is owed to, when it was not paid at once.
+  final String? partyName;
+}
+
 /// One row of the sales list.
 final class SaleListRow {
   const SaleListRow({
@@ -373,6 +406,12 @@ abstract interface class AppQueries {
   });
 
   Future<DayTotals> dayTotals(String firmId, String dateLocal);
+
+  /// Rent, bijli and wages, newest first.
+  ///
+  /// The head comes from the journal line the expense debited, never from a
+  /// column of its own.
+  Future<List<ExpenseRow>> recentExpenses(String firmId, {int limit = 60});
 
   /// Everything needed to draw or print one receipt.
   Future<ReceiptData?> receiptFor(String firmId, String documentId);

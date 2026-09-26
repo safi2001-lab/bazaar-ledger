@@ -2251,6 +2251,138 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Gahak ke khate mein jama'**
   String get returnOnAccount;
+
+  /// No description provided for @homeExpenses.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharcha'**
+  String get homeExpenses;
+
+  /// No description provided for @expensesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchay'**
+  String get expensesTitle;
+
+  /// No description provided for @expensesEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi kharcha nahi'**
+  String get expensesEmpty;
+
+  /// No description provided for @expensesEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kiraya, bijli, tankhwah — jo paisa dukaan se bahar gaya yahan likhein'**
+  String get expensesEmptyHint;
+
+  /// No description provided for @expenseNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya kharcha'**
+  String get expenseNew;
+
+  /// No description provided for @expenseHead.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis mad mein'**
+  String get expenseHead;
+
+  /// No description provided for @expenseHeadRent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ka kiraya'**
+  String get expenseHeadRent;
+
+  /// No description provided for @expenseHeadSalaries.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah'**
+  String get expenseHeadSalaries;
+
+  /// No description provided for @expenseHeadUtilities.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bijli, gas, pani'**
+  String get expenseHeadUtilities;
+
+  /// No description provided for @expenseHeadFreight.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal bardari'**
+  String get expenseHeadFreight;
+
+  /// No description provided for @expenseHeadMisc.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mutafarriq'**
+  String get expenseHeadMisc;
+
+  /// No description provided for @expenseAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam'**
+  String get expenseAmount;
+
+  /// No description provided for @expenseNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis cheez ke liye'**
+  String get expenseNote;
+
+  /// No description provided for @expenseNoteRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Likhein yeh kharcha kis cheez ka tha'**
+  String get expenseNoteRequired;
+
+  /// No description provided for @expensePaidNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi diye'**
+  String get expensePaidNow;
+
+  /// No description provided for @expensePayLater.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baad mein dena hai'**
+  String get expensePayLater;
+
+  /// No description provided for @expensePaidFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan se diye'**
+  String get expensePaidFrom;
+
+  /// No description provided for @expensePayee.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ko dena hai'**
+  String get expensePayee;
+
+  /// No description provided for @expensePayeeRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batayein yeh kis ko dena hai'**
+  String get expensePayeeRequired;
+
+  /// No description provided for @expenseSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharcha save karein'**
+  String get expenseSave;
+
+  /// No description provided for @expenseSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharcha {docNo} save ho gaya'**
+  String expenseSaved(String docNo);
+
+  /// No description provided for @expenseOwedTo.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ko dena hai'**
+  String expenseOwedTo(String name);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
