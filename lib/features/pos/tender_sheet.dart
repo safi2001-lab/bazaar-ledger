@@ -90,17 +90,24 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     return null;
   }
 
-  /// Keeps this cart as a quotation instead of billing it.
+  /// Keeps this cart as a quotation, or sends it on a delivery challan,
+  /// instead of billing it.
   ///
-  /// The customer asked for a price, not for the goods. Nothing leaves the
-  /// shelf, nothing is owed, and the counter is cleared for the next bill.
-  Future<void> _quote() async {
+  /// A quotation is a price asked for: nothing leaves the shelf and nothing
+  /// is owed. A challan is goods sent before the bill: they leave the shelf,
+  /// and are owed for once the bill is made from it. Either way the counter
+  /// is cleared for the next bill.
+  Future<void> _keep({required bool challan}) async {
     if (_busy) return;
     final s = AppStrings.of(context);
     final cart = ref.read(cartProvider);
     final units = ref.read(unitConverterProvider).valueOrNull;
     final firm = ref.read(firmProvider).valueOrNull;
     if (firm == null || cart.isEmpty) return;
+    if (challan && cart.partyId == null) {
+      setState(() => _failure = s.challanNeedsCustomer);
+      return;
+    }
     setState(() {
       _busy = true;
       _failure = null;
@@ -111,21 +118,24 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     final container = ProviderScope.containerOf(context, listen: false);
     try {
       final services = ref.read(appServicesProvider);
-      final saved = await services.saveQuotation(
-        services.actorNow(),
-        SaleDraft(
-          lines: [for (final l in cart.lines) l.toDraft(units)],
-          partyId: cart.partyId,
-          partyName: cart.partyName,
-          billDiscount: cart.billDiscount,
-          roundToRupee: firm.roundInvoiceToRupee,
-        ),
+      final draft = SaleDraft(
+        lines: [for (final l in cart.lines) l.toDraft(units)],
+        partyId: cart.partyId,
+        partyName: cart.partyName,
+        billDiscount: cart.billDiscount,
+        roundToRupee: firm.roundInvoiceToRupee,
       );
+      final String message;
+      if (challan) {
+        final saved = await services.issueChallan(services.actorNow(), draft);
+        message = s.challanSaved(saved.docNo);
+      } else {
+        final saved = await services.saveQuotation(services.actorNow(), draft);
+        message = s.quotationSaved(saved.docNo);
+      }
       cartNotifier.clear();
       container.read(refreshTickProvider.notifier).update((n) => n + 1);
-      messenger.showSnackBar(
-        SnackBar(content: Text(s.quotationSaved(saved.docNo))),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(message)));
       navigator.pop();
     } on Object catch (error) {
       if (mounted) {
@@ -722,15 +732,25 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               busy: _busy,
               onPressed: _busy ? null : _post,
             ),
-            // A price asked for, not goods taken. Not offered while billing
-            // a quotation: that bill is the quotation being kept.
+            // A price asked for, or goods sent ahead of the bill. Not
+            // offered while billing a quotation or a challan: that bill is
+            // the one being kept.
             if (cart.sourceId == null) ...[
               const SizedBox(height: BlTokens.space2),
               BlButton(
                 label: s.quotationMake,
                 icon: Icons.request_quote_outlined,
                 kind: BlButtonKind.secondary,
-                onPressed: _busy ? null : () => unawaited(_quote()),
+                onPressed: _busy
+                    ? null
+                    : () => unawaited(_keep(challan: false)),
+              ),
+              const SizedBox(height: BlTokens.space2),
+              BlButton(
+                label: s.challanMake,
+                icon: Icons.assignment_turned_in_outlined,
+                kind: BlButtonKind.secondary,
+                onPressed: _busy ? null : () => unawaited(_keep(challan: true)),
               ),
             ],
           ],

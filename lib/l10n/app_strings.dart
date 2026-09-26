@@ -3050,6 +3050,78 @@ abstract class AppStrings {
   /// **'Is quotation ki ek cheez ab list mein nahi. Wapas la kar dobara koshish karein.'**
   String get quotationItemGone;
 
+  /// No description provided for @homeChallans.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan'**
+  String get homeChallans;
+
+  /// No description provided for @challansTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Delivery challan'**
+  String get challansTitle;
+
+  /// No description provided for @challansEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi challan nahi'**
+  String get challansEmpty;
+
+  /// No description provided for @challansEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal bill se pehle bhejna ho to payment sheet par \"Challan banayein\" dabayein'**
+  String get challansEmptyHint;
+
+  /// No description provided for @challanMake.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan banayein'**
+  String get challanMake;
+
+  /// No description provided for @challanSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan {docNo} ban gaya, maal nikal gaya'**
+  String challanSaved(String docNo);
+
+  /// No description provided for @challanNeedsCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan par gahak ka naam zaroori hai. Pehle gahak chunein.'**
+  String get challanNeedsCustomer;
+
+  /// No description provided for @challanUnbilled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill baqi hai'**
+  String get challanUnbilled;
+
+  /// No description provided for @challanCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal wapas aa gaya'**
+  String get challanCancelled;
+
+  /// No description provided for @challanCancel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal wapas aa gaya'**
+  String get challanCancel;
+
+  /// No description provided for @challanCancelReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan wapas'**
+  String get challanCancelReason;
+
+  /// No description provided for @challanCancelConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan {docNo} ka saara maal wapas shelf par aa jaye ga. Pakka?'**
+  String challanCancelConfirm(String docNo);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

@@ -961,5 +961,31 @@
   "quotationBill": "Is se bill banayein",
   "quotationCounterBusy": "Counter par pehle se ek bill chal raha hai. Pehle usay mukammal ya khali karein.",
   "quotationItemGone": "Is quotation ki ek cheez ab list mein nahi. Wapas la kar dobara koshish karein.",
+  "homeChallans": "Challan",
+  "challansTitle": "Delivery challan",
+  "challansEmpty": "Abhi koi challan nahi",
+  "challansEmptyHint": "Maal bill se pehle bhejna ho to payment sheet par \"Challan banayein\" dabayein",
+  "challanMake": "Challan banayein",
+  "challanSaved": "Challan {docNo} ban gaya, maal nikal gaya",
+  "@challanSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "challanNeedsCustomer": "Challan par gahak ka naam zaroori hai. Pehle gahak chunein.",
+  "challanUnbilled": "Bill baqi hai",
+  "challanCancelled": "Maal wapas aa gaya",
+  "challanCancel": "Maal wapas aa gaya",
+  "challanCancelReason": "Challan wapas",
+  "challanCancelConfirm": "Challan {docNo} ka saara maal wapas shelf par aa jaye ga. Pakka?",
+  "@challanCancelConfirm": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

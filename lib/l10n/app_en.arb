@@ -882,5 +882,31 @@
   "quotationBill": "Make the bill from it",
   "quotationCounterBusy": "A bill is already on the counter. Finish or clear it first.",
   "quotationItemGone": "An item on this quotation is no longer in the list. Bring it back and try again.",
+  "homeChallans": "Challan",
+  "challansTitle": "Delivery challans",
+  "challansEmpty": "No challans yet",
+  "challansEmptyHint": "To send goods before the bill, tap \"Make challan\" on the payment sheet",
+  "challanMake": "Make challan",
+  "challanSaved": "Challan {docNo} made, goods sent",
+  "@challanSaved": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
+  "challanNeedsCustomer": "A challan needs the customer's name. Pick the customer first.",
+  "challanUnbilled": "Not billed yet",
+  "challanCancelled": "Goods came back",
+  "challanCancel": "Goods came back",
+  "challanCancelReason": "Challan returned",
+  "challanCancelConfirm": "All the goods on challan {docNo} go back on the shelf. Sure?",
+  "@challanCancelConfirm": {
+    "placeholders": {
+      "docNo": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

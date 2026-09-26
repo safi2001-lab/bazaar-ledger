@@ -3303,3 +3303,36 @@ features:
       - a quotation is billed at the price quoted
       - a billed quotation says so and cannot be billed again
       - a quotation is shared as a PDF titled Quotation
+
+  - id: M7-CHALLAN-01
+    milestone: M7
+    title: Goods go out on a delivery challan, and the bill made from it later moves nothing twice
+    status: done
+    # The van leaves on Monday with forty cartons for a retailer billed on
+    # Saturday. The payment sheet sends the cart on a numbered challan to a
+    # named customer: the goods leave the shelf at the average, and their
+    # cost waits in a new asset, Goods on Challan (1250, added to older
+    # firms the first time it is needed), with nothing on the khata. The
+    # bill made from the challan bills exactly the goods sent, to the
+    # customer they went to, at whatever price is settled; it moves no stock
+    # and takes the cost across from Goods on Challan to COGS at what the
+    # goods left at, not at the average of the day it is billed. Goods that
+    # come back cancel an unbilled challan through the ordinary void, which
+    # mirrors its stock and its entry; a billed challan cannot be cancelled.
+    # Partial billing of one challan, and one bill for several challans, are
+    # not built: the first is the challan cancelled and sent again, the
+    # second is several bills.
+    proof:
+      - a challan takes the goods off the shelf and owes nothing
+      - a bill from a challan moves no stock and costs what the goods left at
+      - a bill for other goods than the challan sent is refused
+      - a challan is billed only to the customer it went to
+      - a challan cannot be billed twice
+      - a cancelled challan puts the goods back on the shelf
+      - a billed challan cannot be cancelled
+      - a challan has to name its customer
+      - goods sent on a challan leave the shelf and owe nothing
+      - a challan with no customer is refused in words
+      - a bill made from a challan takes nothing more off the shelf
+      - goods that came back cancel the challan
+      - a challan is shared as a PDF titled Delivery Challan

@@ -1677,5 +1677,47 @@ class AppStringsEn extends AppStrings {
       'An item on this quotation is no longer in the list. Bring it back and try again.';
 
   @override
+  String get homeChallans => 'Challan';
+
+  @override
+  String get challansTitle => 'Delivery challans';
+
+  @override
+  String get challansEmpty => 'No challans yet';
+
+  @override
+  String get challansEmptyHint =>
+      'To send goods before the bill, tap \"Make challan\" on the payment sheet';
+
+  @override
+  String get challanMake => 'Make challan';
+
+  @override
+  String challanSaved(String docNo) {
+    return 'Challan $docNo made, goods sent';
+  }
+
+  @override
+  String get challanNeedsCustomer =>
+      'A challan needs the customer\'s name. Pick the customer first.';
+
+  @override
+  String get challanUnbilled => 'Not billed yet';
+
+  @override
+  String get challanCancelled => 'Goods came back';
+
+  @override
+  String get challanCancel => 'Goods came back';
+
+  @override
+  String get challanCancelReason => 'Challan returned';
+
+  @override
+  String challanCancelConfirm(String docNo) {
+    return 'All the goods on challan $docNo go back on the shelf. Sure?';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

@@ -104,6 +104,14 @@ class HomeScreen extends ConsumerWidget {
                     icon: Icons.request_quote_outlined,
                     onTap: () => _open(context, const QuotationsScreen()),
                   ),
+                  // Goods sent ahead of the bill, and the bill made from them
+                  // when it is settled.
+                  _NavTile(
+                    label: s.homeChallans,
+                    icon: Icons.assignment_turned_in_outlined,
+                    onTap: () =>
+                        _open(context, const QuotationsScreen(challans: true)),
+                  ),
                   // The cheque drawer. In wholesale most of what is owed
                   // arrives as post-dated cheques, and one banked late goes
                   // stale while one that bounces unnoticed reads as paid.

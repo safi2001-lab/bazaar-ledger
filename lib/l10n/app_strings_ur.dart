@@ -1677,5 +1677,47 @@ class AppStringsUr extends AppStrings {
       'Is quotation ki ek cheez ab list mein nahi. Wapas la kar dobara koshish karein.';
 
   @override
+  String get homeChallans => 'Challan';
+
+  @override
+  String get challansTitle => 'Delivery challan';
+
+  @override
+  String get challansEmpty => 'Abhi koi challan nahi';
+
+  @override
+  String get challansEmptyHint =>
+      'Maal bill se pehle bhejna ho to payment sheet par \"Challan banayein\" dabayein';
+
+  @override
+  String get challanMake => 'Challan banayein';
+
+  @override
+  String challanSaved(String docNo) {
+    return 'Challan $docNo ban gaya, maal nikal gaya';
+  }
+
+  @override
+  String get challanNeedsCustomer =>
+      'Challan par gahak ka naam zaroori hai. Pehle gahak chunein.';
+
+  @override
+  String get challanUnbilled => 'Bill baqi hai';
+
+  @override
+  String get challanCancelled => 'Maal wapas aa gaya';
+
+  @override
+  String get challanCancel => 'Maal wapas aa gaya';
+
+  @override
+  String get challanCancelReason => 'Challan wapas';
+
+  @override
+  String challanCancelConfirm(String docNo) {
+    return 'Challan $docNo ka saara maal wapas shelf par aa jaye ga. Pakka?';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

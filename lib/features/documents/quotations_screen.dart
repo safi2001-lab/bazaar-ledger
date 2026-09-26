@@ -27,26 +27,46 @@ final quotationsProvider = FutureProvider.autoDispose<List<QuotationRow>>((
   return services.queries.quotations(firm.id);
 });
 
-/// Prices given, and what became of them.
+/// Delivery challans, newest first.
+final challansProvider = FutureProvider.autoDispose<List<QuotationRow>>((
+  ref,
+) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return const [];
+  return services.queries.challans(firm.id);
+});
+
+/// Prices given, or goods sent ahead of the bill, and what became of them.
 ///
 /// A wholesaler quotes forty cartons on WhatsApp in the morning and the
 /// retailer rings back at four to take them. The quotation is found here,
 /// and the bill is made from it at the prices quoted.
+///
+/// With [challans], the same list for delivery challans: the van left with
+/// the goods on Monday, and the bill is made from the challan on Saturday,
+/// or the challan is cancelled when the goods come back.
 class QuotationsScreen extends ConsumerWidget {
-  const QuotationsScreen({super.key});
+  const QuotationsScreen({super.key, this.challans = false});
+
+  final bool challans;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
     final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
+    final provider = challans ? challansProvider : quotationsProvider;
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.quotationsTitle)),
+      appBar: AppBar(
+        title: Text(challans ? s.challansTitle : s.quotationsTitle),
+      ),
       body: SafeArea(
         child: ref
-            .watch(quotationsProvider)
+            .watch(provider)
             .when(
               loading: () => const Padding(
                 padding: EdgeInsets.all(BlTokens.space4),
@@ -56,14 +76,20 @@ class QuotationsScreen extends ConsumerWidget {
                 title: s.commonSomethingWentWrong,
                 message: '$error',
                 retryLabel: s.actionRetry,
-                onRetry: () => ref.invalidate(quotationsProvider),
+                onRetry: () => ref.invalidate(provider),
               ),
               data: (rows) => rows.isEmpty
-                  ? BlEmpty(
-                      icon: Icons.request_quote_outlined,
-                      title: s.quotationsEmpty,
-                      message: s.quotationsEmptyHint,
-                    )
+                  ? challans
+                        ? BlEmpty(
+                            icon: Icons.assignment_turned_in_outlined,
+                            title: s.challansEmpty,
+                            message: s.challansEmptyHint,
+                          )
+                        : BlEmpty(
+                            icon: Icons.request_quote_outlined,
+                            title: s.quotationsEmpty,
+                            message: s.quotationsEmptyHint,
+                          )
                   : ListView(
                       padding: const EdgeInsets.all(BlTokens.space4),
                       children: [
@@ -93,8 +119,12 @@ class _QuotationTile extends StatelessWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
     final q = quotation;
-    final (String label, BlChipTone tone) = q.isBilled
+    final (String label, BlChipTone tone) = q.isVoid
+        ? (s.challanCancelled, BlChipTone.neutral)
+        : q.isBilled
         ? (s.quotationBilledAs(q.billedAs!), BlChipTone.good)
+        : q.isChallan
+        ? (s.challanUnbilled, BlChipTone.warn)
         : q.isExpiredOn(today)
         ? (s.quotationExpired, BlChipTone.neutral)
         : (s.quotationOpen, BlChipTone.warn);
@@ -153,6 +183,43 @@ class _QuotationActions extends ConsumerStatefulWidget {
 class _QuotationActionsState extends ConsumerState<_QuotationActions> {
   bool _busy = false;
   String? _failure;
+
+  /// Set by the first tap on the cancel button, which then asks again.
+  bool _confirmingCancel = false;
+
+  /// The goods on an unbilled challan came back: the challan is cancelled
+  /// and they go back on the shelf.
+  Future<void> _cancel() async {
+    if (_busy) return;
+    if (!_confirmingCancel) {
+      setState(() => _confirmingCancel = true);
+      return;
+    }
+    final s = AppStrings.of(context);
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    final navigator = Navigator.of(context);
+    final container = ProviderScope.containerOf(context, listen: false);
+    try {
+      final services = ref.read(appServicesProvider);
+      await services.voidDocument(
+        services.actorNow(),
+        documentId: widget.quotation.id,
+        reason: s.challanCancelReason,
+      );
+      container.read(refreshTickProvider.notifier).update((n) => n + 1);
+      navigator.pop();
+    } on Object catch (error) {
+      if (mounted) {
+        setState(() {
+          _busy = false;
+          _failure = error is VoidRefused ? error.reason : '$error';
+        });
+      }
+    }
+  }
 
   Future<void> _share() async {
     if (_busy) return;
@@ -277,13 +344,30 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
             busy: _busy,
             onPressed: _busy ? null : () => unawaited(_share()),
           ),
-          if (!q.isBilled) ...[
+          if (!q.isBilled && !q.isVoid) ...[
             const SizedBox(height: BlTokens.space2),
             BlButton(
               label: s.quotationBill,
               icon: Icons.point_of_sale_outlined,
               big: true,
               onPressed: _busy ? null : () => unawaited(_bill()),
+            ),
+          ],
+          if (q.isChallan && !q.isBilled && !q.isVoid) ...[
+            const SizedBox(height: BlTokens.space2),
+            if (_confirmingCancel)
+              Padding(
+                padding: const EdgeInsets.only(bottom: BlTokens.space2),
+                child: Text(
+                  s.challanCancelConfirm(q.docNo),
+                  style: TextStyle(fontSize: 14, color: t.ink),
+                ),
+              ),
+            BlButton(
+              label: s.challanCancel,
+              icon: Icons.undo,
+              kind: BlButtonKind.secondary,
+              onPressed: _busy ? null : () => unawaited(_cancel()),
             ),
           ],
           if (_failure != null) ...[
