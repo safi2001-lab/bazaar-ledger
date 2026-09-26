@@ -806,6 +806,7 @@ features:
       - the runner that invokes every gate is declared where melos requires it
       - the runner that invokes every gate is pinned below the version that drops melos.yaml
       - the runner that invokes every gate the workflow installs it before invoking any gate
+      - device proofs are checked while the emulator is still running
 
   - id: M0-CI-02
     milestone: M0

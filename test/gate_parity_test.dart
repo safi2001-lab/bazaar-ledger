@@ -120,6 +120,24 @@ void main() {
     );
   });
 
+  test('device proofs are checked while the emulator is still running', () {
+    // The emulator runner kills the emulator when its script ends. A ledger
+    // check in a later step re-ran integration_test/ against no device, and
+    // failed the first row whose device proofs had just passed on it.
+    final runner = workflow.indexOf('reactivecircus/android-emulator-runner');
+    final check = workflow.indexOf('verify_ledger.dart --device');
+    final nextStep = workflow.indexOf('\n      - ', runner);
+    expect(runner, isNonNegative);
+    expect(check, isNonNegative);
+    expect(
+      nextStep == -1 || check < nextStep,
+      isTrue,
+      reason:
+          'verify_ledger --device runs after the emulator step ends, when '
+          'there is no device left for it to check anything on',
+    );
+  });
+
   test('the ledger checkout is deep enough for its own rules', () {
     // verify_ledger's R4 and R5 read the commit range. A shallow clone makes
     // them silently pass, which is a rule that cannot fire.

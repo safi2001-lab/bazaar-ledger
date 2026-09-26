@@ -250,10 +250,17 @@ jobs:
           arch: x86_64
           profile: pixel_6
           disable-animations: true
-          script: flutter test integration_test --reporter expanded
-
-      # Asserts every `device_proof:` in the ledger actually passed, and fails
-      # if no row names one — otherwise --device is a flag that reports success
-      # for verifying nothing.
-      - name: Feature ledger — device proofs
-        run: dart run tool/verify_ledger.dart --device
+          # Both lines run while the emulator is up. The ledger check used to
+          # be a step of its own after this one — by which point the action
+          # had already killed the emulator, so `--device` re-ran
+          # integration_test/ against no device at all. It went unnoticed
+          # while every row with a device proof was still `wip`; the first
+          # row marked done failed on proofs the acceptance suite had just
+          # passed on the emulator a minute earlier.
+          #
+          # verify_ledger --device asserts every `device_proof:` in the ledger
+          # actually passed, and fails if no row names one — otherwise it is a
+          # flag that reports success for verifying nothing.
+          script: |
+            flutter test integration_test --reporter expanded
+            dart run tool/verify_ledger.dart --device
