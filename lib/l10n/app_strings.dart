@@ -3338,6 +3338,162 @@ abstract class AppStrings {
   /// **'Kis supplier ka kitna dena hai, aur kab se'**
   String get reportPayablesHint;
 
+  /// No description provided for @usersTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff aur PIN'**
+  String get usersTitle;
+
+  /// No description provided for @usersMyPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mera PIN rakhein'**
+  String get usersMyPin;
+
+  /// No description provided for @usersAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff shamil karein'**
+  String get usersAdd;
+
+  /// No description provided for @usersName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam'**
+  String get usersName;
+
+  /// No description provided for @usersPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN (4 se 6 hindsay)'**
+  String get usersPin;
+
+  /// No description provided for @usersPinAgain.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN dobara'**
+  String get usersPinAgain;
+
+  /// No description provided for @usersPinMismatch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dono PIN ek jaisay nahi'**
+  String get usersPinMismatch;
+
+  /// No description provided for @usersPinInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN 4 se 6 hindson ka ho'**
+  String get usersPinInvalid;
+
+  /// No description provided for @usersPinSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN rakh diya'**
+  String get usersPinSaved;
+
+  /// No description provided for @usersNoPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN nahi'**
+  String get usersNoPin;
+
+  /// No description provided for @usersInactive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff mein nahi'**
+  String get usersInactive;
+
+  /// No description provided for @usersRemove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff se hatayein'**
+  String get usersRemove;
+
+  /// No description provided for @usersLetBack.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas shamil karein'**
+  String get usersLetBack;
+
+  /// No description provided for @usersNewPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya PIN'**
+  String get usersNewPin;
+
+  /// No description provided for @usersRole.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaam'**
+  String get usersRole;
+
+  /// No description provided for @usersOwnerPinFirst.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle apna PIN rakhein, taake staff aap ki screens na khol sakay.'**
+  String get usersOwnerPinFirst;
+
+  /// No description provided for @roleOwner.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik'**
+  String get roleOwner;
+
+  /// No description provided for @roleManager.
+  ///
+  /// In ur, this message translates to:
+  /// **'Manager'**
+  String get roleManager;
+
+  /// No description provided for @roleAccountant.
+  ///
+  /// In ur, this message translates to:
+  /// **'Munshi'**
+  String get roleAccountant;
+
+  /// No description provided for @roleCashier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier'**
+  String get roleCashier;
+
+  /// No description provided for @signInTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaun hai?'**
+  String get signInTitle;
+
+  /// No description provided for @signInPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN'**
+  String get signInPin;
+
+  /// No description provided for @signInOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kholein'**
+  String get signInOpen;
+
+  /// No description provided for @signInWrong.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghalat PIN'**
+  String get signInWrong;
+
+  /// No description provided for @homeLock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Taala lagayein'**
+  String get homeLock;
+
+  /// No description provided for @homeSignedInAs.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ({role})'**
+  String homeSignedInAs(String name, String role);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

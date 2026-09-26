@@ -110,12 +110,15 @@ final class AppServices {
   /// Sealing the books into a `.pkbak` the shopkeeper can keep somewhere
   /// else. Built per call, like the writers, so it writes its audit row
   /// through whichever runner is current.
-  BackupService get backups => BackupService(
-    database: database,
-    runner: () => _runner,
-    clock: clock,
-    appVersion: _appVersion,
-  );
+  BackupService get backups {
+    require(Permission.backups);
+    return BackupService(
+      database: database,
+      runner: () => _runner,
+      clock: clock,
+      appVersion: _appVersion,
+    );
+  }
 
   /// When this shop last made a backup, or null if it never has.
   Future<DateTime?> lastBackupAt() async {
@@ -143,48 +146,228 @@ final class AppServices {
   /// first run cannot keep writing through the clock that predates the device.
   CatalogueWriter get catalogue => DriftCatalogueWriter(_runner);
 
-  PostSaleUseCase get postSale =>
-      PostSaleUseCase(writer: DriftSaleWriter(runner: _runner));
+  PostSaleUseCase get postSale {
+    require(Permission.sell);
+    return PostSaleUseCase(writer: DriftSaleWriter(runner: _runner));
+  }
 
-  RecordReceiptUseCase get recordReceipt =>
-      RecordReceiptUseCase(writer: DriftPaymentWriter(runner: _runner));
+  RecordReceiptUseCase get recordReceipt {
+    require(Permission.takePayments);
+    return RecordReceiptUseCase(writer: DriftPaymentWriter(runner: _runner));
+  }
 
-  SaveQuotationUseCase get saveQuotation =>
-      SaveQuotationUseCase(writer: DriftQuotationWriter(runner: _runner));
+  SaveQuotationUseCase get saveQuotation {
+    require(Permission.sell);
+    return SaveQuotationUseCase(writer: DriftQuotationWriter(runner: _runner));
+  }
 
-  IssueChallanUseCase get issueChallan =>
-      IssueChallanUseCase(writer: DriftChallanWriter(runner: _runner));
+  IssueChallanUseCase get issueChallan {
+    require(Permission.sell);
+    return IssueChallanUseCase(writer: DriftChallanWriter(runner: _runner));
+  }
 
   /// The report pack, read from the books as they stand.
-  ReportEngine get reports => ReportEngine(DriftReportSource(database));
+  ReportEngine get reports {
+    require(Permission.reports);
+    return ReportEngine(DriftReportSource(database));
+  }
 
-  RecordDebitNoteUseCase get chargeParty =>
-      RecordDebitNoteUseCase(writer: DriftDebitNoteWriter(runner: _runner));
+  RecordDebitNoteUseCase get chargeParty {
+    require(Permission.takePayments);
+    return RecordDebitNoteUseCase(
+      writer: DriftDebitNoteWriter(runner: _runner),
+    );
+  }
 
-  MoveChequeUseCase get cheques =>
-      MoveChequeUseCase(writer: DriftChequeWriter(runner: _runner));
+  MoveChequeUseCase get cheques {
+    require(Permission.cheques);
+    return MoveChequeUseCase(writer: DriftChequeWriter(runner: _runner));
+  }
 
-  PaySupplierUseCase get paySupplier =>
-      PaySupplierUseCase(writer: DriftPaymentWriter(runner: _runner));
+  PaySupplierUseCase get paySupplier {
+    require(Permission.purchases);
+    return PaySupplierUseCase(writer: DriftPaymentWriter(runner: _runner));
+  }
 
-  RecordPurchaseUseCase get recordPurchase =>
-      RecordPurchaseUseCase(writer: DriftPurchaseWriter(runner: _runner));
+  RecordPurchaseUseCase get recordPurchase {
+    require(Permission.purchases);
+    return RecordPurchaseUseCase(writer: DriftPurchaseWriter(runner: _runner));
+  }
 
-  VoidDocumentUseCase get voidDocument =>
-      VoidDocumentUseCase(writer: DriftVoidWriter(runner: _runner));
+  VoidDocumentUseCase get voidDocument {
+    require(Permission.voidDocuments);
+    return VoidDocumentUseCase(writer: DriftVoidWriter(runner: _runner));
+  }
 
-  RecordPurchaseReturnUseCase get recordPurchaseReturn =>
-      RecordPurchaseReturnUseCase(
-        writer: DriftPurchaseReturnWriter(runner: _runner),
-      );
+  RecordPurchaseReturnUseCase get recordPurchaseReturn {
+    require(Permission.purchases);
+    return RecordPurchaseReturnUseCase(
+      writer: DriftPurchaseReturnWriter(runner: _runner),
+    );
+  }
 
-  RecordReturnUseCase get recordReturn =>
-      RecordReturnUseCase(writer: DriftReturnWriter(runner: _runner));
+  RecordReturnUseCase get recordReturn {
+    require(Permission.takeReturns);
+    return RecordReturnUseCase(writer: DriftReturnWriter(runner: _runner));
+  }
 
-  RecordExpenseUseCase get recordExpense =>
-      RecordExpenseUseCase(writer: DriftExpenseWriter(runner: _runner));
+  RecordExpenseUseCase get recordExpense {
+    require(Permission.expenses);
+    return RecordExpenseUseCase(writer: DriftExpenseWriter(runner: _runner));
+  }
 
   bool get isSetUp => _identity != null;
+
+  // ---------------------------------------------------------------------
+  // Who is at the phone
+  // ---------------------------------------------------------------------
+
+  /// How PINs are hashed. Cheap in tests, Argon2id at full cost otherwise.
+  PinHasher pinHasher = const PinHasher();
+
+  /// Staff, and the PINs that let them in.
+  StaffStore get staffStore => DriftStaffStore(database, () => _runner);
+
+  StaffMember? _signedIn;
+  bool _locked = false;
+  int _failedPins = 0;
+  DateTime? _pinsBlockedUntil;
+
+  /// Who is using the app now; null while it is locked.
+  StaffMember? get currentUser => _locked ? null : _signedIn;
+
+  /// Whether somebody has to sign in before anything can be done.
+  bool get isLocked => _locked;
+
+  /// Whether [permission] is allowed to whoever is signed in.
+  ///
+  /// A shop set up before M9 has one user, the owner, with no PIN; they are
+  /// signed in from the moment the app opens, as they always were.
+  bool can(Permission permission) {
+    if (_locked) return false;
+    return (_signedIn?.role ?? Role.owner).can(permission);
+  }
+
+  /// Throws [PermissionDenied] unless [can] allows [permission].
+  void require(Permission permission) {
+    if (_locked) {
+      throw PermissionDenied(permission, 'Sign in first.');
+    }
+    if (!can(permission)) {
+      throw PermissionDenied(
+        permission,
+        'Only the owner or a manager can do this. '
+        '${_signedIn?.name ?? 'This user'} is signed in as '
+        '${_signedIn?.role.name ?? 'staff'}.',
+      );
+    }
+  }
+
+  /// Reads who is signed in when the app opens: the owner, locked if
+  /// anybody in the shop has a PIN.
+  Future<void> _resumeSession() async {
+    final id = _identity;
+    if (id == null) return;
+    final everyone = await staffStore.staff(id.firmId);
+    _signedIn = everyone.where((m) => m.id == id.userId).firstOrNull;
+    _locked = everyone.any((m) => m.isActive && m.hasPin);
+  }
+
+  /// Locks the app until somebody signs in. Does nothing in a shop where
+  /// nobody has a PIN, since nobody could then get back in but the owner by
+  /// default anyway.
+  Future<void> lock() async {
+    final id = _identity;
+    if (id == null) return;
+    final everyone = await staffStore.staff(id.firmId);
+    if (everyone.any((m) => m.isActive && m.hasPin)) _locked = true;
+  }
+
+  /// Signs [userId] in with [pin]. Returns whether it was right.
+  ///
+  /// Five wrong PINs in a row block every sign-in for thirty seconds, so a
+  /// four-digit PIN cannot be walked through at the counter.
+  Future<bool> signIn(String userId, String pin) async {
+    final id = _identity;
+    if (id == null) return false;
+    final blocked = _pinsBlockedUntil;
+    if (blocked != null && clock.nowUtc().isBefore(blocked)) {
+      throw PermissionDenied(
+        Permission.sell,
+        'Too many wrong PINs. Wait ${blocked.difference(clock.nowUtc()).inSeconds + 1} seconds.',
+      );
+    }
+    final member = await staffStore.member(id.firmId, userId);
+    final stored = await staffStore.pinOf(id.firmId, userId);
+    final ok =
+        member != null &&
+        member.isActive &&
+        stored != null &&
+        await pinHasher.verify(pin, hash: stored.hash, salt: stored.salt);
+    if (!ok) {
+      _failedPins++;
+      if (_failedPins >= 5) {
+        _failedPins = 0;
+        _pinsBlockedUntil = clock.nowUtc().add(const Duration(seconds: 30));
+      }
+      return false;
+    }
+    _failedPins = 0;
+    _pinsBlockedUntil = null;
+    _identity = ActorIdentity(
+      firmId: id.firmId,
+      userId: userId,
+      deviceId: id.deviceId,
+    );
+    _signedIn = member;
+    _locked = false;
+    await staffStore.recordSignIn(actorNow());
+    return true;
+  }
+
+  /// Adds a member of staff with their own PIN. Owner only, and only once
+  /// the owner has a PIN: staff with PINs and an owner without one would
+  /// leave the owner's screens open to anybody who taps the owner's name.
+  Future<String> addStaff({
+    required String name,
+    required Role role,
+    required String pin,
+  }) async {
+    require(Permission.manageUsers);
+    final owner = _signedIn;
+    if (owner == null || !owner.hasPin) {
+      throw const PermissionDenied(
+        Permission.manageUsers,
+        'Set your own PIN first, so staff cannot open your screens.',
+      );
+    }
+    return staffStore.add(
+      actorNow(),
+      name: name,
+      role: role,
+      pin: await pinHasher.hash(pin),
+    );
+  }
+
+  /// Sets [userId]'s PIN: the owner for anybody, anybody for themselves.
+  Future<void> setPin(String userId, String pin) async {
+    if (userId != _signedIn?.id) require(Permission.manageUsers);
+    if (_locked) require(Permission.manageUsers);
+    await staffStore.setPin(actorNow(), userId, await pinHasher.hash(pin));
+    if (userId == _signedIn?.id) {
+      _signedIn = await staffStore.member(_identity!.firmId, userId);
+    }
+  }
+
+  Future<void> setStaffRole(String userId, Role role) async {
+    require(Permission.manageUsers);
+    await staffStore.setRole(actorNow(), userId, role);
+  }
+
+  Future<void> setStaffActive(String userId, {required bool active}) async {
+    require(Permission.manageUsers);
+    await staffStore.setActive(actorNow(), userId, active: active);
+  }
 
   /// Opens the database and works out whether this device has a shop yet.
   ///
@@ -331,6 +514,7 @@ final class AppServices {
           userId: owner.read<String>('id'),
           deviceId: deviceId,
         );
+        await services._resumeSession();
       }
     }
 
@@ -372,6 +556,7 @@ final class AppServices {
     _adoptDevice(
       await resumeHlcClock(database, deviceId: result.deviceId, clock: clock),
     );
+    await _resumeSession();
 
     final firm = await queries.currentFirm();
     return firm!;
@@ -384,6 +569,9 @@ final class AppServices {
   /// milliseconds.
   ActorContext actorNow() {
     final id = _identity;
+    if (_locked) {
+      throw const PermissionDenied(Permission.sell, 'Sign in first.');
+    }
     if (id == null) {
       throw StateError(
         'This device has no shop yet. Run the setup wizard before writing '
@@ -400,6 +588,7 @@ final class AppServices {
 
   /// Updates the shop's own details from the settings screen.
   Future<void> updateFirm(Map<String, Object?> columns) async {
+    require(Permission.settings);
     final actor = actorNow();
     await _runner.run(actor, (tx) async {
       await tx.update('firms', actor.firmId, columns);
@@ -495,7 +684,7 @@ Future<AppServices> openInMemoryServices({
   List<PrinterTransport>? transports,
 }) async {
   _resolveSqliteForHost();
-  return AppServices.openWith(
+  final services = await AppServices.openWith(
     NativeDatabase.memory(),
     clock: clock,
     appVersion: appVersion,
@@ -504,6 +693,10 @@ Future<AppServices> openInMemoryServices({
     // to be plugged into the machine running it.
     transports: transports,
   );
+  // A suite signs in dozens of times; Argon2id at full cost would make each
+  // one a second of pure hashing.
+  services.pinHasher = const PinHasher.forTestsOnly();
+  return services;
 }
 
 var _sqliteResolved = false;

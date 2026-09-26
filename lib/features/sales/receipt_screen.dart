@@ -55,7 +55,8 @@ class ReceiptScreen extends ConsumerWidget {
           // Offered before Cancel, because it is the commoner of the two by
           // a long way: a customer bringing one thing back is an everyday
           // event, and a bill that should never have existed is not.
-          if (status.valueOrNull == 'posted')
+          if (status.valueOrNull == 'posted' &&
+              ref.watch(appServicesProvider).can(Permission.takeReturns))
             BlIconButton(
               icon: Icons.assignment_return_outlined,
               label: s.returnAction,
@@ -63,7 +64,10 @@ class ReceiptScreen extends ConsumerWidget {
                 showReturnSheet(context, documentId: documentId, docNo: docNo),
               ),
             ),
-          if (status.valueOrNull == 'posted')
+          // Not offered to a role that may not cancel a bill; the service
+          // refuses it anyway, but a button that only ever says no is noise.
+          if (status.valueOrNull == 'posted' &&
+              ref.watch(appServicesProvider).can(Permission.voidDocuments))
             BlIconButton(
               icon: Icons.block,
               label: s.voidAction,

@@ -1044,5 +1044,41 @@
   "reportSharePdf": "PDF bhejein",
   "reportPayables": "Suppliers ka baqi",
   "reportPayablesHint": "Kis supplier ka kitna dena hai, aur kab se",
+  "usersTitle": "Staff aur PIN",
+  "usersMyPin": "Mera PIN rakhein",
+  "usersAdd": "Staff shamil karein",
+  "usersName": "Naam",
+  "usersPin": "PIN (4 se 6 hindsay)",
+  "usersPinAgain": "PIN dobara",
+  "usersPinMismatch": "Dono PIN ek jaisay nahi",
+  "usersPinInvalid": "PIN 4 se 6 hindson ka ho",
+  "usersPinSaved": "PIN rakh diya",
+  "usersNoPin": "PIN nahi",
+  "usersInactive": "Staff mein nahi",
+  "usersRemove": "Staff se hatayein",
+  "usersLetBack": "Wapas shamil karein",
+  "usersNewPin": "Naya PIN",
+  "usersRole": "Kaam",
+  "usersOwnerPinFirst": "Pehle apna PIN rakhein, taake staff aap ki screens na khol sakay.",
+  "roleOwner": "Malik",
+  "roleManager": "Manager",
+  "roleAccountant": "Munshi",
+  "roleCashier": "Cashier",
+  "signInTitle": "Kaun hai?",
+  "signInPin": "PIN",
+  "signInOpen": "Kholein",
+  "signInWrong": "Ghalat PIN",
+  "homeLock": "Taala lagayein",
+  "homeSignedInAs": "{name} ({role})",
+  "@homeSignedInAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

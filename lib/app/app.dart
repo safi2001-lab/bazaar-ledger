@@ -6,6 +6,7 @@ import '../design/theme.dart';
 import '../design/tokens.dart';
 import '../features/home/home_screen.dart';
 import '../features/setup/setup_screen.dart';
+import '../features/users/sign_in_screen.dart';
 import '../l10n/app_strings.dart';
 import 'localisation.dart';
 import 'providers.dart';
@@ -103,8 +104,14 @@ class _Root extends ConsumerWidget {
           ),
         ),
       ),
-      data: (profile) =>
-          profile == null ? const SetupScreen() : const HomeScreen(),
+      // Locked whenever anybody in the shop has a PIN and nobody has signed
+      // in yet; `firmProvider` watches the refresh tick, so a sign-in or a
+      // lock that bumps it is seen here.
+      data: (profile) => profile == null
+          ? const SetupScreen()
+          : ref.read(appServicesProvider).isLocked
+          ? const SignInScreen()
+          : const HomeScreen(),
     );
   }
 }

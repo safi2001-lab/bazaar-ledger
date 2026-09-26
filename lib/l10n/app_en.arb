@@ -965,5 +965,41 @@
   "reportSharePdf": "Send PDF",
   "reportPayables": "Owed to suppliers",
   "reportPayablesHint": "What the shop owes each supplier, and for how long",
+  "usersTitle": "Staff and PINs",
+  "usersMyPin": "Set my PIN",
+  "usersAdd": "Add staff",
+  "usersName": "Name",
+  "usersPin": "PIN (4 to 6 digits)",
+  "usersPinAgain": "PIN again",
+  "usersPinMismatch": "The two PINs do not match",
+  "usersPinInvalid": "A PIN is 4 to 6 digits",
+  "usersPinSaved": "PIN saved",
+  "usersNoPin": "No PIN",
+  "usersInactive": "Not on staff",
+  "usersRemove": "Remove from staff",
+  "usersLetBack": "Let back in",
+  "usersNewPin": "New PIN",
+  "usersRole": "Role",
+  "usersOwnerPinFirst": "Set your own PIN first, so staff cannot open your screens.",
+  "roleOwner": "Owner",
+  "roleManager": "Manager",
+  "roleAccountant": "Accountant",
+  "roleCashier": "Cashier",
+  "signInTitle": "Who is it?",
+  "signInPin": "PIN",
+  "signInOpen": "Open",
+  "signInWrong": "Wrong PIN",
+  "homeLock": "Lock",
+  "homeSignedInAs": "{name} ({role})",
+  "@homeSignedInAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "role": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

@@ -33,12 +33,28 @@ class HomeScreen extends ConsumerWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
     final firm = ref.watch(firmProvider).valueOrNull;
+    final services = ref.watch(appServicesProvider);
 
     return Scaffold(
       backgroundColor: t.paper,
       appBar: AppBar(
         title: Text(firm?.name ?? s.appName),
         actions: [
+          // Only where somebody could sign back in: with no PIN anywhere in
+          // the shop, a lock would open straight back onto the owner.
+          if (services.currentUser?.hasPin ?? false)
+            BlIconButton(
+              icon: Icons.lock_outline,
+              label: s.homeLock,
+              onPressed: () async {
+                final container = ProviderScope.containerOf(
+                  context,
+                  listen: false,
+                );
+                await services.lock();
+                container.bumpRefresh();
+              },
+            ),
           BlIconButton(
             icon: Icons.settings_outlined,
             label: s.homeSettings,
@@ -61,12 +77,13 @@ class HomeScreen extends ConsumerWidget {
               const SizedBox(height: BlTokens.space3),
               _NavGrid(
                 tiles: [
-                  _NavTile(
-                    label: s.homeNewBill,
-                    icon: Icons.point_of_sale_outlined,
-                    accent: true,
-                    onTap: () => _open(context, const PosScreen()),
-                  ),
+                  if (services.can(Permission.sell))
+                    _NavTile(
+                      label: s.homeNewBill,
+                      icon: Icons.point_of_sale_outlined,
+                      accent: true,
+                      onTap: () => _open(context, const PosScreen()),
+                    ),
                   _NavTile(
                     label: s.homeItems,
                     icon: Icons.inventory_2_outlined,
@@ -85,48 +102,56 @@ class HomeScreen extends ConsumerWidget {
                   // Where every margin figure in this app becomes true. Until
                   // this tile existed, avg_cost_milli_paisa was written once
                   // when an item was created and never moved again.
-                  _NavTile(
-                    label: s.homePurchases,
-                    icon: Icons.local_shipping_outlined,
-                    onTap: () => _open(context, const PurchasesScreen()),
-                  ),
+                  if (services.can(Permission.purchases))
+                    _NavTile(
+                      label: s.homePurchases,
+                      icon: Icons.local_shipping_outlined,
+                      onTap: () => _open(context, const PurchasesScreen()),
+                    ),
                   // Rent, bijli and wages. The heads have sat in the chart
                   // since M0 with nothing posting to them, so every margin
                   // this app showed was profit before the shop paid its rent.
-                  _NavTile(
-                    label: s.homeExpenses,
-                    icon: Icons.receipt_outlined,
-                    onTap: () => _open(context, const ExpensesScreen()),
-                  ),
+                  if (services.can(Permission.expenses))
+                    _NavTile(
+                      label: s.homeExpenses,
+                      icon: Icons.receipt_outlined,
+                      onTap: () => _open(context, const ExpensesScreen()),
+                    ),
                   // Prices given on the phone, and billed when the buyer
                   // rings back.
-                  _NavTile(
-                    label: s.homeQuotations,
-                    icon: Icons.request_quote_outlined,
-                    onTap: () => _open(context, const QuotationsScreen()),
-                  ),
+                  if (services.can(Permission.sell))
+                    _NavTile(
+                      label: s.homeQuotations,
+                      icon: Icons.request_quote_outlined,
+                      onTap: () => _open(context, const QuotationsScreen()),
+                    ),
                   // Goods sent ahead of the bill, and the bill made from them
                   // when it is settled.
-                  _NavTile(
-                    label: s.homeChallans,
-                    icon: Icons.assignment_turned_in_outlined,
-                    onTap: () =>
-                        _open(context, const QuotationsScreen(challans: true)),
-                  ),
+                  if (services.can(Permission.sell))
+                    _NavTile(
+                      label: s.homeChallans,
+                      icon: Icons.assignment_turned_in_outlined,
+                      onTap: () => _open(
+                        context,
+                        const QuotationsScreen(challans: true),
+                      ),
+                    ),
                   // The cheque drawer. In wholesale most of what is owed
                   // arrives as post-dated cheques, and one banked late goes
                   // stale while one that bounces unnoticed reads as paid.
-                  _NavTile(
-                    label: s.homeCheques,
-                    icon: Icons.description_outlined,
-                    onTap: () => _open(context, const ChequesScreen()),
-                  ),
+                  if (services.can(Permission.cheques))
+                    _NavTile(
+                      label: s.homeCheques,
+                      icon: Icons.description_outlined,
+                      onTap: () => _open(context, const ChequesScreen()),
+                    ),
                   // Did the shop make money this month, and where did it go.
-                  _NavTile(
-                    label: s.homeReports,
-                    icon: Icons.bar_chart_outlined,
-                    onTap: () => _open(context, const ReportsScreen()),
-                  ),
+                  if (services.can(Permission.reports))
+                    _NavTile(
+                      label: s.homeReports,
+                      icon: Icons.bar_chart_outlined,
+                      onTap: () => _open(context, const ReportsScreen()),
+                    ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now
                   // there was no way to reach it.
@@ -143,11 +168,13 @@ class HomeScreen extends ConsumerWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _open(context, const PosScreen()),
-        icon: const Icon(Icons.add),
-        label: Text(s.homeNewBill),
-      ),
+      floatingActionButton: services.can(Permission.sell)
+          ? FloatingActionButton.extended(
+              onPressed: () => _open(context, const PosScreen()),
+              icon: const Icon(Icons.add),
+              label: Text(s.homeNewBill),
+            )
+          : null,
     );
   }
 

@@ -1838,5 +1838,86 @@ class AppStringsUr extends AppStrings {
   String get reportPayablesHint => 'Kis supplier ka kitna dena hai, aur kab se';
 
   @override
+  String get usersTitle => 'Staff aur PIN';
+
+  @override
+  String get usersMyPin => 'Mera PIN rakhein';
+
+  @override
+  String get usersAdd => 'Staff shamil karein';
+
+  @override
+  String get usersName => 'Naam';
+
+  @override
+  String get usersPin => 'PIN (4 se 6 hindsay)';
+
+  @override
+  String get usersPinAgain => 'PIN dobara';
+
+  @override
+  String get usersPinMismatch => 'Dono PIN ek jaisay nahi';
+
+  @override
+  String get usersPinInvalid => 'PIN 4 se 6 hindson ka ho';
+
+  @override
+  String get usersPinSaved => 'PIN rakh diya';
+
+  @override
+  String get usersNoPin => 'PIN nahi';
+
+  @override
+  String get usersInactive => 'Staff mein nahi';
+
+  @override
+  String get usersRemove => 'Staff se hatayein';
+
+  @override
+  String get usersLetBack => 'Wapas shamil karein';
+
+  @override
+  String get usersNewPin => 'Naya PIN';
+
+  @override
+  String get usersRole => 'Kaam';
+
+  @override
+  String get usersOwnerPinFirst =>
+      'Pehle apna PIN rakhein, taake staff aap ki screens na khol sakay.';
+
+  @override
+  String get roleOwner => 'Malik';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleAccountant => 'Munshi';
+
+  @override
+  String get roleCashier => 'Cashier';
+
+  @override
+  String get signInTitle => 'Kaun hai?';
+
+  @override
+  String get signInPin => 'PIN';
+
+  @override
+  String get signInOpen => 'Kholein';
+
+  @override
+  String get signInWrong => 'Ghalat PIN';
+
+  @override
+  String get homeLock => 'Taala lagayein';
+
+  @override
+  String homeSignedInAs(String name, String role) {
+    return '$name ($role)';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

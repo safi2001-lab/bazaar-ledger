@@ -194,7 +194,11 @@ milestones:
 
   - id: M9
     title: Multi-user, roles, audit and entitlement
-    state: planned
+    # Opened 26 Sep 2026. Every row since M0 has carried the user who wrote
+    # it, and it has always been the owner: there was no way to add anybody
+    # else, so the counter boy rang bills as the owner and could cancel them,
+    # read what the goods cost, or restore a backup over the day's books.
+    state: open
     owns:
       - lib/features/users/**
       - lib/features/audit/**
@@ -3493,3 +3497,76 @@ features:
       - owed to suppliers the same ageing, headed for suppliers
       - owed to suppliers shows the bill left on account
       - what is owed to suppliers is on its own page
+
+  # ---- M9 · Multi-user, roles, audit and entitlement --------------------
+
+  - id: M9-ROLES-01
+    milestone: M9
+    title: Each role is allowed what its work needs, and the owner everything
+    status: done
+    # pk_domain/entitlement names what can be allowed and what each of the
+    # four roles the schema has carried since M0 is allowed: the owner
+    # everything; a manager the shop but not staff, backups or settings; an
+    # accountant the books but not the counter's cancellations; a cashier
+    # the counter, payments and the day's cash. A role this build does not
+    # know is read as a cashier, never as more.
+    proof:
+      - roles the owner can do everything
+      - roles a cashier sells and takes money, and nothing else
+      - roles only the owner manages staff, backups and settings
+      - roles an accountant keeps the books but does not work the counter
+      - roles a role nobody knows is not read as any role
+
+  - id: M9-STAFF-01
+    milestone: M9
+    title: The owner adds staff, each with their own PIN, and every change is in the log
+    status: done
+    # Settings has Staff and PINs for the owner: their own PIN first, then
+    # staff with a name, a role and a PIN of their own, entered twice. A PIN
+    # is kept as an Argon2id hash with its own salt, never the digits. Roles
+    # can be changed and staff let go; the owner's role cannot be given or
+    # taken, and there is only one. Every change goes through the one write
+    # path and leaves an audit row under the owner's name.
+    proof:
+      - pin the right PIN is accepted and a wrong one is not
+      - pin the digits are never what is stored
+      - pin a PIN is four to six digits
+      - a cashier is added with the role on their row
+      - every change to staff is in the audit log under the owner
+      - there is one owner, and nobody takes the role away
+      - staff staff cannot be added before the owner has a PIN
+      - the owner sets a PIN and adds a cashier from settings
+      - two PINs that differ are refused in words
+
+  - id: M9-SIGNIN-01
+    milestone: M9
+    title: The app locks, opens only for the right PIN, and whatever is done is done in that person's name
+    status: done
+    # A shop where anybody has a PIN opens on Who is it?, and the home
+    # screen can be locked. The right PIN signs that person in, stamps the
+    # sign-in on their row and in the log, and every row written from then
+    # on carries them. Five wrong PINs in a row stop sign-in for thirty
+    # seconds, and staff who have been let go cannot sign in. A shop with no
+    # PINs opens straight to the owner, as it always did.
+    proof:
+      - a sign-in is stamped on the user and in the log
+      - staff a shop with no PINs opens straight to the owner
+      - staff a cashier signs in with their own PIN and not a wrong one
+      - staff five wrong PINs block sign-in for a while
+      - staff staff who have left cannot sign in
+      - staff the sale a cashier rings is theirs in the books
+      - a locked app opens only for the right PIN
+
+  - id: M9-GATE-01
+    milestone: M9
+    title: What a role may not do is refused at the service, and not offered on screen
+    status: done
+    # AppServices refuses before building the use case: cancelling a bill,
+    # purchases and paying suppliers, expenses, cheques, the reports, returns,
+    # backups and shop settings each need their permission, so a screen
+    # that forgot to hide a button still cannot do the work. The screens
+    # hide what the signed-in role cannot use: the home tiles, the Settings
+    # rows, and cancel and return on a bill.
+    proof:
+      - staff a cashier rings bills but cannot cancel one or read the reports
+      - a cashier sees the counter and not the owner's screens

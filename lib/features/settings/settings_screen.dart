@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
@@ -8,6 +9,7 @@ import '../../l10n/app_strings.dart';
 import '../backup/backup_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
+import '../users/users_screen.dart';
 import 'payment_details_screen.dart';
 import 'shop_details_screen.dart';
 
@@ -18,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final services = ref.watch(appServicesProvider);
     final s = AppStrings.of(context);
     final t = context.bl;
     final prefs = ref.watch(preferencesProvider);
@@ -72,24 +75,34 @@ class SettingsScreen extends ConsumerWidget {
 
             BlSectionHeader(s.settingsShop),
             const SizedBox(height: BlTokens.space2),
-            _Row(
-              icon: Icons.storefront_outlined,
-              label: s.settingsShop,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const ShopDetailsScreen(),
+            if (services.can(Permission.manageUsers))
+              _Row(
+                icon: Icons.badge_outlined,
+                label: s.usersTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const UsersScreen()),
                 ),
               ),
-            ),
-            _Row(
-              icon: Icons.account_balance_outlined,
-              label: s.settingsPayment,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (_) => const PaymentDetailsScreen(),
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.storefront_outlined,
+                label: s.settingsShop,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ShopDetailsScreen(),
+                  ),
                 ),
               ),
-            ),
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.account_balance_outlined,
+                label: s.settingsPayment,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const PaymentDetailsScreen(),
+                  ),
+                ),
+              ),
             _Row(
               icon: Icons.print_outlined,
               label: s.settingsPrinter,
@@ -106,13 +119,14 @@ class SettingsScreen extends ConsumerWidget {
             // Beside the health check, because both answer "is my hisaab
             // safe", and a shopkeeper looking for one is looking for the
             // other.
-            _Row(
-              icon: Icons.backup_outlined,
-              label: s.backupTitle,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const BackupScreen()),
+            if (services.can(Permission.backups))
+              _Row(
+                icon: Icons.backup_outlined,
+                label: s.backupTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const BackupScreen()),
+                ),
               ),
-            ),
             _Row(
               icon: Icons.restore_from_trash_outlined,
               label: s.recycleTitle,

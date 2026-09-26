@@ -1837,5 +1837,86 @@ class AppStringsEn extends AppStrings {
       'What the shop owes each supplier, and for how long';
 
   @override
+  String get usersTitle => 'Staff and PINs';
+
+  @override
+  String get usersMyPin => 'Set my PIN';
+
+  @override
+  String get usersAdd => 'Add staff';
+
+  @override
+  String get usersName => 'Name';
+
+  @override
+  String get usersPin => 'PIN (4 to 6 digits)';
+
+  @override
+  String get usersPinAgain => 'PIN again';
+
+  @override
+  String get usersPinMismatch => 'The two PINs do not match';
+
+  @override
+  String get usersPinInvalid => 'A PIN is 4 to 6 digits';
+
+  @override
+  String get usersPinSaved => 'PIN saved';
+
+  @override
+  String get usersNoPin => 'No PIN';
+
+  @override
+  String get usersInactive => 'Not on staff';
+
+  @override
+  String get usersRemove => 'Remove from staff';
+
+  @override
+  String get usersLetBack => 'Let back in';
+
+  @override
+  String get usersNewPin => 'New PIN';
+
+  @override
+  String get usersRole => 'Role';
+
+  @override
+  String get usersOwnerPinFirst =>
+      'Set your own PIN first, so staff cannot open your screens.';
+
+  @override
+  String get roleOwner => 'Owner';
+
+  @override
+  String get roleManager => 'Manager';
+
+  @override
+  String get roleAccountant => 'Accountant';
+
+  @override
+  String get roleCashier => 'Cashier';
+
+  @override
+  String get signInTitle => 'Who is it?';
+
+  @override
+  String get signInPin => 'PIN';
+
+  @override
+  String get signInOpen => 'Open';
+
+  @override
+  String get signInWrong => 'Wrong PIN';
+
+  @override
+  String get homeLock => 'Lock';
+
+  @override
+  String homeSignedInAs(String name, String role) {
+    return '$name ($role)';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }
