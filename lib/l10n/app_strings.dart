@@ -3716,6 +3716,60 @@ abstract class AppStrings {
   /// **'Khata chunein'**
   String get journalPickAccount;
 
+  /// No description provided for @firmsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaanein aur firms'**
+  String get firmsTitle;
+
+  /// No description provided for @firmsAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi firm'**
+  String get firmsAdd;
+
+  /// No description provided for @firmsName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Firm ka naam'**
+  String get firmsName;
+
+  /// No description provided for @firmsOwner.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik ka naam'**
+  String get firmsOwner;
+
+  /// No description provided for @firmsCity.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shehar'**
+  String get firmsCity;
+
+  /// No description provided for @firmsOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kholein'**
+  String get firmsOpen;
+
+  /// No description provided for @firmsCurrent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khuli hui'**
+  String get firmsCurrent;
+
+  /// No description provided for @firmsAdded.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ban gayi'**
+  String firmsAdded(String name);
+
+  /// No description provided for @firmsSwitched.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ab {name} khuli hai'**
+  String firmsSwitched(String name);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

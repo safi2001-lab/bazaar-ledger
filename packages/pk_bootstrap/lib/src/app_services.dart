@@ -301,6 +301,89 @@ final class AppServices {
     );
   }
 
+  // ---------------------------------------------------------------------
+  // More than one firm
+  // ---------------------------------------------------------------------
+
+  /// Starts the books of another firm on this phone: its own chart, its own
+  /// numbering, its own khatas and its own staff, in the same database and
+  /// sealed into the same backup. Owner only. Returns the new firm's id; the
+  /// phone stays on the firm it had open until [switchFirm].
+  Future<String> addFirm({
+    required String shopName,
+    required String ownerName,
+    String city = '',
+    String province = 'punjab',
+  }) async {
+    require(Permission.manageUsers);
+    final name = shopName.trim();
+    if (name.isEmpty) {
+      throw const PermissionDenied(
+        Permission.manageUsers,
+        'A firm needs a name.',
+      );
+    }
+    final label =
+        (await database
+                .customSelect(
+                  'SELECT label FROM devices WHERE id = ?',
+                  variables: [Variable<String>(_identity!.deviceId)],
+                )
+                .getSingleOrNull())
+            ?.read<String>('label');
+    final result =
+        await FirstRunSeeder(database: database, ids: ids, clock: clock).seed(
+          shopName: name,
+          ownerName: ownerName.trim().isEmpty ? 'Owner' : ownerName.trim(),
+          deviceLabel: label ?? 'This phone',
+          platform: _platformName(),
+          city: city,
+          province: province,
+          allowSecondFirm: true,
+        );
+    return result.firmId;
+  }
+
+  /// Opens the books of [firmId] on this phone. The owner of the firm open
+  /// now may switch; the other firm then opens as its owner, or on its own
+  /// sign-in screen when anybody there has a PIN.
+  Future<void> switchFirm(String firmId) async {
+    require(Permission.manageUsers);
+    final device = await database
+        .customSelect(
+          'SELECT id FROM devices WHERE is_this_device = 1 AND firm_id = ? '
+          'AND deleted_at_utc IS NULL LIMIT 1',
+          variables: [Variable<String>(firmId)],
+        )
+        .getSingleOrNull();
+    final owner = await database
+        .customSelect(
+          "SELECT id FROM users WHERE firm_id = ? AND role = 'owner' "
+          'AND deleted_at_utc IS NULL LIMIT 1',
+          variables: [Variable<String>(firmId)],
+        )
+        .getSingleOrNull();
+    if (device == null || owner == null) {
+      throw StateError('That firm is not kept on this phone.');
+    }
+    final deviceId = device.read<String>('id');
+    _identity = ActorIdentity(
+      firmId: firmId,
+      userId: owner.read<String>('id'),
+      deviceId: deviceId,
+    );
+    _adoptDevice(
+      await resumeHlcClock(database, deviceId: deviceId, clock: clock),
+    );
+    await drafts.write(activeFirmSlot, firmId);
+    // A bill half-rung in one firm must not be finished in another.
+    await drafts.clear(cartDraftSlot);
+    _failedPins = 0;
+    _pinsBlockedUntil = null;
+    await _resumeSession();
+    await _postMissingOpenings();
+  }
+
   /// Locks the app until somebody signs in. Does nothing in a shop where
   /// nobody has a PIN, since nobody could then get back in but the owner by
   /// default anyway.
@@ -474,18 +557,38 @@ final class AppServices {
     String? databasePath,
   }) async {
     final ids = UlidGenerator();
-    final queries = DriftAppQueries(database);
+    // Declared before `services` so the store can close over it, and reads the
+    // runner through a supplier rather than holding one: the bootstrap rebuilds
+    // its runner once first run registers this device, and anything caching the
+    // old one would keep stamping rows with the `unregistered` node id.
+    late final AppServices services;
+    // The firm the phone has open, read through the identity so a switch of
+    // firm is seen by every query at once.
+    final queries = DriftAppQueries(
+      database,
+      activeFirmId: () => services._identity?.firmId,
+    );
 
     // Which device is this? Resolved before anything can be written, because
     // ActorContext is a required parameter of every mutation and a write can
     // never be attributed to a device that is not registered.
-    final device = await database
+    //
+    // A phone that keeps the books of more than one firm is registered once
+    // in each, and opens on the one it last had open.
+    final lastFirm = await drafts.read(activeFirmSlot);
+    final devices = await database
         .customSelect(
-          'SELECT id FROM devices WHERE is_this_device = 1 '
-          'AND deleted_at_utc IS NULL LIMIT 1',
+          'SELECT id, firm_id FROM devices WHERE is_this_device = 1 '
+          'AND deleted_at_utc IS NULL ORDER BY created_at_utc',
         )
-        .getSingleOrNull();
+        .get();
+    final device =
+        devices
+            .where((d) => d.read<String>('firm_id') == lastFirm)
+            .firstOrNull ??
+        devices.firstOrNull;
     final deviceId = device?.read<String>('id');
+    final deviceFirmId = device?.read<String>('firm_id');
 
     // The highest HLC this device ever issued is already in the outbox, which
     // the single write path guarantees is complete — so there is no separate
@@ -496,11 +599,6 @@ final class AppServices {
 
     final runner = TxRunner(database: database, ids: ids, hlc: hlc);
 
-    // Declared before `services` so the store can close over it, and reads the
-    // runner through a supplier rather than holding one: the bootstrap rebuilds
-    // its runner once first run registers this device, and anything caching the
-    // old one would keep stamping rows with the `unregistered` node id.
-    late final AppServices services;
     final printing = PrintingServices(
       store: DriftPrinterSettings(database, () => services._runner),
       transports: transports ?? const [],
@@ -527,18 +625,17 @@ final class AppServices {
       runner: runner,
     );
 
-    final firm = await queries.currentFirm();
-    if (firm != null && deviceId != null) {
+    if (deviceFirmId != null && deviceId != null) {
       final owner = await database
           .customSelect(
             "SELECT id FROM users WHERE firm_id = ? AND role = 'owner' "
             'AND deleted_at_utc IS NULL LIMIT 1',
-            variables: [Variable<String>(firm.id)],
+            variables: [Variable<String>(deviceFirmId)],
           )
           .getSingleOrNull();
       if (owner != null) {
         services._identity = ActorIdentity(
-          firmId: firm.id,
+          firmId: deviceFirmId,
           userId: owner.read<String>('id'),
           deviceId: deviceId,
         );

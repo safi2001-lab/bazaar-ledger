@@ -2042,5 +2042,36 @@ class AppStringsUr extends AppStrings {
   String get journalPickAccount => 'Khata chunein';
 
   @override
+  String get firmsTitle => 'Dukaanein aur firms';
+
+  @override
+  String get firmsAdd => 'Nayi firm';
+
+  @override
+  String get firmsName => 'Firm ka naam';
+
+  @override
+  String get firmsOwner => 'Malik ka naam';
+
+  @override
+  String get firmsCity => 'Shehar';
+
+  @override
+  String get firmsOpen => 'Kholein';
+
+  @override
+  String get firmsCurrent => 'Khuli hui';
+
+  @override
+  String firmsAdded(String name) {
+    return '$name ban gayi';
+  }
+
+  @override
+  String firmsSwitched(String name) {
+    return 'Ab $name khuli hai';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

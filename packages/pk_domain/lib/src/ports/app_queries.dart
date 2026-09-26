@@ -403,6 +403,9 @@ abstract interface class AppQueries {
   /// The firm this device belongs to, or null before first run.
   Future<FirmProfile?> currentFirm();
 
+  /// Every firm kept on this phone, oldest first.
+  Future<List<FirmProfile>> firms();
+
   /// The signed-in user's display name.
   Future<String> userName(String userId);
 

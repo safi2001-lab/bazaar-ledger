@@ -192,6 +192,15 @@ Future<void> tapButton(WidgetTester tester, String label) async {
 /// For rows and cards rather than buttons — a settings row is a tappable card
 /// with a label, not a BlButton.
 Future<void> tapText(WidgetTester tester, String text) async {
+  // A lazy list builds only what is on screen, so a row below the fold is
+  // not in the tree at all until it is scrolled to.
+  if (find.text(text).evaluate().isEmpty) {
+    await tester.scrollUntilVisible(
+      find.text(text),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+  }
   final target = find.text(text).first;
   await tester.ensureVisible(target);
   await tester.pumpAndSettle();

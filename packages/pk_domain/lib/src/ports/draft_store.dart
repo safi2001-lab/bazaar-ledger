@@ -48,3 +48,7 @@ abstract interface class DraftStore {
 /// counter writes it and the bootstrap reads it and a typo between the two is
 /// a cart that is saved perfectly and never restored.
 const String cartDraftSlot = 'cart';
+
+/// The slot that remembers which firm this phone last had open, when it
+/// keeps the books of more than one.
+const activeFirmSlot = 'active_firm';

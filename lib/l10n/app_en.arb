@@ -1076,5 +1076,28 @@
   },
   "journalBalanced": "Both sides agree",
   "journalPickAccount": "Pick an account",
+  "firmsTitle": "Shops and firms",
+  "firmsAdd": "New firm",
+  "firmsName": "Firm name",
+  "firmsOwner": "Owner's name",
+  "firmsCity": "City",
+  "firmsOpen": "Open",
+  "firmsCurrent": "Open now",
+  "firmsAdded": "{name} added",
+  "@firmsAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firmsSwitched": "{name} is open now",
+  "@firmsSwitched": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

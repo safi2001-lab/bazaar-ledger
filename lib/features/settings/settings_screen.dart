@@ -8,6 +8,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../audit/audit_screen.dart';
 import '../backup/backup_screen.dart';
+import '../firms/firms_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
 import '../users/users_screen.dart';
@@ -76,6 +77,14 @@ class SettingsScreen extends ConsumerWidget {
 
             BlSectionHeader(s.settingsShop),
             const SizedBox(height: BlTokens.space2),
+            if (services.can(Permission.manageUsers))
+              _Row(
+                icon: Icons.store_mall_directory_outlined,
+                label: s.firmsTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const FirmsScreen()),
+                ),
+              ),
             if (services.can(Permission.audit))
               _Row(
                 icon: Icons.history,

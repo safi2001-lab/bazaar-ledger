@@ -2041,5 +2041,36 @@ class AppStringsEn extends AppStrings {
   String get journalPickAccount => 'Pick an account';
 
   @override
+  String get firmsTitle => 'Shops and firms';
+
+  @override
+  String get firmsAdd => 'New firm';
+
+  @override
+  String get firmsName => 'Firm name';
+
+  @override
+  String get firmsOwner => 'Owner\'s name';
+
+  @override
+  String get firmsCity => 'City';
+
+  @override
+  String get firmsOpen => 'Open';
+
+  @override
+  String get firmsCurrent => 'Open now';
+
+  @override
+  String firmsAdded(String name) {
+    return '$name added';
+  }
+
+  @override
+  String firmsSwitched(String name) {
+    return '$name is open now';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

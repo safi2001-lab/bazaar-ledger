@@ -22,12 +22,28 @@ import '../write/drift_purchase_return_writer.dart'
 /// paginated on the primary key — which works because a ULID sorts by
 /// creation time, so there is no secondary sort and no OFFSET anywhere.
 final class DriftAppQueries implements AppQueries {
-  const DriftAppQueries(this._db);
+  const DriftAppQueries(this._db, {this.activeFirmId});
 
   final AppDatabase _db;
 
+  /// The firm the phone has open, when it keeps more than one. Without it,
+  /// the current firm is the first one set up.
+  final String? Function()? activeFirmId;
+
   @override
-  Future<FirmProfile?> currentFirm() => _firm();
+  Future<FirmProfile?> currentFirm() => _firm(activeFirmId?.call());
+
+  @override
+  Future<List<FirmProfile>> firms() async {
+    final rows = await _db
+        .customSelect(
+          'SELECT id FROM firms WHERE deleted_at_utc IS NULL '
+          'ORDER BY created_at_utc',
+          readsFrom: {_db.firms},
+        )
+        .get();
+    return [for (final r in rows) ?await _firm(r.read<String>('id'))];
+  }
 
   /// The named firm, or -- with no argument -- the one this device belongs to.
   ///

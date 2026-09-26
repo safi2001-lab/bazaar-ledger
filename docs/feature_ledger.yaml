@@ -221,7 +221,15 @@ milestones:
     # screen since M0, and nothing let anybody read it as books: no chart
     # with balances, no trial balance, no balance sheet, no way to write the
     # owner's own money in or out.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 6/6. Openings are in the books, the trial balance
+    # and balance sheet are in the report pack, the chart and every account's
+    # entries are on the phone, vouchers are written by hand, and one phone
+    # keeps more than one firm. Not built: closing a year into retained
+    # earnings (the balance sheet shows profit to date instead), accounts of
+    # the shop's own beyond the shipped chart, and a firm's books
+    # consolidated with another's.
+    state: sealed
     owns:
       - lib/features/accounting/**
       - lib/features/firms/**
@@ -3673,3 +3681,21 @@ features:
     # entry that moved it with the balance after each.
     proof:
       - an account shows every entry that moved it
+
+  - id: M10-FIRMS-01
+    milestone: M10
+    title: One phone keeps the books of more than one firm, each apart
+    status: done
+    # A trader with a retail shop and a wholesale agency next door. The
+    # owner adds a firm from Settings; it gets its own chart, numbering,
+    # khatas, staff and a registration of this phone of its own, in the same
+    # database and the same backup. Opening another firm switches every
+    # query and every write to it at once, clears the bill half-rung in the
+    # other, and opens on that firm's sign-in when anybody there has a PIN.
+    # The phone reopens on the firm it last had open. Owner only.
+    proof:
+      - firms a second firm is added and the phone stays on the first
+      - firms each firm keeps its own khatas
+      - firms only the owner adds or switches firms
+      - firms the phone reopens on the firm it last had open
+      - a second firm is added and opened, with its own khatas

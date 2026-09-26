@@ -78,9 +78,9 @@ final class FirstRunSeeder {
     await database.transaction(() async {
       // Checked inside the transaction, not before it. Outside, two callers
       // racing first run both see an empty table and both seed a shop.
-      // Multi-firm is M10. Until then a second firm in one database is a
-      // bug, except in the tests that prove the isolation between them holds
-      // — which is the one place it has to be possible on purpose.
+      // A second firm is added on purpose, by the owner, through
+      // AppServices.addFirm (M10). Anything else reaching here twice is a
+      // repeated first run, and would seed a second shop by accident.
       final existing = allowSecondFirm
           ? const <QueryRow>[]
           : await database.customSelect('SELECT id FROM firms LIMIT 1').get();

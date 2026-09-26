@@ -1155,5 +1155,28 @@
   },
   "journalBalanced": "Dono taraf barabar",
   "journalPickAccount": "Khata chunein",
+  "firmsTitle": "Dukaanein aur firms",
+  "firmsAdd": "Nayi firm",
+  "firmsName": "Firm ka naam",
+  "firmsOwner": "Malik ka naam",
+  "firmsCity": "Shehar",
+  "firmsOpen": "Kholein",
+  "firmsCurrent": "Khuli hui",
+  "firmsAdded": "{name} ban gayi",
+  "@firmsAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "firmsSwitched": "Ab {name} khuli hai",
+  "@firmsSwitched": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }
