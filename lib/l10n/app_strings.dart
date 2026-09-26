@@ -2683,6 +2683,126 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Cheque sirf naam wale gahak se lein — bounce hua to kis se mangenge?'**
   String get chequeNeedsCustomer;
+
+  /// No description provided for @homeCheques.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque'**
+  String get homeCheques;
+
+  /// No description provided for @chequesInHand.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haath mein'**
+  String get chequesInHand;
+
+  /// No description provided for @chequesBounced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bounce hue'**
+  String get chequesBounced;
+
+  /// No description provided for @chequesEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi cheque haath mein nahi'**
+  String get chequesEmpty;
+
+  /// No description provided for @chequesEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasooli ya bill par cheque lein to yahan nazar aayega'**
+  String get chequesEmptyHint;
+
+  /// No description provided for @chequeDueTodayChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj jama karein'**
+  String get chequeDueTodayChip;
+
+  /// No description provided for @chequeDueInChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din baqi'**
+  String chequeDueInChip(String days);
+
+  /// No description provided for @chequeOverdueChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din guzar gaye'**
+  String chequeOverdueChip(String days);
+
+  /// No description provided for @chequeNoDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh nahi'**
+  String get chequeNoDate;
+
+  /// No description provided for @chequeAtBank.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank mein'**
+  String get chequeAtBank;
+
+  /// No description provided for @chequeDeposit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank mein lagaya'**
+  String get chequeDeposit;
+
+  /// No description provided for @chequeClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Clear ho gaya'**
+  String get chequeClear;
+
+  /// No description provided for @chequeBounce.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bounce ho gaya'**
+  String get chequeBounce;
+
+  /// No description provided for @chequeClearInto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis account mein aaya'**
+  String get chequeClearInto;
+
+  /// No description provided for @chequeBounceReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ne kya likha (marzi se)'**
+  String get chequeBounceReason;
+
+  /// No description provided for @chequeBounceWarning.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} phir se {name} ke khate mein chala jayega.'**
+  String chequeBounceWarning(String amount, String name);
+
+  /// No description provided for @chequeNoticeBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'489-F notice {date} tak bhejein'**
+  String chequeNoticeBy(String date);
+
+  /// No description provided for @chequeBouncedOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bounce: {date}'**
+  String chequeBouncedOn(String date);
+
+  /// No description provided for @chequeNotYet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ise {date} se pehle nahi lega'**
+  String chequeNotYet(String date);
+
+  /// No description provided for @chequeDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ho gaya'**
+  String get chequeDone;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

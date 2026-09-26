@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../cheques/cheques_screen.dart';
 import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
@@ -93,6 +94,14 @@ class HomeScreen extends ConsumerWidget {
                     label: s.homeExpenses,
                     icon: Icons.receipt_outlined,
                     onTap: () => _open(context, const ExpensesScreen()),
+                  ),
+                  // The cheque drawer. In wholesale most of what is owed
+                  // arrives as post-dated cheques, and one banked late goes
+                  // stale while one that bounces unnoticed reads as paid.
+                  _NavTile(
+                    label: s.homeCheques,
+                    icon: Icons.description_outlined,
+                    onTap: () => _open(context, const ChequesScreen()),
                   ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

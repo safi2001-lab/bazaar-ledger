@@ -765,5 +765,70 @@
       }
     }
   },
-  "chequeNeedsCustomer": "Cheque sirf naam wale gahak se lein — bounce hua to kis se mangenge?"
+  "chequeNeedsCustomer": "Cheque sirf naam wale gahak se lein — bounce hua to kis se mangenge?",
+  "homeCheques": "Cheque",
+  "chequesInHand": "Haath mein",
+  "chequesBounced": "Bounce hue",
+  "chequesEmpty": "Koi cheque haath mein nahi",
+  "chequesEmptyHint": "Wasooli ya bill par cheque lein to yahan nazar aayega",
+  "chequeDueTodayChip": "Aaj jama karein",
+  "chequeDueInChip": "{days} din baqi",
+  "@chequeDueInChip": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeOverdueChip": "{days} din guzar gaye",
+  "@chequeOverdueChip": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNoDate": "Tareekh nahi",
+  "chequeAtBank": "Bank mein",
+  "chequeDeposit": "Bank mein lagaya",
+  "chequeClear": "Clear ho gaya",
+  "chequeBounce": "Bounce ho gaya",
+  "chequeClearInto": "Kis account mein aaya",
+  "chequeBounceReason": "Bank ne kya likha (marzi se)",
+  "chequeBounceWarning": "{amount} phir se {name} ke khate mein chala jayega.",
+  "@chequeBounceWarning": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNoticeBy": "489-F notice {date} tak bhejein",
+  "@chequeNoticeBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeBouncedOn": "Bounce: {date}",
+  "@chequeBouncedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNotYet": "Bank ise {date} se pehle nahi lega",
+  "@chequeNotYet": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeDone": "Ho gaya"
 }

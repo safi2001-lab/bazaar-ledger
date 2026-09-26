@@ -3025,3 +3025,56 @@ features:
       - a cheque from a walk-in is refused in words
       - a cheque with no number is refused in words
       - a cheque taken against udhaar carries its due date
+
+  - id: M6-LIFE-01
+    milestone: M6
+    title: A cheque in hand can be deposited, cleared or bounced, and the books follow
+    status: done
+    # Before this, a cheque went into Cheques in Hand and stayed there for
+    # good. There was no way to say it had cleared, so the bank balance never
+    # saw the money; and no way to say it had bounced, so a customer whose
+    # cheque came back read as paid.
+    #
+    # Deposit moves no money, only where the cheque is. Clear is Dr the bank,
+    # Cr Cheques in Hand. Bounce unsettles everything the cheque settled: the
+    # bills it paid are reopened by exactly what it put on them, the udhaar
+    # comes back on the khata by name, and any advance it left is withdrawn,
+    # so the shop is never shown holding money that never arrived. Nothing in
+    # the ledger is edited; the bounce is its own entry pointing at the
+    # cheque. Deposit and clear are refused before the cheque's date, because
+    # no bank will take a post-dated cheque early.
+    proof:
+      - taken to the bank moves no money, only where the cheque is
+      - taken to the bank is refused before its date, because no bank will take it
+      - taken to the bank a cheque with no recorded date is not stranded
+      - cleared the money moves from Cheques in Hand into the bank
+      - cleared is refused before its date
+      - bounced the bills it paid are owed again, for exactly what it paid
+      - bounced the udhaar comes back by name, and the advance is withdrawn
+      - bounced a cheque allocated beyond its amount is a corrupt record
+      - a cheque cannot go to the bank before its date
+      - a cleared cheque puts the money in the bank
+      - a bounced cheque puts the udhaar back on the khata
+      - the khata shows the cheque and then its bounce
+      - a cheque cannot clear twice, or clear after it bounced
+      - a cheque taken at the counter that bounces reopens the sale
+      - every step is in the audit trail
+
+  - id: M6-DRAWER-01
+    milestone: M6
+    title: The cheque drawer shows what is due, what is late, and what bounced
+    status: done
+    # A wholesaler holds dozens of post-dated cheques at once, each due on a
+    # different day. The drawer lists them soonest first with how many days
+    # are left or have gone by, and from each one the shop can record that it
+    # went to the bank, cleared, or bounced. A bounce is listed with the date
+    # by which the s.489-F notice has to go, thirty days on, because that is
+    # the one deadline in a cheque's life that costs money to miss.
+    proof:
+      - bounced the 489-F notice date is thirty days from the bounce
+      - cheques in hand are listed soonest due first
+      - a bounced cheque is listed with its 489-F notice date
+      - the drawer lists what is due today before what is not
+      - a cheque cleared from the drawer puts the money in the bank
+      - a bounced cheque reopens the khata and names the notice date
+      - a post-dated cheque cannot be banked before its date

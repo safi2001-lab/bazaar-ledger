@@ -1435,4 +1435,77 @@ class AppStringsEn extends AppStrings {
   @override
   String get chequeNeedsCustomer =>
       'Take a cheque only from a named customer — if it bounces, who would you ask?';
+
+  @override
+  String get homeCheques => 'Cheques';
+
+  @override
+  String get chequesInHand => 'In hand';
+
+  @override
+  String get chequesBounced => 'Bounced';
+
+  @override
+  String get chequesEmpty => 'No cheques in hand';
+
+  @override
+  String get chequesEmptyHint =>
+      'A cheque taken on a bill or a khata shows up here';
+
+  @override
+  String get chequeDueTodayChip => 'Bank today';
+
+  @override
+  String chequeDueInChip(String days) {
+    return '$days days to go';
+  }
+
+  @override
+  String chequeOverdueChip(String days) {
+    return '$days days overdue';
+  }
+
+  @override
+  String get chequeNoDate => 'No date';
+
+  @override
+  String get chequeAtBank => 'At the bank';
+
+  @override
+  String get chequeDeposit => 'Taken to the bank';
+
+  @override
+  String get chequeClear => 'Cleared';
+
+  @override
+  String get chequeBounce => 'Bounced';
+
+  @override
+  String get chequeClearInto => 'Into which account';
+
+  @override
+  String get chequeBounceReason => 'What the bank wrote (optional)';
+
+  @override
+  String chequeBounceWarning(String amount, String name) {
+    return '$amount goes back onto $name\'s khata.';
+  }
+
+  @override
+  String chequeNoticeBy(String date) {
+    return 'Send the 489-F notice by $date';
+  }
+
+  @override
+  String chequeBouncedOn(String date) {
+    return 'Bounced $date';
+  }
+
+  @override
+  String chequeNotYet(String date) {
+    return 'The bank will not take it before $date';
+  }
+
+  @override
+  String get chequeDone => 'Done';
 }

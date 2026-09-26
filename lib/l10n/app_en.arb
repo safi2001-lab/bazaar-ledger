@@ -686,5 +686,70 @@
       }
     }
   },
-  "chequeNeedsCustomer": "Take a cheque only from a named customer — if it bounces, who would you ask?"
+  "chequeNeedsCustomer": "Take a cheque only from a named customer — if it bounces, who would you ask?",
+  "homeCheques": "Cheques",
+  "chequesInHand": "In hand",
+  "chequesBounced": "Bounced",
+  "chequesEmpty": "No cheques in hand",
+  "chequesEmptyHint": "A cheque taken on a bill or a khata shows up here",
+  "chequeDueTodayChip": "Bank today",
+  "chequeDueInChip": "{days} days to go",
+  "@chequeDueInChip": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeOverdueChip": "{days} days overdue",
+  "@chequeOverdueChip": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNoDate": "No date",
+  "chequeAtBank": "At the bank",
+  "chequeDeposit": "Taken to the bank",
+  "chequeClear": "Cleared",
+  "chequeBounce": "Bounced",
+  "chequeClearInto": "Into which account",
+  "chequeBounceReason": "What the bank wrote (optional)",
+  "chequeBounceWarning": "{amount} goes back onto {name}'s khata.",
+  "@chequeBounceWarning": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNoticeBy": "Send the 489-F notice by {date}",
+  "@chequeNoticeBy": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeBouncedOn": "Bounced {date}",
+  "@chequeBouncedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeNotYet": "The bank will not take it before {date}",
+  "@chequeNotYet": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "chequeDone": "Done"
 }
