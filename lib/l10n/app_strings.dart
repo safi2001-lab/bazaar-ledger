@@ -3494,6 +3494,90 @@ abstract class AppStrings {
   /// **'{name} ({role})'**
   String homeSignedInAs(String name, String role);
 
+  /// No description provided for @homeDayClose.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din band'**
+  String get homeDayClose;
+
+  /// No description provided for @dayCloseTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din band karein'**
+  String get dayCloseTitle;
+
+  /// No description provided for @dayCloseExpected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khaton ke hisaab se galle mein'**
+  String get dayCloseExpected;
+
+  /// No description provided for @dayCloseCounted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gin kar kitna nikla'**
+  String get dayCloseCounted;
+
+  /// No description provided for @dayCloseNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Farq ki wajah (marzi se)'**
+  String get dayCloseNote;
+
+  /// No description provided for @dayCloseSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din band karein'**
+  String get dayCloseSave;
+
+  /// No description provided for @dayCloseMatches.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galla khaton se barabar hai'**
+  String get dayCloseMatches;
+
+  /// No description provided for @dayCloseShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} kam hai'**
+  String dayCloseShort(String amount);
+
+  /// No description provided for @dayCloseOver.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} zyada hai'**
+  String dayCloseOver(String amount);
+
+  /// No description provided for @dayCloseDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din band ho gaya'**
+  String get dayCloseDone;
+
+  /// No description provided for @dayCloseLast.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichli dafa: {when}, {name}'**
+  String dayCloseLast(String when, String name);
+
+  /// No description provided for @auditTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaun ne kya kiya'**
+  String get auditTitle;
+
+  /// No description provided for @auditEveryone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab'**
+  String get auditEveryone;
+
+  /// No description provided for @auditEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi kuch nahi hua'**
+  String get auditEmpty;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

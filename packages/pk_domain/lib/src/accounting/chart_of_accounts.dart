@@ -404,6 +404,19 @@ const List<AccountSpec> defaultChartOfAccounts = [
     systemKey: 'bad_debts',
     parentCode: '6000',
   ),
+  // What the drawer was short or over when the day was closed. A shortage is
+  // a debit, a cost to the shop; an excess a credit. Kept on its own line so
+  // a counter that is short every week is one number, not a mystery spread
+  // across the cash book.
+  AccountSpec(
+    code: '6800',
+    nameEn: 'Cash Short and Over',
+    nameUr: 'Galle ka farq',
+    type: AccountType.expense,
+    normalSide: NormalSide.debit,
+    systemKey: 'cash_short_over',
+    parentCode: '6000',
+  ),
   AccountSpec(
     code: '6900',
     nameEn: 'Miscellaneous',

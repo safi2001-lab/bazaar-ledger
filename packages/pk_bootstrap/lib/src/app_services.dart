@@ -211,6 +211,11 @@ final class AppServices {
     return RecordReturnUseCase(writer: DriftReturnWriter(runner: _runner));
   }
 
+  CloseDayUseCase get closeDay {
+    require(Permission.closeDay);
+    return CloseDayUseCase(writer: DriftDayCloseWriter(runner: _runner));
+  }
+
   RecordExpenseUseCase get recordExpense {
     require(Permission.expenses);
     return RecordExpenseUseCase(writer: DriftExpenseWriter(runner: _runner));

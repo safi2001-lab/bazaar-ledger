@@ -7,6 +7,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheques_screen.dart';
+import '../day_close/day_close_screen.dart';
 import '../documents/quotations_screen.dart';
 import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
@@ -151,6 +152,13 @@ class HomeScreen extends ConsumerWidget {
                       label: s.homeReports,
                       icon: Icons.bar_chart_outlined,
                       onTap: () => _open(context, const ReportsScreen()),
+                    ),
+                  // The evening count of the golak against the books.
+                  if (services.can(Permission.closeDay))
+                    _NavTile(
+                      label: s.homeDayClose,
+                      icon: Icons.lock_clock_outlined,
+                      onTap: () => _open(context, const DayCloseScreen()),
                     ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

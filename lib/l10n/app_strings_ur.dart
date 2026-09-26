@@ -1919,5 +1919,53 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get homeDayClose => 'Din band';
+
+  @override
+  String get dayCloseTitle => 'Din band karein';
+
+  @override
+  String get dayCloseExpected => 'Khaton ke hisaab se galle mein';
+
+  @override
+  String get dayCloseCounted => 'Gin kar kitna nikla';
+
+  @override
+  String get dayCloseNote => 'Farq ki wajah (marzi se)';
+
+  @override
+  String get dayCloseSave => 'Din band karein';
+
+  @override
+  String get dayCloseMatches => 'Galla khaton se barabar hai';
+
+  @override
+  String dayCloseShort(String amount) {
+    return '$amount kam hai';
+  }
+
+  @override
+  String dayCloseOver(String amount) {
+    return '$amount zyada hai';
+  }
+
+  @override
+  String get dayCloseDone => 'Din band ho gaya';
+
+  @override
+  String dayCloseLast(String when, String name) {
+    return 'Pichli dafa: $when, $name';
+  }
+
+  @override
+  String get auditTitle => 'Kaun ne kya kiya';
+
+  @override
+  String get auditEveryone => 'Sab';
+
+  @override
+  String get auditEmpty => 'Abhi kuch nahi hua';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

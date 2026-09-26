@@ -176,14 +176,15 @@ Future<void> insertStockMovements(
   }
 }
 
-/// Writes [entry] and its lines against [documentId]. Returns the entry id.
+/// Writes [entry] and its lines against [documentId], or against no document
+/// for an adjustment that has none. Returns the entry id.
 ///
 /// A line names its account by system key, or by id behind a `#`. A key the
 /// shipped chart has and this firm was set up before is added first; one the
 /// firm does not have at all is refused in words.
 Future<String> insertJournal(
   Tx tx,
-  String documentId,
+  String? documentId,
   JournalEntryPosting entry,
 ) async {
   final journalEntryId = await tx.insert('journal_entries', {

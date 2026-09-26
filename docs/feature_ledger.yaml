@@ -198,7 +198,15 @@ milestones:
     # it, and it has always been the owner: there was no way to add anybody
     # else, so the counter boy rang bills as the owner and could cancel them,
     # read what the goods cost, or restore a backup over the day's books.
-    state: open
+    #
+    # Sealed 26 Sep 2026 at 6/6. Roles, staff with their own PINs, sign-in
+    # and a lock, refusals at the service, the activity log and the day
+    # close. Not built, and said here: the subscription plans and their
+    # entitlement (pk_billing, lib/features/subscription) wait on the Play
+    # listing and its billing key, which do not exist yet -- AppConfig
+    # reports them missing and billing never falls open; and the discount
+    # ceiling each role carries on its row is not yet checked at the counter.
+    state: sealed
     owns:
       - lib/features/users/**
       - lib/features/audit/**
@@ -3570,3 +3578,33 @@ features:
     proof:
       - staff a cashier rings bills but cannot cancel one or read the reports
       - a cashier sees the counter and not the owner's screens
+
+  - id: M9-CLOSE-01
+    milestone: M9
+    title: The day is closed by counting the drawer against the books
+    status: done
+    # The screen shows what the books say is in the golak (Cash in Hand and
+    # every cash tender's account, the Cash Book's accounts), takes what was
+    # counted, and says as it is typed whether the drawer is short or over.
+    # Closing reads the expected figure again inside the write, books any
+    # difference to a new Cash Short and Over account (6800, added to older
+    # firms when first needed) so the books then agree with the drawer, and
+    # leaves a DAY_CLOSED line naming who counted, what, and why it differed.
+    proof:
+      - a drawer that matches the books writes nothing but the close
+      - a short drawer is booked as a shortage, and the books then agree
+      - a drawer over the books is booked the other way
+      - a drawer cannot be counted below nothing
+      - a short drawer is closed, and the books then agree with it
+
+  - id: M9-AUDIT-01
+    milestone: M9
+    title: The owner reads who did what, and when, for everyone or one person
+    status: done
+    # Every write since M0 has left an audit row; Settings now shows them,
+    # newest first, each with the person and the shop's own date and time,
+    # filtered to one member of staff with a tap. Owner, manager and
+    # accountant only.
+    proof:
+      - the activity log names who did what, newest first
+      - the activity log says who did what

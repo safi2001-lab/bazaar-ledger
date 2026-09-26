@@ -1001,5 +1001,43 @@
       }
     }
   },
+  "homeDayClose": "Close day",
+  "dayCloseTitle": "Close the day",
+  "dayCloseExpected": "In the drawer, by the books",
+  "dayCloseCounted": "Counted in the drawer",
+  "dayCloseNote": "Why it differs (optional)",
+  "dayCloseSave": "Close the day",
+  "dayCloseMatches": "The drawer matches the books",
+  "dayCloseShort": "{amount} short",
+  "@dayCloseShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dayCloseOver": "{amount} over",
+  "@dayCloseOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dayCloseDone": "Day closed",
+  "dayCloseLast": "Last closed: {when}, by {name}",
+  "@dayCloseLast": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTitle": "Activity",
+  "auditEveryone": "Everyone",
+  "auditEmpty": "Nothing has happened yet",
   "chequeDone": "Done"
 }

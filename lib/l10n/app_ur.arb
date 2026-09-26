@@ -1080,5 +1080,43 @@
       }
     }
   },
+  "homeDayClose": "Din band",
+  "dayCloseTitle": "Din band karein",
+  "dayCloseExpected": "Khaton ke hisaab se galle mein",
+  "dayCloseCounted": "Gin kar kitna nikla",
+  "dayCloseNote": "Farq ki wajah (marzi se)",
+  "dayCloseSave": "Din band karein",
+  "dayCloseMatches": "Galla khaton se barabar hai",
+  "dayCloseShort": "{amount} kam hai",
+  "@dayCloseShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dayCloseOver": "{amount} zyada hai",
+  "@dayCloseOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dayCloseDone": "Din band ho gaya",
+  "dayCloseLast": "Pichli dafa: {when}, {name}",
+  "@dayCloseLast": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "auditTitle": "Kaun ne kya kiya",
+  "auditEveryone": "Sab",
+  "auditEmpty": "Abhi kuch nahi hua",
   "chequeDone": "Ho gaya"
 }

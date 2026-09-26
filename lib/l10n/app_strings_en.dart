@@ -1918,5 +1918,53 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get homeDayClose => 'Close day';
+
+  @override
+  String get dayCloseTitle => 'Close the day';
+
+  @override
+  String get dayCloseExpected => 'In the drawer, by the books';
+
+  @override
+  String get dayCloseCounted => 'Counted in the drawer';
+
+  @override
+  String get dayCloseNote => 'Why it differs (optional)';
+
+  @override
+  String get dayCloseSave => 'Close the day';
+
+  @override
+  String get dayCloseMatches => 'The drawer matches the books';
+
+  @override
+  String dayCloseShort(String amount) {
+    return '$amount short';
+  }
+
+  @override
+  String dayCloseOver(String amount) {
+    return '$amount over';
+  }
+
+  @override
+  String get dayCloseDone => 'Day closed';
+
+  @override
+  String dayCloseLast(String when, String name) {
+    return 'Last closed: $when, by $name';
+  }
+
+  @override
+  String get auditTitle => 'Activity';
+
+  @override
+  String get auditEveryone => 'Everyone';
+
+  @override
+  String get auditEmpty => 'Nothing has happened yet';
+
+  @override
   String get chequeDone => 'Done';
 }

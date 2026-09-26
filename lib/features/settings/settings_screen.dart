@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/audit_screen.dart';
 import '../backup/backup_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
@@ -75,6 +76,14 @@ class SettingsScreen extends ConsumerWidget {
 
             BlSectionHeader(s.settingsShop),
             const SizedBox(height: BlTokens.space2),
+            if (services.can(Permission.audit))
+              _Row(
+                icon: Icons.history,
+                label: s.auditTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const AuditScreen()),
+                ),
+              ),
             if (services.can(Permission.manageUsers))
               _Row(
                 icon: Icons.badge_outlined,

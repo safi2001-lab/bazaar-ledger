@@ -8,6 +8,7 @@ import '../write/drift_cheque_writer.dart'
         chequeInHandSelect,
         chequeIssuedFrom,
         chequeIssuedSelect;
+import '../write/drift_day_close_writer.dart' show cashInDrawerSql;
 import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
 
@@ -905,6 +906,79 @@ final class DriftAppQueries implements AppQueries {
         )
         .get();
     return [for (final r in rows) chequeInHandFrom(r)];
+  }
+
+  @override
+  Future<List<ActivityEntry>> activity(
+    String firmId, {
+    String? userId,
+    int limit = 200,
+  }) async {
+    // Rides idx_audit_firm_time, or idx_audit_actor for one person's.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT a.at_utc, a.created_by, u.name AS user_name, a.action_code,
+                 a.summary, a.amount_paisa
+          FROM audit_log a
+          JOIN users u ON u.id = a.created_by
+          WHERE a.firm_id = ?1 AND (?2 IS NULL OR a.created_by = ?2)
+          ORDER BY a.at_utc DESC, a.id DESC
+          LIMIT ?3
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(userId),
+            Variable<int>(limit),
+          ],
+          readsFrom: {_db.auditLog, _db.users},
+        )
+        .get();
+    return [for (final r in rows) _activity(r)];
+  }
+
+  @override
+  Future<ActivityEntry?> lastDayClose(String firmId) async {
+    final row = await _db
+        .customSelect(
+          '''
+          SELECT a.at_utc, a.created_by, u.name AS user_name, a.action_code,
+                 a.summary, a.amount_paisa
+          FROM audit_log a
+          JOIN users u ON u.id = a.created_by
+          WHERE a.firm_id = ? AND a.action_code = 'DAY_CLOSED'
+          ORDER BY a.at_utc DESC, a.id DESC
+          LIMIT 1
+          ''',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.auditLog, _db.users},
+        )
+        .getSingleOrNull();
+    return row == null ? null : _activity(row);
+  }
+
+  static ActivityEntry _activity(QueryRow r) => ActivityEntry(
+    atUtcMillis: r.read<int>('at_utc'),
+    userId: r.read<String>('created_by'),
+    userName: r.read<String>('user_name'),
+    actionCode: r.read<String>('action_code'),
+    summary: r.readNullable<String>('summary'),
+    amount: switch (r.readNullable<int>('amount_paisa')) {
+      final int p => Money.paisa(p),
+      null => null,
+    },
+  );
+
+  @override
+  Future<Money> cashInDrawer(String firmId) async {
+    final row = await _db
+        .customSelect(
+          cashInDrawerSql,
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.journalLines, _db.accounts, _db.paymentAccounts},
+        )
+        .getSingle();
+    return Money.paisa(row.read<int>('cash'));
   }
 
   @override

@@ -6,6 +6,7 @@ import '../cheques/demand_notice.dart';
 import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
 import '../documents/quotation.dart';
+import '../entitlement/activity.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
@@ -540,6 +541,19 @@ abstract interface class AppQueries {
 
   /// Quotations, newest first, each with the bill it became if any.
   Future<List<QuotationRow>> quotations(String firmId, {int limit = 100});
+
+  /// What was done in the shop, newest first; only [userId]'s when named.
+  Future<List<ActivityEntry>> activity(
+    String firmId, {
+    String? userId,
+    int limit = 200,
+  });
+
+  /// The last time the day was closed, if it ever has been.
+  Future<ActivityEntry?> lastDayClose(String firmId);
+
+  /// The cash the books say is in the drawer now.
+  Future<Money> cashInDrawer(String firmId);
 
   /// Delivery challans, newest first, each with the bill it became if any.
   Future<List<QuotationRow>> challans(String firmId, {int limit = 100});
