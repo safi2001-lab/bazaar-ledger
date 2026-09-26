@@ -664,5 +664,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "purchaseReturnTitle": "Send goods back to the supplier",
+  "purchaseReturnRefund": "Refunded by the supplier now"
 }

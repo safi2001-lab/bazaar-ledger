@@ -102,14 +102,15 @@ milestones:
     # wrong number in its books, and the wrong number is the one an auditor
     # finds.
     #
-    # Still open, at 10/10, on purpose: two things it owns have no rows yet
-    # and are not built. A delivery entered wrong cannot be corrected — the
-    # void writer now refuses one rather than reverse its stock without its
-    # cost — and the live database is not encrypted at rest
-    # (`encrypted_database.dart`). The backup file is; the books on the phone
-    # are protected by Android's app sandbox and the no-backup directory
-    # alone. Both are real work with real risk, and 100% of the rows that
-    # exist is not the milestone.
+    # Still open on purpose: one thing it owns has no row and is not built.
+    # The live database is not encrypted at rest (`encrypted_database.dart`).
+    # The backup file is; the books on the phone are protected by Android's
+    # app sandbox and the no-backup directory alone. Swapping SQLite for
+    # SQLCipher changes the native library under every install, needs the
+    # existing plaintext books migrated in place, and changes what a backup
+    # snapshot is — real work with real risk to data that already exists, and
+    # 100% of the rows that exist is not the milestone. A delivery entered
+    # wrong can now be corrected (M5-RETURN-04).
     state: open
     owns:
       - lib/features/backup/**
@@ -2933,3 +2934,46 @@ features:
       - a customer can be hidden from the khata and brought back
       - a customer who still owes cannot be hidden, and is told why
       - a supplier the shop still owes cannot be hidden
+
+  - id: M5-RETURN-04
+    milestone: M5
+    title: A delivery entered wrong is corrected by sending goods back
+    status: done
+    # The correction a delivery was missing. It cannot be voided — its cost
+    # moved the average, and reversing its stock without its cost leaves the
+    # average resting on goods the shop no longer has — so it is corrected
+    # the way a shop really corrects one: the goods go back to the supplier.
+    #
+    # `returnStock` is the one movement that moves the average going out. The
+    # goods leave at the landed cost they came in at and what stays is
+    # re-averaged over what stays, so a whole delivery sent back puts the
+    # average back where it was. The supplier credits the goods value; the
+    # freight paid on goods that went back is the shop's and goes to cost of
+    # goods, where a margin report can see it. Credit beyond what is still
+    # owed on the delivery has to come back in cash now, the same
+    # no-supplier-advance rule payments follow. Goods already sold cannot go
+    # back, and a second return cannot send back more than came in.
+    #
+    # Driven from the purchases list: a tap on a delivery opens what can
+    # still go back on it.
+    proof:
+      - what goes back, and at what the supplier credits the goods value, not the freight
+      - what goes back, and at what the shelf gives up what the goods landed at
+      - what goes back, and at what the freight on goods that went back is the shop's, in cost of goods
+      - what goes back, and at what what stays is re-averaged over what stays
+      - what goes back, and at what a whole delivery going back puts the average back where it was
+      - what goes back, and at what an emptied shelf keeps its last average
+      - when the delivery is already paid for the supplier hands the money back now
+      - when the delivery is already paid for credit the delivery cannot absorb has to come back in cash
+      - what a return to the supplier refuses goods that have already been sold
+      - every return balances, whatever the quantity
+      - torn sacks go back and what is owed on the delivery comes down
+      - a whole delivery sent back puts the shelf and its cost back
+      - the inventory account matches the shelf afterwards
+      - a second return cannot send back more than came in
+      - goods already sold cannot go back to the supplier
+      - a paid-for delivery sends back cash, into the drawer
+      - the supplier khata shows the return against the delivery
+      - a refused return writes nothing and burns no number
+      - a return to a supplier is recorded in the audit trail
+      - a delivery entered wrong can be sent back from the list

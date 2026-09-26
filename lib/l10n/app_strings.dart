@@ -2635,6 +2635,18 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{name} wapas aa gaya'**
   String recycleRestored(String name);
+
+  /// No description provided for @purchaseReturnTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier ko maal wapas'**
+  String get purchaseReturnTitle;
+
+  /// No description provided for @purchaseReturnRefund.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier ne abhi wapas diye'**
+  String get purchaseReturnRefund;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

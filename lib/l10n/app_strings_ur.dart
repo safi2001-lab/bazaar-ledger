@@ -1406,4 +1406,10 @@ class AppStringsUr extends AppStrings {
   String recycleRestored(String name) {
     return '$name wapas aa gaya';
   }
+
+  @override
+  String get purchaseReturnTitle => 'Supplier ko maal wapas';
+
+  @override
+  String get purchaseReturnRefund => 'Supplier ne abhi wapas diye';
 }

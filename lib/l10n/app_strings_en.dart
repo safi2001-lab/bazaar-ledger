@@ -1406,4 +1406,10 @@ class AppStringsEn extends AppStrings {
   String recycleRestored(String name) {
     return '$name is back';
   }
+
+  @override
+  String get purchaseReturnTitle => 'Send goods back to the supplier';
+
+  @override
+  String get purchaseReturnRefund => 'Refunded by the supplier now';
 }

@@ -743,5 +743,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "purchaseReturnTitle": "Supplier ko maal wapas",
+  "purchaseReturnRefund": "Supplier ne abhi wapas diye"
 }

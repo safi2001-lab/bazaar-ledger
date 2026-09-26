@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
@@ -173,6 +174,37 @@ void main() {
     expect(find.text('Punjab Rice Mills'), findsOneWidget);
     expect(find.text('800.00 dena hai'), findsOneWidget);
     expect(find.textContaining('SUP/9912'), findsOneWidget);
+  });
+
+  testWidgets('a delivery entered wrong can be sent back from the list', (
+    tester,
+  ) async {
+    // The only correction a delivery has. It cannot be voided — its cost
+    // moved the average — so torn sacks go back as a return.
+    final app = await Harness.startWithShop(tester);
+    await _supplier(app);
+    await _item(app, purchaseRate: Rate.rupees(90));
+
+    await _openPurchase(tester);
+    await _pickSupplier(tester);
+    await _addLine(tester, qty: '10', cost: '1200');
+    await tapText(tester, 'Kharidari save karein');
+    await tester.pumpAndSettle();
+
+    await tapText(tester, 'Punjab Rice Mills');
+    expect(find.text('Supplier ko maal wapas'), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.add_circle_outline).last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.add_circle_outline).last);
+    await tester.pumpAndSettle();
+    await typeInto(tester, 'Wajah', 'Do boriyan phati hui');
+    await tapButton(tester, 'Wapsi save karein');
+
+    final returns = await app.rowsOf(
+      "SELECT total_paisa FROM documents WHERE doc_type = 'purchase_return'",
+    );
+    expect(returns.single['total_paisa'], 24000);
+    expect(find.text('960.00 dena hai'), findsOneWidget);
   });
 
   testWidgets('what is still owed reaches the supplier khata', (tester) async {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
@@ -7,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import 'purchase_screen.dart';
+import 'send_back_sheet.dart';
 
 /// Deliveries, newest first.
 ///
@@ -77,9 +80,9 @@ class PurchasesScreen extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const PurchaseScreen()),
-        ),
+        onPressed: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute<void>(builder: (_) => const PurchaseScreen())),
         icon: const Icon(Icons.add),
         label: Text(s.purchaseTitle),
       ),
@@ -97,7 +100,12 @@ class _PurchaseTile extends StatelessWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
 
+    // A tap opens what can go back on this delivery. The only correction a
+    // delivery has: it cannot be voided, because its cost moved the average.
     return BlCard(
+      onTap: () => unawaited(
+        showSendBackSheet(context, documentId: row.id, docNo: row.docNo),
+      ),
       child: Row(
         children: [
           Expanded(
@@ -117,11 +125,7 @@ class _PurchaseTile extends StatelessWidget {
                 Text(
                   // The supplier's own number first when there is one: it is
                   // the one printed on the paper in the shopkeeper's drawer.
-                  [
-                    row.dateLocal,
-                    ?row.supplierBillNo,
-                    row.docNo,
-                  ].join(' · '),
+                  [row.dateLocal, ?row.supplierBillNo, row.docNo].join(' · '),
                   style: TextStyle(fontSize: 12, color: t.inkMuted),
                 ),
                 if (row.owed.isPositive) ...[
