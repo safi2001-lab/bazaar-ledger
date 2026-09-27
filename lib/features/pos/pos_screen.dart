@@ -41,7 +41,7 @@ final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
 
   return const SaleCalculator().calculate(
     SaleDraft(
-      lines: [for (final l in cart.lines) l.toDraft(units)],
+      lines: [for (final l in cart.lines) ...l.toDrafts(units)],
       partyId: cart.partyId,
       partyName: cart.partyName,
       billDiscount: cart.billDiscount,
@@ -118,7 +118,55 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final firm = ref.read(firmProvider).valueOrNull;
     if (firm == null) return;
 
-    final scanned = await services.queries.itemByBarcode(firm.id, text);
+    final s = AppStrings.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    var scanned = await services.queries.itemByBarcode(firm.id, text);
+
+    // A medicine pack's GS1 code carries its product, batch and expiry in
+    // one symbol. The product is found by its GTIN, and a pack past its date
+    // is stopped here, at the scan, before it reaches the bill.
+    if (scanned == null) {
+      if (parseGs1(text) case final gs1?) {
+        scanned =
+            await services.queries.itemByBarcode(firm.id, gs1.ean13!) ??
+            await services.queries.itemByBarcode(firm.id, gs1.gtin!);
+        final today = BusinessDate.now(services.clock);
+        if (scanned != null &&
+            gs1.expiry != null &&
+            gs1.expiry!.value.compareTo(today.value) < 0) {
+          if (!mounted) return;
+          messenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                s.posScannedExpired(gs1.batch ?? '-', gs1.expiry!.value),
+              ),
+            ),
+          );
+          _clearSearch();
+          return;
+        }
+      }
+    }
+
+    // A phone's IMEI, or any piece sold by its serial number.
+    if (scanned == null) {
+      final piece = await services.queries.serialOnHand(firm.id, text);
+      if (piece != null) {
+        final item = await services.queries.itemById(firm.id, piece.itemId);
+        if (!mounted || item == null) return;
+        final added = ref
+            .read(cartProvider.notifier)
+            .addSerial(item, lotId: piece.lotId, serial: piece.lotNo);
+        if (!added) {
+          messenger.showSnackBar(
+            SnackBar(content: Text(s.posSerialAlreadyOnBill(piece.lotNo))),
+          );
+        }
+        _clearSearch();
+        return;
+      }
+    }
+
     final item =
         scanned ??
         (await services.queries.searchItems(
@@ -129,6 +177,11 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     if (!mounted) return;
     if (item == null) return;
+    if (item.tracksSerial) {
+      // A phone cannot go on the bill without saying which phone.
+      messenger.showSnackBar(SnackBar(content: Text(s.posScanTheSerial)));
+      return;
+    }
 
     ref.read(cartProvider.notifier).add(item);
     _clearSearch();
@@ -156,6 +209,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   }
 
   void _addToCart(ItemSummary item) {
+    if (item.tracksSerial) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppStrings.of(context).posScanTheSerial)),
+      );
+      return;
+    }
     ref.read(cartProvider.notifier).add(item);
     _clearSearch();
   }

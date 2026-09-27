@@ -986,6 +986,106 @@ final class DriftAppQueries implements AppQueries {
   );
 
   @override
+  Future<Map<String, Qty>> stockByLocation(String firmId, String itemId) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT location_code, SUM(qty_delta_thousandths) AS q
+          FROM stock_ledger
+          WHERE firm_id = ? AND item_id = ? AND deleted_at_utc IS NULL
+          GROUP BY location_code
+          ORDER BY location_code <> 'MAIN', location_code
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(itemId)],
+          readsFrom: {_db.stockLedger},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        r.read<String>('location_code'): Qty.raw(r.read<int>('q')),
+    };
+  }
+
+  @override
+  Future<List<String>> stockLocations(String firmId) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT DISTINCT location_code FROM stock_ledger
+          WHERE firm_id = ? AND deleted_at_utc IS NULL
+          ''',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.stockLedger},
+        )
+        .get();
+    final found = {for (final r in rows) r.read<String>('location_code')};
+    return ['MAIN', ...(found..remove('MAIN')).toList()..sort()];
+  }
+
+  static const _lotSelect = '''
+    SELECT l.id, l.item_id, i.name AS item_name, l.lot_no, l.serial,
+           l.expiry_date_local, l.cost_milli_paisa,
+           SUM(s.qty_delta_thousandths) AS q
+    FROM stock_lots l
+    JOIN items i ON i.id = l.item_id
+    JOIN stock_ledger s ON s.lot_id = l.id AND s.deleted_at_utc IS NULL
+  ''';
+
+  static LotOnHand _lotFrom(QueryRow r) => LotOnHand(
+    lotId: r.read<String>('id'),
+    itemId: r.read<String>('item_id'),
+    itemName: r.read<String>('item_name'),
+    lotNo: r.read<String>('lot_no'),
+    qty: Qty.raw(r.read<int>('q')),
+    cost: Rate.raw(r.read<int>('cost_milli_paisa')),
+    serial: r.readNullable<String>('serial'),
+    expiry: switch (r.readNullable<String>('expiry_date_local')) {
+      final String d => BusinessDate(d),
+      null => null,
+    },
+  );
+
+  @override
+  Future<List<LotOnHand>> lotsOnHand(String firmId, {String? itemId}) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          $_lotSelect
+          WHERE l.firm_id = ?1 AND l.deleted_at_utc IS NULL
+            AND (?2 IS NULL OR l.item_id = ?2)
+          GROUP BY l.id
+          HAVING SUM(s.qty_delta_thousandths) > 0
+          ORDER BY l.expiry_date_local IS NULL, l.expiry_date_local, i.name,
+                   l.lot_no
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(itemId)],
+          readsFrom: {_db.stockLots, _db.items, _db.stockLedger},
+        )
+        .get();
+    return [for (final r in rows) _lotFrom(r)];
+  }
+
+  @override
+  Future<LotOnHand?> serialOnHand(String firmId, String serial) async {
+    final row = await _db
+        .customSelect(
+          '''
+          $_lotSelect
+          WHERE l.firm_id = ?1 AND l.serial = ?2 AND l.deleted_at_utc IS NULL
+          GROUP BY l.id
+          HAVING SUM(s.qty_delta_thousandths) > 0
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(serial.trim()),
+          ],
+          readsFrom: {_db.stockLots, _db.items, _db.stockLedger},
+        )
+        .getSingleOrNull();
+    return row == null ? null : _lotFrom(row);
+  }
+
+  @override
   Future<List<ChartAccount>> chartOfAccounts(String firmId) async {
     final rows = await _db
         .customSelect(
@@ -1913,6 +2013,8 @@ final class DriftAppQueries implements AppQueries {
     stockOnHand: Qty.raw(r.read<int>('stock_thousandths')),
     minStock: Qty.raw(r.read<int>('min_stock_thousandths')),
     tracksStock: r.read<int>('track_stock') == 1,
+    tracksBatch: r.read<int>('track_batch') == 1,
+    tracksSerial: r.read<int>('track_serial') == 1,
   );
 
   /// Null stays null rather than becoming zero.

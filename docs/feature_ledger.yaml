@@ -236,7 +236,17 @@ milestones:
 
   - id: M11
     title: Batches, serials, godowns and the pharmacy vertical
-    state: planned
+    # Opened and sealed 26 Sep 2026 at 5/5. stock_lots and the lot and
+    # location columns on the stock ledger had been in the schema since M0
+    # with nothing writing them. A pharmacy now buys by batch and expiry,
+    # sells the batch that expires first and never an expired one; a mobile
+    # shop buys and sells phones by IMEI; goods move to a godown and back;
+    # a pack's GS1 code is read at the counter and at the door; and the
+    # expiry list says what to pull off the shelf. Not built: a return from
+    # a customer or to a supplier going back into the batch it came from
+    # (returns land in no batch), drug schedules and prescriptions, and
+    # selling straight from a godown rather than the shop floor.
+    state: sealed
     owns:
       - lib/features/batches/**
       - packages/pk_domain/lib/src/stock/**
@@ -3699,3 +3709,83 @@ features:
       - firms only the owner adds or switches firms
       - firms the phone reopens on the firm it last had open
       - a second firm is added and opened, with its own khatas
+
+  # ---- M11 · Batches, serials, godowns and the pharmacy vertical ---------
+
+  - id: M11-BATCH-01
+    milestone: M11
+    title: Medicines are bought by batch and expiry, and sold first-expiry-first-out, never expired
+    status: done
+    # An item can be kept by batch. A delivery line then carries the batch
+    # printed on the goods and its expiry, and the stock goes into that
+    # batch. The counter takes the batch that expires first, then the next,
+    # and refuses when only an expired batch could make up the quantity,
+    # naming it, or when one is picked by hand; stock that was never put in
+    # a batch goes after every batch.
+    proof:
+      - fefo the batch that expires first goes first
+      - fefo an expired batch is never taken, and the sale is refused
+      - fefo stock in no batch goes after every batch
+      - fefo a batch expiring today can still be sold today
+      - a delivery keeps each batch with its expiry
+      - the counter sells the batch that expires first
+      - an expired batch is not sold
+      - an expired batch cannot be sold even when picked by hand
+      - a delivery keeps the batch and expiry the pack says
+
+  - id: M11-SERIAL-01
+    milestone: M11
+    title: Phones are bought and sold by IMEI, each one once
+    status: done
+    # An item can be kept by serial. A delivery names one IMEI per piece,
+    # each its own lot, and refuses a count that does not match or the same
+    # IMEI twice. At the counter the IMEI is scanned or typed, which puts
+    # that phone on the bill; the item cannot be added without one, the same
+    # phone cannot go on the bill twice, and a sold phone is no longer found.
+    proof:
+      - a phone comes in by IMEI and goes out by the one scanned
+      - a delivery of phones names one IMEI per phone
+      - a phone is found at the counter by its IMEI
+      - a phone is sold by its IMEI, and only once
+
+  - id: M11-GODOWN-01
+    milestone: M11
+    title: Goods move between the shop floor and a godown, batch and all
+    status: done
+    # From the item, Where it is shows the stock at each place and each
+    # batch or serial on hand, and moves goods from one place to another as
+    # a transfer out and a transfer in, batch by batch, refusing more than
+    # is there. Nothing is bought or sold, so the books do not move.
+    proof:
+      - goods moved to the godown leave the shop floor, batch and all
+      - more than is there cannot be moved
+      - goods are moved to the godown from the item
+
+  - id: M11-GS1-01
+    milestone: M11
+    title: A pack's GS1 code is read for its product, batch and expiry
+    status: done
+    # pk_domain/barcode reads GS1 element strings, raw or in brackets, with
+    # or without the scanner's symbology prefix: the GTIN, the batch, the
+    # expiry (day 00 as the end of the month) and the serial. At the counter
+    # the product is found by its GTIN and a pack past its date is stopped at
+    # the scan; at the door, scanning the pack into the batch field fills the
+    # batch and the expiry.
+    proof:
+      - gs1 a medicine pack gives its product, batch and expiry
+      - gs1 a label printed for people is read the same
+      - gs1 the scanner prefix is dropped
+      - gs1 an ordinary barcode or an IMEI is not GS1
+      - a pack scanned past its date is stopped at the counter
+      - a pack in date is scanned onto the bill by its GS1 code
+
+  - id: M11-EXPIRY-01
+    milestone: M11
+    title: The expiry list says what to pull off the shelf
+    status: done
+    # A report in the pack: every batch past its date or within ninety days
+    # of it, soonest first, with days left, quantity and what it cost, and a
+    # note of how much is already past its date.
+    proof:
+      - expiry expired and soon-to-expire batches, soonest first
+      - the expiry list shows what to pull off the shelf

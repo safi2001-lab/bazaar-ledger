@@ -166,14 +166,10 @@ void main() {
 
     await number(on('2027-07-01'), 'sale_invoice');
 
-    final rows = await db
-        .customSelect(
-          '''
+    final rows = await db.customSelect('''
           SELECT block_start, block_end, next_value FROM numbering_sequences
           WHERE doc_type = 'sale_invoice' AND fiscal_year = 2728
-          ''',
-        )
-        .get();
+          ''').get();
 
     expect(rows, hasLength(1));
     expect(rows.single.read<int>('block_start'), 5000);

@@ -3,6 +3,7 @@ import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_reports/pk_reports.dart';
 
 import '../db/app_database.dart';
+import 'drift_app_queries.dart';
 
 /// The drift implementation of [ReportSource].
 ///
@@ -481,6 +482,15 @@ final class DriftReportSource implements ReportSource {
           over90: Money.paisa(r.read<int>('over90')),
           advance: Money.zero,
         ),
+    ];
+  }
+
+  @override
+  Future<List<LotOnHand>> batchesWithExpiry(String firmId) async {
+    final lots = await DriftAppQueries(_db).lotsOnHand(firmId);
+    return [
+      for (final l in lots)
+        if (l.expiry != null) l,
     ];
   }
 }

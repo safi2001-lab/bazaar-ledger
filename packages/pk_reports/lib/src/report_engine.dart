@@ -28,6 +28,9 @@ enum ReportKind {
 
   /// As of today; the period is ignored.
   balanceSheet,
+
+  /// As of today; the period is ignored.
+  expiry,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -40,7 +43,8 @@ final class ReportEngine {
       kind == ReportKind.receivables ||
       kind == ReportKind.payables ||
       kind == ReportKind.trialBalance ||
-      kind == ReportKind.balanceSheet;
+      kind == ReportKind.balanceSheet ||
+      kind == ReportKind.expiry;
 
   final ReportSource source;
 
@@ -73,6 +77,10 @@ final class ReportEngine {
     ReportKind.balanceSheet => balanceSheet(
       today,
       await source.accountBalances(firmId, today),
+    ),
+    ReportKind.expiry => expiryReport(
+      today,
+      await source.batchesWithExpiry(firmId),
     ),
     ReportKind.payables => payablesByAge(
       today,

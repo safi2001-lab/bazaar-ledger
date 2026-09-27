@@ -11,6 +11,8 @@ import 'package:pk_money/pk_money.dart';
 import '../identity/actor_context.dart';
 import '../sales/sale_posting.dart';
 import '../sales/sale_posting_builder.dart';
+import '../stock/lots.dart';
+import '../time/clock.dart';
 import 'moving_average.dart';
 import 'purchase_posting.dart';
 
@@ -24,10 +26,23 @@ final class PurchaseLineDraft {
     required this.unitId,
     required this.unitCode,
     required this.rate,
+    this.batchNo,
+    this.expiry,
+    this.serials = const [],
   });
 
   final String itemId;
   final String itemName;
+
+  /// The batch printed on the goods, for an item kept by batch.
+  final String? batchNo;
+
+  /// When that batch expires.
+  final BusinessDate? expiry;
+
+  /// One serial number per piece, for an item kept by serial: as many as
+  /// [baseQty] counts pieces.
+  final List<String> serials;
 
   /// As billed — bori, carton, whatever the supplier writes.
   final Qty qty;
@@ -222,18 +237,60 @@ final class PurchaseBuilder {
         ),
       );
 
-      movements.add(
-        StockMovementPosting(
-          itemId: line.itemId,
-          txnType: 'purchase',
-          qtyDelta: line.baseQty,
-          rate: change.after.avg,
-          valueDelta: landed,
-          occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
-          occurredOnLocal: actor.businessDate.value,
-          lineNo: i + 1,
-        ),
-      );
+      final serials = [
+        for (final s in line.serials)
+          if (s.trim().isNotEmpty) s.trim(),
+      ];
+      if (serials.isNotEmpty) {
+        // One movement per piece, each in a lot of its own named by its
+        // serial, so the counter can later say which one it sold.
+        if (!line.baseQty.isWhole ||
+            line.baseQty.inThousandths ~/ 1000 != serials.length) {
+          throw StockRefused(
+            '${line.itemName}: ${line.baseQty.display} pieces need '
+            '${line.baseQty.display} serial numbers, and '
+            '${serials.length} were given.',
+          );
+        }
+        if (serials.toSet().length != serials.length) {
+          throw StockRefused(
+            '${line.itemName}: the same serial number is given twice.',
+          );
+        }
+        final values = landed.split(serials.length);
+        for (var k = 0; k < serials.length; k++) {
+          movements.add(
+            StockMovementPosting(
+              itemId: line.itemId,
+              txnType: 'purchase',
+              qtyDelta: Qty.one,
+              rate: change.after.avg,
+              valueDelta: values[k],
+              occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
+              occurredOnLocal: actor.businessDate.value,
+              lineNo: i + 1,
+              newLot: LotDraft(lotNo: serials[k], serial: serials[k]),
+            ),
+          );
+        }
+      } else {
+        final batch = line.batchNo?.trim();
+        movements.add(
+          StockMovementPosting(
+            itemId: line.itemId,
+            txnType: 'purchase',
+            qtyDelta: line.baseQty,
+            rate: change.after.avg,
+            valueDelta: landed,
+            occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
+            occurredOnLocal: actor.businessDate.value,
+            lineNo: i + 1,
+            newLot: batch == null || batch.isEmpty
+                ? null
+                : LotDraft(lotNo: batch, batchNo: batch, expiry: line.expiry),
+          ),
+        );
+      }
     }
 
     final journalLines = <JournalLinePosting>[];

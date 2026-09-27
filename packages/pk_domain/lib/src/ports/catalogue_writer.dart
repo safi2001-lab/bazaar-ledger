@@ -21,6 +21,8 @@ final class ItemDraft {
     this.openingRate = Rate.zero,
     this.minStock = Qty.zero,
     this.tracksStock = true,
+    this.tracksBatch = false,
+    this.tracksSerial = false,
     this.isActive = true,
   });
 
@@ -41,6 +43,13 @@ final class ItemDraft {
   final Rate openingRate;
   final Qty minStock;
   final bool tracksStock;
+
+  /// Bought and sold by batch, each with its expiry: medicines, packaged
+  /// food. The counter sells the batch that expires first.
+  final bool tracksBatch;
+
+  /// One serial number per piece, bought and sold by it: phones by IMEI.
+  final bool tracksSerial;
   final bool isActive;
 
   /// Lowercased, punctuation-stripped, space-collapsed — what type-ahead
@@ -216,4 +225,29 @@ abstract interface class CatalogueWriter {
   ///
   /// Returns the id of the stock ledger row.
   Future<String> adjustStock(ActorContext actor, StockAdjustmentDraft draft);
+
+  /// Moves goods between the shop floor and a godown, batch by batch for an
+  /// item kept by batch. Nothing is bought or sold, so nothing reaches the
+  /// books; the goods are only somewhere else.
+  Future<void> transferStock(ActorContext actor, StockTransferDraft draft);
+}
+
+/// Goods moved from one place the shop keeps them to another: the shop
+/// floor (`MAIN`) and a godown down the street.
+final class StockTransferDraft {
+  const StockTransferDraft({
+    required this.itemId,
+    required this.qty,
+    required this.from,
+    required this.to,
+    this.note,
+  });
+
+  final String itemId;
+
+  /// In the item's base unit.
+  final Qty qty;
+  final String from;
+  final String to;
+  final String? note;
 }

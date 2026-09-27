@@ -221,6 +221,7 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       documentId,
       lineIdByNo,
       posting.stockMovements,
+      takeFromLots: true,
     );
 
     // --- Double entry ------------------------------------------------------

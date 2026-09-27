@@ -119,7 +119,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     try {
       final services = ref.read(appServicesProvider);
       final draft = SaleDraft(
-        lines: [for (final l in cart.lines) l.toDraft(units)],
+        lines: [for (final l in cart.lines) ...l.toDrafts(units)],
         partyId: cart.partyId,
         partyName: cart.partyName,
         billDiscount: cart.billDiscount,
@@ -369,7 +369,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       final posted = await services.postSale(
         services.actorNow(),
         SaleDraft(
-          lines: [for (final l in cart.lines) l.toDraft(units)],
+          lines: [for (final l in cart.lines) ...l.toDrafts(units)],
           partyId: cart.partyId,
           partyName: cart.partyName,
           tenders: tenders,

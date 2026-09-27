@@ -1178,5 +1178,50 @@
       }
     }
   },
+  "posScannedExpired": "Batch {batch} ki expiry {date} guzar chuki hai. Yeh na bechein.",
+  "@posScannedExpired": {
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "posSerialAlreadyOnBill": "{serial} pehle se bill par hai",
+  "@posSerialAlreadyOnBill": {
+    "placeholders": {
+      "serial": {
+        "type": "String"
+      }
+    }
+  },
+  "posScanTheSerial": "Yeh cheez serial / IMEI se bikti hai. Uska number scan ya type karein.",
+  "reportExpiry": "Expiry",
+  "reportExpiryHint": "Kaunsa batch guzar gaya, kaunsa guzarne wala hai",
+  "itemTracksBatch": "Batch aur expiry se",
+  "itemTracksSerial": "Serial / IMEI se",
+  "purchaseBatch": "Batch no.",
+  "purchaseExpiry": "Expiry",
+  "purchaseSerials": "Serial / IMEI (har line mein ek)",
+  "purchaseSerialCount": "{count} number",
+  "@purchaseSerialCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "purchaseSerialsNeeded": "Har piece ka serial / IMEI likhein",
+  "purchaseBatchNeeded": "Batch no. likhein, aur expiry YYYY-MM-DD mein",
+  "placesTitle": "Maal kahan hai",
+  "placesMain": "Dukaan",
+  "placesBatches": "Batch",
+  "placesSerials": "Serial / IMEI",
+  "placesMove": "Maal bhejein",
+  "placesTo": "Kahan (masalan GODOWN)",
+  "placesMoveButton": "Bhej dein",
+  "placesMoved": "Maal bhej diya",
   "chequeDone": "Ho gaya"
 }

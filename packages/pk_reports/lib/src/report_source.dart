@@ -209,6 +209,9 @@ abstract interface class ReportSource {
     BusinessDate asOf,
   );
 
+  /// Every batch still on the shelf that has an expiry date.
+  Future<List<LotOnHand>> batchesWithExpiry(String firmId);
+
   /// Every supplier the shop owes, aged on [asOf].
   Future<List<PartyReceivable>> payables(String firmId, BusinessDate asOf);
 }

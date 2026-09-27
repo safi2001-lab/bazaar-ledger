@@ -1,5 +1,6 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import '../write/document_rows.dart';
 import '../write/opening_entries.dart';
 import '../write/sequence_allocator.dart';
 import '../write/tx_runner.dart';
@@ -288,6 +289,92 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       });
 
   @override
+  Future<void> transferStock(ActorContext actor, StockTransferDraft draft) =>
+      _runner.run(actor, (tx) async {
+        final from = draft.from.trim();
+        final to = draft.to.trim();
+        if (!draft.qty.isPositive) {
+          throw const StockRefused('Move something: the quantity is nothing.');
+        }
+        if (from.isEmpty || to.isEmpty || from == to) {
+          throw const StockRefused(
+            'Goods have to go from one place to another.',
+          );
+        }
+        final item = await tx.selectOne(
+          'SELECT name, track_stock, track_batch, track_serial, '
+          '       avg_cost_milli_paisa FROM items '
+          'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+          [draft.itemId, actor.firmId],
+        );
+        if (item == null || item.read<int>('track_stock') != 1) {
+          throw const StockRefused('That item does not carry stock.');
+        }
+        final name = item.read<String>('name');
+        final here = await tx.selectOne(
+          'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q '
+          'FROM stock_ledger WHERE firm_id = ? AND item_id = ? '
+          '  AND location_code = ? AND deleted_at_utc IS NULL',
+          [actor.firmId, draft.itemId, from],
+        );
+        final onHand = Qty.raw(here?.read<int>('q') ?? 0);
+        if (onHand < draft.qty) {
+          throw StockRefused(
+            'Only ${onHand.display} of $name is at $from, so '
+            '${draft.qty.display} cannot be moved from there.',
+          );
+        }
+        final byLot =
+            item.read<int>('track_batch') == 1 ||
+            item.read<int>('track_serial') == 1;
+        final takes = byLot
+            ? takeFefo(
+                needed: draft.qty,
+                lots: await lotBalancesAt(tx, draft.itemId, from),
+                unlotted: await unlottedAt(tx, draft.itemId, from),
+                today: actor.businessDate,
+              )
+            : <LotTake>[(lotId: null, qty: draft.qty)];
+        final cost = Rate.raw(item.read<int>('avg_cost_milli_paisa'));
+        for (final take in takes) {
+          final value = cost.amountFor(take.qty);
+          for (final (location, sign, type) in [
+            (from, -1, 'transfer_out'),
+            (to, 1, 'transfer_in'),
+          ]) {
+            await insertStockRow(
+              tx,
+              null,
+              const {},
+              StockMovementPosting(
+                itemId: draft.itemId,
+                txnType: type,
+                qtyDelta: take.qty,
+                rate: cost,
+                valueDelta: value,
+                occurredAtUtcMillis: actor.epochMillis,
+                occurredOnLocal: actor.businessDate.value,
+                lineNo: 0,
+                locationCode: location,
+              ),
+              lotId: take.lotId,
+              qtyDelta: sign < 0 ? -take.qty : take.qty,
+              valueDelta: sign < 0 ? -value : value,
+            );
+          }
+        }
+        final note = draft.note?.trim();
+        tx.audit(
+          action: 'STOCK_TRANSFERRED',
+          entityTable: 'items',
+          entityId: draft.itemId,
+          summary:
+              '${draft.qty.display} of $name moved from $from to $to'
+              '${note == null || note.isEmpty ? '' : ': $note'}',
+        );
+      });
+
+  @override
   Future<String> adjustStock(ActorContext actor, StockAdjustmentDraft draft) {
     final reason = draft.reason.trim();
     if (reason.isEmpty) {
@@ -513,6 +600,8 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         ? 0
         : d.openingRate.inMilliPaisa,
     'track_stock': d.tracksStock ? 1 : 0,
+    'track_batch': d.tracksBatch ? 1 : 0,
+    'track_serial': d.tracksSerial ? 1 : 0,
     'is_active': d.isActive ? 1 : 0,
   };
 

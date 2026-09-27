@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
 
 /// A row to be written to `documents`.
@@ -191,12 +192,17 @@ final class StockMovementPosting {
     required this.lineNo,
     this.locationCode = 'MAIN',
     this.lotId,
+    this.newLot,
     this.rate = Rate.zero,
   });
 
   final String itemId;
   final String locationCode;
   final String? lotId;
+
+  /// A batch or serial arriving with this movement, which the writer finds
+  /// or creates and puts this movement in.
+  final LotDraft? newLot;
   final String txnType;
 
   /// In the item's base unit. Negative when stock leaves the shop.

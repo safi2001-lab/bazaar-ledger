@@ -1099,5 +1099,50 @@
       }
     }
   },
+  "posScannedExpired": "Batch {batch} expired on {date}. Do not sell it.",
+  "@posScannedExpired": {
+    "placeholders": {
+      "batch": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "posSerialAlreadyOnBill": "{serial} is already on the bill",
+  "@posSerialAlreadyOnBill": {
+    "placeholders": {
+      "serial": {
+        "type": "String"
+      }
+    }
+  },
+  "posScanTheSerial": "This item is sold by serial / IMEI. Scan or type its number.",
+  "reportExpiry": "Expiry",
+  "reportExpiryHint": "Batches past their date, and those coming up to it",
+  "itemTracksBatch": "By batch and expiry",
+  "itemTracksSerial": "By serial / IMEI",
+  "purchaseBatch": "Batch no.",
+  "purchaseExpiry": "Expiry",
+  "purchaseSerials": "Serial / IMEI (one per line)",
+  "purchaseSerialCount": "{count} numbers",
+  "@purchaseSerialCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "purchaseSerialsNeeded": "Enter each piece's serial / IMEI",
+  "purchaseBatchNeeded": "Enter the batch no., and the expiry as YYYY-MM-DD",
+  "placesTitle": "Where it is",
+  "placesMain": "Shop floor",
+  "placesBatches": "Batches",
+  "placesSerials": "Serial / IMEI",
+  "placesMove": "Move goods",
+  "placesTo": "To (e.g. GODOWN)",
+  "placesMoveButton": "Move",
+  "placesMoved": "Goods moved",
   "chequeDone": "Done"
 }

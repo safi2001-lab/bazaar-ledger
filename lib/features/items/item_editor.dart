@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../batches/stock_places_screen.dart';
 import '../scan/scan_screen.dart';
 import 'item_history_screen.dart';
 import 'item_picture.dart';
@@ -69,6 +70,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   /// carries stock it can never have is an item permanently at minus
   /// something.
   late bool _tracksStock = widget.item?.tracksStock ?? true;
+  late bool _tracksBatch = widget.item?.tracksBatch ?? false;
+  late bool _tracksSerial = widget.item?.tracksSerial ?? false;
   late final TextEditingController _openingStock = TextEditingController(
     text: widget.item == null ? '' : widget.item!.stockOnHand.display,
   );
@@ -148,6 +151,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         hsCode: _blank(_hsCode.text),
         description: _blank(_description.text),
         tracksStock: _tracksStock,
+        tracksBatch: _tracksStock && _tracksBatch,
+        tracksSerial: _tracksStock && _tracksSerial,
         // Opening stock is an opening balance, not an edit. Changing an
         // existing item's stock happens through a stock adjustment with a
         // reason, which lands in M1 — the ledger is append-only and must
@@ -288,6 +293,17 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                   itemName: widget.item!.name,
                   onHand: widget.item!.stockOnHand,
                   unitCode: widget.item!.unitCode,
+                ),
+              ),
+            ),
+          // Where it is: the shop floor, the godown, and which batches.
+          if (_isEdit && widget.item!.tracksStock)
+            BlIconButton(
+              icon: Icons.warehouse_outlined,
+              label: s.placesTitle,
+              onPressed: () => Navigator.of(context).push<void>(
+                MaterialPageRoute(
+                  builder: (_) => StockPlacesScreen(item: widget.item!),
                 ),
               ),
             ),
@@ -488,6 +504,35 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                   ),
                                 ),
                         ),
+                        // A pharmacy's strips by batch and expiry, a mobile
+                        // shop's phones by IMEI. One or the other, never
+                        // both: a piece with a serial is its own lot.
+                        if (_tracksStock) ...[
+                          SwitchListTile.adaptive(
+                            value: _tracksBatch,
+                            onChanged: (value) => setState(() {
+                              _tracksBatch = value;
+                              if (value) _tracksSerial = false;
+                            }),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              s.itemTracksBatch,
+                              style: TextStyle(fontSize: 15, color: t.ink),
+                            ),
+                          ),
+                          SwitchListTile.adaptive(
+                            value: _tracksSerial,
+                            onChanged: (value) => setState(() {
+                              _tracksSerial = value;
+                              if (value) _tracksBatch = false;
+                            }),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(
+                              s.itemTracksSerial,
+                              style: TextStyle(fontSize: 15, color: t.ink),
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: BlTokens.space4),
                         BlField(
                           controller: _barcode,

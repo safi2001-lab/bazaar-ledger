@@ -3770,6 +3770,132 @@ abstract class AppStrings {
   /// **'Ab {name} khuli hai'**
   String firmsSwitched(String name);
 
+  /// No description provided for @posScannedExpired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch {batch} ki expiry {date} guzar chuki hai. Yeh na bechein.'**
+  String posScannedExpired(String batch, String date);
+
+  /// No description provided for @posSerialAlreadyOnBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'{serial} pehle se bill par hai'**
+  String posSerialAlreadyOnBill(String serial);
+
+  /// No description provided for @posScanTheSerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh cheez serial / IMEI se bikti hai. Uska number scan ya type karein.'**
+  String get posScanTheSerial;
+
+  /// No description provided for @reportExpiry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Expiry'**
+  String get reportExpiry;
+
+  /// No description provided for @reportExpiryHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaunsa batch guzar gaya, kaunsa guzarne wala hai'**
+  String get reportExpiryHint;
+
+  /// No description provided for @itemTracksBatch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch aur expiry se'**
+  String get itemTracksBatch;
+
+  /// No description provided for @itemTracksSerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serial / IMEI se'**
+  String get itemTracksSerial;
+
+  /// No description provided for @purchaseBatch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch no.'**
+  String get purchaseBatch;
+
+  /// No description provided for @purchaseExpiry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Expiry'**
+  String get purchaseExpiry;
+
+  /// No description provided for @purchaseSerials.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serial / IMEI (har line mein ek)'**
+  String get purchaseSerials;
+
+  /// No description provided for @purchaseSerialCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} number'**
+  String purchaseSerialCount(int count);
+
+  /// No description provided for @purchaseSerialsNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har piece ka serial / IMEI likhein'**
+  String get purchaseSerialsNeeded;
+
+  /// No description provided for @purchaseBatchNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch no. likhein, aur expiry YYYY-MM-DD mein'**
+  String get purchaseBatchNeeded;
+
+  /// No description provided for @placesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal kahan hai'**
+  String get placesTitle;
+
+  /// No description provided for @placesMain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan'**
+  String get placesMain;
+
+  /// No description provided for @placesBatches.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch'**
+  String get placesBatches;
+
+  /// No description provided for @placesSerials.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serial / IMEI'**
+  String get placesSerials;
+
+  /// No description provided for @placesMove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal bhejein'**
+  String get placesMove;
+
+  /// No description provided for @placesTo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan (masalan GODOWN)'**
+  String get placesTo;
+
+  /// No description provided for @placesMoveButton.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bhej dein'**
+  String get placesMoveButton;
+
+  /// No description provided for @placesMoved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal bhej diya'**
+  String get placesMoved;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

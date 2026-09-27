@@ -75,7 +75,13 @@ final class _Context implements ChallanWriteContext {
       posting.document,
       posting.lines,
     );
-    await insertStockMovements(_tx, id, lineIdByNo, posting.stockMovements);
+    await insertStockMovements(
+      _tx,
+      id,
+      lineIdByNo,
+      posting.stockMovements,
+      takeFromLots: true,
+    );
     if (posting.journal case final entry?) {
       await insertJournal(_tx, id, entry);
     }

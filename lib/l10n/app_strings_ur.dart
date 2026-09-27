@@ -2073,5 +2073,77 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String posScannedExpired(String batch, String date) {
+    return 'Batch $batch ki expiry $date guzar chuki hai. Yeh na bechein.';
+  }
+
+  @override
+  String posSerialAlreadyOnBill(String serial) {
+    return '$serial pehle se bill par hai';
+  }
+
+  @override
+  String get posScanTheSerial =>
+      'Yeh cheez serial / IMEI se bikti hai. Uska number scan ya type karein.';
+
+  @override
+  String get reportExpiry => 'Expiry';
+
+  @override
+  String get reportExpiryHint =>
+      'Kaunsa batch guzar gaya, kaunsa guzarne wala hai';
+
+  @override
+  String get itemTracksBatch => 'Batch aur expiry se';
+
+  @override
+  String get itemTracksSerial => 'Serial / IMEI se';
+
+  @override
+  String get purchaseBatch => 'Batch no.';
+
+  @override
+  String get purchaseExpiry => 'Expiry';
+
+  @override
+  String get purchaseSerials => 'Serial / IMEI (har line mein ek)';
+
+  @override
+  String purchaseSerialCount(int count) {
+    return '$count number';
+  }
+
+  @override
+  String get purchaseSerialsNeeded => 'Har piece ka serial / IMEI likhein';
+
+  @override
+  String get purchaseBatchNeeded =>
+      'Batch no. likhein, aur expiry YYYY-MM-DD mein';
+
+  @override
+  String get placesTitle => 'Maal kahan hai';
+
+  @override
+  String get placesMain => 'Dukaan';
+
+  @override
+  String get placesBatches => 'Batch';
+
+  @override
+  String get placesSerials => 'Serial / IMEI';
+
+  @override
+  String get placesMove => 'Maal bhejein';
+
+  @override
+  String get placesTo => 'Kahan (masalan GODOWN)';
+
+  @override
+  String get placesMoveButton => 'Bhej dein';
+
+  @override
+  String get placesMoved => 'Maal bhej diya';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

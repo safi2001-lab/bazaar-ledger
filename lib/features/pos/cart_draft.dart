@@ -58,6 +58,8 @@ abstract final class CartDraft {
           'rateMilliPaisa': line.rate.inMilliPaisa,
           'discountBp': line.discountBp,
           'explicitDiscountPaisa': line.explicitDiscount?.inPaisa,
+          if (line.lotIds.isNotEmpty) 'lotIds': line.lotIds,
+          if (line.lotLabels.isNotEmpty) 'lotLabels': line.lotLabels,
           // The unit the line is being SOLD in, which is not always the
           // unit the item is stocked in. A restored bill that quietly
           // reverted two maunds of atta to two kilos would be a bill for
@@ -172,6 +174,14 @@ abstract final class CartDraft {
       explicitDiscount: explicit == null ? null : Money.paisa(explicit as int),
       unitId: sellingUnitId as String?,
       unitCode: sellingUnitCode as String?,
+      lotIds: [
+        for (final id in (raw['lotIds'] as List<Object?>?) ?? const [])
+          if (id is String) id,
+      ],
+      lotLabels: [
+        for (final l in (raw['lotLabels'] as List<Object?>?) ?? const [])
+          if (l is String) l,
+      ],
     );
   }
 }

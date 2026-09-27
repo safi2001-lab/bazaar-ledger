@@ -20,9 +20,18 @@ final class CartLine {
     this.explicitDiscount,
     this.unitId,
     this.unitCode,
+    this.lotIds = const [],
+    this.lotLabels = const [],
   });
 
   final ItemSummary item;
+
+  /// The pieces on this line by serial number, for an item sold by serial:
+  /// one lot per piece, [qty] of them.
+  final List<String> lotIds;
+
+  /// The serial numbers of [lotIds], for the screen.
+  final List<String> lotLabels;
 
   /// The quantity as the cashier typed it, in [sellingUnitCode].
   final Qty qty;
@@ -68,6 +77,8 @@ final class CartLine {
     bool clearExplicitDiscount = false,
     String? unitId,
     String? unitCode,
+    List<String>? lotIds,
+    List<String>? lotLabels,
   }) => CartLine(
     item: item,
     qty: qty ?? this.qty,
@@ -78,7 +89,34 @@ final class CartLine {
         : explicitDiscount ?? this.explicitDiscount,
     unitId: unitId ?? this.unitId,
     unitCode: unitCode ?? this.unitCode,
+    lotIds: lotIds ?? this.lotIds,
+    lotLabels: lotLabels ?? this.lotLabels,
   );
+
+  /// The line as the write path wants it: one line per serial number when
+  /// the pieces were scanned one by one, so each leaves its own lot.
+  List<SaleLineDraft> toDrafts([UnitConverter? units]) {
+    if (lotIds.isEmpty) return [toDraft(units)];
+    final discounts = explicitDiscount?.split(lotIds.length);
+    return [
+      for (var i = 0; i < lotIds.length; i++)
+        SaleLineDraft(
+          itemId: item.id,
+          itemName: item.name,
+          itemCode: item.code,
+          description: lotLabels.length > i ? 'Serial ${lotLabels[i]}' : null,
+          qty: Qty.one,
+          baseQty: Qty.one,
+          unitId: item.unitId,
+          unitCode: item.unitCode,
+          rate: rate,
+          discountBp: discountBp,
+          explicitDiscount: discounts?[i],
+          tracksStock: item.tracksStock,
+          lotId: lotIds[i],
+        ),
+    ];
+  }
 
   /// The line as the write path wants it.
   ///
@@ -263,9 +301,56 @@ class CartNotifier extends Notifier<Cart> {
     state = state.copyWith(
       lines: [
         for (final l in state.lines)
-          l.item.id == itemId ? l.copyWith(qty: qty) : l,
+          l.item.id != itemId
+              ? l
+              : l.lotIds.isEmpty
+              ? l.copyWith(qty: qty)
+              // A line of scanned pieces only shrinks, dropping the last
+              // scanned; more pieces are more scans.
+              : () {
+                  final keep = qty.inThousandths ~/ 1000;
+                  if (keep >= l.lotIds.length) return l;
+                  return l.copyWith(
+                    qty: Qty.units(keep),
+                    lotIds: l.lotIds.sublist(0, keep),
+                    lotLabels: l.lotLabels.take(keep).toList(),
+                  );
+                }(),
       ],
     );
+  }
+
+  /// Adds one piece of [item] by its serial number. Returns false when that
+  /// piece is already on the bill.
+  bool addSerial(
+    ItemSummary item, {
+    required String lotId,
+    required String serial,
+  }) {
+    final index = state.lines.indexWhere((l) => l.item.id == item.id);
+    final lines = [...state.lines];
+    if (index >= 0) {
+      final line = lines[index];
+      if (line.lotIds.contains(lotId)) return false;
+      lines[index] = line.copyWith(
+        qty: Qty.units(line.lotIds.length + 1),
+        lotIds: [...line.lotIds, lotId],
+        lotLabels: [...line.lotLabels, serial],
+      );
+    } else {
+      lines.add(
+        CartLine(
+          item: item,
+          qty: Qty.one,
+          rate: priceFor(item, state.priceTier),
+          discountBp: state.partyDiscountBp,
+          lotIds: [lotId],
+          lotLabels: [serial],
+        ),
+      );
+    }
+    state = state.copyWith(lines: lines);
+    return true;
   }
 
   void setRate(String itemId, Rate rate) {

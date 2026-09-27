@@ -595,3 +595,67 @@ const _profitToDate =
 String _sidesDiffer(String what, Money by) =>
     '$what differ by Rs ${by.abs.amountOnly}. Run the data health check in '
     'Settings.';
+
+/// Batches past their date, and those coming up to it within [withinDays],
+/// soonest first: what to pull off the shelf, and what to sell first or
+/// send back to the supplier while it can still be sold.
+ReportTable expiryReport(
+  BusinessDate asOf,
+  List<LotOnHand> batches, {
+  int withinDays = 90,
+}) {
+  final today = DateTime.utc(asOf.year, asOf.month, asOf.day);
+  int daysLeft(BusinessDate d) =>
+      DateTime.utc(d.year, d.month, d.day).difference(today).inDays;
+  final due = [
+    for (final b in batches)
+      if (b.expiry != null && daysLeft(b.expiry!) <= withinDays) b,
+  ]..sort((a, b) => a.expiry!.value.compareTo(b.expiry!.value));
+  final expired = due.where((b) => daysLeft(b.expiry!) < 0).toList();
+  final value = Money.sum([for (final b in due) b.cost.amountFor(b.qty)]);
+  final expiredValue = Money.sum([
+    for (final b in expired) b.cost.amountFor(b.qty),
+  ]);
+  return ReportTable(
+    id: 'expiry',
+    title: 'Expiry',
+    period: ReportPeriod.day(asOf),
+    columns: const [
+      ReportColumn('Item', CellKind.text),
+      ReportColumn('Batch', CellKind.text),
+      ReportColumn('Expiry', CellKind.text),
+      ReportColumn('Days left', CellKind.count),
+      ReportColumn('Qty', CellKind.qty),
+      ReportColumn('Value', CellKind.money),
+    ],
+    rows: [
+      for (final b in due)
+        ReportRow([
+          b.itemName,
+          b.lotNo,
+          b.expiry!.value,
+          daysLeft(b.expiry!),
+          b.qty,
+          b.cost.amountFor(b.qty),
+        ]),
+      ReportRow([
+        'Total',
+        null,
+        null,
+        null,
+        null,
+        value,
+      ], style: RowStyle.total),
+    ],
+    notes: [
+      if (expired.isNotEmpty) _pastDate(expired.length, expiredValue),
+      'Batches expiring within $withinDays days, valued at what they cost.',
+    ],
+  );
+}
+
+String _pastDate(int batches, Money value) {
+  final what = batches == 1 ? '1 batch is' : '$batches batches are';
+  return '$what past its date, worth Rs ${value.amountOnly} at cost. The '
+      'counter will not sell them.';
+}

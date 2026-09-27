@@ -1,5 +1,6 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'document_rows.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -157,31 +158,12 @@ final class _DriftPurchaseWriteContext implements PurchaseWriteContext {
       });
     }
 
-    for (final movement in posting.stockMovements) {
-      final running = await _tx.selectOne(
-        'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS balance '
-        'FROM stock_ledger '
-        'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
-        '  AND deleted_at_utc IS NULL',
-        [actor.firmId, movement.itemId, movement.locationCode],
-      );
-
-      await _tx.insert('stock_ledger', {
-        'item_id': movement.itemId,
-        'location_code': movement.locationCode,
-        'document_id': documentId,
-        'document_line_id': lineIdByNo[movement.lineNo],
-        'txn_type': movement.txnType,
-        'qty_delta_thousandths': movement.qtyDelta.inThousandths,
-        'rate_milli_paisa': movement.rate.inMilliPaisa,
-        'value_delta_paisa': movement.valueDelta.inPaisa,
-        'balance_after_thousandths':
-            (running?.read<int>('balance') ?? 0) +
-            movement.qtyDelta.inThousandths,
-        'occurred_at_utc': movement.occurredAtUtcMillis,
-        'occurred_on_local': movement.occurredOnLocal,
-      });
-    }
+    await insertStockMovements(
+      _tx,
+      documentId,
+      lineIdByNo,
+      posting.stockMovements,
+    );
 
     // The point of the whole milestone. `items` is not append-only, so
     // `tx.update` is the legitimate path — and the value written is the one

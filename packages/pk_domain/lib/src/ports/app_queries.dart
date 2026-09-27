@@ -11,6 +11,7 @@ import '../entitlement/activity.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
+import '../stock/lots.dart';
 import '../time/clock.dart';
 import 'catalogue_writer.dart';
 import 'purchase_return_writer.dart';
@@ -75,6 +76,8 @@ final class ItemSummary {
     required this.saleRate,
     required this.stockOnHand,
     required this.tracksStock,
+    this.tracksBatch = false,
+    this.tracksSerial = false,
     this.code,
     this.barcode,
     this.category,
@@ -116,6 +119,12 @@ final class ItemSummary {
   final Qty stockOnHand;
   final Qty minStock;
   final bool tracksStock;
+
+  /// Bought and sold by batch and expiry.
+  final bool tracksBatch;
+
+  /// Bought and sold by serial number.
+  final bool tracksSerial;
 
   bool get isLowOnStock =>
       tracksStock && !minStock.isZero && stockOnHand <= minStock;
@@ -555,6 +564,20 @@ abstract interface class AppQueries {
 
   /// The last time the day was closed, if it ever has been.
   Future<ActivityEntry?> lastDayClose(String firmId);
+
+  /// How much of [itemId] is at each place the shop keeps goods, `MAIN`
+  /// first.
+  Future<Map<String, Qty>> stockByLocation(String firmId, String itemId);
+
+  /// Every place the shop has kept goods: `MAIN` and each godown named.
+  Future<List<String>> stockLocations(String firmId);
+
+  /// Every batch or serial of [itemId] still on the shelf, soonest expiry
+  /// first; every one in the shop when [itemId] is null.
+  Future<List<LotOnHand>> lotsOnHand(String firmId, {String? itemId});
+
+  /// The piece with serial number [serial], if it is on the shelf.
+  Future<LotOnHand?> serialOnHand(String firmId, String serial);
 
   /// Every account in the chart with its balance now, by code.
   Future<List<ChartAccount>> chartOfAccounts(String firmId);

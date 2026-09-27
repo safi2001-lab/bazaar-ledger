@@ -142,38 +142,207 @@ Future<(String, Map<int, String>)> insertDocumentRows(
 
 /// Writes [movements] against [documentId], each with the running balance
 /// after it.
+///
+/// A movement bringing a batch or a serial ([StockMovementPosting.newLot])
+/// is put in that lot, found or created. With [takeFromLots], goods leaving
+/// an item kept by batch are taken first-expiry-first-out and written as one
+/// row per lot they came from, and goods leaving an item kept by serial must
+/// name the serial they are.
 Future<void> insertStockMovements(
   Tx tx,
   String documentId,
   Map<int, String> lineIdByNo,
-  List<StockMovementPosting> movements,
-) async {
+  List<StockMovementPosting> movements, {
+  bool takeFromLots = false,
+}) async {
   for (final movement in movements) {
-    final running = await tx.selectOne(
-      'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS balance '
-      'FROM stock_ledger '
-      'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
-      '  AND deleted_at_utc IS NULL',
-      [tx.actor.firmId, movement.itemId, movement.locationCode],
-    );
-    final balanceAfter =
-        (running?.read<int>('balance') ?? 0) + movement.qtyDelta.inThousandths;
+    var lotId = movement.lotId;
+    if (movement.newLot case final lot?) {
+      lotId = await _lotFor(tx, movement, lot);
+    }
 
-    await tx.insert('stock_ledger', {
-      'item_id': movement.itemId,
-      'location_code': movement.locationCode,
-      'lot_id': movement.lotId,
-      'document_id': documentId,
-      'document_line_id': lineIdByNo[movement.lineNo],
-      'txn_type': movement.txnType,
-      'qty_delta_thousandths': movement.qtyDelta.inThousandths,
-      'rate_milli_paisa': movement.rate.inMilliPaisa,
-      'value_delta_paisa': movement.valueDelta.inPaisa,
-      'balance_after_thousandths': balanceAfter,
-      'occurred_at_utc': movement.occurredAtUtcMillis,
-      'occurred_on_local': movement.occurredOnLocal,
-    });
+    if (takeFromLots && movement.qtyDelta.isNegative && lotId == null) {
+      final item = await tx.selectOne(
+        'SELECT name, track_batch, track_serial FROM items WHERE id = ?',
+        [movement.itemId],
+      );
+      if (item?.read<int>('track_serial') == 1) {
+        throw StockRefused(
+          '${item!.read<String>('name')} is sold by serial number. Scan or '
+          'pick the one going out.',
+        );
+      }
+      if (item?.read<int>('track_batch') == 1) {
+        final takes = takeFefo(
+          needed: -movement.qtyDelta,
+          lots: await lotBalancesAt(tx, movement.itemId, movement.locationCode),
+          unlotted: await unlottedAt(
+            tx,
+            movement.itemId,
+            movement.locationCode,
+          ),
+          today: tx.actor.businessDate,
+        );
+        final values = movement.valueDelta.isZero
+            ? [for (final _ in takes) Money.zero]
+            : movement.valueDelta.allocate([
+                for (final t in takes) t.qty.inThousandths,
+              ]);
+        for (var i = 0; i < takes.length; i++) {
+          await insertStockRow(
+            tx,
+            documentId,
+            lineIdByNo,
+            movement,
+            lotId: takes[i].lotId,
+            qtyDelta: -takes[i].qty,
+            valueDelta: values[i],
+          );
+        }
+        continue;
+      }
+    }
+
+    if (takeFromLots && movement.qtyDelta.isNegative && lotId != null) {
+      final left = await tx.selectOne(
+        'SELECT l.lot_no, l.expiry_date_local, '
+        '       COALESCE(SUM(s.qty_delta_thousandths), 0) AS qty '
+        'FROM stock_lots l LEFT JOIN stock_ledger s '
+        '  ON s.lot_id = l.id AND s.deleted_at_utc IS NULL '
+        'WHERE l.id = ? GROUP BY l.id',
+        [lotId],
+      );
+      if (left == null ||
+          left.read<int>('qty') < -movement.qtyDelta.inThousandths) {
+        throw StockRefused(
+          '${left?.read<String>('lot_no') ?? 'That serial'} is not in stock: '
+          'it has been sold already, or never came in.',
+        );
+      }
+      final expiry = left.readNullable<String>('expiry_date_local');
+      if (expiry != null && expiry.compareTo(tx.actor.businessDate.value) < 0) {
+        throw StockRefused(
+          'Batch ${left.read<String>('lot_no')} expired on $expiry and '
+          'cannot be sold.',
+        );
+      }
+    }
+
+    await insertStockRow(
+      tx,
+      documentId,
+      lineIdByNo,
+      movement,
+      lotId: lotId,
+      qtyDelta: movement.qtyDelta,
+      valueDelta: movement.valueDelta,
+    );
   }
+}
+
+/// One stock-ledger row for [movement], at [qtyDelta] and [valueDelta], in
+/// [lotId], with the running balance at its location after it.
+Future<void> insertStockRow(
+  Tx tx,
+  String? documentId,
+  Map<int, String> lineIdByNo,
+  StockMovementPosting movement, {
+  required String? lotId,
+  required Qty qtyDelta,
+  required Money valueDelta,
+}) async {
+  final running = await tx.selectOne(
+    'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS balance '
+    'FROM stock_ledger '
+    'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
+    '  AND deleted_at_utc IS NULL',
+    [tx.actor.firmId, movement.itemId, movement.locationCode],
+  );
+  await tx.insert('stock_ledger', {
+    'item_id': movement.itemId,
+    'location_code': movement.locationCode,
+    'lot_id': lotId,
+    'document_id': documentId,
+    'document_line_id': lineIdByNo[movement.lineNo],
+    'txn_type': movement.txnType,
+    'qty_delta_thousandths': qtyDelta.inThousandths,
+    'rate_milli_paisa': movement.rate.inMilliPaisa,
+    'value_delta_paisa': valueDelta.inPaisa,
+    'balance_after_thousandths':
+        (running?.read<int>('balance') ?? 0) + qtyDelta.inThousandths,
+    'occurred_at_utc': movement.occurredAtUtcMillis,
+    'occurred_on_local': movement.occurredOnLocal,
+  });
+}
+
+/// The lot [lot] names for this item, created the first time it arrives.
+Future<String> _lotFor(
+  Tx tx,
+  StockMovementPosting movement,
+  LotDraft lot,
+) async {
+  final existing = await tx.selectOne(
+    'SELECT id FROM stock_lots WHERE firm_id = ? AND item_id = ? AND lot_no = ?',
+    [tx.actor.firmId, movement.itemId, lot.lotNo],
+  );
+  if (existing != null) {
+    if (lot.serial != null) {
+      throw StockRefused(
+        'Serial ${lot.serial} has come in before. A serial number is one '
+        'piece, and arrives once.',
+      );
+    }
+    return existing.read<String>('id');
+  }
+  return tx.insert('stock_lots', {
+    'item_id': movement.itemId,
+    'lot_no': lot.lotNo,
+    'batch_no': lot.batchNo,
+    'expiry_date_local': lot.expiry?.value,
+    'serial': lot.serial,
+    'cost_milli_paisa': movement.rate.inMilliPaisa,
+    'received_at_utc': movement.occurredAtUtcMillis,
+  });
+}
+
+/// What is left in each lot of [itemId] at [location].
+Future<List<LotBalance>> lotBalancesAt(
+  Tx tx,
+  String itemId,
+  String location,
+) async {
+  final rows = await tx.select(
+    'SELECT l.id, l.lot_no, l.expiry_date_local, '
+    '       SUM(s.qty_delta_thousandths) AS qty '
+    'FROM stock_lots l JOIN stock_ledger s ON s.lot_id = l.id '
+    'WHERE l.item_id = ? AND s.location_code = ? '
+    '  AND s.deleted_at_utc IS NULL AND l.deleted_at_utc IS NULL '
+    'GROUP BY l.id HAVING SUM(s.qty_delta_thousandths) > 0',
+    [itemId, location],
+  );
+  return [
+    for (final r in rows)
+      LotBalance(
+        lotId: r.read<String>('id'),
+        lotNo: r.read<String>('lot_no'),
+        qty: Qty.raw(r.read<int>('qty')),
+        expiry: switch (r.readNullable<String>('expiry_date_local')) {
+          final String d => BusinessDate(d),
+          null => null,
+        },
+      ),
+  ];
+}
+
+/// What of [itemId] at [location] is in no lot.
+Future<Qty> unlottedAt(Tx tx, String itemId, String location) async {
+  final row = await tx.selectOne(
+    'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS qty FROM stock_ledger '
+    'WHERE item_id = ? AND location_code = ? AND lot_id IS NULL '
+    '  AND deleted_at_utc IS NULL',
+    [itemId, location],
+  );
+  return Qty.raw(row?.read<int>('qty') ?? 0);
 }
 
 /// Writes [entry] and its lines against [documentId], or against no document

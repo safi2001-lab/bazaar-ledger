@@ -34,6 +34,10 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   final _search = TextEditingController();
   final _qty = TextEditingController(text: '1');
   final _cost = TextEditingController();
+  final _batch = TextEditingController();
+  final _expiry = TextEditingController();
+  final _serials = TextEditingController();
+  String? _problem;
 
   Timer? _debounce;
   String _query = '';
@@ -45,6 +49,9 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     _search.dispose();
     _qty.dispose();
     _cost.dispose();
+    _batch.dispose();
+    _expiry.dispose();
+    _serials.dispose();
     super.dispose();
   }
 
@@ -69,12 +76,41 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     });
   }
 
+  List<String> get _serialList => [
+    for (final line in _serials.text.split(RegExp(r'[\n,]')))
+      if (line.trim().isNotEmpty) line.trim(),
+  ];
+
+  /// A pack's GS1 code scanned into the batch field fills the batch and the
+  /// expiry from what the pack says.
+  void _onBatch(String value) {
+    if (parseGs1(value) case final gs1? when gs1.batch != null) {
+      _batch.text = gs1.batch!;
+      if (gs1.expiry != null) _expiry.text = gs1.expiry!.value;
+    }
+    setState(() => _problem = null);
+  }
+
   void _add() {
     final item = _chosen;
     if (item == null) return;
-    final qty = Qty.tryParse(_qty.text);
+    final s = AppStrings.of(context);
+    final serials = item.tracksSerial ? _serialList : const <String>[];
+    final qty = item.tracksSerial
+        ? Qty.units(serials.length)
+        : Qty.tryParse(_qty.text);
     final cost = Money.tryParse(_cost.text);
     if (qty == null || !qty.isPositive || cost == null || !cost.isPositive) {
+      setState(
+        () => _problem = item.tracksSerial ? s.purchaseSerialsNeeded : null,
+      );
+      return;
+    }
+    final expiry = BusinessDate.tryParse(_expiry.text.trim());
+    if (item.tracksBatch &&
+        (_batch.text.trim().isEmpty ||
+            (_expiry.text.trim().isNotEmpty && expiry == null))) {
+      setState(() => _problem = s.purchaseBatchNeeded);
       return;
     }
 
@@ -91,6 +127,9 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         unitId: item.unitId,
         unitCode: item.unitCode,
         rate: Rate.fromPack(cost, qty),
+        batchNo: item.tracksBatch ? _batch.text.trim() : null,
+        expiry: item.tracksBatch ? expiry : null,
+        serials: serials,
       ),
     );
   }
@@ -191,6 +230,47 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                 ),
               ],
             ),
+            if (chosen.tracksBatch) ...[
+              const SizedBox(height: BlTokens.space3),
+              Row(
+                children: [
+                  Expanded(
+                    child: BlField(
+                      controller: _batch,
+                      label: s.purchaseBatch,
+                      onChanged: _onBatch,
+                    ),
+                  ),
+                  const SizedBox(width: BlTokens.space2),
+                  Expanded(
+                    child: BlField(
+                      controller: _expiry,
+                      label: s.purchaseExpiry,
+                      hint: 'YYYY-MM-DD',
+                      onChanged: (_) => setState(() => _problem = null),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+            if (chosen.tracksSerial) ...[
+              const SizedBox(height: BlTokens.space3),
+              BlField(
+                controller: _serials,
+                label: s.purchaseSerials,
+                maxLines: 5,
+                onChanged: (_) => setState(() => _problem = null),
+              ),
+              const SizedBox(height: BlTokens.space1),
+              Text(
+                s.purchaseSerialCount(_serialList.length),
+                style: TextStyle(fontSize: 12, color: t.inkMuted),
+              ),
+            ],
+            if (_problem != null) ...[
+              const SizedBox(height: BlTokens.space2),
+              Text(_problem!, style: TextStyle(color: t.danger, fontSize: 14)),
+            ],
             const SizedBox(height: BlTokens.space4),
             BlButton(
               label: s.purchaseAddItem,

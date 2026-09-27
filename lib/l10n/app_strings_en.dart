@@ -2072,5 +2072,77 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String posScannedExpired(String batch, String date) {
+    return 'Batch $batch expired on $date. Do not sell it.';
+  }
+
+  @override
+  String posSerialAlreadyOnBill(String serial) {
+    return '$serial is already on the bill';
+  }
+
+  @override
+  String get posScanTheSerial =>
+      'This item is sold by serial / IMEI. Scan or type its number.';
+
+  @override
+  String get reportExpiry => 'Expiry';
+
+  @override
+  String get reportExpiryHint =>
+      'Batches past their date, and those coming up to it';
+
+  @override
+  String get itemTracksBatch => 'By batch and expiry';
+
+  @override
+  String get itemTracksSerial => 'By serial / IMEI';
+
+  @override
+  String get purchaseBatch => 'Batch no.';
+
+  @override
+  String get purchaseExpiry => 'Expiry';
+
+  @override
+  String get purchaseSerials => 'Serial / IMEI (one per line)';
+
+  @override
+  String purchaseSerialCount(int count) {
+    return '$count numbers';
+  }
+
+  @override
+  String get purchaseSerialsNeeded => 'Enter each piece\'s serial / IMEI';
+
+  @override
+  String get purchaseBatchNeeded =>
+      'Enter the batch no., and the expiry as YYYY-MM-DD';
+
+  @override
+  String get placesTitle => 'Where it is';
+
+  @override
+  String get placesMain => 'Shop floor';
+
+  @override
+  String get placesBatches => 'Batches';
+
+  @override
+  String get placesSerials => 'Serial / IMEI';
+
+  @override
+  String get placesMove => 'Move goods';
+
+  @override
+  String get placesTo => 'To (e.g. GODOWN)';
+
+  @override
+  String get placesMoveButton => 'Move';
+
+  @override
+  String get placesMoved => 'Goods moved';
+
+  @override
   String get chequeDone => 'Done';
 }

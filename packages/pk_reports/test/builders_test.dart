@@ -372,6 +372,31 @@ void main() {
     });
   });
 
+  group('expiry', () {
+    test('expired and soon-to-expire batches, soonest first', () {
+      LotOnHand lot(String no, String? expiry) => LotOnHand(
+        lotId: no,
+        itemId: 'p',
+        itemName: 'Panadol strip',
+        lotNo: no,
+        qty: Qty.units(10),
+        cost: Rate.rupees(30),
+        expiry: expiry == null ? null : BusinessDate(expiry),
+      );
+      final t = expiryReport(const BusinessDate('2026-09-26'), [
+        lot('FAR', '2027-12-31'),
+        lot('SOON', '2026-10-26'),
+        lot('GONE', '2026-09-20'),
+        lot('NONE', null),
+      ]);
+      expect([for (final r in t.rows) r.cells[1]], ['GONE', 'SOON', null]);
+      expect(t.rows.first.cells[3], -6);
+      expect(t.rows[1].cells[3], 30);
+      expect(t.totals.single.cells.last, const Money.rupees(600));
+      expect(t.notes.first, startsWith('1 batch is past its date'));
+    });
+  });
+
   group('periods', () {
     test('a month ends on its last day, February included', () {
       final feb = ReportPeriod.monthOf(const BusinessDate('2028-02-10'));
