@@ -58,7 +58,10 @@ milestones:
 
   - id: M2
     title: A receipt reaches paper, once, on hardware a shop owns
-    state: open
+    # Sealed 27 Sep 2026 at 20/20, the last row on the virtual printer by the
+    # owner's decision (see M2-RUN-01 for what that proves and what it does
+    # not). Nothing has yet been printed on a physical machine.
+    state: sealed
     owns:
       - packages/pk_platform/**
       - packages/pk_printer_android/**
@@ -1739,35 +1742,51 @@ features:
 
   - id: M2-RUN-01
     milestone: M2
-    title: A receipt comes out of a real thermal printer
-    status: wip
-    # The milestone is called "a receipt reaches paper, once, on hardware a
-    # shop owns", and until this row passes no paper has moved. Every other M2
-    # row is a host proof: the byte stream is asserted command by command, the
-    # queue survives a simulated process kill, the USB writer's short-write
-    # handling is tested against a fake, and the label renderer is measured in
-    # modules. All of that is real and none of it is a printer.
+    title: A receipt comes out of a thermal printer, read back as a printer reads it
+    status: done
+    # Closed 27 Sep 2026 on the virtual printer, by the owner's decision: the
+    # owner has no thermal printer, and asked for M2 to be finished without
+    # one. This row used to demand paper from real hardware and said a
+    # simulation must not close it. That rule was the owner's to change, and
+    # they changed it; what follows says exactly what the emulator proves and
+    # what it cannot.
     #
-    # Added because M2 read 100% without it, which was an overclaim the gate
-    # could not catch — no row asserted the thing the title promises, so
-    # nothing failed. That is the same shape as the blind spot M0 had when
-    # every row said M0 and M1 through M14 were invisible.
+    # pk_platform/virtual_printer.dart takes the exact bytes the app sends a
+    # printer and puts them on paper as an ESC/POS controller does, at the
+    # Epson reference geometry for a 203 dpi head: Font A cells, line pitch,
+    # the cutter sitting above the head. It is strict where a real machine is
+    # unforgiving — an unknown command, a raster short of its header, a byte
+    # outside the Latin code page is a fault, not a guess. Labels are read
+    # back by a Code 128 decoder that measures bars off the raster the way a
+    # scanner's sweep does, with a table learned from an independent encoder
+    # and the checksum and stop pattern checked. The Urdu name is drawn by the
+    # app's own rasteriser in the Naskh face it bundles, and joining is
+    # measured: joined letters make fewer separate marks than the same
+    # letters forced apart.
     #
-    # Held at `wip` and deliberately NOT deferred, for the same reason as
-    # M0-RUN-03: a deferral is for a proof that would pass if a device
-    # existed, and this one has never been observed passing at all. There is
-    # no thermal printer on this bench.
+    # Found on the first run: every Urdu line was drawn against the left
+    # margin, the shop name small and off-centre. Fixed — the name is now
+    # centred and large like its Latin counterpart, and other Urdu lines
+    # start from the right.
     #
-    # What it has to show, on hardware and not in a log: an 80mm and a 58mm
-    # machine, the column count read off a printed ruler rather than assumed,
-    # a bill whose totals line up, a Code128 label a scanner actually reads
-    # back, an Urdu shop name legible as joined script, and a cut that lands
-    # below the last line instead of through it.
-    device_proof:
-      - a bill printed on an 80mm machine is readable and cut below the total
-      - a Code128 label printed at the declared width scans back to its code
+    # What it cannot prove, and is not claimed: a particular clone's ROM font
+    # width (the in-app test print exists for exactly that, and its ruler is
+    # proved here to show a wrong setting as a wrap), the distance from head
+    # to blade on a given machine, heat and paper quality, and a physical
+    # scanner's tolerance. The first shop with a printer should run Settings,
+    # Printer, Test print once and look at the paper.
+    proof:
+      - on paper a bill printed on an 80mm machine is readable and cut below the total
+      - on paper a bill printed on an 58mm machine is readable and cut below the total
+      - on paper a bare cut after the same feed would go through the bill
+      - on paper a Code128 label printed at the declared width scans back to its code (80mm)
+      - on paper a Code128 label printed at the declared width scans back to its code (58mm)
+      - on paper a Code128 label printed at the declared width scans back to its code (80mm two across)
+      - on paper a code too long for its label is refused, not printed ragged
+      - on paper a label that does not decode is caught
+      - on paper what a real printer would choke on is a fault here
       - an Urdu shop name prints as joined script, not as question marks
-    proof: []
+      - the column count is read off a printed ruler, not assumed
 
   # ---- M3 · Parties, udhaar and money in and out ------------------------
 

@@ -742,7 +742,7 @@ packages:
     source: path
     version: "0.1.0"
   pk_platform:
-    dependency: transitive
+    dependency: "direct dev"
     description:
       path: "packages/pk_platform"
       relative: true

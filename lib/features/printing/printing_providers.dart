@@ -48,11 +48,7 @@ final receiptBytesProvider = FutureProvider.family<List<int>?, String>((
   return services.receipts.toThermalBytes(
     receipt,
     paper: settings.paper,
-    drawn: await _drawUnprintable(
-      services.receipts,
-      receipt,
-      settings.paper,
-    ),
+    drawn: await _drawUnprintable(services.receipts, receipt, settings.paper),
     // Only on a sale that actually took cash. A drawer that clicks on a
     // card payment is a drawer somebody unplugs.
     openDrawer:
@@ -77,15 +73,7 @@ Future<Map<String, MonoBitmap>> _drawUnprintable(
   ReceiptData receipt,
   ReceiptPaper paper,
 ) async {
-  final needed = renderer.unprintableLines(receipt, paper: paper);
-  if (needed.isEmpty) return const {};
-
-  const rasteriser = UiTextRasteriser();
-  final drawn = <String, MonoBitmap>{};
-  for (final line in needed) {
-    drawn[line] = await rasteriser.rasterise(line, widthDots: paper.dots);
-  }
-  return drawn;
+  return drawUnprintableLines(renderer, receipt, paper);
 }
 
 /// A ruler and a sample money row, for finding out how wide the paper is.

@@ -31,7 +31,12 @@ import 'package:pk_bootstrap/pk_bootstrap.dart';
 /// download. If it is ever bundled, it goes behind a setting and not into
 /// the default build.
 final class UiTextRasteriser {
-  const UiTextRasteriser();
+  const UiTextRasteriser({this.fontFamily});
+
+  /// The face to draw with. Null on a phone, which uses the system's own
+  /// Urdu-capable font; set by the paper proofs to the Naskh face the app
+  /// bundles, since the test engine's own font draws every letter as a box.
+  final String? fontFamily;
 
   /// The only two values a thermal head has.
   ///
@@ -59,6 +64,7 @@ final class UiTextRasteriser {
     required int widthDots,
     double pointSize = 30,
     bool bold = false,
+    bool centre = false,
   }) async {
     final builder =
         ui.ParagraphBuilder(
@@ -68,7 +74,11 @@ final class UiTextRasteriser {
               // is what a mixed line needs. `ur` gives the engine the right
               // language for glyph selection where Arabic and Urdu differ.
               textDirection: _baseDirection(text),
-              textAlign: ui.TextAlign.left,
+              // From the start of the line, which for Urdu is the right-hand
+              // edge. `left` put every Urdu line hard against the wrong
+              // margin, which the virtual printer showed on its first run.
+              textAlign: centre ? ui.TextAlign.center : ui.TextAlign.start,
+              fontFamily: fontFamily,
               fontSize: pointSize,
               // Generous, because Naskh's descenders and the nuqta below `\u067E`
               // sit well outside a Latin line box and would otherwise be
@@ -80,6 +90,7 @@ final class UiTextRasteriser {
           ..pushStyle(
             ui.TextStyle(
               color: _burn,
+              fontFamily: fontFamily,
               fontSize: pointSize,
               fontWeight: bold ? ui.FontWeight.bold : ui.FontWeight.normal,
               locale: const ui.Locale('ur', 'PK'),
@@ -161,4 +172,30 @@ final class UiTextRasteriser {
     }
     return MonoBitmap(width: width, height: height, bits: bits);
   }
+}
+
+/// Draws every line of [receipt] the printer cannot spell, as the renderer
+/// will ask for them: the shop name centred and large, like its Latin
+/// counterpart, and every other line from its own starting edge.
+Future<Map<String, MonoBitmap>> drawUnprintableLines(
+  ReceiptRenderer renderer,
+  ReceiptData receipt,
+  ReceiptPaper paper, {
+  UiTextRasteriser rasteriser = const UiTextRasteriser(),
+}) async {
+  final needed = renderer.unprintableLines(receipt, paper: paper);
+  if (needed.isEmpty) return const {};
+  final name = receipt.shop.name.toUpperCase();
+  return {
+    for (final line in needed)
+      line: line == name
+          ? await rasteriser.rasterise(
+              line,
+              widthDots: paper.dots,
+              pointSize: 44,
+              bold: true,
+              centre: true,
+            )
+          : await rasteriser.rasterise(line, widthDots: paper.dots),
+  };
 }
