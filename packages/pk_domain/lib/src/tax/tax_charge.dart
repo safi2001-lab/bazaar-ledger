@@ -67,7 +67,13 @@ final class TaxContext {
     required this.province,
     required this.pricesIncludeTax,
     required this.ruleVersion,
+    this.hasNamedBuyer = false,
   });
+
+  /// Whether the bill names who it is to. Further tax is a charge on supplies
+  /// to a business that is not registered or not active; a walk-in customer
+  /// buying for their own kitchen is a consumer, not that.
+  final bool hasNamedBuyer;
 
   /// Most kiryana stores are not registered. Under s.3(9) STA a non-Tier-1
   /// retailer pays sales tax through the electricity bill instead, so the
@@ -103,9 +109,8 @@ final class TaxContext {
 
 /// Computes the taxes on one line.
 ///
-/// The real rule pack lands in M12. Everything before it ships with
-/// [UntaxedEngine], which is the correct behaviour for the majority of the
-/// market rather than a placeholder.
+/// The Pakistan rule pack (M12) is `PakistanTaxEngine`, which charges
+/// nothing for an unregistered shop exactly as [UntaxedEngine] does.
 abstract interface class TaxEngine {
   List<TaxCharge> chargesFor({
     required Money taxableBase,

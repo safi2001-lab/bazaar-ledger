@@ -12,6 +12,7 @@ import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
 import '../stock/lots.dart';
+import '../tax/tax_charge.dart';
 import '../time/clock.dart';
 import 'catalogue_writer.dart';
 import 'purchase_return_writer.dart';
@@ -25,6 +26,7 @@ final class FirmProfile {
     required this.province,
     required this.isSalesTaxRegistered,
     required this.roundInvoiceToRupee,
+    this.pricesIncludeTax = false,
     this.city,
     this.addressLine1,
     this.phone,
@@ -46,6 +48,9 @@ final class FirmProfile {
   final String? strn;
   final bool isSalesTaxRegistered;
   final bool roundInvoiceToRupee;
+
+  /// Whether the prices on the shelf already include sales tax.
+  final bool pricesIncludeTax;
   final String? raastAlias;
   final String? bankName;
   final String? bankAccountTitle;
@@ -568,6 +573,10 @@ abstract interface class AppQueries {
   /// How much of [itemId] is at each place the shop keeps goods, `MAIN`
   /// first.
   Future<Map<String, Qty>> stockByLocation(String firmId, String itemId);
+
+  /// The tax standing of this firm and of [partyId] as a buyer, read the
+  /// way a bill for them is priced, so the counter shows what will post.
+  Future<TaxContext> taxContextFor(String firmId, String? partyId);
 
   /// Every place the shop has kept goods: `MAIN` and each godown named.
   Future<List<String>> stockLocations(String firmId);

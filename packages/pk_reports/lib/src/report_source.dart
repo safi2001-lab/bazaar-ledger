@@ -168,6 +168,30 @@ final class PartyReceivable {
   Money get owed => opening + upTo30 + upTo60 + upTo90 + over90 - advance;
 }
 
+/// Tax charged or given back under one code in a period.
+final class TaxLine {
+  const TaxLine({
+    required this.code,
+    required this.kind,
+    required this.rateBp,
+    required this.base,
+    required this.amount,
+    required this.isReturn,
+  });
+
+  /// `ST_STD_18`, `ST_3RD_18`, `FURTHER_4`, `ST_RETURN`...
+  final String code;
+
+  /// `sales_tax` or `further_tax`.
+  final String kind;
+  final int rateBp;
+  final Money base;
+  final Money amount;
+
+  /// Given back on a return rather than charged on a sale.
+  final bool isReturn;
+}
+
 /// Where the reports read from. Implemented against the database in
 /// pk_data; every method is a read, and none of them adds anything up that a
 /// builder then adds up again.
@@ -207,6 +231,15 @@ abstract interface class ReportSource {
   Future<List<AccountMovement>> accountBalances(
     String firmId,
     BusinessDate asOf,
+  );
+
+  /// Tax on posted sales and returns in [period], by code.
+  Future<List<TaxLine>> taxLines(String firmId, ReportPeriod period);
+
+  /// Sales before any return, by calendar month, for [period].
+  Future<Map<String, Money>> monthlyTurnover(
+    String firmId,
+    ReportPeriod period,
   );
 
   /// Every batch still on the shelf that has an expiry date.

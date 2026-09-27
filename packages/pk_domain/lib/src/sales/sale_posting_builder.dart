@@ -280,7 +280,9 @@ final class SalePostingBuilder {
 
     post(key: 'cogs', debit: cost);
 
-    post(key: 'sales', credit: calculated.subtotal);
+    // Gross of discount, net of any tax that was inside the price: that tax
+    // is the government's, credited below, and never the shop's sales.
+    post(key: 'sales', credit: calculated.subtotal - calculated.inclusiveTax);
     post(key: 'output_tax', credit: calculated.tax);
     post(key: 'further_tax_payable', credit: calculated.furtherTax);
     post(key: 'other_income', credit: calculated.extraCharges);

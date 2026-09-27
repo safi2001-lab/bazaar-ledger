@@ -73,6 +73,7 @@ final class DriftAppQueries implements AppQueries {
       strn: _blankToNull(row.readNullable<String>('strn')),
       isSalesTaxRegistered: row.read<int>('is_sales_tax_registered') == 1,
       roundInvoiceToRupee: row.read<int>('round_invoice_to_rupee') == 1,
+      pricesIncludeTax: row.read<int>('prices_include_tax') == 1,
       raastAlias: _blankToNull(row.readNullable<String>('raast_alias')),
       bankName: _blankToNull(row.readNullable<String>('bank_name')),
       bankAccountTitle: _blankToNull(
@@ -674,7 +675,16 @@ final class DriftAppQueries implements AppQueries {
                      AND r.deleted_at_utc IS NULL
                      AND rl.item_id = dl.item_id
                      AND rl.deleted_at_utc IS NULL
-                 ), 0) AS returned
+                 ), 0) AS returned,
+             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                        WHERE t.document_line_id = dl.id
+                          AND t.tax_kind = 'sales_tax'), 0) AS sales_tax,
+             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                        WHERE t.document_line_id = dl.id
+                          AND t.tax_kind = 'further_tax'), 0) AS further_tax,
+             COALESCE((SELECT MAX(t.is_inclusive) FROM document_line_taxes t
+                        WHERE t.document_line_id = dl.id
+                          AND t.tax_kind = 'sales_tax'), 0) AS tax_inclusive
           FROM document_lines dl
           JOIN documents d ON d.id = dl.document_id
           WHERE dl.document_id = ? AND d.firm_id = ?
@@ -699,6 +709,9 @@ final class DriftAppQueries implements AppQueries {
           alreadyReturned: Qty.raw(r.read<int>('returned')),
           rate: Rate.raw(r.read<int>('rate_milli_paisa')),
           cost: Money.paisa(r.read<int>('cost_paisa')),
+          salesTax: Money.paisa(r.read<int>('sales_tax')),
+          furtherTax: Money.paisa(r.read<int>('further_tax')),
+          taxInclusive: r.read<int>('tax_inclusive') == 1,
         ),
     ];
   }
@@ -984,6 +997,42 @@ final class DriftAppQueries implements AppQueries {
       null => null,
     },
   );
+
+  @override
+  Future<TaxContext> taxContextFor(String firmId, String? partyId) async {
+    final firm = await _db
+        .customSelect(
+          'SELECT is_sales_tax_registered, province, prices_include_tax '
+          'FROM firms WHERE id = ?',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.firms},
+        )
+        .getSingle();
+    final party = partyId == null
+        ? null
+        : await _db
+              .customSelect(
+                'SELECT buyer_registration_type, is_on_atl FROM parties '
+                'WHERE id = ? AND firm_id = ?',
+                variables: [
+                  Variable<String>(partyId),
+                  Variable<String>(firmId),
+                ],
+                readsFrom: {_db.parties},
+              )
+              .getSingleOrNull();
+    final atl = party?.readNullable<int>('is_on_atl');
+    return TaxContext(
+      hasNamedBuyer: partyId != null,
+      isSellerRegistered: firm.read<int>('is_sales_tax_registered') == 1,
+      buyerIsRegistered:
+          party?.read<String>('buyer_registration_type') == 'registered',
+      buyerIsOnAtl: atl == null ? null : atl == 1,
+      province: firm.read<String>('province'),
+      pricesIncludeTax: firm.read<int>('prices_include_tax') == 1,
+      ruleVersion: 'pk-2026-27-v1',
+    );
+  }
 
   @override
   Future<Map<String, Qty>> stockByLocation(String firmId, String itemId) async {

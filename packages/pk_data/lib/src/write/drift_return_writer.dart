@@ -80,7 +80,16 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
                  AND r.deleted_at_utc IS NULL
                  AND rl.item_id = dl.item_id
                  AND rl.deleted_at_utc IS NULL
-             ), 0) AS returned
+             ), 0) AS returned,
+             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                        WHERE t.document_line_id = dl.id
+                          AND t.tax_kind = 'sales_tax'), 0) AS sales_tax,
+             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                        WHERE t.document_line_id = dl.id
+                          AND t.tax_kind = 'further_tax'), 0) AS further_tax,
+             COALESCE((SELECT MAX(t.is_inclusive) FROM document_line_taxes t
+                        WHERE t.document_line_id = dl.id
+                          AND t.tax_kind = 'sales_tax'), 0) AS tax_inclusive
       FROM document_lines dl
       WHERE dl.document_id = ? AND dl.deleted_at_utc IS NULL
       ORDER BY dl.line_no
@@ -106,6 +115,9 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
             rate: Rate.raw(r.read<int>('rate_milli_paisa')),
             // The snapshot. Never today's average — see ReturnBuilder.
             cost: Money.paisa(r.read<int>('cost_paisa')),
+            salesTax: Money.paisa(r.read<int>('sales_tax')),
+            furtherTax: Money.paisa(r.read<int>('further_tax')),
+            taxInclusive: r.read<int>('tax_inclusive') == 1,
           ),
       ],
     );
@@ -176,6 +188,20 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
         'cost_paisa': line.cost.inPaisa,
         'is_free_item': line.isFreeItem ? 1 : 0,
       });
+      // The tax given back on the line, kept beside it as a sale's is, so
+      // the sales tax summary can take it off what was charged.
+      for (final tax in line.taxes) {
+        await _tx.insert('document_line_taxes', {
+          'document_line_id': lineIdByNo[line.lineNo],
+          'document_id': documentId,
+          'tax_kind': tax.kind.code,
+          'tax_code': tax.code,
+          'rate_bp': tax.rateBp,
+          'base_paisa': tax.base.inPaisa,
+          'amount_paisa': tax.amount.inPaisa,
+          'is_inclusive': tax.isInclusive ? 1 : 0,
+        });
+      }
     }
 
     for (final movement in posting.stockMovements) {

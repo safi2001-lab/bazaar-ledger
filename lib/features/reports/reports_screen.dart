@@ -76,6 +76,8 @@ class ReportsScreen extends StatelessWidget {
 
   static IconData _icon(ReportKind kind) => switch (kind) {
     ReportKind.profitAndLoss => Icons.trending_up,
+    ReportKind.salesTax => Icons.receipt_long_outlined,
+    ReportKind.tajirDost => Icons.percent,
     ReportKind.salesByDay => Icons.calendar_month_outlined,
     ReportKind.receivables => Icons.hourglass_bottom_outlined,
     ReportKind.payables => Icons.local_shipping_outlined,
@@ -91,6 +93,8 @@ class ReportsScreen extends StatelessWidget {
 
   static String _hint(AppStrings s, ReportKind kind) => switch (kind) {
     ReportKind.profitAndLoss => s.reportProfitAndLossHint,
+    ReportKind.salesTax => s.reportSalesTaxHint,
+    ReportKind.tajirDost => s.reportTajirDostHint,
     ReportKind.salesByDay => s.reportSalesByDayHint,
     ReportKind.receivables => s.reportReceivablesHint,
     ReportKind.payables => s.reportPayablesHint,
@@ -108,6 +112,8 @@ class ReportsScreen extends StatelessWidget {
 /// A report's name as the shop reads it.
 String reportName(AppStrings s, ReportKind kind) => switch (kind) {
   ReportKind.profitAndLoss => s.reportProfitAndLoss,
+  ReportKind.salesTax => s.reportSalesTax,
+  ReportKind.tajirDost => s.reportTajirDost,
   ReportKind.salesByDay => s.reportSalesByDay,
   ReportKind.receivables => s.reportReceivables,
   ReportKind.payables => s.reportPayables,

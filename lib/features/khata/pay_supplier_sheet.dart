@@ -248,6 +248,16 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
                 onChanged: () => setState(() => _error = null),
               ),
             ],
+            // Section 73 STA: a registered buyer paying a supplier more than
+            // Rs 50,000 other than through a bank loses the input tax on it.
+            if (!_byCheque &&
+                account?.modeLabel == 'cash' &&
+                _entered > section73CashLimit &&
+                (ref.watch(firmProvider).valueOrNull?.isSalesTaxRegistered ??
+                    false)) ...[
+              const SizedBox(height: BlTokens.space3),
+              BlOfflineNote(message: s.paySection73),
+            ],
             const SizedBox(height: BlTokens.space3),
             BlField(controller: _reference, label: s.wasooliReference),
             const SizedBox(height: BlTokens.space4),

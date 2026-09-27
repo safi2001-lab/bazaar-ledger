@@ -11,6 +11,7 @@ import '../backup/backup_screen.dart';
 import '../firms/firms_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
+import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
 import 'payment_details_screen.dart';
 import 'shop_details_screen.dart';
@@ -137,6 +138,14 @@ class SettingsScreen extends ConsumerWidget {
             // Beside the health check, because both answer "is my hisaab
             // safe", and a shopkeeper looking for one is looking for the
             // other.
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.account_balance_wallet_outlined,
+                label: s.taxTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const TaxScreen()),
+                ),
+              ),
             if (services.can(Permission.backups))
               _Row(
                 icon: Icons.backup_outlined,

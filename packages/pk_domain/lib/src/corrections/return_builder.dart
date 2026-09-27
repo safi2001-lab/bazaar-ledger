@@ -29,6 +29,7 @@ import 'package:pk_money/pk_money.dart';
 import '../identity/actor_context.dart';
 import '../sales/sale_posting.dart';
 import '../sales/sale_posting_builder.dart';
+import '../tax/tax_charge.dart';
 
 /// One line of the original bill, as it was sold.
 final class SoldLine {
@@ -42,6 +43,9 @@ final class SoldLine {
     required this.alreadyReturned,
     required this.rate,
     required this.cost,
+    this.salesTax = Money.zero,
+    this.furtherTax = Money.zero,
+    this.taxInclusive = false,
   });
 
   final String documentLineId;
@@ -64,6 +68,14 @@ final class SoldLine {
   /// What the goods cost the shop when they left, in whole paisa for the
   /// WHOLE line. A snapshot, never recomputed.
   final Money cost;
+
+  /// The sales tax on the whole line as sold, and whether it was inside the
+  /// price. A return gives back the part of it that comes back.
+  final Money salesTax;
+
+  /// The further tax on the whole line as sold, always on top of the price.
+  final Money furtherTax;
+  final bool taxInclusive;
 
   Qty get returnable =>
       Qty.raw(soldQty.inThousandths - alreadyReturned.inThousandths);
@@ -198,6 +210,9 @@ final class ReturnBuilder {
     final lines = <DocumentLinePosting>[];
     final movements = <StockMovementPosting>[];
     var goods = Money.zero;
+    var goodsNetTotal = Money.zero;
+    var salesTaxBack = Money.zero;
+    var furtherTaxBack = Money.zero;
     var costBack = Money.zero;
     var lineNo = 1;
 
@@ -225,18 +240,30 @@ final class ReturnBuilder {
         );
       }
 
-      final refundValue = sold.rate.amountFor(wanted.qty);
+      final priceValue = sold.rate.amountFor(wanted.qty);
       // The line's cost, pro-rated by how much of it is coming back. Whole
       // paisa, allocated so a part return of an odd cost cannot lose one.
-      final costOfReturn =
+      Money share(Money whole) =>
           sold.soldQty.inThousandths == wanted.qty.inThousandths
-          ? sold.cost
-          : sold.cost.allocate([
+          ? whole
+          : whole.isZero
+          ? Money.zero
+          : whole.allocate([
               wanted.qty.inThousandths,
               sold.soldQty.inThousandths - wanted.qty.inThousandths,
             ]).first;
+      final costOfReturn = share(sold.cost);
+      // The tax on what comes back comes back with it, in the same share: it
+      // was never the shop's, and the return reduces what is owed over.
+      final stBack = share(sold.salesTax);
+      final ftBack = share(sold.furtherTax);
+      final goodsNet = sold.taxInclusive ? priceValue - stBack : priceValue;
+      final refundValue = goodsNet + stBack + ftBack;
 
       goods += refundValue;
+      goodsNetTotal += goodsNet;
+      salesTaxBack += stBack;
+      furtherTaxBack += ftBack;
       costBack += costOfReturn;
 
       lines.add(
@@ -245,23 +272,39 @@ final class ReturnBuilder {
           itemId: sold.itemId,
           itemNameSnapshot: sold.itemName,
           qty: wanted.qty,
-          unitId: sold.unitId,
+          // A line sold with no unit named comes back with none, not with an
+          // empty id pointing at no unit at all.
+          unitId: sold.unitId.isEmpty ? null : sold.unitId,
           unitCodeSnapshot: sold.unitCode,
           baseQty: wanted.qty,
           rate: sold.rate,
-          gross: refundValue,
+          gross: priceValue,
           discount: Money.zero,
           discountBp: 0,
-          taxable: refundValue,
-          // Tax on a return lands in M12 with the rest of the tax pack. A
-          // return of a taxed sale currently gives back the goods value and
-          // nothing else, which is visibly incomplete rather than quietly
-          // wrong — and it is stated here so it is not mistaken for done.
-          tax: Money.zero,
+          taxable: goodsNet,
+          tax: stBack + ftBack,
           lineTotal: refundValue,
           cost: costOfReturn,
           isFreeItem: false,
-          taxes: const [],
+          taxes: [
+            if (!stBack.isZero)
+              TaxCharge(
+                kind: TaxKind.salesTax,
+                code: 'ST_RETURN',
+                rateBp: 0,
+                base: goodsNet,
+                amount: stBack,
+                isInclusive: sold.taxInclusive,
+              ),
+            if (!ftBack.isZero)
+              TaxCharge(
+                kind: TaxKind.furtherTax,
+                code: 'FURTHER_RETURN',
+                rateBp: 0,
+                base: goodsNet,
+                amount: ftBack,
+              ),
+          ],
         ),
       );
 
@@ -325,9 +368,12 @@ final class ReturnBuilder {
     // needs to be able to see that number — netting it into Sales hides it.
     post(
       key: 'sales_returns',
-      debit: goods,
+      debit: goodsNetTotal,
       narration: 'Returned on $originalDocNo',
     );
+    // The tax charged on what came back is no longer owed over.
+    post(key: 'output_tax', debit: salesTaxBack);
+    post(key: 'further_tax_payable', debit: furtherTaxBack);
 
     // Cash out of the drawer for what was handed back now.
     post(
@@ -399,9 +445,9 @@ final class ReturnBuilder {
         subtotal: goods,
         lineDiscount: Money.zero,
         billDiscount: Money.zero,
-        taxable: goods,
-        tax: Money.zero,
-        furtherTax: Money.zero,
+        taxable: goodsNetTotal,
+        tax: salesTaxBack,
+        furtherTax: furtherTaxBack,
         withholding: Money.zero,
         extraCharges: Money.zero,
         roundOff: Money.zero,

@@ -114,11 +114,17 @@ final class CalculatedSale {
     required this.changeDue,
     required this.cashThresholdBreached,
     required this.ruleVersion,
+    this.inclusiveTax = Money.zero,
   });
 
   final List<CalculatedLine> lines;
 
   final Money subtotal;
+
+  /// The part of [subtotal] that is tax already inside the price: Third
+  /// Schedule goods, and every line when the shop's prices include tax.
+  /// Sales in the books are the subtotal less this.
+  final Money inclusiveTax;
   final Money lineDiscountTotal;
   final Money billDiscount;
   final Money taxable;
@@ -273,6 +279,14 @@ final class SaleCalculator {
         context: context,
       );
       final taxTotal = Money.sum([for (final t in taxes) t.amount]);
+      // A price that already includes the tax: the tax is inside it, so the
+      // value the tax is charged on is the price less the tax, and the line
+      // still comes to the price the customer was quoted.
+      final inside = Money.sum([
+        for (final t in taxes)
+          if (t.isInclusive) t.amount,
+      ]);
+      final netTaxable = taxable - inside;
 
       calculated.add(
         CalculatedLine(
@@ -281,9 +295,9 @@ final class SaleCalculator {
           gross: gross[i],
           lineDiscount: lineDiscounts[i],
           apportionedBillDiscount: apportioned[i],
-          taxable: taxable,
+          taxable: netTaxable,
           taxes: taxes,
-          lineTotal: taxable + taxTotal,
+          lineTotal: netTaxable + taxTotal,
           // Cost follows the goods, so a free item still costs what it cost.
           cost: line.unitCost.amountFor(line.baseQty, mode: mode),
         ),
@@ -428,6 +442,11 @@ final class SaleCalculator {
       changeDue: changeDue,
       cashThresholdBreached: breached,
       ruleVersion: taxEngine.ruleVersion,
+      inclusiveTax: Money.sum([
+        for (final l in calculated)
+          for (final t in l.taxes)
+            if (t.isInclusive) t.amount,
+      ]),
     );
   }
 

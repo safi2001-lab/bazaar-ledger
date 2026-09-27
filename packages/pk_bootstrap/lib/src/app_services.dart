@@ -146,9 +146,17 @@ final class AppServices {
   /// first run cannot keep writing through the clock that predates the device.
   CatalogueWriter get catalogue => DriftCatalogueWriter(_runner);
 
+  /// The one calculator every bill, quotation and challan is priced by, and
+  /// the counter's own preview with it: the Pakistan tax pack, which charges
+  /// nothing at all for a shop that is not registered for sales tax.
+  static const taxCalculator = SaleCalculator(taxEngine: PakistanTaxEngine());
+
   PostSaleUseCase get postSale {
     require(Permission.sell);
-    return PostSaleUseCase(writer: DriftSaleWriter(runner: _runner));
+    return PostSaleUseCase(
+      writer: DriftSaleWriter(runner: _runner),
+      calculator: taxCalculator,
+    );
   }
 
   RecordReceiptUseCase get recordReceipt {
@@ -158,12 +166,18 @@ final class AppServices {
 
   SaveQuotationUseCase get saveQuotation {
     require(Permission.sell);
-    return SaveQuotationUseCase(writer: DriftQuotationWriter(runner: _runner));
+    return SaveQuotationUseCase(
+      writer: DriftQuotationWriter(runner: _runner),
+      calculator: taxCalculator,
+    );
   }
 
   IssueChallanUseCase get issueChallan {
     require(Permission.sell);
-    return IssueChallanUseCase(writer: DriftChallanWriter(runner: _runner));
+    return IssueChallanUseCase(
+      writer: DriftChallanWriter(runner: _runner),
+      calculator: taxCalculator,
+    );
   }
 
   /// The report pack, read from the books as they stand.

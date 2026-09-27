@@ -34,6 +34,7 @@ Future<TaxContext> taxContextOf(Tx tx, String? partyId) async {
   }
 
   return TaxContext(
+    hasNamedBuyer: partyId != null,
     isSellerRegistered: firm.read<int>('is_sales_tax_registered') == 1,
     buyerIsRegistered: buyerRegistered,
     buyerIsOnAtl: buyerOnAtl,

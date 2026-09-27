@@ -40,6 +40,11 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   );
   late PriceTier _tier = widget.party?.priceTier ?? PriceTier.retail;
 
+  /// A buyer's tax standing, which decides further tax on a registered
+  /// shop's bill to them.
+  bool _buyerRegistered = false;
+  bool _buyerOnAtl = false;
+
   /// The party as saved, for an edit. Everything this form does not show —
   /// their type, NTN, WhatsApp number — is written back from here. The
   /// editor used to send only what it showed, and the writer stores the
@@ -75,6 +80,8 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
       _address.text = saved?.addressLine1 ?? '';
       _city.text = saved?.city ?? '';
       _cnic.text = saved?.cnic ?? '';
+      _buyerRegistered = saved?.buyerRegistrationType == 'registered';
+      _buyerOnAtl = saved?.isOnAtl ?? false;
     });
   }
 
@@ -135,8 +142,8 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         ntn: saved?.ntn,
         strn: saved?.strn,
         cnic: text(_cnic),
-        buyerRegistrationType: saved?.buyerRegistrationType ?? 'unregistered',
-        isOnAtl: saved?.isOnAtl,
+        buyerRegistrationType: _buyerRegistered ? 'registered' : 'unregistered',
+        isOnAtl: _buyerOnAtl,
         // An opening balance is what they already owed before the shop
         // started using this app. Set once, at creation; afterwards the
         // balance is whatever the documents say it is, and no form may
@@ -358,6 +365,22 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             onSubmitted: (_) {
                               if (!_busy) unawaited(_save());
                             },
+                          ),
+                          const SizedBox(height: BlTokens.space2),
+                          // Further tax is charged to a business that is not
+                          // registered or not on the Active Taxpayers List.
+                          SwitchListTile.adaptive(
+                            value: _buyerRegistered,
+                            onChanged: (v) =>
+                                setState(() => _buyerRegistered = v),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(s.partyTaxRegistered),
+                          ),
+                          SwitchListTile.adaptive(
+                            value: _buyerOnAtl,
+                            onChanged: (v) => setState(() => _buyerOnAtl = v),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(s.partyOnAtl),
                           ),
                           if (_failure != null) ...[
                             const SizedBox(height: BlTokens.space4),

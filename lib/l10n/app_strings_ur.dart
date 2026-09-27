@@ -2145,5 +2145,60 @@ class AppStringsUr extends AppStrings {
   String get placesMoved => 'Maal bhej diya';
 
   @override
+  String get partyTaxRegistered => 'Sales tax mein registered';
+
+  @override
+  String get partyOnAtl => 'Active taxpayer list (ATL) par hai';
+
+  @override
+  String get taxTitle => 'Tax';
+
+  @override
+  String get taxNeverSent =>
+      'Sab hisaab isi phone par hota hai, kahin bheja nahi jata. Return khud ya accountant se IRIS par file karein.';
+
+  @override
+  String get taxRegistered => 'Dukaan sales tax mein registered hai';
+
+  @override
+  String get taxRegisteredHint =>
+      'Registered dukaan bill par 18% sales tax lagati hai; ghair registered koi tax nahi lagati';
+
+  @override
+  String get taxPricesInclude => 'Qeematon mein tax shamil hai';
+
+  @override
+  String get taxTajirDost => 'Tajir Dost 1%';
+
+  @override
+  String get taxTurnoverThisMonth => 'Is mahine ki bikri';
+
+  @override
+  String get taxFixedAtOnePercent => '1% fixed tax';
+
+  @override
+  String get taxUtilityWht => 'Bijli ke bill par kata hua tax';
+
+  @override
+  String get taxToPay => 'Dena hai';
+
+  @override
+  String get reportSalesTax => 'Sales tax';
+
+  @override
+  String get reportSalesTaxHint =>
+      'Is mahine kitna sales tax aur further tax dena hai';
+
+  @override
+  String get reportTajirDost => 'Tajir Dost 1%';
+
+  @override
+  String get reportTajirDostHint => 'Har mahine ki bikri ka 1%';
+
+  @override
+  String get paySection73 =>
+      'Section 73: Rs 50,000 se zyada naqad adaygi par is maal ka input tax nahi milega. Bank ya cheque se dein.';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

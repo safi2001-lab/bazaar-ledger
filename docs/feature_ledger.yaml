@@ -254,7 +254,18 @@ milestones:
 
   - id: M12
     title: The Pakistan tax pack, computed locally and never transmitted
-    state: planned
+    # Opened and sealed 27 Sep 2026 at 4/4. The engine had been a zero-rate
+    # stub since M0. The pack for 2026-27 now charges 18% sales tax, takes
+    # it out of prices that include it and out of Third Schedule retail
+    # prices, adds 4% further tax for a named buyer who is unregistered or
+    # off the active list, and charges nothing for an unregistered shop.
+    # Returns give the tax back, the sales tax summary nets it, Tajir Dost
+    # is worked out each month, and paying a supplier more than Rs 50,000
+    # in cash warns of section 73. Nothing is sent to FBR. Not built: FBR
+    # POS integration, withholding on a distributor's bills, provincial
+    # sales tax on services, and the annex-C schedule a registered shop
+    # files.
+    state: sealed
     owns:
       - lib/features/tax/**
       - packages/pk_domain/lib/src/tax/pack/**
@@ -3789,3 +3800,59 @@ features:
     proof:
       - expiry expired and soon-to-expire batches, soonest first
       - the expiry list shows what to pull off the shelf
+
+  # ---------------------------------------------------------------------------
+  # M12 — the Pakistan tax pack
+  # ---------------------------------------------------------------------------
+
+  - id: M12-ENGINE-01
+    milestone: M12
+    title: The 2026-27 pack works out sales tax and further tax on each line
+    status: done
+    # pk_domain/tax/pack is a TaxEngine with its rule version stamped on
+    # every bill. The calculator takes tax out of the price when it is
+    # already inside, so the sale is credited without it.
+    proof:
+      - pakistan tax an unregistered shop charges no tax at all
+      - pakistan tax a registered shop adds 18% to a price without tax
+      - pakistan tax a price that includes tax has the 18% taken out of it
+      - pakistan tax third schedule goods carry the tax inside the retail price
+      - pakistan tax further tax is charged to a named buyer who is not registered
+      - pakistan tax a registered buyer off the active list still pays further tax
+      - pakistan tax an active registered buyer, a walk-in and third schedule goods pay none
+      - pakistan tax exempt and zero-rated goods carry no sales tax
+      - a registered sale to an unregistered business owes both taxes
+      - prices that include tax credit sales without the tax
+      - an unregistered shop charges no tax under the same pack
+
+  - id: M12-RETURN-01
+    milestone: M12
+    title: A return gives back the tax on what came back
+    status: done
+    # Each returned line carries its share of the sales and further tax,
+    # debited back to what the shop owes FBR. Found on the way: returns had
+    # been dropping the unit of a line sold without one.
+    proof:
+      - a return gives back the tax on what came back
+
+  - id: M12-REPORT-01
+    milestone: M12
+    title: The sales tax summary and Tajir Dost are in the report pack
+    status: done
+    proof:
+      - tax the sales tax summary nets what returns gave back
+      - tax Tajir Dost is one per cent of each month
+
+  - id: M12-SCREEN-01
+    milestone: M12
+    title: The shop turns tax on from the phone, and the counter charges it
+    status: done
+    # Settings, Tax: registered or not, prices with tax inside or not, and
+    # this month's Tajir Dost less the tax taken on the electricity bill. A
+    # party is marked registered and on the active list from its editor, and
+    # paying a supplier over Rs 50,000 in cash warns of section 73.
+    proof:
+      - a shop registered from the tax screen charges 18% on the bill
+      - an unregistered shop charges no tax at all
+      - further tax is added for a named unregistered business
+      - Tajir Dost is one per cent of the month, less the bijli tax

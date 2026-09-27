@@ -3896,6 +3896,108 @@ abstract class AppStrings {
   /// **'Maal bhej diya'**
   String get placesMoved;
 
+  /// No description provided for @partyTaxRegistered.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sales tax mein registered'**
+  String get partyTaxRegistered;
+
+  /// No description provided for @partyOnAtl.
+  ///
+  /// In ur, this message translates to:
+  /// **'Active taxpayer list (ATL) par hai'**
+  String get partyOnAtl;
+
+  /// No description provided for @taxTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tax'**
+  String get taxTitle;
+
+  /// No description provided for @taxNeverSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab hisaab isi phone par hota hai, kahin bheja nahi jata. Return khud ya accountant se IRIS par file karein.'**
+  String get taxNeverSent;
+
+  /// No description provided for @taxRegistered.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan sales tax mein registered hai'**
+  String get taxRegistered;
+
+  /// No description provided for @taxRegisteredHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Registered dukaan bill par 18% sales tax lagati hai; ghair registered koi tax nahi lagati'**
+  String get taxRegisteredHint;
+
+  /// No description provided for @taxPricesInclude.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeematon mein tax shamil hai'**
+  String get taxPricesInclude;
+
+  /// No description provided for @taxTajirDost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tajir Dost 1%'**
+  String get taxTajirDost;
+
+  /// No description provided for @taxTurnoverThisMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine ki bikri'**
+  String get taxTurnoverThisMonth;
+
+  /// No description provided for @taxFixedAtOnePercent.
+  ///
+  /// In ur, this message translates to:
+  /// **'1% fixed tax'**
+  String get taxFixedAtOnePercent;
+
+  /// No description provided for @taxUtilityWht.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bijli ke bill par kata hua tax'**
+  String get taxUtilityWht;
+
+  /// No description provided for @taxToPay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dena hai'**
+  String get taxToPay;
+
+  /// No description provided for @reportSalesTax.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sales tax'**
+  String get reportSalesTax;
+
+  /// No description provided for @reportSalesTaxHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine kitna sales tax aur further tax dena hai'**
+  String get reportSalesTaxHint;
+
+  /// No description provided for @reportTajirDost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tajir Dost 1%'**
+  String get reportTajirDost;
+
+  /// No description provided for @reportTajirDostHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine ki bikri ka 1%'**
+  String get reportTajirDostHint;
+
+  /// No description provided for @paySection73.
+  ///
+  /// In ur, this message translates to:
+  /// **'Section 73: Rs 50,000 se zyada naqad adaygi par is maal ka input tax nahi milega. Bank ya cheque se dein.'**
+  String get paySection73;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

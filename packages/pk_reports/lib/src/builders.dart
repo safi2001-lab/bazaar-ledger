@@ -659,3 +659,98 @@ String _pastDate(int batches, Money value) {
   return '$what past its date, worth Rs ${value.amountOnly} at cost. The '
       'counter will not sell them.';
 }
+
+/// The sales tax a registered shop charged and gave back in [period], by
+/// rate, and what is owed over for it: the figures the monthly return asks
+/// for, computed here and typed in by the shop or its accountant. Nothing is
+/// sent anywhere.
+ReportTable salesTaxSummary(ReportPeriod period, List<TaxLine> lines) {
+  final charged = [
+    for (final l in lines)
+      if (!l.isReturn) l,
+  ]..sort((a, b) => a.code.compareTo(b.code));
+  final returned = [
+    for (final l in lines)
+      if (l.isReturn) l,
+  ];
+  Money sum(Iterable<TaxLine> ls, String kind) => Money.sum([
+    for (final l in ls)
+      if (l.kind == kind) l.amount,
+  ]);
+  final st = sum(charged, 'sales_tax') - sum(returned, 'sales_tax');
+  final ft = sum(charged, 'further_tax') - sum(returned, 'further_tax');
+  return ReportTable(
+    id: 'sales_tax',
+    title: 'Sales tax',
+    period: period,
+    columns: const [
+      ReportColumn('Tax', CellKind.text),
+      ReportColumn('Rate', CellKind.percent),
+      ReportColumn('Value of supplies', CellKind.money),
+      ReportColumn('Tax', CellKind.money),
+    ],
+    rows: [
+      for (final l in charged)
+        ReportRow([_taxName(l.code), l.rateBp, l.base, l.amount]),
+      for (final l in returned)
+        ReportRow([_taxName(l.code), null, -l.base, -l.amount]),
+      ReportRow(['Sales tax owed', null, null, st], style: RowStyle.subtotal),
+      ReportRow(['Further tax owed', null, null, ft], style: RowStyle.subtotal),
+      ReportRow(['Total owed', null, null, st + ft], style: RowStyle.total),
+    ],
+    notes: const [_noInputTax, _neverSent],
+  );
+}
+
+const _noInputTax =
+    'Input tax on purchases is not kept by this app yet: take it from the '
+    'suppliers\' invoices when filing.';
+
+const _neverSent =
+    'Computed on this phone and never sent anywhere. File the return on IRIS.';
+
+String _taxName(String code) => switch (code) {
+  'ST_STD_18' => 'Sales tax 18%',
+  'ST_3RD_18' => 'Sales tax, Third Schedule',
+  'FURTHER_4' => 'Further tax 4%',
+  'ST_RETURN' => 'Sales tax given back on returns',
+  'FURTHER_RETURN' => 'Further tax given back on returns',
+  _ => code,
+};
+
+/// The Tajir Dost fixed tax: one per cent of each month's turnover, for a
+/// retailer in the scheme (SRO 1166(I)/2026), with the withholding already
+/// paid on the shop's electricity bill left to be taken off.
+ReportTable tajirDost(ReportPeriod period, Map<String, Money> turnover) {
+  final months = turnover.keys.toList()..sort();
+  final total = Money.sum(turnover.values);
+  return ReportTable(
+    id: 'tajir_dost',
+    title: 'Tajir Dost 1%',
+    period: period,
+    columns: const [
+      ReportColumn('Month', CellKind.text),
+      ReportColumn('Turnover', CellKind.money),
+      ReportColumn('Tax at 1%', CellKind.money),
+    ],
+    rows: [
+      for (final m in months)
+        ReportRow([m, turnover[m], turnover[m]!.percentBp(tajirDostBp)]),
+      ReportRow([
+        'Total',
+        total,
+        Money.sum([
+          for (final m in months) turnover[m]!.percentBp(tajirDostBp),
+        ]),
+      ], style: RowStyle.total),
+    ],
+    notes: const [_lessUtilityWht, _neverSent],
+  );
+}
+
+/// The Tajir Dost rate, in basis points.
+const tajirDostBp = 100;
+
+const _lessUtilityWht =
+    'Take off the withholding tax already paid with the electricity bill for '
+    'each month; what is left is what is paid.';

@@ -8,6 +8,8 @@ import 'report_table.dart';
 /// The reports a shop can run.
 enum ReportKind {
   profitAndLoss,
+  salesTax,
+  tajirDost,
   salesByDay,
   salesByItem,
   expenses,
@@ -61,6 +63,14 @@ final class ReportEngine {
     ReportKind.expenses => expensesByHead(
       period,
       await source.accountMovements(firmId, period),
+    ),
+    ReportKind.salesTax => salesTaxSummary(
+      period,
+      await source.taxLines(firmId, period),
+    ),
+    ReportKind.tajirDost => tajirDost(
+      period,
+      await source.monthlyTurnover(firmId, period),
     ),
     ReportKind.salesByDay => salesByDay(
       period,

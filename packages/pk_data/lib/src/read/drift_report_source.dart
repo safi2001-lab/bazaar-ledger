@@ -493,4 +493,72 @@ final class DriftReportSource implements ReportSource {
         if (l.expiry != null) l,
     ];
   }
+
+  @override
+  Future<List<TaxLine>> taxLines(String firmId, ReportPeriod period) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT t.tax_code, t.tax_kind, t.rate_bp,
+                 d.doc_type = 'sale_return' AS is_return,
+                 SUM(t.base_paisa) AS base, SUM(t.amount_paisa) AS amount
+          FROM document_line_taxes t
+          JOIN documents d ON d.id = t.document_id
+          WHERE d.firm_id = ?1
+            AND d.doc_type IN ('sale_invoice', 'sale_return')
+            AND d.status = 'posted'
+            AND d.deleted_at_utc IS NULL
+            AND d.doc_date_local BETWEEN ?2 AND ?3
+          GROUP BY t.tax_code, t.tax_kind, t.rate_bp, is_return
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(period.from.value),
+            Variable<String>(period.to.value),
+          ],
+          readsFrom: {_db.documentLineTaxes, _db.documents},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        TaxLine(
+          code: r.read<String>('tax_code'),
+          kind: r.read<String>('tax_kind'),
+          rateBp: r.read<int>('rate_bp'),
+          base: Money.paisa(r.read<int>('base')),
+          amount: Money.paisa(r.read<int>('amount')),
+          isReturn: r.read<int>('is_return') == 1,
+        ),
+    ];
+  }
+
+  @override
+  Future<Map<String, Money>> monthlyTurnover(
+    String firmId,
+    ReportPeriod period,
+  ) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT substr(doc_date_local, 1, 7) AS month,
+                 SUM(total_paisa) AS turnover
+          FROM documents
+          WHERE firm_id = ?1 AND doc_type = 'sale_invoice'
+            AND status = 'posted' AND deleted_at_utc IS NULL
+            AND doc_date_local BETWEEN ?2 AND ?3
+          GROUP BY month
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(period.from.value),
+            Variable<String>(period.to.value),
+          ],
+          readsFrom: {_db.documents},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        r.read<String>('month'): Money.paisa(r.read<int>('turnover')),
+    };
+  }
 }

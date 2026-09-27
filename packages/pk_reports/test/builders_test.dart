@@ -397,6 +397,53 @@ void main() {
     });
   });
 
+  group('tax', () {
+    test('the sales tax summary nets what returns gave back', () {
+      final t = salesTaxSummary(_september, [
+        const TaxLine(
+          code: 'ST_STD_18',
+          kind: 'sales_tax',
+          rateBp: 1800,
+          base: Money.rupees(10000),
+          amount: Money.rupees(1800),
+          isReturn: false,
+        ),
+        const TaxLine(
+          code: 'FURTHER_4',
+          kind: 'further_tax',
+          rateBp: 400,
+          base: Money.rupees(5000),
+          amount: Money.rupees(200),
+          isReturn: false,
+        ),
+        const TaxLine(
+          code: 'ST_RETURN',
+          kind: 'sales_tax',
+          rateBp: 0,
+          base: Money.rupees(1000),
+          amount: Money.rupees(180),
+          isReturn: true,
+        ),
+      ]);
+      expect(_cell(t, 'Sales tax owed', 3), const Money.rupees(1620));
+      expect(_cell(t, 'Further tax owed', 3), const Money.rupees(200));
+      expect(t.totals.single.cells.last, const Money.rupees(1820));
+    });
+
+    test('Tajir Dost is one per cent of each month', () {
+      final t = tajirDost(_september, {
+        '2026-09': const Money.rupees(450000),
+        '2026-08': const Money.rupees(300000),
+      });
+      expect(t.rows.first.cells, [
+        '2026-08',
+        const Money.rupees(300000),
+        const Money.rupees(3000),
+      ]);
+      expect(t.totals.single.cells.last, const Money.rupees(7500));
+    });
+  });
+
   group('periods', () {
     test('a month ends on its last day, February included', () {
       final feb = ReportPeriod.monthOf(const BusinessDate('2028-02-10'));

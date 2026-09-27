@@ -2144,5 +2144,60 @@ class AppStringsEn extends AppStrings {
   String get placesMoved => 'Goods moved';
 
   @override
+  String get partyTaxRegistered => 'Registered for sales tax';
+
+  @override
+  String get partyOnAtl => 'On the Active Taxpayers List';
+
+  @override
+  String get taxTitle => 'Tax';
+
+  @override
+  String get taxNeverSent =>
+      'Everything is worked out on this phone and sent nowhere. File the return yourself, or through your accountant, on IRIS.';
+
+  @override
+  String get taxRegistered => 'The shop is registered for sales tax';
+
+  @override
+  String get taxRegisteredHint =>
+      'A registered shop charges 18% sales tax on its bills; an unregistered one charges none';
+
+  @override
+  String get taxPricesInclude => 'Prices include tax';
+
+  @override
+  String get taxTajirDost => 'Tajir Dost 1%';
+
+  @override
+  String get taxTurnoverThisMonth => 'This month\'s sales';
+
+  @override
+  String get taxFixedAtOnePercent => '1% fixed tax';
+
+  @override
+  String get taxUtilityWht => 'Tax already taken on the electricity bill';
+
+  @override
+  String get taxToPay => 'To pay';
+
+  @override
+  String get reportSalesTax => 'Sales tax';
+
+  @override
+  String get reportSalesTaxHint =>
+      'The sales tax and further tax owed for the period';
+
+  @override
+  String get reportTajirDost => 'Tajir Dost 1%';
+
+  @override
+  String get reportTajirDostHint => 'One per cent of each month\'s sales';
+
+  @override
+  String get paySection73 =>
+      'Section 73: paying more than Rs 50,000 in cash loses the input tax on these goods. Pay through the bank or by cheque.';
+
+  @override
   String get chequeDone => 'Done';
 }

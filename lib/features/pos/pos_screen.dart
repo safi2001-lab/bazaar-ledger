@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pk_domain/pk_domain.dart';
+import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
@@ -33,13 +33,26 @@ final posQueryProvider = StateProvider.autoDispose<String>((ref) => '');
 /// total disagrees with the posted total by one paisa is the defect class this
 /// whole money layer exists to make impossible, so there is exactly one
 /// calculator and both callers use it.
+/// The tax standing of the shop and of the customer on the bill, as the
+/// posting will read it.
+final buyerTaxProvider = FutureProvider.autoDispose
+    .family<TaxContext?, String?>((ref, partyId) async {
+      ref.watch(refreshTickProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return null;
+      return ref
+          .watch(appServicesProvider)
+          .queries
+          .taxContextFor(firm.id, partyId);
+    });
+
 final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
   final cart = ref.watch(cartProvider);
   final firm = ref.watch(firmProvider).valueOrNull;
   final units = ref.watch(unitConverterProvider).valueOrNull;
   if (firm == null || cart.isEmpty) return null;
 
-  return const SaleCalculator().calculate(
+  return AppServices.taxCalculator.calculate(
     SaleDraft(
       lines: [for (final l in cart.lines) ...l.toDrafts(units)],
       partyId: cart.partyId,
@@ -47,14 +60,16 @@ final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
       billDiscount: cart.billDiscount,
       roundToRupee: firm.roundInvoiceToRupee,
     ),
-    TaxContext(
-      isSellerRegistered: firm.isSalesTaxRegistered,
-      buyerIsRegistered: false,
-      buyerIsOnAtl: null,
-      province: firm.province,
-      pricesIncludeTax: false,
-      ruleVersion: 'm0',
-    ),
+    ref.watch(buyerTaxProvider(cart.partyId)).valueOrNull ??
+        TaxContext(
+          isSellerRegistered: firm.isSalesTaxRegistered,
+          buyerIsRegistered: false,
+          buyerIsOnAtl: null,
+          province: firm.province,
+          pricesIncludeTax: false,
+          ruleVersion: 'pk-2026-27-v1',
+          hasNamedBuyer: cart.partyId != null,
+        ),
   );
 });
 
