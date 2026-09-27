@@ -6,6 +6,7 @@ import '../design/theme.dart';
 import '../design/tokens.dart';
 import '../features/home/home_screen.dart';
 import '../features/setup/setup_screen.dart';
+import '../features/sync/sync_keeper.dart';
 import '../features/users/sign_in_screen.dart';
 import '../l10n/app_strings.dart';
 import 'localisation.dart';
@@ -109,9 +110,12 @@ class _Root extends ConsumerWidget {
       // lock that bumps it is seen here.
       data: (profile) => profile == null
           ? const SetupScreen()
-          : ref.read(appServicesProvider).isLocked
-          ? const SignInScreen()
-          : const HomeScreen(),
+          : SyncKeeper(
+              key: ValueKey(profile.id),
+              child: ref.read(appServicesProvider).isLocked
+                  ? const SignInScreen()
+                  : const HomeScreen(),
+            ),
     );
   }
 }

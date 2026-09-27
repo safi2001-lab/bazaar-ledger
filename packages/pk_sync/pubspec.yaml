@@ -1,0 +1,14 @@
+name: pk_sync
+description: >-
+  LAN multi-counter sync for Bazaar Ledger: the wire format, the exchange
+  between two peers, and a small HTTP host and client for the shop's own
+  wi-fi. No database and no Flutter; the books reach it through SyncPeer.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.12.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.26.0

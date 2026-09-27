@@ -1240,5 +1240,68 @@
   "reportTajirDost": "Tajir Dost 1%",
   "reportTajirDostHint": "Har mahine ki bikri ka 1%",
   "paySection73": "Section 73: Rs 50,000 se zyada naqad adaygi par is maal ka input tax nahi milega. Bank ya cheque se dein.",
+  "syncTitle": "Wi-fi par counters",
+  "syncStaysInShop": "Counters dukaan ke apne wi-fi par milte hain. Internet par kuch nahin jata.",
+  "syncHostSwitch": "Counters ko is phone se milne dein",
+  "syncHostHint": "Yeh phone master hai. Isay dukaan ke wi-fi par khula rakhein.",
+  "syncAddress": "Counters ke liye pata",
+  "syncNoAddress": "Yeh phone kisi wi-fi par nahin",
+  "syncLetJoin": "Naya counter jorein",
+  "syncJoinCode": "Yeh code counter par likhein",
+  "syncDevices": "Is dukaan ke phone",
+  "syncMasterRole": "Master",
+  "syncCounterRole": "Counter · bill {prefix}",
+  "@syncCounterRole": {
+    "placeholders": {
+      "prefix": {
+        "type": "String"
+      }
+    }
+  },
+  "syncThisPhone": "Yeh phone",
+  "syncLastSynced": "Aakhri sync {when}",
+  "@syncLastSynced": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Abhi sync nahin hua",
+  "syncNow": "Abhi sync karein",
+  "syncDone": "{sent} bheje, {received} aaye",
+  "@syncDone": {
+    "placeholders": {
+      "sent": {
+        "type": "String"
+      },
+      "received": {
+        "type": "String"
+      }
+    }
+  },
+  "syncConflicts": "{count} takraao nishaan wale naam se rakhe gaye",
+  "@syncConflicts": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncCounterOf": "Yeh phone {host} wale master ka counter hai. Har aadhe minute mein khud sync hota hai.",
+  "@syncCounterOf": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "syncJoinTitle": "Dukaan ke master phone se jurein",
+  "syncJoinHint": "Master par: Settings, Wi-fi par counters, Naya counter jorein. Dono phone ek hi wi-fi par hon.",
+  "syncMasterAddress": "Master ka pata",
+  "syncCode": "Master par dikhaya code",
+  "syncCounterName": "Is counter ka naam",
+  "syncCounterNameHint": "maslan Counter 2",
+  "syncJoin": "Jurein",
   "chequeDone": "Ho gaya"
 }

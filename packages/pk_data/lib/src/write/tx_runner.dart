@@ -501,33 +501,43 @@ final class Tx {
   }
 
   Future<void> _writeAudit(_PendingAudit audit) async {
+    // Into the outbox as well, so the owner's activity log on the master
+    // shows what was done at every counter, not only at the master.
+    final id = _ids.next();
+    final hlc = _hlc.next().value;
+    final row = <String, Object?>{
+      'id': id,
+      'firm_id': actor.firmId,
+      'created_at_utc': actor.epochMillis,
+      'updated_at_utc': actor.epochMillis,
+      'created_by': actor.userId,
+      'updated_by': actor.userId,
+      'deleted_at_utc': null,
+      'origin_device_id': actor.deviceId,
+      'hlc': hlc,
+      'rev': 1,
+      'action_code': audit.action,
+      'entity_table': audit.entityTable,
+      'entity_id': audit.entityId,
+      'summary': audit.summary,
+      'before_json': audit.before == null ? null : jsonEncode(audit.before),
+      'after_json': audit.after == null ? null : jsonEncode(audit.after),
+      'amount_paisa': audit.amountPaisa,
+      'at_utc': actor.epochMillis,
+    };
+    final columns = row.keys.toList();
     await _db.customStatement(
-      '''
-      INSERT INTO audit_log (
-        id, firm_id, created_at_utc, updated_at_utc, created_by, updated_by,
-        deleted_at_utc, origin_device_id, hlc, rev,
-        action_code, entity_table, entity_id, summary, before_json,
-        after_json, amount_paisa, at_utc
-      ) VALUES (?, ?, ?, ?, ?, ?, NULL, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?, ?)
-      ''',
-      [
-        _ids.next(),
-        actor.firmId,
-        actor.epochMillis,
-        actor.epochMillis,
-        actor.userId,
-        actor.userId,
-        actor.deviceId,
-        _hlc.next().value,
-        audit.action,
-        audit.entityTable,
-        audit.entityId,
-        audit.summary,
-        audit.before == null ? null : jsonEncode(audit.before),
-        audit.after == null ? null : jsonEncode(audit.after),
-        audit.amountPaisa,
-        actor.epochMillis,
-      ],
+      'INSERT INTO audit_log (${columns.join(', ')}) '
+      'VALUES (${List.filled(columns.length, '?').join(', ')})',
+      _checked([for (final c in columns) row[c]]),
+    );
+    await _recordChange(
+      table: 'audit_log',
+      entityId: id,
+      op: 'insert',
+      payload: row,
+      hlc: hlc,
+      rev: 1,
     );
   }
 

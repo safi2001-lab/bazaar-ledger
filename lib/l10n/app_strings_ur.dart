@@ -2200,5 +2200,93 @@ class AppStringsUr extends AppStrings {
       'Section 73: Rs 50,000 se zyada naqad adaygi par is maal ka input tax nahi milega. Bank ya cheque se dein.';
 
   @override
+  String get syncTitle => 'Wi-fi par counters';
+
+  @override
+  String get syncStaysInShop =>
+      'Counters dukaan ke apne wi-fi par milte hain. Internet par kuch nahin jata.';
+
+  @override
+  String get syncHostSwitch => 'Counters ko is phone se milne dein';
+
+  @override
+  String get syncHostHint =>
+      'Yeh phone master hai. Isay dukaan ke wi-fi par khula rakhein.';
+
+  @override
+  String get syncAddress => 'Counters ke liye pata';
+
+  @override
+  String get syncNoAddress => 'Yeh phone kisi wi-fi par nahin';
+
+  @override
+  String get syncLetJoin => 'Naya counter jorein';
+
+  @override
+  String get syncJoinCode => 'Yeh code counter par likhein';
+
+  @override
+  String get syncDevices => 'Is dukaan ke phone';
+
+  @override
+  String get syncMasterRole => 'Master';
+
+  @override
+  String syncCounterRole(String prefix) {
+    return 'Counter · bill $prefix';
+  }
+
+  @override
+  String get syncThisPhone => 'Yeh phone';
+
+  @override
+  String syncLastSynced(String when) {
+    return 'Aakhri sync $when';
+  }
+
+  @override
+  String get syncNever => 'Abhi sync nahin hua';
+
+  @override
+  String get syncNow => 'Abhi sync karein';
+
+  @override
+  String syncDone(String sent, String received) {
+    return '$sent bheje, $received aaye';
+  }
+
+  @override
+  String syncConflicts(String count) {
+    return '$count takraao nishaan wale naam se rakhe gaye';
+  }
+
+  @override
+  String syncCounterOf(String host) {
+    return 'Yeh phone $host wale master ka counter hai. Har aadhe minute mein khud sync hota hai.';
+  }
+
+  @override
+  String get syncJoinTitle => 'Dukaan ke master phone se jurein';
+
+  @override
+  String get syncJoinHint =>
+      'Master par: Settings, Wi-fi par counters, Naya counter jorein. Dono phone ek hi wi-fi par hon.';
+
+  @override
+  String get syncMasterAddress => 'Master ka pata';
+
+  @override
+  String get syncCode => 'Master par dikhaya code';
+
+  @override
+  String get syncCounterName => 'Is counter ka naam';
+
+  @override
+  String get syncCounterNameHint => 'maslan Counter 2';
+
+  @override
+  String get syncJoin => 'Jurein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

@@ -2199,5 +2199,93 @@ class AppStringsEn extends AppStrings {
       'Section 73: paying more than Rs 50,000 in cash loses the input tax on these goods. Pay through the bank or by cheque.';
 
   @override
+  String get syncTitle => 'Counters on wi-fi';
+
+  @override
+  String get syncStaysInShop =>
+      'Counters sync over the shop\'s own wi-fi. Nothing goes to the internet.';
+
+  @override
+  String get syncHostSwitch => 'Let counters sync with this phone';
+
+  @override
+  String get syncHostHint =>
+      'This phone is the master. Keep it open on the shop\'s wi-fi.';
+
+  @override
+  String get syncAddress => 'Address for counters';
+
+  @override
+  String get syncNoAddress => 'This phone is not on a wi-fi network';
+
+  @override
+  String get syncLetJoin => 'Let a counter join';
+
+  @override
+  String get syncJoinCode => 'Type this code on the counter';
+
+  @override
+  String get syncDevices => 'Phones of this shop';
+
+  @override
+  String get syncMasterRole => 'Master';
+
+  @override
+  String syncCounterRole(String prefix) {
+    return 'Counter · bills $prefix';
+  }
+
+  @override
+  String get syncThisPhone => 'This phone';
+
+  @override
+  String syncLastSynced(String when) {
+    return 'Last synced $when';
+  }
+
+  @override
+  String get syncNever => 'Not synced yet';
+
+  @override
+  String get syncNow => 'Sync now';
+
+  @override
+  String syncDone(String sent, String received) {
+    return 'Sent $sent, received $received';
+  }
+
+  @override
+  String syncConflicts(String count) {
+    return '$count clashes kept under a marked name';
+  }
+
+  @override
+  String syncCounterOf(String host) {
+    return 'This phone is a counter of the master at $host. It syncs by itself every half minute.';
+  }
+
+  @override
+  String get syncJoinTitle => 'Join a shop\'s master phone';
+
+  @override
+  String get syncJoinHint =>
+      'On the master: Settings, Counters on wi-fi, Let a counter join. Both phones on the same wi-fi.';
+
+  @override
+  String get syncMasterAddress => 'Master\'s address';
+
+  @override
+  String get syncCode => 'Code shown on the master';
+
+  @override
+  String get syncCounterName => 'Name of this counter';
+
+  @override
+  String get syncCounterNameHint => 'e.g. Counter 2';
+
+  @override
+  String get syncJoin => 'Join';
+
+  @override
   String get chequeDone => 'Done';
 }

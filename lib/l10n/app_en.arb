@@ -1161,5 +1161,68 @@
   "reportTajirDost": "Tajir Dost 1%",
   "reportTajirDostHint": "One per cent of each month's sales",
   "paySection73": "Section 73: paying more than Rs 50,000 in cash loses the input tax on these goods. Pay through the bank or by cheque.",
+  "syncTitle": "Counters on wi-fi",
+  "syncStaysInShop": "Counters sync over the shop's own wi-fi. Nothing goes to the internet.",
+  "syncHostSwitch": "Let counters sync with this phone",
+  "syncHostHint": "This phone is the master. Keep it open on the shop's wi-fi.",
+  "syncAddress": "Address for counters",
+  "syncNoAddress": "This phone is not on a wi-fi network",
+  "syncLetJoin": "Let a counter join",
+  "syncJoinCode": "Type this code on the counter",
+  "syncDevices": "Phones of this shop",
+  "syncMasterRole": "Master",
+  "syncCounterRole": "Counter · bills {prefix}",
+  "@syncCounterRole": {
+    "placeholders": {
+      "prefix": {
+        "type": "String"
+      }
+    }
+  },
+  "syncThisPhone": "This phone",
+  "syncLastSynced": "Last synced {when}",
+  "@syncLastSynced": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "syncNever": "Not synced yet",
+  "syncNow": "Sync now",
+  "syncDone": "Sent {sent}, received {received}",
+  "@syncDone": {
+    "placeholders": {
+      "sent": {
+        "type": "String"
+      },
+      "received": {
+        "type": "String"
+      }
+    }
+  },
+  "syncConflicts": "{count} clashes kept under a marked name",
+  "@syncConflicts": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "syncCounterOf": "This phone is a counter of the master at {host}. It syncs by itself every half minute.",
+  "@syncCounterOf": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "syncJoinTitle": "Join a shop's master phone",
+  "syncJoinHint": "On the master: Settings, Counters on wi-fi, Let a counter join. Both phones on the same wi-fi.",
+  "syncMasterAddress": "Master's address",
+  "syncCode": "Code shown on the master",
+  "syncCounterName": "Name of this counter",
+  "syncCounterNameHint": "e.g. Counter 2",
+  "syncJoin": "Join",
   "chequeDone": "Done"
 }

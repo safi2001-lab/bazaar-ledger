@@ -11,6 +11,7 @@ import '../backup/backup_screen.dart';
 import '../firms/firms_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
+import '../sync/sync_screen.dart';
 import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
 import 'payment_details_screen.dart';
@@ -146,6 +147,13 @@ class SettingsScreen extends ConsumerWidget {
                   MaterialPageRoute<void>(builder: (_) => const TaxScreen()),
                 ),
               ),
+            _Row(
+              icon: Icons.wifi_tethering,
+              label: s.syncTitle,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SyncScreen()),
+              ),
+            ),
             if (services.can(Permission.backups))
               _Row(
                 icon: Icons.backup_outlined,

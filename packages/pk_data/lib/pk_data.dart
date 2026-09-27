@@ -11,6 +11,8 @@ export 'package:drift/drift.dart' show QueryExecutor, QueryRow, Value, Variable;
 export 'src/db/app_database.dart';
 export 'src/read/drift_app_queries.dart';
 export 'src/read/drift_report_source.dart';
+export 'src/sync/admit.dart';
+export 'src/sync/drift_sync_store.dart';
 export 'src/write/document_series.dart';
 export 'src/write/drift_attachments.dart';
 export 'src/write/drift_catalogue_writer.dart';

@@ -3998,6 +3998,156 @@ abstract class AppStrings {
   /// **'Section 73: Rs 50,000 se zyada naqad adaygi par is maal ka input tax nahi milega. Bank ya cheque se dein.'**
   String get paySection73;
 
+  /// No description provided for @syncTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wi-fi par counters'**
+  String get syncTitle;
+
+  /// No description provided for @syncStaysInShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counters dukaan ke apne wi-fi par milte hain. Internet par kuch nahin jata.'**
+  String get syncStaysInShop;
+
+  /// No description provided for @syncHostSwitch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counters ko is phone se milne dein'**
+  String get syncHostSwitch;
+
+  /// No description provided for @syncHostHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh phone master hai. Isay dukaan ke wi-fi par khula rakhein.'**
+  String get syncHostHint;
+
+  /// No description provided for @syncAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counters ke liye pata'**
+  String get syncAddress;
+
+  /// No description provided for @syncNoAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh phone kisi wi-fi par nahin'**
+  String get syncNoAddress;
+
+  /// No description provided for @syncLetJoin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya counter jorein'**
+  String get syncLetJoin;
+
+  /// No description provided for @syncJoinCode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh code counter par likhein'**
+  String get syncJoinCode;
+
+  /// No description provided for @syncDevices.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is dukaan ke phone'**
+  String get syncDevices;
+
+  /// No description provided for @syncMasterRole.
+  ///
+  /// In ur, this message translates to:
+  /// **'Master'**
+  String get syncMasterRole;
+
+  /// No description provided for @syncCounterRole.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter · bill {prefix}'**
+  String syncCounterRole(String prefix);
+
+  /// No description provided for @syncThisPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh phone'**
+  String get syncThisPhone;
+
+  /// No description provided for @syncLastSynced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhri sync {when}'**
+  String syncLastSynced(String when);
+
+  /// No description provided for @syncNever.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi sync nahin hua'**
+  String get syncNever;
+
+  /// No description provided for @syncNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi sync karein'**
+  String get syncNow;
+
+  /// No description provided for @syncDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{sent} bheje, {received} aaye'**
+  String syncDone(String sent, String received);
+
+  /// No description provided for @syncConflicts.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} takraao nishaan wale naam se rakhe gaye'**
+  String syncConflicts(String count);
+
+  /// No description provided for @syncCounterOf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh phone {host} wale master ka counter hai. Har aadhe minute mein khud sync hota hai.'**
+  String syncCounterOf(String host);
+
+  /// No description provided for @syncJoinTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ke master phone se jurein'**
+  String get syncJoinTitle;
+
+  /// No description provided for @syncJoinHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Master par: Settings, Wi-fi par counters, Naya counter jorein. Dono phone ek hi wi-fi par hon.'**
+  String get syncJoinHint;
+
+  /// No description provided for @syncMasterAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Master ka pata'**
+  String get syncMasterAddress;
+
+  /// No description provided for @syncCode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Master par dikhaya code'**
+  String get syncCode;
+
+  /// No description provided for @syncCounterName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is counter ka naam'**
+  String get syncCounterName;
+
+  /// No description provided for @syncCounterNameHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'maslan Counter 2'**
+  String get syncCounterNameHint;
+
+  /// No description provided for @syncJoin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jurein'**
+  String get syncJoin;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

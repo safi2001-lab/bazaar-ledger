@@ -30,6 +30,8 @@ export 'package:pk_platform/pk_platform.dart'
         ThermalReceiptRenderer,
         isPrintableLatin;
 export 'package:pk_reports/pk_reports.dart';
+export 'package:pk_sync/pk_sync.dart'
+    show ApplyResult, SyncRefused, SyncReport, defaultSyncPort;
 
 export 'src/app_config.dart';
 export 'src/app_services.dart';

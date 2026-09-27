@@ -490,14 +490,17 @@ final rules = <Rule>[
         'attribute, that no other counter will ever see, and that no '
         "integrity check will ever look at. Drift's typed API counts: "
         '`into(x).insert(...)` skips exactly the same guarantees as raw SQL '
-        'and reads more innocently. FirstRunSeeder is the one exception and '
+        'and reads more innocently. FirstRunSeeder is one exception and '
         'says so in its own doc comment: at first run there is no actor yet '
-        'for the envelope to name.',
+        'for the envelope to name. DriftSyncStore is the other: it writes '
+        'only rows another device already wrote through its own TxRunner, '
+        'with that envelope intact, and keeps the outbox entry they came in.',
     include: ['packages/pk_data/lib', 'packages/pk_bootstrap/lib'],
     exclude: [
       'pk_data/lib/src/write/tx_runner.dart',
       'pk_data/lib/src/write/first_run.dart',
       'pk_data/lib/src/db/app_database.dart',
+      'pk_data/lib/src/sync/drift_sync_store.dart',
     ],
     reads: Reads.code,
     forbid: [
@@ -537,6 +540,8 @@ final rules = <Rule>[
     exclude: [
       'pk_data/lib/src/write/tx_runner.dart',
       'pk_data/lib/src/write/first_run.dart',
+      // Merges rows other devices wrote; see one_write_path.
+      'pk_data/lib/src/sync/drift_sync_store.dart',
     ],
     reads: Reads.raw,
     forbid: [

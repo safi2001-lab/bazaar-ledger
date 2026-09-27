@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
@@ -11,9 +13,12 @@ import 'package:pk_data/pk_data.dart';
 import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:pk_reports/pk_reports.dart';
+import 'package:pk_sync/pk_sync.dart';
 import 'package:sqlite3/open.dart';
 import 'backup_service.dart';
 import 'printing_services.dart';
+
+part 'sync_services.dart';
 
 /// Everything the app can do, wired once.
 ///
@@ -244,6 +249,9 @@ final class AppServices {
 
   bool get isSetUp => _identity != null;
 
+  /// Counters on the shop's wi-fi.
+  late final SyncServices sync = SyncServices._(this);
+
   // ---------------------------------------------------------------------
   // Who is at the phone
   // ---------------------------------------------------------------------
@@ -386,6 +394,8 @@ final class AppServices {
       userId: owner.read<String>('id'),
       deviceId: deviceId,
     );
+    // The host serves one firm's books; it does not follow the switch.
+    await sync.stopHosting(forget: false);
     _adoptDevice(
       await resumeHlcClock(database, deviceId: deviceId, clock: clock),
     );
@@ -743,7 +753,10 @@ final class AppServices {
 
   Future<DatabaseHealth> checkHealth() => database.checkHealth();
 
-  Future<void> close() => database.close();
+  Future<void> close() async {
+    await sync._close();
+    await database.close();
+  }
 
   /// Where the books live on this phone. Public so the startup-failure
   /// screen, which has no services, can stage a restore into it.

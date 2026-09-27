@@ -31,6 +31,8 @@ dependencies:
     path: ../pk_platform
   pk_reports:
     path: ../pk_reports
+  pk_sync:
+    path: ../pk_sync
   sqlite3: ^2.9.0
   sqlite3_flutter_libs: ^0.5.26
 

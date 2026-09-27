@@ -755,6 +755,13 @@ packages:
       relative: true
     source: path
     version: "0.1.0"
+  pk_sync:
+    dependency: transitive
+    description:
+      path: "packages/pk_sync"
+      relative: true
+    source: path
+    version: "0.1.0"
   platform:
     dependency: transitive
     description:

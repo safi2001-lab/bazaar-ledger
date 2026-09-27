@@ -29,6 +29,29 @@ call of any kind, and a sale completes identically on a phone in airplane mode.
 it, including one to a thermal printer at `192.168.x.x` on the shop's own
 wi-fi.
 
+## Counters on the shop's wi-fi (M13)
+
+A shop with more than one till can let its counters sync with one master
+phone. This moves the books **between the shop's own phones, over the shop's
+own wi-fi**, and nowhere else:
+
+- Nothing listens until the owner turns on *Counters on wi-fi* on the master.
+  It then answers on port 47470 of its local address, and stops when it is
+  turned off.
+- A counter joins only with the six-digit code the master shows while joining
+  is open; one code lets one phone in, and five wrong codes close it. Every
+  request after that carries the shop's sync key, which never leaves the
+  shop's phones.
+- What travels is the outbox every write already keeps: the rows of the
+  shop's books, staff PIN hashes included, so staff sign in at any counter.
+- **The traffic is not encrypted.** Anyone on the same wi-fi who can watch
+  packets could read the books as they pass. A shop that shares its wi-fi
+  with customers should keep sync off, or put the tills on a network of
+  their own. Encrypting the traffic is not built.
+
+No server is involved at any point, and the counters bill on their own when
+the master is off; they catch up the next time both are on the wi-fi.
+
 ## What Google's ML Kit sends, and why it is here
 
 Adding camera barcode scanning brought in `com.google.mlkit:barcode-scanning`,
@@ -165,7 +188,7 @@ kind.
 
 | Permission | Source | Prompts? | Why |
 |---|---|---|---|
-| `INTERNET` | this app, and ML Kit's transport | no | Android gates every socket behind it, including one to a LAN printer |
+| `INTERNET` | this app, and ML Kit's transport | no | Android gates every socket behind it, including one to a LAN printer and the counters' sync on the shop's wi-fi |
 | `CAMERA` | this app | yes, on first scan | reading a barcode off a packet |
 | `ACCESS_NETWORK_STATE` | ML Kit's transport | no | normal permission; reads connectivity state, grants no network access |
 | `BLUETOOTH_CONNECT`, `BLUETOOTH_SCAN`, and the two legacy ones | the printer plugin | yes, if a shop uses a Bluetooth printer | talking to an already-paired printer |

@@ -21,6 +21,8 @@ dependencies:
     path: ../pk_money
   pk_reports:
     path: ../pk_reports
+  pk_sync:
+    path: ../pk_sync
 
 dev_dependencies:
   build_runner: ^2.4.15

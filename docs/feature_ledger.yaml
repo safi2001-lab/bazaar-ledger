@@ -272,10 +272,24 @@ milestones:
 
   - id: M13
     title: LAN multi-counter sync over the shop's own wi-fi
-    state: planned
+    # Opened and sealed 27 Sep 2026 at 4/4. The outbox format had been in
+    # the schema since M0 with nothing reading it. A master now serves the
+    # counters over plain HTTP on the shop's wi-fi; a counter joins once
+    # with the code the master shows, receives the whole shop, prints bills
+    # under its own letter, and syncs every half minute. Rows merge last
+    # writer wins by HLC, the ledgers are append-only so no sale or stock
+    # movement is merged away, and the stock balances are rebuilt from the
+    # whole ledger after each merge. Not built: finding the master without
+    # typing its address (mDNS), encrypting the traffic, counter-to-counter
+    # sync without the master, merging an edit column by column rather than
+    # row by row, and a screen for resolving a clash (they are counted, and
+    # kept under a marked name).
+    state: sealed
     owns:
       - lib/features/sync/**
       - packages/pk_sync/**
+      - packages/pk_data/lib/src/sync/**
+      - packages/pk_bootstrap/lib/src/sync_services.dart
 
   - id: M14
     title: Launch hardening and Excel import
@@ -3856,3 +3870,64 @@ features:
       - an unregistered shop charges no tax at all
       - further tax is added for a named unregistered business
       - Tajir Dost is one per cent of the month, less the bijli tax
+
+  # ---------------------------------------------------------------------------
+  # M13 — counters on the shop's wi-fi
+  # ---------------------------------------------------------------------------
+
+  - id: M13-WIRE-01
+    milestone: M13
+    title: A master serves its counters over the shop's wi-fi, behind a code and a key
+    status: done
+    # pk_sync: the exchange (push, then pull, by version vector) and a small
+    # HTTP host and client on dart:io. Joining needs the six-digit code the
+    # master shows, once; everything after needs the shop's sync key.
+    proof:
+      - sync exchange two counters are level after one round each through the master
+      - sync exchange a round with nothing new moves nothing
+      - sync over http a counter joins with the code and then syncs with the key
+      - sync over http a wrong key is refused and nothing moves
+      - sync over http joining is shut until opened, and five wrong codes shut it
+      - sync over http a master that is not there is said in words
+
+  - id: M13-JOIN-01
+    milestone: M13
+    title: A counter joins the master and opens the whole shop under its own letter
+    status: done
+    # The master makes the counter's device row with the next free letter
+    # and puts the whole shipped chart in the books first, so two tills
+    # never add the same account apart. Staff and their PIN hashes travel.
+    proof:
+      - lan sync a counter joins the master and opens the whole shop
+      - lan sync staff PINs travel, so staff sign in at the counter
+      - lan sync a wrong code does not let a phone join
+
+  - id: M13-MERGE-01
+    milestone: M13
+    title: Sales, stock and edits from every till merge into the same books
+    status: done
+    # DriftSyncStore merges the outbox by HLC, keeps each entry under its
+    # own device and sequence so the master can relay it, rebuilds the
+    # stock balances, and keeps a clash of code or barcode under a marked
+    # name. The activity log now travels through the outbox too.
+    proof:
+      - lan sync a sale on the counter reaches the master's books
+      - lan sync two tills selling at once both count against the stock
+      - lan sync the later of two edits wins on both phones
+      - lan sync a second sync with nothing new moves nothing
+      - lan sync what was done at a counter is in the master's activity log
+      - lan sync a second counter gets the first one's sales through the master
+      - lan sync two items given the same barcode apart are both kept
+
+  - id: M13-SCREEN-01
+    milestone: M13
+    title: Sync is turned on, joined and watched from the phone
+    status: done
+    # Settings, Counters on wi-fi: the master's switch, its address, the
+    # join code and the shop's phones; on a counter, Sync now. The welcome
+    # screen offers joining a master instead of starting a shop. A master
+    # that was hosting hosts again when the app opens; a counter syncs by
+    # itself every thirty seconds.
+    proof:
+      - the master turns sync on and shows a code for a counter
+      - a new phone joins the master from the welcome screen
