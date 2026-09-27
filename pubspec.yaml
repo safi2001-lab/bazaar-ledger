@@ -115,3 +115,12 @@ flutter:
     # package embeds only the glyphs a given receipt uses — about 2.6 KB per
     # bill, and nothing at all on a bill with no Urdu in it.
     - assets/fonts/NotoNaskhArabic-Regular.ttf
+
+# SQLite3MultipleCiphers in place of plain SQLite, so the books on the phone
+# can be encrypted at rest (M14). A database opened with no key is an
+# ordinary SQLite file, so tests and a phone whose keystore is unavailable
+# work exactly as before.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

@@ -20,8 +20,8 @@ void main() {
 
   setUp(() {
     root = Directory.systemTemp.createTempSync('pkbak_test');
-    // drift_flutter asks the platform for a temp directory before it opens a
-    // file. Answered with this test's own, and nothing else is stubbed.
+    // Anything that asks the platform for a directory is answered with this
+    // test's own, and nothing else is stubbed.
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
           const MethodChannel('plugins.flutter.io/path_provider'),
@@ -167,7 +167,7 @@ void main() {
     );
 
     final kept = raw.sqlite3.open('$target${Restore.keptSuffix}');
-    addTearDown(kept.dispose);
+    addTearDown(kept.close);
     expect(
       kept.select('SELECT name FROM firms').first['name'],
       'Madina General Store',
@@ -238,7 +238,7 @@ void main() {
         ..writeAsBytesSync(opened.database);
       raw.sqlite3.open(future.path)
         ..execute('PRAGMA user_version = 99')
-        ..dispose();
+        ..close();
 
       expect(
         Restore.inspect(
@@ -269,7 +269,7 @@ void main() {
     final stranger = File(p.join(root.path, 'stranger.db'));
     raw.sqlite3.open(stranger.path)
       ..execute('CREATE TABLE notes (body TEXT)')
-      ..dispose();
+      ..close();
 
     expect(
       Restore.inspect(

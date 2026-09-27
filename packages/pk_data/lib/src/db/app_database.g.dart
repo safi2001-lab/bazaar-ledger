@@ -34751,7 +34751,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.devices,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.devices.firmId),
+    aliasName: 'firms__id__devices__firm_id',
   );
 
   $DevicesProcessedTableManager get devicesRefs {
@@ -34770,7 +34770,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.users,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.users.firmId),
+    aliasName: 'firms__id__users__firm_id',
   );
 
   $UsersProcessedTableManager get usersRefs {
@@ -34789,7 +34789,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.taxRules,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.taxRules.firmId),
+    aliasName: 'firms__id__tax_rules__firm_id',
   );
 
   $TaxRulesProcessedTableManager get taxRulesRefs {
@@ -34807,7 +34807,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<Attachments, List<Attachment>>
   _attachmentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.attachments,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.attachments.firmId),
+    aliasName: 'firms__id__attachments__firm_id',
   );
 
   $AttachmentsProcessedTableManager get attachmentsRefs {
@@ -34826,7 +34826,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.auditLog,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.auditLog.firmId),
+    aliasName: 'firms__id__audit_log__firm_id',
   );
 
   $AuditLogProcessedTableManager get auditLogRefs {
@@ -34844,7 +34844,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<ChangeLog, List<ChangeLogData>>
   _changeLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.changeLog,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.changeLog.firmId),
+    aliasName: 'firms__id__change_log__firm_id',
   );
 
   $ChangeLogProcessedTableManager get changeLogRefs {
@@ -34863,7 +34863,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.parties,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.parties.firmId),
+    aliasName: 'firms__id__parties__firm_id',
   );
 
   $PartiesProcessedTableManager get partiesRefs {
@@ -34882,7 +34882,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.documents,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.documents.firmId),
+    aliasName: 'firms__id__documents__firm_id',
   );
 
   $DocumentsProcessedTableManager get documentsRefs {
@@ -34901,7 +34901,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.printJobs,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.printJobs.firmId),
+    aliasName: 'firms__id__print_jobs__firm_id',
   );
 
   $PrintJobsProcessedTableManager get printJobsRefs {
@@ -34920,7 +34920,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.accounts,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.accounts.firmId),
+    aliasName: 'firms__id__accounts__firm_id',
   );
 
   $AccountsProcessedTableManager get accountsRefs {
@@ -34938,7 +34938,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<PaymentAccounts, List<PaymentAccount>>
   _paymentAccountsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.paymentAccounts,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.paymentAccounts.firmId),
+    aliasName: 'firms__id__payment_accounts__firm_id',
   );
 
   $PaymentAccountsProcessedTableManager get paymentAccountsRefs {
@@ -34959,7 +34959,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.payments,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.payments.firmId),
+    aliasName: 'firms__id__payments__firm_id',
   );
 
   $PaymentsProcessedTableManager get paymentsRefs {
@@ -34977,7 +34977,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<JournalEntries, List<JournalEntry>>
   _journalEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalEntries,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.journalEntries.firmId),
+    aliasName: 'firms__id__journal_entries__firm_id',
   );
 
   $JournalEntriesProcessedTableManager get journalEntriesRefs {
@@ -34996,7 +34996,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.units,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.units.firmId),
+    aliasName: 'firms__id__units__firm_id',
   );
 
   $UnitsProcessedTableManager get unitsRefs {
@@ -35015,7 +35015,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.items,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.items.firmId),
+    aliasName: 'firms__id__items__firm_id',
   );
 
   $ItemsProcessedTableManager get itemsRefs {
@@ -35033,7 +35033,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.journalLines.firmId),
+    aliasName: 'firms__id__journal_lines__firm_id',
   );
 
   $JournalLinesProcessedTableManager get journalLinesRefs {
@@ -35052,7 +35052,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.stockLots,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.stockLots.firmId),
+    aliasName: 'firms__id__stock_lots__firm_id',
   );
 
   $StockLotsProcessedTableManager get stockLotsRefs {
@@ -35070,7 +35070,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
   _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentLines,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.documentLines.firmId),
+    aliasName: 'firms__id__document_lines__firm_id',
   );
 
   $DocumentLinesProcessedTableManager get documentLinesRefs {
@@ -35088,7 +35088,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
   _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.stockLedger,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.stockLedger.firmId),
+    aliasName: 'firms__id__stock_ledger__firm_id',
   );
 
   $StockLedgerProcessedTableManager get stockLedgerRefs {
@@ -35107,10 +35107,7 @@ final class $FirmsReferences
   _paymentAllocationsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.paymentAllocations,
-        aliasName: $_aliasNameGenerator(
-          db.firms.id,
-          db.paymentAllocations.firmId,
-        ),
+        aliasName: 'firms__id__payment_allocations__firm_id',
       );
 
   $PaymentAllocationsProcessedTableManager get paymentAllocationsRefs {
@@ -35131,10 +35128,7 @@ final class $FirmsReferences
   _documentLineTaxesRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.documentLineTaxes,
-        aliasName: $_aliasNameGenerator(
-          db.firms.id,
-          db.documentLineTaxes.firmId,
-        ),
+        aliasName: 'firms__id__document_line_taxes__firm_id',
       );
 
   $DocumentLineTaxesProcessedTableManager get documentLineTaxesRefs {
@@ -35155,7 +35149,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.docLinks,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.docLinks.firmId),
+    aliasName: 'firms__id__doc_links__firm_id',
   );
 
   $DocLinksProcessedTableManager get docLinksRefs {
@@ -35173,7 +35167,7 @@ final class $FirmsReferences
   static MultiTypedResultKey<UnitConversions, List<UnitConversion>>
   _unitConversionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.unitConversions,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.unitConversions.firmId),
+    aliasName: 'firms__id__unit_conversions__firm_id',
   );
 
   $UnitConversionsProcessedTableManager get unitConversionsRefs {
@@ -35194,7 +35188,7 @@ final class $FirmsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.settings,
-    aliasName: $_aliasNameGenerator(db.firms.id, db.settings.firmId),
+    aliasName: 'firms__id__settings__firm_id',
   );
 
   $SettingsProcessedTableManager get settingsRefs {
@@ -35213,10 +35207,7 @@ final class $FirmsReferences
   _numberingSequencesRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.numberingSequences,
-        aliasName: $_aliasNameGenerator(
-          db.firms.id,
-          db.numberingSequences.firmId,
-        ),
+        aliasName: 'firms__id__numbering_sequences__firm_id',
       );
 
   $NumberingSequencesProcessedTableManager get numberingSequencesRefs {
@@ -37167,7 +37158,12 @@ class $FirmsTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $FirmsReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<Firms, Firm>(table),
+                  $FirmsReferences(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback:
               ({
@@ -37694,9 +37690,8 @@ final class $DevicesReferences
     extends BaseReferences<_$AppDatabase, Devices, Device> {
   $DevicesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.devices.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('devices__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -37712,11 +37707,28 @@ final class $DevicesReferences
     );
   }
 
+  static Devices _originDeviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('devices__origin_device_id__devices__id');
+
+  $DevicesProcessedTableManager get originDeviceId {
+    final $_column = $_itemColumn<String>('origin_device_id')!;
+
+    final manager = $DevicesTableManager(
+      $_db,
+      $_db.devices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
   static MultiTypedResultKey<Users, List<User>> _usersRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.users,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.users.originDeviceId),
+    aliasName: 'devices__id__users__origin_device_id',
   );
 
   $UsersProcessedTableManager get usersRefs {
@@ -37735,7 +37747,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.taxRules,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.taxRules.originDeviceId),
+    aliasName: 'devices__id__tax_rules__origin_device_id',
   );
 
   $TaxRulesProcessedTableManager get taxRulesRefs {
@@ -37753,10 +37765,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<Attachments, List<Attachment>>
   _attachmentsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.attachments,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.attachments.originDeviceId,
-    ),
+    aliasName: 'devices__id__attachments__origin_device_id',
   );
 
   $AttachmentsProcessedTableManager get attachmentsRefs {
@@ -37775,7 +37784,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.auditLog,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.auditLog.originDeviceId),
+    aliasName: 'devices__id__audit_log__origin_device_id',
   );
 
   $AuditLogProcessedTableManager get auditLogRefs {
@@ -37793,7 +37802,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<ChangeLog, List<ChangeLogData>>
   _changeLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.changeLog,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.changeLog.originDeviceId),
+    aliasName: 'devices__id__change_log__origin_device_id',
   );
 
   $ChangeLogProcessedTableManager get changeLogRefs {
@@ -37812,7 +37821,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.parties,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.parties.originDeviceId),
+    aliasName: 'devices__id__parties__origin_device_id',
   );
 
   $PartiesProcessedTableManager get partiesRefs {
@@ -37831,7 +37840,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.documents,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.documents.originDeviceId),
+    aliasName: 'devices__id__documents__origin_device_id',
   );
 
   $DocumentsProcessedTableManager get documentsRefs {
@@ -37850,7 +37859,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.printJobs,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.printJobs.originDeviceId),
+    aliasName: 'devices__id__print_jobs__origin_device_id',
   );
 
   $PrintJobsProcessedTableManager get printJobsRefs {
@@ -37869,7 +37878,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.accounts,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.accounts.originDeviceId),
+    aliasName: 'devices__id__accounts__origin_device_id',
   );
 
   $AccountsProcessedTableManager get accountsRefs {
@@ -37887,10 +37896,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<PaymentAccounts, List<PaymentAccount>>
   _paymentAccountsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.paymentAccounts,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.paymentAccounts.originDeviceId,
-    ),
+    aliasName: 'devices__id__payment_accounts__origin_device_id',
   );
 
   $PaymentAccountsProcessedTableManager get paymentAccountsRefs {
@@ -37911,7 +37917,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.payments,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.payments.originDeviceId),
+    aliasName: 'devices__id__payments__origin_device_id',
   );
 
   $PaymentsProcessedTableManager get paymentsRefs {
@@ -37929,10 +37935,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<JournalEntries, List<JournalEntry>>
   _journalEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalEntries,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.journalEntries.originDeviceId,
-    ),
+    aliasName: 'devices__id__journal_entries__origin_device_id',
   );
 
   $JournalEntriesProcessedTableManager get journalEntriesRefs {
@@ -37951,7 +37954,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.units,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.units.originDeviceId),
+    aliasName: 'devices__id__units__origin_device_id',
   );
 
   $UnitsProcessedTableManager get unitsRefs {
@@ -37970,7 +37973,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.items,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.items.originDeviceId),
+    aliasName: 'devices__id__items__origin_device_id',
   );
 
   $ItemsProcessedTableManager get itemsRefs {
@@ -37988,10 +37991,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.journalLines.originDeviceId,
-    ),
+    aliasName: 'devices__id__journal_lines__origin_device_id',
   );
 
   $JournalLinesProcessedTableManager get journalLinesRefs {
@@ -38010,7 +38010,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.stockLots,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.stockLots.originDeviceId),
+    aliasName: 'devices__id__stock_lots__origin_device_id',
   );
 
   $StockLotsProcessedTableManager get stockLotsRefs {
@@ -38028,10 +38028,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
   _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentLines,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.documentLines.originDeviceId,
-    ),
+    aliasName: 'devices__id__document_lines__origin_device_id',
   );
 
   $DocumentLinesProcessedTableManager get documentLinesRefs {
@@ -38049,10 +38046,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
   _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.stockLedger,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.stockLedger.originDeviceId,
-    ),
+    aliasName: 'devices__id__stock_ledger__origin_device_id',
   );
 
   $StockLedgerProcessedTableManager get stockLedgerRefs {
@@ -38071,10 +38065,7 @@ final class $DevicesReferences
   _paymentAllocationsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.paymentAllocations,
-        aliasName: $_aliasNameGenerator(
-          db.devices.id,
-          db.paymentAllocations.originDeviceId,
-        ),
+        aliasName: 'devices__id__payment_allocations__origin_device_id',
       );
 
   $PaymentAllocationsProcessedTableManager get paymentAllocationsRefs {
@@ -38095,10 +38086,7 @@ final class $DevicesReferences
   _documentLineTaxesRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.documentLineTaxes,
-        aliasName: $_aliasNameGenerator(
-          db.devices.id,
-          db.documentLineTaxes.originDeviceId,
-        ),
+        aliasName: 'devices__id__document_line_taxes__origin_device_id',
       );
 
   $DocumentLineTaxesProcessedTableManager get documentLineTaxesRefs {
@@ -38119,7 +38107,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.docLinks,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.docLinks.originDeviceId),
+    aliasName: 'devices__id__doc_links__origin_device_id',
   );
 
   $DocLinksProcessedTableManager get docLinksRefs {
@@ -38137,10 +38125,7 @@ final class $DevicesReferences
   static MultiTypedResultKey<UnitConversions, List<UnitConversion>>
   _unitConversionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.unitConversions,
-    aliasName: $_aliasNameGenerator(
-      db.devices.id,
-      db.unitConversions.originDeviceId,
-    ),
+    aliasName: 'devices__id__unit_conversions__origin_device_id',
   );
 
   $UnitConversionsProcessedTableManager get unitConversionsRefs {
@@ -38161,7 +38146,7 @@ final class $DevicesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.settings,
-    aliasName: $_aliasNameGenerator(db.devices.id, db.settings.originDeviceId),
+    aliasName: 'devices__id__settings__origin_device_id',
   );
 
   $SettingsProcessedTableManager get settingsRefs {
@@ -38212,11 +38197,6 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
 
   ColumnFilters<int> get deletedAtUtc => $composableBuilder(
     column: $table.deletedAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get originDeviceId => $composableBuilder(
-    column: $table.originDeviceId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -38294,6 +38274,29 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
           }) => $FirmsFilterComposer(
             $db: $db,
             $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesFilterComposer get originDeviceId {
+    final $DevicesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesFilterComposer(
+            $db: $db,
+            $table: $db.devices,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -38917,11 +38920,6 @@ class $DevicesOrderingComposer extends Composer<_$AppDatabase, Devices> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get originDeviceId => $composableBuilder(
-    column: $table.originDeviceId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get hlc => $composableBuilder(
     column: $table.hlc,
     builder: (column) => ColumnOrderings(column),
@@ -39004,6 +39002,29 @@ class $DevicesOrderingComposer extends Composer<_$AppDatabase, Devices> {
     );
     return composer;
   }
+
+  $DevicesOrderingComposer get originDeviceId {
+    final $DevicesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesOrderingComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
@@ -39035,11 +39056,6 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
 
   GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
     column: $table.deletedAtUtc,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get originDeviceId => $composableBuilder(
-    column: $table.originDeviceId,
     builder: (column) => column,
   );
 
@@ -39101,6 +39117,29 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
           }) => $FirmsAnnotationComposer(
             $db: $db,
             $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesAnnotationComposer get originDeviceId {
+    final $DevicesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesAnnotationComposer(
+            $db: $db,
+            $table: $db.devices,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39701,6 +39740,7 @@ class $DevicesTableManager
           Device,
           PrefetchHooks Function({
             bool firmId,
+            bool originDeviceId,
             bool usersRefs,
             bool taxRulesRefs,
             bool attachmentsRefs,
@@ -39831,12 +39871,16 @@ class $DevicesTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $DevicesReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Devices, Device>(table),
+                  $DevicesReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
               ({
                 firmId = false,
+                originDeviceId = false,
                 usersRefs = false,
                 taxRulesRefs = false,
                 attachmentsRefs = false,
@@ -39913,6 +39957,19 @@ class $DevicesTableManager
                                         ._firmIdTable(db),
                                     referencedColumn: $DevicesReferences
                                         ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $DevicesReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $DevicesReferences
+                                        ._originDeviceIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -40304,6 +40361,7 @@ typedef $DevicesProcessedTableManager =
       Device,
       PrefetchHooks Function({
         bool firmId,
+        bool originDeviceId,
         bool usersRefs,
         bool taxRulesRefs,
         bool attachmentsRefs,
@@ -40385,7 +40443,7 @@ final class $UsersReferences
   $UsersReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias($_aliasNameGenerator(db.users.firmId, db.firms.id));
+      db.firms.createAlias('users__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -40401,10 +40459,42 @@ final class $UsersReferences
     );
   }
 
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('users__created_by__users__id');
+
+  $UsersProcessedTableManager get createdBy {
+    final $_column = $_itemColumn<String>('created_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('users__updated_by__users__id');
+
+  $UsersProcessedTableManager get updatedBy {
+    final $_column = $_itemColumn<String>('updated_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.users.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('users__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -40441,16 +40531,6 @@ class $UsersFilterComposer extends Composer<_$AppDatabase, Users> {
 
   ColumnFilters<int> get updatedAtUtc => $composableBuilder(
     column: $table.updatedAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get updatedBy => $composableBuilder(
-    column: $table.updatedBy,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -40547,6 +40627,52 @@ class $UsersFilterComposer extends Composer<_$AppDatabase, Users> {
     return composer;
   }
 
+  $UsersFilterComposer get createdBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get updatedBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $DevicesFilterComposer get originDeviceId {
     final $DevicesFilterComposer composer = $composerBuilder(
       composer: this,
@@ -40591,16 +40717,6 @@ class $UsersOrderingComposer extends Composer<_$AppDatabase, Users> {
 
   ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
     column: $table.updatedAtUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get createdBy => $composableBuilder(
-    column: $table.createdBy,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get updatedBy => $composableBuilder(
-    column: $table.updatedBy,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -40697,6 +40813,52 @@ class $UsersOrderingComposer extends Composer<_$AppDatabase, Users> {
     return composer;
   }
 
+  $UsersOrderingComposer get createdBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get updatedBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $DevicesOrderingComposer get originDeviceId {
     final $DevicesOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -40741,12 +40903,6 @@ class $UsersAnnotationComposer extends Composer<_$AppDatabase, Users> {
     column: $table.updatedAtUtc,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get createdBy =>
-      $composableBuilder(column: $table.createdBy, builder: (column) => column);
-
-  GeneratedColumn<String> get updatedBy =>
-      $composableBuilder(column: $table.updatedBy, builder: (column) => column);
 
   GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
     column: $table.deletedAtUtc,
@@ -40825,6 +40981,52 @@ class $UsersAnnotationComposer extends Composer<_$AppDatabase, Users> {
     return composer;
   }
 
+  $UsersAnnotationComposer get createdBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get updatedBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $DevicesAnnotationComposer get originDeviceId {
     final $DevicesAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -40862,7 +41064,12 @@ class $UsersTableManager
           $UsersUpdateCompanionBuilder,
           (User, $UsersReferences),
           User,
-          PrefetchHooks Function({bool firmId, bool originDeviceId})
+          PrefetchHooks Function({
+            bool firmId,
+            bool createdBy,
+            bool updatedBy,
+            bool originDeviceId,
+          })
         > {
   $UsersTableManager(_$AppDatabase db, Users table)
     : super(
@@ -40972,63 +41179,99 @@ class $UsersTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $UsersReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<Users, User>(table),
+                  $UsersReferences(db, table, e),
+                ),
+              )
               .toList(),
-          prefetchHooksCallback: ({firmId = false, originDeviceId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (firmId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.firmId,
-                                referencedTable: $UsersReferences._firmIdTable(
-                                  db,
-                                ),
-                                referencedColumn: $UsersReferences
-                                    ._firmIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-                    if (originDeviceId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.originDeviceId,
-                                referencedTable: $UsersReferences
-                                    ._originDeviceIdTable(db),
-                                referencedColumn: $UsersReferences
-                                    ._originDeviceIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
+          prefetchHooksCallback:
+              ({
+                firmId = false,
+                createdBy = false,
+                updatedBy = false,
+                originDeviceId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (firmId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.firmId,
+                                    referencedTable: $UsersReferences
+                                        ._firmIdTable(db),
+                                    referencedColumn: $UsersReferences
+                                        ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $UsersReferences
+                                        ._createdByTable(db),
+                                    referencedColumn: $UsersReferences
+                                        ._createdByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (updatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.updatedBy,
+                                    referencedTable: $UsersReferences
+                                        ._updatedByTable(db),
+                                    referencedColumn: $UsersReferences
+                                        ._updatedByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $UsersReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $UsersReferences
+                                        ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
-                    return state;
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
                   },
-              getPrefetchedDataCallback: (items) async {
-                return [];
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -41045,7 +41288,12 @@ typedef $UsersProcessedTableManager =
       $UsersUpdateCompanionBuilder,
       (User, $UsersReferences),
       User,
-      PrefetchHooks Function({bool firmId, bool originDeviceId})
+      PrefetchHooks Function({
+        bool firmId,
+        bool createdBy,
+        bool updatedBy,
+        bool originDeviceId,
+      })
     >;
 typedef $TaxRulesCreateCompanionBuilder =
     TaxRulesCompanion Function({
@@ -41114,9 +41362,8 @@ final class $TaxRulesReferences
     extends BaseReferences<_$AppDatabase, TaxRules, TaxRule> {
   $TaxRulesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.taxRules.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('tax_rules__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -41132,9 +41379,8 @@ final class $TaxRulesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.taxRules.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('tax_rules__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -41150,9 +41396,8 @@ final class $TaxRulesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.taxRules.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('tax_rules__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -41169,9 +41414,7 @@ final class $TaxRulesReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.taxRules.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('tax_rules__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -41191,7 +41434,7 @@ final class $TaxRulesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.items,
-    aliasName: $_aliasNameGenerator(db.taxRules.id, db.items.taxRuleId),
+    aliasName: 'tax_rules__id__items__tax_rule_id',
   );
 
   $ItemsProcessedTableManager get itemsRefs {
@@ -41210,10 +41453,7 @@ final class $TaxRulesReferences
   _documentLineTaxesRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.documentLineTaxes,
-        aliasName: $_aliasNameGenerator(
-          db.taxRules.id,
-          db.documentLineTaxes.taxRuleId,
-        ),
+        aliasName: 'tax_rules__id__document_line_taxes__tax_rule_id',
       );
 
   $DocumentLineTaxesProcessedTableManager get documentLineTaxesRefs {
@@ -42110,7 +42350,10 @@ class $TaxRulesTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $TaxRulesReferences(db, table, e)),
+                (e) => (
+                  e.readTable<TaxRules, TaxRule>(table),
+                  $TaxRulesReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -42319,9 +42562,8 @@ final class $AttachmentsReferences
     extends BaseReferences<_$AppDatabase, Attachments, Attachment> {
   $AttachmentsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.attachments.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('attachments__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -42337,9 +42579,8 @@ final class $AttachmentsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.attachments.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('attachments__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -42355,9 +42596,8 @@ final class $AttachmentsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.attachments.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('attachments__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -42374,9 +42614,7 @@ final class $AttachmentsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.attachments.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('attachments__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -42395,10 +42633,7 @@ final class $AttachmentsReferences
   static MultiTypedResultKey<PaymentAccounts, List<PaymentAccount>>
   _paymentAccountsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.paymentAccounts,
-    aliasName: $_aliasNameGenerator(
-      db.attachments.id,
-      db.paymentAccounts.qrAttachmentId,
-    ),
+    aliasName: 'attachments__id__payment_accounts__qr_attachment_id',
   );
 
   $PaymentAccountsProcessedTableManager get paymentAccountsRefs {
@@ -42419,10 +42654,7 @@ final class $AttachmentsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.payments,
-    aliasName: $_aliasNameGenerator(
-      db.attachments.id,
-      db.payments.chequeImageAttachmentId,
-    ),
+    aliasName: 'attachments__id__payments__cheque_image_attachment_id',
   );
 
   $PaymentsProcessedTableManager get paymentsRefs {
@@ -42441,10 +42673,7 @@ final class $AttachmentsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.items,
-    aliasName: $_aliasNameGenerator(
-      db.attachments.id,
-      db.items.imageAttachmentId,
-    ),
+    aliasName: 'attachments__id__items__image_attachment_id',
   );
 
   $ItemsProcessedTableManager get itemsRefs {
@@ -43277,8 +43506,10 @@ class $AttachmentsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $AttachmentsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Attachments, Attachment>(table),
+                  $AttachmentsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -43509,9 +43740,8 @@ final class $AuditLogReferences
     extends BaseReferences<_$AppDatabase, AuditLog, AuditLogData> {
   $AuditLogReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.auditLog.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('audit_log__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -43527,9 +43757,8 @@ final class $AuditLogReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.auditLog.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('audit_log__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -43545,9 +43774,8 @@ final class $AuditLogReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.auditLog.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('audit_log__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -43564,9 +43792,7 @@ final class $AuditLogReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.auditLog.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('audit_log__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -44199,7 +44425,10 @@ class $AuditLogTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $AuditLogReferences(db, table, e)),
+                (e) => (
+                  e.readTable<AuditLog, AuditLogData>(table),
+                  $AuditLogReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -44364,9 +44593,8 @@ final class $ChangeLogReferences
     extends BaseReferences<_$AppDatabase, ChangeLog, ChangeLogData> {
   $ChangeLogReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.changeLog.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('change_log__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -44382,9 +44610,8 @@ final class $ChangeLogReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.changeLog.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('change_log__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -44400,9 +44627,8 @@ final class $ChangeLogReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.changeLog.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('change_log__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -44419,9 +44645,7 @@ final class $ChangeLogReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.changeLog.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('change_log__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -45086,7 +45310,10 @@ class $ChangeLogTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $ChangeLogReferences(db, table, e)),
+                (e) => (
+                  e.readTable<ChangeLog, ChangeLogData>(table),
+                  $ChangeLogReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -45277,9 +45504,8 @@ final class $PartiesReferences
     extends BaseReferences<_$AppDatabase, Parties, Party> {
   $PartiesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.parties.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('parties__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -45295,9 +45521,8 @@ final class $PartiesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.parties.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('parties__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -45313,9 +45538,8 @@ final class $PartiesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.parties.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('parties__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -45332,9 +45556,7 @@ final class $PartiesReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.parties.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('parties__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -45354,7 +45576,7 @@ final class $PartiesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.documents,
-    aliasName: $_aliasNameGenerator(db.parties.id, db.documents.partyId),
+    aliasName: 'parties__id__documents__party_id',
   );
 
   $DocumentsProcessedTableManager get documentsRefs {
@@ -45373,7 +45595,7 @@ final class $PartiesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.payments,
-    aliasName: $_aliasNameGenerator(db.parties.id, db.payments.partyId),
+    aliasName: 'parties__id__payments__party_id',
   );
 
   $PaymentsProcessedTableManager get paymentsRefs {
@@ -45391,7 +45613,7 @@ final class $PartiesReferences
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
-    aliasName: $_aliasNameGenerator(db.parties.id, db.journalLines.partyId),
+    aliasName: 'parties__id__journal_lines__party_id',
   );
 
   $JournalLinesProcessedTableManager get journalLinesRefs {
@@ -45410,10 +45632,7 @@ final class $PartiesReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.stockLots,
-    aliasName: $_aliasNameGenerator(
-      db.parties.id,
-      db.stockLots.supplierPartyId,
-    ),
+    aliasName: 'parties__id__stock_lots__supplier_party_id',
   );
 
   $StockLotsProcessedTableManager get stockLotsRefs {
@@ -46515,7 +46734,10 @@ class $PartiesTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $PartiesReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Parties, Party>(table),
+                  $PartiesReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -46819,9 +47041,8 @@ final class $DocumentsReferences
     extends BaseReferences<_$AppDatabase, Documents, Document> {
   $DocumentsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.documents.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('documents__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -46837,9 +47058,8 @@ final class $DocumentsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documents.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('documents__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -46855,9 +47075,8 @@ final class $DocumentsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documents.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('documents__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -46874,9 +47093,7 @@ final class $DocumentsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.documents.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('documents__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -46892,9 +47109,8 @@ final class $DocumentsReferences
     );
   }
 
-  static Parties _partyIdTable(_$AppDatabase db) => db.parties.createAlias(
-    $_aliasNameGenerator(db.documents.partyId, db.parties.id),
-  );
+  static Parties _partyIdTable(_$AppDatabase db) =>
+      db.parties.createAlias('documents__party_id__parties__id');
 
   $PartiesProcessedTableManager? get partyId {
     final $_column = $_itemColumn<String>('party_id');
@@ -46910,9 +47126,42 @@ final class $DocumentsReferences
     );
   }
 
-  static Users _salespersonIdTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documents.salespersonId, db.users.id),
-  );
+  static Documents _supersedesIdTable(_$AppDatabase db) =>
+      db.documents.createAlias('documents__supersedes_id__documents__id');
+
+  $DocumentsProcessedTableManager? get supersedesId {
+    final $_column = $_itemColumn<String>('supersedes_id');
+    if ($_column == null) return null;
+    final manager = $DocumentsTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_supersedesIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Documents _voidedByIdTable(_$AppDatabase db) =>
+      db.documents.createAlias('documents__voided_by_id__documents__id');
+
+  $DocumentsProcessedTableManager? get voidedById {
+    final $_column = $_itemColumn<String>('voided_by_id');
+    if ($_column == null) return null;
+    final manager = $DocumentsTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_voidedByIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _salespersonIdTable(_$AppDatabase db) =>
+      db.users.createAlias('documents__salesperson_id__users__id');
 
   $UsersProcessedTableManager? get salespersonId {
     final $_column = $_itemColumn<String>('salesperson_id');
@@ -46932,7 +47181,7 @@ final class $DocumentsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.printJobs,
-    aliasName: $_aliasNameGenerator(db.documents.id, db.printJobs.documentId),
+    aliasName: 'documents__id__print_jobs__document_id',
   );
 
   $PrintJobsProcessedTableManager get printJobsRefs {
@@ -46950,10 +47199,7 @@ final class $DocumentsReferences
   static MultiTypedResultKey<JournalEntries, List<JournalEntry>>
   _journalEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalEntries,
-    aliasName: $_aliasNameGenerator(
-      db.documents.id,
-      db.journalEntries.documentId,
-    ),
+    aliasName: 'documents__id__journal_entries__document_id',
   );
 
   $JournalEntriesProcessedTableManager get journalEntriesRefs {
@@ -46971,10 +47217,7 @@ final class $DocumentsReferences
   static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
   _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentLines,
-    aliasName: $_aliasNameGenerator(
-      db.documents.id,
-      db.documentLines.documentId,
-    ),
+    aliasName: 'documents__id__document_lines__document_id',
   );
 
   $DocumentLinesProcessedTableManager get documentLinesRefs {
@@ -46992,7 +47235,7 @@ final class $DocumentsReferences
   static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
   _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.stockLedger,
-    aliasName: $_aliasNameGenerator(db.documents.id, db.stockLedger.documentId),
+    aliasName: 'documents__id__stock_ledger__document_id',
   );
 
   $StockLedgerProcessedTableManager get stockLedgerRefs {
@@ -47011,10 +47254,7 @@ final class $DocumentsReferences
   _paymentAllocationsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.paymentAllocations,
-        aliasName: $_aliasNameGenerator(
-          db.documents.id,
-          db.paymentAllocations.documentId,
-        ),
+        aliasName: 'documents__id__payment_allocations__document_id',
       );
 
   $PaymentAllocationsProcessedTableManager get paymentAllocationsRefs {
@@ -47035,10 +47275,7 @@ final class $DocumentsReferences
   _documentLineTaxesRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.documentLineTaxes,
-        aliasName: $_aliasNameGenerator(
-          db.documents.id,
-          db.documentLineTaxes.documentId,
-        ),
+        aliasName: 'documents__id__document_line_taxes__document_id',
       );
 
   $DocumentLineTaxesProcessedTableManager get documentLineTaxesRefs {
@@ -47156,16 +47393,6 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
 
   ColumnFilters<int> get revision => $composableBuilder(
     column: $table.revision,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get supersedesId => $composableBuilder(
-    column: $table.supersedesId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get voidedById => $composableBuilder(
-    column: $table.voidedById,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -47415,6 +47642,52 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
           }) => $PartiesFilterComposer(
             $db: $db,
             $table: $db.parties,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsFilterComposer get supersedesId {
+    final $DocumentsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.supersedesId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsFilterComposer get voidedById {
+    final $DocumentsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.voidedById,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsFilterComposer(
+            $db: $db,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -47701,16 +47974,6 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get supersedesId => $composableBuilder(
-    column: $table.supersedesId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get voidedById => $composableBuilder(
-    column: $table.voidedById,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get voidReason => $composableBuilder(
     column: $table.voidReason,
     builder: (column) => ColumnOrderings(column),
@@ -47966,6 +48229,52 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     return composer;
   }
 
+  $DocumentsOrderingComposer get supersedesId {
+    final $DocumentsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.supersedesId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsOrderingComposer get voidedById {
+    final $DocumentsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.voidedById,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $UsersOrderingComposer get salespersonId {
     final $UsersOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -48074,16 +48383,6 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
 
   GeneratedColumn<int> get revision =>
       $composableBuilder(column: $table.revision, builder: (column) => column);
-
-  GeneratedColumn<String> get supersedesId => $composableBuilder(
-    column: $table.supersedesId,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get voidedById => $composableBuilder(
-    column: $table.voidedById,
-    builder: (column) => column,
-  );
 
   GeneratedColumn<String> get voidReason => $composableBuilder(
     column: $table.voidReason,
@@ -48322,6 +48621,52 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
     return composer;
   }
 
+  $DocumentsAnnotationComposer get supersedesId {
+    final $DocumentsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.supersedesId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsAnnotationComposer get voidedById {
+    final $DocumentsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.voidedById,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $UsersAnnotationComposer get salespersonId {
     final $UsersAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -48515,6 +48860,8 @@ class $DocumentsTableManager
             bool updatedBy,
             bool originDeviceId,
             bool partyId,
+            bool supersedesId,
+            bool voidedById,
             bool salespersonId,
             bool printJobsRefs,
             bool journalEntriesRefs,
@@ -48769,7 +49116,10 @@ class $DocumentsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $DocumentsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Documents, Document>(table),
+                  $DocumentsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -48779,6 +49129,8 @@ class $DocumentsTableManager
                 updatedBy = false,
                 originDeviceId = false,
                 partyId = false,
+                supersedesId = false,
+                voidedById = false,
                 salespersonId = false,
                 printJobsRefs = false,
                 journalEntriesRefs = false,
@@ -48874,6 +49226,32 @@ class $DocumentsTableManager
                                         ._partyIdTable(db),
                                     referencedColumn: $DocumentsReferences
                                         ._partyIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (supersedesId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.supersedesId,
+                                    referencedTable: $DocumentsReferences
+                                        ._supersedesIdTable(db),
+                                    referencedColumn: $DocumentsReferences
+                                        ._supersedesIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (voidedById) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.voidedById,
+                                    referencedTable: $DocumentsReferences
+                                        ._voidedByIdTable(db),
+                                    referencedColumn: $DocumentsReferences
+                                        ._voidedByIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -49039,6 +49417,8 @@ typedef $DocumentsProcessedTableManager =
         bool updatedBy,
         bool originDeviceId,
         bool partyId,
+        bool supersedesId,
+        bool voidedById,
         bool salespersonId,
         bool printJobsRefs,
         bool journalEntriesRefs,
@@ -49107,9 +49487,8 @@ final class $PrintJobsReferences
     extends BaseReferences<_$AppDatabase, PrintJobs, PrintJob> {
   $PrintJobsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.printJobs.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('print_jobs__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -49125,9 +49504,8 @@ final class $PrintJobsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.printJobs.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('print_jobs__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -49143,9 +49521,8 @@ final class $PrintJobsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.printJobs.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('print_jobs__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -49162,9 +49539,7 @@ final class $PrintJobsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.printJobs.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('print_jobs__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -49181,9 +49556,7 @@ final class $PrintJobsReferences
   }
 
   static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.printJobs.documentId, db.documents.id),
-      );
+      db.documents.createAlias('print_jobs__document_id__documents__id');
 
   $DocumentsProcessedTableManager? get documentId {
     final $_column = $_itemColumn<String>('document_id');
@@ -49966,7 +50339,10 @@ class $PrintJobsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $PrintJobsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<PrintJobs, PrintJob>(table),
+                  $PrintJobsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -50142,9 +50518,8 @@ final class $AccountsReferences
     extends BaseReferences<_$AppDatabase, Accounts, Account> {
   $AccountsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.accounts.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('accounts__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -50160,9 +50535,8 @@ final class $AccountsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.accounts.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('accounts__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -50178,9 +50552,8 @@ final class $AccountsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.accounts.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('accounts__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -50197,9 +50570,7 @@ final class $AccountsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.accounts.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('accounts__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -50215,13 +50586,27 @@ final class $AccountsReferences
     );
   }
 
+  static Accounts _parentIdTable(_$AppDatabase db) =>
+      db.accounts.createAlias('accounts__parent_id__accounts__id');
+
+  $AccountsProcessedTableManager? get parentId {
+    final $_column = $_itemColumn<String>('parent_id');
+    if ($_column == null) return null;
+    final manager = $AccountsTableManager(
+      $_db,
+      $_db.accounts,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_parentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
   static MultiTypedResultKey<PaymentAccounts, List<PaymentAccount>>
   _paymentAccountsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.paymentAccounts,
-    aliasName: $_aliasNameGenerator(
-      db.accounts.id,
-      db.paymentAccounts.ledgerAccountId,
-    ),
+    aliasName: 'accounts__id__payment_accounts__ledger_account_id',
   );
 
   $PaymentAccountsProcessedTableManager get paymentAccountsRefs {
@@ -50241,7 +50626,7 @@ final class $AccountsReferences
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
-    aliasName: $_aliasNameGenerator(db.accounts.id, db.journalLines.accountId),
+    aliasName: 'accounts__id__journal_lines__account_id',
   );
 
   $JournalLinesProcessedTableManager get journalLinesRefs {
@@ -50312,11 +50697,6 @@ class $AccountsFilterComposer extends Composer<_$AppDatabase, Accounts> {
 
   ColumnFilters<String> get normalSide => $composableBuilder(
     column: $table.normalSide,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get parentId => $composableBuilder(
-    column: $table.parentId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -50418,6 +50798,29 @@ class $AccountsFilterComposer extends Composer<_$AppDatabase, Accounts> {
           }) => $DevicesFilterComposer(
             $db: $db,
             $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $AccountsFilterComposer get parentId {
+    final $AccountsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AccountsFilterComposer(
+            $db: $db,
+            $table: $db.accounts,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -50536,11 +50939,6 @@ class $AccountsOrderingComposer extends Composer<_$AppDatabase, Accounts> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get parentId => $composableBuilder(
-    column: $table.parentId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get systemKey => $composableBuilder(
     column: $table.systemKey,
     builder: (column) => ColumnOrderings(column),
@@ -50647,6 +51045,29 @@ class $AccountsOrderingComposer extends Composer<_$AppDatabase, Accounts> {
     );
     return composer;
   }
+
+  $AccountsOrderingComposer get parentId {
+    final $AccountsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AccountsOrderingComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $AccountsAnnotationComposer extends Composer<_$AppDatabase, Accounts> {
@@ -50696,9 +51117,6 @@ class $AccountsAnnotationComposer extends Composer<_$AppDatabase, Accounts> {
     column: $table.normalSide,
     builder: (column) => column,
   );
-
-  GeneratedColumn<String> get parentId =>
-      $composableBuilder(column: $table.parentId, builder: (column) => column);
 
   GeneratedColumn<String> get systemKey =>
       $composableBuilder(column: $table.systemKey, builder: (column) => column);
@@ -50801,6 +51219,29 @@ class $AccountsAnnotationComposer extends Composer<_$AppDatabase, Accounts> {
     return composer;
   }
 
+  $AccountsAnnotationComposer get parentId {
+    final $AccountsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.parentId,
+      referencedTable: $db.accounts,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AccountsAnnotationComposer(
+            $db: $db,
+            $table: $db.accounts,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> paymentAccountsRefs<T extends Object>(
     Expression<T> Function($PaymentAccountsAnnotationComposer a) f,
   ) {
@@ -50870,6 +51311,7 @@ class $AccountsTableManager
             bool createdBy,
             bool updatedBy,
             bool originDeviceId,
+            bool parentId,
             bool paymentAccountsRefs,
             bool journalLinesRefs,
           })
@@ -50971,7 +51413,10 @@ class $AccountsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $AccountsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Accounts, Account>(table),
+                  $AccountsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -50980,6 +51425,7 @@ class $AccountsTableManager
                 createdBy = false,
                 updatedBy = false,
                 originDeviceId = false,
+                parentId = false,
                 paymentAccountsRefs = false,
                 journalLinesRefs = false,
               }) {
@@ -51057,6 +51503,19 @@ class $AccountsTableManager
                                   )
                                   as T;
                         }
+                        if (parentId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.parentId,
+                                    referencedTable: $AccountsReferences
+                                        ._parentIdTable(db),
+                                    referencedColumn: $AccountsReferences
+                                        ._parentIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
                         return state;
                       },
@@ -51127,6 +51586,7 @@ typedef $AccountsProcessedTableManager =
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
+        bool parentId,
         bool paymentAccountsRefs,
         bool journalLinesRefs,
       })
@@ -51190,9 +51650,8 @@ final class $PaymentAccountsReferences
     extends BaseReferences<_$AppDatabase, PaymentAccounts, PaymentAccount> {
   $PaymentAccountsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.paymentAccounts.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('payment_accounts__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -51208,9 +51667,8 @@ final class $PaymentAccountsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.paymentAccounts.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('payment_accounts__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -51226,9 +51684,8 @@ final class $PaymentAccountsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.paymentAccounts.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('payment_accounts__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -51245,9 +51702,7 @@ final class $PaymentAccountsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.paymentAccounts.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('payment_accounts__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -51263,13 +51718,8 @@ final class $PaymentAccountsReferences
     );
   }
 
-  static Attachments _qrAttachmentIdTable(_$AppDatabase db) =>
-      db.attachments.createAlias(
-        $_aliasNameGenerator(
-          db.paymentAccounts.qrAttachmentId,
-          db.attachments.id,
-        ),
-      );
+  static Attachments _qrAttachmentIdTable(_$AppDatabase db) => db.attachments
+      .createAlias('payment_accounts__qr_attachment_id__attachments__id');
 
   $AttachmentsProcessedTableManager? get qrAttachmentId {
     final $_column = $_itemColumn<String>('qr_attachment_id');
@@ -51285,13 +51735,8 @@ final class $PaymentAccountsReferences
     );
   }
 
-  static Accounts _ledgerAccountIdTable(_$AppDatabase db) =>
-      db.accounts.createAlias(
-        $_aliasNameGenerator(
-          db.paymentAccounts.ledgerAccountId,
-          db.accounts.id,
-        ),
-      );
+  static Accounts _ledgerAccountIdTable(_$AppDatabase db) => db.accounts
+      .createAlias('payment_accounts__ledger_account_id__accounts__id');
 
   $AccountsProcessedTableManager get ledgerAccountId {
     final $_column = $_itemColumn<String>('ledger_account_id')!;
@@ -51311,10 +51756,7 @@ final class $PaymentAccountsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.payments,
-    aliasName: $_aliasNameGenerator(
-      db.paymentAccounts.id,
-      db.payments.paymentAccountId,
-    ),
+    aliasName: 'payment_accounts__id__payments__payment_account_id',
   );
 
   $PaymentsProcessedTableManager get paymentsRefs {
@@ -52201,7 +52643,7 @@ class $PaymentAccountsTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<PaymentAccounts, PaymentAccount>(table),
                   $PaymentAccountsReferences(db, table, e),
                 ),
               )
@@ -52438,9 +52880,8 @@ final class $PaymentsReferences
     extends BaseReferences<_$AppDatabase, Payments, Payment> {
   $PaymentsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.payments.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('payments__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -52456,9 +52897,8 @@ final class $PaymentsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.payments.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('payments__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -52474,9 +52914,8 @@ final class $PaymentsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.payments.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('payments__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -52493,9 +52932,7 @@ final class $PaymentsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.payments.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('payments__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -52511,9 +52948,8 @@ final class $PaymentsReferences
     );
   }
 
-  static Parties _partyIdTable(_$AppDatabase db) => db.parties.createAlias(
-    $_aliasNameGenerator(db.payments.partyId, db.parties.id),
-  );
+  static Parties _partyIdTable(_$AppDatabase db) =>
+      db.parties.createAlias('payments__party_id__parties__id');
 
   $PartiesProcessedTableManager? get partyId {
     final $_column = $_itemColumn<String>('party_id');
@@ -52529,13 +52965,9 @@ final class $PaymentsReferences
     );
   }
 
-  static PaymentAccounts _paymentAccountIdTable(_$AppDatabase db) =>
-      db.paymentAccounts.createAlias(
-        $_aliasNameGenerator(
-          db.payments.paymentAccountId,
-          db.paymentAccounts.id,
-        ),
-      );
+  static PaymentAccounts _paymentAccountIdTable(_$AppDatabase db) => db
+      .paymentAccounts
+      .createAlias('payments__payment_account_id__payment_accounts__id');
 
   $PaymentAccountsProcessedTableManager get paymentAccountId {
     final $_column = $_itemColumn<String>('payment_account_id')!;
@@ -52551,13 +52983,9 @@ final class $PaymentsReferences
     );
   }
 
-  static Attachments _chequeImageAttachmentIdTable(_$AppDatabase db) =>
-      db.attachments.createAlias(
-        $_aliasNameGenerator(
-          db.payments.chequeImageAttachmentId,
-          db.attachments.id,
-        ),
-      );
+  static Attachments _chequeImageAttachmentIdTable(_$AppDatabase db) => db
+      .attachments
+      .createAlias('payments__cheque_image_attachment_id__attachments__id');
 
   $AttachmentsProcessedTableManager? get chequeImageAttachmentId {
     final $_column = $_itemColumn<String>('cheque_image_attachment_id');
@@ -52578,10 +53006,7 @@ final class $PaymentsReferences
   static MultiTypedResultKey<JournalEntries, List<JournalEntry>>
   _journalEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalEntries,
-    aliasName: $_aliasNameGenerator(
-      db.payments.id,
-      db.journalEntries.paymentId,
-    ),
+    aliasName: 'payments__id__journal_entries__payment_id',
   );
 
   $JournalEntriesProcessedTableManager get journalEntriesRefs {
@@ -52600,10 +53025,7 @@ final class $PaymentsReferences
   _paymentAllocationsRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.paymentAllocations,
-        aliasName: $_aliasNameGenerator(
-          db.payments.id,
-          db.paymentAllocations.paymentId,
-        ),
+        aliasName: 'payments__id__payment_allocations__payment_id',
       );
 
   $PaymentAllocationsProcessedTableManager get paymentAllocationsRefs {
@@ -53688,7 +54110,10 @@ class $PaymentsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $PaymentsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Payments, Payment>(table),
+                  $PaymentsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -53949,9 +54374,8 @@ final class $JournalEntriesReferences
     extends BaseReferences<_$AppDatabase, JournalEntries, JournalEntry> {
   $JournalEntriesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.journalEntries.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('journal_entries__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -53967,9 +54391,8 @@ final class $JournalEntriesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.journalEntries.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('journal_entries__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -53985,9 +54408,8 @@ final class $JournalEntriesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.journalEntries.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('journal_entries__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -54004,9 +54426,7 @@ final class $JournalEntriesReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.journalEntries.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('journal_entries__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -54023,9 +54443,7 @@ final class $JournalEntriesReferences
   }
 
   static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.journalEntries.documentId, db.documents.id),
-      );
+      db.documents.createAlias('journal_entries__document_id__documents__id');
 
   $DocumentsProcessedTableManager? get documentId {
     final $_column = $_itemColumn<String>('document_id');
@@ -54041,9 +54459,8 @@ final class $JournalEntriesReferences
     );
   }
 
-  static Payments _paymentIdTable(_$AppDatabase db) => db.payments.createAlias(
-    $_aliasNameGenerator(db.journalEntries.paymentId, db.payments.id),
-  );
+  static Payments _paymentIdTable(_$AppDatabase db) =>
+      db.payments.createAlias('journal_entries__payment_id__payments__id');
 
   $PaymentsProcessedTableManager? get paymentId {
     final $_column = $_itemColumn<String>('payment_id');
@@ -54059,13 +54476,28 @@ final class $JournalEntriesReferences
     );
   }
 
+  static JournalEntries _reversesEntryIdTable(_$AppDatabase db) => db
+      .journalEntries
+      .createAlias('journal_entries__reverses_entry_id__journal_entries__id');
+
+  $JournalEntriesProcessedTableManager? get reversesEntryId {
+    final $_column = $_itemColumn<String>('reverses_entry_id');
+    if ($_column == null) return null;
+    final manager = $JournalEntriesTableManager(
+      $_db,
+      $_db.journalEntries,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_reversesEntryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
-    aliasName: $_aliasNameGenerator(
-      db.journalEntries.id,
-      db.journalLines.journalEntryId,
-    ),
+    aliasName: 'journal_entries__id__journal_lines__journal_entry_id',
   );
 
   $JournalLinesProcessedTableManager get journalLinesRefs {
@@ -54142,11 +54574,6 @@ class $JournalEntriesFilterComposer
 
   ColumnFilters<String> get sourceType => $composableBuilder(
     column: $table.sourceType,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get reversesEntryId => $composableBuilder(
-    column: $table.reversesEntryId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -54303,6 +54730,29 @@ class $JournalEntriesFilterComposer
     return composer;
   }
 
+  $JournalEntriesFilterComposer get reversesEntryId {
+    final $JournalEntriesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reversesEntryId,
+      referencedTable: $db.journalEntries,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalEntriesFilterComposer(
+            $db: $db,
+            $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<bool> journalLinesRefs(
     Expression<bool> Function($JournalLinesFilterComposer f) f,
   ) {
@@ -54390,11 +54840,6 @@ class $JournalEntriesOrderingComposer
 
   ColumnOrderings<String> get sourceType => $composableBuilder(
     column: $table.sourceType,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get reversesEntryId => $composableBuilder(
-    column: $table.reversesEntryId,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -54550,6 +54995,29 @@ class $JournalEntriesOrderingComposer
     );
     return composer;
   }
+
+  $JournalEntriesOrderingComposer get reversesEntryId {
+    final $JournalEntriesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reversesEntryId,
+      referencedTable: $db.journalEntries,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalEntriesOrderingComposer(
+            $db: $db,
+            $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $JournalEntriesAnnotationComposer
@@ -54605,11 +55073,6 @@ class $JournalEntriesAnnotationComposer
 
   GeneratedColumn<String> get sourceType => $composableBuilder(
     column: $table.sourceType,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get reversesEntryId => $composableBuilder(
-    column: $table.reversesEntryId,
     builder: (column) => column,
   );
 
@@ -54764,6 +55227,29 @@ class $JournalEntriesAnnotationComposer
     return composer;
   }
 
+  $JournalEntriesAnnotationComposer get reversesEntryId {
+    final $JournalEntriesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.reversesEntryId,
+      referencedTable: $db.journalEntries,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalEntriesAnnotationComposer(
+            $db: $db,
+            $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   Expression<T> journalLinesRefs<T extends Object>(
     Expression<T> Function($JournalLinesAnnotationComposer a) f,
   ) {
@@ -54810,6 +55296,7 @@ class $JournalEntriesTableManager
             bool originDeviceId,
             bool documentId,
             bool paymentId,
+            bool reversesEntryId,
             bool journalLinesRefs,
           })
         > {
@@ -54923,7 +55410,7 @@ class $JournalEntriesTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<JournalEntries, JournalEntry>(table),
                   $JournalEntriesReferences(db, table, e),
                 ),
               )
@@ -54936,6 +55423,7 @@ class $JournalEntriesTableManager
                 originDeviceId = false,
                 documentId = false,
                 paymentId = false,
+                reversesEntryId = false,
                 journalLinesRefs = false,
               }) {
                 return PrefetchHooks(
@@ -55037,6 +55525,19 @@ class $JournalEntriesTableManager
                                   )
                                   as T;
                         }
+                        if (reversesEntryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.reversesEntryId,
+                                    referencedTable: $JournalEntriesReferences
+                                        ._reversesEntryIdTable(db),
+                                    referencedColumn: $JournalEntriesReferences
+                                        ._reversesEntryIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
 
                         return state;
                       },
@@ -55090,6 +55591,7 @@ typedef $JournalEntriesProcessedTableManager =
         bool originDeviceId,
         bool documentId,
         bool paymentId,
+        bool reversesEntryId,
         bool journalLinesRefs,
       })
     >;
@@ -55141,7 +55643,7 @@ final class $UnitsReferences
   $UnitsReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias($_aliasNameGenerator(db.units.firmId, db.firms.id));
+      db.firms.createAlias('units__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -55157,9 +55659,8 @@ final class $UnitsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.units.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('units__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -55175,9 +55676,8 @@ final class $UnitsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.units.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('units__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -55194,9 +55694,7 @@ final class $UnitsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.units.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('units__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -55215,7 +55713,7 @@ final class $UnitsReferences
   static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
   _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentLines,
-    aliasName: $_aliasNameGenerator(db.units.id, db.documentLines.unitId),
+    aliasName: 'units__id__document_lines__unit_id',
   );
 
   $DocumentLinesProcessedTableManager get documentLinesRefs {
@@ -55872,7 +56370,12 @@ class $UnitsTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $UnitsReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<Units, Unit>(table),
+                  $UnitsReferences(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback:
               ({
@@ -56089,7 +56592,7 @@ final class $ItemsReferences
   $ItemsReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias($_aliasNameGenerator(db.items.firmId, db.firms.id));
+      db.firms.createAlias('items__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -56105,9 +56608,8 @@ final class $ItemsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.items.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('items__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -56123,9 +56625,8 @@ final class $ItemsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.items.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('items__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -56142,9 +56643,7 @@ final class $ItemsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.items.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('items__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -56160,9 +56659,8 @@ final class $ItemsReferences
     );
   }
 
-  static Units _baseUnitIdTable(_$AppDatabase db) => db.units.createAlias(
-    $_aliasNameGenerator(db.items.baseUnitId, db.units.id),
-  );
+  static Units _baseUnitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('items__base_unit_id__units__id');
 
   $UnitsProcessedTableManager get baseUnitId {
     final $_column = $_itemColumn<String>('base_unit_id')!;
@@ -56178,9 +56676,8 @@ final class $ItemsReferences
     );
   }
 
-  static Units _displayUnitIdTable(_$AppDatabase db) => db.units.createAlias(
-    $_aliasNameGenerator(db.items.displayUnitId, db.units.id),
-  );
+  static Units _displayUnitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('items__display_unit_id__units__id');
 
   $UnitsProcessedTableManager? get displayUnitId {
     final $_column = $_itemColumn<String>('display_unit_id');
@@ -56196,9 +56693,8 @@ final class $ItemsReferences
     );
   }
 
-  static TaxRules _taxRuleIdTable(_$AppDatabase db) => db.taxRules.createAlias(
-    $_aliasNameGenerator(db.items.taxRuleId, db.taxRules.id),
-  );
+  static TaxRules _taxRuleIdTable(_$AppDatabase db) =>
+      db.taxRules.createAlias('items__tax_rule_id__tax_rules__id');
 
   $TaxRulesProcessedTableManager? get taxRuleId {
     final $_column = $_itemColumn<String>('tax_rule_id');
@@ -56215,9 +56711,7 @@ final class $ItemsReferences
   }
 
   static Attachments _imageAttachmentIdTable(_$AppDatabase db) =>
-      db.attachments.createAlias(
-        $_aliasNameGenerator(db.items.imageAttachmentId, db.attachments.id),
-      );
+      db.attachments.createAlias('items__image_attachment_id__attachments__id');
 
   $AttachmentsProcessedTableManager? get imageAttachmentId {
     final $_column = $_itemColumn<String>('image_attachment_id');
@@ -56236,7 +56730,7 @@ final class $ItemsReferences
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
-    aliasName: $_aliasNameGenerator(db.items.id, db.journalLines.itemId),
+    aliasName: 'items__id__journal_lines__item_id',
   );
 
   $JournalLinesProcessedTableManager get journalLinesRefs {
@@ -56255,7 +56749,7 @@ final class $ItemsReferences
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
     db.stockLots,
-    aliasName: $_aliasNameGenerator(db.items.id, db.stockLots.itemId),
+    aliasName: 'items__id__stock_lots__item_id',
   );
 
   $StockLotsProcessedTableManager get stockLotsRefs {
@@ -56273,7 +56767,7 @@ final class $ItemsReferences
   static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
   _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentLines,
-    aliasName: $_aliasNameGenerator(db.items.id, db.documentLines.itemId),
+    aliasName: 'items__id__document_lines__item_id',
   );
 
   $DocumentLinesProcessedTableManager get documentLinesRefs {
@@ -56291,7 +56785,7 @@ final class $ItemsReferences
   static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
   _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.stockLedger,
-    aliasName: $_aliasNameGenerator(db.items.id, db.stockLedger.itemId),
+    aliasName: 'items__id__stock_ledger__item_id',
   );
 
   $StockLedgerProcessedTableManager get stockLedgerRefs {
@@ -56309,7 +56803,7 @@ final class $ItemsReferences
   static MultiTypedResultKey<UnitConversions, List<UnitConversion>>
   _unitConversionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.unitConversions,
-    aliasName: $_aliasNameGenerator(db.items.id, db.unitConversions.itemId),
+    aliasName: 'items__id__unit_conversions__item_id',
   );
 
   $UnitConversionsProcessedTableManager get unitConversionsRefs {
@@ -57770,7 +58264,12 @@ class $ItemsTableManager
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), $ItemsReferences(db, table, e)))
+              .map(
+                (e) => (
+                  e.readTable<Items, Item>(table),
+                  $ItemsReferences(db, table, e),
+                ),
+              )
               .toList(),
           prefetchHooksCallback:
               ({
@@ -58078,9 +58577,8 @@ final class $JournalLinesReferences
     extends BaseReferences<_$AppDatabase, JournalLines, JournalLine> {
   $JournalLinesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.journalLines.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('journal_lines__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -58096,9 +58594,8 @@ final class $JournalLinesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.journalLines.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('journal_lines__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -58114,9 +58611,8 @@ final class $JournalLinesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.journalLines.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('journal_lines__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -58133,9 +58629,7 @@ final class $JournalLinesReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.journalLines.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('journal_lines__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -58151,13 +58645,9 @@ final class $JournalLinesReferences
     );
   }
 
-  static JournalEntries _journalEntryIdTable(_$AppDatabase db) =>
-      db.journalEntries.createAlias(
-        $_aliasNameGenerator(
-          db.journalLines.journalEntryId,
-          db.journalEntries.id,
-        ),
-      );
+  static JournalEntries _journalEntryIdTable(_$AppDatabase db) => db
+      .journalEntries
+      .createAlias('journal_lines__journal_entry_id__journal_entries__id');
 
   $JournalEntriesProcessedTableManager get journalEntryId {
     final $_column = $_itemColumn<String>('journal_entry_id')!;
@@ -58173,9 +58663,8 @@ final class $JournalLinesReferences
     );
   }
 
-  static Accounts _accountIdTable(_$AppDatabase db) => db.accounts.createAlias(
-    $_aliasNameGenerator(db.journalLines.accountId, db.accounts.id),
-  );
+  static Accounts _accountIdTable(_$AppDatabase db) =>
+      db.accounts.createAlias('journal_lines__account_id__accounts__id');
 
   $AccountsProcessedTableManager get accountId {
     final $_column = $_itemColumn<String>('account_id')!;
@@ -58191,9 +58680,8 @@ final class $JournalLinesReferences
     );
   }
 
-  static Parties _partyIdTable(_$AppDatabase db) => db.parties.createAlias(
-    $_aliasNameGenerator(db.journalLines.partyId, db.parties.id),
-  );
+  static Parties _partyIdTable(_$AppDatabase db) =>
+      db.parties.createAlias('journal_lines__party_id__parties__id');
 
   $PartiesProcessedTableManager? get partyId {
     final $_column = $_itemColumn<String>('party_id');
@@ -58209,9 +58697,8 @@ final class $JournalLinesReferences
     );
   }
 
-  static Items _itemIdTable(_$AppDatabase db) => db.items.createAlias(
-    $_aliasNameGenerator(db.journalLines.itemId, db.items.id),
-  );
+  static Items _itemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('journal_lines__item_id__items__id');
 
   $ItemsProcessedTableManager? get itemId {
     final $_column = $_itemColumn<String>('item_id');
@@ -59090,8 +59577,10 @@ class $JournalLinesTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $JournalLinesReferences(db, table, e)),
+                (e) => (
+                  e.readTable<JournalLines, JournalLine>(table),
+                  $JournalLinesReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -59318,9 +59807,8 @@ final class $StockLotsReferences
     extends BaseReferences<_$AppDatabase, StockLots, StockLot> {
   $StockLotsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.stockLots.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('stock_lots__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -59336,9 +59824,8 @@ final class $StockLotsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.stockLots.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('stock_lots__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -59354,9 +59841,8 @@ final class $StockLotsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.stockLots.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('stock_lots__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -59373,9 +59859,7 @@ final class $StockLotsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.stockLots.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('stock_lots__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -59391,9 +59875,8 @@ final class $StockLotsReferences
     );
   }
 
-  static Items _itemIdTable(_$AppDatabase db) => db.items.createAlias(
-    $_aliasNameGenerator(db.stockLots.itemId, db.items.id),
-  );
+  static Items _itemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('stock_lots__item_id__items__id');
 
   $ItemsProcessedTableManager get itemId {
     final $_column = $_itemColumn<String>('item_id')!;
@@ -59410,9 +59893,7 @@ final class $StockLotsReferences
   }
 
   static Parties _supplierPartyIdTable(_$AppDatabase db) =>
-      db.parties.createAlias(
-        $_aliasNameGenerator(db.stockLots.supplierPartyId, db.parties.id),
-      );
+      db.parties.createAlias('stock_lots__supplier_party_id__parties__id');
 
   $PartiesProcessedTableManager? get supplierPartyId {
     final $_column = $_itemColumn<String>('supplier_party_id');
@@ -59431,7 +59912,7 @@ final class $StockLotsReferences
   static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
   _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.documentLines,
-    aliasName: $_aliasNameGenerator(db.stockLots.id, db.documentLines.lotId),
+    aliasName: 'stock_lots__id__document_lines__lot_id',
   );
 
   $DocumentLinesProcessedTableManager get documentLinesRefs {
@@ -59449,7 +59930,7 @@ final class $StockLotsReferences
   static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
   _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.stockLedger,
-    aliasName: $_aliasNameGenerator(db.stockLots.id, db.stockLedger.lotId),
+    aliasName: 'stock_lots__id__stock_ledger__lot_id',
   );
 
   $StockLedgerProcessedTableManager get stockLedgerRefs {
@@ -60348,7 +60829,10 @@ class $StockLotsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $StockLotsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<StockLots, StockLot>(table),
+                  $StockLotsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -60615,9 +61099,8 @@ final class $DocumentLinesReferences
     extends BaseReferences<_$AppDatabase, DocumentLines, DocumentLine> {
   $DocumentLinesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.documentLines.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('document_lines__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -60633,9 +61116,8 @@ final class $DocumentLinesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documentLines.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('document_lines__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -60651,9 +61133,8 @@ final class $DocumentLinesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documentLines.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('document_lines__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -60670,9 +61151,7 @@ final class $DocumentLinesReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.documentLines.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('document_lines__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -60689,9 +61168,7 @@ final class $DocumentLinesReferences
   }
 
   static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.documentLines.documentId, db.documents.id),
-      );
+      db.documents.createAlias('document_lines__document_id__documents__id');
 
   $DocumentsProcessedTableManager get documentId {
     final $_column = $_itemColumn<String>('document_id')!;
@@ -60707,9 +61184,8 @@ final class $DocumentLinesReferences
     );
   }
 
-  static Items _itemIdTable(_$AppDatabase db) => db.items.createAlias(
-    $_aliasNameGenerator(db.documentLines.itemId, db.items.id),
-  );
+  static Items _itemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('document_lines__item_id__items__id');
 
   $ItemsProcessedTableManager? get itemId {
     final $_column = $_itemColumn<String>('item_id');
@@ -60725,9 +61201,8 @@ final class $DocumentLinesReferences
     );
   }
 
-  static Units _unitIdTable(_$AppDatabase db) => db.units.createAlias(
-    $_aliasNameGenerator(db.documentLines.unitId, db.units.id),
-  );
+  static Units _unitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('document_lines__unit_id__units__id');
 
   $UnitsProcessedTableManager? get unitId {
     final $_column = $_itemColumn<String>('unit_id');
@@ -60743,9 +61218,8 @@ final class $DocumentLinesReferences
     );
   }
 
-  static StockLots _lotIdTable(_$AppDatabase db) => db.stockLots.createAlias(
-    $_aliasNameGenerator(db.documentLines.lotId, db.stockLots.id),
-  );
+  static StockLots _lotIdTable(_$AppDatabase db) =>
+      db.stockLots.createAlias('document_lines__lot_id__stock_lots__id');
 
   $StockLotsProcessedTableManager? get lotId {
     final $_column = $_itemColumn<String>('lot_id');
@@ -60764,10 +61238,7 @@ final class $DocumentLinesReferences
   static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
   _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.stockLedger,
-    aliasName: $_aliasNameGenerator(
-      db.documentLines.id,
-      db.stockLedger.documentLineId,
-    ),
+    aliasName: 'document_lines__id__stock_ledger__document_line_id',
   );
 
   $StockLedgerProcessedTableManager get stockLedgerRefs {
@@ -60786,10 +61257,7 @@ final class $DocumentLinesReferences
   _documentLineTaxesRefsTable(_$AppDatabase db) =>
       MultiTypedResultKey.fromTable(
         db.documentLineTaxes,
-        aliasName: $_aliasNameGenerator(
-          db.documentLines.id,
-          db.documentLineTaxes.documentLineId,
-        ),
+        aliasName: 'document_lines__id__document_line_taxes__document_line_id',
       );
 
   $DocumentLineTaxesProcessedTableManager get documentLineTaxesRefs {
@@ -62015,7 +62483,7 @@ class $DocumentLinesTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<DocumentLines, DocumentLine>(table),
                   $DocumentLinesReferences(db, table, e),
                 ),
               )
@@ -62298,9 +62766,8 @@ final class $StockLedgerReferences
     extends BaseReferences<_$AppDatabase, StockLedger, StockLedgerData> {
   $StockLedgerReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.stockLedger.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('stock_ledger__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -62316,9 +62783,8 @@ final class $StockLedgerReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.stockLedger.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('stock_ledger__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -62334,9 +62800,8 @@ final class $StockLedgerReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.stockLedger.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('stock_ledger__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -62353,9 +62818,7 @@ final class $StockLedgerReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.stockLedger.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('stock_ledger__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -62371,9 +62834,8 @@ final class $StockLedgerReferences
     );
   }
 
-  static Items _itemIdTable(_$AppDatabase db) => db.items.createAlias(
-    $_aliasNameGenerator(db.stockLedger.itemId, db.items.id),
-  );
+  static Items _itemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('stock_ledger__item_id__items__id');
 
   $ItemsProcessedTableManager get itemId {
     final $_column = $_itemColumn<String>('item_id')!;
@@ -62389,9 +62851,8 @@ final class $StockLedgerReferences
     );
   }
 
-  static StockLots _lotIdTable(_$AppDatabase db) => db.stockLots.createAlias(
-    $_aliasNameGenerator(db.stockLedger.lotId, db.stockLots.id),
-  );
+  static StockLots _lotIdTable(_$AppDatabase db) =>
+      db.stockLots.createAlias('stock_ledger__lot_id__stock_lots__id');
 
   $StockLotsProcessedTableManager? get lotId {
     final $_column = $_itemColumn<String>('lot_id');
@@ -62408,9 +62869,7 @@ final class $StockLedgerReferences
   }
 
   static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.stockLedger.documentId, db.documents.id),
-      );
+      db.documents.createAlias('stock_ledger__document_id__documents__id');
 
   $DocumentsProcessedTableManager? get documentId {
     final $_column = $_itemColumn<String>('document_id');
@@ -62426,13 +62885,9 @@ final class $StockLedgerReferences
     );
   }
 
-  static DocumentLines _documentLineIdTable(_$AppDatabase db) =>
-      db.documentLines.createAlias(
-        $_aliasNameGenerator(
-          db.stockLedger.documentLineId,
-          db.documentLines.id,
-        ),
-      );
+  static DocumentLines _documentLineIdTable(_$AppDatabase db) => db
+      .documentLines
+      .createAlias('stock_ledger__document_line_id__document_lines__id');
 
   $DocumentLinesProcessedTableManager? get documentLineId {
     final $_column = $_itemColumn<String>('document_line_id');
@@ -63386,8 +63841,10 @@ class $StockLedgerTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) =>
-                    (e.readTable(table), $StockLedgerReferences(db, table, e)),
+                (e) => (
+                  e.readTable<StockLedger, StockLedgerData>(table),
+                  $StockLedgerReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -63603,9 +64060,8 @@ final class $PaymentAllocationsReferences
         BaseReferences<_$AppDatabase, PaymentAllocations, PaymentAllocation> {
   $PaymentAllocationsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.paymentAllocations.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('payment_allocations__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -63621,9 +64077,8 @@ final class $PaymentAllocationsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.paymentAllocations.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('payment_allocations__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -63639,9 +64094,8 @@ final class $PaymentAllocationsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.paymentAllocations.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('payment_allocations__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -63657,13 +64111,8 @@ final class $PaymentAllocationsReferences
     );
   }
 
-  static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(
-          db.paymentAllocations.originDeviceId,
-          db.devices.id,
-        ),
-      );
+  static Devices _originDeviceIdTable(_$AppDatabase db) => db.devices
+      .createAlias('payment_allocations__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -63679,9 +64128,8 @@ final class $PaymentAllocationsReferences
     );
   }
 
-  static Payments _paymentIdTable(_$AppDatabase db) => db.payments.createAlias(
-    $_aliasNameGenerator(db.paymentAllocations.paymentId, db.payments.id),
-  );
+  static Payments _paymentIdTable(_$AppDatabase db) =>
+      db.payments.createAlias('payment_allocations__payment_id__payments__id');
 
   $PaymentsProcessedTableManager get paymentId {
     final $_column = $_itemColumn<String>('payment_id')!;
@@ -63697,10 +64145,8 @@ final class $PaymentAllocationsReferences
     );
   }
 
-  static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.paymentAllocations.documentId, db.documents.id),
-      );
+  static Documents _documentIdTable(_$AppDatabase db) => db.documents
+      .createAlias('payment_allocations__document_id__documents__id');
 
   $DocumentsProcessedTableManager get documentId {
     final $_column = $_itemColumn<String>('document_id')!;
@@ -64398,7 +64844,7 @@ class $PaymentAllocationsTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<PaymentAllocations, PaymentAllocation>(table),
                   $PaymentAllocationsReferences(db, table, e),
                 ),
               )
@@ -64609,9 +65055,8 @@ final class $DocumentLineTaxesReferences
     extends BaseReferences<_$AppDatabase, DocumentLineTaxes, DocumentLineTaxe> {
   $DocumentLineTaxesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.documentLineTaxes.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('document_line_taxes__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -64627,9 +65072,8 @@ final class $DocumentLineTaxesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documentLineTaxes.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('document_line_taxes__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -64645,9 +65089,8 @@ final class $DocumentLineTaxesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.documentLineTaxes.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('document_line_taxes__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -64663,13 +65106,8 @@ final class $DocumentLineTaxesReferences
     );
   }
 
-  static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(
-          db.documentLineTaxes.originDeviceId,
-          db.devices.id,
-        ),
-      );
+  static Devices _originDeviceIdTable(_$AppDatabase db) => db.devices
+      .createAlias('document_line_taxes__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -64685,13 +65123,9 @@ final class $DocumentLineTaxesReferences
     );
   }
 
-  static DocumentLines _documentLineIdTable(_$AppDatabase db) =>
-      db.documentLines.createAlias(
-        $_aliasNameGenerator(
-          db.documentLineTaxes.documentLineId,
-          db.documentLines.id,
-        ),
-      );
+  static DocumentLines _documentLineIdTable(_$AppDatabase db) => db
+      .documentLines
+      .createAlias('document_line_taxes__document_line_id__document_lines__id');
 
   $DocumentLinesProcessedTableManager get documentLineId {
     final $_column = $_itemColumn<String>('document_line_id')!;
@@ -64707,10 +65141,8 @@ final class $DocumentLineTaxesReferences
     );
   }
 
-  static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.documentLineTaxes.documentId, db.documents.id),
-      );
+  static Documents _documentIdTable(_$AppDatabase db) => db.documents
+      .createAlias('document_line_taxes__document_id__documents__id');
 
   $DocumentsProcessedTableManager get documentId {
     final $_column = $_itemColumn<String>('document_id')!;
@@ -64727,7 +65159,7 @@ final class $DocumentLineTaxesReferences
   }
 
   static TaxRules _taxRuleIdTable(_$AppDatabase db) => db.taxRules.createAlias(
-    $_aliasNameGenerator(db.documentLineTaxes.taxRuleId, db.taxRules.id),
+    'document_line_taxes__tax_rule_id__tax_rules__id',
   );
 
   $TaxRulesProcessedTableManager? get taxRuleId {
@@ -65585,7 +66017,7 @@ class $DocumentLineTaxesTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<DocumentLineTaxes, DocumentLineTaxe>(table),
                   $DocumentLineTaxesReferences(db, table, e),
                 ),
               )
@@ -65801,9 +66233,8 @@ final class $DocLinksReferences
     extends BaseReferences<_$AppDatabase, DocLinks, DocLink> {
   $DocLinksReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.docLinks.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('doc_links__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -65819,9 +66250,8 @@ final class $DocLinksReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.docLinks.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('doc_links__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -65837,9 +66267,8 @@ final class $DocLinksReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.docLinks.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('doc_links__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -65856,9 +66285,7 @@ final class $DocLinksReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.docLinks.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('doc_links__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -65875,9 +66302,7 @@ final class $DocLinksReferences
   }
 
   static Documents _fromDocumentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.docLinks.fromDocumentId, db.documents.id),
-      );
+      db.documents.createAlias('doc_links__from_document_id__documents__id');
 
   $DocumentsProcessedTableManager get fromDocumentId {
     final $_column = $_itemColumn<String>('from_document_id')!;
@@ -65894,9 +66319,7 @@ final class $DocLinksReferences
   }
 
   static Documents _toDocumentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias(
-        $_aliasNameGenerator(db.docLinks.toDocumentId, db.documents.id),
-      );
+      db.documents.createAlias('doc_links__to_document_id__documents__id');
 
   $DocumentsProcessedTableManager get toDocumentId {
     final $_column = $_itemColumn<String>('to_document_id')!;
@@ -66588,7 +67011,10 @@ class $DocLinksTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $DocLinksReferences(db, table, e)),
+                (e) => (
+                  e.readTable<DocLinks, DocLink>(table),
+                  $DocLinksReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -66771,9 +67197,8 @@ final class $UnitConversionsReferences
     extends BaseReferences<_$AppDatabase, UnitConversions, UnitConversion> {
   $UnitConversionsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.unitConversions.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('unit_conversions__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -66789,9 +67214,8 @@ final class $UnitConversionsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.unitConversions.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('unit_conversions__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -66807,9 +67231,8 @@ final class $UnitConversionsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.unitConversions.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('unit_conversions__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -66826,9 +67249,7 @@ final class $UnitConversionsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.unitConversions.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('unit_conversions__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -66844,9 +67265,8 @@ final class $UnitConversionsReferences
     );
   }
 
-  static Units _fromUnitIdTable(_$AppDatabase db) => db.units.createAlias(
-    $_aliasNameGenerator(db.unitConversions.fromUnitId, db.units.id),
-  );
+  static Units _fromUnitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('unit_conversions__from_unit_id__units__id');
 
   $UnitsProcessedTableManager get fromUnitId {
     final $_column = $_itemColumn<String>('from_unit_id')!;
@@ -66862,9 +67282,8 @@ final class $UnitConversionsReferences
     );
   }
 
-  static Units _toUnitIdTable(_$AppDatabase db) => db.units.createAlias(
-    $_aliasNameGenerator(db.unitConversions.toUnitId, db.units.id),
-  );
+  static Units _toUnitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('unit_conversions__to_unit_id__units__id');
 
   $UnitsProcessedTableManager get toUnitId {
     final $_column = $_itemColumn<String>('to_unit_id')!;
@@ -66880,9 +67299,8 @@ final class $UnitConversionsReferences
     );
   }
 
-  static Items _itemIdTable(_$AppDatabase db) => db.items.createAlias(
-    $_aliasNameGenerator(db.unitConversions.itemId, db.items.id),
-  );
+  static Items _itemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('unit_conversions__item_id__items__id');
 
   $ItemsProcessedTableManager? get itemId {
     final $_column = $_itemColumn<String>('item_id');
@@ -67616,7 +68034,7 @@ class $UnitConversionsTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<UnitConversions, UnitConversion>(table),
                   $UnitConversionsReferences(db, table, e),
                 ),
               )
@@ -67814,9 +68232,8 @@ final class $SettingsReferences
     extends BaseReferences<_$AppDatabase, Settings, Setting> {
   $SettingsReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.settings.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('settings__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -67832,9 +68249,8 @@ final class $SettingsReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.settings.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('settings__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -67850,9 +68266,8 @@ final class $SettingsReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.settings.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('settings__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -67869,9 +68284,7 @@ final class $SettingsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(db.settings.originDeviceId, db.devices.id),
-      );
+      db.devices.createAlias('settings__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -68415,7 +68828,10 @@ class $SettingsTableManager
               ),
           withReferenceMapper: (p0) => p0
               .map(
-                (e) => (e.readTable(table), $SettingsReferences(db, table, e)),
+                (e) => (
+                  e.readTable<Settings, Setting>(table),
+                  $SettingsReferences(db, table, e),
+                ),
               )
               .toList(),
           prefetchHooksCallback:
@@ -68577,9 +68993,8 @@ final class $NumberingSequencesReferences
         BaseReferences<_$AppDatabase, NumberingSequences, NumberingSequence> {
   $NumberingSequencesReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static Firms _firmIdTable(_$AppDatabase db) => db.firms.createAlias(
-    $_aliasNameGenerator(db.numberingSequences.firmId, db.firms.id),
-  );
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('numbering_sequences__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -68595,9 +69010,8 @@ final class $NumberingSequencesReferences
     );
   }
 
-  static Users _createdByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.numberingSequences.createdBy, db.users.id),
-  );
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('numbering_sequences__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -68613,9 +69027,8 @@ final class $NumberingSequencesReferences
     );
   }
 
-  static Users _updatedByTable(_$AppDatabase db) => db.users.createAlias(
-    $_aliasNameGenerator(db.numberingSequences.updatedBy, db.users.id),
-  );
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('numbering_sequences__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -68631,13 +69044,8 @@ final class $NumberingSequencesReferences
     );
   }
 
-  static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias(
-        $_aliasNameGenerator(
-          db.numberingSequences.originDeviceId,
-          db.devices.id,
-        ),
-      );
+  static Devices _originDeviceIdTable(_$AppDatabase db) => db.devices
+      .createAlias('numbering_sequences__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -68653,9 +69061,8 @@ final class $NumberingSequencesReferences
     );
   }
 
-  static Devices _deviceIdTable(_$AppDatabase db) => db.devices.createAlias(
-    $_aliasNameGenerator(db.numberingSequences.deviceId, db.devices.id),
-  );
+  static Devices _deviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('numbering_sequences__device_id__devices__id');
 
   $DevicesProcessedTableManager get deviceId {
     final $_column = $_itemColumn<String>('device_id')!;
@@ -69345,7 +69752,7 @@ class $NumberingSequencesTableManager
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable(table),
+                  e.readTable<NumberingSequences, NumberingSequence>(table),
                   $NumberingSequencesReferences(db, table, e),
                 ),
               )

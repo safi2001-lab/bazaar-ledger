@@ -2287,5 +2287,61 @@ class AppStringsEn extends AppStrings {
   String get syncJoin => 'Join';
 
   @override
+  String get importTitle => 'Import from Excel';
+
+  @override
+  String get importHint =>
+      'Choose your old list as .xlsx or .csv. The first row should name the columns, e.g. Name, Sale price, Stock.';
+
+  @override
+  String get importItems => 'Items';
+
+  @override
+  String get importParties => 'Khata';
+
+  @override
+  String get importPick => 'Choose file';
+
+  @override
+  String importReady(String count) {
+    return '$count rows ready';
+  }
+
+  @override
+  String importProblems(String count) {
+    return '$count rows cannot come in';
+  }
+
+  @override
+  String importRun(String count) {
+    return 'Bring in $count';
+  }
+
+  @override
+  String importDone(String added, String skipped) {
+    return '$added brought in, $skipped left out';
+  }
+
+  @override
+  String importColumns(String columns) {
+    return 'Columns: $columns';
+  }
+
+  @override
+  String get settingsBooksEncrypted => 'The books on this phone are encrypted';
+
+  @override
+  String get settingsBooksPlain =>
+      'The books on this phone are not encrypted: its keystore could not keep a key';
+
+  @override
+  String settingsCrashes(String count) {
+    return 'The app hit $count errors on this phone';
+  }
+
+  @override
+  String get settingsCrashesClear => 'Clear';
+
+  @override
   String get chequeDone => 'Done';
 }

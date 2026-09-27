@@ -31,8 +31,29 @@ Future<void> main() async {
   // both are the standard Pakistani retail setup. Nothing is locked.
   await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
 
+  // Errors nothing else caught are written down on the phone, since there is
+  // nowhere else to send them, and shown in Data Health.
+  try {
+    final journal = CrashJournal(
+      File('${(await AppServices.booksDirectory()).path}/crashes.jsonl'),
+    );
+    _crashJournal = journal;
+    FlutterError.onError = (details) {
+      FlutterError.presentError(details);
+      journal.record(details.exception, details.stack);
+    };
+    PlatformDispatcher.instance.onError = (error, stack) {
+      journal.record(error, stack);
+      return true;
+    };
+  } on Object {
+    // No journal is no reason not to open the shop.
+  }
+
   runApp(_Boot(first: await _open()));
 }
+
+CrashJournal? _crashJournal;
 
 /// What opening the books produced: the services, or why there are none.
 final class _Opened {
@@ -126,6 +147,7 @@ class _BootState extends State<_Boot> {
         appServicesProvider.overrideWithValue(services),
         initialPreferencesProvider.overrideWithValue(opened.prefs),
         restartAppProvider.overrideWithValue(_reopen),
+        crashJournalProvider.overrideWithValue(_crashJournal),
       ],
       child: const BazaarLedgerApp(),
     );

@@ -1303,5 +1303,64 @@
   "syncCounterName": "Is counter ka naam",
   "syncCounterNameHint": "maslan Counter 2",
   "syncJoin": "Jurein",
+  "importTitle": "Excel se laayein",
+  "importHint": "Apni purani list .xlsx ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.",
+  "importItems": "Maal",
+  "importParties": "Khata",
+  "importPick": "File chunein",
+  "importReady": "{count} line tayyar",
+  "@importReady": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importProblems": "{count} line nahin aa sakti",
+  "@importProblems": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importRun": "{count} laayein",
+  "@importRun": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importDone": "{added} aa gaye, {skipped} chhor diye",
+  "@importDone": {
+    "placeholders": {
+      "added": {
+        "type": "String"
+      },
+      "skipped": {
+        "type": "String"
+      }
+    }
+  },
+  "importColumns": "Columns: {columns}",
+  "@importColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBooksEncrypted": "Is phone par hisaab encrypted hai",
+  "settingsBooksPlain": "Is phone par hisaab encrypted nahin: phone ka keystore key nahin rakh saka",
+  "settingsCrashes": "App is phone par {count} dafa kisi ghalti par ruki",
+  "@settingsCrashes": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCrashesClear": "Saaf karein",
   "chequeDone": "Ho gaya"
 }

@@ -1224,5 +1224,64 @@
   "syncCounterName": "Name of this counter",
   "syncCounterNameHint": "e.g. Counter 2",
   "syncJoin": "Join",
+  "importTitle": "Import from Excel",
+  "importHint": "Choose your old list as .xlsx or .csv. The first row should name the columns, e.g. Name, Sale price, Stock.",
+  "importItems": "Items",
+  "importParties": "Khata",
+  "importPick": "Choose file",
+  "importReady": "{count} rows ready",
+  "@importReady": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importProblems": "{count} rows cannot come in",
+  "@importProblems": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importRun": "Bring in {count}",
+  "@importRun": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importDone": "{added} brought in, {skipped} left out",
+  "@importDone": {
+    "placeholders": {
+      "added": {
+        "type": "String"
+      },
+      "skipped": {
+        "type": "String"
+      }
+    }
+  },
+  "importColumns": "Columns: {columns}",
+  "@importColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsBooksEncrypted": "The books on this phone are encrypted",
+  "settingsBooksPlain": "The books on this phone are not encrypted: its keystore could not keep a key",
+  "settingsCrashes": "The app hit {count} errors on this phone",
+  "@settingsCrashes": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsCrashesClear": "Clear",
   "chequeDone": "Done"
 }

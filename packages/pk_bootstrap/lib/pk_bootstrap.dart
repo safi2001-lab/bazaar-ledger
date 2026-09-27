@@ -8,6 +8,7 @@ library;
 export 'package:pk_application/pk_application.dart';
 export 'package:pk_domain/pk_domain.dart';
 export 'package:pk_export/pk_export.dart';
+export 'package:pk_import/pk_import.dart';
 export 'package:pk_platform/pk_platform.dart'
     show
         BackupArchive,
@@ -36,4 +37,7 @@ export 'package:pk_sync/pk_sync.dart'
 export 'src/app_config.dart';
 export 'src/app_services.dart';
 export 'src/backup_service.dart';
+export 'src/crash_journal.dart';
+export 'src/encrypted_database.dart'
+    show AndroidBooksKey, BooksKeySource, BooksLocked;
 export 'src/printing_services.dart';

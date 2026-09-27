@@ -196,6 +196,10 @@ final receiptProvider = FutureProvider.autoDispose.family<ReceiptData?, String>(
 /// after every write while the Settings screen happens to be open would turn
 /// a diagnostic into a background job on a phone that cannot spare one. The
 /// screen has an explicit "check now" button, and that is the trigger.
+/// Errors the app did not handle, kept on this phone. Null in tests and
+/// wherever the journal could not be opened.
+final crashJournalProvider = Provider<CrashJournal?>((ref) => null);
+
 final dataHealthProvider = FutureProvider.autoDispose<DatabaseHealth>((
   ref,
 ) async {

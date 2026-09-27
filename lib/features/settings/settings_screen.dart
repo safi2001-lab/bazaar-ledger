@@ -9,6 +9,7 @@ import '../../l10n/app_strings.dart';
 import '../audit/audit_screen.dart';
 import '../backup/backup_screen.dart';
 import '../firms/firms_screen.dart';
+import '../import/import_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
 import '../sync/sync_screen.dart';
@@ -147,6 +148,14 @@ class SettingsScreen extends ConsumerWidget {
                   MaterialPageRoute<void>(builder: (_) => const TaxScreen()),
                 ),
               ),
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.table_view_outlined,
+                label: s.importTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const ImportScreen()),
+                ),
+              ),
             _Row(
               icon: Icons.wifi_tethering,
               label: s.syncTitle,
@@ -250,6 +259,8 @@ class _DataHealthCard extends ConsumerWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
     final health = ref.watch(dataHealthProvider);
+    final encrypted = ref.watch(appServicesProvider).booksEncrypted;
+    final journal = ref.watch(crashJournalProvider);
 
     return BlCard(
       child: health.when(
@@ -270,6 +281,7 @@ class _DataHealthCard extends ConsumerWidget {
         ),
         data: (report) {
           final problems = report.findings;
+          final crashes = journal?.entries() ?? const <CrashEntry>[];
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -304,6 +316,53 @@ class _DataHealthCard extends ConsumerWidget {
               for (final problem in problems) ...[
                 const SizedBox(height: BlTokens.space2),
                 Text(problem, style: TextStyle(fontSize: 12, color: t.danger)),
+              ],
+              const SizedBox(height: BlTokens.space2),
+              Row(
+                children: [
+                  Icon(
+                    encrypted ? Icons.lock_outline : Icons.lock_open_outlined,
+                    size: 16,
+                    color: t.inkMuted,
+                  ),
+                  const SizedBox(width: BlTokens.space2),
+                  Expanded(
+                    child: Text(
+                      encrypted
+                          ? s.settingsBooksEncrypted
+                          : s.settingsBooksPlain,
+                      style: TextStyle(fontSize: 12, color: t.inkMuted),
+                    ),
+                  ),
+                ],
+              ),
+              if (crashes.isNotEmpty) ...[
+                const SizedBox(height: BlTokens.space2),
+                Row(
+                  children: [
+                    Icon(Icons.bug_report_outlined, size: 16, color: t.warning),
+                    const SizedBox(width: BlTokens.space2),
+                    Expanded(
+                      child: Text(
+                        s.settingsCrashes('${crashes.length}'),
+                        style: TextStyle(fontSize: 12, color: t.ink),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        journal?.clear();
+                        ref.invalidate(dataHealthProvider);
+                      },
+                      child: Text(s.settingsCrashesClear),
+                    ),
+                  ],
+                ),
+                Text(
+                  crashes.last.error,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, color: t.inkMuted),
+                ),
               ],
             ],
           );

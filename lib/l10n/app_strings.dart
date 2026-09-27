@@ -4148,6 +4148,90 @@ abstract class AppStrings {
   /// **'Jurein'**
   String get syncJoin;
 
+  /// No description provided for @importTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Excel se laayein'**
+  String get importTitle;
+
+  /// No description provided for @importHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Apni purani list .xlsx ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.'**
+  String get importHint;
+
+  /// No description provided for @importItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal'**
+  String get importItems;
+
+  /// No description provided for @importParties.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khata'**
+  String get importParties;
+
+  /// No description provided for @importPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'File chunein'**
+  String get importPick;
+
+  /// No description provided for @importReady.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} line tayyar'**
+  String importReady(String count);
+
+  /// No description provided for @importProblems.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} line nahin aa sakti'**
+  String importProblems(String count);
+
+  /// No description provided for @importRun.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} laayein'**
+  String importRun(String count);
+
+  /// No description provided for @importDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{added} aa gaye, {skipped} chhor diye'**
+  String importDone(String added, String skipped);
+
+  /// No description provided for @importColumns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Columns: {columns}'**
+  String importColumns(String columns);
+
+  /// No description provided for @settingsBooksEncrypted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone par hisaab encrypted hai'**
+  String get settingsBooksEncrypted;
+
+  /// No description provided for @settingsBooksPlain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone par hisaab encrypted nahin: phone ka keystore key nahin rakh saka'**
+  String get settingsBooksPlain;
+
+  /// No description provided for @settingsCrashes.
+  ///
+  /// In ur, this message translates to:
+  /// **'App is phone par {count} dafa kisi ghalti par ruki'**
+  String settingsCrashes(String count);
+
+  /// No description provided for @settingsCrashesClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Saaf karein'**
+  String get settingsCrashesClear;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

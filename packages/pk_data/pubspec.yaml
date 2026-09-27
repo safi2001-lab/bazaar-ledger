@@ -14,7 +14,7 @@ dependencies:
   # here because this package imports it directly, and a direct import of a
   # transitive dependency breaks the moment the intermediate package drops it.
   crypto: ^3.0.6
-  drift: ^2.28.0
+  drift: ^2.35.0
   pk_domain:
     path: ../pk_domain
   pk_money:
@@ -26,11 +26,11 @@ dependencies:
 
 dev_dependencies:
   build_runner: ^2.4.15
-  drift_dev: ^2.28.0
+  drift_dev: ^2.35.0
   lints: ^6.0.0
   pk_application:
     path: ../pk_application
   pk_platform:
     path: ../pk_platform
-  sqlite3: ^2.4.0
+  sqlite3: ">=3.4.0 <3.6.0"
   test: ^1.26.0

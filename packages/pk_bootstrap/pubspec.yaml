@@ -11,8 +11,7 @@ environment:
   flutter: ">=3.24.0"
 
 dependencies:
-  drift: ^2.28.0
-  drift_flutter: ^0.2.4
+  drift: ^2.35.0
   flutter:
     sdk: flutter
   path: ^1.9.0
@@ -25,6 +24,8 @@ dependencies:
     path: ../pk_domain
   pk_export:
     path: ../pk_export
+  pk_import:
+    path: ../pk_import
   pk_money:
     path: ../pk_money
   pk_platform:
@@ -33,10 +34,18 @@ dependencies:
     path: ../pk_reports
   pk_sync:
     path: ../pk_sync
-  sqlite3: ^2.9.0
-  sqlite3_flutter_libs: ^0.5.26
+  sqlite3: ">=3.4.0 <3.6.0"
 
 dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+
+# SQLite3MultipleCiphers in place of plain SQLite, so the books on the phone
+# can be encrypted at rest (M14). A database opened with no key is an
+# ordinary SQLite file, so tests and a phone whose keystore is unavailable
+# work exactly as before.
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

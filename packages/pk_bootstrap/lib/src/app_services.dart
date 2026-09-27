@@ -1,23 +1,23 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:drift/native.dart';
-import 'package:drift_flutter/drift_flutter.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pk_application/pk_application.dart';
 import 'package:pk_data/pk_data.dart';
 import 'package:pk_domain/pk_domain.dart';
+import 'package:pk_import/pk_import.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:pk_reports/pk_reports.dart';
 import 'package:pk_sync/pk_sync.dart';
-import 'package:sqlite3/open.dart';
 import 'backup_service.dart';
+import 'encrypted_database.dart';
 import 'printing_services.dart';
 
+part 'import_services.dart';
 part 'sync_services.dart';
 
 /// Everything the app can do, wired once.
@@ -122,8 +122,16 @@ final class AppServices {
       runner: () => _runner,
       clock: clock,
       appVersion: _appVersion,
+      booksKey: _booksKey,
     );
   }
+
+  /// The key the books on this phone are encrypted with, or null when they
+  /// are not: a phone whose keystore could not keep one, or a test.
+  String? _booksKey;
+
+  /// Whether the books on this phone are encrypted at rest.
+  bool get booksEncrypted => _booksKey != null;
 
   /// When this shop last made a backup, or null if it never has.
   Future<DateTime?> lastBackupAt() async {
@@ -251,6 +259,9 @@ final class AppServices {
 
   /// Counters on the shop's wi-fi.
   late final SyncServices sync = SyncServices._(this);
+
+  /// Items and parties from a spreadsheet.
+  late final ImportServices import = ImportServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone
@@ -515,6 +526,7 @@ final class AppServices {
     Clock clock = const SystemClock(),
     String appVersion = '0.1.0',
     List<PrinterTransport>? transports,
+    BooksKeySource keys = const AndroidBooksKey(),
   }) async {
     final path = databasePath ?? await defaultDatabasePath();
 
@@ -523,14 +535,23 @@ final class AppServices {
     // which a half-replaced file is being written to.
     final restored = Restore.applyPending(path);
 
-    final database = AppDatabase(
-      driftDatabase(
-        name: p.basenameWithoutExtension(path),
-        native: DriftNativeOptions(
-          databaseDirectory: () async => Directory(p.dirname(path)),
-        ),
-      ),
-    );
+    // Encrypted at rest when this phone can keep a key (M14). Books kept in
+    // the clear — a shop set up before, or a backup just restored — are
+    // encrypted in place on the way in. A phone whose keystore cannot keep
+    // a key goes on with plain books rather than not opening at all; Data
+    // Health says which it is.
+    final key = await keys.key();
+    if (key != null && BooksFile.isPlain(path)) {
+      BooksFile.encryptInPlace(path, key);
+    }
+    if (File(path).existsSync() &&
+        File(path).lengthSync() > 0 &&
+        !BooksFile.isPlain(path) &&
+        (key == null || !BooksFile.opensWith(path, key))) {
+      throw const BooksLocked();
+    }
+
+    final database = AppDatabase(BooksFile.open(path, key: key));
     final services = await _wire(
       database,
       clock,
@@ -539,6 +560,7 @@ final class AppServices {
       transports,
       databasePath: path,
     );
+    services._booksKey = key;
     if (restored && services._identity != null) {
       // The first row the restored books hold that the backup did not: when
       // they came back, and on which device.
@@ -836,7 +858,6 @@ Future<AppServices> openInMemoryServices({
   String appVersion = '0.1.0-test',
   List<PrinterTransport>? transports,
 }) async {
-  _resolveSqliteForHost();
   final services = await AppServices.openWith(
     NativeDatabase.memory(),
     clock: clock,
@@ -850,26 +871,6 @@ Future<AppServices> openInMemoryServices({
   // one a second of pure hashing.
   services.pinHasher = const PinHasher.forTestsOnly();
   return services;
-}
-
-var _sqliteResolved = false;
-
-/// Points `sqlite3` at a native library on desktop hosts that do not ship one
-/// on the default search path.
-///
-/// Android and iOS get theirs from `sqlite3_flutter_libs`, and Linux CI finds
-/// `libsqlite3.so` the usual way. Windows 10 1803 and later carry
-/// `winsqlite3.dll` in System32 — a current SQLite, 3.51 on the development
-/// machine — so the suite runs with no vendored binary and no download step.
-void _resolveSqliteForHost() {
-  if (_sqliteResolved) return;
-  _sqliteResolved = true;
-  if (Platform.isWindows) {
-    open.overrideFor(
-      OperatingSystem.windows,
-      () => DynamicLibrary.open('winsqlite3.dll'),
-    );
-  }
 }
 
 /// Pictures the shop owns.

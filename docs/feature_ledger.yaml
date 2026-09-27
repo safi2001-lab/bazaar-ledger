@@ -297,10 +297,27 @@ milestones:
     # on 26 Sep 2026: it needs the data layer on sqlite3 3.x first (the 2.x
     # native packages are end-of-life) and it spends APK size this milestone
     # is where the budget is managed.
-    state: planned
+    #
+    # Opened and sealed 27 Sep 2026 at 3/3. The data layer is on drift 2.35
+    # and sqlite3 3.5, which bundles SQLite3 Multiple Ciphers through a build
+    # hook in place of the end-of-life sqlite3_flutter_libs. The books are
+    # encrypted at rest under a random key sealed by the Android Keystore,
+    # books kept in the clear before are encrypted at the next open, and a
+    # backup still opens on a phone that never had the key. Item lists and
+    # khatas come in from .xlsx or .csv. Errors nothing caught are kept on
+    # the phone and shown in Data Health. Not built: old binary .xls files,
+    # a supplier's opening balance from a sheet (it is said, and left for a
+    # purchase bill), sqlite3 3.6 (it needs a newer Flutter SDK than
+    # 3.44's), and the APK size measured on this change — Tier B measures
+    # it on the next signed build.
+    state: sealed
     owns:
       - lib/features/import/**
       - packages/pk_bootstrap/lib/src/encrypted_database.dart
+      - packages/pk_bootstrap/lib/src/import_services.dart
+      - packages/pk_bootstrap/lib/src/crash_journal.dart
+      - packages/pk_import/**
+      - android/app/src/main/kotlin/**
 
 features:
   # ---------------------------------------------------------------------------
@@ -3931,3 +3948,51 @@ features:
     proof:
       - the master turns sync on and shows a code for a counter
       - a new phone joins the master from the welcome screen
+
+  # ---------------------------------------------------------------------------
+  # M14 — launch hardening and Excel import
+  # ---------------------------------------------------------------------------
+
+  - id: M14-ATREST-01
+    milestone: M14
+    title: The books on the phone are encrypted at rest
+    status: done
+    # BooksFile opens the database under a 256-bit key with SQLite3 Multiple
+    # Ciphers; on Android the key is random, made once, and kept sealed by
+    # an AES key in the Android Keystore (BooksKey.kt). A backup decrypts
+    # its snapshot before sealing it with the passphrase. A phone whose
+    # keystore cannot keep a key opens its books in the clear and says so.
+    proof:
+      - books at rest a new shop's books are encrypted on the phone
+      - books at rest books kept in the clear before are encrypted at the next open
+      - books at rest a backup of encrypted books opens on a phone with another key
+      - books at rest books whose key is gone do not open, and say so
+      - Data Health says whether the books are encrypted
+
+  - id: M14-IMPORT-01
+    milestone: M14
+    title: Item lists and khatas come in from Excel or CSV
+    status: done
+    # pk_import reads the first sheet of an .xlsx, or a CSV in whatever
+    # delimiter and encoding Excel saved it, finds the columns by their
+    # headings (English, Roman Urdu, and the common billing apps' exports),
+    # and checks each row. Rows go in through the item and party writers,
+    # so opening stock and balances are posted as if typed.
+    proof:
+      - import an Excel item list is read with prices and stock
+      - import rows that cannot come in are named, and the rest still do
+      - import a khata list is read with balances, suppliers and phones
+      - import a sheet with no headings it knows is refused in words
+      - import numbers are read as Excel keeps them, to the paisa
+      - an item list from Excel becomes items with stock on hand
+      - a khata list comes in with what each customer owes
+
+  - id: M14-CRASH-01
+    milestone: M14
+    title: Errors nothing caught are kept on the phone and shown
+    status: done
+    proof:
+      - crash journal an error the app did not handle is kept on the phone
+      - crash journal only the last ones are kept, and a torn line is skipped
+      - crash journal a journal that cannot be written does not throw
+      - an error the app hit is shown in Data Health, and cleared

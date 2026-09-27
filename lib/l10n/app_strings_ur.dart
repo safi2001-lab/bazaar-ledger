@@ -2288,5 +2288,61 @@ class AppStringsUr extends AppStrings {
   String get syncJoin => 'Jurein';
 
   @override
+  String get importTitle => 'Excel se laayein';
+
+  @override
+  String get importHint =>
+      'Apni purani list .xlsx ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.';
+
+  @override
+  String get importItems => 'Maal';
+
+  @override
+  String get importParties => 'Khata';
+
+  @override
+  String get importPick => 'File chunein';
+
+  @override
+  String importReady(String count) {
+    return '$count line tayyar';
+  }
+
+  @override
+  String importProblems(String count) {
+    return '$count line nahin aa sakti';
+  }
+
+  @override
+  String importRun(String count) {
+    return '$count laayein';
+  }
+
+  @override
+  String importDone(String added, String skipped) {
+    return '$added aa gaye, $skipped chhor diye';
+  }
+
+  @override
+  String importColumns(String columns) {
+    return 'Columns: $columns';
+  }
+
+  @override
+  String get settingsBooksEncrypted => 'Is phone par hisaab encrypted hai';
+
+  @override
+  String get settingsBooksPlain =>
+      'Is phone par hisaab encrypted nahin: phone ka keystore key nahin rakh saka';
+
+  @override
+  String settingsCrashes(String count) {
+    return 'App is phone par $count dafa kisi ghalti par ruki';
+  }
+
+  @override
+  String get settingsCrashesClear => 'Saaf karein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

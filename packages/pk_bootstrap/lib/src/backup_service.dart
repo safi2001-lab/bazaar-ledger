@@ -8,6 +8,8 @@ import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:sqlite3/sqlite3.dart' as raw;
 
+import 'encrypted_database.dart';
+
 /// A backup that was written, ready to be handed to the share sheet.
 final class MadeBackup {
   const MadeBackup({
@@ -63,9 +65,15 @@ final class BackupService {
     required this._runner,
     required this._clock,
     required this._appVersion,
+    this._booksKey,
   });
 
   final AppDatabase _database;
+
+  /// The key the live books are encrypted with, if they are. A copy of them
+  /// comes out encrypted too, and is decrypted before it is sealed, so the
+  /// backup opens on a phone that never had this key.
+  final String? _booksKey;
   final TxRunner Function() _runner;
   final Clock _clock;
   final String _appVersion;
@@ -98,6 +106,9 @@ final class BackupService {
     final Uint8List sealed;
     try {
       await _database.snapshotTo(snapshot.path);
+      if (_booksKey case final key?) {
+        await Isolate.run(() => BooksFile.decryptInPlace(snapshot.path, key));
+      }
       final plain = await snapshot.readAsBytes();
       final appVersion = _appVersion;
       // Off the UI isolate. Argon2id and AES over a few megabytes is seconds
@@ -271,7 +282,7 @@ abstract final class Restore {
         verifiedPath: path,
       );
     } finally {
-      db.dispose();
+      db.close();
     }
   }
 

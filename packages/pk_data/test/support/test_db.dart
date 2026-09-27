@@ -1,29 +1,10 @@
-import 'dart:ffi';
-import 'dart:io';
-
 import 'package:drift/native.dart';
 import 'package:pk_data/pk_data.dart';
-import 'package:sqlite3/open.dart';
 
-var _resolved = false;
-
-/// Points the `sqlite3` package at a native library on hosts that do not ship
-/// one on the default search path.
-///
-/// Windows 10 1803 and later carry `winsqlite3.dll` in System32. It is a real,
-/// current SQLite — 3.51 on the development machine — so the test suite runs
-/// with no vendored binary and no download step. CI on Linux finds
-/// `libsqlite3.so` the usual way.
-void resolveSqlite() {
-  if (_resolved) return;
-  _resolved = true;
-  if (Platform.isWindows) {
-    open.overrideFor(
-      OperatingSystem.windows,
-      () => DynamicLibrary.open('winsqlite3.dll'),
-    );
-  }
-}
+/// Kept for the suites that call it. `package:sqlite3` 3.x bundles its own
+/// SQLite through a build hook on every host, so there is nothing left to
+/// point anywhere.
+void resolveSqlite() {}
 
 /// Opens an in-memory [AppDatabase] with the schema created.
 ///
