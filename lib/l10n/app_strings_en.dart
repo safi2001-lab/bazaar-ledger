@@ -2503,5 +2503,56 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get fbrTitle => 'FBR digital invoicing';
+
+  @override
+  String get fbrWhatIsSent =>
+      'When on, each bill (items, prices, tax, the buyer\'s NTN) is sent to FBR. When off, nothing is sent.';
+
+  @override
+  String get fbrReport => 'Report every bill to FBR';
+
+  @override
+  String get fbrSandbox => 'FBR\'s test gateway (sandbox)';
+
+  @override
+  String get fbrToken => 'Token from PRAL';
+
+  @override
+  String get fbrBaseUrl => 'Integrator address (empty = FBR)';
+
+  @override
+  String get fbrSave => 'Save';
+
+  @override
+  String get fbrSaved => 'FBR settings saved';
+
+  @override
+  String get fbrBills => 'Bills for FBR';
+
+  @override
+  String get fbrSendNow => 'Send now';
+
+  @override
+  String fbrSent(String posted, String rejected, String waiting) {
+    return '$posted accepted, $rejected refused, $waiting waiting';
+  }
+
+  @override
+  String get fbrPosted => 'Accepted';
+
+  @override
+  String get fbrRejected => 'Refused';
+
+  @override
+  String get fbrPending => 'Waiting';
+
+  @override
+  String get fbrLate => 'Past 72 hours; issue a credit note';
+
+  @override
+  String get fbrRetry => 'Send again';
+
+  @override
   String get chequeDone => 'Done';
 }

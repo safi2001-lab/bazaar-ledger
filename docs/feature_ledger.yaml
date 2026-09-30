@@ -384,6 +384,35 @@ milestones:
       - packages/pk_data/lib/src/write/drift_van_writer.dart
       - packages/pk_data/lib/src/db/tables/vans.drift
 
+  - id: M19
+    title: FBR Digital Invoicing — each bill reported, numbered and QR'd
+    # Opened and sealed 30 Sep 2026 at 1/1. A registered shop turns it on in
+    # Tax, with the token PRAL issued and, if it uses one, an integrator's
+    # address. Each bill made after that is marked pending when saved and
+    # sent at once and every five minutes while the app is open: checked
+    # first for what FBR would refuse (the shop's NTN, an 8-digit HS code on
+    # every line), written as DI v1.12 JSON with every amount the exact
+    # decimal of its paisa, posted with the token, and FBR's answer kept on
+    # the bill. The receipt prints FBR's number and a QR of it, or "FBR:
+    # pending". Schema v8 adds the FBR columns on documents. Found on the
+    # way: bills rung up at the counter never carried the item's HS code, so
+    # FBR would have refused every one of them.
+    #
+    # Not exercised against FBR itself: there are no PRAL credentials on
+    # this bench, so the payload, the answers and the retry are proved
+    # against a stand-in, and the field names follow the plan document's
+    # DI v1.12 summary rather than PRAL's published schema. Not built:
+    # credit notes to FBR for returns, amending a bill inside the 72 hours
+    # (a late bill is flagged), and provincial sales tax on services.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/tax/fbr/**
+      - packages/pk_platform/lib/src/fbr/**
+      - packages/pk_platform/lib/src/receipt/fbr_qr.dart
+      - packages/pk_bootstrap/lib/src/fbr_services.dart
+      - lib/features/tax/fbr_screen.dart
+      - lib/features/tax/fbr_keeper.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4143,3 +4172,27 @@ features:
       - van sales a day is settled once
       - van sales a phone set to a van sells from the van
       - a van is loaded, sells from the counter, and settles short
+
+  # ---------------------------------------------------------------------------
+  # M19 — FBR Digital Invoicing
+  # ---------------------------------------------------------------------------
+
+  - id: M19-FBR-01
+    milestone: M19
+    title: A registered shop's bills are reported to FBR and printed with FBR's number
+    status: done
+    proof:
+      - fbr invoice a registered sale is written as the gateway reads it
+      - fbr invoice amounts go out as exact decimals, never through a float
+      - fbr invoice what FBR would refuse is said before anything is sent
+      - fbr invoice the gateway's answers are read for a number, a refusal or a retry
+      - fbr client a bill is posted with the token and comes back numbered
+      - fbr client a refusal is a refusal, and a gateway down is a retry
+      - fbr client no connection is a retry, not a crash
+      - fbr reporting a bill made while reporting is sent and comes back numbered
+      - fbr reporting FBR out of reach leaves the bill waiting, to be sent later
+      - fbr reporting a bill FBR would refuse is held back and says why
+      - fbr reporting a shop that does not report sends nothing, and an unregistered one cannot
+      - fbr receipt FBR's number is printed with a QR of it
+      - fbr receipt a bill FBR has not answered yet says so, with no QR
+      - a registered shop turns FBR on and a bill comes back numbered

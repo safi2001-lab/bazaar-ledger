@@ -20,6 +20,7 @@ export 'package:pk_platform/pk_platform.dart'
         EscPos,
         EscPosAlign,
         EscPosFont,
+        FbrClient,
         LabelData,
         LabelRenderer,
         LabelSpec,

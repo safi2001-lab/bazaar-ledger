@@ -4514,6 +4514,102 @@ abstract class AppStrings {
   /// **'Hisaab ho gaya, {amount} zyada'**
   String vansSettledOver(String amount);
 
+  /// No description provided for @fbrTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR digital invoicing'**
+  String get fbrTitle;
+
+  /// No description provided for @fbrWhatIsSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chalu karne par har bill (maal, qeemat, tax, kharidar ka NTN) FBR ko jata hai. Band ho to kuch nahin jata.'**
+  String get fbrWhatIsSent;
+
+  /// No description provided for @fbrReport.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har bill FBR ko bhejein'**
+  String get fbrReport;
+
+  /// No description provided for @fbrSandbox.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR ka test gateway (sandbox)'**
+  String get fbrSandbox;
+
+  /// No description provided for @fbrToken.
+  ///
+  /// In ur, this message translates to:
+  /// **'PRAL ka token'**
+  String get fbrToken;
+
+  /// No description provided for @fbrBaseUrl.
+  ///
+  /// In ur, this message translates to:
+  /// **'Integrator ka pata (khali = FBR)'**
+  String get fbrBaseUrl;
+
+  /// No description provided for @fbrSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save karein'**
+  String get fbrSave;
+
+  /// No description provided for @fbrSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR ki setting save ho gayi'**
+  String get fbrSaved;
+
+  /// No description provided for @fbrBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR ko bheje bill'**
+  String get fbrBills;
+
+  /// No description provided for @fbrSendNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi bhejein'**
+  String get fbrSendNow;
+
+  /// No description provided for @fbrSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'{posted} qabool, {rejected} wapas, {waiting} intezar mein'**
+  String fbrSent(String posted, String rejected, String waiting);
+
+  /// No description provided for @fbrPosted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qabool'**
+  String get fbrPosted;
+
+  /// No description provided for @fbrRejected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas'**
+  String get fbrRejected;
+
+  /// No description provided for @fbrPending.
+  ///
+  /// In ur, this message translates to:
+  /// **'Intezar'**
+  String get fbrPending;
+
+  /// No description provided for @fbrLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'72 ghante guzar gaye; credit note banayein'**
+  String get fbrLate;
+
+  /// No description provided for @fbrRetry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dobara bhejein'**
+  String get fbrRetry;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

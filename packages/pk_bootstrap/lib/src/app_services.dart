@@ -17,6 +17,7 @@ import 'backup_service.dart';
 import 'encrypted_database.dart';
 import 'printing_services.dart';
 
+part 'fbr_services.dart';
 part 'import_services.dart';
 part 'sync_services.dart';
 
@@ -320,6 +321,9 @@ final class AppServices {
 
   /// Counters on the shop's wi-fi.
   late final SyncServices sync = SyncServices._(this);
+
+  /// Reporting bills to FBR (M19).
+  late final FbrServices fbr = FbrServices._(this);
 
   /// Items and parties from a spreadsheet.
   late final ImportServices import = ImportServices._(this);

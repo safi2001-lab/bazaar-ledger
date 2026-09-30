@@ -52,6 +52,28 @@ own wi-fi**, and nowhere else:
 No server is involved at any point, and the counters bill on their own when
 the master is off; they catch up the next time both are on the wi-fi.
 
+## FBR Digital Invoicing, when a registered shop turns it on (M19)
+
+Off by default, and only offered to a shop registered for sales tax. When
+the owner turns it on in *Tax → FBR digital invoicing*:
+
+- Each bill made from then on is sent to FBR's Digital Invoicing gateway:
+  the shop's NTN and STRN, the buyer's name and NTN, and each line's item,
+  HS code, quantity, price and tax. That is the invoice FBR requires, and
+  nothing else from the books.
+- It goes to the address the shop configures: FBR's own gateway, or the
+  licensed integrator or fixed-IP proxy the shop uses (FBR whitelists the
+  sender's IP, which a phone cannot keep). It carries the token PRAL issued
+  to the shop.
+- FBR's answer — its invoice number, or why it refused — is kept on the
+  bill, and the number is printed with a QR of it.
+- Bills made before it was turned on are never sent. Turning it off stops
+  sending at once.
+
+**Not yet exercised against FBR itself.** The payload, the answers and the
+retry are proved against a stand-in; the first real bill is the first time
+the live gateway sees one.
+
 ## What Google's ML Kit sends, and why it is here
 
 Adding camera barcode scanning brought in `com.google.mlkit:barcode-scanning`,

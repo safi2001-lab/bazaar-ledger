@@ -7381,6 +7381,51 @@ class Documents extends Table with TableInfo<Documents, Document> {
     requiredDuringInsert: false,
     $customConstraints: '',
   );
+  static const VerificationMeta _fbrStatusMeta = const VerificationMeta(
+    'fbrStatus',
+  );
+  late final GeneratedColumn<String> fbrStatus = GeneratedColumn<String>(
+    'fbr_status',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'CHECK (fbr_status IS NULL OR fbr_status IN (\'pending\', \'posted\', \'rejected\'))',
+  );
+  static const VerificationMeta _fbrInvoiceNoMeta = const VerificationMeta(
+    'fbrInvoiceNo',
+  );
+  late final GeneratedColumn<String> fbrInvoiceNo = GeneratedColumn<String>(
+    'fbr_invoice_no',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _fbrErrorMeta = const VerificationMeta(
+    'fbrError',
+  );
+  late final GeneratedColumn<String> fbrError = GeneratedColumn<String>(
+    'fbr_error',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _fbrPostedAtUtcMeta = const VerificationMeta(
+    'fbrPostedAtUtc',
+  );
+  late final GeneratedColumn<int> fbrPostedAtUtc = GeneratedColumn<int>(
+    'fbr_posted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -7439,6 +7484,10 @@ class Documents extends Table with TableInfo<Documents, Document> {
     cashThresholdBreached,
     postedAtUtc,
     locationCode,
+    fbrStatus,
+    fbrInvoiceNo,
+    fbrError,
+    fbrPostedAtUtc,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -7908,6 +7957,36 @@ class Documents extends Table with TableInfo<Documents, Document> {
         ),
       );
     }
+    if (data.containsKey('fbr_status')) {
+      context.handle(
+        _fbrStatusMeta,
+        fbrStatus.isAcceptableOrUnknown(data['fbr_status']!, _fbrStatusMeta),
+      );
+    }
+    if (data.containsKey('fbr_invoice_no')) {
+      context.handle(
+        _fbrInvoiceNoMeta,
+        fbrInvoiceNo.isAcceptableOrUnknown(
+          data['fbr_invoice_no']!,
+          _fbrInvoiceNoMeta,
+        ),
+      );
+    }
+    if (data.containsKey('fbr_error')) {
+      context.handle(
+        _fbrErrorMeta,
+        fbrError.isAcceptableOrUnknown(data['fbr_error']!, _fbrErrorMeta),
+      );
+    }
+    if (data.containsKey('fbr_posted_at_utc')) {
+      context.handle(
+        _fbrPostedAtUtcMeta,
+        fbrPostedAtUtc.isAcceptableOrUnknown(
+          data['fbr_posted_at_utc']!,
+          _fbrPostedAtUtcMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -8141,6 +8220,22 @@ class Documents extends Table with TableInfo<Documents, Document> {
         DriftSqlType.string,
         data['${effectivePrefix}location_code'],
       ),
+      fbrStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fbr_status'],
+      ),
+      fbrInvoiceNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fbr_invoice_no'],
+      ),
+      fbrError: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}fbr_error'],
+      ),
+      fbrPostedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fbr_posted_at_utc'],
+      ),
     );
   }
 
@@ -8255,6 +8350,15 @@ class Document extends DataClass implements Insertable<Document> {
   /// a van's location code. A rider's cash is counted against exactly the
   /// sales that left from their van.
   final String? locationCode;
+
+  /// FBR Digital Invoicing (M19). NULL on every bill of a shop that does
+  /// not report to FBR, and on every bill made before it started to.
+  /// 'pending' until FBR has answered; 'posted' with FBR's own number, or
+  /// 'rejected' with its reason in words.
+  final String? fbrStatus;
+  final String? fbrInvoiceNo;
+  final String? fbrError;
+  final int? fbrPostedAtUtc;
   const Document({
     required this.id,
     required this.firmId,
@@ -8312,6 +8416,10 @@ class Document extends DataClass implements Insertable<Document> {
     required this.cashThresholdBreached,
     this.postedAtUtc,
     this.locationCode,
+    this.fbrStatus,
+    this.fbrInvoiceNo,
+    this.fbrError,
+    this.fbrPostedAtUtc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -8413,6 +8521,18 @@ class Document extends DataClass implements Insertable<Document> {
     }
     if (!nullToAbsent || locationCode != null) {
       map['location_code'] = Variable<String>(locationCode);
+    }
+    if (!nullToAbsent || fbrStatus != null) {
+      map['fbr_status'] = Variable<String>(fbrStatus);
+    }
+    if (!nullToAbsent || fbrInvoiceNo != null) {
+      map['fbr_invoice_no'] = Variable<String>(fbrInvoiceNo);
+    }
+    if (!nullToAbsent || fbrError != null) {
+      map['fbr_error'] = Variable<String>(fbrError);
+    }
+    if (!nullToAbsent || fbrPostedAtUtc != null) {
+      map['fbr_posted_at_utc'] = Variable<int>(fbrPostedAtUtc);
     }
     return map;
   }
@@ -8517,6 +8637,18 @@ class Document extends DataClass implements Insertable<Document> {
       locationCode: locationCode == null && nullToAbsent
           ? const Value.absent()
           : Value(locationCode),
+      fbrStatus: fbrStatus == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fbrStatus),
+      fbrInvoiceNo: fbrInvoiceNo == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fbrInvoiceNo),
+      fbrError: fbrError == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fbrError),
+      fbrPostedAtUtc: fbrPostedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fbrPostedAtUtc),
     );
   }
 
@@ -8592,6 +8724,10 @@ class Document extends DataClass implements Insertable<Document> {
       ),
       postedAtUtc: serializer.fromJson<int?>(json['posted_at_utc']),
       locationCode: serializer.fromJson<String?>(json['location_code']),
+      fbrStatus: serializer.fromJson<String?>(json['fbr_status']),
+      fbrInvoiceNo: serializer.fromJson<String?>(json['fbr_invoice_no']),
+      fbrError: serializer.fromJson<String?>(json['fbr_error']),
+      fbrPostedAtUtc: serializer.fromJson<int?>(json['fbr_posted_at_utc']),
     );
   }
   @override
@@ -8656,6 +8792,10 @@ class Document extends DataClass implements Insertable<Document> {
       'cash_threshold_breached': serializer.toJson<int>(cashThresholdBreached),
       'posted_at_utc': serializer.toJson<int?>(postedAtUtc),
       'location_code': serializer.toJson<String?>(locationCode),
+      'fbr_status': serializer.toJson<String?>(fbrStatus),
+      'fbr_invoice_no': serializer.toJson<String?>(fbrInvoiceNo),
+      'fbr_error': serializer.toJson<String?>(fbrError),
+      'fbr_posted_at_utc': serializer.toJson<int?>(fbrPostedAtUtc),
     };
   }
 
@@ -8716,6 +8856,10 @@ class Document extends DataClass implements Insertable<Document> {
     int? cashThresholdBreached,
     Value<int?> postedAtUtc = const Value.absent(),
     Value<String?> locationCode = const Value.absent(),
+    Value<String?> fbrStatus = const Value.absent(),
+    Value<String?> fbrInvoiceNo = const Value.absent(),
+    Value<String?> fbrError = const Value.absent(),
+    Value<int?> fbrPostedAtUtc = const Value.absent(),
   }) => Document(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
@@ -8787,6 +8931,12 @@ class Document extends DataClass implements Insertable<Document> {
     cashThresholdBreached: cashThresholdBreached ?? this.cashThresholdBreached,
     postedAtUtc: postedAtUtc.present ? postedAtUtc.value : this.postedAtUtc,
     locationCode: locationCode.present ? locationCode.value : this.locationCode,
+    fbrStatus: fbrStatus.present ? fbrStatus.value : this.fbrStatus,
+    fbrInvoiceNo: fbrInvoiceNo.present ? fbrInvoiceNo.value : this.fbrInvoiceNo,
+    fbrError: fbrError.present ? fbrError.value : this.fbrError,
+    fbrPostedAtUtc: fbrPostedAtUtc.present
+        ? fbrPostedAtUtc.value
+        : this.fbrPostedAtUtc,
   );
   Document copyWithCompanion(DocumentsCompanion data) {
     return Document(
@@ -8914,6 +9064,14 @@ class Document extends DataClass implements Insertable<Document> {
       locationCode: data.locationCode.present
           ? data.locationCode.value
           : this.locationCode,
+      fbrStatus: data.fbrStatus.present ? data.fbrStatus.value : this.fbrStatus,
+      fbrInvoiceNo: data.fbrInvoiceNo.present
+          ? data.fbrInvoiceNo.value
+          : this.fbrInvoiceNo,
+      fbrError: data.fbrError.present ? data.fbrError.value : this.fbrError,
+      fbrPostedAtUtc: data.fbrPostedAtUtc.present
+          ? data.fbrPostedAtUtc.value
+          : this.fbrPostedAtUtc,
     );
   }
 
@@ -8975,7 +9133,11 @@ class Document extends DataClass implements Insertable<Document> {
           ..write('supplierBillNo: $supplierBillNo, ')
           ..write('cashThresholdBreached: $cashThresholdBreached, ')
           ..write('postedAtUtc: $postedAtUtc, ')
-          ..write('locationCode: $locationCode')
+          ..write('locationCode: $locationCode, ')
+          ..write('fbrStatus: $fbrStatus, ')
+          ..write('fbrInvoiceNo: $fbrInvoiceNo, ')
+          ..write('fbrError: $fbrError, ')
+          ..write('fbrPostedAtUtc: $fbrPostedAtUtc')
           ..write(')'))
         .toString();
   }
@@ -9038,6 +9200,10 @@ class Document extends DataClass implements Insertable<Document> {
     cashThresholdBreached,
     postedAtUtc,
     locationCode,
+    fbrStatus,
+    fbrInvoiceNo,
+    fbrError,
+    fbrPostedAtUtc,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -9098,7 +9264,11 @@ class Document extends DataClass implements Insertable<Document> {
           other.supplierBillNo == this.supplierBillNo &&
           other.cashThresholdBreached == this.cashThresholdBreached &&
           other.postedAtUtc == this.postedAtUtc &&
-          other.locationCode == this.locationCode);
+          other.locationCode == this.locationCode &&
+          other.fbrStatus == this.fbrStatus &&
+          other.fbrInvoiceNo == this.fbrInvoiceNo &&
+          other.fbrError == this.fbrError &&
+          other.fbrPostedAtUtc == this.fbrPostedAtUtc);
 }
 
 class DocumentsCompanion extends UpdateCompanion<Document> {
@@ -9158,6 +9328,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
   final Value<int> cashThresholdBreached;
   final Value<int?> postedAtUtc;
   final Value<String?> locationCode;
+  final Value<String?> fbrStatus;
+  final Value<String?> fbrInvoiceNo;
+  final Value<String?> fbrError;
+  final Value<int?> fbrPostedAtUtc;
   final Value<int> rowid;
   const DocumentsCompanion({
     this.id = const Value.absent(),
@@ -9216,6 +9390,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     this.cashThresholdBreached = const Value.absent(),
     this.postedAtUtc = const Value.absent(),
     this.locationCode = const Value.absent(),
+    this.fbrStatus = const Value.absent(),
+    this.fbrInvoiceNo = const Value.absent(),
+    this.fbrError = const Value.absent(),
+    this.fbrPostedAtUtc = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   DocumentsCompanion.insert({
@@ -9275,6 +9453,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     this.cashThresholdBreached = const Value.absent(),
     this.postedAtUtc = const Value.absent(),
     this.locationCode = const Value.absent(),
+    this.fbrStatus = const Value.absent(),
+    this.fbrInvoiceNo = const Value.absent(),
+    this.fbrError = const Value.absent(),
+    this.fbrPostedAtUtc = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -9348,6 +9530,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     Expression<int>? cashThresholdBreached,
     Expression<int>? postedAtUtc,
     Expression<String>? locationCode,
+    Expression<String>? fbrStatus,
+    Expression<String>? fbrInvoiceNo,
+    Expression<String>? fbrError,
+    Expression<int>? fbrPostedAtUtc,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -9409,6 +9595,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
         'cash_threshold_breached': cashThresholdBreached,
       if (postedAtUtc != null) 'posted_at_utc': postedAtUtc,
       if (locationCode != null) 'location_code': locationCode,
+      if (fbrStatus != null) 'fbr_status': fbrStatus,
+      if (fbrInvoiceNo != null) 'fbr_invoice_no': fbrInvoiceNo,
+      if (fbrError != null) 'fbr_error': fbrError,
+      if (fbrPostedAtUtc != null) 'fbr_posted_at_utc': fbrPostedAtUtc,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -9470,6 +9660,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     Value<int>? cashThresholdBreached,
     Value<int?>? postedAtUtc,
     Value<String?>? locationCode,
+    Value<String?>? fbrStatus,
+    Value<String?>? fbrInvoiceNo,
+    Value<String?>? fbrError,
+    Value<int?>? fbrPostedAtUtc,
     Value<int>? rowid,
   }) {
     return DocumentsCompanion(
@@ -9530,6 +9724,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
           cashThresholdBreached ?? this.cashThresholdBreached,
       postedAtUtc: postedAtUtc ?? this.postedAtUtc,
       locationCode: locationCode ?? this.locationCode,
+      fbrStatus: fbrStatus ?? this.fbrStatus,
+      fbrInvoiceNo: fbrInvoiceNo ?? this.fbrInvoiceNo,
+      fbrError: fbrError ?? this.fbrError,
+      fbrPostedAtUtc: fbrPostedAtUtc ?? this.fbrPostedAtUtc,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -9709,6 +9907,18 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
     if (locationCode.present) {
       map['location_code'] = Variable<String>(locationCode.value);
     }
+    if (fbrStatus.present) {
+      map['fbr_status'] = Variable<String>(fbrStatus.value);
+    }
+    if (fbrInvoiceNo.present) {
+      map['fbr_invoice_no'] = Variable<String>(fbrInvoiceNo.value);
+    }
+    if (fbrError.present) {
+      map['fbr_error'] = Variable<String>(fbrError.value);
+    }
+    if (fbrPostedAtUtc.present) {
+      map['fbr_posted_at_utc'] = Variable<int>(fbrPostedAtUtc.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -9774,6 +9984,10 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
           ..write('cashThresholdBreached: $cashThresholdBreached, ')
           ..write('postedAtUtc: $postedAtUtc, ')
           ..write('locationCode: $locationCode, ')
+          ..write('fbrStatus: $fbrStatus, ')
+          ..write('fbrInvoiceNo: $fbrInvoiceNo, ')
+          ..write('fbrError: $fbrError, ')
+          ..write('fbrPostedAtUtc: $fbrPostedAtUtc, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -39109,6 +39323,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_documents_salesperson',
     'CREATE INDEX idx_documents_salesperson ON documents (salesperson_id)',
   );
+  late final Index idxDocumentsFbr = Index(
+    'idx_documents_fbr',
+    'CREATE INDEX idx_documents_fbr ON documents (firm_id, fbr_status) WHERE fbr_status IS NOT NULL',
+  );
   late final Index idxDoclinesSeq = Index(
     'idx_doclines_seq',
     'CREATE UNIQUE INDEX idx_doclines_seq ON document_lines (document_id, line_no)',
@@ -39369,6 +39587,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxDocumentsSupersedes,
     idxDocumentsVoidedBy,
     idxDocumentsSalesperson,
+    idxDocumentsFbr,
     idxDoclinesSeq,
     idxDoclinesItem,
     idxDoclinesFirmItem,
@@ -49404,6 +49623,10 @@ typedef $DocumentsCreateCompanionBuilder =
       Value<int> cashThresholdBreached,
       Value<int?> postedAtUtc,
       Value<String?> locationCode,
+      Value<String?> fbrStatus,
+      Value<String?> fbrInvoiceNo,
+      Value<String?> fbrError,
+      Value<int?> fbrPostedAtUtc,
       Value<int> rowid,
     });
 typedef $DocumentsUpdateCompanionBuilder =
@@ -49464,6 +49687,10 @@ typedef $DocumentsUpdateCompanionBuilder =
       Value<int> cashThresholdBreached,
       Value<int?> postedAtUtc,
       Value<String?> locationCode,
+      Value<String?> fbrStatus,
+      Value<String?> fbrInvoiceNo,
+      Value<String?> fbrError,
+      Value<int?> fbrPostedAtUtc,
       Value<int> rowid,
     });
 
@@ -49968,6 +50195,26 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
 
   ColumnFilters<String> get locationCode => $composableBuilder(
     column: $table.locationCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fbrStatus => $composableBuilder(
+    column: $table.fbrStatus,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fbrInvoiceNo => $composableBuilder(
+    column: $table.fbrInvoiceNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get fbrError => $composableBuilder(
+    column: $table.fbrError,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fbrPostedAtUtc => $composableBuilder(
+    column: $table.fbrPostedAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -50554,6 +50801,26 @@ class $DocumentsOrderingComposer extends Composer<_$AppDatabase, Documents> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get fbrStatus => $composableBuilder(
+    column: $table.fbrStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fbrInvoiceNo => $composableBuilder(
+    column: $table.fbrInvoiceNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get fbrError => $composableBuilder(
+    column: $table.fbrError,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fbrPostedAtUtc => $composableBuilder(
+    column: $table.fbrPostedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $FirmsOrderingComposer get firmId {
     final $FirmsOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -50948,6 +51215,22 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
 
   GeneratedColumn<String> get locationCode => $composableBuilder(
     column: $table.locationCode,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fbrStatus =>
+      $composableBuilder(column: $table.fbrStatus, builder: (column) => column);
+
+  GeneratedColumn<String> get fbrInvoiceNo => $composableBuilder(
+    column: $table.fbrInvoiceNo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get fbrError =>
+      $composableBuilder(column: $table.fbrError, builder: (column) => column);
+
+  GeneratedColumn<int> get fbrPostedAtUtc => $composableBuilder(
+    column: $table.fbrPostedAtUtc,
     builder: (column) => column,
   );
 
@@ -51385,6 +51668,10 @@ class $DocumentsTableManager
                 Value<int> cashThresholdBreached = const Value.absent(),
                 Value<int?> postedAtUtc = const Value.absent(),
                 Value<String?> locationCode = const Value.absent(),
+                Value<String?> fbrStatus = const Value.absent(),
+                Value<String?> fbrInvoiceNo = const Value.absent(),
+                Value<String?> fbrError = const Value.absent(),
+                Value<int?> fbrPostedAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion(
                 id: id,
@@ -51443,6 +51730,10 @@ class $DocumentsTableManager
                 cashThresholdBreached: cashThresholdBreached,
                 postedAtUtc: postedAtUtc,
                 locationCode: locationCode,
+                fbrStatus: fbrStatus,
+                fbrInvoiceNo: fbrInvoiceNo,
+                fbrError: fbrError,
+                fbrPostedAtUtc: fbrPostedAtUtc,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -51503,6 +51794,10 @@ class $DocumentsTableManager
                 Value<int> cashThresholdBreached = const Value.absent(),
                 Value<int?> postedAtUtc = const Value.absent(),
                 Value<String?> locationCode = const Value.absent(),
+                Value<String?> fbrStatus = const Value.absent(),
+                Value<String?> fbrInvoiceNo = const Value.absent(),
+                Value<String?> fbrError = const Value.absent(),
+                Value<int?> fbrPostedAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => DocumentsCompanion.insert(
                 id: id,
@@ -51561,6 +51856,10 @@ class $DocumentsTableManager
                 cashThresholdBreached: cashThresholdBreached,
                 postedAtUtc: postedAtUtc,
                 locationCode: locationCode,
+                fbrStatus: fbrStatus,
+                fbrInvoiceNo: fbrInvoiceNo,
+                fbrError: fbrError,
+                fbrPostedAtUtc: fbrPostedAtUtc,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

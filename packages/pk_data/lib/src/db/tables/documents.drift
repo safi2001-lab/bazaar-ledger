@@ -117,6 +117,16 @@ CREATE TABLE documents (
   -- sales that left from their van.
   location_code TEXT,
 
+  -- FBR Digital Invoicing (M19). NULL on every bill of a shop that does
+  -- not report to FBR, and on every bill made before it started to.
+  -- 'pending' until FBR has answered; 'posted' with FBR's own number, or
+  -- 'rejected' with its reason in words.
+  fbr_status TEXT
+    CHECK (fbr_status IS NULL OR fbr_status IN ('pending', 'posted', 'rejected')),
+  fbr_invoice_no TEXT,
+  fbr_error TEXT,
+  fbr_posted_at_utc INTEGER,
+
   CHECK (revision = 1 OR supersedes_id IS NOT NULL),
   -- An unpaid balance is somebody's khata. The counter refuses an
   -- anonymous debtor, but a UI rule protects only the UI: an import, a
@@ -139,6 +149,8 @@ CREATE INDEX idx_documents_open_balance
 CREATE INDEX idx_documents_supersedes ON documents (supersedes_id);
 CREATE INDEX idx_documents_voided_by ON documents (voided_by_id);
 CREATE INDEX idx_documents_salesperson ON documents (salesperson_id);
+CREATE INDEX idx_documents_fbr ON documents (firm_id, fbr_status)
+  WHERE fbr_status IS NOT NULL;
 
 CREATE TABLE document_lines (
   id TEXT NOT NULL PRIMARY KEY,

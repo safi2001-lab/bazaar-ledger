@@ -104,6 +104,7 @@ final class CartLine {
           itemId: item.id,
           itemName: item.name,
           itemCode: item.code,
+          hsCode: item.hsCode,
           description: lotLabels.length > i ? 'Serial ${lotLabels[i]}' : null,
           qty: Qty.one,
           baseQty: Qty.one,
@@ -129,6 +130,8 @@ final class CartLine {
     itemId: item.id,
     itemName: item.name,
     itemCode: item.code,
+    // On the bill line, so a registered shop's invoice carries it to FBR.
+    hsCode: item.hsCode,
     qty: qty,
     // Stock moves in the item's base unit and nothing else. A bill for
     // two maunds of atta takes eighty kilos off the shelf, and the

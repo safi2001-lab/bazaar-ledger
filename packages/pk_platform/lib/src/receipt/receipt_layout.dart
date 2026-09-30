@@ -179,6 +179,20 @@ final class ReceiptLayout {
       }
     }
 
+    // --- FBR (M19) --------------------------------------------------------
+    // FBR's own number for the bill, once it has answered; the QR of it is
+    // drawn under the text by the thermal renderer.
+    if (d.fbrInvoiceNo != null) {
+      rule('-');
+      centred('FBR Invoice No');
+      for (final part in _wrap(d.fbrInvoiceNo!, width)) {
+        out.add(_centre(part));
+      }
+    } else if (d.fbrPending) {
+      rule('-');
+      centred('FBR: pending');
+    }
+
     rule('=');
     out.add(_centre('${d.itemCount} item(s)'));
     for (final footer in d.footerLines) {

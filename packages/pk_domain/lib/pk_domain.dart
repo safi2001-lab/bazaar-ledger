@@ -70,6 +70,7 @@ export 'src/sales/sale_draft.dart';
 export 'src/sales/sale_posting.dart';
 export 'src/sales/sale_posting_builder.dart';
 export 'src/stock/lots.dart';
+export 'src/tax/fbr/fbr_invoice.dart';
 export 'src/tax/pack/pakistan_2026.dart';
 export 'src/tax/tax_charge.dart';
 export 'src/time/clock.dart';

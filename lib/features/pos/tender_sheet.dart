@@ -385,6 +385,11 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       // Through the captured handles, not through `ref`: this runs whether or
       // not the sheet is still on screen, because the sale is committed and
       // the cart must not survive it.
+      // Waiting for FBR, when the shop reports (M19): the receipt says so
+      // until FBR's number is back, and the send is tried at once.
+      await services.fbr.afterSale(posted.documentId);
+      unawaited(services.fbr.sendPending());
+
       cartNotifier.clear();
       container.read(posQueryProvider.notifier).state = '';
       container.read(refreshTickProvider.notifier).update((n) => n + 1);

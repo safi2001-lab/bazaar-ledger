@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../reports/reports_screen.dart';
+import 'fbr_screen.dart';
 
 final _thisMonthTurnover = FutureProvider.autoDispose<Money>((ref) async {
   ref.watch(refreshTickProvider);
@@ -133,6 +134,16 @@ class _TaxScreenState extends ConsumerState<TaxScreen> {
               ),
             ),
             const SizedBox(height: BlTokens.space4),
+            // Reporting each bill to FBR (M19), for a registered shop.
+            BlButton(
+              label: s.fbrTitle,
+              icon: Icons.cloud_upload_outlined,
+              kind: BlButtonKind.secondary,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const FbrScreen()),
+              ),
+            ),
+            const SizedBox(height: BlTokens.space2),
             for (final kind in [ReportKind.salesTax, ReportKind.tajirDost])
               Padding(
                 padding: const EdgeInsets.only(bottom: BlTokens.space2),

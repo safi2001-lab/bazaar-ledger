@@ -117,6 +117,8 @@ final class ReceiptData {
     this.previousBalance,
     this.footerLines = const [],
     this.bankQr,
+    this.fbrInvoiceNo,
+    this.fbrPending = false,
     this.isReprint = false,
     this.docTitle = 'Invoice',
     this.docLabel = 'Bill No',
@@ -165,6 +167,13 @@ final class ReceiptData {
   /// A QR image the merchant's own bank issued and the merchant imported.
   /// Rendered as a picture. Never generated.
   final MonoBitmap? bankQr;
+
+  /// FBR's own number for this bill once FBR has accepted it (M19),
+  /// printed with a QR of it.
+  final String? fbrInvoiceNo;
+
+  /// Sent to FBR and not yet answered.
+  final bool fbrPending;
 
   final bool isReprint;
 

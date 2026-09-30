@@ -1477,5 +1477,34 @@
       }
     }
   },
+  "fbrTitle": "FBR digital invoicing",
+  "fbrWhatIsSent": "Chalu karne par har bill (maal, qeemat, tax, kharidar ka NTN) FBR ko jata hai. Band ho to kuch nahin jata.",
+  "fbrReport": "Har bill FBR ko bhejein",
+  "fbrSandbox": "FBR ka test gateway (sandbox)",
+  "fbrToken": "PRAL ka token",
+  "fbrBaseUrl": "Integrator ka pata (khali = FBR)",
+  "fbrSave": "Save karein",
+  "fbrSaved": "FBR ki setting save ho gayi",
+  "fbrBills": "FBR ko bheje bill",
+  "fbrSendNow": "Abhi bhejein",
+  "fbrSent": "{posted} qabool, {rejected} wapas, {waiting} intezar mein",
+  "@fbrSent": {
+    "placeholders": {
+      "posted": {
+        "type": "String"
+      },
+      "rejected": {
+        "type": "String"
+      },
+      "waiting": {
+        "type": "String"
+      }
+    }
+  },
+  "fbrPosted": "Qabool",
+  "fbrRejected": "Wapas",
+  "fbrPending": "Intezar",
+  "fbrLate": "72 ghante guzar gaye; credit note banayein",
+  "fbrRetry": "Dobara bhejein",
   "chequeDone": "Ho gaya"
 }

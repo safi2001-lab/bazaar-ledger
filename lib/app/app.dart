@@ -7,6 +7,7 @@ import '../design/tokens.dart';
 import '../features/home/home_screen.dart';
 import '../features/setup/setup_screen.dart';
 import '../features/sync/sync_keeper.dart';
+import '../features/tax/fbr_keeper.dart';
 import '../features/users/sign_in_screen.dart';
 import '../l10n/app_strings.dart';
 import 'localisation.dart';
@@ -112,9 +113,12 @@ class _Root extends ConsumerWidget {
           ? const SetupScreen()
           : SyncKeeper(
               key: ValueKey(profile.id),
-              child: ref.read(appServicesProvider).isLocked
-                  ? const SignInScreen()
-                  : const HomeScreen(),
+              child: FbrKeeper(
+                key: ValueKey('fbr-${profile.id}'),
+                child: ref.read(appServicesProvider).isLocked
+                    ? const SignInScreen()
+                    : const HomeScreen(),
+              ),
             ),
     );
   }

@@ -5,6 +5,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:pk_domain/pk_domain.dart';
 
 import 'escpos.dart';
+import 'fbr_qr.dart';
 import 'printable.dart';
 import 'receipt_layout.dart';
 
@@ -104,6 +105,14 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
         ..line()
         ..align(EscPosAlign.centre)
         ..raster(data.bankQr!)
+        ..align(EscPosAlign.left);
+    }
+
+    // FBR's number as a QR, under the number printed as text (M19).
+    if (data.fbrInvoiceNo case final fbrNo?) {
+      out
+        ..align(EscPosAlign.centre)
+        ..raster(fbrQrBitmap(fbrNo, widthDots: paper.dots))
         ..align(EscPosAlign.left);
     }
 

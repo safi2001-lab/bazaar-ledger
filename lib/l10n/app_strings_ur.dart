@@ -2503,5 +2503,56 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get fbrTitle => 'FBR digital invoicing';
+
+  @override
+  String get fbrWhatIsSent =>
+      'Chalu karne par har bill (maal, qeemat, tax, kharidar ka NTN) FBR ko jata hai. Band ho to kuch nahin jata.';
+
+  @override
+  String get fbrReport => 'Har bill FBR ko bhejein';
+
+  @override
+  String get fbrSandbox => 'FBR ka test gateway (sandbox)';
+
+  @override
+  String get fbrToken => 'PRAL ka token';
+
+  @override
+  String get fbrBaseUrl => 'Integrator ka pata (khali = FBR)';
+
+  @override
+  String get fbrSave => 'Save karein';
+
+  @override
+  String get fbrSaved => 'FBR ki setting save ho gayi';
+
+  @override
+  String get fbrBills => 'FBR ko bheje bill';
+
+  @override
+  String get fbrSendNow => 'Abhi bhejein';
+
+  @override
+  String fbrSent(String posted, String rejected, String waiting) {
+    return '$posted qabool, $rejected wapas, $waiting intezar mein';
+  }
+
+  @override
+  String get fbrPosted => 'Qabool';
+
+  @override
+  String get fbrRejected => 'Wapas';
+
+  @override
+  String get fbrPending => 'Intezar';
+
+  @override
+  String get fbrLate => '72 ghante guzar gaye; credit note banayein';
+
+  @override
+  String get fbrRetry => 'Dobara bhejein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

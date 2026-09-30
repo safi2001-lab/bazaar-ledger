@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 7;
+  static const currentSchemaVersion = 8;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -155,6 +155,19 @@ class AppDatabase extends _$AppDatabase {
             ]) {
               await migrator.create(index);
             }
+          },
+          // v7 → v8 (M19): FBR's answer on each bill. Four columns added in
+          // place, empty on every existing bill, and an index for the queue.
+          from7To8: (migrator, schema) async {
+            for (final column in [
+              schema.documents.fbrStatus,
+              schema.documents.fbrInvoiceNo,
+              schema.documents.fbrError,
+              schema.documents.fbrPostedAtUtc,
+            ]) {
+              await migrator.addColumn(schema.documents, column);
+            }
+            await migrator.create(schema.idxDocumentsFbr);
           },
         )(m, from, to);
       } on ArgumentError {

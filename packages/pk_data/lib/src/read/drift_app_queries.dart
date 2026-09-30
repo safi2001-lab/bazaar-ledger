@@ -1926,6 +1926,8 @@ final class DriftAppQueries implements AppQueries {
     return ReceiptData(
       shop: firm.toReceiptShop(),
       docNo: doc.read<String>('doc_no'),
+      fbrInvoiceNo: _blankToNull(doc.readNullable<String>('fbr_invoice_no')),
+      fbrPending: doc.readNullable<String>('fbr_status') == 'pending',
       docTitle: docTitle,
       docLabel: docLabel,
       dateTimeLabel: _dateTimeLabel(doc.read<int>('doc_date_utc')),

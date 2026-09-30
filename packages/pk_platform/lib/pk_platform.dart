@@ -9,10 +9,12 @@ export 'package:pdf/pdf.dart' show PdfPageFormat;
 export 'src/backup/backup_archive.dart';
 export 'src/cheques/demand_notice_pdf.dart';
 
+export 'src/fbr/fbr_client.dart';
 export 'src/media/image_shrinker.dart';
 export 'src/printing/print_queue.dart';
 export 'src/printing/tcp_printer.dart';
 export 'src/receipt/escpos.dart';
+export 'src/receipt/fbr_qr.dart';
 export 'src/receipt/label_renderer.dart';
 export 'src/receipt/printable.dart';
 export 'src/receipt/receipt_layout.dart';

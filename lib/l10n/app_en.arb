@@ -1398,5 +1398,34 @@
       }
     }
   },
+  "fbrTitle": "FBR digital invoicing",
+  "fbrWhatIsSent": "When on, each bill (items, prices, tax, the buyer's NTN) is sent to FBR. When off, nothing is sent.",
+  "fbrReport": "Report every bill to FBR",
+  "fbrSandbox": "FBR's test gateway (sandbox)",
+  "fbrToken": "Token from PRAL",
+  "fbrBaseUrl": "Integrator address (empty = FBR)",
+  "fbrSave": "Save",
+  "fbrSaved": "FBR settings saved",
+  "fbrBills": "Bills for FBR",
+  "fbrSendNow": "Send now",
+  "fbrSent": "{posted} accepted, {rejected} refused, {waiting} waiting",
+  "@fbrSent": {
+    "placeholders": {
+      "posted": {
+        "type": "String"
+      },
+      "rejected": {
+        "type": "String"
+      },
+      "waiting": {
+        "type": "String"
+      }
+    }
+  },
+  "fbrPosted": "Accepted",
+  "fbrRejected": "Refused",
+  "fbrPending": "Waiting",
+  "fbrLate": "Past 72 hours; issue a credit note",
+  "fbrRetry": "Send again",
   "chequeDone": "Done"
 }
