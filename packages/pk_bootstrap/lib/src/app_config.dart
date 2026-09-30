@@ -25,7 +25,13 @@
 /// something honest — never a crash, and never a screen that pretends the
 /// feature is working.
 abstract final class AppConfig {
-  /// OAuth client ID for Google Drive backup (M5).
+  /// OAuth client ID for Google Drive backup (M20).
+  ///
+  /// On Android it switches the feature on rather than being sent anywhere:
+  /// Google recognises the app by its Android OAuth client (package name and
+  /// signing SHA-1) registered in the same Cloud project, and the app asks
+  /// only for authorization, never for the user's identity, so no web
+  /// client ID is needed.
   ///
   /// Scope is `drive.appdata` and nothing else: a private per-app folder the
   /// shopkeeper can see the size of and delete, which we cannot read anything

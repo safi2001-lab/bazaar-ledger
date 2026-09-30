@@ -15,6 +15,12 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_riverpod: ^2.6.1
+  # Google sign-in, for one thing only: an access token with scope
+  # `drive.appdata`, so the daily backup (M20) can reach the shop's own
+  # Drive. Authorization only; the app never asks who the user is. Nothing
+  # is called unless the build carries GOOGLE_OAUTH_CLIENT_ID and the owner
+  # turns Drive backup on.
+  google_sign_in: ^7.2.0
   # The system photo picker, deliberately. On Android 13+ image_picker routes
   # through Android's own Photo Picker, which needs NO permission at all --
   # not READ_MEDIA_IMAGES, which Play now restricts to apps whose core

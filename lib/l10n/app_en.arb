@@ -1427,5 +1427,26 @@
   "fbrPending": "Waiting",
   "fbrLate": "Past 72 hours; issue a credit note",
   "fbrRetry": "Send again",
+  "driveTitle": "Daily backup to Google Drive",
+  "driveExplain": "Every day, when the app opens, the books are sealed with the passphrase above and sent to the app folder on your own Google Drive. The newest 7 are kept. A new phone needs the same Google account and this passphrase.",
+  "driveTurnOn": "Turn on Drive backup",
+  "driveTurnOff": "Turn off Drive backup",
+  "driveOn": "Drive backup is on",
+  "driveLast": "Last Drive backup: {when}",
+  "@driveLast": {
+    "placeholders": {
+      "when": {"type": "String"}
+    }
+  },
+  "driveFailed": "Did not reach Drive: {reason}",
+  "@driveFailed": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "driveNow": "Back up to Drive now",
+  "driveRestore": "Restore from Google Drive",
+  "driveNone": "No backups found on Drive",
+  "drivePick": "Which backup to restore?",
   "chequeDone": "Done"
 }

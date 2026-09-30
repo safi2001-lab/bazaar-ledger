@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../design/components.dart';
 import '../design/theme.dart';
 import '../design/tokens.dart';
+import '../features/backup/drive_access.dart';
 import '../features/home/home_screen.dart';
 import '../features/setup/setup_screen.dart';
 import '../features/sync/sync_keeper.dart';
@@ -115,9 +116,12 @@ class _Root extends ConsumerWidget {
               key: ValueKey(profile.id),
               child: FbrKeeper(
                 key: ValueKey('fbr-${profile.id}'),
-                child: ref.read(appServicesProvider).isLocked
-                    ? const SignInScreen()
-                    : const HomeScreen(),
+                child: DriveBackupKeeper(
+                  key: ValueKey('drive-${profile.id}'),
+                  child: ref.read(appServicesProvider).isLocked
+                      ? const SignInScreen()
+                      : const HomeScreen(),
+                ),
               ),
             ),
     );

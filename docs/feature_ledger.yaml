@@ -413,6 +413,33 @@ milestones:
       - lib/features/tax/fbr_screen.dart
       - lib/features/tax/fbr_keeper.dart
 
+  - id: M20
+    title: Automatic Google Drive backup — every day, sealed, the newest seven kept
+    # Opened and sealed 30 Sep 2026 at 1/1. The owner types a backup
+    # passphrase twice on the Backup screen and turns on Drive backup;
+    # Google's own screen allows the app its private app folder
+    # (drive.appdata), and the first backup goes at once. From then on,
+    # whenever the app opens or comes back to the front a day after the last
+    # one, the books are sealed exactly as a shared backup is and uploaded,
+    # the newest seven are kept, and the last time or the last failure shows
+    # on the Backup screen. A new phone restores from Drive on the setup
+    # screen, through the same restore that checks and stages a file. No
+    # background job: a shop opens its till every day.
+    #
+    # Not exercised against Google itself: there is no OAuth client for this
+    # app on this bench, so Google sign-in has never run, and the Drive REST
+    # calls are proved against a stand-in for Drive on this machine. It
+    # needs the app's Android OAuth client (package name and signing SHA-1)
+    # in the owner's Google Cloud project and GOOGLE_OAUTH_CLIENT_ID in the
+    # build; without it the Drive section is not shown at all. The new
+    # google_sign_in plugin has not been through the release gates here
+    # (they need the upload key).
+    state: sealed
+    owns:
+      - packages/pk_platform/lib/src/backup/cloud_store.dart
+      - packages/pk_bootstrap/lib/src/drive_backup_services.dart
+      - lib/features/backup/drive_access.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4196,3 +4223,21 @@ features:
       - fbr receipt FBR's number is printed with a QR of it
       - fbr receipt a bill FBR has not answered yet says so, with no QR
       - a registered shop turns FBR on and a bill comes back numbered
+  - id: M20-DRIVE-01
+    milestone: M20
+    title: The books go to the shop's own Google Drive once a day, and come back from it
+    status: done
+    proof:
+      - drive backup store uploads, lists newest first, downloads and deletes
+      - drive backup store with no sign-in, nothing is sent and it says so
+      - drive backup store a refused token asks the shopkeeper to connect again
+      - drive backup store no connection is a failure in words, not a crash
+      - drive backup a backup is due after a day, and not before
+      - drive backup the newest seven are kept
+      - drive backup off until turned on, and a short passphrase is refused
+      - drive backup once a day it goes to Drive, the newest seven stay, and one comes back
+      - drive backup a failure is kept in words and tried again next time
+      - drive backup turned off, nothing is sent
+      - turning Drive backup on sends the first one straight away
+      - a backup that is due goes when the app comes back to the front
+      - a new phone brings the books back from Drive

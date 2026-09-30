@@ -74,6 +74,35 @@ the owner turns it on in *Tax → FBR digital invoicing*:
 retry are proved against a stand-in; the first real bill is the first time
 the live gateway sees one.
 
+## Daily Google Drive backup, when the owner turns it on (M20)
+
+Off by default, and not even offered on a build without a Google OAuth
+client configured. When the owner turns it on in *Settings → Backup*:
+
+- Google's own screen asks them to choose their account and allow this app
+  its private app folder (`drive.appdata`). The app gets an access token for
+  that folder and nothing else: it cannot see any other file on their Drive,
+  and it never learns who they are.
+- Once a day, when the app opens or comes back to the front, the books are
+  sealed exactly as a shared backup is — Argon2id and AES-256-GCM with the
+  backup passphrase the owner chose — and the sealed `.pkbak` is uploaded to
+  that folder. The plain copy made on the way is deleted before anything is
+  sent. The newest 7 are kept; older ones are deleted from Drive.
+- Google holds a file it cannot open. What it can see is the file's size,
+  its date-only name and when it was uploaded.
+- The passphrase is kept in the books on the phone (inside the encrypted
+  database) so the daily backup needs nobody to type it. It is needed, with
+  the same Google account, to bring the books back on a new phone, which
+  the setup screen offers.
+- Turning it off stops it at once. The backups already on Drive stay there
+  until the owner deletes them (Drive → Settings → Manage apps).
+
+**Not yet exercised against Google itself.** The upload, list, download and
+delete are proved against a stand-in for Drive's REST API, and the daily
+schedule and the restore against a stand-in store. Google sign-in needs the
+app's Android OAuth client (package name and signing SHA-1) in the owner's
+Google Cloud project; the first real backup is the first time Drive sees one.
+
 ## What Google's ML Kit sends, and why it is here
 
 Adding camera barcode scanning brought in `com.google.mlkit:barcode-scanning`,
@@ -178,8 +207,9 @@ specifically so that it can leave the phone. So it is worth being exact.
 `.pkbak` file and hands it to Android's own share sheet. Where it goes next —
 WhatsApp to the shopkeeper's own number, Google Drive, a USB stick — is chosen
 there, by them, exactly as if they had shared a photo. There is no backup
-server, no account, and no automatic upload; `android:allowBackup="false"`
-still keeps the live database out of Google's Auto Backup.
+server and no account, and nothing is uploaded on its own unless the owner
+turns on the daily Drive backup below; `android:allowBackup="false"` still
+keeps the live database out of Google's Auto Backup.
 
 **The file is useless without its passphrase.** Argon2id (19 MiB, two passes)
 turns the passphrase into a key, and AES-256-GCM seals the data. Whoever holds
@@ -246,6 +276,12 @@ So the form must say, at minimum:
   identifier. Google publishes no ruling on whether this must be declared;
   declare it. Over-disclosure is never a policy violation and under-disclosure
   is.
+
+With Drive backup on, the sealed backup goes to the user's own Drive at
+their request; it is encrypted with a key only they hold, and nobody but
+them can open it. Declare it under **Files and docs** as transferred at the
+user's direction if the Play form asks; over-disclosure is never a policy
+violation.
 
 Nothing else. No camera images, no barcode contents, no financial data, no
 customer data, no location.

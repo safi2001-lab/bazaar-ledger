@@ -4610,6 +4610,72 @@ abstract class AppStrings {
   /// **'Dobara bhejein'**
   String get fbrRetry;
 
+  /// No description provided for @driveTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Google Drive par roz backup'**
+  String get driveTitle;
+
+  /// No description provided for @driveExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roz jab app khulti hai, hisaab upar wale password se band ho kar aap ki apni Google Drive ke app folder mein chala jata hai. Aakhri 7 rakhe jate hain. Naye phone par wahi Google account aur yehi password chahiye.'**
+  String get driveExplain;
+
+  /// No description provided for @driveTurnOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Drive backup chalu karein'**
+  String get driveTurnOn;
+
+  /// No description provided for @driveTurnOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Drive backup band karein'**
+  String get driveTurnOff;
+
+  /// No description provided for @driveOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Drive backup chalu hai'**
+  String get driveOn;
+
+  /// No description provided for @driveLast.
+  ///
+  /// In ur, this message translates to:
+  /// **'Drive par aakhri backup: {when}'**
+  String driveLast(String when);
+
+  /// No description provided for @driveFailed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Drive tak nahi pohncha: {reason}'**
+  String driveFailed(String reason);
+
+  /// No description provided for @driveNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi Drive par bhejein'**
+  String get driveNow;
+
+  /// No description provided for @driveRestore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Google Drive se wapas layein'**
+  String get driveRestore;
+
+  /// No description provided for @driveNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Drive par koi backup nahi mila'**
+  String get driveNone;
+
+  /// No description provided for @drivePick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaunsi backup wapas layein?'**
+  String get drivePick;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

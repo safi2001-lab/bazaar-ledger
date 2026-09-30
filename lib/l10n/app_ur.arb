@@ -1506,5 +1506,26 @@
   "fbrPending": "Intezar",
   "fbrLate": "72 ghante guzar gaye; credit note banayein",
   "fbrRetry": "Dobara bhejein",
+  "driveTitle": "Google Drive par roz backup",
+  "driveExplain": "Roz jab app khulti hai, hisaab upar wale password se band ho kar aap ki apni Google Drive ke app folder mein chala jata hai. Aakhri 7 rakhe jate hain. Naye phone par wahi Google account aur yehi password chahiye.",
+  "driveTurnOn": "Drive backup chalu karein",
+  "driveTurnOff": "Drive backup band karein",
+  "driveOn": "Drive backup chalu hai",
+  "driveLast": "Drive par aakhri backup: {when}",
+  "@driveLast": {
+    "placeholders": {
+      "when": {"type": "String"}
+    }
+  },
+  "driveFailed": "Drive tak nahi pohncha: {reason}",
+  "@driveFailed": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "driveNow": "Abhi Drive par bhejein",
+  "driveRestore": "Google Drive se wapas layein",
+  "driveNone": "Drive par koi backup nahi mila",
+  "drivePick": "Kaunsi backup wapas layein?",
   "chequeDone": "Ho gaya"
 }

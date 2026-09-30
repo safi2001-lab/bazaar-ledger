@@ -2554,5 +2554,43 @@ class AppStringsEn extends AppStrings {
   String get fbrRetry => 'Send again';
 
   @override
+  String get driveTitle => 'Daily backup to Google Drive';
+
+  @override
+  String get driveExplain =>
+      'Every day, when the app opens, the books are sealed with the passphrase above and sent to the app folder on your own Google Drive. The newest 7 are kept. A new phone needs the same Google account and this passphrase.';
+
+  @override
+  String get driveTurnOn => 'Turn on Drive backup';
+
+  @override
+  String get driveTurnOff => 'Turn off Drive backup';
+
+  @override
+  String get driveOn => 'Drive backup is on';
+
+  @override
+  String driveLast(String when) {
+    return 'Last Drive backup: $when';
+  }
+
+  @override
+  String driveFailed(String reason) {
+    return 'Did not reach Drive: $reason';
+  }
+
+  @override
+  String get driveNow => 'Back up to Drive now';
+
+  @override
+  String get driveRestore => 'Restore from Google Drive';
+
+  @override
+  String get driveNone => 'No backups found on Drive';
+
+  @override
+  String get drivePick => 'Which backup to restore?';
+
+  @override
   String get chequeDone => 'Done';
 }

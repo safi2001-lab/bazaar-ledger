@@ -2554,5 +2554,43 @@ class AppStringsUr extends AppStrings {
   String get fbrRetry => 'Dobara bhejein';
 
   @override
+  String get driveTitle => 'Google Drive par roz backup';
+
+  @override
+  String get driveExplain =>
+      'Roz jab app khulti hai, hisaab upar wale password se band ho kar aap ki apni Google Drive ke app folder mein chala jata hai. Aakhri 7 rakhe jate hain. Naye phone par wahi Google account aur yehi password chahiye.';
+
+  @override
+  String get driveTurnOn => 'Drive backup chalu karein';
+
+  @override
+  String get driveTurnOff => 'Drive backup band karein';
+
+  @override
+  String get driveOn => 'Drive backup chalu hai';
+
+  @override
+  String driveLast(String when) {
+    return 'Drive par aakhri backup: $when';
+  }
+
+  @override
+  String driveFailed(String reason) {
+    return 'Drive tak nahi pohncha: $reason';
+  }
+
+  @override
+  String get driveNow => 'Abhi Drive par bhejein';
+
+  @override
+  String get driveRestore => 'Google Drive se wapas layein';
+
+  @override
+  String get driveNone => 'Drive par koi backup nahi mila';
+
+  @override
+  String get drivePick => 'Kaunsi backup wapas layein?';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

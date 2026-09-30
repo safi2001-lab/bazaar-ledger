@@ -6,6 +6,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../backup/backup_screen.dart';
+import '../backup/drive_access.dart';
 import '../sync/join_screen.dart';
 
 /// First run. Three fields, one button, and the shop exists.
@@ -233,6 +234,16 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                               ),
                             ),
                     ),
+                    // A lost phone's books are often on its owner's Drive.
+                    if (ref.watch(driveStoreProvider) case final store?)
+                      BlButton(
+                        label: s.driveRestore,
+                        icon: Icons.cloud_download_outlined,
+                        kind: BlButtonKind.ghost,
+                        onPressed: _busy
+                            ? null
+                            : () => openDriveRestore(context, ref, store),
+                      ),
                     // A second till joins the shop's master rather than
                     // starting books of its own.
                     BlButton(

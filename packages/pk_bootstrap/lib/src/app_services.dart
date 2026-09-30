@@ -17,6 +17,7 @@ import 'backup_service.dart';
 import 'encrypted_database.dart';
 import 'printing_services.dart';
 
+part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
 part 'sync_services.dart';
@@ -321,6 +322,9 @@ final class AppServices {
 
   /// Counters on the shop's wi-fi.
   late final SyncServices sync = SyncServices._(this);
+
+  /// Daily backups to the shop's own Google Drive (M20).
+  late final DriveBackupServices drive = DriveBackupServices._(this);
 
   /// Reporting bills to FBR (M19).
   late final FbrServices fbr = FbrServices._(this);
