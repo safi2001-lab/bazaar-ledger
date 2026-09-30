@@ -2343,5 +2343,11 @@ class AppStringsEn extends AppStrings {
   String get settingsCrashesClear => 'Clear';
 
   @override
+  String get itemVipPrice => 'VIP price';
+
+  @override
+  String get partyTierVip => 'VIP';
+
+  @override
   String get chequeDone => 'Done';
 }

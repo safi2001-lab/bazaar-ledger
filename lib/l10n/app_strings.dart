@@ -4232,6 +4232,18 @@ abstract class AppStrings {
   /// **'Saaf karein'**
   String get settingsCrashesClear;
 
+  /// No description provided for @itemVipPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'VIP qeemat'**
+  String get itemVipPrice;
+
+  /// No description provided for @partyTierVip.
+  ///
+  /// In ur, this message translates to:
+  /// **'VIP'**
+  String get partyTierVip;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

@@ -579,6 +579,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     'base_unit_id': d.baseUnitId,
     'sale_rate_milli_paisa': d.saleRate.inMilliPaisa,
     'wholesale_rate_milli_paisa': d.wholesaleRate?.inMilliPaisa,
+    'vip_rate_milli_paisa': d.vipRate?.inMilliPaisa,
     'purchase_rate_milli_paisa': d.purchaseRate?.inMilliPaisa,
     'mrp_paisa': d.mrp?.inPaisa,
     'hs_code': _blank(d.hsCode),

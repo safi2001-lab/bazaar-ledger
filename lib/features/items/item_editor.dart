@@ -50,6 +50,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     text: widget.item == null ? '' : widget.item!.saleRate.amountOnly,
   );
   final _purchaseRate = TextEditingController();
+  late final TextEditingController _vipRate = TextEditingController(
+    text: widget.item?.vipRate?.amountOnly ?? '',
+  );
   late final TextEditingController _wholesaleRate = TextEditingController(
     text: widget.item?.wholesaleRate?.amountOnly ?? '',
   );
@@ -102,6 +105,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     _saleRate.dispose();
     _purchaseRate.dispose();
     _wholesaleRate.dispose();
+    _vipRate.dispose();
     _mrp.dispose();
     _hsCode.dispose();
     _description.dispose();
@@ -145,6 +149,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         // on the box. Neither is the retail price, and neither can be
         // derived from it.
         wholesaleRate: Rate.tryParse(_wholesaleRate.text),
+        vipRate: Rate.tryParse(_vipRate.text),
         mrp: Money.tryParse(_mrp.text),
         // The FBR invoice needs it, and it is per item rather than per bill,
         // so it is captured where the item is.
@@ -599,6 +604,19 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                   ),
                                 ),
                                 const SizedBox(width: BlTokens.space3),
+                                Expanded(
+                                  child: BlField(
+                                    controller: _vipRate,
+                                    label: s.itemVipPrice,
+                                    numeric: true,
+                                    textInputAction: TextInputAction.next,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: BlTokens.space3),
+                            Row(
+                              children: [
                                 Expanded(
                                   child: BlField(
                                     controller: _mrp,

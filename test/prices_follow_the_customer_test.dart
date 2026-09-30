@@ -25,6 +25,39 @@ void main() {
     expect(await _billTotal(app), 230000);
   });
 
+  testWidgets('a VIP customer is charged the VIP price', (tester) async {
+    final app = await Harness.startWithShop(tester);
+    await _oil(app);
+    await _party(app, tier: PriceTier.vip);
+
+    await _ringUpOil(tester);
+    await _pick(tester, 'Rashid Traders');
+    await _onUdhaar(tester);
+
+    expect(await _billTotal(app), 220000);
+  });
+
+  testWidgets('an item is given a VIP price from its editor', (tester) async {
+    final app = await Harness.startWithShop(tester);
+
+    await tester.tap(find.text('Maal').first);
+    await tester.pumpAndSettle();
+    await tapButton(tester, 'Naya maal');
+    await typeInto(tester, 'Naam', 'Cooking Oil 5L');
+    await typeInto(tester, 'Farokht ki qeemat', '2500');
+    await tester.tap(find.text('Aur tafseel'));
+    await tester.pumpAndSettle();
+    await typeInto(tester, 'Thok ki qeemat', '2300');
+    await typeInto(tester, 'VIP qeemat', '2150');
+    await tapButton(tester, 'Save karein');
+
+    final row = await app.rowsOf(
+      'SELECT wholesale_rate_milli_paisa w, vip_rate_milli_paisa v FROM items',
+    );
+    expect(row.single['w'], const Rate.rupees(2300).inMilliPaisa);
+    expect(row.single['v'], const Rate.rupees(2150).inMilliPaisa);
+  });
+
   testWidgets('a standing discount comes off every line', (tester) async {
     final app = await Harness.startWithShop(tester);
     await _oil(app);
@@ -127,6 +160,7 @@ Future<void> _oil(Harness app) async {
       baseUnitId: pcs.id,
       saleRate: Rate.rupees(2500),
       wholesaleRate: Rate.rupees(2300),
+      vipRate: Rate.rupees(2200),
       openingStock: Qty.units(50),
     ),
   );

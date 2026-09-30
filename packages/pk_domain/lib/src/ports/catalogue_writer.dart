@@ -15,6 +15,7 @@ final class ItemDraft {
     this.description,
     this.purchaseRate,
     this.wholesaleRate,
+    this.vipRate,
     this.mrp,
     this.hsCode,
     this.openingStock = Qty.zero,
@@ -36,6 +37,7 @@ final class ItemDraft {
   final Rate saleRate;
   final Rate? purchaseRate;
   final Rate? wholesaleRate;
+  final Rate? vipRate;
   final Money? mrp;
   final String? hsCode;
 

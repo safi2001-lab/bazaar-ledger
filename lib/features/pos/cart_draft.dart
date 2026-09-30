@@ -51,6 +51,7 @@ abstract final class CartDraft {
           'unitDecimals': line.item.unitDecimals,
           'saleRateMilliPaisa': line.item.saleRate.inMilliPaisa,
           'wholesaleRateMilliPaisa': line.item.wholesaleRate?.inMilliPaisa,
+          'vipRateMilliPaisa': line.item.vipRate?.inMilliPaisa,
           'stockOnHandThousandths': line.item.stockOnHand.inThousandths,
           'minStockThousandths': line.item.minStock.inThousandths,
           'tracksStock': line.item.tracksStock,
@@ -121,6 +122,7 @@ abstract final class CartDraft {
     final unitDecimals = raw['unitDecimals'];
     final saleRate = raw['saleRateMilliPaisa'];
     final wholesaleRate = raw['wholesaleRateMilliPaisa'];
+    final vipRate = raw['vipRateMilliPaisa'];
     final stock = raw['stockOnHandThousandths'];
     final minStock = raw['minStockThousandths'];
     final tracksStock = raw['tracksStock'];
@@ -138,6 +140,7 @@ abstract final class CartDraft {
         unitDecimals is! int ||
         saleRate is! int ||
         (wholesaleRate != null && wholesaleRate is! int) ||
+        (vipRate != null && vipRate is! int) ||
         stock is! int ||
         minStock is! int ||
         tracksStock is! bool ||
@@ -164,6 +167,7 @@ abstract final class CartDraft {
         wholesaleRate: wholesaleRate == null
             ? null
             : Rate.raw(wholesaleRate as int),
+        vipRate: vipRate == null ? null : Rate.raw(vipRate as int),
         stockOnHand: Qty.raw(stock),
         minStock: Qty.raw(minStock),
         tracksStock: tracksStock,

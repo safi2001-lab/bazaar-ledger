@@ -9311,7 +9311,7 @@ class Parties extends Table with TableInfo<Parties, Party> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     $customConstraints:
-        'NOT NULL DEFAULT \'retail\' CHECK (price_tier IN (\'retail\', \'wholesale\'))',
+        'NOT NULL DEFAULT \'retail\' CHECK (price_tier IN (\'retail\', \'wholesale\', \'vip\'))',
     defaultValue: const CustomExpression('\'retail\''),
   );
   @override
@@ -21512,6 +21512,17 @@ class Items extends Table with TableInfo<Items, Item> {
     $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))',
     defaultValue: const CustomExpression('1'),
   );
+  static const VerificationMeta _vipRateMilliPaisaMeta = const VerificationMeta(
+    'vipRateMilliPaisa',
+  );
+  late final GeneratedColumn<int> vipRateMilliPaisa = GeneratedColumn<int>(
+    'vip_rate_milli_paisa',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -21551,6 +21562,7 @@ class Items extends Table with TableInfo<Items, Item> {
     openingRateMilliPaisa,
     imageAttachmentId,
     isActive,
+    vipRateMilliPaisa,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -21862,6 +21874,15 @@ class Items extends Table with TableInfo<Items, Item> {
         isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
       );
     }
+    if (data.containsKey('vip_rate_milli_paisa')) {
+      context.handle(
+        _vipRateMilliPaisaMeta,
+        vipRateMilliPaisa.isAcceptableOrUnknown(
+          data['vip_rate_milli_paisa']!,
+          _vipRateMilliPaisaMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -22019,6 +22040,10 @@ class Items extends Table with TableInfo<Items, Item> {
         DriftSqlType.int,
         data['${effectivePrefix}is_active'],
       )!,
+      vipRateMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vip_rate_milli_paisa'],
+      ),
     );
   }
 
@@ -22086,6 +22111,11 @@ class Item extends DataClass implements Insertable<Item> {
   final int openingRateMilliPaisa;
   final String? imageAttachmentId;
   final int isActive;
+
+  /// The price a VIP buyer pays (M15). Last, because SQLite adds a column at
+  /// the end. Empty means the item has none, and a VIP buyer pays the
+  /// wholesale price, or the retail one where there is no wholesale price.
+  final int? vipRateMilliPaisa;
   const Item({
     required this.id,
     required this.firmId,
@@ -22124,6 +22154,7 @@ class Item extends DataClass implements Insertable<Item> {
     required this.openingRateMilliPaisa,
     this.imageAttachmentId,
     required this.isActive,
+    this.vipRateMilliPaisa,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -22191,6 +22222,9 @@ class Item extends DataClass implements Insertable<Item> {
       map['image_attachment_id'] = Variable<String>(imageAttachmentId);
     }
     map['is_active'] = Variable<int>(isActive);
+    if (!nullToAbsent || vipRateMilliPaisa != null) {
+      map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa);
+    }
     return map;
   }
 
@@ -22255,6 +22289,9 @@ class Item extends DataClass implements Insertable<Item> {
           ? const Value.absent()
           : Value(imageAttachmentId),
       isActive: Value(isActive),
+      vipRateMilliPaisa: vipRateMilliPaisa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(vipRateMilliPaisa),
     );
   }
 
@@ -22317,6 +22354,9 @@ class Item extends DataClass implements Insertable<Item> {
         json['image_attachment_id'],
       ),
       isActive: serializer.fromJson<int>(json['is_active']),
+      vipRateMilliPaisa: serializer.fromJson<int?>(
+        json['vip_rate_milli_paisa'],
+      ),
     );
   }
   @override
@@ -22368,6 +22408,7 @@ class Item extends DataClass implements Insertable<Item> {
       'opening_rate_milli_paisa': serializer.toJson<int>(openingRateMilliPaisa),
       'image_attachment_id': serializer.toJson<String?>(imageAttachmentId),
       'is_active': serializer.toJson<int>(isActive),
+      'vip_rate_milli_paisa': serializer.toJson<int?>(vipRateMilliPaisa),
     };
   }
 
@@ -22409,6 +22450,7 @@ class Item extends DataClass implements Insertable<Item> {
     int? openingRateMilliPaisa,
     Value<String?> imageAttachmentId = const Value.absent(),
     int? isActive,
+    Value<int?> vipRateMilliPaisa = const Value.absent(),
   }) => Item(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
@@ -22457,6 +22499,9 @@ class Item extends DataClass implements Insertable<Item> {
         ? imageAttachmentId.value
         : this.imageAttachmentId,
     isActive: isActive ?? this.isActive,
+    vipRateMilliPaisa: vipRateMilliPaisa.present
+        ? vipRateMilliPaisa.value
+        : this.vipRateMilliPaisa,
   );
   Item copyWithCompanion(ItemsCompanion data) {
     return Item(
@@ -22541,6 +22586,9 @@ class Item extends DataClass implements Insertable<Item> {
           ? data.imageAttachmentId.value
           : this.imageAttachmentId,
       isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      vipRateMilliPaisa: data.vipRateMilliPaisa.present
+          ? data.vipRateMilliPaisa.value
+          : this.vipRateMilliPaisa,
     );
   }
 
@@ -22583,7 +22631,8 @@ class Item extends DataClass implements Insertable<Item> {
           ..write('openingStockThousandths: $openingStockThousandths, ')
           ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
           ..write('imageAttachmentId: $imageAttachmentId, ')
-          ..write('isActive: $isActive')
+          ..write('isActive: $isActive, ')
+          ..write('vipRateMilliPaisa: $vipRateMilliPaisa')
           ..write(')'))
         .toString();
   }
@@ -22627,6 +22676,7 @@ class Item extends DataClass implements Insertable<Item> {
     openingRateMilliPaisa,
     imageAttachmentId,
     isActive,
+    vipRateMilliPaisa,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -22668,7 +22718,8 @@ class Item extends DataClass implements Insertable<Item> {
           other.openingStockThousandths == this.openingStockThousandths &&
           other.openingRateMilliPaisa == this.openingRateMilliPaisa &&
           other.imageAttachmentId == this.imageAttachmentId &&
-          other.isActive == this.isActive);
+          other.isActive == this.isActive &&
+          other.vipRateMilliPaisa == this.vipRateMilliPaisa);
 }
 
 class ItemsCompanion extends UpdateCompanion<Item> {
@@ -22709,6 +22760,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
   final Value<int> openingRateMilliPaisa;
   final Value<String?> imageAttachmentId;
   final Value<int> isActive;
+  final Value<int?> vipRateMilliPaisa;
   final Value<int> rowid;
   const ItemsCompanion({
     this.id = const Value.absent(),
@@ -22748,6 +22800,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.openingRateMilliPaisa = const Value.absent(),
     this.imageAttachmentId = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.vipRateMilliPaisa = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ItemsCompanion.insert({
@@ -22788,6 +22841,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.openingRateMilliPaisa = const Value.absent(),
     this.imageAttachmentId = const Value.absent(),
     this.isActive = const Value.absent(),
+    this.vipRateMilliPaisa = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -22838,6 +22892,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Expression<int>? openingRateMilliPaisa,
     Expression<String>? imageAttachmentId,
     Expression<int>? isActive,
+    Expression<int>? vipRateMilliPaisa,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -22885,6 +22940,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
         'opening_rate_milli_paisa': openingRateMilliPaisa,
       if (imageAttachmentId != null) 'image_attachment_id': imageAttachmentId,
       if (isActive != null) 'is_active': isActive,
+      if (vipRateMilliPaisa != null) 'vip_rate_milli_paisa': vipRateMilliPaisa,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -22927,6 +22983,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Value<int>? openingRateMilliPaisa,
     Value<String?>? imageAttachmentId,
     Value<int>? isActive,
+    Value<int?>? vipRateMilliPaisa,
     Value<int>? rowid,
   }) {
     return ItemsCompanion(
@@ -22972,6 +23029,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
           openingRateMilliPaisa ?? this.openingRateMilliPaisa,
       imageAttachmentId: imageAttachmentId ?? this.imageAttachmentId,
       isActive: isActive ?? this.isActive,
+      vipRateMilliPaisa: vipRateMilliPaisa ?? this.vipRateMilliPaisa,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -23100,6 +23158,9 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     if (isActive.present) {
       map['is_active'] = Variable<int>(isActive.value);
     }
+    if (vipRateMilliPaisa.present) {
+      map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -23146,6 +23207,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
           ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
           ..write('imageAttachmentId: $imageAttachmentId, ')
           ..write('isActive: $isActive, ')
+          ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -56543,6 +56605,7 @@ typedef $ItemsCreateCompanionBuilder =
       Value<int> openingRateMilliPaisa,
       Value<String?> imageAttachmentId,
       Value<int> isActive,
+      Value<int?> vipRateMilliPaisa,
       Value<int> rowid,
     });
 typedef $ItemsUpdateCompanionBuilder =
@@ -56584,6 +56647,7 @@ typedef $ItemsUpdateCompanionBuilder =
       Value<int> openingRateMilliPaisa,
       Value<String?> imageAttachmentId,
       Value<int> isActive,
+      Value<int?> vipRateMilliPaisa,
       Value<int> rowid,
     });
 
@@ -56971,6 +57035,11 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
 
   ColumnFilters<int> get isActive => $composableBuilder(
     column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get vipRateMilliPaisa => $composableBuilder(
+    column: $table.vipRateMilliPaisa,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -57437,6 +57506,11 @@ class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get vipRateMilliPaisa => $composableBuilder(
+    column: $table.vipRateMilliPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $FirmsOrderingComposer get firmId {
     final $FirmsOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -57752,6 +57826,11 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
 
   GeneratedColumn<int> get isActive =>
       $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get vipRateMilliPaisa => $composableBuilder(
+    column: $table.vipRateMilliPaisa,
+    builder: (column) => column,
+  );
 
   $FirmsAnnotationComposer get firmId {
     final $FirmsAnnotationComposer composer = $composerBuilder(
@@ -58142,6 +58221,7 @@ class $ItemsTableManager
                 Value<int> openingRateMilliPaisa = const Value.absent(),
                 Value<String?> imageAttachmentId = const Value.absent(),
                 Value<int> isActive = const Value.absent(),
+                Value<int?> vipRateMilliPaisa = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion(
                 id: id,
@@ -58181,6 +58261,7 @@ class $ItemsTableManager
                 openingRateMilliPaisa: openingRateMilliPaisa,
                 imageAttachmentId: imageAttachmentId,
                 isActive: isActive,
+                vipRateMilliPaisa: vipRateMilliPaisa,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -58222,6 +58303,7 @@ class $ItemsTableManager
                 Value<int> openingRateMilliPaisa = const Value.absent(),
                 Value<String?> imageAttachmentId = const Value.absent(),
                 Value<int> isActive = const Value.absent(),
+                Value<int?> vipRateMilliPaisa = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion.insert(
                 id: id,
@@ -58261,6 +58343,7 @@ class $ItemsTableManager
                 openingRateMilliPaisa: openingRateMilliPaisa,
                 imageAttachmentId: imageAttachmentId,
                 isActive: isActive,
+                vipRateMilliPaisa: vipRateMilliPaisa,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

@@ -9,6 +9,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
 
 /// Migrations, and the machinery that makes them testable at all.
 ///
@@ -308,10 +309,67 @@ void main() {
           'INSERT INTO parties (id, firm_id, created_at_utc, updated_at_utc, '
           'created_by, updated_by, origin_device_id, hlc, rev, name, '
           "name_search, price_tier) VALUES ('P', 'F', 1, 1, 'U', 'U', 'D', "
-          "'h', 1, 'X', 'x', 'vip')",
+          "'h', 1, 'X', 'x', 'platinum')",
         ),
         throwsA(anything),
       );
+    });
+  });
+
+  group('v4 to v5 — a VIP price', () {
+    test('a v4 wholesale customer comes through the rebuild whole', () async {
+      // parties is rebuilt to change its CHECK, so every column of every row
+      // has to come across, and nothing pointing at a party may dangle.
+      final schema = await verifier.schemaAt(4);
+      final old = v4.DatabaseAtV4(schema.newConnection());
+      const firmId = 'FIRM0000000000000000000001';
+      const userId = 'USER0000000000000000000001';
+      const deviceId = 'DEV00000000000000000000001';
+      await old.customStatement('PRAGMA foreign_keys = OFF');
+      await old.customStatement(
+        'INSERT INTO parties (id, firm_id, created_at_utc, updated_at_utc, '
+        'created_by, updated_by, origin_device_id, hlc, rev, name, '
+        'name_search, party_type, opening_balance_paisa, price_tier, '
+        'default_discount_bp) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 3, ?, ?, ?, ?, ?, ?)',
+        [
+          'PTY00000000000000000000001',
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'a-0000-$deviceId',
+          'Rashid Traders',
+          'rashid traders',
+          'customer',
+          4500000,
+          'wholesale',
+          250,
+        ],
+      );
+      await old.close();
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 5);
+
+      final row = await db
+          .customSelect(
+            'SELECT name, rev, opening_balance_paisa, price_tier, '
+            'default_discount_bp FROM parties',
+          )
+          .getSingle();
+      expect(row.data['name'], 'Rashid Traders');
+      expect(row.data['rev'], 3);
+      expect(row.data['opening_balance_paisa'], 4500000);
+      expect(row.data['price_tier'], 'wholesale');
+      expect(row.data['default_discount_bp'], 250);
+
+      await db.customStatement("UPDATE parties SET price_tier = 'vip'");
+      final vip = await db
+          .customSelect('SELECT price_tier FROM parties')
+          .getSingle();
+      expect(vip.data['price_tier'], 'vip');
     });
   });
 
@@ -343,4 +401,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 4;
+const _currentVersion = 5;

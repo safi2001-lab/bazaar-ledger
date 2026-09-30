@@ -39,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 4;
+  static const currentSchemaVersion = 5;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -102,6 +102,14 @@ class AppDatabase extends _$AppDatabase {
           // counter already charged them.
           from3To4: (migrator, schema) async {
             await migrator.addColumn(schema.parties, schema.parties.priceTier);
+          },
+          // v4 → v5 (M15): a VIP price. items gains its column in place;
+          // parties is rebuilt, because its CHECK on price_tier has to learn
+          // 'vip' and SQLite cannot change a CHECK any other way. Every row
+          // is copied across as it was.
+          from4To5: (migrator, schema) async {
+            await migrator.addColumn(schema.items, schema.items.vipRateMilliPaisa);
+            await migrator.alterTable(TableMigration(schema.parties));
           },
         )(m, from, to);
       } on ArgumentError {

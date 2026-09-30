@@ -325,6 +325,8 @@ const _tablesByVersion = <int, List<String>>{
   3: _tablesV2,
   // v4 added a column, not a table.
   4: _tablesV2,
+  // v5 added a column and rebuilt parties, not a table.
+  5: _tablesV2,
 };
 
 const _tablesV1 = <String>[

@@ -323,6 +323,7 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                               for (final (tier, label) in [
                                 (PriceTier.retail, s.partyTierRetail),
                                 (PriceTier.wholesale, s.partyTierWholesale),
+                                (PriceTier.vip, s.partyTierVip),
                               ])
                                 ChoiceChip(
                                   selected: _tier == tier,

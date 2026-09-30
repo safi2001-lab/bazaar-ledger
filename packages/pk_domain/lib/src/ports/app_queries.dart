@@ -90,6 +90,7 @@ final class ItemSummary {
     this.minStock = Qty.zero,
     this.purchaseRate,
     this.wholesaleRate,
+    this.vipRate,
     this.mrp,
     this.hsCode,
   });
@@ -116,6 +117,9 @@ final class ItemSummary {
   /// that it may not legally exceed.
   final Rate? purchaseRate;
   final Rate? wholesaleRate;
+
+  /// What a VIP buyer pays per base unit, if the item has a VIP price.
+  final Rate? vipRate;
   final Money? mrp;
 
   /// For the FBR invoice, which wants it per line rather than per bill.

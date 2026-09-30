@@ -2344,5 +2344,11 @@ class AppStringsUr extends AppStrings {
   String get settingsCrashesClear => 'Saaf karein';
 
   @override
+  String get itemVipPrice => 'VIP qeemat';
+
+  @override
+  String get partyTierVip => 'VIP';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

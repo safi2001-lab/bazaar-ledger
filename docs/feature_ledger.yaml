@@ -322,6 +322,17 @@ milestones:
       - packages/pk_import/**
       - android/app/src/main/kotlin/**
 
+  - id: M15
+    title: A VIP price, the third price a buyer can be sold at
+    # Opened and sealed 30 Sep 2026 at 1/1. The plan document's price lists
+    # named three tiers and the app had two. Items carry a VIP price, a party
+    # is marked VIP, and the counter charges it, falling back to wholesale
+    # and then retail where an item has no VIP price. Schema v5: items gains
+    # its column in place, parties is rebuilt to widen its CHECK.
+    # Its files are M7's (pricing) and M1's (items, parties); it owns none.
+    state: sealed
+    owns: []
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4015,3 +4026,18 @@ features:
       - crash journal only the last ones are kept, and a torn line is skipped
       - crash journal a journal that cannot be written does not throw
       - an error the app hit is shown in Data Health, and cleared
+
+  # ---------------------------------------------------------------------------
+  # M15 — a VIP price
+  # ---------------------------------------------------------------------------
+
+  - id: M15-VIP-01
+    milestone: M15
+    title: A VIP customer is charged the VIP price
+    status: done
+    proof:
+      - the price a buyer pays a VIP buyer pays the VIP price
+      - the price a buyer pays a VIP buyer falls back to the trade price, then the shelf price
+      - v4 to v5 — a VIP price a v4 wholesale customer comes through the rebuild whole
+      - a VIP customer is charged the VIP price
+      - an item is given a VIP price from its editor

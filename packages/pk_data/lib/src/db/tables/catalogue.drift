@@ -128,7 +128,12 @@ CREATE TABLE items (
   opening_rate_milli_paisa INTEGER NOT NULL DEFAULT 0,
 
   image_attachment_id TEXT REFERENCES attachments(id) DEFERRABLE INITIALLY DEFERRED,
-  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1)),
+
+  -- The price a VIP buyer pays (M15). Last, because SQLite adds a column at
+  -- the end. Empty means the item has none, and a VIP buyer pays the
+  -- wholesale price, or the retail one where there is no wholesale price.
+  vip_rate_milli_paisa INTEGER
 ) STRICT;
 
 CREATE INDEX idx_items_firm_name ON items (firm_id, name_search);
@@ -194,7 +199,7 @@ CREATE TABLE parties (
   -- unless the cashier remembered to retype every line. Last in the table
   -- because SQLite adds a column where it adds it: at the end.
   price_tier TEXT NOT NULL DEFAULT 'retail'
-    CHECK (price_tier IN ('retail', 'wholesale'))
+    CHECK (price_tier IN ('retail', 'wholesale', 'vip'))
 ) STRICT;
 
 CREATE INDEX idx_parties_firm_name ON parties (firm_id, name_search);

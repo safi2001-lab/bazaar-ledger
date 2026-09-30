@@ -12,7 +12,10 @@ import '../ports/app_queries.dart';
 
 enum PriceTier {
   retail('retail'),
-  wholesale('wholesale');
+  wholesale('wholesale'),
+
+  /// The shop's best buyers (M15): a third price, below wholesale.
+  vip('vip');
 
   const PriceTier(this.code);
 
@@ -22,12 +25,14 @@ enum PriceTier {
   /// Anything unknown is retail: the price every buyer was charged before
   /// tiers existed, and never a price the shop did not mean to give.
   static PriceTier parse(String? code) =>
-      code == wholesale.code ? wholesale : retail;
+      values.where((t) => t.code == code).firstOrNull ?? retail;
 }
 
-/// The price per base unit [item] is sold at to a [tier] buyer: the wholesale
-/// price where the item has one, and its retail price where it does not.
+/// The price per base unit [item] is sold at to a [tier] buyer: the tier's
+/// own price where the item has one, falling back a tier at a time — VIP to
+/// wholesale to retail — where it does not.
 Rate priceFor(ItemSummary item, PriceTier tier) => switch (tier) {
+  PriceTier.vip => item.vipRate ?? item.wholesaleRate ?? item.saleRate,
   PriceTier.wholesale => item.wholesaleRate ?? item.saleRate,
   PriceTier.retail => item.saleRate,
 };

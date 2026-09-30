@@ -3,7 +3,7 @@ import 'package:test/test.dart';
 
 /// Which price a buyer pays.
 void main() {
-  ItemSummary oil({Rate? wholesale}) => ItemSummary(
+  ItemSummary oil({Rate? wholesale, Rate? vip}) => ItemSummary(
     id: 'oil',
     name: 'Cooking Oil 5L',
     unitId: 'pcs',
@@ -11,6 +11,7 @@ void main() {
     unitDecimals: 0,
     saleRate: Rate.rupees(2500),
     wholesaleRate: wholesale,
+    vipRate: vip,
     stockOnHand: Qty.units(10),
     minStock: Qty.zero,
     tracksStock: true,
@@ -35,8 +36,27 @@ void main() {
       expect(priceFor(oil(), PriceTier.wholesale), Rate.rupees(2500));
     });
 
+    test('a VIP buyer pays the VIP price', () {
+      expect(
+        priceFor(
+          oil(wholesale: Rate.rupees(2300), vip: Rate.rupees(2200)),
+          PriceTier.vip,
+        ),
+        Rate.rupees(2200),
+      );
+    });
+
+    test('a VIP buyer falls back to the trade price, then the shelf price', () {
+      expect(
+        priceFor(oil(wholesale: Rate.rupees(2300)), PriceTier.vip),
+        Rate.rupees(2300),
+      );
+      expect(priceFor(oil(), PriceTier.vip), Rate.rupees(2500));
+    });
+
     test('a tier nobody recognises is retail', () {
-      expect(PriceTier.parse('vip'), PriceTier.retail);
+      expect(PriceTier.parse('platinum'), PriceTier.retail);
+      expect(PriceTier.parse('vip'), PriceTier.vip);
       expect(PriceTier.parse(null), PriceTier.retail);
       expect(PriceTier.parse('wholesale'), PriceTier.wholesale);
     });

@@ -2053,6 +2053,7 @@ final class DriftAppQueries implements AppQueries {
     description: _blankToNull(r.readNullable<String>('description')),
     purchaseRate: _rateOrNull(r, 'purchase_rate_milli_paisa'),
     wholesaleRate: _rateOrNull(r, 'wholesale_rate_milli_paisa'),
+    vipRate: _rateOrNull(r, 'vip_rate_milli_paisa'),
     mrp: _moneyOrNull(r, 'mrp_paisa'),
     hsCode: _blankToNull(r.readNullable<String>('hs_code')),
     unitId: r.read<String>('base_unit_id'),
