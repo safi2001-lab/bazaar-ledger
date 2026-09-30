@@ -19,6 +19,7 @@ import '../purchases/purchases_screen.dart';
 import '../reports/reports_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
+import '../vans/vans_screen.dart';
 
 /// The day, at a glance, and the way to everything else.
 ///
@@ -168,6 +169,13 @@ class HomeScreen extends ConsumerWidget {
                       label: s.homeDayClose,
                       icon: Icons.lock_clock_outlined,
                       onTap: () => _open(context, const DayCloseScreen()),
+                    ),
+                  // Delivery vans: loading, and the rider's cash (M18).
+                  if (services.can(Permission.closeDay))
+                    _NavTile(
+                      label: s.vansTitle,
+                      icon: Icons.local_shipping_outlined,
+                      onTap: () => _open(context, const VansScreen()),
                     ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

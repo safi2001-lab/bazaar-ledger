@@ -2438,5 +2438,70 @@ class AppStringsEn extends AppStrings {
   String get recipesSave => 'Save';
 
   @override
+  String get vansTitle => 'Vans';
+
+  @override
+  String get vansNew => 'New van';
+
+  @override
+  String get vansName => 'Van name';
+
+  @override
+  String get vansAdd => 'Add';
+
+  @override
+  String get vansEmpty => 'No vans yet';
+
+  @override
+  String get vansThisPhone => 'This phone sells from';
+
+  @override
+  String get vansShopFloor => 'The shop';
+
+  @override
+  String vansToday(String count) {
+    return 'Today $count bills, cash:';
+  }
+
+  @override
+  String vansSettled(String amount) {
+    return 'Settled: $amount handed in';
+  }
+
+  @override
+  String get vansLoad => 'Load';
+
+  @override
+  String get vansSettle => 'Settle';
+
+  @override
+  String get vansOnBoard => 'On the van';
+
+  @override
+  String get vansQty => 'Quantity';
+
+  @override
+  String get vansExpected => 'The rider should have';
+
+  @override
+  String get vansCounted => 'The rider handed in (Rs)';
+
+  @override
+  String get vansReturnUnsold => 'Unsold stock back to the shop';
+
+  @override
+  String get vansSettledEven => 'Settled, even';
+
+  @override
+  String vansSettledShort(String amount) {
+    return 'Settled, $amount short';
+  }
+
+  @override
+  String vansSettledOver(String amount) {
+    return 'Settled, $amount over';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

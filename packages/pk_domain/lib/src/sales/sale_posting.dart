@@ -35,6 +35,7 @@ final class DocumentPosting {
     this.partyStrnSnapshot,
     this.partyAddressSnapshot,
     this.salespersonId,
+    this.locationCode,
     this.notes,
     this.supplierBillNo,
     this.terms,
@@ -72,6 +73,9 @@ final class DocumentPosting {
   final String taxRuleVersion;
   final bool cashThresholdBreached;
   final String? salespersonId;
+
+  /// A van's location, or null for the shop floor.
+  final String? locationCode;
   final String? notes;
 
   /// The number on the supplier's own paper, on a purchase bill. What they

@@ -365,6 +365,25 @@ milestones:
       - packages/pk_data/lib/src/write/drift_manufacturing_writer.dart
       - packages/pk_data/lib/src/db/tables/manufacturing.drift
 
+  - id: M18
+    title: Van sales — loading, selling from the van, and settling the rider
+    # Opened and sealed 30 Sep 2026 at 1/1. A van is a stock location with a
+    # rider. Goods are loaded onto it as a transfer; a phone set to the van
+    # sells from its stock, and each sale records where it left from; the
+    # rider's cash is settled once a day against what the van's cash sales
+    # took, any short or over booked to Cash Short and Over, and what was
+    # not sold goes back to the shop floor batch by batch. Schema v7 adds
+    # vans, van_settlements and documents.location_code. Not built: routes
+    # and stops, credit sales collected on the round (the khata handles
+    # them as any udhaar), returns going back onto the van, and settling a
+    # day other than today.
+    state: sealed
+    owns:
+      - lib/features/vans/**
+      - packages/pk_domain/lib/src/vans/**
+      - packages/pk_data/lib/src/write/drift_van_writer.dart
+      - packages/pk_data/lib/src/db/tables/vans.drift
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4110,3 +4129,17 @@ features:
       - making goods a run the shelf cannot cover changes nothing
       - making goods a recipe is kept, listed and changed
       - ten packs of masala are made from bulk spice
+
+  # ---------------------------------------------------------------------------
+  # M18 — van sales
+  # ---------------------------------------------------------------------------
+
+  - id: M18-VAN-01
+    milestone: M18
+    title: A van is loaded, sells, and its rider's cash is settled
+    status: done
+    proof:
+      - van sales a van is loaded, sells, and settles short
+      - van sales a day is settled once
+      - van sales a phone set to a van sells from the van
+      - a van is loaded, sells from the counter, and settles short

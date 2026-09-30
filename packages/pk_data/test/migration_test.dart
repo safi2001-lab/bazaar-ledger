@@ -401,4 +401,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 6;
+const _currentVersion = 7;

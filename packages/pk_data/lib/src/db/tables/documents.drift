@@ -112,6 +112,11 @@ CREATE TABLE documents (
 
   posted_at_utc INTEGER,
 
+  -- Where the goods on a sale left from (M18): NULL for the shop floor, or
+  -- a van's location code. A rider's cash is counted against exactly the
+  -- sales that left from their van.
+  location_code TEXT,
+
   CHECK (revision = 1 OR supersedes_id IS NOT NULL),
   -- An unpaid balance is somebody's khata. The counter refuses an
   -- anonymous debtor, but a UI rule protects only the UI: an import, a

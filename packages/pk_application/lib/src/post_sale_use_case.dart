@@ -41,27 +41,14 @@ final class PostSaleUseCase {
       final costs = await write.averageCostFor({
         for (final l in draft.lines) l.itemId,
       });
-      final priced = SaleDraft(
-        lines: [
-          for (final l in draft.lines)
-            l.unitCost.isZero && costs[l.itemId] != null
-                ? _withCost(l, costs[l.itemId]!)
-                : l,
-        ],
-        partyId: draft.partyId,
-        partyName: draft.partyName,
-        partyNtn: draft.partyNtn,
-        partyStrn: draft.partyStrn,
-        partyAddress: draft.partyAddress,
-        tenders: draft.tenders,
-        billDiscount: draft.billDiscount,
-        extraCharges: draft.extraCharges,
-        roundToRupee: draft.roundToRupee,
-        roundingMode: draft.roundingMode,
-        notes: draft.notes,
-        salespersonId: draft.salespersonId,
-        convertedFromId: draft.convertedFromId,
-      );
+      // Through withLines, so nothing else on the draft — where the goods
+      // leave from included — is lost on the way.
+      final priced = draft.withLines([
+        for (final l in draft.lines)
+          l.unitCost.isZero && costs[l.itemId] != null
+              ? _withCost(l, costs[l.itemId]!)
+              : l,
+      ]);
 
       final calculated = calculator.calculate(priced, taxContext);
 

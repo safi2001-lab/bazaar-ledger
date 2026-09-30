@@ -18,6 +18,7 @@ import 'catalogue_writer.dart';
 import 'manufacturing.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
+import 'vans.dart';
 
 /// The shop, as the app needs it on screen.
 final class FirmProfile {
@@ -452,6 +453,13 @@ abstract interface class AppQueries {
 
   /// Every recipe the shop keeps (M17), by name.
   Future<List<BomView>> boms(String firmId);
+
+  /// The shop's vans (M18).
+  Future<List<VanView>> vans(String firmId);
+
+  /// One van's [day]: its sales, the cash they took, what is still on it,
+  /// and the settlement if the day is settled.
+  Future<VanDay> vanDay(String firmId, String vanId, BusinessDate day);
 
   Future<List<PartySummary>> searchParties(
     String firmId, {

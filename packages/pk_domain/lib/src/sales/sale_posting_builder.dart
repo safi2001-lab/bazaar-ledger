@@ -95,6 +95,7 @@ final class SalePostingBuilder {
       cashThresholdBreached: calculated.cashThresholdBreached,
       salespersonId: draft.salespersonId,
       notes: draft.notes,
+      locationCode: draft.locationCode == 'MAIN' ? null : draft.locationCode,
     );
 
     final lines = <DocumentLinePosting>[];
@@ -114,6 +115,7 @@ final class SalePostingBuilder {
             occurredOnLocal: localDate,
             lineNo: l.lineNo,
             lotId: l.draft.lotId,
+            locationCode: draft.locationCode,
           ),
         );
       }

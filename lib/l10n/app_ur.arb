@@ -1430,5 +1430,52 @@
   "recipesPerBatch": "Ek batch mein",
   "recipesAddComponent": "Aur cheez",
   "recipesSave": "Save karein",
+  "vansTitle": "Gaariyan (van)",
+  "vansNew": "Nayi gaari",
+  "vansName": "Gaari ka naam",
+  "vansAdd": "Jorein",
+  "vansEmpty": "Abhi koi gaari nahin",
+  "vansThisPhone": "Yeh phone kahan se bechta hai",
+  "vansShopFloor": "Dukaan",
+  "vansToday": "Aaj {count} bill, cash:",
+  "@vansToday": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vansSettled": "Hisaab ho gaya: {amount} jama",
+  "@vansSettled": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vansLoad": "Maal laadein",
+  "vansSettle": "Hisaab karein",
+  "vansOnBoard": "Gaari mein maal",
+  "vansQty": "Kitna",
+  "vansExpected": "Rider ke paas hona chahiye",
+  "vansCounted": "Rider ne diya (Rs)",
+  "vansReturnUnsold": "Bacha hua maal dukaan wapas",
+  "vansSettledEven": "Hisaab barabar",
+  "vansSettledShort": "Hisaab ho gaya, {amount} kam",
+  "@vansSettledShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vansSettledOver": "Hisaab ho gaya, {amount} zyada",
+  "@vansSettledOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Ho gaya"
 }

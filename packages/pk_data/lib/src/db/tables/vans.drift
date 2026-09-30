@@ -1,0 +1,59 @@
+import 'core.drift';
+import 'ledger.drift';
+
+-- Bazaar Ledger — schema v7: van sales (M18).
+--
+-- A van is a stock location with a rider. Goods are loaded onto it as a
+-- transfer, sold from it at the rider's phone, and at the end of the day
+-- the rider hands over the cash: what the van's cash sales say they should
+-- have, against what they actually count out. Anything short or over is
+-- booked, and what was not sold goes back to the shop.
+
+CREATE TABLE vans (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  name TEXT NOT NULL,
+  -- The stock_ledger location its goods are kept under.
+  location_code TEXT NOT NULL,
+  rider_user_id TEXT REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  is_active INTEGER NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))
+) STRICT;
+
+CREATE UNIQUE INDEX idx_vans_location ON vans (firm_id, location_code);
+CREATE INDEX idx_vans_rider ON vans (rider_user_id);
+
+CREATE TABLE van_settlements (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  van_id TEXT NOT NULL REFERENCES vans(id) DEFERRABLE INITIALLY DEFERRED,
+  settled_on_local TEXT NOT NULL,
+  cash_expected_paisa INTEGER NOT NULL CHECK (cash_expected_paisa >= 0),
+  cash_counted_paisa INTEGER NOT NULL CHECK (cash_counted_paisa >= 0),
+  -- Lines of stock brought back to the shop floor.
+  lines_returned_count INTEGER NOT NULL DEFAULT 0
+    CHECK (lines_returned_count >= 0),
+  journal_entry_id TEXT REFERENCES journal_entries(id) DEFERRABLE INITIALLY DEFERRED
+) STRICT;
+
+CREATE UNIQUE INDEX idx_vansettle_day
+  ON van_settlements (firm_id, van_id, settled_on_local);
+CREATE INDEX idx_vansettle_van ON van_settlements (van_id);
+CREATE INDEX idx_vansettle_journal ON van_settlements (journal_entry_id);

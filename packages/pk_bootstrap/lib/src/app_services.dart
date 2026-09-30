@@ -223,6 +223,60 @@ final class AppServices {
     return DriftManufacturingWriter(runner: _runner);
   }
 
+  /// Vans and their daily settlements (M18). Settling a rider's cash is a
+  /// day-close job, so it takes the day-close permission.
+  VanWriter get vans {
+    require(Permission.closeDay);
+    return DriftVanWriter(runner: _runner);
+  }
+
+  /// Where this phone's sales leave from: the shop floor, or the van its
+  /// rider is selling from. Kept per device, as a printer is.
+  Future<String> counterLocation() async {
+    final id = _identity;
+    if (id == null) return 'MAIN';
+    final row = await database
+        .customSelect(
+          'SELECT setting_value FROM settings WHERE firm_id = ? '
+          'AND setting_key = ? AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(id.firmId),
+            Variable<String>('device.location.${id.deviceId}'),
+          ],
+        )
+        .getSingleOrNull();
+    return row?.read<String>('setting_value') ?? 'MAIN';
+  }
+
+  Future<void> setCounterLocation(String locationCode) async {
+    require(Permission.settings);
+    final actor = actorNow();
+    final key = 'device.location.${actor.deviceId}';
+    await _runner.run(actor, (tx) async {
+      final held = await tx.selectOne(
+        'SELECT id FROM settings WHERE firm_id = ? AND setting_key = ? '
+        'AND deleted_at_utc IS NULL',
+        [actor.firmId, key],
+      );
+      if (held == null) {
+        await tx.insert('settings', {
+          'setting_key': key,
+          'setting_value': locationCode,
+        });
+      } else {
+        await tx.update('settings', held.read<String>('id'), {
+          'setting_value': locationCode,
+        });
+      }
+      tx.audit(
+        action: 'COUNTER_LOCATION_SET',
+        entityTable: 'devices',
+        entityId: actor.deviceId,
+        summary: 'This phone sells from $locationCode',
+      );
+    });
+  }
+
   RecordPurchaseUseCase get recordPurchase {
     require(Permission.purchases);
     return RecordPurchaseUseCase(writer: DriftPurchaseWriter(runner: _runner));

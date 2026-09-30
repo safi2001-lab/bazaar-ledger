@@ -366,9 +366,12 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
 
     try {
       final services = ref.read(appServicesProvider);
+      // A rider's phone sells from the van, not from the shop floor (M18).
+      final location = await services.counterLocation();
       final posted = await services.postSale(
         services.actorNow(),
         SaleDraft(
+          locationCode: location,
           lines: [for (final l in cart.lines) ...l.toDrafts(units)],
           partyId: cart.partyId,
           partyName: cart.partyName,

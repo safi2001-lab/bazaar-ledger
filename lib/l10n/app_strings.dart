@@ -4400,6 +4400,120 @@ abstract class AppStrings {
   /// **'Save karein'**
   String get recipesSave;
 
+  /// No description provided for @vansTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaariyan (van)'**
+  String get vansTitle;
+
+  /// No description provided for @vansNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi gaari'**
+  String get vansNew;
+
+  /// No description provided for @vansName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaari ka naam'**
+  String get vansName;
+
+  /// No description provided for @vansAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jorein'**
+  String get vansAdd;
+
+  /// No description provided for @vansEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi gaari nahin'**
+  String get vansEmpty;
+
+  /// No description provided for @vansThisPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh phone kahan se bechta hai'**
+  String get vansThisPhone;
+
+  /// No description provided for @vansShopFloor.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan'**
+  String get vansShopFloor;
+
+  /// No description provided for @vansToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj {count} bill, cash:'**
+  String vansToday(String count);
+
+  /// No description provided for @vansSettled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab ho gaya: {amount} jama'**
+  String vansSettled(String amount);
+
+  /// No description provided for @vansLoad.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal laadein'**
+  String get vansLoad;
+
+  /// No description provided for @vansSettle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab karein'**
+  String get vansSettle;
+
+  /// No description provided for @vansOnBoard.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaari mein maal'**
+  String get vansOnBoard;
+
+  /// No description provided for @vansQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna'**
+  String get vansQty;
+
+  /// No description provided for @vansExpected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rider ke paas hona chahiye'**
+  String get vansExpected;
+
+  /// No description provided for @vansCounted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rider ne diya (Rs)'**
+  String get vansCounted;
+
+  /// No description provided for @vansReturnUnsold.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bacha hua maal dukaan wapas'**
+  String get vansReturnUnsold;
+
+  /// No description provided for @vansSettledEven.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab barabar'**
+  String get vansSettledEven;
+
+  /// No description provided for @vansSettledShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab ho gaya, {amount} kam'**
+  String vansSettledShort(String amount);
+
+  /// No description provided for @vansSettledOver.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab ho gaya, {amount} zyada'**
+  String vansSettledOver(String amount);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

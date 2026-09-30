@@ -328,7 +328,11 @@ const _tablesByVersion = <int, List<String>>{
   // v5 added a column and rebuilt parties, not a table.
   5: _tablesV2,
   6: _tablesV6,
+  7: _tablesV7,
 };
+
+/// v7 (M18): vans and their daily settlements.
+const _tablesV7 = <String>[..._tablesV6, 'van_settlements', 'vans'];
 
 /// v6 (M17): bills of materials and production runs.
 const _tablesV6 = <String>[

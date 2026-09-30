@@ -26,6 +26,7 @@ part 'app_database.g.dart';
     'tables/ledger.drift',
     'tables/system.drift',
     'tables/manufacturing.drift',
+    'tables/vans.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {
@@ -40,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 6;
+  static const currentSchemaVersion = 7;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -131,6 +132,26 @@ class AppDatabase extends _$AppDatabase {
               schema.idxAssembliesBom,
               schema.idxAssembliesOutput,
               schema.idxAssembliesJournal,
+            ]) {
+              await migrator.create(index);
+            }
+          },
+          // v6 → v7 (M18): vans, their daily settlements, and where each
+          // sale left from. The column is added in place and is empty for
+          // every existing sale, which all left from the shop floor.
+          from6To7: (migrator, schema) async {
+            await migrator.addColumn(
+              schema.documents,
+              schema.documents.locationCode,
+            );
+            await migrator.createTable(schema.vans);
+            await migrator.createTable(schema.vanSettlements);
+            for (final index in [
+              schema.idxVansLocation,
+              schema.idxVansRider,
+              schema.idxVansettleDay,
+              schema.idxVansettleVan,
+              schema.idxVansettleJournal,
             ]) {
               await migrator.create(index);
             }

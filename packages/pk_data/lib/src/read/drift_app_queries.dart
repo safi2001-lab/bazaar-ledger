@@ -11,6 +11,7 @@ import '../write/drift_cheque_writer.dart'
 import '../write/drift_day_close_writer.dart' show cashInDrawerSql;
 import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
+import '../write/drift_van_writer.dart' show vanCashSql, vanStockSql;
 
 /// Every read the app performs, as indexed SQL.
 ///
@@ -329,6 +330,96 @@ final class DriftAppQueries implements AppQueries {
           );
         }(),
     ];
+  }
+
+  @override
+  Future<List<VanView>> vans(String firmId) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT v.id, v.name, v.location_code, v.rider_user_id,
+                 u.name AS rider_name
+          FROM vans v LEFT JOIN users u ON u.id = v.rider_user_id
+          WHERE v.firm_id = ? AND v.deleted_at_utc IS NULL AND v.is_active = 1
+          ORDER BY v.name COLLATE NOCASE
+          ''',
+          variables: [Variable<String>(firmId)],
+        )
+        .get();
+    return [
+      for (final r in rows)
+        VanView(
+          id: r.read<String>('id'),
+          name: r.read<String>('name'),
+          locationCode: r.read<String>('location_code'),
+          riderUserId: r.readNullable<String>('rider_user_id'),
+          riderName: r.readNullable<String>('rider_name'),
+        ),
+    ];
+  }
+
+  @override
+  Future<VanDay> vanDay(String firmId, String vanId, BusinessDate day) async {
+    final van = await _db
+        .customSelect(
+          'SELECT location_code FROM vans WHERE id = ? AND firm_id = ?',
+          variables: [Variable<String>(vanId), Variable<String>(firmId)],
+        )
+        .getSingleOrNull();
+    if (van == null) {
+      return const VanDay(salesCount: 0, expectedCash: Money.zero, stock: []);
+    }
+    final location = van.read<String>('location_code');
+    final cash = await _db
+        .customSelect(
+          vanCashSql,
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(location),
+            Variable<String>(day.value),
+          ],
+        )
+        .getSingle();
+    final stock = await _db
+        .customSelect(
+          vanStockSql,
+          variables: [Variable<String>(firmId), Variable<String>(location)],
+        )
+        .get();
+    final settled = await _db
+        .customSelect(
+          'SELECT cash_expected_paisa, cash_counted_paisa, '
+          'lines_returned_count FROM van_settlements '
+          'WHERE firm_id = ? AND van_id = ? AND settled_on_local = ? '
+          'AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(vanId),
+            Variable<String>(day.value),
+          ],
+        )
+        .getSingleOrNull();
+    return VanDay(
+      salesCount: cash.read<int>('sales'),
+      expectedCash: Money.paisa(cash.read<int>('cash')),
+      stock: [
+        for (final r in stock)
+          (
+            itemId: r.read<String>('item_id'),
+            name: r.read<String>('name'),
+            unitCode: r.read<String>('unit_code'),
+            qty: Qty.raw(r.read<int>('q')),
+          ),
+      ],
+      settled: settled == null
+          ? null
+          : VanSettlementView(
+              date: day,
+              expected: Money.paisa(settled.read<int>('cash_expected_paisa')),
+              counted: Money.paisa(settled.read<int>('cash_counted_paisa')),
+              linesReturned: settled.read<int>('lines_returned_count'),
+            ),
+    );
   }
 
   @override

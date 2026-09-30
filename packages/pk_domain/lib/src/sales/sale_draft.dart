@@ -155,7 +155,12 @@ final class SaleDraft {
     this.notes,
     this.salespersonId,
     this.convertedFromId,
+    this.locationCode = 'MAIN',
   });
+
+  /// Where the goods leave from (M18): the shop floor, or a van a rider is
+  /// selling from.
+  final String locationCode;
 
   final List<SaleLineDraft> lines;
 
@@ -199,5 +204,6 @@ final class SaleDraft {
     notes: notes,
     salespersonId: salespersonId,
     convertedFromId: convertedFromId,
+    locationCode: locationCode,
   );
 }

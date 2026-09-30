@@ -1351,5 +1351,52 @@
   "recipesPerBatch": "Per batch",
   "recipesAddComponent": "Add a component",
   "recipesSave": "Save",
+  "vansTitle": "Vans",
+  "vansNew": "New van",
+  "vansName": "Van name",
+  "vansAdd": "Add",
+  "vansEmpty": "No vans yet",
+  "vansThisPhone": "This phone sells from",
+  "vansShopFloor": "The shop",
+  "vansToday": "Today {count} bills, cash:",
+  "@vansToday": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "vansSettled": "Settled: {amount} handed in",
+  "@vansSettled": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vansLoad": "Load",
+  "vansSettle": "Settle",
+  "vansOnBoard": "On the van",
+  "vansQty": "Quantity",
+  "vansExpected": "The rider should have",
+  "vansCounted": "The rider handed in (Rs)",
+  "vansReturnUnsold": "Unsold stock back to the shop",
+  "vansSettledEven": "Settled, even",
+  "vansSettledShort": "Settled, {amount} short",
+  "@vansSettledShort": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "vansSettledOver": "Settled, {amount} over",
+  "@vansSettledOver": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "chequeDone": "Done"
 }

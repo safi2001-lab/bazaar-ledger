@@ -87,6 +87,7 @@ Future<(String, Map<int, String>)> insertDocumentRows(
     'tax_rule_version': doc.taxRuleVersion,
     'cash_threshold_breached': doc.cashThresholdBreached ? 1 : 0,
     'salesperson_id': doc.salespersonId,
+    'location_code': doc.locationCode,
     'notes': doc.notes,
     'terms': doc.terms,
     'posted_at_utc': doc.docDateUtcMillis,

@@ -2438,5 +2438,70 @@ class AppStringsUr extends AppStrings {
   String get recipesSave => 'Save karein';
 
   @override
+  String get vansTitle => 'Gaariyan (van)';
+
+  @override
+  String get vansNew => 'Nayi gaari';
+
+  @override
+  String get vansName => 'Gaari ka naam';
+
+  @override
+  String get vansAdd => 'Jorein';
+
+  @override
+  String get vansEmpty => 'Abhi koi gaari nahin';
+
+  @override
+  String get vansThisPhone => 'Yeh phone kahan se bechta hai';
+
+  @override
+  String get vansShopFloor => 'Dukaan';
+
+  @override
+  String vansToday(String count) {
+    return 'Aaj $count bill, cash:';
+  }
+
+  @override
+  String vansSettled(String amount) {
+    return 'Hisaab ho gaya: $amount jama';
+  }
+
+  @override
+  String get vansLoad => 'Maal laadein';
+
+  @override
+  String get vansSettle => 'Hisaab karein';
+
+  @override
+  String get vansOnBoard => 'Gaari mein maal';
+
+  @override
+  String get vansQty => 'Kitna';
+
+  @override
+  String get vansExpected => 'Rider ke paas hona chahiye';
+
+  @override
+  String get vansCounted => 'Rider ne diya (Rs)';
+
+  @override
+  String get vansReturnUnsold => 'Bacha hua maal dukaan wapas';
+
+  @override
+  String get vansSettledEven => 'Hisaab barabar';
+
+  @override
+  String vansSettledShort(String amount) {
+    return 'Hisaab ho gaya, $amount kam';
+  }
+
+  @override
+  String vansSettledOver(String amount) {
+    return 'Hisaab ho gaya, $amount zyada';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }
