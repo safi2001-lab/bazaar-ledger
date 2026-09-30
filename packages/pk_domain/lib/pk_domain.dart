@@ -12,6 +12,7 @@ export 'src/accounting/chart_view.dart';
 export 'src/accounting/day_close.dart';
 export 'src/accounting/journal_voucher.dart';
 export 'src/barcode/gs1.dart';
+export 'src/barcode/scale.dart';
 export 'src/catalogue/barcode_key.dart';
 export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';

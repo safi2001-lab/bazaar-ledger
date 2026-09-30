@@ -2349,5 +2349,41 @@ class AppStringsEn extends AppStrings {
   String get partyTierVip => 'VIP';
 
   @override
+  String posScaleUnknown(String plu) {
+    return 'No item has the code $plu from this scale label';
+  }
+
+  @override
+  String posScaleNoPrice(String name) {
+    return '$name has no price, so the weight cannot be worked out from the label\'s price';
+  }
+
+  @override
+  String get scaleTitle => 'Weighing-scale labels';
+
+  @override
+  String get scaleHint =>
+      'A scale\'s label carries the item\'s PLU and its weight or price. Give each item the same code as its PLU on the scale.';
+
+  @override
+  String get scaleWeightPrefixes =>
+      'Prefixes that carry a weight (e.g. 21, 22)';
+
+  @override
+  String get scalePricePrefixes => 'Prefixes that carry a price (e.g. 23, 24)';
+
+  @override
+  String get scalePluDigits => 'Digits of PLU';
+
+  @override
+  String get scalePriceInPaisa => 'Prices are printed in paisa';
+
+  @override
+  String get scaleSave => 'Save';
+
+  @override
+  String get scaleSaved => 'Scale labels saved';
+
+  @override
   String get chequeDone => 'Done';
 }

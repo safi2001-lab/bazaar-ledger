@@ -4244,6 +4244,66 @@ abstract class AppStrings {
   /// **'VIP'**
   String get partyTierVip;
 
+  /// No description provided for @posScaleUnknown.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scale label par PLU {plu} kisi maal ka code nahin'**
+  String posScaleUnknown(String plu);
+
+  /// No description provided for @posScaleNoPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ki qeemat nahin, is liye scale ki qeemat se wazan nahin nikal sakta'**
+  String posScaleNoPrice(String name);
+
+  /// No description provided for @scaleTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tarazu ke labels'**
+  String get scaleTitle;
+
+  /// No description provided for @scaleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tarazu jo barcode chhapta hai us mein maal ka PLU aur wazan ya qeemat hoti hai. Maal ka code wahi rakhein jo tarazu mein PLU hai.'**
+  String get scaleHint;
+
+  /// No description provided for @scaleWeightPrefixes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wazan wale prefix (maslan 21, 22)'**
+  String get scaleWeightPrefixes;
+
+  /// No description provided for @scalePricePrefixes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat wale prefix (maslan 23, 24)'**
+  String get scalePricePrefixes;
+
+  /// No description provided for @scalePluDigits.
+  ///
+  /// In ur, this message translates to:
+  /// **'PLU ke hindse'**
+  String get scalePluDigits;
+
+  /// No description provided for @scalePriceInPaisa.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat paison mein chhapti hai'**
+  String get scalePriceInPaisa;
+
+  /// No description provided for @scaleSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save karein'**
+  String get scaleSave;
+
+  /// No description provided for @scaleSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tarazu ke labels save ho gaye'**
+  String get scaleSaved;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

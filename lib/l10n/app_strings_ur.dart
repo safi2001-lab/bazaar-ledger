@@ -2350,5 +2350,40 @@ class AppStringsUr extends AppStrings {
   String get partyTierVip => 'VIP';
 
   @override
+  String posScaleUnknown(String plu) {
+    return 'Scale label par PLU $plu kisi maal ka code nahin';
+  }
+
+  @override
+  String posScaleNoPrice(String name) {
+    return '$name ki qeemat nahin, is liye scale ki qeemat se wazan nahin nikal sakta';
+  }
+
+  @override
+  String get scaleTitle => 'Tarazu ke labels';
+
+  @override
+  String get scaleHint =>
+      'Tarazu jo barcode chhapta hai us mein maal ka PLU aur wazan ya qeemat hoti hai. Maal ka code wahi rakhein jo tarazu mein PLU hai.';
+
+  @override
+  String get scaleWeightPrefixes => 'Wazan wale prefix (maslan 21, 22)';
+
+  @override
+  String get scalePricePrefixes => 'Qeemat wale prefix (maslan 23, 24)';
+
+  @override
+  String get scalePluDigits => 'PLU ke hindse';
+
+  @override
+  String get scalePriceInPaisa => 'Qeemat paison mein chhapti hai';
+
+  @override
+  String get scaleSave => 'Save karein';
+
+  @override
+  String get scaleSaved => 'Tarazu ke labels save ho gaye';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

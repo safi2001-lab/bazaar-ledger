@@ -1364,5 +1364,29 @@
   "settingsCrashesClear": "Saaf karein",
   "itemVipPrice": "VIP qeemat",
   "partyTierVip": "VIP",
+  "posScaleUnknown": "Scale label par PLU {plu} kisi maal ka code nahin",
+  "@posScaleUnknown": {
+    "placeholders": {
+      "plu": {
+        "type": "String"
+      }
+    }
+  },
+  "posScaleNoPrice": "{name} ki qeemat nahin, is liye scale ki qeemat se wazan nahin nikal sakta",
+  "@posScaleNoPrice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "scaleTitle": "Tarazu ke labels",
+  "scaleHint": "Tarazu jo barcode chhapta hai us mein maal ka PLU aur wazan ya qeemat hoti hai. Maal ka code wahi rakhein jo tarazu mein PLU hai.",
+  "scaleWeightPrefixes": "Wazan wale prefix (maslan 21, 22)",
+  "scalePricePrefixes": "Qeemat wale prefix (maslan 23, 24)",
+  "scalePluDigits": "PLU ke hindse",
+  "scalePriceInPaisa": "Qeemat paison mein chhapti hai",
+  "scaleSave": "Save karein",
+  "scaleSaved": "Tarazu ke labels save ho gaye",
   "chequeDone": "Ho gaya"
 }

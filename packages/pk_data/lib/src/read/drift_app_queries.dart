@@ -235,6 +235,39 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<ItemSummary?> itemByCode(String firmId, String code) async {
+    final wanted = code.trim().replaceFirst(RegExp('^0+(?=.)'), '');
+    if (wanted.isEmpty) return null;
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT i.*, u.code AS unit_code, u.decimals AS unit_decimals,
+                 COALESCE((
+                   SELECT SUM(sl.qty_delta_thousandths)
+                   FROM stock_ledger sl
+                   WHERE sl.item_id = i.id AND sl.deleted_at_utc IS NULL
+                 ), 0) AS stock_thousandths
+          FROM items i
+          JOIN units u ON u.id = i.base_unit_id
+          WHERE i.firm_id = ? AND i.deleted_at_utc IS NULL AND i.is_active = 1
+            AND (i.code = ? OR LTRIM(i.code, '0') = ?)
+          -- The code exactly as keyed wins over one equal only without its
+          -- leading zeros.
+          ORDER BY i.code = ? DESC
+          LIMIT 1
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(code.trim()),
+            Variable<String>(wanted),
+            Variable<String>(code.trim()),
+          ],
+        )
+        .get();
+    return rows.isEmpty ? null : _itemFrom(rows.single);
+  }
+
+  @override
   Future<List<PartySummary>> searchParties(
     String firmId, {
     String query = '',

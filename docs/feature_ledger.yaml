@@ -333,6 +333,20 @@ milestones:
     state: sealed
     owns: []
 
+  - id: M16
+    title: A weighing scale's label rings up the item and its weight or price
+    # Opened and sealed 30 Sep 2026 at 1/1. Scales print EAN-13 labels in the
+    # 20–29 range carrying the item's PLU and a weight or a price. The shop
+    # says which prefix means which, and how many digits the PLU has; the
+    # counter finds the item by its own code and rings up the weight, or the
+    # quantity the printed price buys, to the gram. A torn label (bad check
+    # digit) is not read. Not built: a scale connected by cable, and labels
+    # that carry both a weight and a price.
+    state: sealed
+    owns:
+      - lib/features/scale/**
+      - packages/pk_domain/lib/src/barcode/scale.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4041,3 +4055,22 @@ features:
       - v4 to v5 — a VIP price a v4 wholesale customer comes through the rebuild whole
       - a VIP customer is charged the VIP price
       - an item is given a VIP price from its editor
+
+  # ---------------------------------------------------------------------------
+  # M16 — weighing-scale labels
+  # ---------------------------------------------------------------------------
+
+  - id: M16-SCALE-01
+    milestone: M16
+    title: A scale label is read at the counter for the item and its weight or price
+    status: done
+    proof:
+      - scale label a weight label gives the PLU and the grams
+      - scale label a price label gives the PLU and the rupees
+      - scale label a torn label or an ordinary barcode is not a scale label
+      - scale label a four-digit PLU leaves six digits of weight
+      - scale label the format a shop set is kept, and a broken one is not used
+      - a butcher's weight label rings up 1.500 kg
+      - a price label rings up what that price buys
+      - a label for a PLU the shop has not coded is said
+      - the shop sets its scale labels up from Settings

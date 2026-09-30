@@ -137,6 +137,34 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     final messenger = ScaffoldMessenger.of(context);
     var scanned = await services.queries.itemByBarcode(firm.id, text);
 
+    // A weighing scale's own label: the item's PLU and the weight or the
+    // price, in one EAN-13 in the 20–29 range (M16).
+    if (scanned == null) {
+      final label = parseScaleBarcode(text, await services.scaleFormat());
+      if (label != null) {
+        final item = await services.queries.itemByCode(firm.id, label.plu);
+        if (!mounted) return;
+        if (item == null) {
+          messenger.showSnackBar(
+            SnackBar(content: Text(s.posScaleUnknown(label.plu))),
+          );
+          _clearSearch();
+          return;
+        }
+        final qty = _scaleQty(item, label);
+        if (qty == null || !qty.isPositive) {
+          messenger.showSnackBar(
+            SnackBar(content: Text(s.posScaleNoPrice(item.name))),
+          );
+          _clearSearch();
+          return;
+        }
+        ref.read(cartProvider.notifier).add(item, qty: qty);
+        _clearSearch();
+        return;
+      }
+    }
+
     // A medicine pack's GS1 code carries its product, batch and expiry in
     // one symbol. The product is found by its GTIN, and a pack past its date
     // is stopped here, at the scan, before it reaches the bill.
@@ -200,6 +228,24 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     ref.read(cartProvider.notifier).add(item);
     _clearSearch();
+  }
+
+  /// How much a scale label rang up, in the item's own base unit. Grams for
+  /// an item kept in grams, kilograms (to the gram) for anything else. A
+  /// price label is turned into the quantity that price buys at the rate
+  /// the buyer pays, to the gram.
+  Qty? _scaleQty(ItemSummary item, ScaleData label) {
+    final perGram = item.unitCode.toLowerCase() == 'g';
+    if (label.grams case final grams?) {
+      return perGram ? Qty.units(grams) : Qty.raw(grams);
+    }
+    final price = label.price;
+    final rate = priceFor(item, ref.read(cartProvider).priceTier);
+    if (price == null || rate.inMilliPaisa <= 0) return null;
+    // amount (paisa) = qty (thousandths) x rate (milli-paisa) / 1,000,000
+    final thousandths =
+        (price.inPaisa * 1000000 + rate.inMilliPaisa ~/ 2) ~/ rate.inMilliPaisa;
+    return Qty.raw(thousandths);
   }
 
   /// Opens the camera, and treats what it reads exactly like a wedge scan.

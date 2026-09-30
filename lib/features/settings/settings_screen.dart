@@ -12,6 +12,7 @@ import '../firms/firms_screen.dart';
 import '../import/import_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
+import '../scale/scale_screen.dart';
 import '../sync/sync_screen.dart';
 import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
@@ -154,6 +155,14 @@ class SettingsScreen extends ConsumerWidget {
                 label: s.importTitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const ImportScreen()),
+                ),
+              ),
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.scale_outlined,
+                label: s.scaleTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const ScaleScreen()),
                 ),
               ),
             _Row(

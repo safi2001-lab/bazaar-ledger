@@ -224,7 +224,7 @@ features:
       buffer.writeln('    state: $libState');
       buffer.writeln('    owns:');
       buffer.writeln('      - $ownsLib');
-      for (var i = 2; i <= 14; i++) {
+      for (var i = 2; i <= _lastMilestone; i++) {
         buffer.writeln('  - id: M$i');
         buffer.writeln('    title: Declared so R5 has nothing to say');
         buffer.writeln('    state: open');
@@ -247,7 +247,7 @@ features:
       // a ledger that holds together in every respect except the one under
       // test.
       buffer.writeln('features:');
-      for (var i = 0; i <= 14; i++) {
+      for (var i = 0; i <= _lastMilestone; i++) {
         buffer.writeln('  - id: M$i-A-01');
         buffer.writeln('    milestone: M$i');
         buffer.writeln('    title: A row so the milestone is measurable');
@@ -426,3 +426,8 @@ features:
     }
   });
 }
+
+/// Every milestone a real commit subject in this repository might name. The
+/// fixture declares them all, so R5 has nothing to say about a commit that
+/// is really being used to test R4; raise it when milestones outgrow it.
+const _lastMilestone = 40;

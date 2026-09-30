@@ -758,6 +758,61 @@ final class AppServices {
     );
   }
 
+  /// How this shop's weighing scale lays out its labels (M16).
+  static const scaleFormatSetting = 'scale.format';
+
+  Future<ScaleFormat> scaleFormat() async {
+    final id = _identity;
+    if (id == null) return ScaleFormat.standard;
+    final row = await database
+        .customSelect(
+          'SELECT setting_value FROM settings WHERE firm_id = ? '
+          'AND setting_key = ? AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(id.firmId),
+            Variable<String>(scaleFormatSetting),
+          ],
+        )
+        .getSingleOrNull();
+    return ScaleFormat.fromJson(row?.read<String>('setting_value'));
+  }
+
+  Future<void> setScaleFormat(ScaleFormat format) async {
+    require(Permission.settings);
+    if (!format.isValid) {
+      throw const PermissionDenied(
+        Permission.settings,
+        'A prefix can mean weight or price, not both, and each must be '
+        'between 20 and 29.',
+      );
+    }
+    final actor = actorNow();
+    await _runner.run(actor, (tx) async {
+      final held = await tx.selectOne(
+        'SELECT id FROM settings WHERE firm_id = ? AND setting_key = ? '
+        'AND deleted_at_utc IS NULL',
+        [actor.firmId, scaleFormatSetting],
+      );
+      if (held == null) {
+        await tx.insert('settings', {
+          'setting_key': scaleFormatSetting,
+          'setting_value': format.toJson(),
+          'value_type': 'json',
+        });
+      } else {
+        await tx.update('settings', held.read<String>('id'), {
+          'setting_value': format.toJson(),
+        });
+      }
+      tx.audit(
+        action: 'SCALE_FORMAT_SET',
+        entityTable: 'settings',
+        entityId: actor.firmId,
+        summary: 'Weighing-scale labels set up',
+      );
+    });
+  }
+
   /// Updates the shop's own details from the settings screen.
   Future<void> updateFirm(Map<String, Object?> columns) async {
     require(Permission.settings);

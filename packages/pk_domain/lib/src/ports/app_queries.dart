@@ -445,6 +445,10 @@ abstract interface class AppQueries {
 
   Future<ItemSummary?> itemById(String firmId, String itemId);
 
+  /// The item whose own code is [code], leading zeros aside: how a scale
+  /// label's PLU finds what was weighed (M16).
+  Future<ItemSummary?> itemByCode(String firmId, String code);
+
   Future<List<PartySummary>> searchParties(
     String firmId, {
     String query = '',
