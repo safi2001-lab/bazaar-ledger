@@ -268,6 +268,70 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<BomView>> boms(String firmId) async {
+    final heads = await _db
+        .customSelect(
+          '''
+          SELECT b.id, b.name, b.output_item_id, b.output_qty_thousandths,
+                 b.overhead_paisa, i.name AS output_name,
+                 u.code AS output_unit
+          FROM boms b
+          JOIN items i ON i.id = b.output_item_id
+          JOIN units u ON u.id = i.base_unit_id
+          WHERE b.firm_id = ? AND b.deleted_at_utc IS NULL
+          ORDER BY b.name COLLATE NOCASE
+          ''',
+          variables: [Variable<String>(firmId)],
+        )
+        .get();
+    final lines = await _db
+        .customSelect(
+          '''
+          SELECT l.bom_id, l.component_item_id, l.qty_thousandths,
+                 i.name AS component_name
+          FROM bom_lines l
+          JOIN items i ON i.id = l.component_item_id
+          WHERE l.firm_id = ? AND l.deleted_at_utc IS NULL
+          ORDER BY l.bom_id, l.line_no
+          ''',
+          variables: [Variable<String>(firmId)],
+        )
+        .get();
+    return [
+      for (final h in heads)
+        () {
+          final mine = lines
+              .where((l) => l.read<String>('bom_id') == h.read<String>('id'))
+              .toList();
+          return BomView(
+            id: h.read<String>('id'),
+            outputName: h.read<String>('output_name'),
+            outputUnitCode: h.read<String>('output_unit'),
+            componentNames: {
+              for (final l in mine)
+                l.read<String>('component_item_id'): l.read<String>(
+                  'component_name',
+                ),
+            },
+            draft: BomDraft(
+              name: h.read<String>('name'),
+              outputItemId: h.read<String>('output_item_id'),
+              outputQty: Qty.raw(h.read<int>('output_qty_thousandths')),
+              overhead: Money.paisa(h.read<int>('overhead_paisa')),
+              lines: [
+                for (final l in mine)
+                  BomLineDraft(
+                    itemId: l.read<String>('component_item_id'),
+                    qty: Qty.raw(l.read<int>('qty_thousandths')),
+                  ),
+              ],
+            ),
+          );
+        }(),
+    ];
+  }
+
+  @override
   Future<List<PartySummary>> searchParties(
     String firmId, {
     String query = '',

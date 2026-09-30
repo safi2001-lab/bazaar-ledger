@@ -347,6 +347,24 @@ milestones:
       - lib/features/scale/**
       - packages/pk_domain/lib/src/barcode/scale.dart
 
+  - id: M17
+    title: Making things — bills of materials and production runs
+    # Opened and sealed 30 Sep 2026 at 1/1. A recipe says what one batch of a
+    # finished item takes and what the work costs on top; a production run
+    # takes the components off the shelf at their average cost, puts the
+    # finished goods on it at that cost plus the work, and moves the finished
+    # item's average as a delivery would. Only the work is new value, booked
+    # to Inventory against Production Costs Absorbed (6850). Schema v6 adds
+    # boms, bom_lines and assemblies. Not built: components or finished goods
+    # kept by batch or serial (refused in words), making in a godown rather
+    # than on the shop floor, undoing a run, and by-products.
+    state: sealed
+    owns:
+      - lib/features/manufacturing/**
+      - packages/pk_domain/lib/src/manufacturing/**
+      - packages/pk_data/lib/src/write/drift_manufacturing_writer.dart
+      - packages/pk_data/lib/src/db/tables/manufacturing.drift
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4074,3 +4092,21 @@ features:
       - a price label rings up what that price buys
       - a label for a PLU the shop has not coded is said
       - the shop sets its scale labels up from Settings
+
+  # ---------------------------------------------------------------------------
+  # M17 — making things
+  # ---------------------------------------------------------------------------
+
+  - id: M17-BOM-01
+    milestone: M17
+    title: A recipe is written and a production run moves stock and cost
+    status: done
+    proof:
+      - assembly a run costs its components plus the work
+      - assembly the finished goods average with what is already on the shelf
+      - assembly a run the shelf cannot cover is refused, naming what is short
+      - assembly a recipe that cannot be made is refused before it is kept
+      - making goods a run moves the stock, costs the goods and keeps the books
+      - making goods a run the shelf cannot cover changes nothing
+      - making goods a recipe is kept, listed and changed
+      - ten packs of masala are made from bulk spice

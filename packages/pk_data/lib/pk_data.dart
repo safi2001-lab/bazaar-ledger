@@ -22,6 +22,8 @@ export 'src/write/drift_day_close_writer.dart';
 export 'src/write/drift_debit_note_writer.dart';
 export 'src/write/drift_expense_writer.dart';
 export 'src/write/drift_journal_writer.dart';
+export 'src/write/drift_manufacturing_writer.dart'
+    show DriftManufacturingWriter;
 export 'src/write/drift_payment_writer.dart';
 export 'src/write/drift_printer_settings.dart';
 export 'src/write/drift_purchase_return_writer.dart'

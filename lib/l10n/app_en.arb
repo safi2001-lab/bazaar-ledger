@@ -1309,5 +1309,47 @@
   "scalePriceInPaisa": "Prices are printed in paisa",
   "scaleSave": "Save",
   "scaleSaved": "Scale labels saved",
+  "recipesTitle": "Making (recipes)",
+  "recipesNew": "New recipe",
+  "recipesEmpty": "No recipes yet. Write one for anything the shop makes itself.",
+  "recipesMakes": "One batch: {qty} {unit} of {name}",
+  "@recipesMakes": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipesMake": "Make",
+  "recipesRuns": "How many batches",
+  "recipesMade": "{no}: {qty} of {name} made",
+  "@recipesMade": {
+    "placeholders": {
+      "no": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipesName": "Recipe name",
+  "recipesOutput": "What it makes",
+  "recipesPickItem": "Choose an item",
+  "recipesBatchMakes": "How much one batch makes",
+  "recipesOverhead": "Work and packing (Rs)",
+  "recipesComponents": "What goes in (per batch)",
+  "recipesPerBatch": "Per batch",
+  "recipesAddComponent": "Add a component",
+  "recipesSave": "Save",
   "chequeDone": "Done"
 }

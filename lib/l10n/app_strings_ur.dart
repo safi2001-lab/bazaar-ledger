@@ -2385,5 +2385,58 @@ class AppStringsUr extends AppStrings {
   String get scaleSaved => 'Tarazu ke labels save ho gaye';
 
   @override
+  String get recipesTitle => 'Banana (recipe)';
+
+  @override
+  String get recipesNew => 'Nayi recipe';
+
+  @override
+  String get recipesEmpty =>
+      'Abhi koi recipe nahin. Jo cheez aap khud banate hain, us ki recipe likhein.';
+
+  @override
+  String recipesMakes(String qty, String unit, String name) {
+    return 'Ek batch: $qty $unit $name';
+  }
+
+  @override
+  String get recipesMake => 'Banayein';
+
+  @override
+  String get recipesRuns => 'Kitne batch';
+
+  @override
+  String recipesMade(String no, String qty, String name) {
+    return '$no: $qty $name ban gaye';
+  }
+
+  @override
+  String get recipesName => 'Recipe ka naam';
+
+  @override
+  String get recipesOutput => 'Kya banta hai';
+
+  @override
+  String get recipesPickItem => 'Maal chunein';
+
+  @override
+  String get recipesBatchMakes => 'Ek batch mein kitna';
+
+  @override
+  String get recipesOverhead => 'Mazdoori aur packing (Rs)';
+
+  @override
+  String get recipesComponents => 'Kya lagta hai (ek batch mein)';
+
+  @override
+  String get recipesPerBatch => 'Ek batch mein';
+
+  @override
+  String get recipesAddComponent => 'Aur cheez';
+
+  @override
+  String get recipesSave => 'Save karein';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

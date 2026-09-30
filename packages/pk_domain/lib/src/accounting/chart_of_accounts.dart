@@ -430,6 +430,19 @@ const List<AccountSpec> defaultChartOfAccounts = [
     systemKey: 'cash_short_over',
     parentCode: '6000',
   ),
+  // What the shop's own work added to goods it made (M17). A production run
+  // debits the finished goods with it and credits it here, so the work is
+  // carried in stock until the goods are sold, and then reaches profit
+  // through their cost.
+  AccountSpec(
+    code: '6850',
+    nameEn: 'Production Costs Absorbed',
+    nameUr: 'Banane ka kharcha',
+    type: AccountType.expense,
+    normalSide: NormalSide.debit,
+    systemKey: 'production_overhead',
+    parentCode: '6000',
+  ),
   AccountSpec(
     code: '6900',
     nameEn: 'Miscellaneous',

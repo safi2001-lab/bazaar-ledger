@@ -4122,6 +4122,961 @@ class UsersCompanion extends UpdateCompanion<User> {
   }
 }
 
+class Units extends Table with TableInfo<Units, Unit> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Units(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
+  late final GeneratedColumn<String> firmId = GeneratedColumn<String>(
+    'firm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES firms(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _updatedByMeta = const VerificationMeta(
+    'updatedBy',
+  );
+  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
+    'updated_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
+    'deletedAtUtc',
+  );
+  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _originDeviceIdMeta = const VerificationMeta(
+    'originDeviceId',
+  );
+  late final GeneratedColumn<String> originDeviceId = GeneratedColumn<String>(
+    'origin_device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES devices(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _revMeta = const VerificationMeta('rev');
+  late final GeneratedColumn<int> rev = GeneratedColumn<int>(
+    'rev',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
+  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
+    'name_en',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _nameUrMeta = const VerificationMeta('nameUr');
+  late final GeneratedColumn<String> nameUr = GeneratedColumn<String>(
+    'name_ur',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (kind IN (\'count\', \'weight\', \'volume\', \'length\'))',
+  );
+  static const VerificationMeta _isBaseMeta = const VerificationMeta('isBase');
+  late final GeneratedColumn<int> isBase = GeneratedColumn<int>(
+    'is_base',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_base IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _decimalsMeta = const VerificationMeta(
+    'decimals',
+  );
+  late final GeneratedColumn<int> decimals = GeneratedColumn<int>(
+    'decimals',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (decimals BETWEEN 0 AND 3)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  late final GeneratedColumn<int> isActive = GeneratedColumn<int>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    code,
+    nameEn,
+    nameUr,
+    kind,
+    isBase,
+    decimals,
+    isActive,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'units';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Unit> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('firm_id')) {
+      context.handle(
+        _firmIdMeta,
+        firmId.isAcceptableOrUnknown(data['firm_id']!, _firmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firmIdMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('updated_by')) {
+      context.handle(
+        _updatedByMeta,
+        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedByMeta);
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+        _deletedAtUtcMeta,
+        deletedAtUtc.isAcceptableOrUnknown(
+          data['deleted_at_utc']!,
+          _deletedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_device_id')) {
+      context.handle(
+        _originDeviceIdMeta,
+        originDeviceId.isAcceptableOrUnknown(
+          data['origin_device_id']!,
+          _originDeviceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originDeviceIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('rev')) {
+      context.handle(
+        _revMeta,
+        rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
+      );
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('name_en')) {
+      context.handle(
+        _nameEnMeta,
+        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameEnMeta);
+    }
+    if (data.containsKey('name_ur')) {
+      context.handle(
+        _nameUrMeta,
+        nameUr.isAcceptableOrUnknown(data['name_ur']!, _nameUrMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameUrMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_kindMeta);
+    }
+    if (data.containsKey('is_base')) {
+      context.handle(
+        _isBaseMeta,
+        isBase.isAcceptableOrUnknown(data['is_base']!, _isBaseMeta),
+      );
+    }
+    if (data.containsKey('decimals')) {
+      context.handle(
+        _decimalsMeta,
+        decimals.isAcceptableOrUnknown(data['decimals']!, _decimalsMeta),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Unit map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Unit(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      firmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}firm_id'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      updatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_by'],
+      )!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at_utc'],
+      ),
+      originDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_device_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      rev: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rev'],
+      )!,
+      code: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}code'],
+      )!,
+      nameEn: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_en'],
+      )!,
+      nameUr: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name_ur'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      isBase: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_base'],
+      )!,
+      decimals: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}decimals'],
+      )!,
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_active'],
+      )!,
+    );
+  }
+
+  @override
+  Units createAlias(String alias) {
+    return Units(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class Unit extends DataClass implements Insertable<Unit> {
+  final String id;
+  final String firmId;
+  final int createdAtUtc;
+  final int updatedAtUtc;
+  final String createdBy;
+  final String updatedBy;
+  final int? deletedAtUtc;
+  final String originDeviceId;
+  final String hlc;
+  final int rev;
+  final String code;
+  final String nameEn;
+  final String nameUr;
+  final String kind;
+
+  /// Exactly one base unit per kind per firm; everything else is an alias over
+  /// it with a conversion factor.
+  final int isBase;
+
+  /// How many decimals the UI offers. Pieces get 0, weight gets 3.
+  final int decimals;
+  final int isActive;
+  const Unit({
+    required this.id,
+    required this.firmId,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+    required this.createdBy,
+    required this.updatedBy,
+    this.deletedAtUtc,
+    required this.originDeviceId,
+    required this.hlc,
+    required this.rev,
+    required this.code,
+    required this.nameEn,
+    required this.nameUr,
+    required this.kind,
+    required this.isBase,
+    required this.decimals,
+    required this.isActive,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['firm_id'] = Variable<String>(firmId);
+    map['created_at_utc'] = Variable<int>(createdAtUtc);
+    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
+    map['created_by'] = Variable<String>(createdBy);
+    map['updated_by'] = Variable<String>(updatedBy);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc);
+    }
+    map['origin_device_id'] = Variable<String>(originDeviceId);
+    map['hlc'] = Variable<String>(hlc);
+    map['rev'] = Variable<int>(rev);
+    map['code'] = Variable<String>(code);
+    map['name_en'] = Variable<String>(nameEn);
+    map['name_ur'] = Variable<String>(nameUr);
+    map['kind'] = Variable<String>(kind);
+    map['is_base'] = Variable<int>(isBase);
+    map['decimals'] = Variable<int>(decimals);
+    map['is_active'] = Variable<int>(isActive);
+    return map;
+  }
+
+  UnitsCompanion toCompanion(bool nullToAbsent) {
+    return UnitsCompanion(
+      id: Value(id),
+      firmId: Value(firmId),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+      createdBy: Value(createdBy),
+      updatedBy: Value(updatedBy),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      originDeviceId: Value(originDeviceId),
+      hlc: Value(hlc),
+      rev: Value(rev),
+      code: Value(code),
+      nameEn: Value(nameEn),
+      nameUr: Value(nameUr),
+      kind: Value(kind),
+      isBase: Value(isBase),
+      decimals: Value(decimals),
+      isActive: Value(isActive),
+    );
+  }
+
+  factory Unit.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Unit(
+      id: serializer.fromJson<String>(json['id']),
+      firmId: serializer.fromJson<String>(json['firm_id']),
+      createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
+      updatedAtUtc: serializer.fromJson<int>(json['updated_at_utc']),
+      createdBy: serializer.fromJson<String>(json['created_by']),
+      updatedBy: serializer.fromJson<String>(json['updated_by']),
+      deletedAtUtc: serializer.fromJson<int?>(json['deleted_at_utc']),
+      originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      rev: serializer.fromJson<int>(json['rev']),
+      code: serializer.fromJson<String>(json['code']),
+      nameEn: serializer.fromJson<String>(json['name_en']),
+      nameUr: serializer.fromJson<String>(json['name_ur']),
+      kind: serializer.fromJson<String>(json['kind']),
+      isBase: serializer.fromJson<int>(json['is_base']),
+      decimals: serializer.fromJson<int>(json['decimals']),
+      isActive: serializer.fromJson<int>(json['is_active']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'firm_id': serializer.toJson<String>(firmId),
+      'created_at_utc': serializer.toJson<int>(createdAtUtc),
+      'updated_at_utc': serializer.toJson<int>(updatedAtUtc),
+      'created_by': serializer.toJson<String>(createdBy),
+      'updated_by': serializer.toJson<String>(updatedBy),
+      'deleted_at_utc': serializer.toJson<int?>(deletedAtUtc),
+      'origin_device_id': serializer.toJson<String>(originDeviceId),
+      'hlc': serializer.toJson<String>(hlc),
+      'rev': serializer.toJson<int>(rev),
+      'code': serializer.toJson<String>(code),
+      'name_en': serializer.toJson<String>(nameEn),
+      'name_ur': serializer.toJson<String>(nameUr),
+      'kind': serializer.toJson<String>(kind),
+      'is_base': serializer.toJson<int>(isBase),
+      'decimals': serializer.toJson<int>(decimals),
+      'is_active': serializer.toJson<int>(isActive),
+    };
+  }
+
+  Unit copyWith({
+    String? id,
+    String? firmId,
+    int? createdAtUtc,
+    int? updatedAtUtc,
+    String? createdBy,
+    String? updatedBy,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    String? originDeviceId,
+    String? hlc,
+    int? rev,
+    String? code,
+    String? nameEn,
+    String? nameUr,
+    String? kind,
+    int? isBase,
+    int? decimals,
+    int? isActive,
+  }) => Unit(
+    id: id ?? this.id,
+    firmId: firmId ?? this.firmId,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+    createdBy: createdBy ?? this.createdBy,
+    updatedBy: updatedBy ?? this.updatedBy,
+    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+    originDeviceId: originDeviceId ?? this.originDeviceId,
+    hlc: hlc ?? this.hlc,
+    rev: rev ?? this.rev,
+    code: code ?? this.code,
+    nameEn: nameEn ?? this.nameEn,
+    nameUr: nameUr ?? this.nameUr,
+    kind: kind ?? this.kind,
+    isBase: isBase ?? this.isBase,
+    decimals: decimals ?? this.decimals,
+    isActive: isActive ?? this.isActive,
+  );
+  Unit copyWithCompanion(UnitsCompanion data) {
+    return Unit(
+      id: data.id.present ? data.id.value : this.id,
+      firmId: data.firmId.present ? data.firmId.value : this.firmId,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      originDeviceId: data.originDeviceId.present
+          ? data.originDeviceId.value
+          : this.originDeviceId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      rev: data.rev.present ? data.rev.value : this.rev,
+      code: data.code.present ? data.code.value : this.code,
+      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
+      nameUr: data.nameUr.present ? data.nameUr.value : this.nameUr,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      isBase: data.isBase.present ? data.isBase.value : this.isBase,
+      decimals: data.decimals.present ? data.decimals.value : this.decimals,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Unit(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('code: $code, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('nameUr: $nameUr, ')
+          ..write('kind: $kind, ')
+          ..write('isBase: $isBase, ')
+          ..write('decimals: $decimals, ')
+          ..write('isActive: $isActive')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    code,
+    nameEn,
+    nameUr,
+    kind,
+    isBase,
+    decimals,
+    isActive,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Unit &&
+          other.id == this.id &&
+          other.firmId == this.firmId &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.createdBy == this.createdBy &&
+          other.updatedBy == this.updatedBy &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.originDeviceId == this.originDeviceId &&
+          other.hlc == this.hlc &&
+          other.rev == this.rev &&
+          other.code == this.code &&
+          other.nameEn == this.nameEn &&
+          other.nameUr == this.nameUr &&
+          other.kind == this.kind &&
+          other.isBase == this.isBase &&
+          other.decimals == this.decimals &&
+          other.isActive == this.isActive);
+}
+
+class UnitsCompanion extends UpdateCompanion<Unit> {
+  final Value<String> id;
+  final Value<String> firmId;
+  final Value<int> createdAtUtc;
+  final Value<int> updatedAtUtc;
+  final Value<String> createdBy;
+  final Value<String> updatedBy;
+  final Value<int?> deletedAtUtc;
+  final Value<String> originDeviceId;
+  final Value<String> hlc;
+  final Value<int> rev;
+  final Value<String> code;
+  final Value<String> nameEn;
+  final Value<String> nameUr;
+  final Value<String> kind;
+  final Value<int> isBase;
+  final Value<int> decimals;
+  final Value<int> isActive;
+  final Value<int> rowid;
+  const UnitsCompanion({
+    this.id = const Value.absent(),
+    this.firmId = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.originDeviceId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.rev = const Value.absent(),
+    this.code = const Value.absent(),
+    this.nameEn = const Value.absent(),
+    this.nameUr = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.isBase = const Value.absent(),
+    this.decimals = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  UnitsCompanion.insert({
+    required String id,
+    required String firmId,
+    required int createdAtUtc,
+    required int updatedAtUtc,
+    required String createdBy,
+    required String updatedBy,
+    this.deletedAtUtc = const Value.absent(),
+    required String originDeviceId,
+    required String hlc,
+    this.rev = const Value.absent(),
+    required String code,
+    required String nameEn,
+    required String nameUr,
+    required String kind,
+    this.isBase = const Value.absent(),
+    this.decimals = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       firmId = Value(firmId),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc),
+       createdBy = Value(createdBy),
+       updatedBy = Value(updatedBy),
+       originDeviceId = Value(originDeviceId),
+       hlc = Value(hlc),
+       code = Value(code),
+       nameEn = Value(nameEn),
+       nameUr = Value(nameUr),
+       kind = Value(kind);
+  static Insertable<Unit> custom({
+    Expression<String>? id,
+    Expression<String>? firmId,
+    Expression<int>? createdAtUtc,
+    Expression<int>? updatedAtUtc,
+    Expression<String>? createdBy,
+    Expression<String>? updatedBy,
+    Expression<int>? deletedAtUtc,
+    Expression<String>? originDeviceId,
+    Expression<String>? hlc,
+    Expression<int>? rev,
+    Expression<String>? code,
+    Expression<String>? nameEn,
+    Expression<String>? nameUr,
+    Expression<String>? kind,
+    Expression<int>? isBase,
+    Expression<int>? decimals,
+    Expression<int>? isActive,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (firmId != null) 'firm_id': firmId,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (createdBy != null) 'created_by': createdBy,
+      if (updatedBy != null) 'updated_by': updatedBy,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (originDeviceId != null) 'origin_device_id': originDeviceId,
+      if (hlc != null) 'hlc': hlc,
+      if (rev != null) 'rev': rev,
+      if (code != null) 'code': code,
+      if (nameEn != null) 'name_en': nameEn,
+      if (nameUr != null) 'name_ur': nameUr,
+      if (kind != null) 'kind': kind,
+      if (isBase != null) 'is_base': isBase,
+      if (decimals != null) 'decimals': decimals,
+      if (isActive != null) 'is_active': isActive,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  UnitsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? firmId,
+    Value<int>? createdAtUtc,
+    Value<int>? updatedAtUtc,
+    Value<String>? createdBy,
+    Value<String>? updatedBy,
+    Value<int?>? deletedAtUtc,
+    Value<String>? originDeviceId,
+    Value<String>? hlc,
+    Value<int>? rev,
+    Value<String>? code,
+    Value<String>? nameEn,
+    Value<String>? nameUr,
+    Value<String>? kind,
+    Value<int>? isBase,
+    Value<int>? decimals,
+    Value<int>? isActive,
+    Value<int>? rowid,
+  }) {
+    return UnitsCompanion(
+      id: id ?? this.id,
+      firmId: firmId ?? this.firmId,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      originDeviceId: originDeviceId ?? this.originDeviceId,
+      hlc: hlc ?? this.hlc,
+      rev: rev ?? this.rev,
+      code: code ?? this.code,
+      nameEn: nameEn ?? this.nameEn,
+      nameUr: nameUr ?? this.nameUr,
+      kind: kind ?? this.kind,
+      isBase: isBase ?? this.isBase,
+      decimals: decimals ?? this.decimals,
+      isActive: isActive ?? this.isActive,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (firmId.present) {
+      map['firm_id'] = Variable<String>(firmId.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (updatedBy.present) {
+      map['updated_by'] = Variable<String>(updatedBy.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc.value);
+    }
+    if (originDeviceId.present) {
+      map['origin_device_id'] = Variable<String>(originDeviceId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (rev.present) {
+      map['rev'] = Variable<int>(rev.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (nameEn.present) {
+      map['name_en'] = Variable<String>(nameEn.value);
+    }
+    if (nameUr.present) {
+      map['name_ur'] = Variable<String>(nameUr.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (isBase.present) {
+      map['is_base'] = Variable<int>(isBase.value);
+    }
+    if (decimals.present) {
+      map['decimals'] = Variable<int>(decimals.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<int>(isActive.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UnitsCompanion(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('code: $code, ')
+          ..write('nameEn: $nameEn, ')
+          ..write('nameUr: $nameUr, ')
+          ..write('kind: $kind, ')
+          ..write('isBase: $isBase, ')
+          ..write('decimals: $decimals, ')
+          ..write('isActive: $isActive, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class TaxRules extends Table with TableInfo<TaxRules, TaxRule> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -6792,11 +7747,11 @@ class AttachmentsCompanion extends UpdateCompanion<Attachment> {
   }
 }
 
-class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
+class Items extends Table with TableInfo<Items, Item> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  AuditLog(this.attachedDatabase, [this._alias]);
+  Items(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -6904,91 +7859,323 @@ class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
     $customConstraints: 'NOT NULL DEFAULT 1',
     defaultValue: const CustomExpression('1'),
   );
-  static const VerificationMeta _actionCodeMeta = const VerificationMeta(
-    'actionCode',
-  );
-  late final GeneratedColumn<String> actionCode = GeneratedColumn<String>(
-    'action_code',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _entityTableMeta = const VerificationMeta(
-    'entityTable',
-  );
-  late final GeneratedColumn<String> entityTable = GeneratedColumn<String>(
-    'entity_table',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _entityIdMeta = const VerificationMeta(
-    'entityId',
-  );
-  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
-    'entity_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _summaryMeta = const VerificationMeta(
-    'summary',
-  );
-  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
-    'summary',
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+    'code',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     $customConstraints: '',
   );
-  static const VerificationMeta _beforeJsonMeta = const VerificationMeta(
-    'beforeJson',
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
-  late final GeneratedColumn<String> beforeJson = GeneratedColumn<String>(
-    'before_json',
+  static const VerificationMeta _nameSearchMeta = const VerificationMeta(
+    'nameSearch',
+  );
+  late final GeneratedColumn<String> nameSearch = GeneratedColumn<String>(
+    'name_search',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _itemTypeMeta = const VerificationMeta(
+    'itemType',
+  );
+  late final GeneratedColumn<String> itemType = GeneratedColumn<String>(
+    'item_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT \'goods\' CHECK (item_type IN (\'goods\', \'service\'))',
+    defaultValue: const CustomExpression('\'goods\''),
+  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta(
+    'category',
+  );
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     $customConstraints: '',
   );
-  static const VerificationMeta _afterJsonMeta = const VerificationMeta(
-    'afterJson',
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
   );
-  late final GeneratedColumn<String> afterJson = GeneratedColumn<String>(
-    'after_json',
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     $customConstraints: '',
   );
-  static const VerificationMeta _amountPaisaMeta = const VerificationMeta(
-    'amountPaisa',
+  static const VerificationMeta _barcodeMeta = const VerificationMeta(
+    'barcode',
   );
-  late final GeneratedColumn<int> amountPaisa = GeneratedColumn<int>(
-    'amount_paisa',
+  late final GeneratedColumn<String> barcode = GeneratedColumn<String>(
+    'barcode',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _baseUnitIdMeta = const VerificationMeta(
+    'baseUnitId',
+  );
+  late final GeneratedColumn<String> baseUnitId = GeneratedColumn<String>(
+    'base_unit_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES units(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _displayUnitIdMeta = const VerificationMeta(
+    'displayUnitId',
+  );
+  late final GeneratedColumn<String> displayUnitId = GeneratedColumn<String>(
+    'display_unit_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'REFERENCES units(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _displayFactorThousandthsMeta =
+      const VerificationMeta('displayFactorThousandths');
+  late final GeneratedColumn<int> displayFactorThousandths =
+      GeneratedColumn<int>(
+        'display_factor_thousandths',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints:
+            'NOT NULL DEFAULT 1000 CHECK (display_factor_thousandths > 0)',
+        defaultValue: const CustomExpression('1000'),
+      );
+  static const VerificationMeta _saleRateMilliPaisaMeta =
+      const VerificationMeta('saleRateMilliPaisa');
+  late final GeneratedColumn<int> saleRateMilliPaisa = GeneratedColumn<int>(
+    'sale_rate_milli_paisa',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _wholesaleRateMilliPaisaMeta =
+      const VerificationMeta('wholesaleRateMilliPaisa');
+  late final GeneratedColumn<int> wholesaleRateMilliPaisa =
+      GeneratedColumn<int>(
+        'wholesale_rate_milli_paisa',
+        aliasedName,
+        true,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints: '',
+      );
+  static const VerificationMeta _purchaseRateMilliPaisaMeta =
+      const VerificationMeta('purchaseRateMilliPaisa');
+  late final GeneratedColumn<int> purchaseRateMilliPaisa = GeneratedColumn<int>(
+    'purchase_rate_milli_paisa',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     $customConstraints: '',
   );
-  static const VerificationMeta _atUtcMeta = const VerificationMeta('atUtc');
-  late final GeneratedColumn<int> atUtc = GeneratedColumn<int>(
-    'at_utc',
+  static const VerificationMeta _avgCostMilliPaisaMeta = const VerificationMeta(
+    'avgCostMilliPaisa',
+  );
+  late final GeneratedColumn<int> avgCostMilliPaisa = GeneratedColumn<int>(
+    'avg_cost_milli_paisa',
     aliasedName,
     false,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _mrpPaisaMeta = const VerificationMeta(
+    'mrpPaisa',
+  );
+  late final GeneratedColumn<int> mrpPaisa = GeneratedColumn<int>(
+    'mrp_paisa',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _hsCodeMeta = const VerificationMeta('hsCode');
+  late final GeneratedColumn<String> hsCode = GeneratedColumn<String>(
+    'hs_code',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _taxRuleIdMeta = const VerificationMeta(
+    'taxRuleId',
+  );
+  late final GeneratedColumn<String> taxRuleId = GeneratedColumn<String>(
+    'tax_rule_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'REFERENCES tax_rules(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _priceIncludesTaxMeta = const VerificationMeta(
+    'priceIncludesTax',
+  );
+  late final GeneratedColumn<int> priceIncludesTax = GeneratedColumn<int>(
+    'price_includes_tax',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (price_includes_tax IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _isThirdScheduleMeta = const VerificationMeta(
+    'isThirdSchedule',
+  );
+  late final GeneratedColumn<int> isThirdSchedule = GeneratedColumn<int>(
+    'is_third_schedule',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT 0 CHECK (is_third_schedule IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _trackStockMeta = const VerificationMeta(
+    'trackStock',
+  );
+  late final GeneratedColumn<int> trackStock = GeneratedColumn<int>(
+    'track_stock',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (track_stock IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _trackBatchMeta = const VerificationMeta(
+    'trackBatch',
+  );
+  late final GeneratedColumn<int> trackBatch = GeneratedColumn<int>(
+    'track_batch',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (track_batch IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _trackSerialMeta = const VerificationMeta(
+    'trackSerial',
+  );
+  late final GeneratedColumn<int> trackSerial = GeneratedColumn<int>(
+    'track_serial',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (track_serial IN (0, 1))',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _minStockThousandthsMeta =
+      const VerificationMeta('minStockThousandths');
+  late final GeneratedColumn<int> minStockThousandths = GeneratedColumn<int>(
+    'min_stock_thousandths',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _openingStockThousandthsMeta =
+      const VerificationMeta('openingStockThousandths');
+  late final GeneratedColumn<int> openingStockThousandths =
+      GeneratedColumn<int>(
+        'opening_stock_thousandths',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        $customConstraints: 'NOT NULL DEFAULT 0',
+        defaultValue: const CustomExpression('0'),
+      );
+  static const VerificationMeta _openingRateMilliPaisaMeta =
+      const VerificationMeta('openingRateMilliPaisa');
+  late final GeneratedColumn<int> openingRateMilliPaisa = GeneratedColumn<int>(
+    'opening_rate_milli_paisa',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _imageAttachmentIdMeta = const VerificationMeta(
+    'imageAttachmentId',
+  );
+  late final GeneratedColumn<String> imageAttachmentId =
+      GeneratedColumn<String>(
+        'image_attachment_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        $customConstraints:
+            'REFERENCES attachments(id)DEFERRABLE INITIALLY DEFERRED',
+      );
+  static const VerificationMeta _isActiveMeta = const VerificationMeta(
+    'isActive',
+  );
+  late final GeneratedColumn<int> isActive = GeneratedColumn<int>(
+    'is_active',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _vipRateMilliPaisaMeta = const VerificationMeta(
+    'vipRateMilliPaisa',
+  );
+  late final GeneratedColumn<int> vipRateMilliPaisa = GeneratedColumn<int>(
+    'vip_rate_milli_paisa',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -7002,23 +8189,43 @@ class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
     originDeviceId,
     hlc,
     rev,
-    actionCode,
-    entityTable,
-    entityId,
-    summary,
-    beforeJson,
-    afterJson,
-    amountPaisa,
-    atUtc,
+    code,
+    name,
+    nameSearch,
+    itemType,
+    category,
+    description,
+    barcode,
+    baseUnitId,
+    displayUnitId,
+    displayFactorThousandths,
+    saleRateMilliPaisa,
+    wholesaleRateMilliPaisa,
+    purchaseRateMilliPaisa,
+    avgCostMilliPaisa,
+    mrpPaisa,
+    hsCode,
+    taxRuleId,
+    priceIncludesTax,
+    isThirdSchedule,
+    trackStock,
+    trackBatch,
+    trackSerial,
+    minStockThousandths,
+    openingStockThousandths,
+    openingRateMilliPaisa,
+    imageAttachmentId,
+    isActive,
+    vipRateMilliPaisa,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'audit_log';
+  static const String $name = 'items';
   @override
   VerificationContext validateIntegrity(
-    Insertable<AuditLogData> instance, {
+    Insertable<Item> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -7108,67 +8315,227 @@ class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
         rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
       );
     }
-    if (data.containsKey('action_code')) {
+    if (data.containsKey('code')) {
       context.handle(
-        _actionCodeMeta,
-        actionCode.isAcceptableOrUnknown(data['action_code']!, _actionCodeMeta),
+        _codeMeta,
+        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+      );
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
       );
     } else if (isInserting) {
-      context.missing(_actionCodeMeta);
+      context.missing(_nameMeta);
     }
-    if (data.containsKey('entity_table')) {
+    if (data.containsKey('name_search')) {
       context.handle(
-        _entityTableMeta,
-        entityTable.isAcceptableOrUnknown(
-          data['entity_table']!,
-          _entityTableMeta,
-        ),
+        _nameSearchMeta,
+        nameSearch.isAcceptableOrUnknown(data['name_search']!, _nameSearchMeta),
       );
     } else if (isInserting) {
-      context.missing(_entityTableMeta);
+      context.missing(_nameSearchMeta);
     }
-    if (data.containsKey('entity_id')) {
+    if (data.containsKey('item_type')) {
       context.handle(
-        _entityIdMeta,
-        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_entityIdMeta);
-    }
-    if (data.containsKey('summary')) {
-      context.handle(
-        _summaryMeta,
-        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+        _itemTypeMeta,
+        itemType.isAcceptableOrUnknown(data['item_type']!, _itemTypeMeta),
       );
     }
-    if (data.containsKey('before_json')) {
+    if (data.containsKey('category')) {
       context.handle(
-        _beforeJsonMeta,
-        beforeJson.isAcceptableOrUnknown(data['before_json']!, _beforeJsonMeta),
+        _categoryMeta,
+        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
       );
     }
-    if (data.containsKey('after_json')) {
+    if (data.containsKey('description')) {
       context.handle(
-        _afterJsonMeta,
-        afterJson.isAcceptableOrUnknown(data['after_json']!, _afterJsonMeta),
-      );
-    }
-    if (data.containsKey('amount_paisa')) {
-      context.handle(
-        _amountPaisaMeta,
-        amountPaisa.isAcceptableOrUnknown(
-          data['amount_paisa']!,
-          _amountPaisaMeta,
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
         ),
       );
     }
-    if (data.containsKey('at_utc')) {
+    if (data.containsKey('barcode')) {
       context.handle(
-        _atUtcMeta,
-        atUtc.isAcceptableOrUnknown(data['at_utc']!, _atUtcMeta),
+        _barcodeMeta,
+        barcode.isAcceptableOrUnknown(data['barcode']!, _barcodeMeta),
+      );
+    }
+    if (data.containsKey('base_unit_id')) {
+      context.handle(
+        _baseUnitIdMeta,
+        baseUnitId.isAcceptableOrUnknown(
+          data['base_unit_id']!,
+          _baseUnitIdMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_atUtcMeta);
+      context.missing(_baseUnitIdMeta);
+    }
+    if (data.containsKey('display_unit_id')) {
+      context.handle(
+        _displayUnitIdMeta,
+        displayUnitId.isAcceptableOrUnknown(
+          data['display_unit_id']!,
+          _displayUnitIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('display_factor_thousandths')) {
+      context.handle(
+        _displayFactorThousandthsMeta,
+        displayFactorThousandths.isAcceptableOrUnknown(
+          data['display_factor_thousandths']!,
+          _displayFactorThousandthsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('sale_rate_milli_paisa')) {
+      context.handle(
+        _saleRateMilliPaisaMeta,
+        saleRateMilliPaisa.isAcceptableOrUnknown(
+          data['sale_rate_milli_paisa']!,
+          _saleRateMilliPaisaMeta,
+        ),
+      );
+    }
+    if (data.containsKey('wholesale_rate_milli_paisa')) {
+      context.handle(
+        _wholesaleRateMilliPaisaMeta,
+        wholesaleRateMilliPaisa.isAcceptableOrUnknown(
+          data['wholesale_rate_milli_paisa']!,
+          _wholesaleRateMilliPaisaMeta,
+        ),
+      );
+    }
+    if (data.containsKey('purchase_rate_milli_paisa')) {
+      context.handle(
+        _purchaseRateMilliPaisaMeta,
+        purchaseRateMilliPaisa.isAcceptableOrUnknown(
+          data['purchase_rate_milli_paisa']!,
+          _purchaseRateMilliPaisaMeta,
+        ),
+      );
+    }
+    if (data.containsKey('avg_cost_milli_paisa')) {
+      context.handle(
+        _avgCostMilliPaisaMeta,
+        avgCostMilliPaisa.isAcceptableOrUnknown(
+          data['avg_cost_milli_paisa']!,
+          _avgCostMilliPaisaMeta,
+        ),
+      );
+    }
+    if (data.containsKey('mrp_paisa')) {
+      context.handle(
+        _mrpPaisaMeta,
+        mrpPaisa.isAcceptableOrUnknown(data['mrp_paisa']!, _mrpPaisaMeta),
+      );
+    }
+    if (data.containsKey('hs_code')) {
+      context.handle(
+        _hsCodeMeta,
+        hsCode.isAcceptableOrUnknown(data['hs_code']!, _hsCodeMeta),
+      );
+    }
+    if (data.containsKey('tax_rule_id')) {
+      context.handle(
+        _taxRuleIdMeta,
+        taxRuleId.isAcceptableOrUnknown(data['tax_rule_id']!, _taxRuleIdMeta),
+      );
+    }
+    if (data.containsKey('price_includes_tax')) {
+      context.handle(
+        _priceIncludesTaxMeta,
+        priceIncludesTax.isAcceptableOrUnknown(
+          data['price_includes_tax']!,
+          _priceIncludesTaxMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_third_schedule')) {
+      context.handle(
+        _isThirdScheduleMeta,
+        isThirdSchedule.isAcceptableOrUnknown(
+          data['is_third_schedule']!,
+          _isThirdScheduleMeta,
+        ),
+      );
+    }
+    if (data.containsKey('track_stock')) {
+      context.handle(
+        _trackStockMeta,
+        trackStock.isAcceptableOrUnknown(data['track_stock']!, _trackStockMeta),
+      );
+    }
+    if (data.containsKey('track_batch')) {
+      context.handle(
+        _trackBatchMeta,
+        trackBatch.isAcceptableOrUnknown(data['track_batch']!, _trackBatchMeta),
+      );
+    }
+    if (data.containsKey('track_serial')) {
+      context.handle(
+        _trackSerialMeta,
+        trackSerial.isAcceptableOrUnknown(
+          data['track_serial']!,
+          _trackSerialMeta,
+        ),
+      );
+    }
+    if (data.containsKey('min_stock_thousandths')) {
+      context.handle(
+        _minStockThousandthsMeta,
+        minStockThousandths.isAcceptableOrUnknown(
+          data['min_stock_thousandths']!,
+          _minStockThousandthsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('opening_stock_thousandths')) {
+      context.handle(
+        _openingStockThousandthsMeta,
+        openingStockThousandths.isAcceptableOrUnknown(
+          data['opening_stock_thousandths']!,
+          _openingStockThousandthsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('opening_rate_milli_paisa')) {
+      context.handle(
+        _openingRateMilliPaisaMeta,
+        openingRateMilliPaisa.isAcceptableOrUnknown(
+          data['opening_rate_milli_paisa']!,
+          _openingRateMilliPaisaMeta,
+        ),
+      );
+    }
+    if (data.containsKey('image_attachment_id')) {
+      context.handle(
+        _imageAttachmentIdMeta,
+        imageAttachmentId.isAcceptableOrUnknown(
+          data['image_attachment_id']!,
+          _imageAttachmentIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('is_active')) {
+      context.handle(
+        _isActiveMeta,
+        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
+      );
+    }
+    if (data.containsKey('vip_rate_milli_paisa')) {
+      context.handle(
+        _vipRateMilliPaisaMeta,
+        vipRateMilliPaisa.isAcceptableOrUnknown(
+          data['vip_rate_milli_paisa']!,
+          _vipRateMilliPaisaMeta,
+        ),
+      );
     }
     return context;
   }
@@ -7176,9 +8543,9 @@ class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  AuditLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Item map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return AuditLogData(
+    return Item(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -7219,44 +8586,124 @@ class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
         DriftSqlType.int,
         data['${effectivePrefix}rev'],
       )!,
-      actionCode: attachedDatabase.typeMapping.read(
+      code: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}action_code'],
-      )!,
-      entityTable: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_table'],
-      )!,
-      entityId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_id'],
-      )!,
-      summary: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}summary'],
+        data['${effectivePrefix}code'],
       ),
-      beforeJson: attachedDatabase.typeMapping.read(
+      name: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}before_json'],
-      ),
-      afterJson: attachedDatabase.typeMapping.read(
+        data['${effectivePrefix}name'],
+      )!,
+      nameSearch: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}after_json'],
+        data['${effectivePrefix}name_search'],
+      )!,
+      itemType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_type'],
+      )!,
+      category: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}category'],
       ),
-      amountPaisa: attachedDatabase.typeMapping.read(
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      barcode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}barcode'],
+      ),
+      baseUnitId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}base_unit_id'],
+      )!,
+      displayUnitId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}display_unit_id'],
+      ),
+      displayFactorThousandths: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}amount_paisa'],
-      ),
-      atUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}at_utc'],
+        data['${effectivePrefix}display_factor_thousandths'],
       )!,
+      saleRateMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sale_rate_milli_paisa'],
+      )!,
+      wholesaleRateMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}wholesale_rate_milli_paisa'],
+      ),
+      purchaseRateMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}purchase_rate_milli_paisa'],
+      ),
+      avgCostMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}avg_cost_milli_paisa'],
+      )!,
+      mrpPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}mrp_paisa'],
+      ),
+      hsCode: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hs_code'],
+      ),
+      taxRuleId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}tax_rule_id'],
+      ),
+      priceIncludesTax: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_includes_tax'],
+      )!,
+      isThirdSchedule: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_third_schedule'],
+      )!,
+      trackStock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}track_stock'],
+      )!,
+      trackBatch: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}track_batch'],
+      )!,
+      trackSerial: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}track_serial'],
+      )!,
+      minStockThousandths: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}min_stock_thousandths'],
+      )!,
+      openingStockThousandths: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}opening_stock_thousandths'],
+      )!,
+      openingRateMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}opening_rate_milli_paisa'],
+      )!,
+      imageAttachmentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_attachment_id'],
+      ),
+      isActive: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}is_active'],
+      )!,
+      vipRateMilliPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}vip_rate_milli_paisa'],
+      ),
     );
   }
 
   @override
-  AuditLog createAlias(String alias) {
-    return AuditLog(attachedDatabase, alias);
+  Items createAlias(String alias) {
+    return Items(attachedDatabase, alias);
   }
 
   @override
@@ -7265,7 +8712,7 @@ class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
   bool get dontWriteConstraints => true;
 }
 
-class AuditLogData extends DataClass implements Insertable<AuditLogData> {
+class Item extends DataClass implements Insertable<Item> {
   final String id;
   final String firmId;
   final int createdAtUtc;
@@ -7276,26 +8723,54 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
   final String originDeviceId;
   final String hlc;
   final int rev;
+  final String? code;
+  final String name;
 
-  /// Screaming snake case, from a closed set the application declares:
-  /// SALE_POSTED, SALE_VOIDED, PAYMENT_RECEIVED, ITEM_PRICE_CHANGED, ...
-  /// Named `action_code` and not `action`: ACTION is a reserved word in the
-  /// SQL grammar (the ON DELETE ... clause), so a bare `action` column cannot
-  /// be referenced from an index without quoting it everywhere.
-  final String actionCode;
-  final String entityTable;
-  final String entityId;
+  /// Lowercased, unaccented, space-collapsed. Roman-Urdu type-ahead matches on
+  /// this, and M1's FTS5 index is built over it.
+  final String nameSearch;
+  final String itemType;
+  final String? category;
+  final String? description;
+  final String? barcode;
+  final String baseUnitId;
 
-  /// One human-readable line, in English, for the activity dashboard. Never
-  /// reconstructed from JSON at read time.
-  final String? summary;
+  /// What the counter shows and types in. Stock is always stored in base units.
+  final String? displayUnitId;
+  final int displayFactorThousandths;
 
-  /// Field-level before and after, for the fields that changed only.
-  final String? beforeJson;
-  final String? afterJson;
-  final int? amountPaisa;
-  final int atUtc;
-  const AuditLogData({
+  /// Rates are milli-paisa per BASE unit. Loose atta from a Rs 132 ten-kilo bag
+  /// is 1.32 paisa per gram; a paisa-precision column would price it 25% wrong.
+  final int saleRateMilliPaisa;
+  final int? wholesaleRateMilliPaisa;
+  final int? purchaseRateMilliPaisa;
+
+  /// Weighted-average cost. Seeded from the opening consignment when the item
+  /// is created, and moved by the purchase posting rule from M4.
+  final int avgCostMilliPaisa;
+
+  /// Printed MRP in paisa. For pharmacy this is a fallback only: MRP hangs off
+  /// the BATCH, not the item, because a price increase does not apply to
+  /// batches manufactured before it.
+  final int? mrpPaisa;
+  final String? hsCode;
+  final String? taxRuleId;
+  final int priceIncludesTax;
+  final int isThirdSchedule;
+  final int trackStock;
+  final int trackBatch;
+  final int trackSerial;
+  final int minStockThousandths;
+  final int openingStockThousandths;
+  final int openingRateMilliPaisa;
+  final String? imageAttachmentId;
+  final int isActive;
+
+  /// The price a VIP buyer pays (M15). Last, because SQLite adds a column at
+  /// the end. Empty means the item has none, and a VIP buyer pays the
+  /// wholesale price, or the retail one where there is no wholesale price.
+  final int? vipRateMilliPaisa;
+  const Item({
     required this.id,
     required this.firmId,
     required this.createdAtUtc,
@@ -7306,14 +8781,34 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
     required this.originDeviceId,
     required this.hlc,
     required this.rev,
-    required this.actionCode,
-    required this.entityTable,
-    required this.entityId,
-    this.summary,
-    this.beforeJson,
-    this.afterJson,
-    this.amountPaisa,
-    required this.atUtc,
+    this.code,
+    required this.name,
+    required this.nameSearch,
+    required this.itemType,
+    this.category,
+    this.description,
+    this.barcode,
+    required this.baseUnitId,
+    this.displayUnitId,
+    required this.displayFactorThousandths,
+    required this.saleRateMilliPaisa,
+    this.wholesaleRateMilliPaisa,
+    this.purchaseRateMilliPaisa,
+    required this.avgCostMilliPaisa,
+    this.mrpPaisa,
+    this.hsCode,
+    this.taxRuleId,
+    required this.priceIncludesTax,
+    required this.isThirdSchedule,
+    required this.trackStock,
+    required this.trackBatch,
+    required this.trackSerial,
+    required this.minStockThousandths,
+    required this.openingStockThousandths,
+    required this.openingRateMilliPaisa,
+    this.imageAttachmentId,
+    required this.isActive,
+    this.vipRateMilliPaisa,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -7330,27 +8825,65 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
     map['origin_device_id'] = Variable<String>(originDeviceId);
     map['hlc'] = Variable<String>(hlc);
     map['rev'] = Variable<int>(rev);
-    map['action_code'] = Variable<String>(actionCode);
-    map['entity_table'] = Variable<String>(entityTable);
-    map['entity_id'] = Variable<String>(entityId);
-    if (!nullToAbsent || summary != null) {
-      map['summary'] = Variable<String>(summary);
+    if (!nullToAbsent || code != null) {
+      map['code'] = Variable<String>(code);
     }
-    if (!nullToAbsent || beforeJson != null) {
-      map['before_json'] = Variable<String>(beforeJson);
+    map['name'] = Variable<String>(name);
+    map['name_search'] = Variable<String>(nameSearch);
+    map['item_type'] = Variable<String>(itemType);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
     }
-    if (!nullToAbsent || afterJson != null) {
-      map['after_json'] = Variable<String>(afterJson);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
     }
-    if (!nullToAbsent || amountPaisa != null) {
-      map['amount_paisa'] = Variable<int>(amountPaisa);
+    if (!nullToAbsent || barcode != null) {
+      map['barcode'] = Variable<String>(barcode);
     }
-    map['at_utc'] = Variable<int>(atUtc);
+    map['base_unit_id'] = Variable<String>(baseUnitId);
+    if (!nullToAbsent || displayUnitId != null) {
+      map['display_unit_id'] = Variable<String>(displayUnitId);
+    }
+    map['display_factor_thousandths'] = Variable<int>(displayFactorThousandths);
+    map['sale_rate_milli_paisa'] = Variable<int>(saleRateMilliPaisa);
+    if (!nullToAbsent || wholesaleRateMilliPaisa != null) {
+      map['wholesale_rate_milli_paisa'] = Variable<int>(
+        wholesaleRateMilliPaisa,
+      );
+    }
+    if (!nullToAbsent || purchaseRateMilliPaisa != null) {
+      map['purchase_rate_milli_paisa'] = Variable<int>(purchaseRateMilliPaisa);
+    }
+    map['avg_cost_milli_paisa'] = Variable<int>(avgCostMilliPaisa);
+    if (!nullToAbsent || mrpPaisa != null) {
+      map['mrp_paisa'] = Variable<int>(mrpPaisa);
+    }
+    if (!nullToAbsent || hsCode != null) {
+      map['hs_code'] = Variable<String>(hsCode);
+    }
+    if (!nullToAbsent || taxRuleId != null) {
+      map['tax_rule_id'] = Variable<String>(taxRuleId);
+    }
+    map['price_includes_tax'] = Variable<int>(priceIncludesTax);
+    map['is_third_schedule'] = Variable<int>(isThirdSchedule);
+    map['track_stock'] = Variable<int>(trackStock);
+    map['track_batch'] = Variable<int>(trackBatch);
+    map['track_serial'] = Variable<int>(trackSerial);
+    map['min_stock_thousandths'] = Variable<int>(minStockThousandths);
+    map['opening_stock_thousandths'] = Variable<int>(openingStockThousandths);
+    map['opening_rate_milli_paisa'] = Variable<int>(openingRateMilliPaisa);
+    if (!nullToAbsent || imageAttachmentId != null) {
+      map['image_attachment_id'] = Variable<String>(imageAttachmentId);
+    }
+    map['is_active'] = Variable<int>(isActive);
+    if (!nullToAbsent || vipRateMilliPaisa != null) {
+      map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa);
+    }
     return map;
   }
 
-  AuditLogCompanion toCompanion(bool nullToAbsent) {
-    return AuditLogCompanion(
+  ItemsCompanion toCompanion(bool nullToAbsent) {
+    return ItemsCompanion(
       id: Value(id),
       firmId: Value(firmId),
       createdAtUtc: Value(createdAtUtc),
@@ -7363,31 +8896,65 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
       originDeviceId: Value(originDeviceId),
       hlc: Value(hlc),
       rev: Value(rev),
-      actionCode: Value(actionCode),
-      entityTable: Value(entityTable),
-      entityId: Value(entityId),
-      summary: summary == null && nullToAbsent
+      code: code == null && nullToAbsent ? const Value.absent() : Value(code),
+      name: Value(name),
+      nameSearch: Value(nameSearch),
+      itemType: Value(itemType),
+      category: category == null && nullToAbsent
           ? const Value.absent()
-          : Value(summary),
-      beforeJson: beforeJson == null && nullToAbsent
+          : Value(category),
+      description: description == null && nullToAbsent
           ? const Value.absent()
-          : Value(beforeJson),
-      afterJson: afterJson == null && nullToAbsent
+          : Value(description),
+      barcode: barcode == null && nullToAbsent
           ? const Value.absent()
-          : Value(afterJson),
-      amountPaisa: amountPaisa == null && nullToAbsent
+          : Value(barcode),
+      baseUnitId: Value(baseUnitId),
+      displayUnitId: displayUnitId == null && nullToAbsent
           ? const Value.absent()
-          : Value(amountPaisa),
-      atUtc: Value(atUtc),
+          : Value(displayUnitId),
+      displayFactorThousandths: Value(displayFactorThousandths),
+      saleRateMilliPaisa: Value(saleRateMilliPaisa),
+      wholesaleRateMilliPaisa: wholesaleRateMilliPaisa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(wholesaleRateMilliPaisa),
+      purchaseRateMilliPaisa: purchaseRateMilliPaisa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(purchaseRateMilliPaisa),
+      avgCostMilliPaisa: Value(avgCostMilliPaisa),
+      mrpPaisa: mrpPaisa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mrpPaisa),
+      hsCode: hsCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(hsCode),
+      taxRuleId: taxRuleId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(taxRuleId),
+      priceIncludesTax: Value(priceIncludesTax),
+      isThirdSchedule: Value(isThirdSchedule),
+      trackStock: Value(trackStock),
+      trackBatch: Value(trackBatch),
+      trackSerial: Value(trackSerial),
+      minStockThousandths: Value(minStockThousandths),
+      openingStockThousandths: Value(openingStockThousandths),
+      openingRateMilliPaisa: Value(openingRateMilliPaisa),
+      imageAttachmentId: imageAttachmentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imageAttachmentId),
+      isActive: Value(isActive),
+      vipRateMilliPaisa: vipRateMilliPaisa == null && nullToAbsent
+          ? const Value.absent()
+          : Value(vipRateMilliPaisa),
     );
   }
 
-  factory AuditLogData.fromJson(
+  factory Item.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return AuditLogData(
+    return Item(
       id: serializer.fromJson<String>(json['id']),
       firmId: serializer.fromJson<String>(json['firm_id']),
       createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
@@ -7398,14 +8965,52 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
       originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
       hlc: serializer.fromJson<String>(json['hlc']),
       rev: serializer.fromJson<int>(json['rev']),
-      actionCode: serializer.fromJson<String>(json['action_code']),
-      entityTable: serializer.fromJson<String>(json['entity_table']),
-      entityId: serializer.fromJson<String>(json['entity_id']),
-      summary: serializer.fromJson<String?>(json['summary']),
-      beforeJson: serializer.fromJson<String?>(json['before_json']),
-      afterJson: serializer.fromJson<String?>(json['after_json']),
-      amountPaisa: serializer.fromJson<int?>(json['amount_paisa']),
-      atUtc: serializer.fromJson<int>(json['at_utc']),
+      code: serializer.fromJson<String?>(json['code']),
+      name: serializer.fromJson<String>(json['name']),
+      nameSearch: serializer.fromJson<String>(json['name_search']),
+      itemType: serializer.fromJson<String>(json['item_type']),
+      category: serializer.fromJson<String?>(json['category']),
+      description: serializer.fromJson<String?>(json['description']),
+      barcode: serializer.fromJson<String?>(json['barcode']),
+      baseUnitId: serializer.fromJson<String>(json['base_unit_id']),
+      displayUnitId: serializer.fromJson<String?>(json['display_unit_id']),
+      displayFactorThousandths: serializer.fromJson<int>(
+        json['display_factor_thousandths'],
+      ),
+      saleRateMilliPaisa: serializer.fromJson<int>(
+        json['sale_rate_milli_paisa'],
+      ),
+      wholesaleRateMilliPaisa: serializer.fromJson<int?>(
+        json['wholesale_rate_milli_paisa'],
+      ),
+      purchaseRateMilliPaisa: serializer.fromJson<int?>(
+        json['purchase_rate_milli_paisa'],
+      ),
+      avgCostMilliPaisa: serializer.fromJson<int>(json['avg_cost_milli_paisa']),
+      mrpPaisa: serializer.fromJson<int?>(json['mrp_paisa']),
+      hsCode: serializer.fromJson<String?>(json['hs_code']),
+      taxRuleId: serializer.fromJson<String?>(json['tax_rule_id']),
+      priceIncludesTax: serializer.fromJson<int>(json['price_includes_tax']),
+      isThirdSchedule: serializer.fromJson<int>(json['is_third_schedule']),
+      trackStock: serializer.fromJson<int>(json['track_stock']),
+      trackBatch: serializer.fromJson<int>(json['track_batch']),
+      trackSerial: serializer.fromJson<int>(json['track_serial']),
+      minStockThousandths: serializer.fromJson<int>(
+        json['min_stock_thousandths'],
+      ),
+      openingStockThousandths: serializer.fromJson<int>(
+        json['opening_stock_thousandths'],
+      ),
+      openingRateMilliPaisa: serializer.fromJson<int>(
+        json['opening_rate_milli_paisa'],
+      ),
+      imageAttachmentId: serializer.fromJson<String?>(
+        json['image_attachment_id'],
+      ),
+      isActive: serializer.fromJson<int>(json['is_active']),
+      vipRateMilliPaisa: serializer.fromJson<int?>(
+        json['vip_rate_milli_paisa'],
+      ),
     );
   }
   @override
@@ -7422,18 +9027,46 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
       'origin_device_id': serializer.toJson<String>(originDeviceId),
       'hlc': serializer.toJson<String>(hlc),
       'rev': serializer.toJson<int>(rev),
-      'action_code': serializer.toJson<String>(actionCode),
-      'entity_table': serializer.toJson<String>(entityTable),
-      'entity_id': serializer.toJson<String>(entityId),
-      'summary': serializer.toJson<String?>(summary),
-      'before_json': serializer.toJson<String?>(beforeJson),
-      'after_json': serializer.toJson<String?>(afterJson),
-      'amount_paisa': serializer.toJson<int?>(amountPaisa),
-      'at_utc': serializer.toJson<int>(atUtc),
+      'code': serializer.toJson<String?>(code),
+      'name': serializer.toJson<String>(name),
+      'name_search': serializer.toJson<String>(nameSearch),
+      'item_type': serializer.toJson<String>(itemType),
+      'category': serializer.toJson<String?>(category),
+      'description': serializer.toJson<String?>(description),
+      'barcode': serializer.toJson<String?>(barcode),
+      'base_unit_id': serializer.toJson<String>(baseUnitId),
+      'display_unit_id': serializer.toJson<String?>(displayUnitId),
+      'display_factor_thousandths': serializer.toJson<int>(
+        displayFactorThousandths,
+      ),
+      'sale_rate_milli_paisa': serializer.toJson<int>(saleRateMilliPaisa),
+      'wholesale_rate_milli_paisa': serializer.toJson<int?>(
+        wholesaleRateMilliPaisa,
+      ),
+      'purchase_rate_milli_paisa': serializer.toJson<int?>(
+        purchaseRateMilliPaisa,
+      ),
+      'avg_cost_milli_paisa': serializer.toJson<int>(avgCostMilliPaisa),
+      'mrp_paisa': serializer.toJson<int?>(mrpPaisa),
+      'hs_code': serializer.toJson<String?>(hsCode),
+      'tax_rule_id': serializer.toJson<String?>(taxRuleId),
+      'price_includes_tax': serializer.toJson<int>(priceIncludesTax),
+      'is_third_schedule': serializer.toJson<int>(isThirdSchedule),
+      'track_stock': serializer.toJson<int>(trackStock),
+      'track_batch': serializer.toJson<int>(trackBatch),
+      'track_serial': serializer.toJson<int>(trackSerial),
+      'min_stock_thousandths': serializer.toJson<int>(minStockThousandths),
+      'opening_stock_thousandths': serializer.toJson<int>(
+        openingStockThousandths,
+      ),
+      'opening_rate_milli_paisa': serializer.toJson<int>(openingRateMilliPaisa),
+      'image_attachment_id': serializer.toJson<String?>(imageAttachmentId),
+      'is_active': serializer.toJson<int>(isActive),
+      'vip_rate_milli_paisa': serializer.toJson<int?>(vipRateMilliPaisa),
     };
   }
 
-  AuditLogData copyWith({
+  Item copyWith({
     String? id,
     String? firmId,
     int? createdAtUtc,
@@ -7444,15 +9077,35 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
     String? originDeviceId,
     String? hlc,
     int? rev,
-    String? actionCode,
-    String? entityTable,
-    String? entityId,
-    Value<String?> summary = const Value.absent(),
-    Value<String?> beforeJson = const Value.absent(),
-    Value<String?> afterJson = const Value.absent(),
-    Value<int?> amountPaisa = const Value.absent(),
-    int? atUtc,
-  }) => AuditLogData(
+    Value<String?> code = const Value.absent(),
+    String? name,
+    String? nameSearch,
+    String? itemType,
+    Value<String?> category = const Value.absent(),
+    Value<String?> description = const Value.absent(),
+    Value<String?> barcode = const Value.absent(),
+    String? baseUnitId,
+    Value<String?> displayUnitId = const Value.absent(),
+    int? displayFactorThousandths,
+    int? saleRateMilliPaisa,
+    Value<int?> wholesaleRateMilliPaisa = const Value.absent(),
+    Value<int?> purchaseRateMilliPaisa = const Value.absent(),
+    int? avgCostMilliPaisa,
+    Value<int?> mrpPaisa = const Value.absent(),
+    Value<String?> hsCode = const Value.absent(),
+    Value<String?> taxRuleId = const Value.absent(),
+    int? priceIncludesTax,
+    int? isThirdSchedule,
+    int? trackStock,
+    int? trackBatch,
+    int? trackSerial,
+    int? minStockThousandths,
+    int? openingStockThousandths,
+    int? openingRateMilliPaisa,
+    Value<String?> imageAttachmentId = const Value.absent(),
+    int? isActive,
+    Value<int?> vipRateMilliPaisa = const Value.absent(),
+  }) => Item(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -7463,17 +9116,49 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
     originDeviceId: originDeviceId ?? this.originDeviceId,
     hlc: hlc ?? this.hlc,
     rev: rev ?? this.rev,
-    actionCode: actionCode ?? this.actionCode,
-    entityTable: entityTable ?? this.entityTable,
-    entityId: entityId ?? this.entityId,
-    summary: summary.present ? summary.value : this.summary,
-    beforeJson: beforeJson.present ? beforeJson.value : this.beforeJson,
-    afterJson: afterJson.present ? afterJson.value : this.afterJson,
-    amountPaisa: amountPaisa.present ? amountPaisa.value : this.amountPaisa,
-    atUtc: atUtc ?? this.atUtc,
+    code: code.present ? code.value : this.code,
+    name: name ?? this.name,
+    nameSearch: nameSearch ?? this.nameSearch,
+    itemType: itemType ?? this.itemType,
+    category: category.present ? category.value : this.category,
+    description: description.present ? description.value : this.description,
+    barcode: barcode.present ? barcode.value : this.barcode,
+    baseUnitId: baseUnitId ?? this.baseUnitId,
+    displayUnitId: displayUnitId.present
+        ? displayUnitId.value
+        : this.displayUnitId,
+    displayFactorThousandths:
+        displayFactorThousandths ?? this.displayFactorThousandths,
+    saleRateMilliPaisa: saleRateMilliPaisa ?? this.saleRateMilliPaisa,
+    wholesaleRateMilliPaisa: wholesaleRateMilliPaisa.present
+        ? wholesaleRateMilliPaisa.value
+        : this.wholesaleRateMilliPaisa,
+    purchaseRateMilliPaisa: purchaseRateMilliPaisa.present
+        ? purchaseRateMilliPaisa.value
+        : this.purchaseRateMilliPaisa,
+    avgCostMilliPaisa: avgCostMilliPaisa ?? this.avgCostMilliPaisa,
+    mrpPaisa: mrpPaisa.present ? mrpPaisa.value : this.mrpPaisa,
+    hsCode: hsCode.present ? hsCode.value : this.hsCode,
+    taxRuleId: taxRuleId.present ? taxRuleId.value : this.taxRuleId,
+    priceIncludesTax: priceIncludesTax ?? this.priceIncludesTax,
+    isThirdSchedule: isThirdSchedule ?? this.isThirdSchedule,
+    trackStock: trackStock ?? this.trackStock,
+    trackBatch: trackBatch ?? this.trackBatch,
+    trackSerial: trackSerial ?? this.trackSerial,
+    minStockThousandths: minStockThousandths ?? this.minStockThousandths,
+    openingStockThousandths:
+        openingStockThousandths ?? this.openingStockThousandths,
+    openingRateMilliPaisa: openingRateMilliPaisa ?? this.openingRateMilliPaisa,
+    imageAttachmentId: imageAttachmentId.present
+        ? imageAttachmentId.value
+        : this.imageAttachmentId,
+    isActive: isActive ?? this.isActive,
+    vipRateMilliPaisa: vipRateMilliPaisa.present
+        ? vipRateMilliPaisa.value
+        : this.vipRateMilliPaisa,
   );
-  AuditLogData copyWithCompanion(AuditLogCompanion data) {
-    return AuditLogData(
+  Item copyWithCompanion(ItemsCompanion data) {
+    return Item(
       id: data.id.present ? data.id.value : this.id,
       firmId: data.firmId.present ? data.firmId.value : this.firmId,
       createdAtUtc: data.createdAtUtc.present
@@ -7492,28 +9177,78 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
           : this.originDeviceId,
       hlc: data.hlc.present ? data.hlc.value : this.hlc,
       rev: data.rev.present ? data.rev.value : this.rev,
-      actionCode: data.actionCode.present
-          ? data.actionCode.value
-          : this.actionCode,
-      entityTable: data.entityTable.present
-          ? data.entityTable.value
-          : this.entityTable,
-      entityId: data.entityId.present ? data.entityId.value : this.entityId,
-      summary: data.summary.present ? data.summary.value : this.summary,
-      beforeJson: data.beforeJson.present
-          ? data.beforeJson.value
-          : this.beforeJson,
-      afterJson: data.afterJson.present ? data.afterJson.value : this.afterJson,
-      amountPaisa: data.amountPaisa.present
-          ? data.amountPaisa.value
-          : this.amountPaisa,
-      atUtc: data.atUtc.present ? data.atUtc.value : this.atUtc,
+      code: data.code.present ? data.code.value : this.code,
+      name: data.name.present ? data.name.value : this.name,
+      nameSearch: data.nameSearch.present
+          ? data.nameSearch.value
+          : this.nameSearch,
+      itemType: data.itemType.present ? data.itemType.value : this.itemType,
+      category: data.category.present ? data.category.value : this.category,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      barcode: data.barcode.present ? data.barcode.value : this.barcode,
+      baseUnitId: data.baseUnitId.present
+          ? data.baseUnitId.value
+          : this.baseUnitId,
+      displayUnitId: data.displayUnitId.present
+          ? data.displayUnitId.value
+          : this.displayUnitId,
+      displayFactorThousandths: data.displayFactorThousandths.present
+          ? data.displayFactorThousandths.value
+          : this.displayFactorThousandths,
+      saleRateMilliPaisa: data.saleRateMilliPaisa.present
+          ? data.saleRateMilliPaisa.value
+          : this.saleRateMilliPaisa,
+      wholesaleRateMilliPaisa: data.wholesaleRateMilliPaisa.present
+          ? data.wholesaleRateMilliPaisa.value
+          : this.wholesaleRateMilliPaisa,
+      purchaseRateMilliPaisa: data.purchaseRateMilliPaisa.present
+          ? data.purchaseRateMilliPaisa.value
+          : this.purchaseRateMilliPaisa,
+      avgCostMilliPaisa: data.avgCostMilliPaisa.present
+          ? data.avgCostMilliPaisa.value
+          : this.avgCostMilliPaisa,
+      mrpPaisa: data.mrpPaisa.present ? data.mrpPaisa.value : this.mrpPaisa,
+      hsCode: data.hsCode.present ? data.hsCode.value : this.hsCode,
+      taxRuleId: data.taxRuleId.present ? data.taxRuleId.value : this.taxRuleId,
+      priceIncludesTax: data.priceIncludesTax.present
+          ? data.priceIncludesTax.value
+          : this.priceIncludesTax,
+      isThirdSchedule: data.isThirdSchedule.present
+          ? data.isThirdSchedule.value
+          : this.isThirdSchedule,
+      trackStock: data.trackStock.present
+          ? data.trackStock.value
+          : this.trackStock,
+      trackBatch: data.trackBatch.present
+          ? data.trackBatch.value
+          : this.trackBatch,
+      trackSerial: data.trackSerial.present
+          ? data.trackSerial.value
+          : this.trackSerial,
+      minStockThousandths: data.minStockThousandths.present
+          ? data.minStockThousandths.value
+          : this.minStockThousandths,
+      openingStockThousandths: data.openingStockThousandths.present
+          ? data.openingStockThousandths.value
+          : this.openingStockThousandths,
+      openingRateMilliPaisa: data.openingRateMilliPaisa.present
+          ? data.openingRateMilliPaisa.value
+          : this.openingRateMilliPaisa,
+      imageAttachmentId: data.imageAttachmentId.present
+          ? data.imageAttachmentId.value
+          : this.imageAttachmentId,
+      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      vipRateMilliPaisa: data.vipRateMilliPaisa.present
+          ? data.vipRateMilliPaisa.value
+          : this.vipRateMilliPaisa,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('AuditLogData(')
+    return (StringBuffer('Item(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -7524,20 +9259,40 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('actionCode: $actionCode, ')
-          ..write('entityTable: $entityTable, ')
-          ..write('entityId: $entityId, ')
-          ..write('summary: $summary, ')
-          ..write('beforeJson: $beforeJson, ')
-          ..write('afterJson: $afterJson, ')
-          ..write('amountPaisa: $amountPaisa, ')
-          ..write('atUtc: $atUtc')
+          ..write('code: $code, ')
+          ..write('name: $name, ')
+          ..write('nameSearch: $nameSearch, ')
+          ..write('itemType: $itemType, ')
+          ..write('category: $category, ')
+          ..write('description: $description, ')
+          ..write('barcode: $barcode, ')
+          ..write('baseUnitId: $baseUnitId, ')
+          ..write('displayUnitId: $displayUnitId, ')
+          ..write('displayFactorThousandths: $displayFactorThousandths, ')
+          ..write('saleRateMilliPaisa: $saleRateMilliPaisa, ')
+          ..write('wholesaleRateMilliPaisa: $wholesaleRateMilliPaisa, ')
+          ..write('purchaseRateMilliPaisa: $purchaseRateMilliPaisa, ')
+          ..write('avgCostMilliPaisa: $avgCostMilliPaisa, ')
+          ..write('mrpPaisa: $mrpPaisa, ')
+          ..write('hsCode: $hsCode, ')
+          ..write('taxRuleId: $taxRuleId, ')
+          ..write('priceIncludesTax: $priceIncludesTax, ')
+          ..write('isThirdSchedule: $isThirdSchedule, ')
+          ..write('trackStock: $trackStock, ')
+          ..write('trackBatch: $trackBatch, ')
+          ..write('trackSerial: $trackSerial, ')
+          ..write('minStockThousandths: $minStockThousandths, ')
+          ..write('openingStockThousandths: $openingStockThousandths, ')
+          ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
+          ..write('imageAttachmentId: $imageAttachmentId, ')
+          ..write('isActive: $isActive, ')
+          ..write('vipRateMilliPaisa: $vipRateMilliPaisa')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
     firmId,
     createdAtUtc,
@@ -7548,19 +9303,39 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
     originDeviceId,
     hlc,
     rev,
-    actionCode,
-    entityTable,
-    entityId,
-    summary,
-    beforeJson,
-    afterJson,
-    amountPaisa,
-    atUtc,
-  );
+    code,
+    name,
+    nameSearch,
+    itemType,
+    category,
+    description,
+    barcode,
+    baseUnitId,
+    displayUnitId,
+    displayFactorThousandths,
+    saleRateMilliPaisa,
+    wholesaleRateMilliPaisa,
+    purchaseRateMilliPaisa,
+    avgCostMilliPaisa,
+    mrpPaisa,
+    hsCode,
+    taxRuleId,
+    priceIncludesTax,
+    isThirdSchedule,
+    trackStock,
+    trackBatch,
+    trackSerial,
+    minStockThousandths,
+    openingStockThousandths,
+    openingRateMilliPaisa,
+    imageAttachmentId,
+    isActive,
+    vipRateMilliPaisa,
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is AuditLogData &&
+      (other is Item &&
           other.id == this.id &&
           other.firmId == this.firmId &&
           other.createdAtUtc == this.createdAtUtc &&
@@ -7571,17 +9346,37 @@ class AuditLogData extends DataClass implements Insertable<AuditLogData> {
           other.originDeviceId == this.originDeviceId &&
           other.hlc == this.hlc &&
           other.rev == this.rev &&
-          other.actionCode == this.actionCode &&
-          other.entityTable == this.entityTable &&
-          other.entityId == this.entityId &&
-          other.summary == this.summary &&
-          other.beforeJson == this.beforeJson &&
-          other.afterJson == this.afterJson &&
-          other.amountPaisa == this.amountPaisa &&
-          other.atUtc == this.atUtc);
+          other.code == this.code &&
+          other.name == this.name &&
+          other.nameSearch == this.nameSearch &&
+          other.itemType == this.itemType &&
+          other.category == this.category &&
+          other.description == this.description &&
+          other.barcode == this.barcode &&
+          other.baseUnitId == this.baseUnitId &&
+          other.displayUnitId == this.displayUnitId &&
+          other.displayFactorThousandths == this.displayFactorThousandths &&
+          other.saleRateMilliPaisa == this.saleRateMilliPaisa &&
+          other.wholesaleRateMilliPaisa == this.wholesaleRateMilliPaisa &&
+          other.purchaseRateMilliPaisa == this.purchaseRateMilliPaisa &&
+          other.avgCostMilliPaisa == this.avgCostMilliPaisa &&
+          other.mrpPaisa == this.mrpPaisa &&
+          other.hsCode == this.hsCode &&
+          other.taxRuleId == this.taxRuleId &&
+          other.priceIncludesTax == this.priceIncludesTax &&
+          other.isThirdSchedule == this.isThirdSchedule &&
+          other.trackStock == this.trackStock &&
+          other.trackBatch == this.trackBatch &&
+          other.trackSerial == this.trackSerial &&
+          other.minStockThousandths == this.minStockThousandths &&
+          other.openingStockThousandths == this.openingStockThousandths &&
+          other.openingRateMilliPaisa == this.openingRateMilliPaisa &&
+          other.imageAttachmentId == this.imageAttachmentId &&
+          other.isActive == this.isActive &&
+          other.vipRateMilliPaisa == this.vipRateMilliPaisa);
 }
 
-class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
+class ItemsCompanion extends UpdateCompanion<Item> {
   final Value<String> id;
   final Value<String> firmId;
   final Value<int> createdAtUtc;
@@ -7592,16 +9387,36 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
   final Value<String> originDeviceId;
   final Value<String> hlc;
   final Value<int> rev;
-  final Value<String> actionCode;
-  final Value<String> entityTable;
-  final Value<String> entityId;
-  final Value<String?> summary;
-  final Value<String?> beforeJson;
-  final Value<String?> afterJson;
-  final Value<int?> amountPaisa;
-  final Value<int> atUtc;
+  final Value<String?> code;
+  final Value<String> name;
+  final Value<String> nameSearch;
+  final Value<String> itemType;
+  final Value<String?> category;
+  final Value<String?> description;
+  final Value<String?> barcode;
+  final Value<String> baseUnitId;
+  final Value<String?> displayUnitId;
+  final Value<int> displayFactorThousandths;
+  final Value<int> saleRateMilliPaisa;
+  final Value<int?> wholesaleRateMilliPaisa;
+  final Value<int?> purchaseRateMilliPaisa;
+  final Value<int> avgCostMilliPaisa;
+  final Value<int?> mrpPaisa;
+  final Value<String?> hsCode;
+  final Value<String?> taxRuleId;
+  final Value<int> priceIncludesTax;
+  final Value<int> isThirdSchedule;
+  final Value<int> trackStock;
+  final Value<int> trackBatch;
+  final Value<int> trackSerial;
+  final Value<int> minStockThousandths;
+  final Value<int> openingStockThousandths;
+  final Value<int> openingRateMilliPaisa;
+  final Value<String?> imageAttachmentId;
+  final Value<int> isActive;
+  final Value<int?> vipRateMilliPaisa;
   final Value<int> rowid;
-  const AuditLogCompanion({
+  const ItemsCompanion({
     this.id = const Value.absent(),
     this.firmId = const Value.absent(),
     this.createdAtUtc = const Value.absent(),
@@ -7612,17 +9427,37 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
     this.originDeviceId = const Value.absent(),
     this.hlc = const Value.absent(),
     this.rev = const Value.absent(),
-    this.actionCode = const Value.absent(),
-    this.entityTable = const Value.absent(),
-    this.entityId = const Value.absent(),
-    this.summary = const Value.absent(),
-    this.beforeJson = const Value.absent(),
-    this.afterJson = const Value.absent(),
-    this.amountPaisa = const Value.absent(),
-    this.atUtc = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+    this.nameSearch = const Value.absent(),
+    this.itemType = const Value.absent(),
+    this.category = const Value.absent(),
+    this.description = const Value.absent(),
+    this.barcode = const Value.absent(),
+    this.baseUnitId = const Value.absent(),
+    this.displayUnitId = const Value.absent(),
+    this.displayFactorThousandths = const Value.absent(),
+    this.saleRateMilliPaisa = const Value.absent(),
+    this.wholesaleRateMilliPaisa = const Value.absent(),
+    this.purchaseRateMilliPaisa = const Value.absent(),
+    this.avgCostMilliPaisa = const Value.absent(),
+    this.mrpPaisa = const Value.absent(),
+    this.hsCode = const Value.absent(),
+    this.taxRuleId = const Value.absent(),
+    this.priceIncludesTax = const Value.absent(),
+    this.isThirdSchedule = const Value.absent(),
+    this.trackStock = const Value.absent(),
+    this.trackBatch = const Value.absent(),
+    this.trackSerial = const Value.absent(),
+    this.minStockThousandths = const Value.absent(),
+    this.openingStockThousandths = const Value.absent(),
+    this.openingRateMilliPaisa = const Value.absent(),
+    this.imageAttachmentId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.vipRateMilliPaisa = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  AuditLogCompanion.insert({
+  ItemsCompanion.insert({
     required String id,
     required String firmId,
     required int createdAtUtc,
@@ -7633,14 +9468,34 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
     required String originDeviceId,
     required String hlc,
     this.rev = const Value.absent(),
-    required String actionCode,
-    required String entityTable,
-    required String entityId,
-    this.summary = const Value.absent(),
-    this.beforeJson = const Value.absent(),
-    this.afterJson = const Value.absent(),
-    this.amountPaisa = const Value.absent(),
-    required int atUtc,
+    this.code = const Value.absent(),
+    required String name,
+    required String nameSearch,
+    this.itemType = const Value.absent(),
+    this.category = const Value.absent(),
+    this.description = const Value.absent(),
+    this.barcode = const Value.absent(),
+    required String baseUnitId,
+    this.displayUnitId = const Value.absent(),
+    this.displayFactorThousandths = const Value.absent(),
+    this.saleRateMilliPaisa = const Value.absent(),
+    this.wholesaleRateMilliPaisa = const Value.absent(),
+    this.purchaseRateMilliPaisa = const Value.absent(),
+    this.avgCostMilliPaisa = const Value.absent(),
+    this.mrpPaisa = const Value.absent(),
+    this.hsCode = const Value.absent(),
+    this.taxRuleId = const Value.absent(),
+    this.priceIncludesTax = const Value.absent(),
+    this.isThirdSchedule = const Value.absent(),
+    this.trackStock = const Value.absent(),
+    this.trackBatch = const Value.absent(),
+    this.trackSerial = const Value.absent(),
+    this.minStockThousandths = const Value.absent(),
+    this.openingStockThousandths = const Value.absent(),
+    this.openingRateMilliPaisa = const Value.absent(),
+    this.imageAttachmentId = const Value.absent(),
+    this.isActive = const Value.absent(),
+    this.vipRateMilliPaisa = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -7650,11 +9505,10 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
        updatedBy = Value(updatedBy),
        originDeviceId = Value(originDeviceId),
        hlc = Value(hlc),
-       actionCode = Value(actionCode),
-       entityTable = Value(entityTable),
-       entityId = Value(entityId),
-       atUtc = Value(atUtc);
-  static Insertable<AuditLogData> custom({
+       name = Value(name),
+       nameSearch = Value(nameSearch),
+       baseUnitId = Value(baseUnitId);
+  static Insertable<Item> custom({
     Expression<String>? id,
     Expression<String>? firmId,
     Expression<int>? createdAtUtc,
@@ -7665,14 +9519,34 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
     Expression<String>? originDeviceId,
     Expression<String>? hlc,
     Expression<int>? rev,
-    Expression<String>? actionCode,
-    Expression<String>? entityTable,
-    Expression<String>? entityId,
-    Expression<String>? summary,
-    Expression<String>? beforeJson,
-    Expression<String>? afterJson,
-    Expression<int>? amountPaisa,
-    Expression<int>? atUtc,
+    Expression<String>? code,
+    Expression<String>? name,
+    Expression<String>? nameSearch,
+    Expression<String>? itemType,
+    Expression<String>? category,
+    Expression<String>? description,
+    Expression<String>? barcode,
+    Expression<String>? baseUnitId,
+    Expression<String>? displayUnitId,
+    Expression<int>? displayFactorThousandths,
+    Expression<int>? saleRateMilliPaisa,
+    Expression<int>? wholesaleRateMilliPaisa,
+    Expression<int>? purchaseRateMilliPaisa,
+    Expression<int>? avgCostMilliPaisa,
+    Expression<int>? mrpPaisa,
+    Expression<String>? hsCode,
+    Expression<String>? taxRuleId,
+    Expression<int>? priceIncludesTax,
+    Expression<int>? isThirdSchedule,
+    Expression<int>? trackStock,
+    Expression<int>? trackBatch,
+    Expression<int>? trackSerial,
+    Expression<int>? minStockThousandths,
+    Expression<int>? openingStockThousandths,
+    Expression<int>? openingRateMilliPaisa,
+    Expression<String>? imageAttachmentId,
+    Expression<int>? isActive,
+    Expression<int>? vipRateMilliPaisa,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -7686,19 +9560,46 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
       if (originDeviceId != null) 'origin_device_id': originDeviceId,
       if (hlc != null) 'hlc': hlc,
       if (rev != null) 'rev': rev,
-      if (actionCode != null) 'action_code': actionCode,
-      if (entityTable != null) 'entity_table': entityTable,
-      if (entityId != null) 'entity_id': entityId,
-      if (summary != null) 'summary': summary,
-      if (beforeJson != null) 'before_json': beforeJson,
-      if (afterJson != null) 'after_json': afterJson,
-      if (amountPaisa != null) 'amount_paisa': amountPaisa,
-      if (atUtc != null) 'at_utc': atUtc,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+      if (nameSearch != null) 'name_search': nameSearch,
+      if (itemType != null) 'item_type': itemType,
+      if (category != null) 'category': category,
+      if (description != null) 'description': description,
+      if (barcode != null) 'barcode': barcode,
+      if (baseUnitId != null) 'base_unit_id': baseUnitId,
+      if (displayUnitId != null) 'display_unit_id': displayUnitId,
+      if (displayFactorThousandths != null)
+        'display_factor_thousandths': displayFactorThousandths,
+      if (saleRateMilliPaisa != null)
+        'sale_rate_milli_paisa': saleRateMilliPaisa,
+      if (wholesaleRateMilliPaisa != null)
+        'wholesale_rate_milli_paisa': wholesaleRateMilliPaisa,
+      if (purchaseRateMilliPaisa != null)
+        'purchase_rate_milli_paisa': purchaseRateMilliPaisa,
+      if (avgCostMilliPaisa != null) 'avg_cost_milli_paisa': avgCostMilliPaisa,
+      if (mrpPaisa != null) 'mrp_paisa': mrpPaisa,
+      if (hsCode != null) 'hs_code': hsCode,
+      if (taxRuleId != null) 'tax_rule_id': taxRuleId,
+      if (priceIncludesTax != null) 'price_includes_tax': priceIncludesTax,
+      if (isThirdSchedule != null) 'is_third_schedule': isThirdSchedule,
+      if (trackStock != null) 'track_stock': trackStock,
+      if (trackBatch != null) 'track_batch': trackBatch,
+      if (trackSerial != null) 'track_serial': trackSerial,
+      if (minStockThousandths != null)
+        'min_stock_thousandths': minStockThousandths,
+      if (openingStockThousandths != null)
+        'opening_stock_thousandths': openingStockThousandths,
+      if (openingRateMilliPaisa != null)
+        'opening_rate_milli_paisa': openingRateMilliPaisa,
+      if (imageAttachmentId != null) 'image_attachment_id': imageAttachmentId,
+      if (isActive != null) 'is_active': isActive,
+      if (vipRateMilliPaisa != null) 'vip_rate_milli_paisa': vipRateMilliPaisa,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  AuditLogCompanion copyWith({
+  ItemsCompanion copyWith({
     Value<String>? id,
     Value<String>? firmId,
     Value<int>? createdAtUtc,
@@ -7709,17 +9610,37 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
     Value<String>? originDeviceId,
     Value<String>? hlc,
     Value<int>? rev,
-    Value<String>? actionCode,
-    Value<String>? entityTable,
-    Value<String>? entityId,
-    Value<String?>? summary,
-    Value<String?>? beforeJson,
-    Value<String?>? afterJson,
-    Value<int?>? amountPaisa,
-    Value<int>? atUtc,
+    Value<String?>? code,
+    Value<String>? name,
+    Value<String>? nameSearch,
+    Value<String>? itemType,
+    Value<String?>? category,
+    Value<String?>? description,
+    Value<String?>? barcode,
+    Value<String>? baseUnitId,
+    Value<String?>? displayUnitId,
+    Value<int>? displayFactorThousandths,
+    Value<int>? saleRateMilliPaisa,
+    Value<int?>? wholesaleRateMilliPaisa,
+    Value<int?>? purchaseRateMilliPaisa,
+    Value<int>? avgCostMilliPaisa,
+    Value<int?>? mrpPaisa,
+    Value<String?>? hsCode,
+    Value<String?>? taxRuleId,
+    Value<int>? priceIncludesTax,
+    Value<int>? isThirdSchedule,
+    Value<int>? trackStock,
+    Value<int>? trackBatch,
+    Value<int>? trackSerial,
+    Value<int>? minStockThousandths,
+    Value<int>? openingStockThousandths,
+    Value<int>? openingRateMilliPaisa,
+    Value<String?>? imageAttachmentId,
+    Value<int>? isActive,
+    Value<int?>? vipRateMilliPaisa,
     Value<int>? rowid,
   }) {
-    return AuditLogCompanion(
+    return ItemsCompanion(
       id: id ?? this.id,
       firmId: firmId ?? this.firmId,
       createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -7730,14 +9651,39 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
       originDeviceId: originDeviceId ?? this.originDeviceId,
       hlc: hlc ?? this.hlc,
       rev: rev ?? this.rev,
-      actionCode: actionCode ?? this.actionCode,
-      entityTable: entityTable ?? this.entityTable,
-      entityId: entityId ?? this.entityId,
-      summary: summary ?? this.summary,
-      beforeJson: beforeJson ?? this.beforeJson,
-      afterJson: afterJson ?? this.afterJson,
-      amountPaisa: amountPaisa ?? this.amountPaisa,
-      atUtc: atUtc ?? this.atUtc,
+      code: code ?? this.code,
+      name: name ?? this.name,
+      nameSearch: nameSearch ?? this.nameSearch,
+      itemType: itemType ?? this.itemType,
+      category: category ?? this.category,
+      description: description ?? this.description,
+      barcode: barcode ?? this.barcode,
+      baseUnitId: baseUnitId ?? this.baseUnitId,
+      displayUnitId: displayUnitId ?? this.displayUnitId,
+      displayFactorThousandths:
+          displayFactorThousandths ?? this.displayFactorThousandths,
+      saleRateMilliPaisa: saleRateMilliPaisa ?? this.saleRateMilliPaisa,
+      wholesaleRateMilliPaisa:
+          wholesaleRateMilliPaisa ?? this.wholesaleRateMilliPaisa,
+      purchaseRateMilliPaisa:
+          purchaseRateMilliPaisa ?? this.purchaseRateMilliPaisa,
+      avgCostMilliPaisa: avgCostMilliPaisa ?? this.avgCostMilliPaisa,
+      mrpPaisa: mrpPaisa ?? this.mrpPaisa,
+      hsCode: hsCode ?? this.hsCode,
+      taxRuleId: taxRuleId ?? this.taxRuleId,
+      priceIncludesTax: priceIncludesTax ?? this.priceIncludesTax,
+      isThirdSchedule: isThirdSchedule ?? this.isThirdSchedule,
+      trackStock: trackStock ?? this.trackStock,
+      trackBatch: trackBatch ?? this.trackBatch,
+      trackSerial: trackSerial ?? this.trackSerial,
+      minStockThousandths: minStockThousandths ?? this.minStockThousandths,
+      openingStockThousandths:
+          openingStockThousandths ?? this.openingStockThousandths,
+      openingRateMilliPaisa:
+          openingRateMilliPaisa ?? this.openingRateMilliPaisa,
+      imageAttachmentId: imageAttachmentId ?? this.imageAttachmentId,
+      isActive: isActive ?? this.isActive,
+      vipRateMilliPaisa: vipRateMilliPaisa ?? this.vipRateMilliPaisa,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -7775,29 +9721,99 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
     if (rev.present) {
       map['rev'] = Variable<int>(rev.value);
     }
-    if (actionCode.present) {
-      map['action_code'] = Variable<String>(actionCode.value);
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
     }
-    if (entityTable.present) {
-      map['entity_table'] = Variable<String>(entityTable.value);
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
     }
-    if (entityId.present) {
-      map['entity_id'] = Variable<String>(entityId.value);
+    if (nameSearch.present) {
+      map['name_search'] = Variable<String>(nameSearch.value);
     }
-    if (summary.present) {
-      map['summary'] = Variable<String>(summary.value);
+    if (itemType.present) {
+      map['item_type'] = Variable<String>(itemType.value);
     }
-    if (beforeJson.present) {
-      map['before_json'] = Variable<String>(beforeJson.value);
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
     }
-    if (afterJson.present) {
-      map['after_json'] = Variable<String>(afterJson.value);
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
-    if (amountPaisa.present) {
-      map['amount_paisa'] = Variable<int>(amountPaisa.value);
+    if (barcode.present) {
+      map['barcode'] = Variable<String>(barcode.value);
     }
-    if (atUtc.present) {
-      map['at_utc'] = Variable<int>(atUtc.value);
+    if (baseUnitId.present) {
+      map['base_unit_id'] = Variable<String>(baseUnitId.value);
+    }
+    if (displayUnitId.present) {
+      map['display_unit_id'] = Variable<String>(displayUnitId.value);
+    }
+    if (displayFactorThousandths.present) {
+      map['display_factor_thousandths'] = Variable<int>(
+        displayFactorThousandths.value,
+      );
+    }
+    if (saleRateMilliPaisa.present) {
+      map['sale_rate_milli_paisa'] = Variable<int>(saleRateMilliPaisa.value);
+    }
+    if (wholesaleRateMilliPaisa.present) {
+      map['wholesale_rate_milli_paisa'] = Variable<int>(
+        wholesaleRateMilliPaisa.value,
+      );
+    }
+    if (purchaseRateMilliPaisa.present) {
+      map['purchase_rate_milli_paisa'] = Variable<int>(
+        purchaseRateMilliPaisa.value,
+      );
+    }
+    if (avgCostMilliPaisa.present) {
+      map['avg_cost_milli_paisa'] = Variable<int>(avgCostMilliPaisa.value);
+    }
+    if (mrpPaisa.present) {
+      map['mrp_paisa'] = Variable<int>(mrpPaisa.value);
+    }
+    if (hsCode.present) {
+      map['hs_code'] = Variable<String>(hsCode.value);
+    }
+    if (taxRuleId.present) {
+      map['tax_rule_id'] = Variable<String>(taxRuleId.value);
+    }
+    if (priceIncludesTax.present) {
+      map['price_includes_tax'] = Variable<int>(priceIncludesTax.value);
+    }
+    if (isThirdSchedule.present) {
+      map['is_third_schedule'] = Variable<int>(isThirdSchedule.value);
+    }
+    if (trackStock.present) {
+      map['track_stock'] = Variable<int>(trackStock.value);
+    }
+    if (trackBatch.present) {
+      map['track_batch'] = Variable<int>(trackBatch.value);
+    }
+    if (trackSerial.present) {
+      map['track_serial'] = Variable<int>(trackSerial.value);
+    }
+    if (minStockThousandths.present) {
+      map['min_stock_thousandths'] = Variable<int>(minStockThousandths.value);
+    }
+    if (openingStockThousandths.present) {
+      map['opening_stock_thousandths'] = Variable<int>(
+        openingStockThousandths.value,
+      );
+    }
+    if (openingRateMilliPaisa.present) {
+      map['opening_rate_milli_paisa'] = Variable<int>(
+        openingRateMilliPaisa.value,
+      );
+    }
+    if (imageAttachmentId.present) {
+      map['image_attachment_id'] = Variable<String>(imageAttachmentId.value);
+    }
+    if (isActive.present) {
+      map['is_active'] = Variable<int>(isActive.value);
+    }
+    if (vipRateMilliPaisa.present) {
+      map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -7807,7 +9823,7 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
 
   @override
   String toString() {
-    return (StringBuffer('AuditLogCompanion(')
+    return (StringBuffer('ItemsCompanion(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -7818,25 +9834,45 @@ class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('actionCode: $actionCode, ')
-          ..write('entityTable: $entityTable, ')
-          ..write('entityId: $entityId, ')
-          ..write('summary: $summary, ')
-          ..write('beforeJson: $beforeJson, ')
-          ..write('afterJson: $afterJson, ')
-          ..write('amountPaisa: $amountPaisa, ')
-          ..write('atUtc: $atUtc, ')
+          ..write('code: $code, ')
+          ..write('name: $name, ')
+          ..write('nameSearch: $nameSearch, ')
+          ..write('itemType: $itemType, ')
+          ..write('category: $category, ')
+          ..write('description: $description, ')
+          ..write('barcode: $barcode, ')
+          ..write('baseUnitId: $baseUnitId, ')
+          ..write('displayUnitId: $displayUnitId, ')
+          ..write('displayFactorThousandths: $displayFactorThousandths, ')
+          ..write('saleRateMilliPaisa: $saleRateMilliPaisa, ')
+          ..write('wholesaleRateMilliPaisa: $wholesaleRateMilliPaisa, ')
+          ..write('purchaseRateMilliPaisa: $purchaseRateMilliPaisa, ')
+          ..write('avgCostMilliPaisa: $avgCostMilliPaisa, ')
+          ..write('mrpPaisa: $mrpPaisa, ')
+          ..write('hsCode: $hsCode, ')
+          ..write('taxRuleId: $taxRuleId, ')
+          ..write('priceIncludesTax: $priceIncludesTax, ')
+          ..write('isThirdSchedule: $isThirdSchedule, ')
+          ..write('trackStock: $trackStock, ')
+          ..write('trackBatch: $trackBatch, ')
+          ..write('trackSerial: $trackSerial, ')
+          ..write('minStockThousandths: $minStockThousandths, ')
+          ..write('openingStockThousandths: $openingStockThousandths, ')
+          ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
+          ..write('imageAttachmentId: $imageAttachmentId, ')
+          ..write('isActive: $isActive, ')
+          ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
+class Boms extends Table with TableInfo<Boms, Bom> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  ChangeLog(this.attachedDatabase, [this._alias]);
+  Boms(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -7944,112 +9980,48 @@ class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
     $customConstraints: 'NOT NULL DEFAULT 1',
     defaultValue: const CustomExpression('1'),
   );
-  static const VerificationMeta _seqMeta = const VerificationMeta('seq');
-  late final GeneratedColumn<int> seq = GeneratedColumn<int>(
-    'seq',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (seq > 0)',
-  );
-  static const VerificationMeta _entityTableMeta = const VerificationMeta(
-    'entityTable',
-  );
-  late final GeneratedColumn<String> entityTable = GeneratedColumn<String>(
-    'entity_table',
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _entityIdMeta = const VerificationMeta(
-    'entityId',
+  static const VerificationMeta _outputItemIdMeta = const VerificationMeta(
+    'outputItemId',
   );
-  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
-    'entity_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _opMeta = const VerificationMeta('op');
-  late final GeneratedColumn<String> op = GeneratedColumn<String>(
-    'op',
+  late final GeneratedColumn<String> outputItemId = GeneratedColumn<String>(
+    'output_item_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints:
-        'NOT NULL CHECK (op IN (\'insert\', \'update\', \'delete\'))',
+        'NOT NULL REFERENCES items(id)DEFERRABLE INITIALLY DEFERRED',
   );
-  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
-    'payloadJson',
-  );
-  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
-    'payload_json',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _entityHlcMeta = const VerificationMeta(
-    'entityHlc',
-  );
-  late final GeneratedColumn<String> entityHlc = GeneratedColumn<String>(
-    'entity_hlc',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _entityRevMeta = const VerificationMeta(
-    'entityRev',
-  );
-  late final GeneratedColumn<int> entityRev = GeneratedColumn<int>(
-    'entity_rev',
+  static const VerificationMeta _outputQtyThousandthsMeta =
+      const VerificationMeta('outputQtyThousandths');
+  late final GeneratedColumn<int> outputQtyThousandths = GeneratedColumn<int>(
+    'output_qty_thousandths',
     aliasedName,
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
+    $customConstraints: 'NOT NULL CHECK (output_qty_thousandths > 0)',
   );
-  static const VerificationMeta _atUtcMeta = const VerificationMeta('atUtc');
-  late final GeneratedColumn<int> atUtc = GeneratedColumn<int>(
-    'at_utc',
+  static const VerificationMeta _overheadPaisaMeta = const VerificationMeta(
+    'overheadPaisa',
+  );
+  late final GeneratedColumn<int> overheadPaisa = GeneratedColumn<int>(
+    'overhead_paisa',
     aliasedName,
     false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _syncStateMeta = const VerificationMeta(
-    'syncState',
-  );
-  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
-    'sync_state',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints:
-        'NOT NULL DEFAULT \'pending\' CHECK (sync_state IN (\'pending\', \'sent\', \'acked\', \'conflict\'))',
-    defaultValue: const CustomExpression('\'pending\''),
-  );
-  static const VerificationMeta _syncedAtUtcMeta = const VerificationMeta(
-    'syncedAtUtc',
-  );
-  late final GeneratedColumn<int> syncedAtUtc = GeneratedColumn<int>(
-    'synced_at_utc',
-    aliasedName,
-    true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
-    $customConstraints: '',
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (overhead_paisa >= 0)',
+    defaultValue: const CustomExpression('0'),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -8063,25 +10035,19 @@ class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
     originDeviceId,
     hlc,
     rev,
-    seq,
-    entityTable,
-    entityId,
-    op,
-    payloadJson,
-    entityHlc,
-    entityRev,
-    atUtc,
-    syncState,
-    syncedAtUtc,
+    name,
+    outputItemId,
+    outputQtyThousandths,
+    overheadPaisa,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'change_log';
+  static const String $name = 'boms';
   @override
   VerificationContext validateIntegrity(
-    Insertable<ChangeLogData> instance, {
+    Insertable<Bom> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -8171,85 +10137,42 @@ class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
         rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
       );
     }
-    if (data.containsKey('seq')) {
+    if (data.containsKey('name')) {
       context.handle(
-        _seqMeta,
-        seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
       );
     } else if (isInserting) {
-      context.missing(_seqMeta);
+      context.missing(_nameMeta);
     }
-    if (data.containsKey('entity_table')) {
+    if (data.containsKey('output_item_id')) {
       context.handle(
-        _entityTableMeta,
-        entityTable.isAcceptableOrUnknown(
-          data['entity_table']!,
-          _entityTableMeta,
+        _outputItemIdMeta,
+        outputItemId.isAcceptableOrUnknown(
+          data['output_item_id']!,
+          _outputItemIdMeta,
         ),
       );
     } else if (isInserting) {
-      context.missing(_entityTableMeta);
+      context.missing(_outputItemIdMeta);
     }
-    if (data.containsKey('entity_id')) {
+    if (data.containsKey('output_qty_thousandths')) {
       context.handle(
-        _entityIdMeta,
-        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_entityIdMeta);
-    }
-    if (data.containsKey('op')) {
-      context.handle(_opMeta, op.isAcceptableOrUnknown(data['op']!, _opMeta));
-    } else if (isInserting) {
-      context.missing(_opMeta);
-    }
-    if (data.containsKey('payload_json')) {
-      context.handle(
-        _payloadJsonMeta,
-        payloadJson.isAcceptableOrUnknown(
-          data['payload_json']!,
-          _payloadJsonMeta,
+        _outputQtyThousandthsMeta,
+        outputQtyThousandths.isAcceptableOrUnknown(
+          data['output_qty_thousandths']!,
+          _outputQtyThousandthsMeta,
         ),
       );
     } else if (isInserting) {
-      context.missing(_payloadJsonMeta);
+      context.missing(_outputQtyThousandthsMeta);
     }
-    if (data.containsKey('entity_hlc')) {
+    if (data.containsKey('overhead_paisa')) {
       context.handle(
-        _entityHlcMeta,
-        entityHlc.isAcceptableOrUnknown(data['entity_hlc']!, _entityHlcMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_entityHlcMeta);
-    }
-    if (data.containsKey('entity_rev')) {
-      context.handle(
-        _entityRevMeta,
-        entityRev.isAcceptableOrUnknown(data['entity_rev']!, _entityRevMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_entityRevMeta);
-    }
-    if (data.containsKey('at_utc')) {
-      context.handle(
-        _atUtcMeta,
-        atUtc.isAcceptableOrUnknown(data['at_utc']!, _atUtcMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_atUtcMeta);
-    }
-    if (data.containsKey('sync_state')) {
-      context.handle(
-        _syncStateMeta,
-        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
-      );
-    }
-    if (data.containsKey('synced_at_utc')) {
-      context.handle(
-        _syncedAtUtcMeta,
-        syncedAtUtc.isAcceptableOrUnknown(
-          data['synced_at_utc']!,
-          _syncedAtUtcMeta,
+        _overheadPaisaMeta,
+        overheadPaisa.isAcceptableOrUnknown(
+          data['overhead_paisa']!,
+          _overheadPaisaMeta,
         ),
       );
     }
@@ -8259,9 +10182,9 @@ class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ChangeLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Bom map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ChangeLogData(
+    return Bom(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -8302,52 +10225,28 @@ class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
         DriftSqlType.int,
         data['${effectivePrefix}rev'],
       )!,
-      seq: attachedDatabase.typeMapping.read(
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      outputItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}output_item_id'],
+      )!,
+      outputQtyThousandths: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}seq'],
+        data['${effectivePrefix}output_qty_thousandths'],
       )!,
-      entityTable: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_table'],
-      )!,
-      entityId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_id'],
-      )!,
-      op: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}op'],
-      )!,
-      payloadJson: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}payload_json'],
-      )!,
-      entityHlc: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}entity_hlc'],
-      )!,
-      entityRev: attachedDatabase.typeMapping.read(
+      overheadPaisa: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}entity_rev'],
+        data['${effectivePrefix}overhead_paisa'],
       )!,
-      atUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}at_utc'],
-      )!,
-      syncState: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}sync_state'],
-      )!,
-      syncedAtUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}synced_at_utc'],
-      ),
     );
   }
 
   @override
-  ChangeLog createAlias(String alias) {
-    return ChangeLog(attachedDatabase, alias);
+  Boms createAlias(String alias) {
+    return Boms(attachedDatabase, alias);
   }
 
   @override
@@ -8356,7 +10255,7 @@ class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
   bool get dontWriteConstraints => true;
 }
 
-class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
+class Bom extends DataClass implements Insertable<Bom> {
   final String id;
   final String firmId;
   final int createdAtUtc;
@@ -8367,23 +10266,15 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
   final String originDeviceId;
   final String hlc;
   final int rev;
+  final String name;
+  final String outputItemId;
 
-  /// Monotonic per device, allocated from devices.change_seq in the same
-  /// transaction. A peer asks for "everything after 4,117" and gets exactly
-  /// that, in order, with no gaps and no clock involved.
-  final int seq;
-  final String entityTable;
-  final String entityId;
-  final String op;
-  final String payloadJson;
+  /// How much one batch makes, in the output's base unit, thousandths.
+  final int outputQtyThousandths;
 
-  /// The HLC and rev of the ROW as written, which is what the merge rule reads.
-  final String entityHlc;
-  final int entityRev;
-  final int atUtc;
-  final String syncState;
-  final int? syncedAtUtc;
-  const ChangeLogData({
+  /// Work, packets, gas: what a batch costs beyond its components.
+  final int overheadPaisa;
+  const Bom({
     required this.id,
     required this.firmId,
     required this.createdAtUtc,
@@ -8394,16 +10285,10 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
     required this.originDeviceId,
     required this.hlc,
     required this.rev,
-    required this.seq,
-    required this.entityTable,
-    required this.entityId,
-    required this.op,
-    required this.payloadJson,
-    required this.entityHlc,
-    required this.entityRev,
-    required this.atUtc,
-    required this.syncState,
-    this.syncedAtUtc,
+    required this.name,
+    required this.outputItemId,
+    required this.outputQtyThousandths,
+    required this.overheadPaisa,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -8420,23 +10305,15 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
     map['origin_device_id'] = Variable<String>(originDeviceId);
     map['hlc'] = Variable<String>(hlc);
     map['rev'] = Variable<int>(rev);
-    map['seq'] = Variable<int>(seq);
-    map['entity_table'] = Variable<String>(entityTable);
-    map['entity_id'] = Variable<String>(entityId);
-    map['op'] = Variable<String>(op);
-    map['payload_json'] = Variable<String>(payloadJson);
-    map['entity_hlc'] = Variable<String>(entityHlc);
-    map['entity_rev'] = Variable<int>(entityRev);
-    map['at_utc'] = Variable<int>(atUtc);
-    map['sync_state'] = Variable<String>(syncState);
-    if (!nullToAbsent || syncedAtUtc != null) {
-      map['synced_at_utc'] = Variable<int>(syncedAtUtc);
-    }
+    map['name'] = Variable<String>(name);
+    map['output_item_id'] = Variable<String>(outputItemId);
+    map['output_qty_thousandths'] = Variable<int>(outputQtyThousandths);
+    map['overhead_paisa'] = Variable<int>(overheadPaisa);
     return map;
   }
 
-  ChangeLogCompanion toCompanion(bool nullToAbsent) {
-    return ChangeLogCompanion(
+  BomsCompanion toCompanion(bool nullToAbsent) {
+    return BomsCompanion(
       id: Value(id),
       firmId: Value(firmId),
       createdAtUtc: Value(createdAtUtc),
@@ -8449,27 +10326,19 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
       originDeviceId: Value(originDeviceId),
       hlc: Value(hlc),
       rev: Value(rev),
-      seq: Value(seq),
-      entityTable: Value(entityTable),
-      entityId: Value(entityId),
-      op: Value(op),
-      payloadJson: Value(payloadJson),
-      entityHlc: Value(entityHlc),
-      entityRev: Value(entityRev),
-      atUtc: Value(atUtc),
-      syncState: Value(syncState),
-      syncedAtUtc: syncedAtUtc == null && nullToAbsent
-          ? const Value.absent()
-          : Value(syncedAtUtc),
+      name: Value(name),
+      outputItemId: Value(outputItemId),
+      outputQtyThousandths: Value(outputQtyThousandths),
+      overheadPaisa: Value(overheadPaisa),
     );
   }
 
-  factory ChangeLogData.fromJson(
+  factory Bom.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ChangeLogData(
+    return Bom(
       id: serializer.fromJson<String>(json['id']),
       firmId: serializer.fromJson<String>(json['firm_id']),
       createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
@@ -8480,16 +10349,12 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
       originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
       hlc: serializer.fromJson<String>(json['hlc']),
       rev: serializer.fromJson<int>(json['rev']),
-      seq: serializer.fromJson<int>(json['seq']),
-      entityTable: serializer.fromJson<String>(json['entity_table']),
-      entityId: serializer.fromJson<String>(json['entity_id']),
-      op: serializer.fromJson<String>(json['op']),
-      payloadJson: serializer.fromJson<String>(json['payload_json']),
-      entityHlc: serializer.fromJson<String>(json['entity_hlc']),
-      entityRev: serializer.fromJson<int>(json['entity_rev']),
-      atUtc: serializer.fromJson<int>(json['at_utc']),
-      syncState: serializer.fromJson<String>(json['sync_state']),
-      syncedAtUtc: serializer.fromJson<int?>(json['synced_at_utc']),
+      name: serializer.fromJson<String>(json['name']),
+      outputItemId: serializer.fromJson<String>(json['output_item_id']),
+      outputQtyThousandths: serializer.fromJson<int>(
+        json['output_qty_thousandths'],
+      ),
+      overheadPaisa: serializer.fromJson<int>(json['overhead_paisa']),
     );
   }
   @override
@@ -8506,20 +10371,14 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
       'origin_device_id': serializer.toJson<String>(originDeviceId),
       'hlc': serializer.toJson<String>(hlc),
       'rev': serializer.toJson<int>(rev),
-      'seq': serializer.toJson<int>(seq),
-      'entity_table': serializer.toJson<String>(entityTable),
-      'entity_id': serializer.toJson<String>(entityId),
-      'op': serializer.toJson<String>(op),
-      'payload_json': serializer.toJson<String>(payloadJson),
-      'entity_hlc': serializer.toJson<String>(entityHlc),
-      'entity_rev': serializer.toJson<int>(entityRev),
-      'at_utc': serializer.toJson<int>(atUtc),
-      'sync_state': serializer.toJson<String>(syncState),
-      'synced_at_utc': serializer.toJson<int?>(syncedAtUtc),
+      'name': serializer.toJson<String>(name),
+      'output_item_id': serializer.toJson<String>(outputItemId),
+      'output_qty_thousandths': serializer.toJson<int>(outputQtyThousandths),
+      'overhead_paisa': serializer.toJson<int>(overheadPaisa),
     };
   }
 
-  ChangeLogData copyWith({
+  Bom copyWith({
     String? id,
     String? firmId,
     int? createdAtUtc,
@@ -8530,17 +10389,11 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
     String? originDeviceId,
     String? hlc,
     int? rev,
-    int? seq,
-    String? entityTable,
-    String? entityId,
-    String? op,
-    String? payloadJson,
-    String? entityHlc,
-    int? entityRev,
-    int? atUtc,
-    String? syncState,
-    Value<int?> syncedAtUtc = const Value.absent(),
-  }) => ChangeLogData(
+    String? name,
+    String? outputItemId,
+    int? outputQtyThousandths,
+    int? overheadPaisa,
+  }) => Bom(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -8551,19 +10404,13 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
     originDeviceId: originDeviceId ?? this.originDeviceId,
     hlc: hlc ?? this.hlc,
     rev: rev ?? this.rev,
-    seq: seq ?? this.seq,
-    entityTable: entityTable ?? this.entityTable,
-    entityId: entityId ?? this.entityId,
-    op: op ?? this.op,
-    payloadJson: payloadJson ?? this.payloadJson,
-    entityHlc: entityHlc ?? this.entityHlc,
-    entityRev: entityRev ?? this.entityRev,
-    atUtc: atUtc ?? this.atUtc,
-    syncState: syncState ?? this.syncState,
-    syncedAtUtc: syncedAtUtc.present ? syncedAtUtc.value : this.syncedAtUtc,
+    name: name ?? this.name,
+    outputItemId: outputItemId ?? this.outputItemId,
+    outputQtyThousandths: outputQtyThousandths ?? this.outputQtyThousandths,
+    overheadPaisa: overheadPaisa ?? this.overheadPaisa,
   );
-  ChangeLogData copyWithCompanion(ChangeLogCompanion data) {
-    return ChangeLogData(
+  Bom copyWithCompanion(BomsCompanion data) {
+    return Bom(
       id: data.id.present ? data.id.value : this.id,
       firmId: data.firmId.present ? data.firmId.value : this.firmId,
       createdAtUtc: data.createdAtUtc.present
@@ -8582,28 +10429,22 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
           : this.originDeviceId,
       hlc: data.hlc.present ? data.hlc.value : this.hlc,
       rev: data.rev.present ? data.rev.value : this.rev,
-      seq: data.seq.present ? data.seq.value : this.seq,
-      entityTable: data.entityTable.present
-          ? data.entityTable.value
-          : this.entityTable,
-      entityId: data.entityId.present ? data.entityId.value : this.entityId,
-      op: data.op.present ? data.op.value : this.op,
-      payloadJson: data.payloadJson.present
-          ? data.payloadJson.value
-          : this.payloadJson,
-      entityHlc: data.entityHlc.present ? data.entityHlc.value : this.entityHlc,
-      entityRev: data.entityRev.present ? data.entityRev.value : this.entityRev,
-      atUtc: data.atUtc.present ? data.atUtc.value : this.atUtc,
-      syncState: data.syncState.present ? data.syncState.value : this.syncState,
-      syncedAtUtc: data.syncedAtUtc.present
-          ? data.syncedAtUtc.value
-          : this.syncedAtUtc,
+      name: data.name.present ? data.name.value : this.name,
+      outputItemId: data.outputItemId.present
+          ? data.outputItemId.value
+          : this.outputItemId,
+      outputQtyThousandths: data.outputQtyThousandths.present
+          ? data.outputQtyThousandths.value
+          : this.outputQtyThousandths,
+      overheadPaisa: data.overheadPaisa.present
+          ? data.overheadPaisa.value
+          : this.overheadPaisa,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('ChangeLogData(')
+    return (StringBuffer('Bom(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -8614,16 +10455,10 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('seq: $seq, ')
-          ..write('entityTable: $entityTable, ')
-          ..write('entityId: $entityId, ')
-          ..write('op: $op, ')
-          ..write('payloadJson: $payloadJson, ')
-          ..write('entityHlc: $entityHlc, ')
-          ..write('entityRev: $entityRev, ')
-          ..write('atUtc: $atUtc, ')
-          ..write('syncState: $syncState, ')
-          ..write('syncedAtUtc: $syncedAtUtc')
+          ..write('name: $name, ')
+          ..write('outputItemId: $outputItemId, ')
+          ..write('outputQtyThousandths: $outputQtyThousandths, ')
+          ..write('overheadPaisa: $overheadPaisa')
           ..write(')'))
         .toString();
   }
@@ -8640,21 +10475,15 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
     originDeviceId,
     hlc,
     rev,
-    seq,
-    entityTable,
-    entityId,
-    op,
-    payloadJson,
-    entityHlc,
-    entityRev,
-    atUtc,
-    syncState,
-    syncedAtUtc,
+    name,
+    outputItemId,
+    outputQtyThousandths,
+    overheadPaisa,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ChangeLogData &&
+      (other is Bom &&
           other.id == this.id &&
           other.firmId == this.firmId &&
           other.createdAtUtc == this.createdAtUtc &&
@@ -8665,19 +10494,13 @@ class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
           other.originDeviceId == this.originDeviceId &&
           other.hlc == this.hlc &&
           other.rev == this.rev &&
-          other.seq == this.seq &&
-          other.entityTable == this.entityTable &&
-          other.entityId == this.entityId &&
-          other.op == this.op &&
-          other.payloadJson == this.payloadJson &&
-          other.entityHlc == this.entityHlc &&
-          other.entityRev == this.entityRev &&
-          other.atUtc == this.atUtc &&
-          other.syncState == this.syncState &&
-          other.syncedAtUtc == this.syncedAtUtc);
+          other.name == this.name &&
+          other.outputItemId == this.outputItemId &&
+          other.outputQtyThousandths == this.outputQtyThousandths &&
+          other.overheadPaisa == this.overheadPaisa);
 }
 
-class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
+class BomsCompanion extends UpdateCompanion<Bom> {
   final Value<String> id;
   final Value<String> firmId;
   final Value<int> createdAtUtc;
@@ -8688,18 +10511,12 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
   final Value<String> originDeviceId;
   final Value<String> hlc;
   final Value<int> rev;
-  final Value<int> seq;
-  final Value<String> entityTable;
-  final Value<String> entityId;
-  final Value<String> op;
-  final Value<String> payloadJson;
-  final Value<String> entityHlc;
-  final Value<int> entityRev;
-  final Value<int> atUtc;
-  final Value<String> syncState;
-  final Value<int?> syncedAtUtc;
+  final Value<String> name;
+  final Value<String> outputItemId;
+  final Value<int> outputQtyThousandths;
+  final Value<int> overheadPaisa;
   final Value<int> rowid;
-  const ChangeLogCompanion({
+  const BomsCompanion({
     this.id = const Value.absent(),
     this.firmId = const Value.absent(),
     this.createdAtUtc = const Value.absent(),
@@ -8710,19 +10527,13 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
     this.originDeviceId = const Value.absent(),
     this.hlc = const Value.absent(),
     this.rev = const Value.absent(),
-    this.seq = const Value.absent(),
-    this.entityTable = const Value.absent(),
-    this.entityId = const Value.absent(),
-    this.op = const Value.absent(),
-    this.payloadJson = const Value.absent(),
-    this.entityHlc = const Value.absent(),
-    this.entityRev = const Value.absent(),
-    this.atUtc = const Value.absent(),
-    this.syncState = const Value.absent(),
-    this.syncedAtUtc = const Value.absent(),
+    this.name = const Value.absent(),
+    this.outputItemId = const Value.absent(),
+    this.outputQtyThousandths = const Value.absent(),
+    this.overheadPaisa = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  ChangeLogCompanion.insert({
+  BomsCompanion.insert({
     required String id,
     required String firmId,
     required int createdAtUtc,
@@ -8733,16 +10544,10 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
     required String originDeviceId,
     required String hlc,
     this.rev = const Value.absent(),
-    required int seq,
-    required String entityTable,
-    required String entityId,
-    required String op,
-    required String payloadJson,
-    required String entityHlc,
-    required int entityRev,
-    required int atUtc,
-    this.syncState = const Value.absent(),
-    this.syncedAtUtc = const Value.absent(),
+    required String name,
+    required String outputItemId,
+    required int outputQtyThousandths,
+    this.overheadPaisa = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -8752,15 +10557,10 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
        updatedBy = Value(updatedBy),
        originDeviceId = Value(originDeviceId),
        hlc = Value(hlc),
-       seq = Value(seq),
-       entityTable = Value(entityTable),
-       entityId = Value(entityId),
-       op = Value(op),
-       payloadJson = Value(payloadJson),
-       entityHlc = Value(entityHlc),
-       entityRev = Value(entityRev),
-       atUtc = Value(atUtc);
-  static Insertable<ChangeLogData> custom({
+       name = Value(name),
+       outputItemId = Value(outputItemId),
+       outputQtyThousandths = Value(outputQtyThousandths);
+  static Insertable<Bom> custom({
     Expression<String>? id,
     Expression<String>? firmId,
     Expression<int>? createdAtUtc,
@@ -8771,16 +10571,10 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
     Expression<String>? originDeviceId,
     Expression<String>? hlc,
     Expression<int>? rev,
-    Expression<int>? seq,
-    Expression<String>? entityTable,
-    Expression<String>? entityId,
-    Expression<String>? op,
-    Expression<String>? payloadJson,
-    Expression<String>? entityHlc,
-    Expression<int>? entityRev,
-    Expression<int>? atUtc,
-    Expression<String>? syncState,
-    Expression<int>? syncedAtUtc,
+    Expression<String>? name,
+    Expression<String>? outputItemId,
+    Expression<int>? outputQtyThousandths,
+    Expression<int>? overheadPaisa,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -8794,21 +10588,16 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
       if (originDeviceId != null) 'origin_device_id': originDeviceId,
       if (hlc != null) 'hlc': hlc,
       if (rev != null) 'rev': rev,
-      if (seq != null) 'seq': seq,
-      if (entityTable != null) 'entity_table': entityTable,
-      if (entityId != null) 'entity_id': entityId,
-      if (op != null) 'op': op,
-      if (payloadJson != null) 'payload_json': payloadJson,
-      if (entityHlc != null) 'entity_hlc': entityHlc,
-      if (entityRev != null) 'entity_rev': entityRev,
-      if (atUtc != null) 'at_utc': atUtc,
-      if (syncState != null) 'sync_state': syncState,
-      if (syncedAtUtc != null) 'synced_at_utc': syncedAtUtc,
+      if (name != null) 'name': name,
+      if (outputItemId != null) 'output_item_id': outputItemId,
+      if (outputQtyThousandths != null)
+        'output_qty_thousandths': outputQtyThousandths,
+      if (overheadPaisa != null) 'overhead_paisa': overheadPaisa,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  ChangeLogCompanion copyWith({
+  BomsCompanion copyWith({
     Value<String>? id,
     Value<String>? firmId,
     Value<int>? createdAtUtc,
@@ -8819,19 +10608,13 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
     Value<String>? originDeviceId,
     Value<String>? hlc,
     Value<int>? rev,
-    Value<int>? seq,
-    Value<String>? entityTable,
-    Value<String>? entityId,
-    Value<String>? op,
-    Value<String>? payloadJson,
-    Value<String>? entityHlc,
-    Value<int>? entityRev,
-    Value<int>? atUtc,
-    Value<String>? syncState,
-    Value<int?>? syncedAtUtc,
+    Value<String>? name,
+    Value<String>? outputItemId,
+    Value<int>? outputQtyThousandths,
+    Value<int>? overheadPaisa,
     Value<int>? rowid,
   }) {
-    return ChangeLogCompanion(
+    return BomsCompanion(
       id: id ?? this.id,
       firmId: firmId ?? this.firmId,
       createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -8842,16 +10625,10 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
       originDeviceId: originDeviceId ?? this.originDeviceId,
       hlc: hlc ?? this.hlc,
       rev: rev ?? this.rev,
-      seq: seq ?? this.seq,
-      entityTable: entityTable ?? this.entityTable,
-      entityId: entityId ?? this.entityId,
-      op: op ?? this.op,
-      payloadJson: payloadJson ?? this.payloadJson,
-      entityHlc: entityHlc ?? this.entityHlc,
-      entityRev: entityRev ?? this.entityRev,
-      atUtc: atUtc ?? this.atUtc,
-      syncState: syncState ?? this.syncState,
-      syncedAtUtc: syncedAtUtc ?? this.syncedAtUtc,
+      name: name ?? this.name,
+      outputItemId: outputItemId ?? this.outputItemId,
+      outputQtyThousandths: outputQtyThousandths ?? this.outputQtyThousandths,
+      overheadPaisa: overheadPaisa ?? this.overheadPaisa,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -8889,35 +10666,17 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
     if (rev.present) {
       map['rev'] = Variable<int>(rev.value);
     }
-    if (seq.present) {
-      map['seq'] = Variable<int>(seq.value);
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
     }
-    if (entityTable.present) {
-      map['entity_table'] = Variable<String>(entityTable.value);
+    if (outputItemId.present) {
+      map['output_item_id'] = Variable<String>(outputItemId.value);
     }
-    if (entityId.present) {
-      map['entity_id'] = Variable<String>(entityId.value);
+    if (outputQtyThousandths.present) {
+      map['output_qty_thousandths'] = Variable<int>(outputQtyThousandths.value);
     }
-    if (op.present) {
-      map['op'] = Variable<String>(op.value);
-    }
-    if (payloadJson.present) {
-      map['payload_json'] = Variable<String>(payloadJson.value);
-    }
-    if (entityHlc.present) {
-      map['entity_hlc'] = Variable<String>(entityHlc.value);
-    }
-    if (entityRev.present) {
-      map['entity_rev'] = Variable<int>(entityRev.value);
-    }
-    if (atUtc.present) {
-      map['at_utc'] = Variable<int>(atUtc.value);
-    }
-    if (syncState.present) {
-      map['sync_state'] = Variable<String>(syncState.value);
-    }
-    if (syncedAtUtc.present) {
-      map['synced_at_utc'] = Variable<int>(syncedAtUtc.value);
+    if (overheadPaisa.present) {
+      map['overhead_paisa'] = Variable<int>(overheadPaisa.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -8927,7 +10686,7 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
 
   @override
   String toString() {
-    return (StringBuffer('ChangeLogCompanion(')
+    return (StringBuffer('BomsCompanion(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -8938,16 +10697,841 @@ class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('seq: $seq, ')
-          ..write('entityTable: $entityTable, ')
-          ..write('entityId: $entityId, ')
-          ..write('op: $op, ')
-          ..write('payloadJson: $payloadJson, ')
-          ..write('entityHlc: $entityHlc, ')
-          ..write('entityRev: $entityRev, ')
-          ..write('atUtc: $atUtc, ')
-          ..write('syncState: $syncState, ')
-          ..write('syncedAtUtc: $syncedAtUtc, ')
+          ..write('name: $name, ')
+          ..write('outputItemId: $outputItemId, ')
+          ..write('outputQtyThousandths: $outputQtyThousandths, ')
+          ..write('overheadPaisa: $overheadPaisa, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class BomLines extends Table with TableInfo<BomLines, BomLine> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  BomLines(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
+  late final GeneratedColumn<String> firmId = GeneratedColumn<String>(
+    'firm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES firms(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _updatedByMeta = const VerificationMeta(
+    'updatedBy',
+  );
+  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
+    'updated_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
+    'deletedAtUtc',
+  );
+  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _originDeviceIdMeta = const VerificationMeta(
+    'originDeviceId',
+  );
+  late final GeneratedColumn<String> originDeviceId = GeneratedColumn<String>(
+    'origin_device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES devices(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _revMeta = const VerificationMeta('rev');
+  late final GeneratedColumn<int> rev = GeneratedColumn<int>(
+    'rev',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _bomIdMeta = const VerificationMeta('bomId');
+  late final GeneratedColumn<String> bomId = GeneratedColumn<String>(
+    'bom_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES boms(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _lineNoMeta = const VerificationMeta('lineNo');
+  late final GeneratedColumn<int> lineNo = GeneratedColumn<int>(
+    'line_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (line_no > 0)',
+  );
+  static const VerificationMeta _componentItemIdMeta = const VerificationMeta(
+    'componentItemId',
+  );
+  late final GeneratedColumn<String> componentItemId = GeneratedColumn<String>(
+    'component_item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES items(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _qtyThousandthsMeta = const VerificationMeta(
+    'qtyThousandths',
+  );
+  late final GeneratedColumn<int> qtyThousandths = GeneratedColumn<int>(
+    'qty_thousandths',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (qty_thousandths > 0)',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    bomId,
+    lineNo,
+    componentItemId,
+    qtyThousandths,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bom_lines';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<BomLine> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('firm_id')) {
+      context.handle(
+        _firmIdMeta,
+        firmId.isAcceptableOrUnknown(data['firm_id']!, _firmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firmIdMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('updated_by')) {
+      context.handle(
+        _updatedByMeta,
+        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedByMeta);
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+        _deletedAtUtcMeta,
+        deletedAtUtc.isAcceptableOrUnknown(
+          data['deleted_at_utc']!,
+          _deletedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_device_id')) {
+      context.handle(
+        _originDeviceIdMeta,
+        originDeviceId.isAcceptableOrUnknown(
+          data['origin_device_id']!,
+          _originDeviceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originDeviceIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('rev')) {
+      context.handle(
+        _revMeta,
+        rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
+      );
+    }
+    if (data.containsKey('bom_id')) {
+      context.handle(
+        _bomIdMeta,
+        bomId.isAcceptableOrUnknown(data['bom_id']!, _bomIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bomIdMeta);
+    }
+    if (data.containsKey('line_no')) {
+      context.handle(
+        _lineNoMeta,
+        lineNo.isAcceptableOrUnknown(data['line_no']!, _lineNoMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_lineNoMeta);
+    }
+    if (data.containsKey('component_item_id')) {
+      context.handle(
+        _componentItemIdMeta,
+        componentItemId.isAcceptableOrUnknown(
+          data['component_item_id']!,
+          _componentItemIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentItemIdMeta);
+    }
+    if (data.containsKey('qty_thousandths')) {
+      context.handle(
+        _qtyThousandthsMeta,
+        qtyThousandths.isAcceptableOrUnknown(
+          data['qty_thousandths']!,
+          _qtyThousandthsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_qtyThousandthsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BomLine map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BomLine(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      firmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}firm_id'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      updatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_by'],
+      )!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at_utc'],
+      ),
+      originDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_device_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      rev: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rev'],
+      )!,
+      bomId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bom_id'],
+      )!,
+      lineNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}line_no'],
+      )!,
+      componentItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}component_item_id'],
+      )!,
+      qtyThousandths: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}qty_thousandths'],
+      )!,
+    );
+  }
+
+  @override
+  BomLines createAlias(String alias) {
+    return BomLines(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class BomLine extends DataClass implements Insertable<BomLine> {
+  final String id;
+  final String firmId;
+  final int createdAtUtc;
+  final int updatedAtUtc;
+  final String createdBy;
+  final String updatedBy;
+  final int? deletedAtUtc;
+  final String originDeviceId;
+  final String hlc;
+  final int rev;
+  final String bomId;
+  final int lineNo;
+  final String componentItemId;
+
+  /// Per batch, in the component's base unit, thousandths.
+  final int qtyThousandths;
+  const BomLine({
+    required this.id,
+    required this.firmId,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+    required this.createdBy,
+    required this.updatedBy,
+    this.deletedAtUtc,
+    required this.originDeviceId,
+    required this.hlc,
+    required this.rev,
+    required this.bomId,
+    required this.lineNo,
+    required this.componentItemId,
+    required this.qtyThousandths,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['firm_id'] = Variable<String>(firmId);
+    map['created_at_utc'] = Variable<int>(createdAtUtc);
+    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
+    map['created_by'] = Variable<String>(createdBy);
+    map['updated_by'] = Variable<String>(updatedBy);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc);
+    }
+    map['origin_device_id'] = Variable<String>(originDeviceId);
+    map['hlc'] = Variable<String>(hlc);
+    map['rev'] = Variable<int>(rev);
+    map['bom_id'] = Variable<String>(bomId);
+    map['line_no'] = Variable<int>(lineNo);
+    map['component_item_id'] = Variable<String>(componentItemId);
+    map['qty_thousandths'] = Variable<int>(qtyThousandths);
+    return map;
+  }
+
+  BomLinesCompanion toCompanion(bool nullToAbsent) {
+    return BomLinesCompanion(
+      id: Value(id),
+      firmId: Value(firmId),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+      createdBy: Value(createdBy),
+      updatedBy: Value(updatedBy),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      originDeviceId: Value(originDeviceId),
+      hlc: Value(hlc),
+      rev: Value(rev),
+      bomId: Value(bomId),
+      lineNo: Value(lineNo),
+      componentItemId: Value(componentItemId),
+      qtyThousandths: Value(qtyThousandths),
+    );
+  }
+
+  factory BomLine.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BomLine(
+      id: serializer.fromJson<String>(json['id']),
+      firmId: serializer.fromJson<String>(json['firm_id']),
+      createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
+      updatedAtUtc: serializer.fromJson<int>(json['updated_at_utc']),
+      createdBy: serializer.fromJson<String>(json['created_by']),
+      updatedBy: serializer.fromJson<String>(json['updated_by']),
+      deletedAtUtc: serializer.fromJson<int?>(json['deleted_at_utc']),
+      originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      rev: serializer.fromJson<int>(json['rev']),
+      bomId: serializer.fromJson<String>(json['bom_id']),
+      lineNo: serializer.fromJson<int>(json['line_no']),
+      componentItemId: serializer.fromJson<String>(json['component_item_id']),
+      qtyThousandths: serializer.fromJson<int>(json['qty_thousandths']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'firm_id': serializer.toJson<String>(firmId),
+      'created_at_utc': serializer.toJson<int>(createdAtUtc),
+      'updated_at_utc': serializer.toJson<int>(updatedAtUtc),
+      'created_by': serializer.toJson<String>(createdBy),
+      'updated_by': serializer.toJson<String>(updatedBy),
+      'deleted_at_utc': serializer.toJson<int?>(deletedAtUtc),
+      'origin_device_id': serializer.toJson<String>(originDeviceId),
+      'hlc': serializer.toJson<String>(hlc),
+      'rev': serializer.toJson<int>(rev),
+      'bom_id': serializer.toJson<String>(bomId),
+      'line_no': serializer.toJson<int>(lineNo),
+      'component_item_id': serializer.toJson<String>(componentItemId),
+      'qty_thousandths': serializer.toJson<int>(qtyThousandths),
+    };
+  }
+
+  BomLine copyWith({
+    String? id,
+    String? firmId,
+    int? createdAtUtc,
+    int? updatedAtUtc,
+    String? createdBy,
+    String? updatedBy,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    String? originDeviceId,
+    String? hlc,
+    int? rev,
+    String? bomId,
+    int? lineNo,
+    String? componentItemId,
+    int? qtyThousandths,
+  }) => BomLine(
+    id: id ?? this.id,
+    firmId: firmId ?? this.firmId,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+    createdBy: createdBy ?? this.createdBy,
+    updatedBy: updatedBy ?? this.updatedBy,
+    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+    originDeviceId: originDeviceId ?? this.originDeviceId,
+    hlc: hlc ?? this.hlc,
+    rev: rev ?? this.rev,
+    bomId: bomId ?? this.bomId,
+    lineNo: lineNo ?? this.lineNo,
+    componentItemId: componentItemId ?? this.componentItemId,
+    qtyThousandths: qtyThousandths ?? this.qtyThousandths,
+  );
+  BomLine copyWithCompanion(BomLinesCompanion data) {
+    return BomLine(
+      id: data.id.present ? data.id.value : this.id,
+      firmId: data.firmId.present ? data.firmId.value : this.firmId,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      originDeviceId: data.originDeviceId.present
+          ? data.originDeviceId.value
+          : this.originDeviceId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      rev: data.rev.present ? data.rev.value : this.rev,
+      bomId: data.bomId.present ? data.bomId.value : this.bomId,
+      lineNo: data.lineNo.present ? data.lineNo.value : this.lineNo,
+      componentItemId: data.componentItemId.present
+          ? data.componentItemId.value
+          : this.componentItemId,
+      qtyThousandths: data.qtyThousandths.present
+          ? data.qtyThousandths.value
+          : this.qtyThousandths,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BomLine(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('bomId: $bomId, ')
+          ..write('lineNo: $lineNo, ')
+          ..write('componentItemId: $componentItemId, ')
+          ..write('qtyThousandths: $qtyThousandths')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    bomId,
+    lineNo,
+    componentItemId,
+    qtyThousandths,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BomLine &&
+          other.id == this.id &&
+          other.firmId == this.firmId &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.createdBy == this.createdBy &&
+          other.updatedBy == this.updatedBy &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.originDeviceId == this.originDeviceId &&
+          other.hlc == this.hlc &&
+          other.rev == this.rev &&
+          other.bomId == this.bomId &&
+          other.lineNo == this.lineNo &&
+          other.componentItemId == this.componentItemId &&
+          other.qtyThousandths == this.qtyThousandths);
+}
+
+class BomLinesCompanion extends UpdateCompanion<BomLine> {
+  final Value<String> id;
+  final Value<String> firmId;
+  final Value<int> createdAtUtc;
+  final Value<int> updatedAtUtc;
+  final Value<String> createdBy;
+  final Value<String> updatedBy;
+  final Value<int?> deletedAtUtc;
+  final Value<String> originDeviceId;
+  final Value<String> hlc;
+  final Value<int> rev;
+  final Value<String> bomId;
+  final Value<int> lineNo;
+  final Value<String> componentItemId;
+  final Value<int> qtyThousandths;
+  final Value<int> rowid;
+  const BomLinesCompanion({
+    this.id = const Value.absent(),
+    this.firmId = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.originDeviceId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.rev = const Value.absent(),
+    this.bomId = const Value.absent(),
+    this.lineNo = const Value.absent(),
+    this.componentItemId = const Value.absent(),
+    this.qtyThousandths = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  BomLinesCompanion.insert({
+    required String id,
+    required String firmId,
+    required int createdAtUtc,
+    required int updatedAtUtc,
+    required String createdBy,
+    required String updatedBy,
+    this.deletedAtUtc = const Value.absent(),
+    required String originDeviceId,
+    required String hlc,
+    this.rev = const Value.absent(),
+    required String bomId,
+    required int lineNo,
+    required String componentItemId,
+    required int qtyThousandths,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       firmId = Value(firmId),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc),
+       createdBy = Value(createdBy),
+       updatedBy = Value(updatedBy),
+       originDeviceId = Value(originDeviceId),
+       hlc = Value(hlc),
+       bomId = Value(bomId),
+       lineNo = Value(lineNo),
+       componentItemId = Value(componentItemId),
+       qtyThousandths = Value(qtyThousandths);
+  static Insertable<BomLine> custom({
+    Expression<String>? id,
+    Expression<String>? firmId,
+    Expression<int>? createdAtUtc,
+    Expression<int>? updatedAtUtc,
+    Expression<String>? createdBy,
+    Expression<String>? updatedBy,
+    Expression<int>? deletedAtUtc,
+    Expression<String>? originDeviceId,
+    Expression<String>? hlc,
+    Expression<int>? rev,
+    Expression<String>? bomId,
+    Expression<int>? lineNo,
+    Expression<String>? componentItemId,
+    Expression<int>? qtyThousandths,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (firmId != null) 'firm_id': firmId,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (createdBy != null) 'created_by': createdBy,
+      if (updatedBy != null) 'updated_by': updatedBy,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (originDeviceId != null) 'origin_device_id': originDeviceId,
+      if (hlc != null) 'hlc': hlc,
+      if (rev != null) 'rev': rev,
+      if (bomId != null) 'bom_id': bomId,
+      if (lineNo != null) 'line_no': lineNo,
+      if (componentItemId != null) 'component_item_id': componentItemId,
+      if (qtyThousandths != null) 'qty_thousandths': qtyThousandths,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  BomLinesCompanion copyWith({
+    Value<String>? id,
+    Value<String>? firmId,
+    Value<int>? createdAtUtc,
+    Value<int>? updatedAtUtc,
+    Value<String>? createdBy,
+    Value<String>? updatedBy,
+    Value<int?>? deletedAtUtc,
+    Value<String>? originDeviceId,
+    Value<String>? hlc,
+    Value<int>? rev,
+    Value<String>? bomId,
+    Value<int>? lineNo,
+    Value<String>? componentItemId,
+    Value<int>? qtyThousandths,
+    Value<int>? rowid,
+  }) {
+    return BomLinesCompanion(
+      id: id ?? this.id,
+      firmId: firmId ?? this.firmId,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      originDeviceId: originDeviceId ?? this.originDeviceId,
+      hlc: hlc ?? this.hlc,
+      rev: rev ?? this.rev,
+      bomId: bomId ?? this.bomId,
+      lineNo: lineNo ?? this.lineNo,
+      componentItemId: componentItemId ?? this.componentItemId,
+      qtyThousandths: qtyThousandths ?? this.qtyThousandths,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (firmId.present) {
+      map['firm_id'] = Variable<String>(firmId.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (updatedBy.present) {
+      map['updated_by'] = Variable<String>(updatedBy.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc.value);
+    }
+    if (originDeviceId.present) {
+      map['origin_device_id'] = Variable<String>(originDeviceId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (rev.present) {
+      map['rev'] = Variable<int>(rev.value);
+    }
+    if (bomId.present) {
+      map['bom_id'] = Variable<String>(bomId.value);
+    }
+    if (lineNo.present) {
+      map['line_no'] = Variable<int>(lineNo.value);
+    }
+    if (componentItemId.present) {
+      map['component_item_id'] = Variable<String>(componentItemId.value);
+    }
+    if (qtyThousandths.present) {
+      map['qty_thousandths'] = Variable<int>(qtyThousandths.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BomLinesCompanion(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('bomId: $bomId, ')
+          ..write('lineNo: $lineNo, ')
+          ..write('componentItemId: $componentItemId, ')
+          ..write('qtyThousandths: $qtyThousandths, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -13718,1324 +16302,6 @@ class DocumentsCompanion extends UpdateCompanion<Document> {
           ..write('supplierBillNo: $supplierBillNo, ')
           ..write('cashThresholdBreached: $cashThresholdBreached, ')
           ..write('postedAtUtc: $postedAtUtc, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class PrintJobs extends Table with TableInfo<PrintJobs, PrintJob> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  PrintJobs(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-    'id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL PRIMARY KEY',
-  );
-  static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
-  late final GeneratedColumn<String> firmId = GeneratedColumn<String>(
-    'firm_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL REFERENCES firms(id)DEFERRABLE INITIALLY DEFERRED',
-  );
-  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
-    'createdAtUtc',
-  );
-  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
-    'created_at_utc',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
-    'updatedAtUtc',
-  );
-  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
-    'updated_at_utc',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _createdByMeta = const VerificationMeta(
-    'createdBy',
-  );
-  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
-    'created_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
-  );
-  static const VerificationMeta _updatedByMeta = const VerificationMeta(
-    'updatedBy',
-  );
-  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
-    'updated_by',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
-  );
-  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
-    'deletedAtUtc',
-  );
-  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
-    'deleted_at_utc',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _originDeviceIdMeta = const VerificationMeta(
-    'originDeviceId',
-  );
-  late final GeneratedColumn<String> originDeviceId = GeneratedColumn<String>(
-    'origin_device_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL REFERENCES devices(id)DEFERRABLE INITIALLY DEFERRED',
-  );
-  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
-  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
-    'hlc',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _revMeta = const VerificationMeta('rev');
-  late final GeneratedColumn<int> rev = GeneratedColumn<int>(
-    'rev',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 1',
-    defaultValue: const CustomExpression('1'),
-  );
-  static const VerificationMeta _jobKeyMeta = const VerificationMeta('jobKey');
-  late final GeneratedColumn<String> jobKey = GeneratedColumn<String>(
-    'job_key',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _documentIdMeta = const VerificationMeta(
-    'documentId',
-  );
-  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
-    'document_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'REFERENCES documents(id)DEFERRABLE INITIALLY DEFERRED',
-  );
-  static const VerificationMeta _transportKindMeta = const VerificationMeta(
-    'transportKind',
-  );
-  late final GeneratedColumn<String> transportKind = GeneratedColumn<String>(
-    'transport_kind',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL CHECK (transport_kind IN (\'tcp\', \'bluetooth\', \'usb\'))',
-  );
-  static const VerificationMeta _targetAddressMeta = const VerificationMeta(
-    'targetAddress',
-  );
-  late final GeneratedColumn<String> targetAddress = GeneratedColumn<String>(
-    'target_address',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _columnsUsedMeta = const VerificationMeta(
-    'columnsUsed',
-  );
-  late final GeneratedColumn<int> columnsUsed = GeneratedColumn<int>(
-    'columns_used',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (columns_used > 0)',
-  );
-  static const VerificationMeta _copyIndexMeta = const VerificationMeta(
-    'copyIndex',
-  );
-  late final GeneratedColumn<int> copyIndex = GeneratedColumn<int>(
-    'copy_index',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (copy_index >= 1)',
-    defaultValue: const CustomExpression('1'),
-  );
-  static const VerificationMeta _byteCountMeta = const VerificationMeta(
-    'byteCount',
-  );
-  late final GeneratedColumn<int> byteCount = GeneratedColumn<int>(
-    'byte_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL CHECK (byte_count >= 0)',
-  );
-  static const VerificationMeta _payloadSha256Meta = const VerificationMeta(
-    'payloadSha256',
-  );
-  late final GeneratedColumn<String> payloadSha256 = GeneratedColumn<String>(
-    'payload_sha256',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _statusMeta = const VerificationMeta('status');
-  late final GeneratedColumn<String> status = GeneratedColumn<String>(
-    'status',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL CHECK (status IN (\'sending\', \'printed\', \'partial\', \'failed\'))',
-  );
-  static const VerificationMeta _bytesWrittenMeta = const VerificationMeta(
-    'bytesWritten',
-  );
-  late final GeneratedColumn<int> bytesWritten = GeneratedColumn<int>(
-    'bytes_written',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (bytes_written >= 0)',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _failureReasonMeta = const VerificationMeta(
-    'failureReason',
-  );
-  late final GeneratedColumn<String> failureReason = GeneratedColumn<String>(
-    'failure_reason',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _startedAtUtcMeta = const VerificationMeta(
-    'startedAtUtc',
-  );
-  late final GeneratedColumn<int> startedAtUtc = GeneratedColumn<int>(
-    'started_at_utc',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _finishedAtUtcMeta = const VerificationMeta(
-    'finishedAtUtc',
-  );
-  late final GeneratedColumn<int> finishedAtUtc = GeneratedColumn<int>(
-    'finished_at_utc',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    firmId,
-    createdAtUtc,
-    updatedAtUtc,
-    createdBy,
-    updatedBy,
-    deletedAtUtc,
-    originDeviceId,
-    hlc,
-    rev,
-    jobKey,
-    documentId,
-    transportKind,
-    targetAddress,
-    columnsUsed,
-    copyIndex,
-    byteCount,
-    payloadSha256,
-    status,
-    bytesWritten,
-    failureReason,
-    startedAtUtc,
-    finishedAtUtc,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'print_jobs';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<PrintJob> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('firm_id')) {
-      context.handle(
-        _firmIdMeta,
-        firmId.isAcceptableOrUnknown(data['firm_id']!, _firmIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_firmIdMeta);
-    }
-    if (data.containsKey('created_at_utc')) {
-      context.handle(
-        _createdAtUtcMeta,
-        createdAtUtc.isAcceptableOrUnknown(
-          data['created_at_utc']!,
-          _createdAtUtcMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_createdAtUtcMeta);
-    }
-    if (data.containsKey('updated_at_utc')) {
-      context.handle(
-        _updatedAtUtcMeta,
-        updatedAtUtc.isAcceptableOrUnknown(
-          data['updated_at_utc']!,
-          _updatedAtUtcMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_updatedAtUtcMeta);
-    }
-    if (data.containsKey('created_by')) {
-      context.handle(
-        _createdByMeta,
-        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_createdByMeta);
-    }
-    if (data.containsKey('updated_by')) {
-      context.handle(
-        _updatedByMeta,
-        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_updatedByMeta);
-    }
-    if (data.containsKey('deleted_at_utc')) {
-      context.handle(
-        _deletedAtUtcMeta,
-        deletedAtUtc.isAcceptableOrUnknown(
-          data['deleted_at_utc']!,
-          _deletedAtUtcMeta,
-        ),
-      );
-    }
-    if (data.containsKey('origin_device_id')) {
-      context.handle(
-        _originDeviceIdMeta,
-        originDeviceId.isAcceptableOrUnknown(
-          data['origin_device_id']!,
-          _originDeviceIdMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_originDeviceIdMeta);
-    }
-    if (data.containsKey('hlc')) {
-      context.handle(
-        _hlcMeta,
-        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_hlcMeta);
-    }
-    if (data.containsKey('rev')) {
-      context.handle(
-        _revMeta,
-        rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
-      );
-    }
-    if (data.containsKey('job_key')) {
-      context.handle(
-        _jobKeyMeta,
-        jobKey.isAcceptableOrUnknown(data['job_key']!, _jobKeyMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_jobKeyMeta);
-    }
-    if (data.containsKey('document_id')) {
-      context.handle(
-        _documentIdMeta,
-        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
-      );
-    }
-    if (data.containsKey('transport_kind')) {
-      context.handle(
-        _transportKindMeta,
-        transportKind.isAcceptableOrUnknown(
-          data['transport_kind']!,
-          _transportKindMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_transportKindMeta);
-    }
-    if (data.containsKey('target_address')) {
-      context.handle(
-        _targetAddressMeta,
-        targetAddress.isAcceptableOrUnknown(
-          data['target_address']!,
-          _targetAddressMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_targetAddressMeta);
-    }
-    if (data.containsKey('columns_used')) {
-      context.handle(
-        _columnsUsedMeta,
-        columnsUsed.isAcceptableOrUnknown(
-          data['columns_used']!,
-          _columnsUsedMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_columnsUsedMeta);
-    }
-    if (data.containsKey('copy_index')) {
-      context.handle(
-        _copyIndexMeta,
-        copyIndex.isAcceptableOrUnknown(data['copy_index']!, _copyIndexMeta),
-      );
-    }
-    if (data.containsKey('byte_count')) {
-      context.handle(
-        _byteCountMeta,
-        byteCount.isAcceptableOrUnknown(data['byte_count']!, _byteCountMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_byteCountMeta);
-    }
-    if (data.containsKey('payload_sha256')) {
-      context.handle(
-        _payloadSha256Meta,
-        payloadSha256.isAcceptableOrUnknown(
-          data['payload_sha256']!,
-          _payloadSha256Meta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_payloadSha256Meta);
-    }
-    if (data.containsKey('status')) {
-      context.handle(
-        _statusMeta,
-        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_statusMeta);
-    }
-    if (data.containsKey('bytes_written')) {
-      context.handle(
-        _bytesWrittenMeta,
-        bytesWritten.isAcceptableOrUnknown(
-          data['bytes_written']!,
-          _bytesWrittenMeta,
-        ),
-      );
-    }
-    if (data.containsKey('failure_reason')) {
-      context.handle(
-        _failureReasonMeta,
-        failureReason.isAcceptableOrUnknown(
-          data['failure_reason']!,
-          _failureReasonMeta,
-        ),
-      );
-    }
-    if (data.containsKey('started_at_utc')) {
-      context.handle(
-        _startedAtUtcMeta,
-        startedAtUtc.isAcceptableOrUnknown(
-          data['started_at_utc']!,
-          _startedAtUtcMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_startedAtUtcMeta);
-    }
-    if (data.containsKey('finished_at_utc')) {
-      context.handle(
-        _finishedAtUtcMeta,
-        finishedAtUtc.isAcceptableOrUnknown(
-          data['finished_at_utc']!,
-          _finishedAtUtcMeta,
-        ),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  PrintJob map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return PrintJob(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
-      firmId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}firm_id'],
-      )!,
-      createdAtUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}created_at_utc'],
-      )!,
-      updatedAtUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}updated_at_utc'],
-      )!,
-      createdBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}created_by'],
-      )!,
-      updatedBy: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}updated_by'],
-      )!,
-      deletedAtUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}deleted_at_utc'],
-      ),
-      originDeviceId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}origin_device_id'],
-      )!,
-      hlc: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}hlc'],
-      )!,
-      rev: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}rev'],
-      )!,
-      jobKey: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}job_key'],
-      )!,
-      documentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}document_id'],
-      ),
-      transportKind: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}transport_kind'],
-      )!,
-      targetAddress: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}target_address'],
-      )!,
-      columnsUsed: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}columns_used'],
-      )!,
-      copyIndex: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}copy_index'],
-      )!,
-      byteCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}byte_count'],
-      )!,
-      payloadSha256: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}payload_sha256'],
-      )!,
-      status: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}status'],
-      )!,
-      bytesWritten: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}bytes_written'],
-      )!,
-      failureReason: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}failure_reason'],
-      ),
-      startedAtUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}started_at_utc'],
-      )!,
-      finishedAtUtc: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}finished_at_utc'],
-      ),
-    );
-  }
-
-  @override
-  PrintJobs createAlias(String alias) {
-    return PrintJobs(attachedDatabase, alias);
-  }
-
-  @override
-  bool get isStrict => true;
-  @override
-  List<String> get customConstraints => const [
-    'CHECK((status = \'sending\')=(finished_at_utc IS NULL))',
-  ];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class PrintJob extends DataClass implements Insertable<PrintJob> {
-  final String id;
-  final String firmId;
-  final int createdAtUtc;
-  final int updatedAtUtc;
-  final String createdBy;
-  final String updatedBy;
-  final int? deletedAtUtc;
-  final String originDeviceId;
-  final String hlc;
-  final int rev;
-
-  /// Deterministic, never a fresh ULID: '<documentId>#<revision>#<columns>#<copy>'.
-  /// A random id would not match after a restart, which would make the whole
-  /// table pointless at the one moment it exists for.
-  final String jobKey;
-
-  /// Null for a test print, which belongs to no bill.
-  final String? documentId;
-  final String transportKind;
-  final String targetAddress;
-
-  /// 32, 42 or 48. Recorded because a reprint at a different width is a
-  /// different piece of paper, and because it is the setting shopkeepers get
-  /// wrong most often.
-  final int columnsUsed;
-  final int copyIndex;
-  final int byteCount;
-
-  /// Of the bytes, not of the document. Two prints of one bill at different
-  /// column widths are genuinely different jobs and this is what says so.
-  final String payloadSha256;
-
-  ///   sending  in flight, or the process died holding it. NOT `not printed`.
-  ///   printed  every byte acknowledged.
-  ///   partial  paper moved and then something went wrong. Never auto-retried.
-  ///   failed   nothing came out; safe for the counter to offer again.
-  final String status;
-  final int bytesWritten;
-  final String? failureReason;
-  final int startedAtUtc;
-  final int? finishedAtUtc;
-  const PrintJob({
-    required this.id,
-    required this.firmId,
-    required this.createdAtUtc,
-    required this.updatedAtUtc,
-    required this.createdBy,
-    required this.updatedBy,
-    this.deletedAtUtc,
-    required this.originDeviceId,
-    required this.hlc,
-    required this.rev,
-    required this.jobKey,
-    this.documentId,
-    required this.transportKind,
-    required this.targetAddress,
-    required this.columnsUsed,
-    required this.copyIndex,
-    required this.byteCount,
-    required this.payloadSha256,
-    required this.status,
-    required this.bytesWritten,
-    this.failureReason,
-    required this.startedAtUtc,
-    this.finishedAtUtc,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['firm_id'] = Variable<String>(firmId);
-    map['created_at_utc'] = Variable<int>(createdAtUtc);
-    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
-    map['created_by'] = Variable<String>(createdBy);
-    map['updated_by'] = Variable<String>(updatedBy);
-    if (!nullToAbsent || deletedAtUtc != null) {
-      map['deleted_at_utc'] = Variable<int>(deletedAtUtc);
-    }
-    map['origin_device_id'] = Variable<String>(originDeviceId);
-    map['hlc'] = Variable<String>(hlc);
-    map['rev'] = Variable<int>(rev);
-    map['job_key'] = Variable<String>(jobKey);
-    if (!nullToAbsent || documentId != null) {
-      map['document_id'] = Variable<String>(documentId);
-    }
-    map['transport_kind'] = Variable<String>(transportKind);
-    map['target_address'] = Variable<String>(targetAddress);
-    map['columns_used'] = Variable<int>(columnsUsed);
-    map['copy_index'] = Variable<int>(copyIndex);
-    map['byte_count'] = Variable<int>(byteCount);
-    map['payload_sha256'] = Variable<String>(payloadSha256);
-    map['status'] = Variable<String>(status);
-    map['bytes_written'] = Variable<int>(bytesWritten);
-    if (!nullToAbsent || failureReason != null) {
-      map['failure_reason'] = Variable<String>(failureReason);
-    }
-    map['started_at_utc'] = Variable<int>(startedAtUtc);
-    if (!nullToAbsent || finishedAtUtc != null) {
-      map['finished_at_utc'] = Variable<int>(finishedAtUtc);
-    }
-    return map;
-  }
-
-  PrintJobsCompanion toCompanion(bool nullToAbsent) {
-    return PrintJobsCompanion(
-      id: Value(id),
-      firmId: Value(firmId),
-      createdAtUtc: Value(createdAtUtc),
-      updatedAtUtc: Value(updatedAtUtc),
-      createdBy: Value(createdBy),
-      updatedBy: Value(updatedBy),
-      deletedAtUtc: deletedAtUtc == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deletedAtUtc),
-      originDeviceId: Value(originDeviceId),
-      hlc: Value(hlc),
-      rev: Value(rev),
-      jobKey: Value(jobKey),
-      documentId: documentId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(documentId),
-      transportKind: Value(transportKind),
-      targetAddress: Value(targetAddress),
-      columnsUsed: Value(columnsUsed),
-      copyIndex: Value(copyIndex),
-      byteCount: Value(byteCount),
-      payloadSha256: Value(payloadSha256),
-      status: Value(status),
-      bytesWritten: Value(bytesWritten),
-      failureReason: failureReason == null && nullToAbsent
-          ? const Value.absent()
-          : Value(failureReason),
-      startedAtUtc: Value(startedAtUtc),
-      finishedAtUtc: finishedAtUtc == null && nullToAbsent
-          ? const Value.absent()
-          : Value(finishedAtUtc),
-    );
-  }
-
-  factory PrintJob.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PrintJob(
-      id: serializer.fromJson<String>(json['id']),
-      firmId: serializer.fromJson<String>(json['firm_id']),
-      createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
-      updatedAtUtc: serializer.fromJson<int>(json['updated_at_utc']),
-      createdBy: serializer.fromJson<String>(json['created_by']),
-      updatedBy: serializer.fromJson<String>(json['updated_by']),
-      deletedAtUtc: serializer.fromJson<int?>(json['deleted_at_utc']),
-      originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
-      hlc: serializer.fromJson<String>(json['hlc']),
-      rev: serializer.fromJson<int>(json['rev']),
-      jobKey: serializer.fromJson<String>(json['job_key']),
-      documentId: serializer.fromJson<String?>(json['document_id']),
-      transportKind: serializer.fromJson<String>(json['transport_kind']),
-      targetAddress: serializer.fromJson<String>(json['target_address']),
-      columnsUsed: serializer.fromJson<int>(json['columns_used']),
-      copyIndex: serializer.fromJson<int>(json['copy_index']),
-      byteCount: serializer.fromJson<int>(json['byte_count']),
-      payloadSha256: serializer.fromJson<String>(json['payload_sha256']),
-      status: serializer.fromJson<String>(json['status']),
-      bytesWritten: serializer.fromJson<int>(json['bytes_written']),
-      failureReason: serializer.fromJson<String?>(json['failure_reason']),
-      startedAtUtc: serializer.fromJson<int>(json['started_at_utc']),
-      finishedAtUtc: serializer.fromJson<int?>(json['finished_at_utc']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'firm_id': serializer.toJson<String>(firmId),
-      'created_at_utc': serializer.toJson<int>(createdAtUtc),
-      'updated_at_utc': serializer.toJson<int>(updatedAtUtc),
-      'created_by': serializer.toJson<String>(createdBy),
-      'updated_by': serializer.toJson<String>(updatedBy),
-      'deleted_at_utc': serializer.toJson<int?>(deletedAtUtc),
-      'origin_device_id': serializer.toJson<String>(originDeviceId),
-      'hlc': serializer.toJson<String>(hlc),
-      'rev': serializer.toJson<int>(rev),
-      'job_key': serializer.toJson<String>(jobKey),
-      'document_id': serializer.toJson<String?>(documentId),
-      'transport_kind': serializer.toJson<String>(transportKind),
-      'target_address': serializer.toJson<String>(targetAddress),
-      'columns_used': serializer.toJson<int>(columnsUsed),
-      'copy_index': serializer.toJson<int>(copyIndex),
-      'byte_count': serializer.toJson<int>(byteCount),
-      'payload_sha256': serializer.toJson<String>(payloadSha256),
-      'status': serializer.toJson<String>(status),
-      'bytes_written': serializer.toJson<int>(bytesWritten),
-      'failure_reason': serializer.toJson<String?>(failureReason),
-      'started_at_utc': serializer.toJson<int>(startedAtUtc),
-      'finished_at_utc': serializer.toJson<int?>(finishedAtUtc),
-    };
-  }
-
-  PrintJob copyWith({
-    String? id,
-    String? firmId,
-    int? createdAtUtc,
-    int? updatedAtUtc,
-    String? createdBy,
-    String? updatedBy,
-    Value<int?> deletedAtUtc = const Value.absent(),
-    String? originDeviceId,
-    String? hlc,
-    int? rev,
-    String? jobKey,
-    Value<String?> documentId = const Value.absent(),
-    String? transportKind,
-    String? targetAddress,
-    int? columnsUsed,
-    int? copyIndex,
-    int? byteCount,
-    String? payloadSha256,
-    String? status,
-    int? bytesWritten,
-    Value<String?> failureReason = const Value.absent(),
-    int? startedAtUtc,
-    Value<int?> finishedAtUtc = const Value.absent(),
-  }) => PrintJob(
-    id: id ?? this.id,
-    firmId: firmId ?? this.firmId,
-    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
-    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
-    createdBy: createdBy ?? this.createdBy,
-    updatedBy: updatedBy ?? this.updatedBy,
-    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
-    originDeviceId: originDeviceId ?? this.originDeviceId,
-    hlc: hlc ?? this.hlc,
-    rev: rev ?? this.rev,
-    jobKey: jobKey ?? this.jobKey,
-    documentId: documentId.present ? documentId.value : this.documentId,
-    transportKind: transportKind ?? this.transportKind,
-    targetAddress: targetAddress ?? this.targetAddress,
-    columnsUsed: columnsUsed ?? this.columnsUsed,
-    copyIndex: copyIndex ?? this.copyIndex,
-    byteCount: byteCount ?? this.byteCount,
-    payloadSha256: payloadSha256 ?? this.payloadSha256,
-    status: status ?? this.status,
-    bytesWritten: bytesWritten ?? this.bytesWritten,
-    failureReason: failureReason.present
-        ? failureReason.value
-        : this.failureReason,
-    startedAtUtc: startedAtUtc ?? this.startedAtUtc,
-    finishedAtUtc: finishedAtUtc.present
-        ? finishedAtUtc.value
-        : this.finishedAtUtc,
-  );
-  PrintJob copyWithCompanion(PrintJobsCompanion data) {
-    return PrintJob(
-      id: data.id.present ? data.id.value : this.id,
-      firmId: data.firmId.present ? data.firmId.value : this.firmId,
-      createdAtUtc: data.createdAtUtc.present
-          ? data.createdAtUtc.value
-          : this.createdAtUtc,
-      updatedAtUtc: data.updatedAtUtc.present
-          ? data.updatedAtUtc.value
-          : this.updatedAtUtc,
-      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
-      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
-      deletedAtUtc: data.deletedAtUtc.present
-          ? data.deletedAtUtc.value
-          : this.deletedAtUtc,
-      originDeviceId: data.originDeviceId.present
-          ? data.originDeviceId.value
-          : this.originDeviceId,
-      hlc: data.hlc.present ? data.hlc.value : this.hlc,
-      rev: data.rev.present ? data.rev.value : this.rev,
-      jobKey: data.jobKey.present ? data.jobKey.value : this.jobKey,
-      documentId: data.documentId.present
-          ? data.documentId.value
-          : this.documentId,
-      transportKind: data.transportKind.present
-          ? data.transportKind.value
-          : this.transportKind,
-      targetAddress: data.targetAddress.present
-          ? data.targetAddress.value
-          : this.targetAddress,
-      columnsUsed: data.columnsUsed.present
-          ? data.columnsUsed.value
-          : this.columnsUsed,
-      copyIndex: data.copyIndex.present ? data.copyIndex.value : this.copyIndex,
-      byteCount: data.byteCount.present ? data.byteCount.value : this.byteCount,
-      payloadSha256: data.payloadSha256.present
-          ? data.payloadSha256.value
-          : this.payloadSha256,
-      status: data.status.present ? data.status.value : this.status,
-      bytesWritten: data.bytesWritten.present
-          ? data.bytesWritten.value
-          : this.bytesWritten,
-      failureReason: data.failureReason.present
-          ? data.failureReason.value
-          : this.failureReason,
-      startedAtUtc: data.startedAtUtc.present
-          ? data.startedAtUtc.value
-          : this.startedAtUtc,
-      finishedAtUtc: data.finishedAtUtc.present
-          ? data.finishedAtUtc.value
-          : this.finishedAtUtc,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PrintJob(')
-          ..write('id: $id, ')
-          ..write('firmId: $firmId, ')
-          ..write('createdAtUtc: $createdAtUtc, ')
-          ..write('updatedAtUtc: $updatedAtUtc, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('updatedBy: $updatedBy, ')
-          ..write('deletedAtUtc: $deletedAtUtc, ')
-          ..write('originDeviceId: $originDeviceId, ')
-          ..write('hlc: $hlc, ')
-          ..write('rev: $rev, ')
-          ..write('jobKey: $jobKey, ')
-          ..write('documentId: $documentId, ')
-          ..write('transportKind: $transportKind, ')
-          ..write('targetAddress: $targetAddress, ')
-          ..write('columnsUsed: $columnsUsed, ')
-          ..write('copyIndex: $copyIndex, ')
-          ..write('byteCount: $byteCount, ')
-          ..write('payloadSha256: $payloadSha256, ')
-          ..write('status: $status, ')
-          ..write('bytesWritten: $bytesWritten, ')
-          ..write('failureReason: $failureReason, ')
-          ..write('startedAtUtc: $startedAtUtc, ')
-          ..write('finishedAtUtc: $finishedAtUtc')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-    id,
-    firmId,
-    createdAtUtc,
-    updatedAtUtc,
-    createdBy,
-    updatedBy,
-    deletedAtUtc,
-    originDeviceId,
-    hlc,
-    rev,
-    jobKey,
-    documentId,
-    transportKind,
-    targetAddress,
-    columnsUsed,
-    copyIndex,
-    byteCount,
-    payloadSha256,
-    status,
-    bytesWritten,
-    failureReason,
-    startedAtUtc,
-    finishedAtUtc,
-  ]);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PrintJob &&
-          other.id == this.id &&
-          other.firmId == this.firmId &&
-          other.createdAtUtc == this.createdAtUtc &&
-          other.updatedAtUtc == this.updatedAtUtc &&
-          other.createdBy == this.createdBy &&
-          other.updatedBy == this.updatedBy &&
-          other.deletedAtUtc == this.deletedAtUtc &&
-          other.originDeviceId == this.originDeviceId &&
-          other.hlc == this.hlc &&
-          other.rev == this.rev &&
-          other.jobKey == this.jobKey &&
-          other.documentId == this.documentId &&
-          other.transportKind == this.transportKind &&
-          other.targetAddress == this.targetAddress &&
-          other.columnsUsed == this.columnsUsed &&
-          other.copyIndex == this.copyIndex &&
-          other.byteCount == this.byteCount &&
-          other.payloadSha256 == this.payloadSha256 &&
-          other.status == this.status &&
-          other.bytesWritten == this.bytesWritten &&
-          other.failureReason == this.failureReason &&
-          other.startedAtUtc == this.startedAtUtc &&
-          other.finishedAtUtc == this.finishedAtUtc);
-}
-
-class PrintJobsCompanion extends UpdateCompanion<PrintJob> {
-  final Value<String> id;
-  final Value<String> firmId;
-  final Value<int> createdAtUtc;
-  final Value<int> updatedAtUtc;
-  final Value<String> createdBy;
-  final Value<String> updatedBy;
-  final Value<int?> deletedAtUtc;
-  final Value<String> originDeviceId;
-  final Value<String> hlc;
-  final Value<int> rev;
-  final Value<String> jobKey;
-  final Value<String?> documentId;
-  final Value<String> transportKind;
-  final Value<String> targetAddress;
-  final Value<int> columnsUsed;
-  final Value<int> copyIndex;
-  final Value<int> byteCount;
-  final Value<String> payloadSha256;
-  final Value<String> status;
-  final Value<int> bytesWritten;
-  final Value<String?> failureReason;
-  final Value<int> startedAtUtc;
-  final Value<int?> finishedAtUtc;
-  final Value<int> rowid;
-  const PrintJobsCompanion({
-    this.id = const Value.absent(),
-    this.firmId = const Value.absent(),
-    this.createdAtUtc = const Value.absent(),
-    this.updatedAtUtc = const Value.absent(),
-    this.createdBy = const Value.absent(),
-    this.updatedBy = const Value.absent(),
-    this.deletedAtUtc = const Value.absent(),
-    this.originDeviceId = const Value.absent(),
-    this.hlc = const Value.absent(),
-    this.rev = const Value.absent(),
-    this.jobKey = const Value.absent(),
-    this.documentId = const Value.absent(),
-    this.transportKind = const Value.absent(),
-    this.targetAddress = const Value.absent(),
-    this.columnsUsed = const Value.absent(),
-    this.copyIndex = const Value.absent(),
-    this.byteCount = const Value.absent(),
-    this.payloadSha256 = const Value.absent(),
-    this.status = const Value.absent(),
-    this.bytesWritten = const Value.absent(),
-    this.failureReason = const Value.absent(),
-    this.startedAtUtc = const Value.absent(),
-    this.finishedAtUtc = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  PrintJobsCompanion.insert({
-    required String id,
-    required String firmId,
-    required int createdAtUtc,
-    required int updatedAtUtc,
-    required String createdBy,
-    required String updatedBy,
-    this.deletedAtUtc = const Value.absent(),
-    required String originDeviceId,
-    required String hlc,
-    this.rev = const Value.absent(),
-    required String jobKey,
-    this.documentId = const Value.absent(),
-    required String transportKind,
-    required String targetAddress,
-    required int columnsUsed,
-    this.copyIndex = const Value.absent(),
-    required int byteCount,
-    required String payloadSha256,
-    required String status,
-    this.bytesWritten = const Value.absent(),
-    this.failureReason = const Value.absent(),
-    required int startedAtUtc,
-    this.finishedAtUtc = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : id = Value(id),
-       firmId = Value(firmId),
-       createdAtUtc = Value(createdAtUtc),
-       updatedAtUtc = Value(updatedAtUtc),
-       createdBy = Value(createdBy),
-       updatedBy = Value(updatedBy),
-       originDeviceId = Value(originDeviceId),
-       hlc = Value(hlc),
-       jobKey = Value(jobKey),
-       transportKind = Value(transportKind),
-       targetAddress = Value(targetAddress),
-       columnsUsed = Value(columnsUsed),
-       byteCount = Value(byteCount),
-       payloadSha256 = Value(payloadSha256),
-       status = Value(status),
-       startedAtUtc = Value(startedAtUtc);
-  static Insertable<PrintJob> custom({
-    Expression<String>? id,
-    Expression<String>? firmId,
-    Expression<int>? createdAtUtc,
-    Expression<int>? updatedAtUtc,
-    Expression<String>? createdBy,
-    Expression<String>? updatedBy,
-    Expression<int>? deletedAtUtc,
-    Expression<String>? originDeviceId,
-    Expression<String>? hlc,
-    Expression<int>? rev,
-    Expression<String>? jobKey,
-    Expression<String>? documentId,
-    Expression<String>? transportKind,
-    Expression<String>? targetAddress,
-    Expression<int>? columnsUsed,
-    Expression<int>? copyIndex,
-    Expression<int>? byteCount,
-    Expression<String>? payloadSha256,
-    Expression<String>? status,
-    Expression<int>? bytesWritten,
-    Expression<String>? failureReason,
-    Expression<int>? startedAtUtc,
-    Expression<int>? finishedAtUtc,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (firmId != null) 'firm_id': firmId,
-      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
-      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
-      if (createdBy != null) 'created_by': createdBy,
-      if (updatedBy != null) 'updated_by': updatedBy,
-      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
-      if (originDeviceId != null) 'origin_device_id': originDeviceId,
-      if (hlc != null) 'hlc': hlc,
-      if (rev != null) 'rev': rev,
-      if (jobKey != null) 'job_key': jobKey,
-      if (documentId != null) 'document_id': documentId,
-      if (transportKind != null) 'transport_kind': transportKind,
-      if (targetAddress != null) 'target_address': targetAddress,
-      if (columnsUsed != null) 'columns_used': columnsUsed,
-      if (copyIndex != null) 'copy_index': copyIndex,
-      if (byteCount != null) 'byte_count': byteCount,
-      if (payloadSha256 != null) 'payload_sha256': payloadSha256,
-      if (status != null) 'status': status,
-      if (bytesWritten != null) 'bytes_written': bytesWritten,
-      if (failureReason != null) 'failure_reason': failureReason,
-      if (startedAtUtc != null) 'started_at_utc': startedAtUtc,
-      if (finishedAtUtc != null) 'finished_at_utc': finishedAtUtc,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  PrintJobsCompanion copyWith({
-    Value<String>? id,
-    Value<String>? firmId,
-    Value<int>? createdAtUtc,
-    Value<int>? updatedAtUtc,
-    Value<String>? createdBy,
-    Value<String>? updatedBy,
-    Value<int?>? deletedAtUtc,
-    Value<String>? originDeviceId,
-    Value<String>? hlc,
-    Value<int>? rev,
-    Value<String>? jobKey,
-    Value<String?>? documentId,
-    Value<String>? transportKind,
-    Value<String>? targetAddress,
-    Value<int>? columnsUsed,
-    Value<int>? copyIndex,
-    Value<int>? byteCount,
-    Value<String>? payloadSha256,
-    Value<String>? status,
-    Value<int>? bytesWritten,
-    Value<String?>? failureReason,
-    Value<int>? startedAtUtc,
-    Value<int?>? finishedAtUtc,
-    Value<int>? rowid,
-  }) {
-    return PrintJobsCompanion(
-      id: id ?? this.id,
-      firmId: firmId ?? this.firmId,
-      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
-      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
-      createdBy: createdBy ?? this.createdBy,
-      updatedBy: updatedBy ?? this.updatedBy,
-      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
-      originDeviceId: originDeviceId ?? this.originDeviceId,
-      hlc: hlc ?? this.hlc,
-      rev: rev ?? this.rev,
-      jobKey: jobKey ?? this.jobKey,
-      documentId: documentId ?? this.documentId,
-      transportKind: transportKind ?? this.transportKind,
-      targetAddress: targetAddress ?? this.targetAddress,
-      columnsUsed: columnsUsed ?? this.columnsUsed,
-      copyIndex: copyIndex ?? this.copyIndex,
-      byteCount: byteCount ?? this.byteCount,
-      payloadSha256: payloadSha256 ?? this.payloadSha256,
-      status: status ?? this.status,
-      bytesWritten: bytesWritten ?? this.bytesWritten,
-      failureReason: failureReason ?? this.failureReason,
-      startedAtUtc: startedAtUtc ?? this.startedAtUtc,
-      finishedAtUtc: finishedAtUtc ?? this.finishedAtUtc,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (firmId.present) {
-      map['firm_id'] = Variable<String>(firmId.value);
-    }
-    if (createdAtUtc.present) {
-      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
-    }
-    if (updatedAtUtc.present) {
-      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
-    }
-    if (createdBy.present) {
-      map['created_by'] = Variable<String>(createdBy.value);
-    }
-    if (updatedBy.present) {
-      map['updated_by'] = Variable<String>(updatedBy.value);
-    }
-    if (deletedAtUtc.present) {
-      map['deleted_at_utc'] = Variable<int>(deletedAtUtc.value);
-    }
-    if (originDeviceId.present) {
-      map['origin_device_id'] = Variable<String>(originDeviceId.value);
-    }
-    if (hlc.present) {
-      map['hlc'] = Variable<String>(hlc.value);
-    }
-    if (rev.present) {
-      map['rev'] = Variable<int>(rev.value);
-    }
-    if (jobKey.present) {
-      map['job_key'] = Variable<String>(jobKey.value);
-    }
-    if (documentId.present) {
-      map['document_id'] = Variable<String>(documentId.value);
-    }
-    if (transportKind.present) {
-      map['transport_kind'] = Variable<String>(transportKind.value);
-    }
-    if (targetAddress.present) {
-      map['target_address'] = Variable<String>(targetAddress.value);
-    }
-    if (columnsUsed.present) {
-      map['columns_used'] = Variable<int>(columnsUsed.value);
-    }
-    if (copyIndex.present) {
-      map['copy_index'] = Variable<int>(copyIndex.value);
-    }
-    if (byteCount.present) {
-      map['byte_count'] = Variable<int>(byteCount.value);
-    }
-    if (payloadSha256.present) {
-      map['payload_sha256'] = Variable<String>(payloadSha256.value);
-    }
-    if (status.present) {
-      map['status'] = Variable<String>(status.value);
-    }
-    if (bytesWritten.present) {
-      map['bytes_written'] = Variable<int>(bytesWritten.value);
-    }
-    if (failureReason.present) {
-      map['failure_reason'] = Variable<String>(failureReason.value);
-    }
-    if (startedAtUtc.present) {
-      map['started_at_utc'] = Variable<int>(startedAtUtc.value);
-    }
-    if (finishedAtUtc.present) {
-      map['finished_at_utc'] = Variable<int>(finishedAtUtc.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PrintJobsCompanion(')
-          ..write('id: $id, ')
-          ..write('firmId: $firmId, ')
-          ..write('createdAtUtc: $createdAtUtc, ')
-          ..write('updatedAtUtc: $updatedAtUtc, ')
-          ..write('createdBy: $createdBy, ')
-          ..write('updatedBy: $updatedBy, ')
-          ..write('deletedAtUtc: $deletedAtUtc, ')
-          ..write('originDeviceId: $originDeviceId, ')
-          ..write('hlc: $hlc, ')
-          ..write('rev: $rev, ')
-          ..write('jobKey: $jobKey, ')
-          ..write('documentId: $documentId, ')
-          ..write('transportKind: $transportKind, ')
-          ..write('targetAddress: $targetAddress, ')
-          ..write('columnsUsed: $columnsUsed, ')
-          ..write('copyIndex: $copyIndex, ')
-          ..write('byteCount: $byteCount, ')
-          ..write('payloadSha256: $payloadSha256, ')
-          ..write('status: $status, ')
-          ..write('bytesWritten: $bytesWritten, ')
-          ..write('failureReason: $failureReason, ')
-          ..write('startedAtUtc: $startedAtUtc, ')
-          ..write('finishedAtUtc: $finishedAtUtc, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -20138,11 +21404,11 @@ class JournalEntriesCompanion extends UpdateCompanion<JournalEntry> {
   }
 }
 
-class Units extends Table with TableInfo<Units, Unit> {
+class Assemblies extends Table with TableInfo<Assemblies, Assembly> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Units(this.attachedDatabase, [this._alias]);
+  Assemblies(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -20250,76 +21516,101 @@ class Units extends Table with TableInfo<Units, Unit> {
     $customConstraints: 'NOT NULL DEFAULT 1',
     defaultValue: const CustomExpression('1'),
   );
-  static const VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-    'code',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _nameEnMeta = const VerificationMeta('nameEn');
-  late final GeneratedColumn<String> nameEn = GeneratedColumn<String>(
-    'name_en',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _nameUrMeta = const VerificationMeta('nameUr');
-  late final GeneratedColumn<String> nameUr = GeneratedColumn<String>(
-    'name_ur',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-    $customConstraints: 'NOT NULL',
-  );
-  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
-  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
-    'kind',
+  static const VerificationMeta _bomIdMeta = const VerificationMeta('bomId');
+  late final GeneratedColumn<String> bomId = GeneratedColumn<String>(
+    'bom_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints:
-        'NOT NULL CHECK (kind IN (\'count\', \'weight\', \'volume\', \'length\'))',
+        'NOT NULL REFERENCES boms(id)DEFERRABLE INITIALLY DEFERRED',
   );
-  static const VerificationMeta _isBaseMeta = const VerificationMeta('isBase');
-  late final GeneratedColumn<int> isBase = GeneratedColumn<int>(
-    'is_base',
+  static const VerificationMeta _assemblyNoMeta = const VerificationMeta(
+    'assemblyNo',
+  );
+  late final GeneratedColumn<String> assemblyNo = GeneratedColumn<String>(
+    'assembly_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _runsMeta = const VerificationMeta('runs');
+  late final GeneratedColumn<int> runs = GeneratedColumn<int>(
+    'runs',
     aliasedName,
     false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (is_base IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (runs > 0)',
   );
-  static const VerificationMeta _decimalsMeta = const VerificationMeta(
-    'decimals',
+  static const VerificationMeta _outputItemIdMeta = const VerificationMeta(
+    'outputItemId',
   );
-  late final GeneratedColumn<int> decimals = GeneratedColumn<int>(
-    'decimals',
+  late final GeneratedColumn<String> outputItemId = GeneratedColumn<String>(
+    'output_item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES items(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _outputQtyThousandthsMeta =
+      const VerificationMeta('outputQtyThousandths');
+  late final GeneratedColumn<int> outputQtyThousandths = GeneratedColumn<int>(
+    'output_qty_thousandths',
     aliasedName,
     false,
     type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (decimals BETWEEN 0 AND 3)',
-    defaultValue: const CustomExpression('0'),
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (output_qty_thousandths > 0)',
   );
-  static const VerificationMeta _isActiveMeta = const VerificationMeta(
-    'isActive',
-  );
-  late final GeneratedColumn<int> isActive = GeneratedColumn<int>(
-    'is_active',
+  static const VerificationMeta _componentsCostPaisaMeta =
+      const VerificationMeta('componentsCostPaisa');
+  late final GeneratedColumn<int> componentsCostPaisa = GeneratedColumn<int>(
+    'components_cost_paisa',
     aliasedName,
     false,
     type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (components_cost_paisa >= 0)',
+  );
+  static const VerificationMeta _overheadPaisaMeta = const VerificationMeta(
+    'overheadPaisa',
+  );
+  late final GeneratedColumn<int> overheadPaisa = GeneratedColumn<int>(
+    'overhead_paisa',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (overhead_paisa >= 0)',
+  );
+  static const VerificationMeta _journalEntryIdMeta = const VerificationMeta(
+    'journalEntryId',
+  );
+  late final GeneratedColumn<String> journalEntryId = GeneratedColumn<String>(
+    'journal_entry_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))',
-    defaultValue: const CustomExpression('1'),
+    $customConstraints:
+        'REFERENCES journal_entries(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _madeOnLocalMeta = const VerificationMeta(
+    'madeOnLocal',
+  );
+  late final GeneratedColumn<String> madeOnLocal = GeneratedColumn<String>(
+    'made_on_local',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -20333,22 +21624,24 @@ class Units extends Table with TableInfo<Units, Unit> {
     originDeviceId,
     hlc,
     rev,
-    code,
-    nameEn,
-    nameUr,
-    kind,
-    isBase,
-    decimals,
-    isActive,
+    bomId,
+    assemblyNo,
+    runs,
+    outputItemId,
+    outputQtyThousandths,
+    componentsCostPaisa,
+    overheadPaisa,
+    journalEntryId,
+    madeOnLocal,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'units';
+  static const String $name = 'assemblies';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Unit> instance, {
+    Insertable<Assembly> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -20438,55 +21731,93 @@ class Units extends Table with TableInfo<Units, Unit> {
         rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
       );
     }
-    if (data.containsKey('code')) {
+    if (data.containsKey('bom_id')) {
       context.handle(
-        _codeMeta,
-        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
+        _bomIdMeta,
+        bomId.isAcceptableOrUnknown(data['bom_id']!, _bomIdMeta),
       );
     } else if (isInserting) {
-      context.missing(_codeMeta);
+      context.missing(_bomIdMeta);
     }
-    if (data.containsKey('name_en')) {
+    if (data.containsKey('assembly_no')) {
       context.handle(
-        _nameEnMeta,
-        nameEn.isAcceptableOrUnknown(data['name_en']!, _nameEnMeta),
+        _assemblyNoMeta,
+        assemblyNo.isAcceptableOrUnknown(data['assembly_no']!, _assemblyNoMeta),
       );
     } else if (isInserting) {
-      context.missing(_nameEnMeta);
+      context.missing(_assemblyNoMeta);
     }
-    if (data.containsKey('name_ur')) {
+    if (data.containsKey('runs')) {
       context.handle(
-        _nameUrMeta,
-        nameUr.isAcceptableOrUnknown(data['name_ur']!, _nameUrMeta),
+        _runsMeta,
+        runs.isAcceptableOrUnknown(data['runs']!, _runsMeta),
       );
     } else if (isInserting) {
-      context.missing(_nameUrMeta);
+      context.missing(_runsMeta);
     }
-    if (data.containsKey('kind')) {
+    if (data.containsKey('output_item_id')) {
       context.handle(
-        _kindMeta,
-        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+        _outputItemIdMeta,
+        outputItemId.isAcceptableOrUnknown(
+          data['output_item_id']!,
+          _outputItemIdMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_kindMeta);
+      context.missing(_outputItemIdMeta);
     }
-    if (data.containsKey('is_base')) {
+    if (data.containsKey('output_qty_thousandths')) {
       context.handle(
-        _isBaseMeta,
-        isBase.isAcceptableOrUnknown(data['is_base']!, _isBaseMeta),
+        _outputQtyThousandthsMeta,
+        outputQtyThousandths.isAcceptableOrUnknown(
+          data['output_qty_thousandths']!,
+          _outputQtyThousandthsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_outputQtyThousandthsMeta);
+    }
+    if (data.containsKey('components_cost_paisa')) {
+      context.handle(
+        _componentsCostPaisaMeta,
+        componentsCostPaisa.isAcceptableOrUnknown(
+          data['components_cost_paisa']!,
+          _componentsCostPaisaMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_componentsCostPaisaMeta);
+    }
+    if (data.containsKey('overhead_paisa')) {
+      context.handle(
+        _overheadPaisaMeta,
+        overheadPaisa.isAcceptableOrUnknown(
+          data['overhead_paisa']!,
+          _overheadPaisaMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_overheadPaisaMeta);
+    }
+    if (data.containsKey('journal_entry_id')) {
+      context.handle(
+        _journalEntryIdMeta,
+        journalEntryId.isAcceptableOrUnknown(
+          data['journal_entry_id']!,
+          _journalEntryIdMeta,
+        ),
       );
     }
-    if (data.containsKey('decimals')) {
+    if (data.containsKey('made_on_local')) {
       context.handle(
-        _decimalsMeta,
-        decimals.isAcceptableOrUnknown(data['decimals']!, _decimalsMeta),
+        _madeOnLocalMeta,
+        madeOnLocal.isAcceptableOrUnknown(
+          data['made_on_local']!,
+          _madeOnLocalMeta,
+        ),
       );
-    }
-    if (data.containsKey('is_active')) {
-      context.handle(
-        _isActiveMeta,
-        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
-      );
+    } else if (isInserting) {
+      context.missing(_madeOnLocalMeta);
     }
     return context;
   }
@@ -20494,9 +21825,9 @@ class Units extends Table with TableInfo<Units, Unit> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Unit map(Map<String, dynamic> data, {String? tablePrefix}) {
+  Assembly map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Unit(
+    return Assembly(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -20537,40 +21868,48 @@ class Units extends Table with TableInfo<Units, Unit> {
         DriftSqlType.int,
         data['${effectivePrefix}rev'],
       )!,
-      code: attachedDatabase.typeMapping.read(
+      bomId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}code'],
+        data['${effectivePrefix}bom_id'],
       )!,
-      nameEn: attachedDatabase.typeMapping.read(
+      assemblyNo: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}name_en'],
+        data['${effectivePrefix}assembly_no'],
       )!,
-      nameUr: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}name_ur'],
-      )!,
-      kind: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}kind'],
-      )!,
-      isBase: attachedDatabase.typeMapping.read(
+      runs: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}is_base'],
+        data['${effectivePrefix}runs'],
       )!,
-      decimals: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}decimals'],
+      outputItemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}output_item_id'],
       )!,
-      isActive: attachedDatabase.typeMapping.read(
+      outputQtyThousandths: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}is_active'],
+        data['${effectivePrefix}output_qty_thousandths'],
+      )!,
+      componentsCostPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}components_cost_paisa'],
+      )!,
+      overheadPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}overhead_paisa'],
+      )!,
+      journalEntryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}journal_entry_id'],
+      ),
+      madeOnLocal: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}made_on_local'],
       )!,
     );
   }
 
   @override
-  Units createAlias(String alias) {
-    return Units(attachedDatabase, alias);
+  Assemblies createAlias(String alias) {
+    return Assemblies(attachedDatabase, alias);
   }
 
   @override
@@ -20579,7 +21918,7 @@ class Units extends Table with TableInfo<Units, Unit> {
   bool get dontWriteConstraints => true;
 }
 
-class Unit extends DataClass implements Insertable<Unit> {
+class Assembly extends DataClass implements Insertable<Assembly> {
   final String id;
   final String firmId;
   final int createdAtUtc;
@@ -20590,19 +21929,16 @@ class Unit extends DataClass implements Insertable<Unit> {
   final String originDeviceId;
   final String hlc;
   final int rev;
-  final String code;
-  final String nameEn;
-  final String nameUr;
-  final String kind;
-
-  /// Exactly one base unit per kind per firm; everything else is an alias over
-  /// it with a conversion factor.
-  final int isBase;
-
-  /// How many decimals the UI offers. Pieces get 0, weight gets 3.
-  final int decimals;
-  final int isActive;
-  const Unit({
+  final String bomId;
+  final String assemblyNo;
+  final int runs;
+  final String outputItemId;
+  final int outputQtyThousandths;
+  final int componentsCostPaisa;
+  final int overheadPaisa;
+  final String? journalEntryId;
+  final String madeOnLocal;
+  const Assembly({
     required this.id,
     required this.firmId,
     required this.createdAtUtc,
@@ -20613,13 +21949,15 @@ class Unit extends DataClass implements Insertable<Unit> {
     required this.originDeviceId,
     required this.hlc,
     required this.rev,
-    required this.code,
-    required this.nameEn,
-    required this.nameUr,
-    required this.kind,
-    required this.isBase,
-    required this.decimals,
-    required this.isActive,
+    required this.bomId,
+    required this.assemblyNo,
+    required this.runs,
+    required this.outputItemId,
+    required this.outputQtyThousandths,
+    required this.componentsCostPaisa,
+    required this.overheadPaisa,
+    this.journalEntryId,
+    required this.madeOnLocal,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -20636,18 +21974,22 @@ class Unit extends DataClass implements Insertable<Unit> {
     map['origin_device_id'] = Variable<String>(originDeviceId);
     map['hlc'] = Variable<String>(hlc);
     map['rev'] = Variable<int>(rev);
-    map['code'] = Variable<String>(code);
-    map['name_en'] = Variable<String>(nameEn);
-    map['name_ur'] = Variable<String>(nameUr);
-    map['kind'] = Variable<String>(kind);
-    map['is_base'] = Variable<int>(isBase);
-    map['decimals'] = Variable<int>(decimals);
-    map['is_active'] = Variable<int>(isActive);
+    map['bom_id'] = Variable<String>(bomId);
+    map['assembly_no'] = Variable<String>(assemblyNo);
+    map['runs'] = Variable<int>(runs);
+    map['output_item_id'] = Variable<String>(outputItemId);
+    map['output_qty_thousandths'] = Variable<int>(outputQtyThousandths);
+    map['components_cost_paisa'] = Variable<int>(componentsCostPaisa);
+    map['overhead_paisa'] = Variable<int>(overheadPaisa);
+    if (!nullToAbsent || journalEntryId != null) {
+      map['journal_entry_id'] = Variable<String>(journalEntryId);
+    }
+    map['made_on_local'] = Variable<String>(madeOnLocal);
     return map;
   }
 
-  UnitsCompanion toCompanion(bool nullToAbsent) {
-    return UnitsCompanion(
+  AssembliesCompanion toCompanion(bool nullToAbsent) {
+    return AssembliesCompanion(
       id: Value(id),
       firmId: Value(firmId),
       createdAtUtc: Value(createdAtUtc),
@@ -20660,22 +22002,26 @@ class Unit extends DataClass implements Insertable<Unit> {
       originDeviceId: Value(originDeviceId),
       hlc: Value(hlc),
       rev: Value(rev),
-      code: Value(code),
-      nameEn: Value(nameEn),
-      nameUr: Value(nameUr),
-      kind: Value(kind),
-      isBase: Value(isBase),
-      decimals: Value(decimals),
-      isActive: Value(isActive),
+      bomId: Value(bomId),
+      assemblyNo: Value(assemblyNo),
+      runs: Value(runs),
+      outputItemId: Value(outputItemId),
+      outputQtyThousandths: Value(outputQtyThousandths),
+      componentsCostPaisa: Value(componentsCostPaisa),
+      overheadPaisa: Value(overheadPaisa),
+      journalEntryId: journalEntryId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(journalEntryId),
+      madeOnLocal: Value(madeOnLocal),
     );
   }
 
-  factory Unit.fromJson(
+  factory Assembly.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Unit(
+    return Assembly(
       id: serializer.fromJson<String>(json['id']),
       firmId: serializer.fromJson<String>(json['firm_id']),
       createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
@@ -20686,13 +22032,19 @@ class Unit extends DataClass implements Insertable<Unit> {
       originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
       hlc: serializer.fromJson<String>(json['hlc']),
       rev: serializer.fromJson<int>(json['rev']),
-      code: serializer.fromJson<String>(json['code']),
-      nameEn: serializer.fromJson<String>(json['name_en']),
-      nameUr: serializer.fromJson<String>(json['name_ur']),
-      kind: serializer.fromJson<String>(json['kind']),
-      isBase: serializer.fromJson<int>(json['is_base']),
-      decimals: serializer.fromJson<int>(json['decimals']),
-      isActive: serializer.fromJson<int>(json['is_active']),
+      bomId: serializer.fromJson<String>(json['bom_id']),
+      assemblyNo: serializer.fromJson<String>(json['assembly_no']),
+      runs: serializer.fromJson<int>(json['runs']),
+      outputItemId: serializer.fromJson<String>(json['output_item_id']),
+      outputQtyThousandths: serializer.fromJson<int>(
+        json['output_qty_thousandths'],
+      ),
+      componentsCostPaisa: serializer.fromJson<int>(
+        json['components_cost_paisa'],
+      ),
+      overheadPaisa: serializer.fromJson<int>(json['overhead_paisa']),
+      journalEntryId: serializer.fromJson<String?>(json['journal_entry_id']),
+      madeOnLocal: serializer.fromJson<String>(json['made_on_local']),
     );
   }
   @override
@@ -20709,17 +22061,19 @@ class Unit extends DataClass implements Insertable<Unit> {
       'origin_device_id': serializer.toJson<String>(originDeviceId),
       'hlc': serializer.toJson<String>(hlc),
       'rev': serializer.toJson<int>(rev),
-      'code': serializer.toJson<String>(code),
-      'name_en': serializer.toJson<String>(nameEn),
-      'name_ur': serializer.toJson<String>(nameUr),
-      'kind': serializer.toJson<String>(kind),
-      'is_base': serializer.toJson<int>(isBase),
-      'decimals': serializer.toJson<int>(decimals),
-      'is_active': serializer.toJson<int>(isActive),
+      'bom_id': serializer.toJson<String>(bomId),
+      'assembly_no': serializer.toJson<String>(assemblyNo),
+      'runs': serializer.toJson<int>(runs),
+      'output_item_id': serializer.toJson<String>(outputItemId),
+      'output_qty_thousandths': serializer.toJson<int>(outputQtyThousandths),
+      'components_cost_paisa': serializer.toJson<int>(componentsCostPaisa),
+      'overhead_paisa': serializer.toJson<int>(overheadPaisa),
+      'journal_entry_id': serializer.toJson<String?>(journalEntryId),
+      'made_on_local': serializer.toJson<String>(madeOnLocal),
     };
   }
 
-  Unit copyWith({
+  Assembly copyWith({
     String? id,
     String? firmId,
     int? createdAtUtc,
@@ -20730,14 +22084,16 @@ class Unit extends DataClass implements Insertable<Unit> {
     String? originDeviceId,
     String? hlc,
     int? rev,
-    String? code,
-    String? nameEn,
-    String? nameUr,
-    String? kind,
-    int? isBase,
-    int? decimals,
-    int? isActive,
-  }) => Unit(
+    String? bomId,
+    String? assemblyNo,
+    int? runs,
+    String? outputItemId,
+    int? outputQtyThousandths,
+    int? componentsCostPaisa,
+    int? overheadPaisa,
+    Value<String?> journalEntryId = const Value.absent(),
+    String? madeOnLocal,
+  }) => Assembly(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -20748,16 +22104,20 @@ class Unit extends DataClass implements Insertable<Unit> {
     originDeviceId: originDeviceId ?? this.originDeviceId,
     hlc: hlc ?? this.hlc,
     rev: rev ?? this.rev,
-    code: code ?? this.code,
-    nameEn: nameEn ?? this.nameEn,
-    nameUr: nameUr ?? this.nameUr,
-    kind: kind ?? this.kind,
-    isBase: isBase ?? this.isBase,
-    decimals: decimals ?? this.decimals,
-    isActive: isActive ?? this.isActive,
+    bomId: bomId ?? this.bomId,
+    assemblyNo: assemblyNo ?? this.assemblyNo,
+    runs: runs ?? this.runs,
+    outputItemId: outputItemId ?? this.outputItemId,
+    outputQtyThousandths: outputQtyThousandths ?? this.outputQtyThousandths,
+    componentsCostPaisa: componentsCostPaisa ?? this.componentsCostPaisa,
+    overheadPaisa: overheadPaisa ?? this.overheadPaisa,
+    journalEntryId: journalEntryId.present
+        ? journalEntryId.value
+        : this.journalEntryId,
+    madeOnLocal: madeOnLocal ?? this.madeOnLocal,
   );
-  Unit copyWithCompanion(UnitsCompanion data) {
-    return Unit(
+  Assembly copyWithCompanion(AssembliesCompanion data) {
+    return Assembly(
       id: data.id.present ? data.id.value : this.id,
       firmId: data.firmId.present ? data.firmId.value : this.firmId,
       createdAtUtc: data.createdAtUtc.present
@@ -20776,19 +22136,35 @@ class Unit extends DataClass implements Insertable<Unit> {
           : this.originDeviceId,
       hlc: data.hlc.present ? data.hlc.value : this.hlc,
       rev: data.rev.present ? data.rev.value : this.rev,
-      code: data.code.present ? data.code.value : this.code,
-      nameEn: data.nameEn.present ? data.nameEn.value : this.nameEn,
-      nameUr: data.nameUr.present ? data.nameUr.value : this.nameUr,
-      kind: data.kind.present ? data.kind.value : this.kind,
-      isBase: data.isBase.present ? data.isBase.value : this.isBase,
-      decimals: data.decimals.present ? data.decimals.value : this.decimals,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
+      bomId: data.bomId.present ? data.bomId.value : this.bomId,
+      assemblyNo: data.assemblyNo.present
+          ? data.assemblyNo.value
+          : this.assemblyNo,
+      runs: data.runs.present ? data.runs.value : this.runs,
+      outputItemId: data.outputItemId.present
+          ? data.outputItemId.value
+          : this.outputItemId,
+      outputQtyThousandths: data.outputQtyThousandths.present
+          ? data.outputQtyThousandths.value
+          : this.outputQtyThousandths,
+      componentsCostPaisa: data.componentsCostPaisa.present
+          ? data.componentsCostPaisa.value
+          : this.componentsCostPaisa,
+      overheadPaisa: data.overheadPaisa.present
+          ? data.overheadPaisa.value
+          : this.overheadPaisa,
+      journalEntryId: data.journalEntryId.present
+          ? data.journalEntryId.value
+          : this.journalEntryId,
+      madeOnLocal: data.madeOnLocal.present
+          ? data.madeOnLocal.value
+          : this.madeOnLocal,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Unit(')
+    return (StringBuffer('Assembly(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -20799,13 +22175,15 @@ class Unit extends DataClass implements Insertable<Unit> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('code: $code, ')
-          ..write('nameEn: $nameEn, ')
-          ..write('nameUr: $nameUr, ')
-          ..write('kind: $kind, ')
-          ..write('isBase: $isBase, ')
-          ..write('decimals: $decimals, ')
-          ..write('isActive: $isActive')
+          ..write('bomId: $bomId, ')
+          ..write('assemblyNo: $assemblyNo, ')
+          ..write('runs: $runs, ')
+          ..write('outputItemId: $outputItemId, ')
+          ..write('outputQtyThousandths: $outputQtyThousandths, ')
+          ..write('componentsCostPaisa: $componentsCostPaisa, ')
+          ..write('overheadPaisa: $overheadPaisa, ')
+          ..write('journalEntryId: $journalEntryId, ')
+          ..write('madeOnLocal: $madeOnLocal')
           ..write(')'))
         .toString();
   }
@@ -20822,18 +22200,20 @@ class Unit extends DataClass implements Insertable<Unit> {
     originDeviceId,
     hlc,
     rev,
-    code,
-    nameEn,
-    nameUr,
-    kind,
-    isBase,
-    decimals,
-    isActive,
+    bomId,
+    assemblyNo,
+    runs,
+    outputItemId,
+    outputQtyThousandths,
+    componentsCostPaisa,
+    overheadPaisa,
+    journalEntryId,
+    madeOnLocal,
   );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Unit &&
+      (other is Assembly &&
           other.id == this.id &&
           other.firmId == this.firmId &&
           other.createdAtUtc == this.createdAtUtc &&
@@ -20844,16 +22224,18 @@ class Unit extends DataClass implements Insertable<Unit> {
           other.originDeviceId == this.originDeviceId &&
           other.hlc == this.hlc &&
           other.rev == this.rev &&
-          other.code == this.code &&
-          other.nameEn == this.nameEn &&
-          other.nameUr == this.nameUr &&
-          other.kind == this.kind &&
-          other.isBase == this.isBase &&
-          other.decimals == this.decimals &&
-          other.isActive == this.isActive);
+          other.bomId == this.bomId &&
+          other.assemblyNo == this.assemblyNo &&
+          other.runs == this.runs &&
+          other.outputItemId == this.outputItemId &&
+          other.outputQtyThousandths == this.outputQtyThousandths &&
+          other.componentsCostPaisa == this.componentsCostPaisa &&
+          other.overheadPaisa == this.overheadPaisa &&
+          other.journalEntryId == this.journalEntryId &&
+          other.madeOnLocal == this.madeOnLocal);
 }
 
-class UnitsCompanion extends UpdateCompanion<Unit> {
+class AssembliesCompanion extends UpdateCompanion<Assembly> {
   final Value<String> id;
   final Value<String> firmId;
   final Value<int> createdAtUtc;
@@ -20864,15 +22246,17 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
   final Value<String> originDeviceId;
   final Value<String> hlc;
   final Value<int> rev;
-  final Value<String> code;
-  final Value<String> nameEn;
-  final Value<String> nameUr;
-  final Value<String> kind;
-  final Value<int> isBase;
-  final Value<int> decimals;
-  final Value<int> isActive;
+  final Value<String> bomId;
+  final Value<String> assemblyNo;
+  final Value<int> runs;
+  final Value<String> outputItemId;
+  final Value<int> outputQtyThousandths;
+  final Value<int> componentsCostPaisa;
+  final Value<int> overheadPaisa;
+  final Value<String?> journalEntryId;
+  final Value<String> madeOnLocal;
   final Value<int> rowid;
-  const UnitsCompanion({
+  const AssembliesCompanion({
     this.id = const Value.absent(),
     this.firmId = const Value.absent(),
     this.createdAtUtc = const Value.absent(),
@@ -20883,16 +22267,18 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
     this.originDeviceId = const Value.absent(),
     this.hlc = const Value.absent(),
     this.rev = const Value.absent(),
-    this.code = const Value.absent(),
-    this.nameEn = const Value.absent(),
-    this.nameUr = const Value.absent(),
-    this.kind = const Value.absent(),
-    this.isBase = const Value.absent(),
-    this.decimals = const Value.absent(),
-    this.isActive = const Value.absent(),
+    this.bomId = const Value.absent(),
+    this.assemblyNo = const Value.absent(),
+    this.runs = const Value.absent(),
+    this.outputItemId = const Value.absent(),
+    this.outputQtyThousandths = const Value.absent(),
+    this.componentsCostPaisa = const Value.absent(),
+    this.overheadPaisa = const Value.absent(),
+    this.journalEntryId = const Value.absent(),
+    this.madeOnLocal = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  UnitsCompanion.insert({
+  AssembliesCompanion.insert({
     required String id,
     required String firmId,
     required int createdAtUtc,
@@ -20903,13 +22289,15 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
     required String originDeviceId,
     required String hlc,
     this.rev = const Value.absent(),
-    required String code,
-    required String nameEn,
-    required String nameUr,
-    required String kind,
-    this.isBase = const Value.absent(),
-    this.decimals = const Value.absent(),
-    this.isActive = const Value.absent(),
+    required String bomId,
+    required String assemblyNo,
+    required int runs,
+    required String outputItemId,
+    required int outputQtyThousandths,
+    required int componentsCostPaisa,
+    required int overheadPaisa,
+    this.journalEntryId = const Value.absent(),
+    required String madeOnLocal,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -20919,11 +22307,15 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
        updatedBy = Value(updatedBy),
        originDeviceId = Value(originDeviceId),
        hlc = Value(hlc),
-       code = Value(code),
-       nameEn = Value(nameEn),
-       nameUr = Value(nameUr),
-       kind = Value(kind);
-  static Insertable<Unit> custom({
+       bomId = Value(bomId),
+       assemblyNo = Value(assemblyNo),
+       runs = Value(runs),
+       outputItemId = Value(outputItemId),
+       outputQtyThousandths = Value(outputQtyThousandths),
+       componentsCostPaisa = Value(componentsCostPaisa),
+       overheadPaisa = Value(overheadPaisa),
+       madeOnLocal = Value(madeOnLocal);
+  static Insertable<Assembly> custom({
     Expression<String>? id,
     Expression<String>? firmId,
     Expression<int>? createdAtUtc,
@@ -20934,13 +22326,15 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
     Expression<String>? originDeviceId,
     Expression<String>? hlc,
     Expression<int>? rev,
-    Expression<String>? code,
-    Expression<String>? nameEn,
-    Expression<String>? nameUr,
-    Expression<String>? kind,
-    Expression<int>? isBase,
-    Expression<int>? decimals,
-    Expression<int>? isActive,
+    Expression<String>? bomId,
+    Expression<String>? assemblyNo,
+    Expression<int>? runs,
+    Expression<String>? outputItemId,
+    Expression<int>? outputQtyThousandths,
+    Expression<int>? componentsCostPaisa,
+    Expression<int>? overheadPaisa,
+    Expression<String>? journalEntryId,
+    Expression<String>? madeOnLocal,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -20954,18 +22348,22 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
       if (originDeviceId != null) 'origin_device_id': originDeviceId,
       if (hlc != null) 'hlc': hlc,
       if (rev != null) 'rev': rev,
-      if (code != null) 'code': code,
-      if (nameEn != null) 'name_en': nameEn,
-      if (nameUr != null) 'name_ur': nameUr,
-      if (kind != null) 'kind': kind,
-      if (isBase != null) 'is_base': isBase,
-      if (decimals != null) 'decimals': decimals,
-      if (isActive != null) 'is_active': isActive,
+      if (bomId != null) 'bom_id': bomId,
+      if (assemblyNo != null) 'assembly_no': assemblyNo,
+      if (runs != null) 'runs': runs,
+      if (outputItemId != null) 'output_item_id': outputItemId,
+      if (outputQtyThousandths != null)
+        'output_qty_thousandths': outputQtyThousandths,
+      if (componentsCostPaisa != null)
+        'components_cost_paisa': componentsCostPaisa,
+      if (overheadPaisa != null) 'overhead_paisa': overheadPaisa,
+      if (journalEntryId != null) 'journal_entry_id': journalEntryId,
+      if (madeOnLocal != null) 'made_on_local': madeOnLocal,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  UnitsCompanion copyWith({
+  AssembliesCompanion copyWith({
     Value<String>? id,
     Value<String>? firmId,
     Value<int>? createdAtUtc,
@@ -20976,16 +22374,18 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
     Value<String>? originDeviceId,
     Value<String>? hlc,
     Value<int>? rev,
-    Value<String>? code,
-    Value<String>? nameEn,
-    Value<String>? nameUr,
-    Value<String>? kind,
-    Value<int>? isBase,
-    Value<int>? decimals,
-    Value<int>? isActive,
+    Value<String>? bomId,
+    Value<String>? assemblyNo,
+    Value<int>? runs,
+    Value<String>? outputItemId,
+    Value<int>? outputQtyThousandths,
+    Value<int>? componentsCostPaisa,
+    Value<int>? overheadPaisa,
+    Value<String?>? journalEntryId,
+    Value<String>? madeOnLocal,
     Value<int>? rowid,
   }) {
-    return UnitsCompanion(
+    return AssembliesCompanion(
       id: id ?? this.id,
       firmId: firmId ?? this.firmId,
       createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -20996,13 +22396,15 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
       originDeviceId: originDeviceId ?? this.originDeviceId,
       hlc: hlc ?? this.hlc,
       rev: rev ?? this.rev,
-      code: code ?? this.code,
-      nameEn: nameEn ?? this.nameEn,
-      nameUr: nameUr ?? this.nameUr,
-      kind: kind ?? this.kind,
-      isBase: isBase ?? this.isBase,
-      decimals: decimals ?? this.decimals,
-      isActive: isActive ?? this.isActive,
+      bomId: bomId ?? this.bomId,
+      assemblyNo: assemblyNo ?? this.assemblyNo,
+      runs: runs ?? this.runs,
+      outputItemId: outputItemId ?? this.outputItemId,
+      outputQtyThousandths: outputQtyThousandths ?? this.outputQtyThousandths,
+      componentsCostPaisa: componentsCostPaisa ?? this.componentsCostPaisa,
+      overheadPaisa: overheadPaisa ?? this.overheadPaisa,
+      journalEntryId: journalEntryId ?? this.journalEntryId,
+      madeOnLocal: madeOnLocal ?? this.madeOnLocal,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -21040,26 +22442,32 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
     if (rev.present) {
       map['rev'] = Variable<int>(rev.value);
     }
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
+    if (bomId.present) {
+      map['bom_id'] = Variable<String>(bomId.value);
     }
-    if (nameEn.present) {
-      map['name_en'] = Variable<String>(nameEn.value);
+    if (assemblyNo.present) {
+      map['assembly_no'] = Variable<String>(assemblyNo.value);
     }
-    if (nameUr.present) {
-      map['name_ur'] = Variable<String>(nameUr.value);
+    if (runs.present) {
+      map['runs'] = Variable<int>(runs.value);
     }
-    if (kind.present) {
-      map['kind'] = Variable<String>(kind.value);
+    if (outputItemId.present) {
+      map['output_item_id'] = Variable<String>(outputItemId.value);
     }
-    if (isBase.present) {
-      map['is_base'] = Variable<int>(isBase.value);
+    if (outputQtyThousandths.present) {
+      map['output_qty_thousandths'] = Variable<int>(outputQtyThousandths.value);
     }
-    if (decimals.present) {
-      map['decimals'] = Variable<int>(decimals.value);
+    if (componentsCostPaisa.present) {
+      map['components_cost_paisa'] = Variable<int>(componentsCostPaisa.value);
     }
-    if (isActive.present) {
-      map['is_active'] = Variable<int>(isActive.value);
+    if (overheadPaisa.present) {
+      map['overhead_paisa'] = Variable<int>(overheadPaisa.value);
+    }
+    if (journalEntryId.present) {
+      map['journal_entry_id'] = Variable<String>(journalEntryId.value);
+    }
+    if (madeOnLocal.present) {
+      map['made_on_local'] = Variable<String>(madeOnLocal.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -21069,7 +22477,7 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
 
   @override
   String toString() {
-    return (StringBuffer('UnitsCompanion(')
+    return (StringBuffer('AssembliesCompanion(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -21080,24 +22488,26 @@ class UnitsCompanion extends UpdateCompanion<Unit> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('code: $code, ')
-          ..write('nameEn: $nameEn, ')
-          ..write('nameUr: $nameUr, ')
-          ..write('kind: $kind, ')
-          ..write('isBase: $isBase, ')
-          ..write('decimals: $decimals, ')
-          ..write('isActive: $isActive, ')
+          ..write('bomId: $bomId, ')
+          ..write('assemblyNo: $assemblyNo, ')
+          ..write('runs: $runs, ')
+          ..write('outputItemId: $outputItemId, ')
+          ..write('outputQtyThousandths: $outputQtyThousandths, ')
+          ..write('componentsCostPaisa: $componentsCostPaisa, ')
+          ..write('overheadPaisa: $overheadPaisa, ')
+          ..write('journalEntryId: $journalEntryId, ')
+          ..write('madeOnLocal: $madeOnLocal, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
 }
 
-class Items extends Table with TableInfo<Items, Item> {
+class AuditLog extends Table with TableInfo<AuditLog, AuditLogData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  Items(this.attachedDatabase, [this._alias]);
+  AuditLog(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
     'id',
@@ -21205,323 +22615,91 @@ class Items extends Table with TableInfo<Items, Item> {
     $customConstraints: 'NOT NULL DEFAULT 1',
     defaultValue: const CustomExpression('1'),
   );
-  static const VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-    'code',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
+  static const VerificationMeta _actionCodeMeta = const VerificationMeta(
+    'actionCode',
   );
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-    'name',
+  late final GeneratedColumn<String> actionCode = GeneratedColumn<String>(
+    'action_code',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _nameSearchMeta = const VerificationMeta(
-    'nameSearch',
+  static const VerificationMeta _entityTableMeta = const VerificationMeta(
+    'entityTable',
   );
-  late final GeneratedColumn<String> nameSearch = GeneratedColumn<String>(
-    'name_search',
+  late final GeneratedColumn<String> entityTable = GeneratedColumn<String>(
+    'entity_table',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
     $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _itemTypeMeta = const VerificationMeta(
-    'itemType',
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
   );
-  late final GeneratedColumn<String> itemType = GeneratedColumn<String>(
-    'item_type',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints:
-        'NOT NULL DEFAULT \'goods\' CHECK (item_type IN (\'goods\', \'service\'))',
-    defaultValue: const CustomExpression('\'goods\''),
-  );
-  static const VerificationMeta _categoryMeta = const VerificationMeta(
-    'category',
-  );
-  late final GeneratedColumn<String> category = GeneratedColumn<String>(
-    'category',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _descriptionMeta = const VerificationMeta(
-    'description',
-  );
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-    'description',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _barcodeMeta = const VerificationMeta(
-    'barcode',
-  );
-  late final GeneratedColumn<String> barcode = GeneratedColumn<String>(
-    'barcode',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _baseUnitIdMeta = const VerificationMeta(
-    'baseUnitId',
-  );
-  late final GeneratedColumn<String> baseUnitId = GeneratedColumn<String>(
-    'base_unit_id',
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-    $customConstraints:
-        'NOT NULL REFERENCES units(id)DEFERRABLE INITIALLY DEFERRED',
+    $customConstraints: 'NOT NULL',
   );
-  static const VerificationMeta _displayUnitIdMeta = const VerificationMeta(
-    'displayUnitId',
+  static const VerificationMeta _summaryMeta = const VerificationMeta(
+    'summary',
   );
-  late final GeneratedColumn<String> displayUnitId = GeneratedColumn<String>(
-    'display_unit_id',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-    $customConstraints: 'REFERENCES units(id)DEFERRABLE INITIALLY DEFERRED',
-  );
-  static const VerificationMeta _displayFactorThousandthsMeta =
-      const VerificationMeta('displayFactorThousandths');
-  late final GeneratedColumn<int> displayFactorThousandths =
-      GeneratedColumn<int>(
-        'display_factor_thousandths',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: false,
-        $customConstraints:
-            'NOT NULL DEFAULT 1000 CHECK (display_factor_thousandths > 0)',
-        defaultValue: const CustomExpression('1000'),
-      );
-  static const VerificationMeta _saleRateMilliPaisaMeta =
-      const VerificationMeta('saleRateMilliPaisa');
-  late final GeneratedColumn<int> saleRateMilliPaisa = GeneratedColumn<int>(
-    'sale_rate_milli_paisa',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _wholesaleRateMilliPaisaMeta =
-      const VerificationMeta('wholesaleRateMilliPaisa');
-  late final GeneratedColumn<int> wholesaleRateMilliPaisa =
-      GeneratedColumn<int>(
-        'wholesale_rate_milli_paisa',
-        aliasedName,
-        true,
-        type: DriftSqlType.int,
-        requiredDuringInsert: false,
-        $customConstraints: '',
-      );
-  static const VerificationMeta _purchaseRateMilliPaisaMeta =
-      const VerificationMeta('purchaseRateMilliPaisa');
-  late final GeneratedColumn<int> purchaseRateMilliPaisa = GeneratedColumn<int>(
-    'purchase_rate_milli_paisa',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _avgCostMilliPaisaMeta = const VerificationMeta(
-    'avgCostMilliPaisa',
-  );
-  late final GeneratedColumn<int> avgCostMilliPaisa = GeneratedColumn<int>(
-    'avg_cost_milli_paisa',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _mrpPaisaMeta = const VerificationMeta(
-    'mrpPaisa',
-  );
-  late final GeneratedColumn<int> mrpPaisa = GeneratedColumn<int>(
-    'mrp_paisa',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: '',
-  );
-  static const VerificationMeta _hsCodeMeta = const VerificationMeta('hsCode');
-  late final GeneratedColumn<String> hsCode = GeneratedColumn<String>(
-    'hs_code',
+  late final GeneratedColumn<String> summary = GeneratedColumn<String>(
+    'summary',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
     $customConstraints: '',
   );
-  static const VerificationMeta _taxRuleIdMeta = const VerificationMeta(
-    'taxRuleId',
+  static const VerificationMeta _beforeJsonMeta = const VerificationMeta(
+    'beforeJson',
   );
-  late final GeneratedColumn<String> taxRuleId = GeneratedColumn<String>(
-    'tax_rule_id',
+  late final GeneratedColumn<String> beforeJson = GeneratedColumn<String>(
+    'before_json',
     aliasedName,
     true,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints: 'REFERENCES tax_rules(id)DEFERRABLE INITIALLY DEFERRED',
+    $customConstraints: '',
   );
-  static const VerificationMeta _priceIncludesTaxMeta = const VerificationMeta(
-    'priceIncludesTax',
+  static const VerificationMeta _afterJsonMeta = const VerificationMeta(
+    'afterJson',
   );
-  late final GeneratedColumn<int> priceIncludesTax = GeneratedColumn<int>(
-    'price_includes_tax',
+  late final GeneratedColumn<String> afterJson = GeneratedColumn<String>(
+    'after_json',
     aliasedName,
-    false,
-    type: DriftSqlType.int,
+    true,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
-    $customConstraints:
-        'NOT NULL DEFAULT 0 CHECK (price_includes_tax IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
+    $customConstraints: '',
   );
-  static const VerificationMeta _isThirdScheduleMeta = const VerificationMeta(
-    'isThirdSchedule',
+  static const VerificationMeta _amountPaisaMeta = const VerificationMeta(
+    'amountPaisa',
   );
-  late final GeneratedColumn<int> isThirdSchedule = GeneratedColumn<int>(
-    'is_third_schedule',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints:
-        'NOT NULL DEFAULT 0 CHECK (is_third_schedule IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _trackStockMeta = const VerificationMeta(
-    'trackStock',
-  );
-  late final GeneratedColumn<int> trackStock = GeneratedColumn<int>(
-    'track_stock',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (track_stock IN (0, 1))',
-    defaultValue: const CustomExpression('1'),
-  );
-  static const VerificationMeta _trackBatchMeta = const VerificationMeta(
-    'trackBatch',
-  );
-  late final GeneratedColumn<int> trackBatch = GeneratedColumn<int>(
-    'track_batch',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (track_batch IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _trackSerialMeta = const VerificationMeta(
-    'trackSerial',
-  );
-  late final GeneratedColumn<int> trackSerial = GeneratedColumn<int>(
-    'track_serial',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (track_serial IN (0, 1))',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _minStockThousandthsMeta =
-      const VerificationMeta('minStockThousandths');
-  late final GeneratedColumn<int> minStockThousandths = GeneratedColumn<int>(
-    'min_stock_thousandths',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _openingStockThousandthsMeta =
-      const VerificationMeta('openingStockThousandths');
-  late final GeneratedColumn<int> openingStockThousandths =
-      GeneratedColumn<int>(
-        'opening_stock_thousandths',
-        aliasedName,
-        false,
-        type: DriftSqlType.int,
-        requiredDuringInsert: false,
-        $customConstraints: 'NOT NULL DEFAULT 0',
-        defaultValue: const CustomExpression('0'),
-      );
-  static const VerificationMeta _openingRateMilliPaisaMeta =
-      const VerificationMeta('openingRateMilliPaisa');
-  late final GeneratedColumn<int> openingRateMilliPaisa = GeneratedColumn<int>(
-    'opening_rate_milli_paisa',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 0',
-    defaultValue: const CustomExpression('0'),
-  );
-  static const VerificationMeta _imageAttachmentIdMeta = const VerificationMeta(
-    'imageAttachmentId',
-  );
-  late final GeneratedColumn<String> imageAttachmentId =
-      GeneratedColumn<String>(
-        'image_attachment_id',
-        aliasedName,
-        true,
-        type: DriftSqlType.string,
-        requiredDuringInsert: false,
-        $customConstraints:
-            'REFERENCES attachments(id)DEFERRABLE INITIALLY DEFERRED',
-      );
-  static const VerificationMeta _isActiveMeta = const VerificationMeta(
-    'isActive',
-  );
-  late final GeneratedColumn<int> isActive = GeneratedColumn<int>(
-    'is_active',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (is_active IN (0, 1))',
-    defaultValue: const CustomExpression('1'),
-  );
-  static const VerificationMeta _vipRateMilliPaisaMeta = const VerificationMeta(
-    'vipRateMilliPaisa',
-  );
-  late final GeneratedColumn<int> vipRateMilliPaisa = GeneratedColumn<int>(
-    'vip_rate_milli_paisa',
+  late final GeneratedColumn<int> amountPaisa = GeneratedColumn<int>(
+    'amount_paisa',
     aliasedName,
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     $customConstraints: '',
+  );
+  static const VerificationMeta _atUtcMeta = const VerificationMeta('atUtc');
+  late final GeneratedColumn<int> atUtc = GeneratedColumn<int>(
+    'at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -21535,43 +22713,23 @@ class Items extends Table with TableInfo<Items, Item> {
     originDeviceId,
     hlc,
     rev,
-    code,
-    name,
-    nameSearch,
-    itemType,
-    category,
-    description,
-    barcode,
-    baseUnitId,
-    displayUnitId,
-    displayFactorThousandths,
-    saleRateMilliPaisa,
-    wholesaleRateMilliPaisa,
-    purchaseRateMilliPaisa,
-    avgCostMilliPaisa,
-    mrpPaisa,
-    hsCode,
-    taxRuleId,
-    priceIncludesTax,
-    isThirdSchedule,
-    trackStock,
-    trackBatch,
-    trackSerial,
-    minStockThousandths,
-    openingStockThousandths,
-    openingRateMilliPaisa,
-    imageAttachmentId,
-    isActive,
-    vipRateMilliPaisa,
+    actionCode,
+    entityTable,
+    entityId,
+    summary,
+    beforeJson,
+    afterJson,
+    amountPaisa,
+    atUtc,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'items';
+  static const String $name = 'audit_log';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Item> instance, {
+    Insertable<AuditLogData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -21661,227 +22819,67 @@ class Items extends Table with TableInfo<Items, Item> {
         rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
       );
     }
-    if (data.containsKey('code')) {
+    if (data.containsKey('action_code')) {
       context.handle(
-        _codeMeta,
-        code.isAcceptableOrUnknown(data['code']!, _codeMeta),
-      );
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-        _nameMeta,
-        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+        _actionCodeMeta,
+        actionCode.isAcceptableOrUnknown(data['action_code']!, _actionCodeMeta),
       );
     } else if (isInserting) {
-      context.missing(_nameMeta);
+      context.missing(_actionCodeMeta);
     }
-    if (data.containsKey('name_search')) {
+    if (data.containsKey('entity_table')) {
       context.handle(
-        _nameSearchMeta,
-        nameSearch.isAcceptableOrUnknown(data['name_search']!, _nameSearchMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_nameSearchMeta);
-    }
-    if (data.containsKey('item_type')) {
-      context.handle(
-        _itemTypeMeta,
-        itemType.isAcceptableOrUnknown(data['item_type']!, _itemTypeMeta),
-      );
-    }
-    if (data.containsKey('category')) {
-      context.handle(
-        _categoryMeta,
-        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
-      );
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-        _descriptionMeta,
-        description.isAcceptableOrUnknown(
-          data['description']!,
-          _descriptionMeta,
-        ),
-      );
-    }
-    if (data.containsKey('barcode')) {
-      context.handle(
-        _barcodeMeta,
-        barcode.isAcceptableOrUnknown(data['barcode']!, _barcodeMeta),
-      );
-    }
-    if (data.containsKey('base_unit_id')) {
-      context.handle(
-        _baseUnitIdMeta,
-        baseUnitId.isAcceptableOrUnknown(
-          data['base_unit_id']!,
-          _baseUnitIdMeta,
+        _entityTableMeta,
+        entityTable.isAcceptableOrUnknown(
+          data['entity_table']!,
+          _entityTableMeta,
         ),
       );
     } else if (isInserting) {
-      context.missing(_baseUnitIdMeta);
+      context.missing(_entityTableMeta);
     }
-    if (data.containsKey('display_unit_id')) {
+    if (data.containsKey('entity_id')) {
       context.handle(
-        _displayUnitIdMeta,
-        displayUnitId.isAcceptableOrUnknown(
-          data['display_unit_id']!,
-          _displayUnitIdMeta,
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('summary')) {
+      context.handle(
+        _summaryMeta,
+        summary.isAcceptableOrUnknown(data['summary']!, _summaryMeta),
+      );
+    }
+    if (data.containsKey('before_json')) {
+      context.handle(
+        _beforeJsonMeta,
+        beforeJson.isAcceptableOrUnknown(data['before_json']!, _beforeJsonMeta),
+      );
+    }
+    if (data.containsKey('after_json')) {
+      context.handle(
+        _afterJsonMeta,
+        afterJson.isAcceptableOrUnknown(data['after_json']!, _afterJsonMeta),
+      );
+    }
+    if (data.containsKey('amount_paisa')) {
+      context.handle(
+        _amountPaisaMeta,
+        amountPaisa.isAcceptableOrUnknown(
+          data['amount_paisa']!,
+          _amountPaisaMeta,
         ),
       );
     }
-    if (data.containsKey('display_factor_thousandths')) {
+    if (data.containsKey('at_utc')) {
       context.handle(
-        _displayFactorThousandthsMeta,
-        displayFactorThousandths.isAcceptableOrUnknown(
-          data['display_factor_thousandths']!,
-          _displayFactorThousandthsMeta,
-        ),
+        _atUtcMeta,
+        atUtc.isAcceptableOrUnknown(data['at_utc']!, _atUtcMeta),
       );
-    }
-    if (data.containsKey('sale_rate_milli_paisa')) {
-      context.handle(
-        _saleRateMilliPaisaMeta,
-        saleRateMilliPaisa.isAcceptableOrUnknown(
-          data['sale_rate_milli_paisa']!,
-          _saleRateMilliPaisaMeta,
-        ),
-      );
-    }
-    if (data.containsKey('wholesale_rate_milli_paisa')) {
-      context.handle(
-        _wholesaleRateMilliPaisaMeta,
-        wholesaleRateMilliPaisa.isAcceptableOrUnknown(
-          data['wholesale_rate_milli_paisa']!,
-          _wholesaleRateMilliPaisaMeta,
-        ),
-      );
-    }
-    if (data.containsKey('purchase_rate_milli_paisa')) {
-      context.handle(
-        _purchaseRateMilliPaisaMeta,
-        purchaseRateMilliPaisa.isAcceptableOrUnknown(
-          data['purchase_rate_milli_paisa']!,
-          _purchaseRateMilliPaisaMeta,
-        ),
-      );
-    }
-    if (data.containsKey('avg_cost_milli_paisa')) {
-      context.handle(
-        _avgCostMilliPaisaMeta,
-        avgCostMilliPaisa.isAcceptableOrUnknown(
-          data['avg_cost_milli_paisa']!,
-          _avgCostMilliPaisaMeta,
-        ),
-      );
-    }
-    if (data.containsKey('mrp_paisa')) {
-      context.handle(
-        _mrpPaisaMeta,
-        mrpPaisa.isAcceptableOrUnknown(data['mrp_paisa']!, _mrpPaisaMeta),
-      );
-    }
-    if (data.containsKey('hs_code')) {
-      context.handle(
-        _hsCodeMeta,
-        hsCode.isAcceptableOrUnknown(data['hs_code']!, _hsCodeMeta),
-      );
-    }
-    if (data.containsKey('tax_rule_id')) {
-      context.handle(
-        _taxRuleIdMeta,
-        taxRuleId.isAcceptableOrUnknown(data['tax_rule_id']!, _taxRuleIdMeta),
-      );
-    }
-    if (data.containsKey('price_includes_tax')) {
-      context.handle(
-        _priceIncludesTaxMeta,
-        priceIncludesTax.isAcceptableOrUnknown(
-          data['price_includes_tax']!,
-          _priceIncludesTaxMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_third_schedule')) {
-      context.handle(
-        _isThirdScheduleMeta,
-        isThirdSchedule.isAcceptableOrUnknown(
-          data['is_third_schedule']!,
-          _isThirdScheduleMeta,
-        ),
-      );
-    }
-    if (data.containsKey('track_stock')) {
-      context.handle(
-        _trackStockMeta,
-        trackStock.isAcceptableOrUnknown(data['track_stock']!, _trackStockMeta),
-      );
-    }
-    if (data.containsKey('track_batch')) {
-      context.handle(
-        _trackBatchMeta,
-        trackBatch.isAcceptableOrUnknown(data['track_batch']!, _trackBatchMeta),
-      );
-    }
-    if (data.containsKey('track_serial')) {
-      context.handle(
-        _trackSerialMeta,
-        trackSerial.isAcceptableOrUnknown(
-          data['track_serial']!,
-          _trackSerialMeta,
-        ),
-      );
-    }
-    if (data.containsKey('min_stock_thousandths')) {
-      context.handle(
-        _minStockThousandthsMeta,
-        minStockThousandths.isAcceptableOrUnknown(
-          data['min_stock_thousandths']!,
-          _minStockThousandthsMeta,
-        ),
-      );
-    }
-    if (data.containsKey('opening_stock_thousandths')) {
-      context.handle(
-        _openingStockThousandthsMeta,
-        openingStockThousandths.isAcceptableOrUnknown(
-          data['opening_stock_thousandths']!,
-          _openingStockThousandthsMeta,
-        ),
-      );
-    }
-    if (data.containsKey('opening_rate_milli_paisa')) {
-      context.handle(
-        _openingRateMilliPaisaMeta,
-        openingRateMilliPaisa.isAcceptableOrUnknown(
-          data['opening_rate_milli_paisa']!,
-          _openingRateMilliPaisaMeta,
-        ),
-      );
-    }
-    if (data.containsKey('image_attachment_id')) {
-      context.handle(
-        _imageAttachmentIdMeta,
-        imageAttachmentId.isAcceptableOrUnknown(
-          data['image_attachment_id']!,
-          _imageAttachmentIdMeta,
-        ),
-      );
-    }
-    if (data.containsKey('is_active')) {
-      context.handle(
-        _isActiveMeta,
-        isActive.isAcceptableOrUnknown(data['is_active']!, _isActiveMeta),
-      );
-    }
-    if (data.containsKey('vip_rate_milli_paisa')) {
-      context.handle(
-        _vipRateMilliPaisaMeta,
-        vipRateMilliPaisa.isAcceptableOrUnknown(
-          data['vip_rate_milli_paisa']!,
-          _vipRateMilliPaisaMeta,
-        ),
-      );
+    } else if (isInserting) {
+      context.missing(_atUtcMeta);
     }
     return context;
   }
@@ -21889,9 +22887,9 @@ class Items extends Table with TableInfo<Items, Item> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Item map(Map<String, dynamic> data, {String? tablePrefix}) {
+  AuditLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Item(
+    return AuditLogData(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -21932,124 +22930,44 @@ class Items extends Table with TableInfo<Items, Item> {
         DriftSqlType.int,
         data['${effectivePrefix}rev'],
       )!,
-      code: attachedDatabase.typeMapping.read(
+      actionCode: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}code'],
-      ),
-      name: attachedDatabase.typeMapping.read(
+        data['${effectivePrefix}action_code'],
+      )!,
+      entityTable: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}name'],
+        data['${effectivePrefix}entity_table'],
       )!,
-      nameSearch: attachedDatabase.typeMapping.read(
+      entityId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}name_search'],
+        data['${effectivePrefix}entity_id'],
       )!,
-      itemType: attachedDatabase.typeMapping.read(
+      summary: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}item_type'],
-      )!,
-      category: attachedDatabase.typeMapping.read(
+        data['${effectivePrefix}summary'],
+      ),
+      beforeJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}category'],
+        data['${effectivePrefix}before_json'],
       ),
-      description: attachedDatabase.typeMapping.read(
+      afterJson: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}description'],
+        data['${effectivePrefix}after_json'],
       ),
-      barcode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}barcode'],
+      amountPaisa: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_paisa'],
       ),
-      baseUnitId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}base_unit_id'],
+      atUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}at_utc'],
       )!,
-      displayUnitId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}display_unit_id'],
-      ),
-      displayFactorThousandths: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}display_factor_thousandths'],
-      )!,
-      saleRateMilliPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}sale_rate_milli_paisa'],
-      )!,
-      wholesaleRateMilliPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}wholesale_rate_milli_paisa'],
-      ),
-      purchaseRateMilliPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}purchase_rate_milli_paisa'],
-      ),
-      avgCostMilliPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}avg_cost_milli_paisa'],
-      )!,
-      mrpPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}mrp_paisa'],
-      ),
-      hsCode: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}hs_code'],
-      ),
-      taxRuleId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tax_rule_id'],
-      ),
-      priceIncludesTax: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}price_includes_tax'],
-      )!,
-      isThirdSchedule: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}is_third_schedule'],
-      )!,
-      trackStock: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}track_stock'],
-      )!,
-      trackBatch: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}track_batch'],
-      )!,
-      trackSerial: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}track_serial'],
-      )!,
-      minStockThousandths: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}min_stock_thousandths'],
-      )!,
-      openingStockThousandths: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}opening_stock_thousandths'],
-      )!,
-      openingRateMilliPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}opening_rate_milli_paisa'],
-      )!,
-      imageAttachmentId: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}image_attachment_id'],
-      ),
-      isActive: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}is_active'],
-      )!,
-      vipRateMilliPaisa: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}vip_rate_milli_paisa'],
-      ),
     );
   }
 
   @override
-  Items createAlias(String alias) {
-    return Items(attachedDatabase, alias);
+  AuditLog createAlias(String alias) {
+    return AuditLog(attachedDatabase, alias);
   }
 
   @override
@@ -22058,7 +22976,7 @@ class Items extends Table with TableInfo<Items, Item> {
   bool get dontWriteConstraints => true;
 }
 
-class Item extends DataClass implements Insertable<Item> {
+class AuditLogData extends DataClass implements Insertable<AuditLogData> {
   final String id;
   final String firmId;
   final int createdAtUtc;
@@ -22069,54 +22987,26 @@ class Item extends DataClass implements Insertable<Item> {
   final String originDeviceId;
   final String hlc;
   final int rev;
-  final String? code;
-  final String name;
 
-  /// Lowercased, unaccented, space-collapsed. Roman-Urdu type-ahead matches on
-  /// this, and M1's FTS5 index is built over it.
-  final String nameSearch;
-  final String itemType;
-  final String? category;
-  final String? description;
-  final String? barcode;
-  final String baseUnitId;
+  /// Screaming snake case, from a closed set the application declares:
+  /// SALE_POSTED, SALE_VOIDED, PAYMENT_RECEIVED, ITEM_PRICE_CHANGED, ...
+  /// Named `action_code` and not `action`: ACTION is a reserved word in the
+  /// SQL grammar (the ON DELETE ... clause), so a bare `action` column cannot
+  /// be referenced from an index without quoting it everywhere.
+  final String actionCode;
+  final String entityTable;
+  final String entityId;
 
-  /// What the counter shows and types in. Stock is always stored in base units.
-  final String? displayUnitId;
-  final int displayFactorThousandths;
+  /// One human-readable line, in English, for the activity dashboard. Never
+  /// reconstructed from JSON at read time.
+  final String? summary;
 
-  /// Rates are milli-paisa per BASE unit. Loose atta from a Rs 132 ten-kilo bag
-  /// is 1.32 paisa per gram; a paisa-precision column would price it 25% wrong.
-  final int saleRateMilliPaisa;
-  final int? wholesaleRateMilliPaisa;
-  final int? purchaseRateMilliPaisa;
-
-  /// Weighted-average cost. Seeded from the opening consignment when the item
-  /// is created, and moved by the purchase posting rule from M4.
-  final int avgCostMilliPaisa;
-
-  /// Printed MRP in paisa. For pharmacy this is a fallback only: MRP hangs off
-  /// the BATCH, not the item, because a price increase does not apply to
-  /// batches manufactured before it.
-  final int? mrpPaisa;
-  final String? hsCode;
-  final String? taxRuleId;
-  final int priceIncludesTax;
-  final int isThirdSchedule;
-  final int trackStock;
-  final int trackBatch;
-  final int trackSerial;
-  final int minStockThousandths;
-  final int openingStockThousandths;
-  final int openingRateMilliPaisa;
-  final String? imageAttachmentId;
-  final int isActive;
-
-  /// The price a VIP buyer pays (M15). Last, because SQLite adds a column at
-  /// the end. Empty means the item has none, and a VIP buyer pays the
-  /// wholesale price, or the retail one where there is no wholesale price.
-  final int? vipRateMilliPaisa;
-  const Item({
+  /// Field-level before and after, for the fields that changed only.
+  final String? beforeJson;
+  final String? afterJson;
+  final int? amountPaisa;
+  final int atUtc;
+  const AuditLogData({
     required this.id,
     required this.firmId,
     required this.createdAtUtc,
@@ -22127,34 +23017,14 @@ class Item extends DataClass implements Insertable<Item> {
     required this.originDeviceId,
     required this.hlc,
     required this.rev,
-    this.code,
-    required this.name,
-    required this.nameSearch,
-    required this.itemType,
-    this.category,
-    this.description,
-    this.barcode,
-    required this.baseUnitId,
-    this.displayUnitId,
-    required this.displayFactorThousandths,
-    required this.saleRateMilliPaisa,
-    this.wholesaleRateMilliPaisa,
-    this.purchaseRateMilliPaisa,
-    required this.avgCostMilliPaisa,
-    this.mrpPaisa,
-    this.hsCode,
-    this.taxRuleId,
-    required this.priceIncludesTax,
-    required this.isThirdSchedule,
-    required this.trackStock,
-    required this.trackBatch,
-    required this.trackSerial,
-    required this.minStockThousandths,
-    required this.openingStockThousandths,
-    required this.openingRateMilliPaisa,
-    this.imageAttachmentId,
-    required this.isActive,
-    this.vipRateMilliPaisa,
+    required this.actionCode,
+    required this.entityTable,
+    required this.entityId,
+    this.summary,
+    this.beforeJson,
+    this.afterJson,
+    this.amountPaisa,
+    required this.atUtc,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -22171,65 +23041,27 @@ class Item extends DataClass implements Insertable<Item> {
     map['origin_device_id'] = Variable<String>(originDeviceId);
     map['hlc'] = Variable<String>(hlc);
     map['rev'] = Variable<int>(rev);
-    if (!nullToAbsent || code != null) {
-      map['code'] = Variable<String>(code);
+    map['action_code'] = Variable<String>(actionCode);
+    map['entity_table'] = Variable<String>(entityTable);
+    map['entity_id'] = Variable<String>(entityId);
+    if (!nullToAbsent || summary != null) {
+      map['summary'] = Variable<String>(summary);
     }
-    map['name'] = Variable<String>(name);
-    map['name_search'] = Variable<String>(nameSearch);
-    map['item_type'] = Variable<String>(itemType);
-    if (!nullToAbsent || category != null) {
-      map['category'] = Variable<String>(category);
+    if (!nullToAbsent || beforeJson != null) {
+      map['before_json'] = Variable<String>(beforeJson);
     }
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
+    if (!nullToAbsent || afterJson != null) {
+      map['after_json'] = Variable<String>(afterJson);
     }
-    if (!nullToAbsent || barcode != null) {
-      map['barcode'] = Variable<String>(barcode);
+    if (!nullToAbsent || amountPaisa != null) {
+      map['amount_paisa'] = Variable<int>(amountPaisa);
     }
-    map['base_unit_id'] = Variable<String>(baseUnitId);
-    if (!nullToAbsent || displayUnitId != null) {
-      map['display_unit_id'] = Variable<String>(displayUnitId);
-    }
-    map['display_factor_thousandths'] = Variable<int>(displayFactorThousandths);
-    map['sale_rate_milli_paisa'] = Variable<int>(saleRateMilliPaisa);
-    if (!nullToAbsent || wholesaleRateMilliPaisa != null) {
-      map['wholesale_rate_milli_paisa'] = Variable<int>(
-        wholesaleRateMilliPaisa,
-      );
-    }
-    if (!nullToAbsent || purchaseRateMilliPaisa != null) {
-      map['purchase_rate_milli_paisa'] = Variable<int>(purchaseRateMilliPaisa);
-    }
-    map['avg_cost_milli_paisa'] = Variable<int>(avgCostMilliPaisa);
-    if (!nullToAbsent || mrpPaisa != null) {
-      map['mrp_paisa'] = Variable<int>(mrpPaisa);
-    }
-    if (!nullToAbsent || hsCode != null) {
-      map['hs_code'] = Variable<String>(hsCode);
-    }
-    if (!nullToAbsent || taxRuleId != null) {
-      map['tax_rule_id'] = Variable<String>(taxRuleId);
-    }
-    map['price_includes_tax'] = Variable<int>(priceIncludesTax);
-    map['is_third_schedule'] = Variable<int>(isThirdSchedule);
-    map['track_stock'] = Variable<int>(trackStock);
-    map['track_batch'] = Variable<int>(trackBatch);
-    map['track_serial'] = Variable<int>(trackSerial);
-    map['min_stock_thousandths'] = Variable<int>(minStockThousandths);
-    map['opening_stock_thousandths'] = Variable<int>(openingStockThousandths);
-    map['opening_rate_milli_paisa'] = Variable<int>(openingRateMilliPaisa);
-    if (!nullToAbsent || imageAttachmentId != null) {
-      map['image_attachment_id'] = Variable<String>(imageAttachmentId);
-    }
-    map['is_active'] = Variable<int>(isActive);
-    if (!nullToAbsent || vipRateMilliPaisa != null) {
-      map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa);
-    }
+    map['at_utc'] = Variable<int>(atUtc);
     return map;
   }
 
-  ItemsCompanion toCompanion(bool nullToAbsent) {
-    return ItemsCompanion(
+  AuditLogCompanion toCompanion(bool nullToAbsent) {
+    return AuditLogCompanion(
       id: Value(id),
       firmId: Value(firmId),
       createdAtUtc: Value(createdAtUtc),
@@ -22242,65 +23074,31 @@ class Item extends DataClass implements Insertable<Item> {
       originDeviceId: Value(originDeviceId),
       hlc: Value(hlc),
       rev: Value(rev),
-      code: code == null && nullToAbsent ? const Value.absent() : Value(code),
-      name: Value(name),
-      nameSearch: Value(nameSearch),
-      itemType: Value(itemType),
-      category: category == null && nullToAbsent
+      actionCode: Value(actionCode),
+      entityTable: Value(entityTable),
+      entityId: Value(entityId),
+      summary: summary == null && nullToAbsent
           ? const Value.absent()
-          : Value(category),
-      description: description == null && nullToAbsent
+          : Value(summary),
+      beforeJson: beforeJson == null && nullToAbsent
           ? const Value.absent()
-          : Value(description),
-      barcode: barcode == null && nullToAbsent
+          : Value(beforeJson),
+      afterJson: afterJson == null && nullToAbsent
           ? const Value.absent()
-          : Value(barcode),
-      baseUnitId: Value(baseUnitId),
-      displayUnitId: displayUnitId == null && nullToAbsent
+          : Value(afterJson),
+      amountPaisa: amountPaisa == null && nullToAbsent
           ? const Value.absent()
-          : Value(displayUnitId),
-      displayFactorThousandths: Value(displayFactorThousandths),
-      saleRateMilliPaisa: Value(saleRateMilliPaisa),
-      wholesaleRateMilliPaisa: wholesaleRateMilliPaisa == null && nullToAbsent
-          ? const Value.absent()
-          : Value(wholesaleRateMilliPaisa),
-      purchaseRateMilliPaisa: purchaseRateMilliPaisa == null && nullToAbsent
-          ? const Value.absent()
-          : Value(purchaseRateMilliPaisa),
-      avgCostMilliPaisa: Value(avgCostMilliPaisa),
-      mrpPaisa: mrpPaisa == null && nullToAbsent
-          ? const Value.absent()
-          : Value(mrpPaisa),
-      hsCode: hsCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(hsCode),
-      taxRuleId: taxRuleId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(taxRuleId),
-      priceIncludesTax: Value(priceIncludesTax),
-      isThirdSchedule: Value(isThirdSchedule),
-      trackStock: Value(trackStock),
-      trackBatch: Value(trackBatch),
-      trackSerial: Value(trackSerial),
-      minStockThousandths: Value(minStockThousandths),
-      openingStockThousandths: Value(openingStockThousandths),
-      openingRateMilliPaisa: Value(openingRateMilliPaisa),
-      imageAttachmentId: imageAttachmentId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(imageAttachmentId),
-      isActive: Value(isActive),
-      vipRateMilliPaisa: vipRateMilliPaisa == null && nullToAbsent
-          ? const Value.absent()
-          : Value(vipRateMilliPaisa),
+          : Value(amountPaisa),
+      atUtc: Value(atUtc),
     );
   }
 
-  factory Item.fromJson(
+  factory AuditLogData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Item(
+    return AuditLogData(
       id: serializer.fromJson<String>(json['id']),
       firmId: serializer.fromJson<String>(json['firm_id']),
       createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
@@ -22311,52 +23109,14 @@ class Item extends DataClass implements Insertable<Item> {
       originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
       hlc: serializer.fromJson<String>(json['hlc']),
       rev: serializer.fromJson<int>(json['rev']),
-      code: serializer.fromJson<String?>(json['code']),
-      name: serializer.fromJson<String>(json['name']),
-      nameSearch: serializer.fromJson<String>(json['name_search']),
-      itemType: serializer.fromJson<String>(json['item_type']),
-      category: serializer.fromJson<String?>(json['category']),
-      description: serializer.fromJson<String?>(json['description']),
-      barcode: serializer.fromJson<String?>(json['barcode']),
-      baseUnitId: serializer.fromJson<String>(json['base_unit_id']),
-      displayUnitId: serializer.fromJson<String?>(json['display_unit_id']),
-      displayFactorThousandths: serializer.fromJson<int>(
-        json['display_factor_thousandths'],
-      ),
-      saleRateMilliPaisa: serializer.fromJson<int>(
-        json['sale_rate_milli_paisa'],
-      ),
-      wholesaleRateMilliPaisa: serializer.fromJson<int?>(
-        json['wholesale_rate_milli_paisa'],
-      ),
-      purchaseRateMilliPaisa: serializer.fromJson<int?>(
-        json['purchase_rate_milli_paisa'],
-      ),
-      avgCostMilliPaisa: serializer.fromJson<int>(json['avg_cost_milli_paisa']),
-      mrpPaisa: serializer.fromJson<int?>(json['mrp_paisa']),
-      hsCode: serializer.fromJson<String?>(json['hs_code']),
-      taxRuleId: serializer.fromJson<String?>(json['tax_rule_id']),
-      priceIncludesTax: serializer.fromJson<int>(json['price_includes_tax']),
-      isThirdSchedule: serializer.fromJson<int>(json['is_third_schedule']),
-      trackStock: serializer.fromJson<int>(json['track_stock']),
-      trackBatch: serializer.fromJson<int>(json['track_batch']),
-      trackSerial: serializer.fromJson<int>(json['track_serial']),
-      minStockThousandths: serializer.fromJson<int>(
-        json['min_stock_thousandths'],
-      ),
-      openingStockThousandths: serializer.fromJson<int>(
-        json['opening_stock_thousandths'],
-      ),
-      openingRateMilliPaisa: serializer.fromJson<int>(
-        json['opening_rate_milli_paisa'],
-      ),
-      imageAttachmentId: serializer.fromJson<String?>(
-        json['image_attachment_id'],
-      ),
-      isActive: serializer.fromJson<int>(json['is_active']),
-      vipRateMilliPaisa: serializer.fromJson<int?>(
-        json['vip_rate_milli_paisa'],
-      ),
+      actionCode: serializer.fromJson<String>(json['action_code']),
+      entityTable: serializer.fromJson<String>(json['entity_table']),
+      entityId: serializer.fromJson<String>(json['entity_id']),
+      summary: serializer.fromJson<String?>(json['summary']),
+      beforeJson: serializer.fromJson<String?>(json['before_json']),
+      afterJson: serializer.fromJson<String?>(json['after_json']),
+      amountPaisa: serializer.fromJson<int?>(json['amount_paisa']),
+      atUtc: serializer.fromJson<int>(json['at_utc']),
     );
   }
   @override
@@ -22373,46 +23133,18 @@ class Item extends DataClass implements Insertable<Item> {
       'origin_device_id': serializer.toJson<String>(originDeviceId),
       'hlc': serializer.toJson<String>(hlc),
       'rev': serializer.toJson<int>(rev),
-      'code': serializer.toJson<String?>(code),
-      'name': serializer.toJson<String>(name),
-      'name_search': serializer.toJson<String>(nameSearch),
-      'item_type': serializer.toJson<String>(itemType),
-      'category': serializer.toJson<String?>(category),
-      'description': serializer.toJson<String?>(description),
-      'barcode': serializer.toJson<String?>(barcode),
-      'base_unit_id': serializer.toJson<String>(baseUnitId),
-      'display_unit_id': serializer.toJson<String?>(displayUnitId),
-      'display_factor_thousandths': serializer.toJson<int>(
-        displayFactorThousandths,
-      ),
-      'sale_rate_milli_paisa': serializer.toJson<int>(saleRateMilliPaisa),
-      'wholesale_rate_milli_paisa': serializer.toJson<int?>(
-        wholesaleRateMilliPaisa,
-      ),
-      'purchase_rate_milli_paisa': serializer.toJson<int?>(
-        purchaseRateMilliPaisa,
-      ),
-      'avg_cost_milli_paisa': serializer.toJson<int>(avgCostMilliPaisa),
-      'mrp_paisa': serializer.toJson<int?>(mrpPaisa),
-      'hs_code': serializer.toJson<String?>(hsCode),
-      'tax_rule_id': serializer.toJson<String?>(taxRuleId),
-      'price_includes_tax': serializer.toJson<int>(priceIncludesTax),
-      'is_third_schedule': serializer.toJson<int>(isThirdSchedule),
-      'track_stock': serializer.toJson<int>(trackStock),
-      'track_batch': serializer.toJson<int>(trackBatch),
-      'track_serial': serializer.toJson<int>(trackSerial),
-      'min_stock_thousandths': serializer.toJson<int>(minStockThousandths),
-      'opening_stock_thousandths': serializer.toJson<int>(
-        openingStockThousandths,
-      ),
-      'opening_rate_milli_paisa': serializer.toJson<int>(openingRateMilliPaisa),
-      'image_attachment_id': serializer.toJson<String?>(imageAttachmentId),
-      'is_active': serializer.toJson<int>(isActive),
-      'vip_rate_milli_paisa': serializer.toJson<int?>(vipRateMilliPaisa),
+      'action_code': serializer.toJson<String>(actionCode),
+      'entity_table': serializer.toJson<String>(entityTable),
+      'entity_id': serializer.toJson<String>(entityId),
+      'summary': serializer.toJson<String?>(summary),
+      'before_json': serializer.toJson<String?>(beforeJson),
+      'after_json': serializer.toJson<String?>(afterJson),
+      'amount_paisa': serializer.toJson<int?>(amountPaisa),
+      'at_utc': serializer.toJson<int>(atUtc),
     };
   }
 
-  Item copyWith({
+  AuditLogData copyWith({
     String? id,
     String? firmId,
     int? createdAtUtc,
@@ -22423,35 +23155,15 @@ class Item extends DataClass implements Insertable<Item> {
     String? originDeviceId,
     String? hlc,
     int? rev,
-    Value<String?> code = const Value.absent(),
-    String? name,
-    String? nameSearch,
-    String? itemType,
-    Value<String?> category = const Value.absent(),
-    Value<String?> description = const Value.absent(),
-    Value<String?> barcode = const Value.absent(),
-    String? baseUnitId,
-    Value<String?> displayUnitId = const Value.absent(),
-    int? displayFactorThousandths,
-    int? saleRateMilliPaisa,
-    Value<int?> wholesaleRateMilliPaisa = const Value.absent(),
-    Value<int?> purchaseRateMilliPaisa = const Value.absent(),
-    int? avgCostMilliPaisa,
-    Value<int?> mrpPaisa = const Value.absent(),
-    Value<String?> hsCode = const Value.absent(),
-    Value<String?> taxRuleId = const Value.absent(),
-    int? priceIncludesTax,
-    int? isThirdSchedule,
-    int? trackStock,
-    int? trackBatch,
-    int? trackSerial,
-    int? minStockThousandths,
-    int? openingStockThousandths,
-    int? openingRateMilliPaisa,
-    Value<String?> imageAttachmentId = const Value.absent(),
-    int? isActive,
-    Value<int?> vipRateMilliPaisa = const Value.absent(),
-  }) => Item(
+    String? actionCode,
+    String? entityTable,
+    String? entityId,
+    Value<String?> summary = const Value.absent(),
+    Value<String?> beforeJson = const Value.absent(),
+    Value<String?> afterJson = const Value.absent(),
+    Value<int?> amountPaisa = const Value.absent(),
+    int? atUtc,
+  }) => AuditLogData(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
     createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -22462,49 +23174,17 @@ class Item extends DataClass implements Insertable<Item> {
     originDeviceId: originDeviceId ?? this.originDeviceId,
     hlc: hlc ?? this.hlc,
     rev: rev ?? this.rev,
-    code: code.present ? code.value : this.code,
-    name: name ?? this.name,
-    nameSearch: nameSearch ?? this.nameSearch,
-    itemType: itemType ?? this.itemType,
-    category: category.present ? category.value : this.category,
-    description: description.present ? description.value : this.description,
-    barcode: barcode.present ? barcode.value : this.barcode,
-    baseUnitId: baseUnitId ?? this.baseUnitId,
-    displayUnitId: displayUnitId.present
-        ? displayUnitId.value
-        : this.displayUnitId,
-    displayFactorThousandths:
-        displayFactorThousandths ?? this.displayFactorThousandths,
-    saleRateMilliPaisa: saleRateMilliPaisa ?? this.saleRateMilliPaisa,
-    wholesaleRateMilliPaisa: wholesaleRateMilliPaisa.present
-        ? wholesaleRateMilliPaisa.value
-        : this.wholesaleRateMilliPaisa,
-    purchaseRateMilliPaisa: purchaseRateMilliPaisa.present
-        ? purchaseRateMilliPaisa.value
-        : this.purchaseRateMilliPaisa,
-    avgCostMilliPaisa: avgCostMilliPaisa ?? this.avgCostMilliPaisa,
-    mrpPaisa: mrpPaisa.present ? mrpPaisa.value : this.mrpPaisa,
-    hsCode: hsCode.present ? hsCode.value : this.hsCode,
-    taxRuleId: taxRuleId.present ? taxRuleId.value : this.taxRuleId,
-    priceIncludesTax: priceIncludesTax ?? this.priceIncludesTax,
-    isThirdSchedule: isThirdSchedule ?? this.isThirdSchedule,
-    trackStock: trackStock ?? this.trackStock,
-    trackBatch: trackBatch ?? this.trackBatch,
-    trackSerial: trackSerial ?? this.trackSerial,
-    minStockThousandths: minStockThousandths ?? this.minStockThousandths,
-    openingStockThousandths:
-        openingStockThousandths ?? this.openingStockThousandths,
-    openingRateMilliPaisa: openingRateMilliPaisa ?? this.openingRateMilliPaisa,
-    imageAttachmentId: imageAttachmentId.present
-        ? imageAttachmentId.value
-        : this.imageAttachmentId,
-    isActive: isActive ?? this.isActive,
-    vipRateMilliPaisa: vipRateMilliPaisa.present
-        ? vipRateMilliPaisa.value
-        : this.vipRateMilliPaisa,
+    actionCode: actionCode ?? this.actionCode,
+    entityTable: entityTable ?? this.entityTable,
+    entityId: entityId ?? this.entityId,
+    summary: summary.present ? summary.value : this.summary,
+    beforeJson: beforeJson.present ? beforeJson.value : this.beforeJson,
+    afterJson: afterJson.present ? afterJson.value : this.afterJson,
+    amountPaisa: amountPaisa.present ? amountPaisa.value : this.amountPaisa,
+    atUtc: atUtc ?? this.atUtc,
   );
-  Item copyWithCompanion(ItemsCompanion data) {
-    return Item(
+  AuditLogData copyWithCompanion(AuditLogCompanion data) {
+    return AuditLogData(
       id: data.id.present ? data.id.value : this.id,
       firmId: data.firmId.present ? data.firmId.value : this.firmId,
       createdAtUtc: data.createdAtUtc.present
@@ -22523,78 +23203,28 @@ class Item extends DataClass implements Insertable<Item> {
           : this.originDeviceId,
       hlc: data.hlc.present ? data.hlc.value : this.hlc,
       rev: data.rev.present ? data.rev.value : this.rev,
-      code: data.code.present ? data.code.value : this.code,
-      name: data.name.present ? data.name.value : this.name,
-      nameSearch: data.nameSearch.present
-          ? data.nameSearch.value
-          : this.nameSearch,
-      itemType: data.itemType.present ? data.itemType.value : this.itemType,
-      category: data.category.present ? data.category.value : this.category,
-      description: data.description.present
-          ? data.description.value
-          : this.description,
-      barcode: data.barcode.present ? data.barcode.value : this.barcode,
-      baseUnitId: data.baseUnitId.present
-          ? data.baseUnitId.value
-          : this.baseUnitId,
-      displayUnitId: data.displayUnitId.present
-          ? data.displayUnitId.value
-          : this.displayUnitId,
-      displayFactorThousandths: data.displayFactorThousandths.present
-          ? data.displayFactorThousandths.value
-          : this.displayFactorThousandths,
-      saleRateMilliPaisa: data.saleRateMilliPaisa.present
-          ? data.saleRateMilliPaisa.value
-          : this.saleRateMilliPaisa,
-      wholesaleRateMilliPaisa: data.wholesaleRateMilliPaisa.present
-          ? data.wholesaleRateMilliPaisa.value
-          : this.wholesaleRateMilliPaisa,
-      purchaseRateMilliPaisa: data.purchaseRateMilliPaisa.present
-          ? data.purchaseRateMilliPaisa.value
-          : this.purchaseRateMilliPaisa,
-      avgCostMilliPaisa: data.avgCostMilliPaisa.present
-          ? data.avgCostMilliPaisa.value
-          : this.avgCostMilliPaisa,
-      mrpPaisa: data.mrpPaisa.present ? data.mrpPaisa.value : this.mrpPaisa,
-      hsCode: data.hsCode.present ? data.hsCode.value : this.hsCode,
-      taxRuleId: data.taxRuleId.present ? data.taxRuleId.value : this.taxRuleId,
-      priceIncludesTax: data.priceIncludesTax.present
-          ? data.priceIncludesTax.value
-          : this.priceIncludesTax,
-      isThirdSchedule: data.isThirdSchedule.present
-          ? data.isThirdSchedule.value
-          : this.isThirdSchedule,
-      trackStock: data.trackStock.present
-          ? data.trackStock.value
-          : this.trackStock,
-      trackBatch: data.trackBatch.present
-          ? data.trackBatch.value
-          : this.trackBatch,
-      trackSerial: data.trackSerial.present
-          ? data.trackSerial.value
-          : this.trackSerial,
-      minStockThousandths: data.minStockThousandths.present
-          ? data.minStockThousandths.value
-          : this.minStockThousandths,
-      openingStockThousandths: data.openingStockThousandths.present
-          ? data.openingStockThousandths.value
-          : this.openingStockThousandths,
-      openingRateMilliPaisa: data.openingRateMilliPaisa.present
-          ? data.openingRateMilliPaisa.value
-          : this.openingRateMilliPaisa,
-      imageAttachmentId: data.imageAttachmentId.present
-          ? data.imageAttachmentId.value
-          : this.imageAttachmentId,
-      isActive: data.isActive.present ? data.isActive.value : this.isActive,
-      vipRateMilliPaisa: data.vipRateMilliPaisa.present
-          ? data.vipRateMilliPaisa.value
-          : this.vipRateMilliPaisa,
+      actionCode: data.actionCode.present
+          ? data.actionCode.value
+          : this.actionCode,
+      entityTable: data.entityTable.present
+          ? data.entityTable.value
+          : this.entityTable,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      summary: data.summary.present ? data.summary.value : this.summary,
+      beforeJson: data.beforeJson.present
+          ? data.beforeJson.value
+          : this.beforeJson,
+      afterJson: data.afterJson.present ? data.afterJson.value : this.afterJson,
+      amountPaisa: data.amountPaisa.present
+          ? data.amountPaisa.value
+          : this.amountPaisa,
+      atUtc: data.atUtc.present ? data.atUtc.value : this.atUtc,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Item(')
+    return (StringBuffer('AuditLogData(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -22605,40 +23235,20 @@ class Item extends DataClass implements Insertable<Item> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('code: $code, ')
-          ..write('name: $name, ')
-          ..write('nameSearch: $nameSearch, ')
-          ..write('itemType: $itemType, ')
-          ..write('category: $category, ')
-          ..write('description: $description, ')
-          ..write('barcode: $barcode, ')
-          ..write('baseUnitId: $baseUnitId, ')
-          ..write('displayUnitId: $displayUnitId, ')
-          ..write('displayFactorThousandths: $displayFactorThousandths, ')
-          ..write('saleRateMilliPaisa: $saleRateMilliPaisa, ')
-          ..write('wholesaleRateMilliPaisa: $wholesaleRateMilliPaisa, ')
-          ..write('purchaseRateMilliPaisa: $purchaseRateMilliPaisa, ')
-          ..write('avgCostMilliPaisa: $avgCostMilliPaisa, ')
-          ..write('mrpPaisa: $mrpPaisa, ')
-          ..write('hsCode: $hsCode, ')
-          ..write('taxRuleId: $taxRuleId, ')
-          ..write('priceIncludesTax: $priceIncludesTax, ')
-          ..write('isThirdSchedule: $isThirdSchedule, ')
-          ..write('trackStock: $trackStock, ')
-          ..write('trackBatch: $trackBatch, ')
-          ..write('trackSerial: $trackSerial, ')
-          ..write('minStockThousandths: $minStockThousandths, ')
-          ..write('openingStockThousandths: $openingStockThousandths, ')
-          ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
-          ..write('imageAttachmentId: $imageAttachmentId, ')
-          ..write('isActive: $isActive, ')
-          ..write('vipRateMilliPaisa: $vipRateMilliPaisa')
+          ..write('actionCode: $actionCode, ')
+          ..write('entityTable: $entityTable, ')
+          ..write('entityId: $entityId, ')
+          ..write('summary: $summary, ')
+          ..write('beforeJson: $beforeJson, ')
+          ..write('afterJson: $afterJson, ')
+          ..write('amountPaisa: $amountPaisa, ')
+          ..write('atUtc: $atUtc')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode => Object.hash(
     id,
     firmId,
     createdAtUtc,
@@ -22649,39 +23259,19 @@ class Item extends DataClass implements Insertable<Item> {
     originDeviceId,
     hlc,
     rev,
-    code,
-    name,
-    nameSearch,
-    itemType,
-    category,
-    description,
-    barcode,
-    baseUnitId,
-    displayUnitId,
-    displayFactorThousandths,
-    saleRateMilliPaisa,
-    wholesaleRateMilliPaisa,
-    purchaseRateMilliPaisa,
-    avgCostMilliPaisa,
-    mrpPaisa,
-    hsCode,
-    taxRuleId,
-    priceIncludesTax,
-    isThirdSchedule,
-    trackStock,
-    trackBatch,
-    trackSerial,
-    minStockThousandths,
-    openingStockThousandths,
-    openingRateMilliPaisa,
-    imageAttachmentId,
-    isActive,
-    vipRateMilliPaisa,
-  ]);
+    actionCode,
+    entityTable,
+    entityId,
+    summary,
+    beforeJson,
+    afterJson,
+    amountPaisa,
+    atUtc,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Item &&
+      (other is AuditLogData &&
           other.id == this.id &&
           other.firmId == this.firmId &&
           other.createdAtUtc == this.createdAtUtc &&
@@ -22692,37 +23282,17 @@ class Item extends DataClass implements Insertable<Item> {
           other.originDeviceId == this.originDeviceId &&
           other.hlc == this.hlc &&
           other.rev == this.rev &&
-          other.code == this.code &&
-          other.name == this.name &&
-          other.nameSearch == this.nameSearch &&
-          other.itemType == this.itemType &&
-          other.category == this.category &&
-          other.description == this.description &&
-          other.barcode == this.barcode &&
-          other.baseUnitId == this.baseUnitId &&
-          other.displayUnitId == this.displayUnitId &&
-          other.displayFactorThousandths == this.displayFactorThousandths &&
-          other.saleRateMilliPaisa == this.saleRateMilliPaisa &&
-          other.wholesaleRateMilliPaisa == this.wholesaleRateMilliPaisa &&
-          other.purchaseRateMilliPaisa == this.purchaseRateMilliPaisa &&
-          other.avgCostMilliPaisa == this.avgCostMilliPaisa &&
-          other.mrpPaisa == this.mrpPaisa &&
-          other.hsCode == this.hsCode &&
-          other.taxRuleId == this.taxRuleId &&
-          other.priceIncludesTax == this.priceIncludesTax &&
-          other.isThirdSchedule == this.isThirdSchedule &&
-          other.trackStock == this.trackStock &&
-          other.trackBatch == this.trackBatch &&
-          other.trackSerial == this.trackSerial &&
-          other.minStockThousandths == this.minStockThousandths &&
-          other.openingStockThousandths == this.openingStockThousandths &&
-          other.openingRateMilliPaisa == this.openingRateMilliPaisa &&
-          other.imageAttachmentId == this.imageAttachmentId &&
-          other.isActive == this.isActive &&
-          other.vipRateMilliPaisa == this.vipRateMilliPaisa);
+          other.actionCode == this.actionCode &&
+          other.entityTable == this.entityTable &&
+          other.entityId == this.entityId &&
+          other.summary == this.summary &&
+          other.beforeJson == this.beforeJson &&
+          other.afterJson == this.afterJson &&
+          other.amountPaisa == this.amountPaisa &&
+          other.atUtc == this.atUtc);
 }
 
-class ItemsCompanion extends UpdateCompanion<Item> {
+class AuditLogCompanion extends UpdateCompanion<AuditLogData> {
   final Value<String> id;
   final Value<String> firmId;
   final Value<int> createdAtUtc;
@@ -22733,36 +23303,16 @@ class ItemsCompanion extends UpdateCompanion<Item> {
   final Value<String> originDeviceId;
   final Value<String> hlc;
   final Value<int> rev;
-  final Value<String?> code;
-  final Value<String> name;
-  final Value<String> nameSearch;
-  final Value<String> itemType;
-  final Value<String?> category;
-  final Value<String?> description;
-  final Value<String?> barcode;
-  final Value<String> baseUnitId;
-  final Value<String?> displayUnitId;
-  final Value<int> displayFactorThousandths;
-  final Value<int> saleRateMilliPaisa;
-  final Value<int?> wholesaleRateMilliPaisa;
-  final Value<int?> purchaseRateMilliPaisa;
-  final Value<int> avgCostMilliPaisa;
-  final Value<int?> mrpPaisa;
-  final Value<String?> hsCode;
-  final Value<String?> taxRuleId;
-  final Value<int> priceIncludesTax;
-  final Value<int> isThirdSchedule;
-  final Value<int> trackStock;
-  final Value<int> trackBatch;
-  final Value<int> trackSerial;
-  final Value<int> minStockThousandths;
-  final Value<int> openingStockThousandths;
-  final Value<int> openingRateMilliPaisa;
-  final Value<String?> imageAttachmentId;
-  final Value<int> isActive;
-  final Value<int?> vipRateMilliPaisa;
+  final Value<String> actionCode;
+  final Value<String> entityTable;
+  final Value<String> entityId;
+  final Value<String?> summary;
+  final Value<String?> beforeJson;
+  final Value<String?> afterJson;
+  final Value<int?> amountPaisa;
+  final Value<int> atUtc;
   final Value<int> rowid;
-  const ItemsCompanion({
+  const AuditLogCompanion({
     this.id = const Value.absent(),
     this.firmId = const Value.absent(),
     this.createdAtUtc = const Value.absent(),
@@ -22773,37 +23323,17 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.originDeviceId = const Value.absent(),
     this.hlc = const Value.absent(),
     this.rev = const Value.absent(),
-    this.code = const Value.absent(),
-    this.name = const Value.absent(),
-    this.nameSearch = const Value.absent(),
-    this.itemType = const Value.absent(),
-    this.category = const Value.absent(),
-    this.description = const Value.absent(),
-    this.barcode = const Value.absent(),
-    this.baseUnitId = const Value.absent(),
-    this.displayUnitId = const Value.absent(),
-    this.displayFactorThousandths = const Value.absent(),
-    this.saleRateMilliPaisa = const Value.absent(),
-    this.wholesaleRateMilliPaisa = const Value.absent(),
-    this.purchaseRateMilliPaisa = const Value.absent(),
-    this.avgCostMilliPaisa = const Value.absent(),
-    this.mrpPaisa = const Value.absent(),
-    this.hsCode = const Value.absent(),
-    this.taxRuleId = const Value.absent(),
-    this.priceIncludesTax = const Value.absent(),
-    this.isThirdSchedule = const Value.absent(),
-    this.trackStock = const Value.absent(),
-    this.trackBatch = const Value.absent(),
-    this.trackSerial = const Value.absent(),
-    this.minStockThousandths = const Value.absent(),
-    this.openingStockThousandths = const Value.absent(),
-    this.openingRateMilliPaisa = const Value.absent(),
-    this.imageAttachmentId = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.vipRateMilliPaisa = const Value.absent(),
+    this.actionCode = const Value.absent(),
+    this.entityTable = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.summary = const Value.absent(),
+    this.beforeJson = const Value.absent(),
+    this.afterJson = const Value.absent(),
+    this.amountPaisa = const Value.absent(),
+    this.atUtc = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  ItemsCompanion.insert({
+  AuditLogCompanion.insert({
     required String id,
     required String firmId,
     required int createdAtUtc,
@@ -22814,34 +23344,14 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     required String originDeviceId,
     required String hlc,
     this.rev = const Value.absent(),
-    this.code = const Value.absent(),
-    required String name,
-    required String nameSearch,
-    this.itemType = const Value.absent(),
-    this.category = const Value.absent(),
-    this.description = const Value.absent(),
-    this.barcode = const Value.absent(),
-    required String baseUnitId,
-    this.displayUnitId = const Value.absent(),
-    this.displayFactorThousandths = const Value.absent(),
-    this.saleRateMilliPaisa = const Value.absent(),
-    this.wholesaleRateMilliPaisa = const Value.absent(),
-    this.purchaseRateMilliPaisa = const Value.absent(),
-    this.avgCostMilliPaisa = const Value.absent(),
-    this.mrpPaisa = const Value.absent(),
-    this.hsCode = const Value.absent(),
-    this.taxRuleId = const Value.absent(),
-    this.priceIncludesTax = const Value.absent(),
-    this.isThirdSchedule = const Value.absent(),
-    this.trackStock = const Value.absent(),
-    this.trackBatch = const Value.absent(),
-    this.trackSerial = const Value.absent(),
-    this.minStockThousandths = const Value.absent(),
-    this.openingStockThousandths = const Value.absent(),
-    this.openingRateMilliPaisa = const Value.absent(),
-    this.imageAttachmentId = const Value.absent(),
-    this.isActive = const Value.absent(),
-    this.vipRateMilliPaisa = const Value.absent(),
+    required String actionCode,
+    required String entityTable,
+    required String entityId,
+    this.summary = const Value.absent(),
+    this.beforeJson = const Value.absent(),
+    this.afterJson = const Value.absent(),
+    this.amountPaisa = const Value.absent(),
+    required int atUtc,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -22851,10 +23361,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
        updatedBy = Value(updatedBy),
        originDeviceId = Value(originDeviceId),
        hlc = Value(hlc),
-       name = Value(name),
-       nameSearch = Value(nameSearch),
-       baseUnitId = Value(baseUnitId);
-  static Insertable<Item> custom({
+       actionCode = Value(actionCode),
+       entityTable = Value(entityTable),
+       entityId = Value(entityId),
+       atUtc = Value(atUtc);
+  static Insertable<AuditLogData> custom({
     Expression<String>? id,
     Expression<String>? firmId,
     Expression<int>? createdAtUtc,
@@ -22865,34 +23376,14 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Expression<String>? originDeviceId,
     Expression<String>? hlc,
     Expression<int>? rev,
-    Expression<String>? code,
-    Expression<String>? name,
-    Expression<String>? nameSearch,
-    Expression<String>? itemType,
-    Expression<String>? category,
-    Expression<String>? description,
-    Expression<String>? barcode,
-    Expression<String>? baseUnitId,
-    Expression<String>? displayUnitId,
-    Expression<int>? displayFactorThousandths,
-    Expression<int>? saleRateMilliPaisa,
-    Expression<int>? wholesaleRateMilliPaisa,
-    Expression<int>? purchaseRateMilliPaisa,
-    Expression<int>? avgCostMilliPaisa,
-    Expression<int>? mrpPaisa,
-    Expression<String>? hsCode,
-    Expression<String>? taxRuleId,
-    Expression<int>? priceIncludesTax,
-    Expression<int>? isThirdSchedule,
-    Expression<int>? trackStock,
-    Expression<int>? trackBatch,
-    Expression<int>? trackSerial,
-    Expression<int>? minStockThousandths,
-    Expression<int>? openingStockThousandths,
-    Expression<int>? openingRateMilliPaisa,
-    Expression<String>? imageAttachmentId,
-    Expression<int>? isActive,
-    Expression<int>? vipRateMilliPaisa,
+    Expression<String>? actionCode,
+    Expression<String>? entityTable,
+    Expression<String>? entityId,
+    Expression<String>? summary,
+    Expression<String>? beforeJson,
+    Expression<String>? afterJson,
+    Expression<int>? amountPaisa,
+    Expression<int>? atUtc,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -22906,46 +23397,19 @@ class ItemsCompanion extends UpdateCompanion<Item> {
       if (originDeviceId != null) 'origin_device_id': originDeviceId,
       if (hlc != null) 'hlc': hlc,
       if (rev != null) 'rev': rev,
-      if (code != null) 'code': code,
-      if (name != null) 'name': name,
-      if (nameSearch != null) 'name_search': nameSearch,
-      if (itemType != null) 'item_type': itemType,
-      if (category != null) 'category': category,
-      if (description != null) 'description': description,
-      if (barcode != null) 'barcode': barcode,
-      if (baseUnitId != null) 'base_unit_id': baseUnitId,
-      if (displayUnitId != null) 'display_unit_id': displayUnitId,
-      if (displayFactorThousandths != null)
-        'display_factor_thousandths': displayFactorThousandths,
-      if (saleRateMilliPaisa != null)
-        'sale_rate_milli_paisa': saleRateMilliPaisa,
-      if (wholesaleRateMilliPaisa != null)
-        'wholesale_rate_milli_paisa': wholesaleRateMilliPaisa,
-      if (purchaseRateMilliPaisa != null)
-        'purchase_rate_milli_paisa': purchaseRateMilliPaisa,
-      if (avgCostMilliPaisa != null) 'avg_cost_milli_paisa': avgCostMilliPaisa,
-      if (mrpPaisa != null) 'mrp_paisa': mrpPaisa,
-      if (hsCode != null) 'hs_code': hsCode,
-      if (taxRuleId != null) 'tax_rule_id': taxRuleId,
-      if (priceIncludesTax != null) 'price_includes_tax': priceIncludesTax,
-      if (isThirdSchedule != null) 'is_third_schedule': isThirdSchedule,
-      if (trackStock != null) 'track_stock': trackStock,
-      if (trackBatch != null) 'track_batch': trackBatch,
-      if (trackSerial != null) 'track_serial': trackSerial,
-      if (minStockThousandths != null)
-        'min_stock_thousandths': minStockThousandths,
-      if (openingStockThousandths != null)
-        'opening_stock_thousandths': openingStockThousandths,
-      if (openingRateMilliPaisa != null)
-        'opening_rate_milli_paisa': openingRateMilliPaisa,
-      if (imageAttachmentId != null) 'image_attachment_id': imageAttachmentId,
-      if (isActive != null) 'is_active': isActive,
-      if (vipRateMilliPaisa != null) 'vip_rate_milli_paisa': vipRateMilliPaisa,
+      if (actionCode != null) 'action_code': actionCode,
+      if (entityTable != null) 'entity_table': entityTable,
+      if (entityId != null) 'entity_id': entityId,
+      if (summary != null) 'summary': summary,
+      if (beforeJson != null) 'before_json': beforeJson,
+      if (afterJson != null) 'after_json': afterJson,
+      if (amountPaisa != null) 'amount_paisa': amountPaisa,
+      if (atUtc != null) 'at_utc': atUtc,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  ItemsCompanion copyWith({
+  AuditLogCompanion copyWith({
     Value<String>? id,
     Value<String>? firmId,
     Value<int>? createdAtUtc,
@@ -22956,37 +23420,17 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Value<String>? originDeviceId,
     Value<String>? hlc,
     Value<int>? rev,
-    Value<String?>? code,
-    Value<String>? name,
-    Value<String>? nameSearch,
-    Value<String>? itemType,
-    Value<String?>? category,
-    Value<String?>? description,
-    Value<String?>? barcode,
-    Value<String>? baseUnitId,
-    Value<String?>? displayUnitId,
-    Value<int>? displayFactorThousandths,
-    Value<int>? saleRateMilliPaisa,
-    Value<int?>? wholesaleRateMilliPaisa,
-    Value<int?>? purchaseRateMilliPaisa,
-    Value<int>? avgCostMilliPaisa,
-    Value<int?>? mrpPaisa,
-    Value<String?>? hsCode,
-    Value<String?>? taxRuleId,
-    Value<int>? priceIncludesTax,
-    Value<int>? isThirdSchedule,
-    Value<int>? trackStock,
-    Value<int>? trackBatch,
-    Value<int>? trackSerial,
-    Value<int>? minStockThousandths,
-    Value<int>? openingStockThousandths,
-    Value<int>? openingRateMilliPaisa,
-    Value<String?>? imageAttachmentId,
-    Value<int>? isActive,
-    Value<int?>? vipRateMilliPaisa,
+    Value<String>? actionCode,
+    Value<String>? entityTable,
+    Value<String>? entityId,
+    Value<String?>? summary,
+    Value<String?>? beforeJson,
+    Value<String?>? afterJson,
+    Value<int?>? amountPaisa,
+    Value<int>? atUtc,
     Value<int>? rowid,
   }) {
-    return ItemsCompanion(
+    return AuditLogCompanion(
       id: id ?? this.id,
       firmId: firmId ?? this.firmId,
       createdAtUtc: createdAtUtc ?? this.createdAtUtc,
@@ -22997,39 +23441,14 @@ class ItemsCompanion extends UpdateCompanion<Item> {
       originDeviceId: originDeviceId ?? this.originDeviceId,
       hlc: hlc ?? this.hlc,
       rev: rev ?? this.rev,
-      code: code ?? this.code,
-      name: name ?? this.name,
-      nameSearch: nameSearch ?? this.nameSearch,
-      itemType: itemType ?? this.itemType,
-      category: category ?? this.category,
-      description: description ?? this.description,
-      barcode: barcode ?? this.barcode,
-      baseUnitId: baseUnitId ?? this.baseUnitId,
-      displayUnitId: displayUnitId ?? this.displayUnitId,
-      displayFactorThousandths:
-          displayFactorThousandths ?? this.displayFactorThousandths,
-      saleRateMilliPaisa: saleRateMilliPaisa ?? this.saleRateMilliPaisa,
-      wholesaleRateMilliPaisa:
-          wholesaleRateMilliPaisa ?? this.wholesaleRateMilliPaisa,
-      purchaseRateMilliPaisa:
-          purchaseRateMilliPaisa ?? this.purchaseRateMilliPaisa,
-      avgCostMilliPaisa: avgCostMilliPaisa ?? this.avgCostMilliPaisa,
-      mrpPaisa: mrpPaisa ?? this.mrpPaisa,
-      hsCode: hsCode ?? this.hsCode,
-      taxRuleId: taxRuleId ?? this.taxRuleId,
-      priceIncludesTax: priceIncludesTax ?? this.priceIncludesTax,
-      isThirdSchedule: isThirdSchedule ?? this.isThirdSchedule,
-      trackStock: trackStock ?? this.trackStock,
-      trackBatch: trackBatch ?? this.trackBatch,
-      trackSerial: trackSerial ?? this.trackSerial,
-      minStockThousandths: minStockThousandths ?? this.minStockThousandths,
-      openingStockThousandths:
-          openingStockThousandths ?? this.openingStockThousandths,
-      openingRateMilliPaisa:
-          openingRateMilliPaisa ?? this.openingRateMilliPaisa,
-      imageAttachmentId: imageAttachmentId ?? this.imageAttachmentId,
-      isActive: isActive ?? this.isActive,
-      vipRateMilliPaisa: vipRateMilliPaisa ?? this.vipRateMilliPaisa,
+      actionCode: actionCode ?? this.actionCode,
+      entityTable: entityTable ?? this.entityTable,
+      entityId: entityId ?? this.entityId,
+      summary: summary ?? this.summary,
+      beforeJson: beforeJson ?? this.beforeJson,
+      afterJson: afterJson ?? this.afterJson,
+      amountPaisa: amountPaisa ?? this.amountPaisa,
+      atUtc: atUtc ?? this.atUtc,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -23067,99 +23486,29 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     if (rev.present) {
       map['rev'] = Variable<int>(rev.value);
     }
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
+    if (actionCode.present) {
+      map['action_code'] = Variable<String>(actionCode.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
+    if (entityTable.present) {
+      map['entity_table'] = Variable<String>(entityTable.value);
     }
-    if (nameSearch.present) {
-      map['name_search'] = Variable<String>(nameSearch.value);
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
     }
-    if (itemType.present) {
-      map['item_type'] = Variable<String>(itemType.value);
+    if (summary.present) {
+      map['summary'] = Variable<String>(summary.value);
     }
-    if (category.present) {
-      map['category'] = Variable<String>(category.value);
+    if (beforeJson.present) {
+      map['before_json'] = Variable<String>(beforeJson.value);
     }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
+    if (afterJson.present) {
+      map['after_json'] = Variable<String>(afterJson.value);
     }
-    if (barcode.present) {
-      map['barcode'] = Variable<String>(barcode.value);
+    if (amountPaisa.present) {
+      map['amount_paisa'] = Variable<int>(amountPaisa.value);
     }
-    if (baseUnitId.present) {
-      map['base_unit_id'] = Variable<String>(baseUnitId.value);
-    }
-    if (displayUnitId.present) {
-      map['display_unit_id'] = Variable<String>(displayUnitId.value);
-    }
-    if (displayFactorThousandths.present) {
-      map['display_factor_thousandths'] = Variable<int>(
-        displayFactorThousandths.value,
-      );
-    }
-    if (saleRateMilliPaisa.present) {
-      map['sale_rate_milli_paisa'] = Variable<int>(saleRateMilliPaisa.value);
-    }
-    if (wholesaleRateMilliPaisa.present) {
-      map['wholesale_rate_milli_paisa'] = Variable<int>(
-        wholesaleRateMilliPaisa.value,
-      );
-    }
-    if (purchaseRateMilliPaisa.present) {
-      map['purchase_rate_milli_paisa'] = Variable<int>(
-        purchaseRateMilliPaisa.value,
-      );
-    }
-    if (avgCostMilliPaisa.present) {
-      map['avg_cost_milli_paisa'] = Variable<int>(avgCostMilliPaisa.value);
-    }
-    if (mrpPaisa.present) {
-      map['mrp_paisa'] = Variable<int>(mrpPaisa.value);
-    }
-    if (hsCode.present) {
-      map['hs_code'] = Variable<String>(hsCode.value);
-    }
-    if (taxRuleId.present) {
-      map['tax_rule_id'] = Variable<String>(taxRuleId.value);
-    }
-    if (priceIncludesTax.present) {
-      map['price_includes_tax'] = Variable<int>(priceIncludesTax.value);
-    }
-    if (isThirdSchedule.present) {
-      map['is_third_schedule'] = Variable<int>(isThirdSchedule.value);
-    }
-    if (trackStock.present) {
-      map['track_stock'] = Variable<int>(trackStock.value);
-    }
-    if (trackBatch.present) {
-      map['track_batch'] = Variable<int>(trackBatch.value);
-    }
-    if (trackSerial.present) {
-      map['track_serial'] = Variable<int>(trackSerial.value);
-    }
-    if (minStockThousandths.present) {
-      map['min_stock_thousandths'] = Variable<int>(minStockThousandths.value);
-    }
-    if (openingStockThousandths.present) {
-      map['opening_stock_thousandths'] = Variable<int>(
-        openingStockThousandths.value,
-      );
-    }
-    if (openingRateMilliPaisa.present) {
-      map['opening_rate_milli_paisa'] = Variable<int>(
-        openingRateMilliPaisa.value,
-      );
-    }
-    if (imageAttachmentId.present) {
-      map['image_attachment_id'] = Variable<String>(imageAttachmentId.value);
-    }
-    if (isActive.present) {
-      map['is_active'] = Variable<int>(isActive.value);
-    }
-    if (vipRateMilliPaisa.present) {
-      map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa.value);
+    if (atUtc.present) {
+      map['at_utc'] = Variable<int>(atUtc.value);
     }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
@@ -23169,7 +23518,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
 
   @override
   String toString() {
-    return (StringBuffer('ItemsCompanion(')
+    return (StringBuffer('AuditLogCompanion(')
           ..write('id: $id, ')
           ..write('firmId: $firmId, ')
           ..write('createdAtUtc: $createdAtUtc, ')
@@ -23180,34 +23529,2454 @@ class ItemsCompanion extends UpdateCompanion<Item> {
           ..write('originDeviceId: $originDeviceId, ')
           ..write('hlc: $hlc, ')
           ..write('rev: $rev, ')
-          ..write('code: $code, ')
-          ..write('name: $name, ')
-          ..write('nameSearch: $nameSearch, ')
-          ..write('itemType: $itemType, ')
-          ..write('category: $category, ')
-          ..write('description: $description, ')
-          ..write('barcode: $barcode, ')
-          ..write('baseUnitId: $baseUnitId, ')
-          ..write('displayUnitId: $displayUnitId, ')
-          ..write('displayFactorThousandths: $displayFactorThousandths, ')
-          ..write('saleRateMilliPaisa: $saleRateMilliPaisa, ')
-          ..write('wholesaleRateMilliPaisa: $wholesaleRateMilliPaisa, ')
-          ..write('purchaseRateMilliPaisa: $purchaseRateMilliPaisa, ')
-          ..write('avgCostMilliPaisa: $avgCostMilliPaisa, ')
-          ..write('mrpPaisa: $mrpPaisa, ')
-          ..write('hsCode: $hsCode, ')
-          ..write('taxRuleId: $taxRuleId, ')
-          ..write('priceIncludesTax: $priceIncludesTax, ')
-          ..write('isThirdSchedule: $isThirdSchedule, ')
-          ..write('trackStock: $trackStock, ')
-          ..write('trackBatch: $trackBatch, ')
-          ..write('trackSerial: $trackSerial, ')
-          ..write('minStockThousandths: $minStockThousandths, ')
-          ..write('openingStockThousandths: $openingStockThousandths, ')
-          ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
-          ..write('imageAttachmentId: $imageAttachmentId, ')
-          ..write('isActive: $isActive, ')
-          ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
+          ..write('actionCode: $actionCode, ')
+          ..write('entityTable: $entityTable, ')
+          ..write('entityId: $entityId, ')
+          ..write('summary: $summary, ')
+          ..write('beforeJson: $beforeJson, ')
+          ..write('afterJson: $afterJson, ')
+          ..write('amountPaisa: $amountPaisa, ')
+          ..write('atUtc: $atUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class ChangeLog extends Table with TableInfo<ChangeLog, ChangeLogData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  ChangeLog(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
+  late final GeneratedColumn<String> firmId = GeneratedColumn<String>(
+    'firm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES firms(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _updatedByMeta = const VerificationMeta(
+    'updatedBy',
+  );
+  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
+    'updated_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
+    'deletedAtUtc',
+  );
+  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _originDeviceIdMeta = const VerificationMeta(
+    'originDeviceId',
+  );
+  late final GeneratedColumn<String> originDeviceId = GeneratedColumn<String>(
+    'origin_device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES devices(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _revMeta = const VerificationMeta('rev');
+  late final GeneratedColumn<int> rev = GeneratedColumn<int>(
+    'rev',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _seqMeta = const VerificationMeta('seq');
+  late final GeneratedColumn<int> seq = GeneratedColumn<int>(
+    'seq',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (seq > 0)',
+  );
+  static const VerificationMeta _entityTableMeta = const VerificationMeta(
+    'entityTable',
+  );
+  late final GeneratedColumn<String> entityTable = GeneratedColumn<String>(
+    'entity_table',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _entityIdMeta = const VerificationMeta(
+    'entityId',
+  );
+  late final GeneratedColumn<String> entityId = GeneratedColumn<String>(
+    'entity_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _opMeta = const VerificationMeta('op');
+  late final GeneratedColumn<String> op = GeneratedColumn<String>(
+    'op',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (op IN (\'insert\', \'update\', \'delete\'))',
+  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
+    'payloadJson',
+  );
+  late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
+    'payload_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _entityHlcMeta = const VerificationMeta(
+    'entityHlc',
+  );
+  late final GeneratedColumn<String> entityHlc = GeneratedColumn<String>(
+    'entity_hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _entityRevMeta = const VerificationMeta(
+    'entityRev',
+  );
+  late final GeneratedColumn<int> entityRev = GeneratedColumn<int>(
+    'entity_rev',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _atUtcMeta = const VerificationMeta('atUtc');
+  late final GeneratedColumn<int> atUtc = GeneratedColumn<int>(
+    'at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _syncStateMeta = const VerificationMeta(
+    'syncState',
+  );
+  late final GeneratedColumn<String> syncState = GeneratedColumn<String>(
+    'sync_state',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'NOT NULL DEFAULT \'pending\' CHECK (sync_state IN (\'pending\', \'sent\', \'acked\', \'conflict\'))',
+    defaultValue: const CustomExpression('\'pending\''),
+  );
+  static const VerificationMeta _syncedAtUtcMeta = const VerificationMeta(
+    'syncedAtUtc',
+  );
+  late final GeneratedColumn<int> syncedAtUtc = GeneratedColumn<int>(
+    'synced_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    seq,
+    entityTable,
+    entityId,
+    op,
+    payloadJson,
+    entityHlc,
+    entityRev,
+    atUtc,
+    syncState,
+    syncedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'change_log';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ChangeLogData> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('firm_id')) {
+      context.handle(
+        _firmIdMeta,
+        firmId.isAcceptableOrUnknown(data['firm_id']!, _firmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firmIdMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('updated_by')) {
+      context.handle(
+        _updatedByMeta,
+        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedByMeta);
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+        _deletedAtUtcMeta,
+        deletedAtUtc.isAcceptableOrUnknown(
+          data['deleted_at_utc']!,
+          _deletedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_device_id')) {
+      context.handle(
+        _originDeviceIdMeta,
+        originDeviceId.isAcceptableOrUnknown(
+          data['origin_device_id']!,
+          _originDeviceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originDeviceIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('rev')) {
+      context.handle(
+        _revMeta,
+        rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
+      );
+    }
+    if (data.containsKey('seq')) {
+      context.handle(
+        _seqMeta,
+        seq.isAcceptableOrUnknown(data['seq']!, _seqMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_seqMeta);
+    }
+    if (data.containsKey('entity_table')) {
+      context.handle(
+        _entityTableMeta,
+        entityTable.isAcceptableOrUnknown(
+          data['entity_table']!,
+          _entityTableMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_entityTableMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(
+        _entityIdMeta,
+        entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('op')) {
+      context.handle(_opMeta, op.isAcceptableOrUnknown(data['op']!, _opMeta));
+    } else if (isInserting) {
+      context.missing(_opMeta);
+    }
+    if (data.containsKey('payload_json')) {
+      context.handle(
+        _payloadJsonMeta,
+        payloadJson.isAcceptableOrUnknown(
+          data['payload_json']!,
+          _payloadJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadJsonMeta);
+    }
+    if (data.containsKey('entity_hlc')) {
+      context.handle(
+        _entityHlcMeta,
+        entityHlc.isAcceptableOrUnknown(data['entity_hlc']!, _entityHlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityHlcMeta);
+    }
+    if (data.containsKey('entity_rev')) {
+      context.handle(
+        _entityRevMeta,
+        entityRev.isAcceptableOrUnknown(data['entity_rev']!, _entityRevMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_entityRevMeta);
+    }
+    if (data.containsKey('at_utc')) {
+      context.handle(
+        _atUtcMeta,
+        atUtc.isAcceptableOrUnknown(data['at_utc']!, _atUtcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_atUtcMeta);
+    }
+    if (data.containsKey('sync_state')) {
+      context.handle(
+        _syncStateMeta,
+        syncState.isAcceptableOrUnknown(data['sync_state']!, _syncStateMeta),
+      );
+    }
+    if (data.containsKey('synced_at_utc')) {
+      context.handle(
+        _syncedAtUtcMeta,
+        syncedAtUtc.isAcceptableOrUnknown(
+          data['synced_at_utc']!,
+          _syncedAtUtcMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  ChangeLogData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ChangeLogData(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      firmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}firm_id'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      updatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_by'],
+      )!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at_utc'],
+      ),
+      originDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_device_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      rev: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rev'],
+      )!,
+      seq: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}seq'],
+      )!,
+      entityTable: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_table'],
+      )!,
+      entityId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_id'],
+      )!,
+      op: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}op'],
+      )!,
+      payloadJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_json'],
+      )!,
+      entityHlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}entity_hlc'],
+      )!,
+      entityRev: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}entity_rev'],
+      )!,
+      atUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}at_utc'],
+      )!,
+      syncState: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}sync_state'],
+      )!,
+      syncedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}synced_at_utc'],
+      ),
+    );
+  }
+
+  @override
+  ChangeLog createAlias(String alias) {
+    return ChangeLog(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class ChangeLogData extends DataClass implements Insertable<ChangeLogData> {
+  final String id;
+  final String firmId;
+  final int createdAtUtc;
+  final int updatedAtUtc;
+  final String createdBy;
+  final String updatedBy;
+  final int? deletedAtUtc;
+  final String originDeviceId;
+  final String hlc;
+  final int rev;
+
+  /// Monotonic per device, allocated from devices.change_seq in the same
+  /// transaction. A peer asks for "everything after 4,117" and gets exactly
+  /// that, in order, with no gaps and no clock involved.
+  final int seq;
+  final String entityTable;
+  final String entityId;
+  final String op;
+  final String payloadJson;
+
+  /// The HLC and rev of the ROW as written, which is what the merge rule reads.
+  final String entityHlc;
+  final int entityRev;
+  final int atUtc;
+  final String syncState;
+  final int? syncedAtUtc;
+  const ChangeLogData({
+    required this.id,
+    required this.firmId,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+    required this.createdBy,
+    required this.updatedBy,
+    this.deletedAtUtc,
+    required this.originDeviceId,
+    required this.hlc,
+    required this.rev,
+    required this.seq,
+    required this.entityTable,
+    required this.entityId,
+    required this.op,
+    required this.payloadJson,
+    required this.entityHlc,
+    required this.entityRev,
+    required this.atUtc,
+    required this.syncState,
+    this.syncedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['firm_id'] = Variable<String>(firmId);
+    map['created_at_utc'] = Variable<int>(createdAtUtc);
+    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
+    map['created_by'] = Variable<String>(createdBy);
+    map['updated_by'] = Variable<String>(updatedBy);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc);
+    }
+    map['origin_device_id'] = Variable<String>(originDeviceId);
+    map['hlc'] = Variable<String>(hlc);
+    map['rev'] = Variable<int>(rev);
+    map['seq'] = Variable<int>(seq);
+    map['entity_table'] = Variable<String>(entityTable);
+    map['entity_id'] = Variable<String>(entityId);
+    map['op'] = Variable<String>(op);
+    map['payload_json'] = Variable<String>(payloadJson);
+    map['entity_hlc'] = Variable<String>(entityHlc);
+    map['entity_rev'] = Variable<int>(entityRev);
+    map['at_utc'] = Variable<int>(atUtc);
+    map['sync_state'] = Variable<String>(syncState);
+    if (!nullToAbsent || syncedAtUtc != null) {
+      map['synced_at_utc'] = Variable<int>(syncedAtUtc);
+    }
+    return map;
+  }
+
+  ChangeLogCompanion toCompanion(bool nullToAbsent) {
+    return ChangeLogCompanion(
+      id: Value(id),
+      firmId: Value(firmId),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+      createdBy: Value(createdBy),
+      updatedBy: Value(updatedBy),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      originDeviceId: Value(originDeviceId),
+      hlc: Value(hlc),
+      rev: Value(rev),
+      seq: Value(seq),
+      entityTable: Value(entityTable),
+      entityId: Value(entityId),
+      op: Value(op),
+      payloadJson: Value(payloadJson),
+      entityHlc: Value(entityHlc),
+      entityRev: Value(entityRev),
+      atUtc: Value(atUtc),
+      syncState: Value(syncState),
+      syncedAtUtc: syncedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(syncedAtUtc),
+    );
+  }
+
+  factory ChangeLogData.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ChangeLogData(
+      id: serializer.fromJson<String>(json['id']),
+      firmId: serializer.fromJson<String>(json['firm_id']),
+      createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
+      updatedAtUtc: serializer.fromJson<int>(json['updated_at_utc']),
+      createdBy: serializer.fromJson<String>(json['created_by']),
+      updatedBy: serializer.fromJson<String>(json['updated_by']),
+      deletedAtUtc: serializer.fromJson<int?>(json['deleted_at_utc']),
+      originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      rev: serializer.fromJson<int>(json['rev']),
+      seq: serializer.fromJson<int>(json['seq']),
+      entityTable: serializer.fromJson<String>(json['entity_table']),
+      entityId: serializer.fromJson<String>(json['entity_id']),
+      op: serializer.fromJson<String>(json['op']),
+      payloadJson: serializer.fromJson<String>(json['payload_json']),
+      entityHlc: serializer.fromJson<String>(json['entity_hlc']),
+      entityRev: serializer.fromJson<int>(json['entity_rev']),
+      atUtc: serializer.fromJson<int>(json['at_utc']),
+      syncState: serializer.fromJson<String>(json['sync_state']),
+      syncedAtUtc: serializer.fromJson<int?>(json['synced_at_utc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'firm_id': serializer.toJson<String>(firmId),
+      'created_at_utc': serializer.toJson<int>(createdAtUtc),
+      'updated_at_utc': serializer.toJson<int>(updatedAtUtc),
+      'created_by': serializer.toJson<String>(createdBy),
+      'updated_by': serializer.toJson<String>(updatedBy),
+      'deleted_at_utc': serializer.toJson<int?>(deletedAtUtc),
+      'origin_device_id': serializer.toJson<String>(originDeviceId),
+      'hlc': serializer.toJson<String>(hlc),
+      'rev': serializer.toJson<int>(rev),
+      'seq': serializer.toJson<int>(seq),
+      'entity_table': serializer.toJson<String>(entityTable),
+      'entity_id': serializer.toJson<String>(entityId),
+      'op': serializer.toJson<String>(op),
+      'payload_json': serializer.toJson<String>(payloadJson),
+      'entity_hlc': serializer.toJson<String>(entityHlc),
+      'entity_rev': serializer.toJson<int>(entityRev),
+      'at_utc': serializer.toJson<int>(atUtc),
+      'sync_state': serializer.toJson<String>(syncState),
+      'synced_at_utc': serializer.toJson<int?>(syncedAtUtc),
+    };
+  }
+
+  ChangeLogData copyWith({
+    String? id,
+    String? firmId,
+    int? createdAtUtc,
+    int? updatedAtUtc,
+    String? createdBy,
+    String? updatedBy,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    String? originDeviceId,
+    String? hlc,
+    int? rev,
+    int? seq,
+    String? entityTable,
+    String? entityId,
+    String? op,
+    String? payloadJson,
+    String? entityHlc,
+    int? entityRev,
+    int? atUtc,
+    String? syncState,
+    Value<int?> syncedAtUtc = const Value.absent(),
+  }) => ChangeLogData(
+    id: id ?? this.id,
+    firmId: firmId ?? this.firmId,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+    createdBy: createdBy ?? this.createdBy,
+    updatedBy: updatedBy ?? this.updatedBy,
+    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+    originDeviceId: originDeviceId ?? this.originDeviceId,
+    hlc: hlc ?? this.hlc,
+    rev: rev ?? this.rev,
+    seq: seq ?? this.seq,
+    entityTable: entityTable ?? this.entityTable,
+    entityId: entityId ?? this.entityId,
+    op: op ?? this.op,
+    payloadJson: payloadJson ?? this.payloadJson,
+    entityHlc: entityHlc ?? this.entityHlc,
+    entityRev: entityRev ?? this.entityRev,
+    atUtc: atUtc ?? this.atUtc,
+    syncState: syncState ?? this.syncState,
+    syncedAtUtc: syncedAtUtc.present ? syncedAtUtc.value : this.syncedAtUtc,
+  );
+  ChangeLogData copyWithCompanion(ChangeLogCompanion data) {
+    return ChangeLogData(
+      id: data.id.present ? data.id.value : this.id,
+      firmId: data.firmId.present ? data.firmId.value : this.firmId,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      originDeviceId: data.originDeviceId.present
+          ? data.originDeviceId.value
+          : this.originDeviceId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      rev: data.rev.present ? data.rev.value : this.rev,
+      seq: data.seq.present ? data.seq.value : this.seq,
+      entityTable: data.entityTable.present
+          ? data.entityTable.value
+          : this.entityTable,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      op: data.op.present ? data.op.value : this.op,
+      payloadJson: data.payloadJson.present
+          ? data.payloadJson.value
+          : this.payloadJson,
+      entityHlc: data.entityHlc.present ? data.entityHlc.value : this.entityHlc,
+      entityRev: data.entityRev.present ? data.entityRev.value : this.entityRev,
+      atUtc: data.atUtc.present ? data.atUtc.value : this.atUtc,
+      syncState: data.syncState.present ? data.syncState.value : this.syncState,
+      syncedAtUtc: data.syncedAtUtc.present
+          ? data.syncedAtUtc.value
+          : this.syncedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChangeLogData(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('seq: $seq, ')
+          ..write('entityTable: $entityTable, ')
+          ..write('entityId: $entityId, ')
+          ..write('op: $op, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('entityHlc: $entityHlc, ')
+          ..write('entityRev: $entityRev, ')
+          ..write('atUtc: $atUtc, ')
+          ..write('syncState: $syncState, ')
+          ..write('syncedAtUtc: $syncedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    seq,
+    entityTable,
+    entityId,
+    op,
+    payloadJson,
+    entityHlc,
+    entityRev,
+    atUtc,
+    syncState,
+    syncedAtUtc,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ChangeLogData &&
+          other.id == this.id &&
+          other.firmId == this.firmId &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.createdBy == this.createdBy &&
+          other.updatedBy == this.updatedBy &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.originDeviceId == this.originDeviceId &&
+          other.hlc == this.hlc &&
+          other.rev == this.rev &&
+          other.seq == this.seq &&
+          other.entityTable == this.entityTable &&
+          other.entityId == this.entityId &&
+          other.op == this.op &&
+          other.payloadJson == this.payloadJson &&
+          other.entityHlc == this.entityHlc &&
+          other.entityRev == this.entityRev &&
+          other.atUtc == this.atUtc &&
+          other.syncState == this.syncState &&
+          other.syncedAtUtc == this.syncedAtUtc);
+}
+
+class ChangeLogCompanion extends UpdateCompanion<ChangeLogData> {
+  final Value<String> id;
+  final Value<String> firmId;
+  final Value<int> createdAtUtc;
+  final Value<int> updatedAtUtc;
+  final Value<String> createdBy;
+  final Value<String> updatedBy;
+  final Value<int?> deletedAtUtc;
+  final Value<String> originDeviceId;
+  final Value<String> hlc;
+  final Value<int> rev;
+  final Value<int> seq;
+  final Value<String> entityTable;
+  final Value<String> entityId;
+  final Value<String> op;
+  final Value<String> payloadJson;
+  final Value<String> entityHlc;
+  final Value<int> entityRev;
+  final Value<int> atUtc;
+  final Value<String> syncState;
+  final Value<int?> syncedAtUtc;
+  final Value<int> rowid;
+  const ChangeLogCompanion({
+    this.id = const Value.absent(),
+    this.firmId = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.originDeviceId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.rev = const Value.absent(),
+    this.seq = const Value.absent(),
+    this.entityTable = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.op = const Value.absent(),
+    this.payloadJson = const Value.absent(),
+    this.entityHlc = const Value.absent(),
+    this.entityRev = const Value.absent(),
+    this.atUtc = const Value.absent(),
+    this.syncState = const Value.absent(),
+    this.syncedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ChangeLogCompanion.insert({
+    required String id,
+    required String firmId,
+    required int createdAtUtc,
+    required int updatedAtUtc,
+    required String createdBy,
+    required String updatedBy,
+    this.deletedAtUtc = const Value.absent(),
+    required String originDeviceId,
+    required String hlc,
+    this.rev = const Value.absent(),
+    required int seq,
+    required String entityTable,
+    required String entityId,
+    required String op,
+    required String payloadJson,
+    required String entityHlc,
+    required int entityRev,
+    required int atUtc,
+    this.syncState = const Value.absent(),
+    this.syncedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       firmId = Value(firmId),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc),
+       createdBy = Value(createdBy),
+       updatedBy = Value(updatedBy),
+       originDeviceId = Value(originDeviceId),
+       hlc = Value(hlc),
+       seq = Value(seq),
+       entityTable = Value(entityTable),
+       entityId = Value(entityId),
+       op = Value(op),
+       payloadJson = Value(payloadJson),
+       entityHlc = Value(entityHlc),
+       entityRev = Value(entityRev),
+       atUtc = Value(atUtc);
+  static Insertable<ChangeLogData> custom({
+    Expression<String>? id,
+    Expression<String>? firmId,
+    Expression<int>? createdAtUtc,
+    Expression<int>? updatedAtUtc,
+    Expression<String>? createdBy,
+    Expression<String>? updatedBy,
+    Expression<int>? deletedAtUtc,
+    Expression<String>? originDeviceId,
+    Expression<String>? hlc,
+    Expression<int>? rev,
+    Expression<int>? seq,
+    Expression<String>? entityTable,
+    Expression<String>? entityId,
+    Expression<String>? op,
+    Expression<String>? payloadJson,
+    Expression<String>? entityHlc,
+    Expression<int>? entityRev,
+    Expression<int>? atUtc,
+    Expression<String>? syncState,
+    Expression<int>? syncedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (firmId != null) 'firm_id': firmId,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (createdBy != null) 'created_by': createdBy,
+      if (updatedBy != null) 'updated_by': updatedBy,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (originDeviceId != null) 'origin_device_id': originDeviceId,
+      if (hlc != null) 'hlc': hlc,
+      if (rev != null) 'rev': rev,
+      if (seq != null) 'seq': seq,
+      if (entityTable != null) 'entity_table': entityTable,
+      if (entityId != null) 'entity_id': entityId,
+      if (op != null) 'op': op,
+      if (payloadJson != null) 'payload_json': payloadJson,
+      if (entityHlc != null) 'entity_hlc': entityHlc,
+      if (entityRev != null) 'entity_rev': entityRev,
+      if (atUtc != null) 'at_utc': atUtc,
+      if (syncState != null) 'sync_state': syncState,
+      if (syncedAtUtc != null) 'synced_at_utc': syncedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ChangeLogCompanion copyWith({
+    Value<String>? id,
+    Value<String>? firmId,
+    Value<int>? createdAtUtc,
+    Value<int>? updatedAtUtc,
+    Value<String>? createdBy,
+    Value<String>? updatedBy,
+    Value<int?>? deletedAtUtc,
+    Value<String>? originDeviceId,
+    Value<String>? hlc,
+    Value<int>? rev,
+    Value<int>? seq,
+    Value<String>? entityTable,
+    Value<String>? entityId,
+    Value<String>? op,
+    Value<String>? payloadJson,
+    Value<String>? entityHlc,
+    Value<int>? entityRev,
+    Value<int>? atUtc,
+    Value<String>? syncState,
+    Value<int?>? syncedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return ChangeLogCompanion(
+      id: id ?? this.id,
+      firmId: firmId ?? this.firmId,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      originDeviceId: originDeviceId ?? this.originDeviceId,
+      hlc: hlc ?? this.hlc,
+      rev: rev ?? this.rev,
+      seq: seq ?? this.seq,
+      entityTable: entityTable ?? this.entityTable,
+      entityId: entityId ?? this.entityId,
+      op: op ?? this.op,
+      payloadJson: payloadJson ?? this.payloadJson,
+      entityHlc: entityHlc ?? this.entityHlc,
+      entityRev: entityRev ?? this.entityRev,
+      atUtc: atUtc ?? this.atUtc,
+      syncState: syncState ?? this.syncState,
+      syncedAtUtc: syncedAtUtc ?? this.syncedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (firmId.present) {
+      map['firm_id'] = Variable<String>(firmId.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (updatedBy.present) {
+      map['updated_by'] = Variable<String>(updatedBy.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc.value);
+    }
+    if (originDeviceId.present) {
+      map['origin_device_id'] = Variable<String>(originDeviceId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (rev.present) {
+      map['rev'] = Variable<int>(rev.value);
+    }
+    if (seq.present) {
+      map['seq'] = Variable<int>(seq.value);
+    }
+    if (entityTable.present) {
+      map['entity_table'] = Variable<String>(entityTable.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<String>(entityId.value);
+    }
+    if (op.present) {
+      map['op'] = Variable<String>(op.value);
+    }
+    if (payloadJson.present) {
+      map['payload_json'] = Variable<String>(payloadJson.value);
+    }
+    if (entityHlc.present) {
+      map['entity_hlc'] = Variable<String>(entityHlc.value);
+    }
+    if (entityRev.present) {
+      map['entity_rev'] = Variable<int>(entityRev.value);
+    }
+    if (atUtc.present) {
+      map['at_utc'] = Variable<int>(atUtc.value);
+    }
+    if (syncState.present) {
+      map['sync_state'] = Variable<String>(syncState.value);
+    }
+    if (syncedAtUtc.present) {
+      map['synced_at_utc'] = Variable<int>(syncedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ChangeLogCompanion(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('seq: $seq, ')
+          ..write('entityTable: $entityTable, ')
+          ..write('entityId: $entityId, ')
+          ..write('op: $op, ')
+          ..write('payloadJson: $payloadJson, ')
+          ..write('entityHlc: $entityHlc, ')
+          ..write('entityRev: $entityRev, ')
+          ..write('atUtc: $atUtc, ')
+          ..write('syncState: $syncState, ')
+          ..write('syncedAtUtc: $syncedAtUtc, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class PrintJobs extends Table with TableInfo<PrintJobs, PrintJob> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  PrintJobs(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
+  late final GeneratedColumn<String> firmId = GeneratedColumn<String>(
+    'firm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES firms(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _updatedByMeta = const VerificationMeta(
+    'updatedBy',
+  );
+  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
+    'updated_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
+    'deletedAtUtc',
+  );
+  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _originDeviceIdMeta = const VerificationMeta(
+    'originDeviceId',
+  );
+  late final GeneratedColumn<String> originDeviceId = GeneratedColumn<String>(
+    'origin_device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES devices(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _revMeta = const VerificationMeta('rev');
+  late final GeneratedColumn<int> rev = GeneratedColumn<int>(
+    'rev',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _jobKeyMeta = const VerificationMeta('jobKey');
+  late final GeneratedColumn<String> jobKey = GeneratedColumn<String>(
+    'job_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'document_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'REFERENCES documents(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _transportKindMeta = const VerificationMeta(
+    'transportKind',
+  );
+  late final GeneratedColumn<String> transportKind = GeneratedColumn<String>(
+    'transport_kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (transport_kind IN (\'tcp\', \'bluetooth\', \'usb\'))',
+  );
+  static const VerificationMeta _targetAddressMeta = const VerificationMeta(
+    'targetAddress',
+  );
+  late final GeneratedColumn<String> targetAddress = GeneratedColumn<String>(
+    'target_address',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _columnsUsedMeta = const VerificationMeta(
+    'columnsUsed',
+  );
+  late final GeneratedColumn<int> columnsUsed = GeneratedColumn<int>(
+    'columns_used',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (columns_used > 0)',
+  );
+  static const VerificationMeta _copyIndexMeta = const VerificationMeta(
+    'copyIndex',
+  );
+  late final GeneratedColumn<int> copyIndex = GeneratedColumn<int>(
+    'copy_index',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1 CHECK (copy_index >= 1)',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _byteCountMeta = const VerificationMeta(
+    'byteCount',
+  );
+  late final GeneratedColumn<int> byteCount = GeneratedColumn<int>(
+    'byte_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (byte_count >= 0)',
+  );
+  static const VerificationMeta _payloadSha256Meta = const VerificationMeta(
+    'payloadSha256',
+  );
+  late final GeneratedColumn<String> payloadSha256 = GeneratedColumn<String>(
+    'payload_sha256',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (status IN (\'sending\', \'printed\', \'partial\', \'failed\'))',
+  );
+  static const VerificationMeta _bytesWrittenMeta = const VerificationMeta(
+    'bytesWritten',
+  );
+  late final GeneratedColumn<int> bytesWritten = GeneratedColumn<int>(
+    'bytes_written',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 0 CHECK (bytes_written >= 0)',
+    defaultValue: const CustomExpression('0'),
+  );
+  static const VerificationMeta _failureReasonMeta = const VerificationMeta(
+    'failureReason',
+  );
+  late final GeneratedColumn<String> failureReason = GeneratedColumn<String>(
+    'failure_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _startedAtUtcMeta = const VerificationMeta(
+    'startedAtUtc',
+  );
+  late final GeneratedColumn<int> startedAtUtc = GeneratedColumn<int>(
+    'started_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _finishedAtUtcMeta = const VerificationMeta(
+    'finishedAtUtc',
+  );
+  late final GeneratedColumn<int> finishedAtUtc = GeneratedColumn<int>(
+    'finished_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    jobKey,
+    documentId,
+    transportKind,
+    targetAddress,
+    columnsUsed,
+    copyIndex,
+    byteCount,
+    payloadSha256,
+    status,
+    bytesWritten,
+    failureReason,
+    startedAtUtc,
+    finishedAtUtc,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'print_jobs';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PrintJob> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('firm_id')) {
+      context.handle(
+        _firmIdMeta,
+        firmId.isAcceptableOrUnknown(data['firm_id']!, _firmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firmIdMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('updated_by')) {
+      context.handle(
+        _updatedByMeta,
+        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedByMeta);
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+        _deletedAtUtcMeta,
+        deletedAtUtc.isAcceptableOrUnknown(
+          data['deleted_at_utc']!,
+          _deletedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_device_id')) {
+      context.handle(
+        _originDeviceIdMeta,
+        originDeviceId.isAcceptableOrUnknown(
+          data['origin_device_id']!,
+          _originDeviceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originDeviceIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('rev')) {
+      context.handle(
+        _revMeta,
+        rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
+      );
+    }
+    if (data.containsKey('job_key')) {
+      context.handle(
+        _jobKeyMeta,
+        jobKey.isAcceptableOrUnknown(data['job_key']!, _jobKeyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_jobKeyMeta);
+    }
+    if (data.containsKey('document_id')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
+      );
+    }
+    if (data.containsKey('transport_kind')) {
+      context.handle(
+        _transportKindMeta,
+        transportKind.isAcceptableOrUnknown(
+          data['transport_kind']!,
+          _transportKindMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_transportKindMeta);
+    }
+    if (data.containsKey('target_address')) {
+      context.handle(
+        _targetAddressMeta,
+        targetAddress.isAcceptableOrUnknown(
+          data['target_address']!,
+          _targetAddressMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_targetAddressMeta);
+    }
+    if (data.containsKey('columns_used')) {
+      context.handle(
+        _columnsUsedMeta,
+        columnsUsed.isAcceptableOrUnknown(
+          data['columns_used']!,
+          _columnsUsedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_columnsUsedMeta);
+    }
+    if (data.containsKey('copy_index')) {
+      context.handle(
+        _copyIndexMeta,
+        copyIndex.isAcceptableOrUnknown(data['copy_index']!, _copyIndexMeta),
+      );
+    }
+    if (data.containsKey('byte_count')) {
+      context.handle(
+        _byteCountMeta,
+        byteCount.isAcceptableOrUnknown(data['byte_count']!, _byteCountMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_byteCountMeta);
+    }
+    if (data.containsKey('payload_sha256')) {
+      context.handle(
+        _payloadSha256Meta,
+        payloadSha256.isAcceptableOrUnknown(
+          data['payload_sha256']!,
+          _payloadSha256Meta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_payloadSha256Meta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('bytes_written')) {
+      context.handle(
+        _bytesWrittenMeta,
+        bytesWritten.isAcceptableOrUnknown(
+          data['bytes_written']!,
+          _bytesWrittenMeta,
+        ),
+      );
+    }
+    if (data.containsKey('failure_reason')) {
+      context.handle(
+        _failureReasonMeta,
+        failureReason.isAcceptableOrUnknown(
+          data['failure_reason']!,
+          _failureReasonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('started_at_utc')) {
+      context.handle(
+        _startedAtUtcMeta,
+        startedAtUtc.isAcceptableOrUnknown(
+          data['started_at_utc']!,
+          _startedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_startedAtUtcMeta);
+    }
+    if (data.containsKey('finished_at_utc')) {
+      context.handle(
+        _finishedAtUtcMeta,
+        finishedAtUtc.isAcceptableOrUnknown(
+          data['finished_at_utc']!,
+          _finishedAtUtcMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PrintJob map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PrintJob(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      firmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}firm_id'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      updatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_by'],
+      )!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at_utc'],
+      ),
+      originDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_device_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      rev: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rev'],
+      )!,
+      jobKey: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}job_key'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_id'],
+      ),
+      transportKind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}transport_kind'],
+      )!,
+      targetAddress: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}target_address'],
+      )!,
+      columnsUsed: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}columns_used'],
+      )!,
+      copyIndex: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}copy_index'],
+      )!,
+      byteCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}byte_count'],
+      )!,
+      payloadSha256: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payload_sha256'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      bytesWritten: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}bytes_written'],
+      )!,
+      failureReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}failure_reason'],
+      ),
+      startedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}started_at_utc'],
+      )!,
+      finishedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}finished_at_utc'],
+      ),
+    );
+  }
+
+  @override
+  PrintJobs createAlias(String alias) {
+    return PrintJobs(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+  @override
+  List<String> get customConstraints => const [
+    'CHECK((status = \'sending\')=(finished_at_utc IS NULL))',
+  ];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class PrintJob extends DataClass implements Insertable<PrintJob> {
+  final String id;
+  final String firmId;
+  final int createdAtUtc;
+  final int updatedAtUtc;
+  final String createdBy;
+  final String updatedBy;
+  final int? deletedAtUtc;
+  final String originDeviceId;
+  final String hlc;
+  final int rev;
+
+  /// Deterministic, never a fresh ULID: '<documentId>#<revision>#<columns>#<copy>'.
+  /// A random id would not match after a restart, which would make the whole
+  /// table pointless at the one moment it exists for.
+  final String jobKey;
+
+  /// Null for a test print, which belongs to no bill.
+  final String? documentId;
+  final String transportKind;
+  final String targetAddress;
+
+  /// 32, 42 or 48. Recorded because a reprint at a different width is a
+  /// different piece of paper, and because it is the setting shopkeepers get
+  /// wrong most often.
+  final int columnsUsed;
+  final int copyIndex;
+  final int byteCount;
+
+  /// Of the bytes, not of the document. Two prints of one bill at different
+  /// column widths are genuinely different jobs and this is what says so.
+  final String payloadSha256;
+
+  ///   sending  in flight, or the process died holding it. NOT `not printed`.
+  ///   printed  every byte acknowledged.
+  ///   partial  paper moved and then something went wrong. Never auto-retried.
+  ///   failed   nothing came out; safe for the counter to offer again.
+  final String status;
+  final int bytesWritten;
+  final String? failureReason;
+  final int startedAtUtc;
+  final int? finishedAtUtc;
+  const PrintJob({
+    required this.id,
+    required this.firmId,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+    required this.createdBy,
+    required this.updatedBy,
+    this.deletedAtUtc,
+    required this.originDeviceId,
+    required this.hlc,
+    required this.rev,
+    required this.jobKey,
+    this.documentId,
+    required this.transportKind,
+    required this.targetAddress,
+    required this.columnsUsed,
+    required this.copyIndex,
+    required this.byteCount,
+    required this.payloadSha256,
+    required this.status,
+    required this.bytesWritten,
+    this.failureReason,
+    required this.startedAtUtc,
+    this.finishedAtUtc,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['firm_id'] = Variable<String>(firmId);
+    map['created_at_utc'] = Variable<int>(createdAtUtc);
+    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
+    map['created_by'] = Variable<String>(createdBy);
+    map['updated_by'] = Variable<String>(updatedBy);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc);
+    }
+    map['origin_device_id'] = Variable<String>(originDeviceId);
+    map['hlc'] = Variable<String>(hlc);
+    map['rev'] = Variable<int>(rev);
+    map['job_key'] = Variable<String>(jobKey);
+    if (!nullToAbsent || documentId != null) {
+      map['document_id'] = Variable<String>(documentId);
+    }
+    map['transport_kind'] = Variable<String>(transportKind);
+    map['target_address'] = Variable<String>(targetAddress);
+    map['columns_used'] = Variable<int>(columnsUsed);
+    map['copy_index'] = Variable<int>(copyIndex);
+    map['byte_count'] = Variable<int>(byteCount);
+    map['payload_sha256'] = Variable<String>(payloadSha256);
+    map['status'] = Variable<String>(status);
+    map['bytes_written'] = Variable<int>(bytesWritten);
+    if (!nullToAbsent || failureReason != null) {
+      map['failure_reason'] = Variable<String>(failureReason);
+    }
+    map['started_at_utc'] = Variable<int>(startedAtUtc);
+    if (!nullToAbsent || finishedAtUtc != null) {
+      map['finished_at_utc'] = Variable<int>(finishedAtUtc);
+    }
+    return map;
+  }
+
+  PrintJobsCompanion toCompanion(bool nullToAbsent) {
+    return PrintJobsCompanion(
+      id: Value(id),
+      firmId: Value(firmId),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+      createdBy: Value(createdBy),
+      updatedBy: Value(updatedBy),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      originDeviceId: Value(originDeviceId),
+      hlc: Value(hlc),
+      rev: Value(rev),
+      jobKey: Value(jobKey),
+      documentId: documentId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(documentId),
+      transportKind: Value(transportKind),
+      targetAddress: Value(targetAddress),
+      columnsUsed: Value(columnsUsed),
+      copyIndex: Value(copyIndex),
+      byteCount: Value(byteCount),
+      payloadSha256: Value(payloadSha256),
+      status: Value(status),
+      bytesWritten: Value(bytesWritten),
+      failureReason: failureReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(failureReason),
+      startedAtUtc: Value(startedAtUtc),
+      finishedAtUtc: finishedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(finishedAtUtc),
+    );
+  }
+
+  factory PrintJob.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PrintJob(
+      id: serializer.fromJson<String>(json['id']),
+      firmId: serializer.fromJson<String>(json['firm_id']),
+      createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
+      updatedAtUtc: serializer.fromJson<int>(json['updated_at_utc']),
+      createdBy: serializer.fromJson<String>(json['created_by']),
+      updatedBy: serializer.fromJson<String>(json['updated_by']),
+      deletedAtUtc: serializer.fromJson<int?>(json['deleted_at_utc']),
+      originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      rev: serializer.fromJson<int>(json['rev']),
+      jobKey: serializer.fromJson<String>(json['job_key']),
+      documentId: serializer.fromJson<String?>(json['document_id']),
+      transportKind: serializer.fromJson<String>(json['transport_kind']),
+      targetAddress: serializer.fromJson<String>(json['target_address']),
+      columnsUsed: serializer.fromJson<int>(json['columns_used']),
+      copyIndex: serializer.fromJson<int>(json['copy_index']),
+      byteCount: serializer.fromJson<int>(json['byte_count']),
+      payloadSha256: serializer.fromJson<String>(json['payload_sha256']),
+      status: serializer.fromJson<String>(json['status']),
+      bytesWritten: serializer.fromJson<int>(json['bytes_written']),
+      failureReason: serializer.fromJson<String?>(json['failure_reason']),
+      startedAtUtc: serializer.fromJson<int>(json['started_at_utc']),
+      finishedAtUtc: serializer.fromJson<int?>(json['finished_at_utc']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'firm_id': serializer.toJson<String>(firmId),
+      'created_at_utc': serializer.toJson<int>(createdAtUtc),
+      'updated_at_utc': serializer.toJson<int>(updatedAtUtc),
+      'created_by': serializer.toJson<String>(createdBy),
+      'updated_by': serializer.toJson<String>(updatedBy),
+      'deleted_at_utc': serializer.toJson<int?>(deletedAtUtc),
+      'origin_device_id': serializer.toJson<String>(originDeviceId),
+      'hlc': serializer.toJson<String>(hlc),
+      'rev': serializer.toJson<int>(rev),
+      'job_key': serializer.toJson<String>(jobKey),
+      'document_id': serializer.toJson<String?>(documentId),
+      'transport_kind': serializer.toJson<String>(transportKind),
+      'target_address': serializer.toJson<String>(targetAddress),
+      'columns_used': serializer.toJson<int>(columnsUsed),
+      'copy_index': serializer.toJson<int>(copyIndex),
+      'byte_count': serializer.toJson<int>(byteCount),
+      'payload_sha256': serializer.toJson<String>(payloadSha256),
+      'status': serializer.toJson<String>(status),
+      'bytes_written': serializer.toJson<int>(bytesWritten),
+      'failure_reason': serializer.toJson<String?>(failureReason),
+      'started_at_utc': serializer.toJson<int>(startedAtUtc),
+      'finished_at_utc': serializer.toJson<int?>(finishedAtUtc),
+    };
+  }
+
+  PrintJob copyWith({
+    String? id,
+    String? firmId,
+    int? createdAtUtc,
+    int? updatedAtUtc,
+    String? createdBy,
+    String? updatedBy,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    String? originDeviceId,
+    String? hlc,
+    int? rev,
+    String? jobKey,
+    Value<String?> documentId = const Value.absent(),
+    String? transportKind,
+    String? targetAddress,
+    int? columnsUsed,
+    int? copyIndex,
+    int? byteCount,
+    String? payloadSha256,
+    String? status,
+    int? bytesWritten,
+    Value<String?> failureReason = const Value.absent(),
+    int? startedAtUtc,
+    Value<int?> finishedAtUtc = const Value.absent(),
+  }) => PrintJob(
+    id: id ?? this.id,
+    firmId: firmId ?? this.firmId,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+    createdBy: createdBy ?? this.createdBy,
+    updatedBy: updatedBy ?? this.updatedBy,
+    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+    originDeviceId: originDeviceId ?? this.originDeviceId,
+    hlc: hlc ?? this.hlc,
+    rev: rev ?? this.rev,
+    jobKey: jobKey ?? this.jobKey,
+    documentId: documentId.present ? documentId.value : this.documentId,
+    transportKind: transportKind ?? this.transportKind,
+    targetAddress: targetAddress ?? this.targetAddress,
+    columnsUsed: columnsUsed ?? this.columnsUsed,
+    copyIndex: copyIndex ?? this.copyIndex,
+    byteCount: byteCount ?? this.byteCount,
+    payloadSha256: payloadSha256 ?? this.payloadSha256,
+    status: status ?? this.status,
+    bytesWritten: bytesWritten ?? this.bytesWritten,
+    failureReason: failureReason.present
+        ? failureReason.value
+        : this.failureReason,
+    startedAtUtc: startedAtUtc ?? this.startedAtUtc,
+    finishedAtUtc: finishedAtUtc.present
+        ? finishedAtUtc.value
+        : this.finishedAtUtc,
+  );
+  PrintJob copyWithCompanion(PrintJobsCompanion data) {
+    return PrintJob(
+      id: data.id.present ? data.id.value : this.id,
+      firmId: data.firmId.present ? data.firmId.value : this.firmId,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      originDeviceId: data.originDeviceId.present
+          ? data.originDeviceId.value
+          : this.originDeviceId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      rev: data.rev.present ? data.rev.value : this.rev,
+      jobKey: data.jobKey.present ? data.jobKey.value : this.jobKey,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      transportKind: data.transportKind.present
+          ? data.transportKind.value
+          : this.transportKind,
+      targetAddress: data.targetAddress.present
+          ? data.targetAddress.value
+          : this.targetAddress,
+      columnsUsed: data.columnsUsed.present
+          ? data.columnsUsed.value
+          : this.columnsUsed,
+      copyIndex: data.copyIndex.present ? data.copyIndex.value : this.copyIndex,
+      byteCount: data.byteCount.present ? data.byteCount.value : this.byteCount,
+      payloadSha256: data.payloadSha256.present
+          ? data.payloadSha256.value
+          : this.payloadSha256,
+      status: data.status.present ? data.status.value : this.status,
+      bytesWritten: data.bytesWritten.present
+          ? data.bytesWritten.value
+          : this.bytesWritten,
+      failureReason: data.failureReason.present
+          ? data.failureReason.value
+          : this.failureReason,
+      startedAtUtc: data.startedAtUtc.present
+          ? data.startedAtUtc.value
+          : this.startedAtUtc,
+      finishedAtUtc: data.finishedAtUtc.present
+          ? data.finishedAtUtc.value
+          : this.finishedAtUtc,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PrintJob(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('jobKey: $jobKey, ')
+          ..write('documentId: $documentId, ')
+          ..write('transportKind: $transportKind, ')
+          ..write('targetAddress: $targetAddress, ')
+          ..write('columnsUsed: $columnsUsed, ')
+          ..write('copyIndex: $copyIndex, ')
+          ..write('byteCount: $byteCount, ')
+          ..write('payloadSha256: $payloadSha256, ')
+          ..write('status: $status, ')
+          ..write('bytesWritten: $bytesWritten, ')
+          ..write('failureReason: $failureReason, ')
+          ..write('startedAtUtc: $startedAtUtc, ')
+          ..write('finishedAtUtc: $finishedAtUtc')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hashAll([
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    jobKey,
+    documentId,
+    transportKind,
+    targetAddress,
+    columnsUsed,
+    copyIndex,
+    byteCount,
+    payloadSha256,
+    status,
+    bytesWritten,
+    failureReason,
+    startedAtUtc,
+    finishedAtUtc,
+  ]);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PrintJob &&
+          other.id == this.id &&
+          other.firmId == this.firmId &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.createdBy == this.createdBy &&
+          other.updatedBy == this.updatedBy &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.originDeviceId == this.originDeviceId &&
+          other.hlc == this.hlc &&
+          other.rev == this.rev &&
+          other.jobKey == this.jobKey &&
+          other.documentId == this.documentId &&
+          other.transportKind == this.transportKind &&
+          other.targetAddress == this.targetAddress &&
+          other.columnsUsed == this.columnsUsed &&
+          other.copyIndex == this.copyIndex &&
+          other.byteCount == this.byteCount &&
+          other.payloadSha256 == this.payloadSha256 &&
+          other.status == this.status &&
+          other.bytesWritten == this.bytesWritten &&
+          other.failureReason == this.failureReason &&
+          other.startedAtUtc == this.startedAtUtc &&
+          other.finishedAtUtc == this.finishedAtUtc);
+}
+
+class PrintJobsCompanion extends UpdateCompanion<PrintJob> {
+  final Value<String> id;
+  final Value<String> firmId;
+  final Value<int> createdAtUtc;
+  final Value<int> updatedAtUtc;
+  final Value<String> createdBy;
+  final Value<String> updatedBy;
+  final Value<int?> deletedAtUtc;
+  final Value<String> originDeviceId;
+  final Value<String> hlc;
+  final Value<int> rev;
+  final Value<String> jobKey;
+  final Value<String?> documentId;
+  final Value<String> transportKind;
+  final Value<String> targetAddress;
+  final Value<int> columnsUsed;
+  final Value<int> copyIndex;
+  final Value<int> byteCount;
+  final Value<String> payloadSha256;
+  final Value<String> status;
+  final Value<int> bytesWritten;
+  final Value<String?> failureReason;
+  final Value<int> startedAtUtc;
+  final Value<int?> finishedAtUtc;
+  final Value<int> rowid;
+  const PrintJobsCompanion({
+    this.id = const Value.absent(),
+    this.firmId = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.originDeviceId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.rev = const Value.absent(),
+    this.jobKey = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.transportKind = const Value.absent(),
+    this.targetAddress = const Value.absent(),
+    this.columnsUsed = const Value.absent(),
+    this.copyIndex = const Value.absent(),
+    this.byteCount = const Value.absent(),
+    this.payloadSha256 = const Value.absent(),
+    this.status = const Value.absent(),
+    this.bytesWritten = const Value.absent(),
+    this.failureReason = const Value.absent(),
+    this.startedAtUtc = const Value.absent(),
+    this.finishedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PrintJobsCompanion.insert({
+    required String id,
+    required String firmId,
+    required int createdAtUtc,
+    required int updatedAtUtc,
+    required String createdBy,
+    required String updatedBy,
+    this.deletedAtUtc = const Value.absent(),
+    required String originDeviceId,
+    required String hlc,
+    this.rev = const Value.absent(),
+    required String jobKey,
+    this.documentId = const Value.absent(),
+    required String transportKind,
+    required String targetAddress,
+    required int columnsUsed,
+    this.copyIndex = const Value.absent(),
+    required int byteCount,
+    required String payloadSha256,
+    required String status,
+    this.bytesWritten = const Value.absent(),
+    this.failureReason = const Value.absent(),
+    required int startedAtUtc,
+    this.finishedAtUtc = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       firmId = Value(firmId),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc),
+       createdBy = Value(createdBy),
+       updatedBy = Value(updatedBy),
+       originDeviceId = Value(originDeviceId),
+       hlc = Value(hlc),
+       jobKey = Value(jobKey),
+       transportKind = Value(transportKind),
+       targetAddress = Value(targetAddress),
+       columnsUsed = Value(columnsUsed),
+       byteCount = Value(byteCount),
+       payloadSha256 = Value(payloadSha256),
+       status = Value(status),
+       startedAtUtc = Value(startedAtUtc);
+  static Insertable<PrintJob> custom({
+    Expression<String>? id,
+    Expression<String>? firmId,
+    Expression<int>? createdAtUtc,
+    Expression<int>? updatedAtUtc,
+    Expression<String>? createdBy,
+    Expression<String>? updatedBy,
+    Expression<int>? deletedAtUtc,
+    Expression<String>? originDeviceId,
+    Expression<String>? hlc,
+    Expression<int>? rev,
+    Expression<String>? jobKey,
+    Expression<String>? documentId,
+    Expression<String>? transportKind,
+    Expression<String>? targetAddress,
+    Expression<int>? columnsUsed,
+    Expression<int>? copyIndex,
+    Expression<int>? byteCount,
+    Expression<String>? payloadSha256,
+    Expression<String>? status,
+    Expression<int>? bytesWritten,
+    Expression<String>? failureReason,
+    Expression<int>? startedAtUtc,
+    Expression<int>? finishedAtUtc,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (firmId != null) 'firm_id': firmId,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (createdBy != null) 'created_by': createdBy,
+      if (updatedBy != null) 'updated_by': updatedBy,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (originDeviceId != null) 'origin_device_id': originDeviceId,
+      if (hlc != null) 'hlc': hlc,
+      if (rev != null) 'rev': rev,
+      if (jobKey != null) 'job_key': jobKey,
+      if (documentId != null) 'document_id': documentId,
+      if (transportKind != null) 'transport_kind': transportKind,
+      if (targetAddress != null) 'target_address': targetAddress,
+      if (columnsUsed != null) 'columns_used': columnsUsed,
+      if (copyIndex != null) 'copy_index': copyIndex,
+      if (byteCount != null) 'byte_count': byteCount,
+      if (payloadSha256 != null) 'payload_sha256': payloadSha256,
+      if (status != null) 'status': status,
+      if (bytesWritten != null) 'bytes_written': bytesWritten,
+      if (failureReason != null) 'failure_reason': failureReason,
+      if (startedAtUtc != null) 'started_at_utc': startedAtUtc,
+      if (finishedAtUtc != null) 'finished_at_utc': finishedAtUtc,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PrintJobsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? firmId,
+    Value<int>? createdAtUtc,
+    Value<int>? updatedAtUtc,
+    Value<String>? createdBy,
+    Value<String>? updatedBy,
+    Value<int?>? deletedAtUtc,
+    Value<String>? originDeviceId,
+    Value<String>? hlc,
+    Value<int>? rev,
+    Value<String>? jobKey,
+    Value<String?>? documentId,
+    Value<String>? transportKind,
+    Value<String>? targetAddress,
+    Value<int>? columnsUsed,
+    Value<int>? copyIndex,
+    Value<int>? byteCount,
+    Value<String>? payloadSha256,
+    Value<String>? status,
+    Value<int>? bytesWritten,
+    Value<String?>? failureReason,
+    Value<int>? startedAtUtc,
+    Value<int?>? finishedAtUtc,
+    Value<int>? rowid,
+  }) {
+    return PrintJobsCompanion(
+      id: id ?? this.id,
+      firmId: firmId ?? this.firmId,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      originDeviceId: originDeviceId ?? this.originDeviceId,
+      hlc: hlc ?? this.hlc,
+      rev: rev ?? this.rev,
+      jobKey: jobKey ?? this.jobKey,
+      documentId: documentId ?? this.documentId,
+      transportKind: transportKind ?? this.transportKind,
+      targetAddress: targetAddress ?? this.targetAddress,
+      columnsUsed: columnsUsed ?? this.columnsUsed,
+      copyIndex: copyIndex ?? this.copyIndex,
+      byteCount: byteCount ?? this.byteCount,
+      payloadSha256: payloadSha256 ?? this.payloadSha256,
+      status: status ?? this.status,
+      bytesWritten: bytesWritten ?? this.bytesWritten,
+      failureReason: failureReason ?? this.failureReason,
+      startedAtUtc: startedAtUtc ?? this.startedAtUtc,
+      finishedAtUtc: finishedAtUtc ?? this.finishedAtUtc,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (firmId.present) {
+      map['firm_id'] = Variable<String>(firmId.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (updatedBy.present) {
+      map['updated_by'] = Variable<String>(updatedBy.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc.value);
+    }
+    if (originDeviceId.present) {
+      map['origin_device_id'] = Variable<String>(originDeviceId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (rev.present) {
+      map['rev'] = Variable<int>(rev.value);
+    }
+    if (jobKey.present) {
+      map['job_key'] = Variable<String>(jobKey.value);
+    }
+    if (documentId.present) {
+      map['document_id'] = Variable<String>(documentId.value);
+    }
+    if (transportKind.present) {
+      map['transport_kind'] = Variable<String>(transportKind.value);
+    }
+    if (targetAddress.present) {
+      map['target_address'] = Variable<String>(targetAddress.value);
+    }
+    if (columnsUsed.present) {
+      map['columns_used'] = Variable<int>(columnsUsed.value);
+    }
+    if (copyIndex.present) {
+      map['copy_index'] = Variable<int>(copyIndex.value);
+    }
+    if (byteCount.present) {
+      map['byte_count'] = Variable<int>(byteCount.value);
+    }
+    if (payloadSha256.present) {
+      map['payload_sha256'] = Variable<String>(payloadSha256.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (bytesWritten.present) {
+      map['bytes_written'] = Variable<int>(bytesWritten.value);
+    }
+    if (failureReason.present) {
+      map['failure_reason'] = Variable<String>(failureReason.value);
+    }
+    if (startedAtUtc.present) {
+      map['started_at_utc'] = Variable<int>(startedAtUtc.value);
+    }
+    if (finishedAtUtc.present) {
+      map['finished_at_utc'] = Variable<int>(finishedAtUtc.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PrintJobsCompanion(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('jobKey: $jobKey, ')
+          ..write('documentId: $documentId, ')
+          ..write('transportKind: $transportKind, ')
+          ..write('targetAddress: $targetAddress, ')
+          ..write('columnsUsed: $columnsUsed, ')
+          ..write('copyIndex: $copyIndex, ')
+          ..write('byteCount: $byteCount, ')
+          ..write('payloadSha256: $payloadSha256, ')
+          ..write('status: $status, ')
+          ..write('bytesWritten: $bytesWritten, ')
+          ..write('failureReason: $failureReason, ')
+          ..write('startedAtUtc: $startedAtUtc, ')
+          ..write('finishedAtUtc: $finishedAtUtc, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -34193,8 +36962,55 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Firms firms = Firms(this);
   late final Devices devices = Devices(this);
   late final Users users = Users(this);
+  late final Units units = Units(this);
   late final TaxRules taxRules = TaxRules(this);
   late final Attachments attachments = Attachments(this);
+  late final Items items = Items(this);
+  late final Boms boms = Boms(this);
+  late final Index idxBomsFirm = Index(
+    'idx_boms_firm',
+    'CREATE INDEX idx_boms_firm ON boms (firm_id, name)',
+  );
+  late final Index idxBomsOutput = Index(
+    'idx_boms_output',
+    'CREATE INDEX idx_boms_output ON boms (output_item_id)',
+  );
+  late final BomLines bomLines = BomLines(this);
+  late final Index idxBomlinesFirm = Index(
+    'idx_bomlines_firm',
+    'CREATE INDEX idx_bomlines_firm ON bom_lines (firm_id, bom_id)',
+  );
+  late final Index idxBomlinesBom = Index(
+    'idx_bomlines_bom',
+    'CREATE INDEX idx_bomlines_bom ON bom_lines (bom_id, line_no)',
+  );
+  late final Index idxBomlinesItem = Index(
+    'idx_bomlines_item',
+    'CREATE INDEX idx_bomlines_item ON bom_lines (component_item_id)',
+  );
+  late final Parties parties = Parties(this);
+  late final Documents documents = Documents(this);
+  late final Accounts accounts = Accounts(this);
+  late final PaymentAccounts paymentAccounts = PaymentAccounts(this);
+  late final Payments payments = Payments(this);
+  late final JournalEntries journalEntries = JournalEntries(this);
+  late final Assemblies assemblies = Assemblies(this);
+  late final Index idxAssembliesNo = Index(
+    'idx_assemblies_no',
+    'CREATE UNIQUE INDEX idx_assemblies_no ON assemblies (firm_id, assembly_no)',
+  );
+  late final Index idxAssembliesBom = Index(
+    'idx_assemblies_bom',
+    'CREATE INDEX idx_assemblies_bom ON assemblies (bom_id)',
+  );
+  late final Index idxAssembliesOutput = Index(
+    'idx_assemblies_output',
+    'CREATE INDEX idx_assemblies_output ON assemblies (output_item_id)',
+  );
+  late final Index idxAssembliesJournal = Index(
+    'idx_assemblies_journal',
+    'CREATE INDEX idx_assemblies_journal ON assemblies (journal_entry_id)',
+  );
   late final AuditLog auditLog = AuditLog(this);
   late final Index idxAuditEntity = Index(
     'idx_audit_entity',
@@ -34245,8 +37061,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_taxrules_lookup',
     'CREATE INDEX idx_taxrules_lookup ON tax_rules (firm_id, tax_kind, jurisdiction, effective_from_local)',
   );
-  late final Parties parties = Parties(this);
-  late final Documents documents = Documents(this);
   late final PrintJobs printJobs = PrintJobs(this);
   late final Index idxPrintjobsKey = Index(
     'idx_printjobs_key',
@@ -34260,7 +37074,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_printjobs_open',
     'CREATE INDEX idx_printjobs_open ON print_jobs (firm_id, status, started_at_utc)',
   );
-  late final Accounts accounts = Accounts(this);
   late final Index idxAccountsCode = Index(
     'idx_accounts_code',
     'CREATE UNIQUE INDEX idx_accounts_code ON accounts (firm_id, code)',
@@ -34277,9 +37090,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_accounts_type',
     'CREATE INDEX idx_accounts_type ON accounts (firm_id, account_type)',
   );
-  late final PaymentAccounts paymentAccounts = PaymentAccounts(this);
-  late final Payments payments = Payments(this);
-  late final JournalEntries journalEntries = JournalEntries(this);
   late final Index idxJeNo = Index(
     'idx_je_no',
     'CREATE UNIQUE INDEX idx_je_no ON journal_entries (firm_id, entry_no)',
@@ -34304,8 +37114,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_je_source',
     'CREATE INDEX idx_je_source ON journal_entries (firm_id, source_type, entry_date_local)',
   );
-  late final Units units = Units(this);
-  late final Items items = Items(this);
   late final JournalLines journalLines = JournalLines(this);
   late final Index idxJlSeq = Index(
     'idx_jl_seq',
@@ -34608,8 +37416,28 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     firms,
     devices,
     users,
+    units,
     taxRules,
     attachments,
+    items,
+    boms,
+    idxBomsFirm,
+    idxBomsOutput,
+    bomLines,
+    idxBomlinesFirm,
+    idxBomlinesBom,
+    idxBomlinesItem,
+    parties,
+    documents,
+    accounts,
+    paymentAccounts,
+    payments,
+    journalEntries,
+    assemblies,
+    idxAssembliesNo,
+    idxAssembliesBom,
+    idxAssembliesOutput,
+    idxAssembliesJournal,
     auditLog,
     idxAuditEntity,
     idxAuditFirmTime,
@@ -34624,28 +37452,20 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxAttachSha,
     idxTaxrulesCode,
     idxTaxrulesLookup,
-    parties,
-    documents,
     printJobs,
     idxPrintjobsKey,
     idxPrintjobsDoc,
     idxPrintjobsOpen,
-    accounts,
     idxAccountsCode,
     idxAccountsSyskey,
     idxAccountsParent,
     idxAccountsType,
-    paymentAccounts,
-    payments,
-    journalEntries,
     idxJeNo,
     idxJeDate,
     idxJeDoc,
     idxJePayment,
     idxJeReverses,
     idxJeSource,
-    units,
-    items,
     journalLines,
     idxJlSeq,
     idxJlAccount,
@@ -34847,6 +37667,25 @@ final class $FirmsReferences
     );
   }
 
+  static MultiTypedResultKey<Units, List<Unit>> _unitsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.units,
+    aliasName: 'firms__id__units__firm_id',
+  );
+
+  $UnitsProcessedTableManager get unitsRefs {
+    final manager = $UnitsTableManager(
+      $_db,
+      $_db.units,
+    ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_unitsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<TaxRules, List<TaxRule>> _taxRulesRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
@@ -34884,38 +37723,58 @@ final class $FirmsReferences
     );
   }
 
-  static MultiTypedResultKey<AuditLog, List<AuditLogData>> _auditLogRefsTable(
+  static MultiTypedResultKey<Items, List<Item>> _itemsRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
-    db.auditLog,
-    aliasName: 'firms__id__audit_log__firm_id',
+    db.items,
+    aliasName: 'firms__id__items__firm_id',
   );
 
-  $AuditLogProcessedTableManager get auditLogRefs {
-    final manager = $AuditLogTableManager(
+  $ItemsProcessedTableManager get itemsRefs {
+    final manager = $ItemsTableManager(
       $_db,
-      $_db.auditLog,
+      $_db.items,
     ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_auditLogRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_itemsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
-  static MultiTypedResultKey<ChangeLog, List<ChangeLogData>>
-  _changeLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.changeLog,
-    aliasName: 'firms__id__change_log__firm_id',
+  static MultiTypedResultKey<Boms, List<Bom>> _bomsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.boms,
+    aliasName: 'firms__id__boms__firm_id',
   );
 
-  $ChangeLogProcessedTableManager get changeLogRefs {
-    final manager = $ChangeLogTableManager(
+  $BomsProcessedTableManager get bomsRefs {
+    final manager = $BomsTableManager(
       $_db,
-      $_db.changeLog,
+      $_db.boms,
     ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_changeLogRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_bomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<BomLines, List<BomLine>> _bomLinesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.bomLines,
+    aliasName: 'firms__id__bom_lines__firm_id',
+  );
+
+  $BomLinesProcessedTableManager get bomLinesRefs {
+    final manager = $BomLinesTableManager(
+      $_db,
+      $_db.bomLines,
+    ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_bomLinesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -34954,25 +37813,6 @@ final class $FirmsReferences
     ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_documentsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<PrintJobs, List<PrintJob>> _printJobsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.printJobs,
-    aliasName: 'firms__id__print_jobs__firm_id',
-  );
-
-  $PrintJobsProcessedTableManager get printJobsRefs {
-    final manager = $PrintJobsTableManager(
-      $_db,
-      $_db.printJobs,
-    ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_printJobsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -35054,39 +37894,76 @@ final class $FirmsReferences
     );
   }
 
-  static MultiTypedResultKey<Units, List<Unit>> _unitsRefsTable(
+  static MultiTypedResultKey<Assemblies, List<Assembly>> _assembliesRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
-    db.units,
-    aliasName: 'firms__id__units__firm_id',
+    db.assemblies,
+    aliasName: 'firms__id__assemblies__firm_id',
   );
 
-  $UnitsProcessedTableManager get unitsRefs {
-    final manager = $UnitsTableManager(
+  $AssembliesProcessedTableManager get assembliesRefs {
+    final manager = $AssembliesTableManager(
       $_db,
-      $_db.units,
+      $_db.assemblies,
     ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_unitsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_assembliesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
-  static MultiTypedResultKey<Items, List<Item>> _itemsRefsTable(
+  static MultiTypedResultKey<AuditLog, List<AuditLogData>> _auditLogRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
-    db.items,
-    aliasName: 'firms__id__items__firm_id',
+    db.auditLog,
+    aliasName: 'firms__id__audit_log__firm_id',
   );
 
-  $ItemsProcessedTableManager get itemsRefs {
-    final manager = $ItemsTableManager(
+  $AuditLogProcessedTableManager get auditLogRefs {
+    final manager = $AuditLogTableManager(
       $_db,
-      $_db.items,
+      $_db.auditLog,
     ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_itemsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_auditLogRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<ChangeLog, List<ChangeLogData>>
+  _changeLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.changeLog,
+    aliasName: 'firms__id__change_log__firm_id',
+  );
+
+  $ChangeLogProcessedTableManager get changeLogRefs {
+    final manager = $ChangeLogTableManager(
+      $_db,
+      $_db.changeLog,
+    ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_changeLogRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<PrintJobs, List<PrintJob>> _printJobsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.printJobs,
+    aliasName: 'firms__id__print_jobs__firm_id',
+  );
+
+  $PrintJobsProcessedTableManager get printJobsRefs {
+    final manager = $PrintJobsTableManager(
+      $_db,
+      $_db.printJobs,
+    ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_printJobsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -35510,6 +38387,31 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
+  Expression<bool> unitsRefs(
+    Expression<bool> Function($UnitsFilterComposer f) f,
+  ) {
+    final $UnitsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsFilterComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> taxRulesRefs(
     Expression<bool> Function($TaxRulesFilterComposer f) f,
   ) {
@@ -35560,22 +38462,22 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<bool> auditLogRefs(
-    Expression<bool> Function($AuditLogFilterComposer f) f,
+  Expression<bool> itemsRefs(
+    Expression<bool> Function($ItemsFilterComposer f) f,
   ) {
-    final $AuditLogFilterComposer composer = $composerBuilder(
+    final $ItemsFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.auditLog,
+      referencedTable: $db.items,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $AuditLogFilterComposer(
+          }) => $ItemsFilterComposer(
             $db: $db,
-            $table: $db.auditLog,
+            $table: $db.items,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -35585,22 +38487,47 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<bool> changeLogRefs(
-    Expression<bool> Function($ChangeLogFilterComposer f) f,
+  Expression<bool> bomsRefs(
+    Expression<bool> Function($BomsFilterComposer f) f,
   ) {
-    final $ChangeLogFilterComposer composer = $composerBuilder(
+    final $BomsFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.changeLog,
+      referencedTable: $db.boms,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ChangeLogFilterComposer(
+          }) => $BomsFilterComposer(
             $db: $db,
-            $table: $db.changeLog,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> bomLinesRefs(
+    Expression<bool> Function($BomLinesFilterComposer f) f,
+  ) {
+    final $BomLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesFilterComposer(
+            $db: $db,
+            $table: $db.bomLines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -35651,31 +38578,6 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
           }) => $DocumentsFilterComposer(
             $db: $db,
             $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> printJobsRefs(
-    Expression<bool> Function($PrintJobsFilterComposer f) f,
-  ) {
-    final $PrintJobsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.printJobs,
-      getReferencedColumn: (t) => t.firmId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $PrintJobsFilterComposer(
-            $db: $db,
-            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -35785,22 +38687,22 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<bool> unitsRefs(
-    Expression<bool> Function($UnitsFilterComposer f) f,
+  Expression<bool> assembliesRefs(
+    Expression<bool> Function($AssembliesFilterComposer f) f,
   ) {
-    final $UnitsFilterComposer composer = $composerBuilder(
+    final $AssembliesFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.units,
+      referencedTable: $db.assemblies,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsFilterComposer(
+          }) => $AssembliesFilterComposer(
             $db: $db,
-            $table: $db.units,
+            $table: $db.assemblies,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -35810,22 +38712,72 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<bool> itemsRefs(
-    Expression<bool> Function($ItemsFilterComposer f) f,
+  Expression<bool> auditLogRefs(
+    Expression<bool> Function($AuditLogFilterComposer f) f,
   ) {
-    final $ItemsFilterComposer composer = $composerBuilder(
+    final $AuditLogFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.items,
+      referencedTable: $db.auditLog,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ItemsFilterComposer(
+          }) => $AuditLogFilterComposer(
             $db: $db,
-            $table: $db.items,
+            $table: $db.auditLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> changeLogRefs(
+    Expression<bool> Function($ChangeLogFilterComposer f) f,
+  ) {
+    final $ChangeLogFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.changeLog,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ChangeLogFilterComposer(
+            $db: $db,
+            $table: $db.changeLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> printJobsRefs(
+    Expression<bool> Function($PrintJobsFilterComposer f) f,
+  ) {
+    final $PrintJobsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.printJobs,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrintJobsFilterComposer(
+            $db: $db,
+            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -36447,6 +39399,31 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
+  Expression<T> unitsRefs<T extends Object>(
+    Expression<T> Function($UnitsAnnotationComposer a) f,
+  ) {
+    final $UnitsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsAnnotationComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> taxRulesRefs<T extends Object>(
     Expression<T> Function($TaxRulesAnnotationComposer a) f,
   ) {
@@ -36497,22 +39474,22 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<T> auditLogRefs<T extends Object>(
-    Expression<T> Function($AuditLogAnnotationComposer a) f,
+  Expression<T> itemsRefs<T extends Object>(
+    Expression<T> Function($ItemsAnnotationComposer a) f,
   ) {
-    final $AuditLogAnnotationComposer composer = $composerBuilder(
+    final $ItemsAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.auditLog,
+      referencedTable: $db.items,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $AuditLogAnnotationComposer(
+          }) => $ItemsAnnotationComposer(
             $db: $db,
-            $table: $db.auditLog,
+            $table: $db.items,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -36522,22 +39499,47 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<T> changeLogRefs<T extends Object>(
-    Expression<T> Function($ChangeLogAnnotationComposer a) f,
+  Expression<T> bomsRefs<T extends Object>(
+    Expression<T> Function($BomsAnnotationComposer a) f,
   ) {
-    final $ChangeLogAnnotationComposer composer = $composerBuilder(
+    final $BomsAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.changeLog,
+      referencedTable: $db.boms,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ChangeLogAnnotationComposer(
+          }) => $BomsAnnotationComposer(
             $db: $db,
-            $table: $db.changeLog,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> bomLinesRefs<T extends Object>(
+    Expression<T> Function($BomLinesAnnotationComposer a) f,
+  ) {
+    final $BomLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.bomLines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -36588,31 +39590,6 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
           }) => $DocumentsAnnotationComposer(
             $db: $db,
             $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> printJobsRefs<T extends Object>(
-    Expression<T> Function($PrintJobsAnnotationComposer a) f,
-  ) {
-    final $PrintJobsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.printJobs,
-      getReferencedColumn: (t) => t.firmId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $PrintJobsAnnotationComposer(
-            $db: $db,
-            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -36722,22 +39699,22 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<T> unitsRefs<T extends Object>(
-    Expression<T> Function($UnitsAnnotationComposer a) f,
+  Expression<T> assembliesRefs<T extends Object>(
+    Expression<T> Function($AssembliesAnnotationComposer a) f,
   ) {
-    final $UnitsAnnotationComposer composer = $composerBuilder(
+    final $AssembliesAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.units,
+      referencedTable: $db.assemblies,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsAnnotationComposer(
+          }) => $AssembliesAnnotationComposer(
             $db: $db,
-            $table: $db.units,
+            $table: $db.assemblies,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -36747,22 +39724,72 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
-  Expression<T> itemsRefs<T extends Object>(
-    Expression<T> Function($ItemsAnnotationComposer a) f,
+  Expression<T> auditLogRefs<T extends Object>(
+    Expression<T> Function($AuditLogAnnotationComposer a) f,
   ) {
-    final $ItemsAnnotationComposer composer = $composerBuilder(
+    final $AuditLogAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.items,
+      referencedTable: $db.auditLog,
       getReferencedColumn: (t) => t.firmId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ItemsAnnotationComposer(
+          }) => $AuditLogAnnotationComposer(
             $db: $db,
-            $table: $db.items,
+            $table: $db.auditLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> changeLogRefs<T extends Object>(
+    Expression<T> Function($ChangeLogAnnotationComposer a) f,
+  ) {
+    final $ChangeLogAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.changeLog,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ChangeLogAnnotationComposer(
+            $db: $db,
+            $table: $db.changeLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> printJobsRefs<T extends Object>(
+    Expression<T> Function($PrintJobsAnnotationComposer a) f,
+  ) {
+    final $PrintJobsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.printJobs,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrintJobsAnnotationComposer(
+            $db: $db,
+            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -37039,19 +40066,22 @@ class $FirmsTableManager
           PrefetchHooks Function({
             bool devicesRefs,
             bool usersRefs,
+            bool unitsRefs,
             bool taxRulesRefs,
             bool attachmentsRefs,
-            bool auditLogRefs,
-            bool changeLogRefs,
+            bool itemsRefs,
+            bool bomsRefs,
+            bool bomLinesRefs,
             bool partiesRefs,
             bool documentsRefs,
-            bool printJobsRefs,
             bool accountsRefs,
             bool paymentAccountsRefs,
             bool paymentsRefs,
             bool journalEntriesRefs,
-            bool unitsRefs,
-            bool itemsRefs,
+            bool assembliesRefs,
+            bool auditLogRefs,
+            bool changeLogRefs,
+            bool printJobsRefs,
             bool journalLinesRefs,
             bool stockLotsRefs,
             bool documentLinesRefs,
@@ -37231,19 +40261,22 @@ class $FirmsTableManager
               ({
                 devicesRefs = false,
                 usersRefs = false,
+                unitsRefs = false,
                 taxRulesRefs = false,
                 attachmentsRefs = false,
-                auditLogRefs = false,
-                changeLogRefs = false,
+                itemsRefs = false,
+                bomsRefs = false,
+                bomLinesRefs = false,
                 partiesRefs = false,
                 documentsRefs = false,
-                printJobsRefs = false,
                 accountsRefs = false,
                 paymentAccountsRefs = false,
                 paymentsRefs = false,
                 journalEntriesRefs = false,
-                unitsRefs = false,
-                itemsRefs = false,
+                assembliesRefs = false,
+                auditLogRefs = false,
+                changeLogRefs = false,
+                printJobsRefs = false,
                 journalLinesRefs = false,
                 stockLotsRefs = false,
                 documentLinesRefs = false,
@@ -37260,19 +40293,22 @@ class $FirmsTableManager
                   explicitlyWatchedTables: [
                     if (devicesRefs) db.devices,
                     if (usersRefs) db.users,
+                    if (unitsRefs) db.units,
                     if (taxRulesRefs) db.taxRules,
                     if (attachmentsRefs) db.attachments,
-                    if (auditLogRefs) db.auditLog,
-                    if (changeLogRefs) db.changeLog,
+                    if (itemsRefs) db.items,
+                    if (bomsRefs) db.boms,
+                    if (bomLinesRefs) db.bomLines,
                     if (partiesRefs) db.parties,
                     if (documentsRefs) db.documents,
-                    if (printJobsRefs) db.printJobs,
                     if (accountsRefs) db.accounts,
                     if (paymentAccountsRefs) db.paymentAccounts,
                     if (paymentsRefs) db.payments,
                     if (journalEntriesRefs) db.journalEntries,
-                    if (unitsRefs) db.units,
-                    if (itemsRefs) db.items,
+                    if (assembliesRefs) db.assemblies,
+                    if (auditLogRefs) db.auditLog,
+                    if (changeLogRefs) db.changeLog,
+                    if (printJobsRefs) db.printJobs,
                     if (journalLinesRefs) db.journalLines,
                     if (stockLotsRefs) db.stockLots,
                     if (documentLinesRefs) db.documentLines,
@@ -37313,6 +40349,18 @@ class $FirmsTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (unitsRefs)
+                        await $_getPrefetchedData<Firm, Firms, Unit>(
+                          currentTable: table,
+                          referencedTable: $FirmsReferences._unitsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $FirmsReferences(db, table, p0).unitsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.firmId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (taxRulesRefs)
                         await $_getPrefetchedData<Firm, Firms, TaxRule>(
                           currentTable: table,
@@ -37340,28 +40388,38 @@ class $FirmsTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (auditLogRefs)
-                        await $_getPrefetchedData<Firm, Firms, AuditLogData>(
+                      if (itemsRefs)
+                        await $_getPrefetchedData<Firm, Firms, Item>(
                           currentTable: table,
-                          referencedTable: $FirmsReferences._auditLogRefsTable(
-                            db,
-                          ),
+                          referencedTable: $FirmsReferences._itemsRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $FirmsReferences(db, table, p0).auditLogRefs,
+                              $FirmsReferences(db, table, p0).itemsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.firmId == item.id,
                               ),
                           typedResults: items,
                         ),
-                      if (changeLogRefs)
-                        await $_getPrefetchedData<Firm, Firms, ChangeLogData>(
+                      if (bomsRefs)
+                        await $_getPrefetchedData<Firm, Firms, Bom>(
                           currentTable: table,
-                          referencedTable: $FirmsReferences._changeLogRefsTable(
+                          referencedTable: $FirmsReferences._bomsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $FirmsReferences(db, table, p0).bomsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.firmId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (bomLinesRefs)
+                        await $_getPrefetchedData<Firm, Firms, BomLine>(
+                          currentTable: table,
+                          referencedTable: $FirmsReferences._bomLinesRefsTable(
                             db,
                           ),
                           managerFromTypedResult: (p0) =>
-                              $FirmsReferences(db, table, p0).changeLogRefs,
+                              $FirmsReferences(db, table, p0).bomLinesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.firmId == item.id,
@@ -37390,20 +40448,6 @@ class $FirmsTableManager
                           ),
                           managerFromTypedResult: (p0) =>
                               $FirmsReferences(db, table, p0).documentsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.firmId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (printJobsRefs)
-                        await $_getPrefetchedData<Firm, Firms, PrintJob>(
-                          currentTable: table,
-                          referencedTable: $FirmsReferences._printJobsRefsTable(
-                            db,
-                          ),
-                          managerFromTypedResult: (p0) =>
-                              $FirmsReferences(db, table, p0).printJobsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.firmId == item.id,
@@ -37470,24 +40514,55 @@ class $FirmsTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (unitsRefs)
-                        await $_getPrefetchedData<Firm, Firms, Unit>(
+                      if (assembliesRefs)
+                        await $_getPrefetchedData<Firm, Firms, Assembly>(
                           currentTable: table,
-                          referencedTable: $FirmsReferences._unitsRefsTable(db),
+                          referencedTable: $FirmsReferences
+                              ._assembliesRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $FirmsReferences(db, table, p0).unitsRefs,
+                              $FirmsReferences(db, table, p0).assembliesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.firmId == item.id,
                               ),
                           typedResults: items,
                         ),
-                      if (itemsRefs)
-                        await $_getPrefetchedData<Firm, Firms, Item>(
+                      if (auditLogRefs)
+                        await $_getPrefetchedData<Firm, Firms, AuditLogData>(
                           currentTable: table,
-                          referencedTable: $FirmsReferences._itemsRefsTable(db),
+                          referencedTable: $FirmsReferences._auditLogRefsTable(
+                            db,
+                          ),
                           managerFromTypedResult: (p0) =>
-                              $FirmsReferences(db, table, p0).itemsRefs,
+                              $FirmsReferences(db, table, p0).auditLogRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.firmId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (changeLogRefs)
+                        await $_getPrefetchedData<Firm, Firms, ChangeLogData>(
+                          currentTable: table,
+                          referencedTable: $FirmsReferences._changeLogRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $FirmsReferences(db, table, p0).changeLogRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.firmId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (printJobsRefs)
+                        await $_getPrefetchedData<Firm, Firms, PrintJob>(
+                          currentTable: table,
+                          referencedTable: $FirmsReferences._printJobsRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $FirmsReferences(db, table, p0).printJobsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.firmId == item.id,
@@ -37674,19 +40749,22 @@ typedef $FirmsProcessedTableManager =
       PrefetchHooks Function({
         bool devicesRefs,
         bool usersRefs,
+        bool unitsRefs,
         bool taxRulesRefs,
         bool attachmentsRefs,
-        bool auditLogRefs,
-        bool changeLogRefs,
+        bool itemsRefs,
+        bool bomsRefs,
+        bool bomLinesRefs,
         bool partiesRefs,
         bool documentsRefs,
-        bool printJobsRefs,
         bool accountsRefs,
         bool paymentAccountsRefs,
         bool paymentsRefs,
         bool journalEntriesRefs,
-        bool unitsRefs,
-        bool itemsRefs,
+        bool assembliesRefs,
+        bool auditLogRefs,
+        bool changeLogRefs,
+        bool printJobsRefs,
         bool journalLinesRefs,
         bool stockLotsRefs,
         bool documentLinesRefs,
@@ -37805,6 +40883,25 @@ final class $DevicesReferences
     );
   }
 
+  static MultiTypedResultKey<Units, List<Unit>> _unitsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.units,
+    aliasName: 'devices__id__units__origin_device_id',
+  );
+
+  $UnitsProcessedTableManager get unitsRefs {
+    final manager = $UnitsTableManager(
+      $_db,
+      $_db.units,
+    ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_unitsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<TaxRules, List<TaxRule>> _taxRulesRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
@@ -37842,38 +40939,58 @@ final class $DevicesReferences
     );
   }
 
-  static MultiTypedResultKey<AuditLog, List<AuditLogData>> _auditLogRefsTable(
+  static MultiTypedResultKey<Items, List<Item>> _itemsRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
-    db.auditLog,
-    aliasName: 'devices__id__audit_log__origin_device_id',
+    db.items,
+    aliasName: 'devices__id__items__origin_device_id',
   );
 
-  $AuditLogProcessedTableManager get auditLogRefs {
-    final manager = $AuditLogTableManager(
+  $ItemsProcessedTableManager get itemsRefs {
+    final manager = $ItemsTableManager(
       $_db,
-      $_db.auditLog,
+      $_db.items,
     ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_auditLogRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_itemsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
-  static MultiTypedResultKey<ChangeLog, List<ChangeLogData>>
-  _changeLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.changeLog,
-    aliasName: 'devices__id__change_log__origin_device_id',
+  static MultiTypedResultKey<Boms, List<Bom>> _bomsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.boms,
+    aliasName: 'devices__id__boms__origin_device_id',
   );
 
-  $ChangeLogProcessedTableManager get changeLogRefs {
-    final manager = $ChangeLogTableManager(
+  $BomsProcessedTableManager get bomsRefs {
+    final manager = $BomsTableManager(
       $_db,
-      $_db.changeLog,
+      $_db.boms,
     ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_changeLogRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_bomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<BomLines, List<BomLine>> _bomLinesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.bomLines,
+    aliasName: 'devices__id__bom_lines__origin_device_id',
+  );
+
+  $BomLinesProcessedTableManager get bomLinesRefs {
+    final manager = $BomLinesTableManager(
+      $_db,
+      $_db.bomLines,
+    ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_bomLinesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -37912,25 +41029,6 @@ final class $DevicesReferences
     ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_documentsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<PrintJobs, List<PrintJob>> _printJobsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.printJobs,
-    aliasName: 'devices__id__print_jobs__origin_device_id',
-  );
-
-  $PrintJobsProcessedTableManager get printJobsRefs {
-    final manager = $PrintJobsTableManager(
-      $_db,
-      $_db.printJobs,
-    ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_printJobsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -38012,39 +41110,76 @@ final class $DevicesReferences
     );
   }
 
-  static MultiTypedResultKey<Units, List<Unit>> _unitsRefsTable(
+  static MultiTypedResultKey<Assemblies, List<Assembly>> _assembliesRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
-    db.units,
-    aliasName: 'devices__id__units__origin_device_id',
+    db.assemblies,
+    aliasName: 'devices__id__assemblies__origin_device_id',
   );
 
-  $UnitsProcessedTableManager get unitsRefs {
-    final manager = $UnitsTableManager(
+  $AssembliesProcessedTableManager get assembliesRefs {
+    final manager = $AssembliesTableManager(
       $_db,
-      $_db.units,
+      $_db.assemblies,
     ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_unitsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_assembliesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
 
-  static MultiTypedResultKey<Items, List<Item>> _itemsRefsTable(
+  static MultiTypedResultKey<AuditLog, List<AuditLogData>> _auditLogRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
-    db.items,
-    aliasName: 'devices__id__items__origin_device_id',
+    db.auditLog,
+    aliasName: 'devices__id__audit_log__origin_device_id',
   );
 
-  $ItemsProcessedTableManager get itemsRefs {
-    final manager = $ItemsTableManager(
+  $AuditLogProcessedTableManager get auditLogRefs {
+    final manager = $AuditLogTableManager(
       $_db,
-      $_db.items,
+      $_db.auditLog,
     ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
 
-    final cache = $_typedResult.readTableOrNull(_itemsRefsTable($_db));
+    final cache = $_typedResult.readTableOrNull(_auditLogRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<ChangeLog, List<ChangeLogData>>
+  _changeLogRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.changeLog,
+    aliasName: 'devices__id__change_log__origin_device_id',
+  );
+
+  $ChangeLogProcessedTableManager get changeLogRefs {
+    final manager = $ChangeLogTableManager(
+      $_db,
+      $_db.changeLog,
+    ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_changeLogRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<PrintJobs, List<PrintJob>> _printJobsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.printJobs,
+    aliasName: 'devices__id__print_jobs__origin_device_id',
+  );
+
+  $PrintJobsProcessedTableManager get printJobsRefs {
+    final manager = $PrintJobsTableManager(
+      $_db,
+      $_db.printJobs,
+    ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_printJobsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -38393,6 +41528,31 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
+  Expression<bool> unitsRefs(
+    Expression<bool> Function($UnitsFilterComposer f) f,
+  ) {
+    final $UnitsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsFilterComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> taxRulesRefs(
     Expression<bool> Function($TaxRulesFilterComposer f) f,
   ) {
@@ -38443,22 +41603,22 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<bool> auditLogRefs(
-    Expression<bool> Function($AuditLogFilterComposer f) f,
+  Expression<bool> itemsRefs(
+    Expression<bool> Function($ItemsFilterComposer f) f,
   ) {
-    final $AuditLogFilterComposer composer = $composerBuilder(
+    final $ItemsFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.auditLog,
+      referencedTable: $db.items,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $AuditLogFilterComposer(
+          }) => $ItemsFilterComposer(
             $db: $db,
-            $table: $db.auditLog,
+            $table: $db.items,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -38468,22 +41628,47 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<bool> changeLogRefs(
-    Expression<bool> Function($ChangeLogFilterComposer f) f,
+  Expression<bool> bomsRefs(
+    Expression<bool> Function($BomsFilterComposer f) f,
   ) {
-    final $ChangeLogFilterComposer composer = $composerBuilder(
+    final $BomsFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.changeLog,
+      referencedTable: $db.boms,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ChangeLogFilterComposer(
+          }) => $BomsFilterComposer(
             $db: $db,
-            $table: $db.changeLog,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> bomLinesRefs(
+    Expression<bool> Function($BomLinesFilterComposer f) f,
+  ) {
+    final $BomLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesFilterComposer(
+            $db: $db,
+            $table: $db.bomLines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -38534,31 +41719,6 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
           }) => $DocumentsFilterComposer(
             $db: $db,
             $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> printJobsRefs(
-    Expression<bool> Function($PrintJobsFilterComposer f) f,
-  ) {
-    final $PrintJobsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.printJobs,
-      getReferencedColumn: (t) => t.originDeviceId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $PrintJobsFilterComposer(
-            $db: $db,
-            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -38668,22 +41828,22 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<bool> unitsRefs(
-    Expression<bool> Function($UnitsFilterComposer f) f,
+  Expression<bool> assembliesRefs(
+    Expression<bool> Function($AssembliesFilterComposer f) f,
   ) {
-    final $UnitsFilterComposer composer = $composerBuilder(
+    final $AssembliesFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.units,
+      referencedTable: $db.assemblies,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsFilterComposer(
+          }) => $AssembliesFilterComposer(
             $db: $db,
-            $table: $db.units,
+            $table: $db.assemblies,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -38693,22 +41853,72 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<bool> itemsRefs(
-    Expression<bool> Function($ItemsFilterComposer f) f,
+  Expression<bool> auditLogRefs(
+    Expression<bool> Function($AuditLogFilterComposer f) f,
   ) {
-    final $ItemsFilterComposer composer = $composerBuilder(
+    final $AuditLogFilterComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.items,
+      referencedTable: $db.auditLog,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ItemsFilterComposer(
+          }) => $AuditLogFilterComposer(
             $db: $db,
-            $table: $db.items,
+            $table: $db.auditLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> changeLogRefs(
+    Expression<bool> Function($ChangeLogFilterComposer f) f,
+  ) {
+    final $ChangeLogFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.changeLog,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ChangeLogFilterComposer(
+            $db: $db,
+            $table: $db.changeLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> printJobsRefs(
+    Expression<bool> Function($PrintJobsFilterComposer f) f,
+  ) {
+    final $PrintJobsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.printJobs,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrintJobsFilterComposer(
+            $db: $db,
+            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39236,6 +42446,31 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
+  Expression<T> unitsRefs<T extends Object>(
+    Expression<T> Function($UnitsAnnotationComposer a) f,
+  ) {
+    final $UnitsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsAnnotationComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> taxRulesRefs<T extends Object>(
     Expression<T> Function($TaxRulesAnnotationComposer a) f,
   ) {
@@ -39286,22 +42521,22 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<T> auditLogRefs<T extends Object>(
-    Expression<T> Function($AuditLogAnnotationComposer a) f,
+  Expression<T> itemsRefs<T extends Object>(
+    Expression<T> Function($ItemsAnnotationComposer a) f,
   ) {
-    final $AuditLogAnnotationComposer composer = $composerBuilder(
+    final $ItemsAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.auditLog,
+      referencedTable: $db.items,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $AuditLogAnnotationComposer(
+          }) => $ItemsAnnotationComposer(
             $db: $db,
-            $table: $db.auditLog,
+            $table: $db.items,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39311,22 +42546,47 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<T> changeLogRefs<T extends Object>(
-    Expression<T> Function($ChangeLogAnnotationComposer a) f,
+  Expression<T> bomsRefs<T extends Object>(
+    Expression<T> Function($BomsAnnotationComposer a) f,
   ) {
-    final $ChangeLogAnnotationComposer composer = $composerBuilder(
+    final $BomsAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.changeLog,
+      referencedTable: $db.boms,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ChangeLogAnnotationComposer(
+          }) => $BomsAnnotationComposer(
             $db: $db,
-            $table: $db.changeLog,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> bomLinesRefs<T extends Object>(
+    Expression<T> Function($BomLinesAnnotationComposer a) f,
+  ) {
+    final $BomLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.bomLines,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39377,31 +42637,6 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
           }) => $DocumentsAnnotationComposer(
             $db: $db,
             $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> printJobsRefs<T extends Object>(
-    Expression<T> Function($PrintJobsAnnotationComposer a) f,
-  ) {
-    final $PrintJobsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.printJobs,
-      getReferencedColumn: (t) => t.originDeviceId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $PrintJobsAnnotationComposer(
-            $db: $db,
-            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39511,22 +42746,22 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<T> unitsRefs<T extends Object>(
-    Expression<T> Function($UnitsAnnotationComposer a) f,
+  Expression<T> assembliesRefs<T extends Object>(
+    Expression<T> Function($AssembliesAnnotationComposer a) f,
   ) {
-    final $UnitsAnnotationComposer composer = $composerBuilder(
+    final $AssembliesAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.units,
+      referencedTable: $db.assemblies,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsAnnotationComposer(
+          }) => $AssembliesAnnotationComposer(
             $db: $db,
-            $table: $db.units,
+            $table: $db.assemblies,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39536,22 +42771,72 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
-  Expression<T> itemsRefs<T extends Object>(
-    Expression<T> Function($ItemsAnnotationComposer a) f,
+  Expression<T> auditLogRefs<T extends Object>(
+    Expression<T> Function($AuditLogAnnotationComposer a) f,
   ) {
-    final $ItemsAnnotationComposer composer = $composerBuilder(
+    final $AuditLogAnnotationComposer composer = $composerBuilder(
       composer: this,
       getCurrentColumn: (t) => t.id,
-      referencedTable: $db.items,
+      referencedTable: $db.auditLog,
       getReferencedColumn: (t) => t.originDeviceId,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $ItemsAnnotationComposer(
+          }) => $AuditLogAnnotationComposer(
             $db: $db,
-            $table: $db.items,
+            $table: $db.auditLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> changeLogRefs<T extends Object>(
+    Expression<T> Function($ChangeLogAnnotationComposer a) f,
+  ) {
+    final $ChangeLogAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.changeLog,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ChangeLogAnnotationComposer(
+            $db: $db,
+            $table: $db.changeLog,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> printJobsRefs<T extends Object>(
+    Expression<T> Function($PrintJobsAnnotationComposer a) f,
+  ) {
+    final $PrintJobsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.printJobs,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrintJobsAnnotationComposer(
+            $db: $db,
+            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -39804,19 +43089,22 @@ class $DevicesTableManager
             bool firmId,
             bool originDeviceId,
             bool usersRefs,
+            bool unitsRefs,
             bool taxRulesRefs,
             bool attachmentsRefs,
-            bool auditLogRefs,
-            bool changeLogRefs,
+            bool itemsRefs,
+            bool bomsRefs,
+            bool bomLinesRefs,
             bool partiesRefs,
             bool documentsRefs,
-            bool printJobsRefs,
             bool accountsRefs,
             bool paymentAccountsRefs,
             bool paymentsRefs,
             bool journalEntriesRefs,
-            bool unitsRefs,
-            bool itemsRefs,
+            bool assembliesRefs,
+            bool auditLogRefs,
+            bool changeLogRefs,
+            bool printJobsRefs,
             bool journalLinesRefs,
             bool stockLotsRefs,
             bool documentLinesRefs,
@@ -39944,19 +43232,22 @@ class $DevicesTableManager
                 firmId = false,
                 originDeviceId = false,
                 usersRefs = false,
+                unitsRefs = false,
                 taxRulesRefs = false,
                 attachmentsRefs = false,
-                auditLogRefs = false,
-                changeLogRefs = false,
+                itemsRefs = false,
+                bomsRefs = false,
+                bomLinesRefs = false,
                 partiesRefs = false,
                 documentsRefs = false,
-                printJobsRefs = false,
                 accountsRefs = false,
                 paymentAccountsRefs = false,
                 paymentsRefs = false,
                 journalEntriesRefs = false,
-                unitsRefs = false,
-                itemsRefs = false,
+                assembliesRefs = false,
+                auditLogRefs = false,
+                changeLogRefs = false,
+                printJobsRefs = false,
                 journalLinesRefs = false,
                 stockLotsRefs = false,
                 documentLinesRefs = false,
@@ -39971,19 +43262,22 @@ class $DevicesTableManager
                   db: db,
                   explicitlyWatchedTables: [
                     if (usersRefs) db.users,
+                    if (unitsRefs) db.units,
                     if (taxRulesRefs) db.taxRules,
                     if (attachmentsRefs) db.attachments,
-                    if (auditLogRefs) db.auditLog,
-                    if (changeLogRefs) db.changeLog,
+                    if (itemsRefs) db.items,
+                    if (bomsRefs) db.boms,
+                    if (bomLinesRefs) db.bomLines,
                     if (partiesRefs) db.parties,
                     if (documentsRefs) db.documents,
-                    if (printJobsRefs) db.printJobs,
                     if (accountsRefs) db.accounts,
                     if (paymentAccountsRefs) db.paymentAccounts,
                     if (paymentsRefs) db.payments,
                     if (journalEntriesRefs) db.journalEntries,
-                    if (unitsRefs) db.units,
-                    if (itemsRefs) db.items,
+                    if (assembliesRefs) db.assemblies,
+                    if (auditLogRefs) db.auditLog,
+                    if (changeLogRefs) db.changeLog,
+                    if (printJobsRefs) db.printJobs,
                     if (journalLinesRefs) db.journalLines,
                     if (stockLotsRefs) db.stockLots,
                     if (documentLinesRefs) db.documentLines,
@@ -40055,6 +43349,20 @@ class $DevicesTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (unitsRefs)
+                        await $_getPrefetchedData<Device, Devices, Unit>(
+                          currentTable: table,
+                          referencedTable: $DevicesReferences._unitsRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $DevicesReferences(db, table, p0).unitsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.originDeviceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (taxRulesRefs)
                         await $_getPrefetchedData<Device, Devices, TaxRule>(
                           currentTable: table,
@@ -40081,34 +43389,41 @@ class $DevicesTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (auditLogRefs)
-                        await $_getPrefetchedData<
-                          Device,
-                          Devices,
-                          AuditLogData
-                        >(
+                      if (itemsRefs)
+                        await $_getPrefetchedData<Device, Devices, Item>(
                           currentTable: table,
-                          referencedTable: $DevicesReferences
-                              ._auditLogRefsTable(db),
+                          referencedTable: $DevicesReferences._itemsRefsTable(
+                            db,
+                          ),
                           managerFromTypedResult: (p0) =>
-                              $DevicesReferences(db, table, p0).auditLogRefs,
+                              $DevicesReferences(db, table, p0).itemsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.originDeviceId == item.id,
                               ),
                           typedResults: items,
                         ),
-                      if (changeLogRefs)
-                        await $_getPrefetchedData<
-                          Device,
-                          Devices,
-                          ChangeLogData
-                        >(
+                      if (bomsRefs)
+                        await $_getPrefetchedData<Device, Devices, Bom>(
+                          currentTable: table,
+                          referencedTable: $DevicesReferences._bomsRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $DevicesReferences(db, table, p0).bomsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.originDeviceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (bomLinesRefs)
+                        await $_getPrefetchedData<Device, Devices, BomLine>(
                           currentTable: table,
                           referencedTable: $DevicesReferences
-                              ._changeLogRefsTable(db),
+                              ._bomLinesRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $DevicesReferences(db, table, p0).changeLogRefs,
+                              $DevicesReferences(db, table, p0).bomLinesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.originDeviceId == item.id,
@@ -40136,19 +43451,6 @@ class $DevicesTableManager
                               ._documentsRefsTable(db),
                           managerFromTypedResult: (p0) =>
                               $DevicesReferences(db, table, p0).documentsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.originDeviceId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (printJobsRefs)
-                        await $_getPrefetchedData<Device, Devices, PrintJob>(
-                          currentTable: table,
-                          referencedTable: $DevicesReferences
-                              ._printJobsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $DevicesReferences(db, table, p0).printJobsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.originDeviceId == item.id,
@@ -40221,28 +43523,60 @@ class $DevicesTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (unitsRefs)
-                        await $_getPrefetchedData<Device, Devices, Unit>(
+                      if (assembliesRefs)
+                        await $_getPrefetchedData<Device, Devices, Assembly>(
                           currentTable: table,
-                          referencedTable: $DevicesReferences._unitsRefsTable(
-                            db,
-                          ),
+                          referencedTable: $DevicesReferences
+                              ._assembliesRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $DevicesReferences(db, table, p0).unitsRefs,
+                              $DevicesReferences(db, table, p0).assembliesRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.originDeviceId == item.id,
                               ),
                           typedResults: items,
                         ),
-                      if (itemsRefs)
-                        await $_getPrefetchedData<Device, Devices, Item>(
+                      if (auditLogRefs)
+                        await $_getPrefetchedData<
+                          Device,
+                          Devices,
+                          AuditLogData
+                        >(
                           currentTable: table,
-                          referencedTable: $DevicesReferences._itemsRefsTable(
-                            db,
-                          ),
+                          referencedTable: $DevicesReferences
+                              ._auditLogRefsTable(db),
                           managerFromTypedResult: (p0) =>
-                              $DevicesReferences(db, table, p0).itemsRefs,
+                              $DevicesReferences(db, table, p0).auditLogRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.originDeviceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (changeLogRefs)
+                        await $_getPrefetchedData<
+                          Device,
+                          Devices,
+                          ChangeLogData
+                        >(
+                          currentTable: table,
+                          referencedTable: $DevicesReferences
+                              ._changeLogRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $DevicesReferences(db, table, p0).changeLogRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.originDeviceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (printJobsRefs)
+                        await $_getPrefetchedData<Device, Devices, PrintJob>(
+                          currentTable: table,
+                          referencedTable: $DevicesReferences
+                              ._printJobsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $DevicesReferences(db, table, p0).printJobsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.originDeviceId == item.id,
@@ -40425,19 +43759,22 @@ typedef $DevicesProcessedTableManager =
         bool firmId,
         bool originDeviceId,
         bool usersRefs,
+        bool unitsRefs,
         bool taxRulesRefs,
         bool attachmentsRefs,
-        bool auditLogRefs,
-        bool changeLogRefs,
+        bool itemsRefs,
+        bool bomsRefs,
+        bool bomLinesRefs,
         bool partiesRefs,
         bool documentsRefs,
-        bool printJobsRefs,
         bool accountsRefs,
         bool paymentAccountsRefs,
         bool paymentsRefs,
         bool journalEntriesRefs,
-        bool unitsRefs,
-        bool itemsRefs,
+        bool assembliesRefs,
+        bool auditLogRefs,
+        bool changeLogRefs,
+        bool printJobsRefs,
         bool journalLinesRefs,
         bool stockLotsRefs,
         bool documentLinesRefs,
@@ -41355,6 +44692,915 @@ typedef $UsersProcessedTableManager =
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
+      })
+    >;
+typedef $UnitsCreateCompanionBuilder =
+    UnitsCompanion Function({
+      required String id,
+      required String firmId,
+      required int createdAtUtc,
+      required int updatedAtUtc,
+      required String createdBy,
+      required String updatedBy,
+      Value<int?> deletedAtUtc,
+      required String originDeviceId,
+      required String hlc,
+      Value<int> rev,
+      required String code,
+      required String nameEn,
+      required String nameUr,
+      required String kind,
+      Value<int> isBase,
+      Value<int> decimals,
+      Value<int> isActive,
+      Value<int> rowid,
+    });
+typedef $UnitsUpdateCompanionBuilder =
+    UnitsCompanion Function({
+      Value<String> id,
+      Value<String> firmId,
+      Value<int> createdAtUtc,
+      Value<int> updatedAtUtc,
+      Value<String> createdBy,
+      Value<String> updatedBy,
+      Value<int?> deletedAtUtc,
+      Value<String> originDeviceId,
+      Value<String> hlc,
+      Value<int> rev,
+      Value<String> code,
+      Value<String> nameEn,
+      Value<String> nameUr,
+      Value<String> kind,
+      Value<int> isBase,
+      Value<int> decimals,
+      Value<int> isActive,
+      Value<int> rowid,
+    });
+
+final class $UnitsReferences
+    extends BaseReferences<_$AppDatabase, Units, Unit> {
+  $UnitsReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('units__firm_id__firms__id');
+
+  $FirmsProcessedTableManager get firmId {
+    final $_column = $_itemColumn<String>('firm_id')!;
+
+    final manager = $FirmsTableManager(
+      $_db,
+      $_db.firms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_firmIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('units__created_by__users__id');
+
+  $UsersProcessedTableManager get createdBy {
+    final $_column = $_itemColumn<String>('created_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('units__updated_by__users__id');
+
+  $UsersProcessedTableManager get updatedBy {
+    final $_column = $_itemColumn<String>('updated_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Devices _originDeviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('units__origin_device_id__devices__id');
+
+  $DevicesProcessedTableManager get originDeviceId {
+    final $_column = $_itemColumn<String>('origin_device_id')!;
+
+    final manager = $DevicesTableManager(
+      $_db,
+      $_db.devices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
+  _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.documentLines,
+    aliasName: 'units__id__document_lines__unit_id',
+  );
+
+  $DocumentLinesProcessedTableManager get documentLinesRefs {
+    final manager = $DocumentLinesTableManager(
+      $_db,
+      $_db.documentLines,
+    ).filter((f) => f.unitId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_documentLinesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $UnitsFilterComposer extends Composer<_$AppDatabase, Units> {
+  $UnitsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nameUr => $composableBuilder(
+    column: $table.nameUr,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get isBase => $composableBuilder(
+    column: $table.isBase,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get decimals => $composableBuilder(
+    column: $table.decimals,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $FirmsFilterComposer get firmId {
+    final $FirmsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsFilterComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get createdBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get updatedBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesFilterComposer get originDeviceId {
+    final $DevicesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesFilterComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> documentLinesRefs(
+    Expression<bool> Function($DocumentLinesFilterComposer f) f,
+  ) {
+    final $DocumentLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.unitId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesFilterComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $UnitsOrderingComposer extends Composer<_$AppDatabase, Units> {
+  $UnitsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameEn => $composableBuilder(
+    column: $table.nameEn,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nameUr => $composableBuilder(
+    column: $table.nameUr,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get isBase => $composableBuilder(
+    column: $table.isBase,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get decimals => $composableBuilder(
+    column: $table.decimals,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $FirmsOrderingComposer get firmId {
+    final $FirmsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsOrderingComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get createdBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get updatedBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesOrderingComposer get originDeviceId {
+    final $DevicesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesOrderingComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $UnitsAnnotationComposer extends Composer<_$AppDatabase, Units> {
+  $UnitsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => column);
+
+  GeneratedColumn<int> get rev =>
+      $composableBuilder(column: $table.rev, builder: (column) => column);
+
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get nameEn =>
+      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+
+  GeneratedColumn<String> get nameUr =>
+      $composableBuilder(column: $table.nameUr, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<int> get isBase =>
+      $composableBuilder(column: $table.isBase, builder: (column) => column);
+
+  GeneratedColumn<int> get decimals =>
+      $composableBuilder(column: $table.decimals, builder: (column) => column);
+
+  GeneratedColumn<int> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  $FirmsAnnotationComposer get firmId {
+    final $FirmsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsAnnotationComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get createdBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get updatedBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesAnnotationComposer get originDeviceId {
+    final $DevicesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesAnnotationComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> documentLinesRefs<T extends Object>(
+    Expression<T> Function($DocumentLinesAnnotationComposer a) f,
+  ) {
+    final $DocumentLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.unitId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $UnitsTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          Units,
+          Unit,
+          $UnitsFilterComposer,
+          $UnitsOrderingComposer,
+          $UnitsAnnotationComposer,
+          $UnitsCreateCompanionBuilder,
+          $UnitsUpdateCompanionBuilder,
+          (Unit, $UnitsReferences),
+          Unit,
+          PrefetchHooks Function({
+            bool firmId,
+            bool createdBy,
+            bool updatedBy,
+            bool originDeviceId,
+            bool documentLinesRefs,
+          })
+        > {
+  $UnitsTableManager(_$AppDatabase db, Units table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $UnitsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $UnitsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $UnitsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> firmId = const Value.absent(),
+                Value<int> createdAtUtc = const Value.absent(),
+                Value<int> updatedAtUtc = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> updatedBy = const Value.absent(),
+                Value<int?> deletedAtUtc = const Value.absent(),
+                Value<String> originDeviceId = const Value.absent(),
+                Value<String> hlc = const Value.absent(),
+                Value<int> rev = const Value.absent(),
+                Value<String> code = const Value.absent(),
+                Value<String> nameEn = const Value.absent(),
+                Value<String> nameUr = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<int> isBase = const Value.absent(),
+                Value<int> decimals = const Value.absent(),
+                Value<int> isActive = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UnitsCompanion(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                code: code,
+                nameEn: nameEn,
+                nameUr: nameUr,
+                kind: kind,
+                isBase: isBase,
+                decimals: decimals,
+                isActive: isActive,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String firmId,
+                required int createdAtUtc,
+                required int updatedAtUtc,
+                required String createdBy,
+                required String updatedBy,
+                Value<int?> deletedAtUtc = const Value.absent(),
+                required String originDeviceId,
+                required String hlc,
+                Value<int> rev = const Value.absent(),
+                required String code,
+                required String nameEn,
+                required String nameUr,
+                required String kind,
+                Value<int> isBase = const Value.absent(),
+                Value<int> decimals = const Value.absent(),
+                Value<int> isActive = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => UnitsCompanion.insert(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                code: code,
+                nameEn: nameEn,
+                nameUr: nameUr,
+                kind: kind,
+                isBase: isBase,
+                decimals: decimals,
+                isActive: isActive,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<Units, Unit>(table),
+                  $UnitsReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                firmId = false,
+                createdBy = false,
+                updatedBy = false,
+                originDeviceId = false,
+                documentLinesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (documentLinesRefs) db.documentLines,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (firmId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.firmId,
+                                    referencedTable: $UnitsReferences
+                                        ._firmIdTable(db),
+                                    referencedColumn: $UnitsReferences
+                                        ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $UnitsReferences
+                                        ._createdByTable(db),
+                                    referencedColumn: $UnitsReferences
+                                        ._createdByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (updatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.updatedBy,
+                                    referencedTable: $UnitsReferences
+                                        ._updatedByTable(db),
+                                    referencedColumn: $UnitsReferences
+                                        ._updatedByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $UnitsReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $UnitsReferences
+                                        ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (documentLinesRefs)
+                        await $_getPrefetchedData<Unit, Units, DocumentLine>(
+                          currentTable: table,
+                          referencedTable: $UnitsReferences
+                              ._documentLinesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $UnitsReferences(db, table, p0).documentLinesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.unitId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $UnitsProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      Units,
+      Unit,
+      $UnitsFilterComposer,
+      $UnitsOrderingComposer,
+      $UnitsAnnotationComposer,
+      $UnitsCreateCompanionBuilder,
+      $UnitsUpdateCompanionBuilder,
+      (Unit, $UnitsReferences),
+      Unit,
+      PrefetchHooks Function({
+        bool firmId,
+        bool createdBy,
+        bool updatedBy,
+        bool originDeviceId,
+        bool documentLinesRefs,
       })
     >;
 typedef $TaxRulesCreateCompanionBuilder =
@@ -42692,6 +46938,24 @@ final class $AttachmentsReferences
     );
   }
 
+  static MultiTypedResultKey<Items, List<Item>> _itemsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.items,
+    aliasName: 'attachments__id__items__image_attachment_id',
+  );
+
+  $ItemsProcessedTableManager get itemsRefs {
+    final manager = $ItemsTableManager($_db, $_db.items).filter(
+      (f) => f.imageAttachmentId.id.sqlEquals($_itemColumn<String>('id')!),
+    );
+
+    final cache = $_typedResult.readTableOrNull(_itemsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<PaymentAccounts, List<PaymentAccount>>
   _paymentAccountsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.paymentAccounts,
@@ -42726,24 +46990,6 @@ final class $AttachmentsReferences
     );
 
     final cache = $_typedResult.readTableOrNull(_paymentsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<Items, List<Item>> _itemsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.items,
-    aliasName: 'attachments__id__items__image_attachment_id',
-  );
-
-  $ItemsProcessedTableManager get itemsRefs {
-    final manager = $ItemsTableManager($_db, $_db.items).filter(
-      (f) => f.imageAttachmentId.id.sqlEquals($_itemColumn<String>('id')!),
-    );
-
-    final cache = $_typedResult.readTableOrNull(_itemsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -42935,6 +47181,31 @@ class $AttachmentsFilterComposer extends Composer<_$AppDatabase, Attachments> {
     return composer;
   }
 
+  Expression<bool> itemsRefs(
+    Expression<bool> Function($ItemsFilterComposer f) f,
+  ) {
+    final $ItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.imageAttachmentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsFilterComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> paymentAccountsRefs(
     Expression<bool> Function($PaymentAccountsFilterComposer f) f,
   ) {
@@ -42976,31 +47247,6 @@ class $AttachmentsFilterComposer extends Composer<_$AppDatabase, Attachments> {
           }) => $PaymentsFilterComposer(
             $db: $db,
             $table: $db.payments,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> itemsRefs(
-    Expression<bool> Function($ItemsFilterComposer f) f,
-  ) {
-    final $ItemsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.items,
-      getReferencedColumn: (t) => t.imageAttachmentId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $ItemsFilterComposer(
-            $db: $db,
-            $table: $db.items,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -43360,6 +47606,31 @@ class $AttachmentsAnnotationComposer
     return composer;
   }
 
+  Expression<T> itemsRefs<T extends Object>(
+    Expression<T> Function($ItemsAnnotationComposer a) f,
+  ) {
+    final $ItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.imageAttachmentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> paymentAccountsRefs<T extends Object>(
     Expression<T> Function($PaymentAccountsAnnotationComposer a) f,
   ) {
@@ -43409,31 +47680,6 @@ class $AttachmentsAnnotationComposer
     );
     return f(composer);
   }
-
-  Expression<T> itemsRefs<T extends Object>(
-    Expression<T> Function($ItemsAnnotationComposer a) f,
-  ) {
-    final $ItemsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.items,
-      getReferencedColumn: (t) => t.imageAttachmentId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $ItemsAnnotationComposer(
-            $db: $db,
-            $table: $db.items,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
 class $AttachmentsTableManager
@@ -43454,9 +47700,9 @@ class $AttachmentsTableManager
             bool createdBy,
             bool updatedBy,
             bool originDeviceId,
+            bool itemsRefs,
             bool paymentAccountsRefs,
             bool paymentsRefs,
-            bool itemsRefs,
           })
         > {
   $AttachmentsTableManager(_$AppDatabase db, Attachments table)
@@ -43580,16 +47826,16 @@ class $AttachmentsTableManager
                 createdBy = false,
                 updatedBy = false,
                 originDeviceId = false,
+                itemsRefs = false,
                 paymentAccountsRefs = false,
                 paymentsRefs = false,
-                itemsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (itemsRefs) db.items,
                     if (paymentAccountsRefs) db.paymentAccounts,
                     if (paymentsRefs) db.payments,
-                    if (itemsRefs) db.items,
                   ],
                   addJoins:
                       <
@@ -43664,6 +47910,23 @@ class $AttachmentsTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (itemsRefs)
+                        await $_getPrefetchedData<
+                          Attachment,
+                          Attachments,
+                          Item
+                        >(
+                          currentTable: table,
+                          referencedTable: $AttachmentsReferences
+                              ._itemsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $AttachmentsReferences(db, table, p0).itemsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.imageAttachmentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (paymentAccountsRefs)
                         await $_getPrefetchedData<
                           Attachment,
@@ -43706,23 +47969,6 @@ class $AttachmentsTableManager
                               ),
                           typedResults: items,
                         ),
-                      if (itemsRefs)
-                        await $_getPrefetchedData<
-                          Attachment,
-                          Attachments,
-                          Item
-                        >(
-                          currentTable: table,
-                          referencedTable: $AttachmentsReferences
-                              ._itemsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $AttachmentsReferences(db, table, p0).itemsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.imageAttachmentId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
                     ];
                   },
                 );
@@ -43748,13 +47994,13 @@ typedef $AttachmentsProcessedTableManager =
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
+        bool itemsRefs,
         bool paymentAccountsRefs,
         bool paymentsRefs,
-        bool itemsRefs,
       })
     >;
-typedef $AuditLogCreateCompanionBuilder =
-    AuditLogCompanion Function({
+typedef $ItemsCreateCompanionBuilder =
+    ItemsCompanion Function({
       required String id,
       required String firmId,
       required int createdAtUtc,
@@ -43765,18 +48011,38 @@ typedef $AuditLogCreateCompanionBuilder =
       required String originDeviceId,
       required String hlc,
       Value<int> rev,
-      required String actionCode,
-      required String entityTable,
-      required String entityId,
-      Value<String?> summary,
-      Value<String?> beforeJson,
-      Value<String?> afterJson,
-      Value<int?> amountPaisa,
-      required int atUtc,
+      Value<String?> code,
+      required String name,
+      required String nameSearch,
+      Value<String> itemType,
+      Value<String?> category,
+      Value<String?> description,
+      Value<String?> barcode,
+      required String baseUnitId,
+      Value<String?> displayUnitId,
+      Value<int> displayFactorThousandths,
+      Value<int> saleRateMilliPaisa,
+      Value<int?> wholesaleRateMilliPaisa,
+      Value<int?> purchaseRateMilliPaisa,
+      Value<int> avgCostMilliPaisa,
+      Value<int?> mrpPaisa,
+      Value<String?> hsCode,
+      Value<String?> taxRuleId,
+      Value<int> priceIncludesTax,
+      Value<int> isThirdSchedule,
+      Value<int> trackStock,
+      Value<int> trackBatch,
+      Value<int> trackSerial,
+      Value<int> minStockThousandths,
+      Value<int> openingStockThousandths,
+      Value<int> openingRateMilliPaisa,
+      Value<String?> imageAttachmentId,
+      Value<int> isActive,
+      Value<int?> vipRateMilliPaisa,
       Value<int> rowid,
     });
-typedef $AuditLogUpdateCompanionBuilder =
-    AuditLogCompanion Function({
+typedef $ItemsUpdateCompanionBuilder =
+    ItemsCompanion Function({
       Value<String> id,
       Value<String> firmId,
       Value<int> createdAtUtc,
@@ -43787,23 +48053,43 @@ typedef $AuditLogUpdateCompanionBuilder =
       Value<String> originDeviceId,
       Value<String> hlc,
       Value<int> rev,
-      Value<String> actionCode,
-      Value<String> entityTable,
-      Value<String> entityId,
-      Value<String?> summary,
-      Value<String?> beforeJson,
-      Value<String?> afterJson,
-      Value<int?> amountPaisa,
-      Value<int> atUtc,
+      Value<String?> code,
+      Value<String> name,
+      Value<String> nameSearch,
+      Value<String> itemType,
+      Value<String?> category,
+      Value<String?> description,
+      Value<String?> barcode,
+      Value<String> baseUnitId,
+      Value<String?> displayUnitId,
+      Value<int> displayFactorThousandths,
+      Value<int> saleRateMilliPaisa,
+      Value<int?> wholesaleRateMilliPaisa,
+      Value<int?> purchaseRateMilliPaisa,
+      Value<int> avgCostMilliPaisa,
+      Value<int?> mrpPaisa,
+      Value<String?> hsCode,
+      Value<String?> taxRuleId,
+      Value<int> priceIncludesTax,
+      Value<int> isThirdSchedule,
+      Value<int> trackStock,
+      Value<int> trackBatch,
+      Value<int> trackSerial,
+      Value<int> minStockThousandths,
+      Value<int> openingStockThousandths,
+      Value<int> openingRateMilliPaisa,
+      Value<String?> imageAttachmentId,
+      Value<int> isActive,
+      Value<int?> vipRateMilliPaisa,
       Value<int> rowid,
     });
 
-final class $AuditLogReferences
-    extends BaseReferences<_$AppDatabase, AuditLog, AuditLogData> {
-  $AuditLogReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $ItemsReferences
+    extends BaseReferences<_$AppDatabase, Items, Item> {
+  $ItemsReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias('audit_log__firm_id__firms__id');
+      db.firms.createAlias('items__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -43820,7 +48106,7 @@ final class $AuditLogReferences
   }
 
   static Users _createdByTable(_$AppDatabase db) =>
-      db.users.createAlias('audit_log__created_by__users__id');
+      db.users.createAlias('items__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -43837,7 +48123,7 @@ final class $AuditLogReferences
   }
 
   static Users _updatedByTable(_$AppDatabase db) =>
-      db.users.createAlias('audit_log__updated_by__users__id');
+      db.users.createAlias('items__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -43854,7 +48140,7 @@ final class $AuditLogReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias('audit_log__origin_device_id__devices__id');
+      db.devices.createAlias('items__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -43869,10 +48155,227 @@ final class $AuditLogReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static Units _baseUnitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('items__base_unit_id__units__id');
+
+  $UnitsProcessedTableManager get baseUnitId {
+    final $_column = $_itemColumn<String>('base_unit_id')!;
+
+    final manager = $UnitsTableManager(
+      $_db,
+      $_db.units,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_baseUnitIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Units _displayUnitIdTable(_$AppDatabase db) =>
+      db.units.createAlias('items__display_unit_id__units__id');
+
+  $UnitsProcessedTableManager? get displayUnitId {
+    final $_column = $_itemColumn<String>('display_unit_id');
+    if ($_column == null) return null;
+    final manager = $UnitsTableManager(
+      $_db,
+      $_db.units,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_displayUnitIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static TaxRules _taxRuleIdTable(_$AppDatabase db) =>
+      db.taxRules.createAlias('items__tax_rule_id__tax_rules__id');
+
+  $TaxRulesProcessedTableManager? get taxRuleId {
+    final $_column = $_itemColumn<String>('tax_rule_id');
+    if ($_column == null) return null;
+    final manager = $TaxRulesTableManager(
+      $_db,
+      $_db.taxRules,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taxRuleIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Attachments _imageAttachmentIdTable(_$AppDatabase db) =>
+      db.attachments.createAlias('items__image_attachment_id__attachments__id');
+
+  $AttachmentsProcessedTableManager? get imageAttachmentId {
+    final $_column = $_itemColumn<String>('image_attachment_id');
+    if ($_column == null) return null;
+    final manager = $AttachmentsTableManager(
+      $_db,
+      $_db.attachments,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_imageAttachmentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<Boms, List<Bom>> _bomsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.boms,
+    aliasName: 'items__id__boms__output_item_id',
+  );
+
+  $BomsProcessedTableManager get bomsRefs {
+    final manager = $BomsTableManager(
+      $_db,
+      $_db.boms,
+    ).filter((f) => f.outputItemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_bomsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<BomLines, List<BomLine>> _bomLinesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.bomLines,
+    aliasName: 'items__id__bom_lines__component_item_id',
+  );
+
+  $BomLinesProcessedTableManager get bomLinesRefs {
+    final manager = $BomLinesTableManager($_db, $_db.bomLines).filter(
+      (f) => f.componentItemId.id.sqlEquals($_itemColumn<String>('id')!),
+    );
+
+    final cache = $_typedResult.readTableOrNull(_bomLinesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<Assemblies, List<Assembly>> _assembliesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.assemblies,
+    aliasName: 'items__id__assemblies__output_item_id',
+  );
+
+  $AssembliesProcessedTableManager get assembliesRefs {
+    final manager = $AssembliesTableManager(
+      $_db,
+      $_db.assemblies,
+    ).filter((f) => f.outputItemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_assembliesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<JournalLines, List<JournalLine>>
+  _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.journalLines,
+    aliasName: 'items__id__journal_lines__item_id',
+  );
+
+  $JournalLinesProcessedTableManager get journalLinesRefs {
+    final manager = $JournalLinesTableManager(
+      $_db,
+      $_db.journalLines,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_journalLinesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<StockLots, List<StockLot>> _stockLotsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.stockLots,
+    aliasName: 'items__id__stock_lots__item_id',
+  );
+
+  $StockLotsProcessedTableManager get stockLotsRefs {
+    final manager = $StockLotsTableManager(
+      $_db,
+      $_db.stockLots,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_stockLotsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
+  _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.documentLines,
+    aliasName: 'items__id__document_lines__item_id',
+  );
+
+  $DocumentLinesProcessedTableManager get documentLinesRefs {
+    final manager = $DocumentLinesTableManager(
+      $_db,
+      $_db.documentLines,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_documentLinesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
+  _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.stockLedger,
+    aliasName: 'items__id__stock_ledger__item_id',
+  );
+
+  $StockLedgerProcessedTableManager get stockLedgerRefs {
+    final manager = $StockLedgerTableManager(
+      $_db,
+      $_db.stockLedger,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_stockLedgerRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<UnitConversions, List<UnitConversion>>
+  _unitConversionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.unitConversions,
+    aliasName: 'items__id__unit_conversions__item_id',
+  );
+
+  $UnitConversionsProcessedTableManager get unitConversionsRefs {
+    final manager = $UnitConversionsTableManager(
+      $_db,
+      $_db.unitConversions,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _unitConversionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
-class $AuditLogFilterComposer extends Composer<_$AppDatabase, AuditLog> {
-  $AuditLogFilterComposer({
+class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
+  $ItemsFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -43909,43 +48412,123 @@ class $AuditLogFilterComposer extends Composer<_$AppDatabase, AuditLog> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get actionCode => $composableBuilder(
-    column: $table.actionCode,
+  ColumnFilters<String> get code => $composableBuilder(
+    column: $table.code,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get entityTable => $composableBuilder(
-    column: $table.entityTable,
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get entityId => $composableBuilder(
-    column: $table.entityId,
+  ColumnFilters<String> get nameSearch => $composableBuilder(
+    column: $table.nameSearch,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get summary => $composableBuilder(
-    column: $table.summary,
+  ColumnFilters<String> get itemType => $composableBuilder(
+    column: $table.itemType,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get beforeJson => $composableBuilder(
-    column: $table.beforeJson,
+  ColumnFilters<String> get category => $composableBuilder(
+    column: $table.category,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get afterJson => $composableBuilder(
-    column: $table.afterJson,
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get amountPaisa => $composableBuilder(
-    column: $table.amountPaisa,
+  ColumnFilters<String> get barcode => $composableBuilder(
+    column: $table.barcode,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get atUtc => $composableBuilder(
-    column: $table.atUtc,
+  ColumnFilters<int> get displayFactorThousandths => $composableBuilder(
+    column: $table.displayFactorThousandths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get saleRateMilliPaisa => $composableBuilder(
+    column: $table.saleRateMilliPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get wholesaleRateMilliPaisa => $composableBuilder(
+    column: $table.wholesaleRateMilliPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get purchaseRateMilliPaisa => $composableBuilder(
+    column: $table.purchaseRateMilliPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get avgCostMilliPaisa => $composableBuilder(
+    column: $table.avgCostMilliPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get mrpPaisa => $composableBuilder(
+    column: $table.mrpPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hsCode => $composableBuilder(
+    column: $table.hsCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priceIncludesTax => $composableBuilder(
+    column: $table.priceIncludesTax,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get isThirdSchedule => $composableBuilder(
+    column: $table.isThirdSchedule,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get trackStock => $composableBuilder(
+    column: $table.trackStock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get trackBatch => $composableBuilder(
+    column: $table.trackBatch,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get trackSerial => $composableBuilder(
+    column: $table.trackSerial,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get minStockThousandths => $composableBuilder(
+    column: $table.minStockThousandths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get openingStockThousandths => $composableBuilder(
+    column: $table.openingStockThousandths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get openingRateMilliPaisa => $composableBuilder(
+    column: $table.openingRateMilliPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get vipRateMilliPaisa => $composableBuilder(
+    column: $table.vipRateMilliPaisa,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -44040,10 +48623,302 @@ class $AuditLogFilterComposer extends Composer<_$AppDatabase, AuditLog> {
     );
     return composer;
   }
+
+  $UnitsFilterComposer get baseUnitId {
+    final $UnitsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.baseUnitId,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsFilterComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UnitsFilterComposer get displayUnitId {
+    final $UnitsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.displayUnitId,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsFilterComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $TaxRulesFilterComposer get taxRuleId {
+    final $TaxRulesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxRuleId,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $TaxRulesFilterComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $AttachmentsFilterComposer get imageAttachmentId {
+    final $AttachmentsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.imageAttachmentId,
+      referencedTable: $db.attachments,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AttachmentsFilterComposer(
+            $db: $db,
+            $table: $db.attachments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> bomsRefs(
+    Expression<bool> Function($BomsFilterComposer f) f,
+  ) {
+    final $BomsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.outputItemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsFilterComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> bomLinesRefs(
+    Expression<bool> Function($BomLinesFilterComposer f) f,
+  ) {
+    final $BomLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.componentItemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesFilterComposer(
+            $db: $db,
+            $table: $db.bomLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> assembliesRefs(
+    Expression<bool> Function($AssembliesFilterComposer f) f,
+  ) {
+    final $AssembliesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.assemblies,
+      getReferencedColumn: (t) => t.outputItemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AssembliesFilterComposer(
+            $db: $db,
+            $table: $db.assemblies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> journalLinesRefs(
+    Expression<bool> Function($JournalLinesFilterComposer f) f,
+  ) {
+    final $JournalLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.journalLines,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalLinesFilterComposer(
+            $db: $db,
+            $table: $db.journalLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> stockLotsRefs(
+    Expression<bool> Function($StockLotsFilterComposer f) f,
+  ) {
+    final $StockLotsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.stockLots,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $StockLotsFilterComposer(
+            $db: $db,
+            $table: $db.stockLots,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> documentLinesRefs(
+    Expression<bool> Function($DocumentLinesFilterComposer f) f,
+  ) {
+    final $DocumentLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesFilterComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> stockLedgerRefs(
+    Expression<bool> Function($StockLedgerFilterComposer f) f,
+  ) {
+    final $StockLedgerFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.stockLedger,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $StockLedgerFilterComposer(
+            $db: $db,
+            $table: $db.stockLedger,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> unitConversionsRefs(
+    Expression<bool> Function($UnitConversionsFilterComposer f) f,
+  ) {
+    final $UnitConversionsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.unitConversions,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitConversionsFilterComposer(
+            $db: $db,
+            $table: $db.unitConversions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
-class $AuditLogOrderingComposer extends Composer<_$AppDatabase, AuditLog> {
-  $AuditLogOrderingComposer({
+class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
+  $ItemsOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -44080,43 +48955,123 @@ class $AuditLogOrderingComposer extends Composer<_$AppDatabase, AuditLog> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get actionCode => $composableBuilder(
-    column: $table.actionCode,
+  ColumnOrderings<String> get code => $composableBuilder(
+    column: $table.code,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get entityTable => $composableBuilder(
-    column: $table.entityTable,
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get entityId => $composableBuilder(
-    column: $table.entityId,
+  ColumnOrderings<String> get nameSearch => $composableBuilder(
+    column: $table.nameSearch,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get summary => $composableBuilder(
-    column: $table.summary,
+  ColumnOrderings<String> get itemType => $composableBuilder(
+    column: $table.itemType,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get beforeJson => $composableBuilder(
-    column: $table.beforeJson,
+  ColumnOrderings<String> get category => $composableBuilder(
+    column: $table.category,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get afterJson => $composableBuilder(
-    column: $table.afterJson,
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get amountPaisa => $composableBuilder(
-    column: $table.amountPaisa,
+  ColumnOrderings<String> get barcode => $composableBuilder(
+    column: $table.barcode,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get atUtc => $composableBuilder(
-    column: $table.atUtc,
+  ColumnOrderings<int> get displayFactorThousandths => $composableBuilder(
+    column: $table.displayFactorThousandths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get saleRateMilliPaisa => $composableBuilder(
+    column: $table.saleRateMilliPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get wholesaleRateMilliPaisa => $composableBuilder(
+    column: $table.wholesaleRateMilliPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get purchaseRateMilliPaisa => $composableBuilder(
+    column: $table.purchaseRateMilliPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get avgCostMilliPaisa => $composableBuilder(
+    column: $table.avgCostMilliPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get mrpPaisa => $composableBuilder(
+    column: $table.mrpPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hsCode => $composableBuilder(
+    column: $table.hsCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priceIncludesTax => $composableBuilder(
+    column: $table.priceIncludesTax,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get isThirdSchedule => $composableBuilder(
+    column: $table.isThirdSchedule,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get trackStock => $composableBuilder(
+    column: $table.trackStock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get trackBatch => $composableBuilder(
+    column: $table.trackBatch,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get trackSerial => $composableBuilder(
+    column: $table.trackSerial,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get minStockThousandths => $composableBuilder(
+    column: $table.minStockThousandths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get openingStockThousandths => $composableBuilder(
+    column: $table.openingStockThousandths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get openingRateMilliPaisa => $composableBuilder(
+    column: $table.openingRateMilliPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get isActive => $composableBuilder(
+    column: $table.isActive,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get vipRateMilliPaisa => $composableBuilder(
+    column: $table.vipRateMilliPaisa,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -44211,10 +49166,102 @@ class $AuditLogOrderingComposer extends Composer<_$AppDatabase, AuditLog> {
     );
     return composer;
   }
+
+  $UnitsOrderingComposer get baseUnitId {
+    final $UnitsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.baseUnitId,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsOrderingComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UnitsOrderingComposer get displayUnitId {
+    final $UnitsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.displayUnitId,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsOrderingComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $TaxRulesOrderingComposer get taxRuleId {
+    final $TaxRulesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxRuleId,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $TaxRulesOrderingComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $AttachmentsOrderingComposer get imageAttachmentId {
+    final $AttachmentsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.imageAttachmentId,
+      referencedTable: $db.attachments,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AttachmentsOrderingComposer(
+            $db: $db,
+            $table: $db.attachments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
-class $AuditLogAnnotationComposer extends Composer<_$AppDatabase, AuditLog> {
-  $AuditLogAnnotationComposer({
+class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
+  $ItemsAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -44245,37 +49292,109 @@ class $AuditLogAnnotationComposer extends Composer<_$AppDatabase, AuditLog> {
   GeneratedColumn<int> get rev =>
       $composableBuilder(column: $table.rev, builder: (column) => column);
 
-  GeneratedColumn<String> get actionCode => $composableBuilder(
-    column: $table.actionCode,
+  GeneratedColumn<String> get code =>
+      $composableBuilder(column: $table.code, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get nameSearch => $composableBuilder(
+    column: $table.nameSearch,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get entityTable => $composableBuilder(
-    column: $table.entityTable,
+  GeneratedColumn<String> get itemType =>
+      $composableBuilder(column: $table.itemType, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get entityId =>
-      $composableBuilder(column: $table.entityId, builder: (column) => column);
+  GeneratedColumn<String> get barcode =>
+      $composableBuilder(column: $table.barcode, builder: (column) => column);
 
-  GeneratedColumn<String> get summary =>
-      $composableBuilder(column: $table.summary, builder: (column) => column);
-
-  GeneratedColumn<String> get beforeJson => $composableBuilder(
-    column: $table.beforeJson,
+  GeneratedColumn<int> get displayFactorThousandths => $composableBuilder(
+    column: $table.displayFactorThousandths,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get afterJson =>
-      $composableBuilder(column: $table.afterJson, builder: (column) => column);
-
-  GeneratedColumn<int> get amountPaisa => $composableBuilder(
-    column: $table.amountPaisa,
+  GeneratedColumn<int> get saleRateMilliPaisa => $composableBuilder(
+    column: $table.saleRateMilliPaisa,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get atUtc =>
-      $composableBuilder(column: $table.atUtc, builder: (column) => column);
+  GeneratedColumn<int> get wholesaleRateMilliPaisa => $composableBuilder(
+    column: $table.wholesaleRateMilliPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get purchaseRateMilliPaisa => $composableBuilder(
+    column: $table.purchaseRateMilliPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get avgCostMilliPaisa => $composableBuilder(
+    column: $table.avgCostMilliPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get mrpPaisa =>
+      $composableBuilder(column: $table.mrpPaisa, builder: (column) => column);
+
+  GeneratedColumn<String> get hsCode =>
+      $composableBuilder(column: $table.hsCode, builder: (column) => column);
+
+  GeneratedColumn<int> get priceIncludesTax => $composableBuilder(
+    column: $table.priceIncludesTax,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get isThirdSchedule => $composableBuilder(
+    column: $table.isThirdSchedule,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get trackStock => $composableBuilder(
+    column: $table.trackStock,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get trackBatch => $composableBuilder(
+    column: $table.trackBatch,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get trackSerial => $composableBuilder(
+    column: $table.trackSerial,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get minStockThousandths => $composableBuilder(
+    column: $table.minStockThousandths,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get openingStockThousandths => $composableBuilder(
+    column: $table.openingStockThousandths,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get openingRateMilliPaisa => $composableBuilder(
+    column: $table.openingRateMilliPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get isActive =>
+      $composableBuilder(column: $table.isActive, builder: (column) => column);
+
+  GeneratedColumn<int> get vipRateMilliPaisa => $composableBuilder(
+    column: $table.vipRateMilliPaisa,
+    builder: (column) => column,
+  );
 
   $FirmsAnnotationComposer get firmId {
     final $FirmsAnnotationComposer composer = $composerBuilder(
@@ -44368,39 +49487,343 @@ class $AuditLogAnnotationComposer extends Composer<_$AppDatabase, AuditLog> {
     );
     return composer;
   }
+
+  $UnitsAnnotationComposer get baseUnitId {
+    final $UnitsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.baseUnitId,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsAnnotationComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UnitsAnnotationComposer get displayUnitId {
+    final $UnitsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.displayUnitId,
+      referencedTable: $db.units,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitsAnnotationComposer(
+            $db: $db,
+            $table: $db.units,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $TaxRulesAnnotationComposer get taxRuleId {
+    final $TaxRulesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taxRuleId,
+      referencedTable: $db.taxRules,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $TaxRulesAnnotationComposer(
+            $db: $db,
+            $table: $db.taxRules,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $AttachmentsAnnotationComposer get imageAttachmentId {
+    final $AttachmentsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.imageAttachmentId,
+      referencedTable: $db.attachments,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AttachmentsAnnotationComposer(
+            $db: $db,
+            $table: $db.attachments,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> bomsRefs<T extends Object>(
+    Expression<T> Function($BomsAnnotationComposer a) f,
+  ) {
+    final $BomsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.outputItemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsAnnotationComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> bomLinesRefs<T extends Object>(
+    Expression<T> Function($BomLinesAnnotationComposer a) f,
+  ) {
+    final $BomLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.componentItemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.bomLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> assembliesRefs<T extends Object>(
+    Expression<T> Function($AssembliesAnnotationComposer a) f,
+  ) {
+    final $AssembliesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.assemblies,
+      getReferencedColumn: (t) => t.outputItemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AssembliesAnnotationComposer(
+            $db: $db,
+            $table: $db.assemblies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> journalLinesRefs<T extends Object>(
+    Expression<T> Function($JournalLinesAnnotationComposer a) f,
+  ) {
+    final $JournalLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.journalLines,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.journalLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> stockLotsRefs<T extends Object>(
+    Expression<T> Function($StockLotsAnnotationComposer a) f,
+  ) {
+    final $StockLotsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.stockLots,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $StockLotsAnnotationComposer(
+            $db: $db,
+            $table: $db.stockLots,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> documentLinesRefs<T extends Object>(
+    Expression<T> Function($DocumentLinesAnnotationComposer a) f,
+  ) {
+    final $DocumentLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> stockLedgerRefs<T extends Object>(
+    Expression<T> Function($StockLedgerAnnotationComposer a) f,
+  ) {
+    final $StockLedgerAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.stockLedger,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $StockLedgerAnnotationComposer(
+            $db: $db,
+            $table: $db.stockLedger,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> unitConversionsRefs<T extends Object>(
+    Expression<T> Function($UnitConversionsAnnotationComposer a) f,
+  ) {
+    final $UnitConversionsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.unitConversions,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UnitConversionsAnnotationComposer(
+            $db: $db,
+            $table: $db.unitConversions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
-class $AuditLogTableManager
+class $ItemsTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          AuditLog,
-          AuditLogData,
-          $AuditLogFilterComposer,
-          $AuditLogOrderingComposer,
-          $AuditLogAnnotationComposer,
-          $AuditLogCreateCompanionBuilder,
-          $AuditLogUpdateCompanionBuilder,
-          (AuditLogData, $AuditLogReferences),
-          AuditLogData,
+          Items,
+          Item,
+          $ItemsFilterComposer,
+          $ItemsOrderingComposer,
+          $ItemsAnnotationComposer,
+          $ItemsCreateCompanionBuilder,
+          $ItemsUpdateCompanionBuilder,
+          (Item, $ItemsReferences),
+          Item,
           PrefetchHooks Function({
             bool firmId,
             bool createdBy,
             bool updatedBy,
             bool originDeviceId,
+            bool baseUnitId,
+            bool displayUnitId,
+            bool taxRuleId,
+            bool imageAttachmentId,
+            bool bomsRefs,
+            bool bomLinesRefs,
+            bool assembliesRefs,
+            bool journalLinesRefs,
+            bool stockLotsRefs,
+            bool documentLinesRefs,
+            bool stockLedgerRefs,
+            bool unitConversionsRefs,
           })
         > {
-  $AuditLogTableManager(_$AppDatabase db, AuditLog table)
+  $ItemsTableManager(_$AppDatabase db, Items table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $AuditLogFilterComposer($db: db, $table: table),
+              $ItemsFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $AuditLogOrderingComposer($db: db, $table: table),
+              $ItemsOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $AuditLogAnnotationComposer($db: db, $table: table),
+              $ItemsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -44413,16 +49836,36 @@ class $AuditLogTableManager
                 Value<String> originDeviceId = const Value.absent(),
                 Value<String> hlc = const Value.absent(),
                 Value<int> rev = const Value.absent(),
-                Value<String> actionCode = const Value.absent(),
-                Value<String> entityTable = const Value.absent(),
-                Value<String> entityId = const Value.absent(),
-                Value<String?> summary = const Value.absent(),
-                Value<String?> beforeJson = const Value.absent(),
-                Value<String?> afterJson = const Value.absent(),
-                Value<int?> amountPaisa = const Value.absent(),
-                Value<int> atUtc = const Value.absent(),
+                Value<String?> code = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> nameSearch = const Value.absent(),
+                Value<String> itemType = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> barcode = const Value.absent(),
+                Value<String> baseUnitId = const Value.absent(),
+                Value<String?> displayUnitId = const Value.absent(),
+                Value<int> displayFactorThousandths = const Value.absent(),
+                Value<int> saleRateMilliPaisa = const Value.absent(),
+                Value<int?> wholesaleRateMilliPaisa = const Value.absent(),
+                Value<int?> purchaseRateMilliPaisa = const Value.absent(),
+                Value<int> avgCostMilliPaisa = const Value.absent(),
+                Value<int?> mrpPaisa = const Value.absent(),
+                Value<String?> hsCode = const Value.absent(),
+                Value<String?> taxRuleId = const Value.absent(),
+                Value<int> priceIncludesTax = const Value.absent(),
+                Value<int> isThirdSchedule = const Value.absent(),
+                Value<int> trackStock = const Value.absent(),
+                Value<int> trackBatch = const Value.absent(),
+                Value<int> trackSerial = const Value.absent(),
+                Value<int> minStockThousandths = const Value.absent(),
+                Value<int> openingStockThousandths = const Value.absent(),
+                Value<int> openingRateMilliPaisa = const Value.absent(),
+                Value<String?> imageAttachmentId = const Value.absent(),
+                Value<int> isActive = const Value.absent(),
+                Value<int?> vipRateMilliPaisa = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => AuditLogCompanion(
+              }) => ItemsCompanion(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -44433,14 +49876,34 @@ class $AuditLogTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                actionCode: actionCode,
-                entityTable: entityTable,
-                entityId: entityId,
-                summary: summary,
-                beforeJson: beforeJson,
-                afterJson: afterJson,
-                amountPaisa: amountPaisa,
-                atUtc: atUtc,
+                code: code,
+                name: name,
+                nameSearch: nameSearch,
+                itemType: itemType,
+                category: category,
+                description: description,
+                barcode: barcode,
+                baseUnitId: baseUnitId,
+                displayUnitId: displayUnitId,
+                displayFactorThousandths: displayFactorThousandths,
+                saleRateMilliPaisa: saleRateMilliPaisa,
+                wholesaleRateMilliPaisa: wholesaleRateMilliPaisa,
+                purchaseRateMilliPaisa: purchaseRateMilliPaisa,
+                avgCostMilliPaisa: avgCostMilliPaisa,
+                mrpPaisa: mrpPaisa,
+                hsCode: hsCode,
+                taxRuleId: taxRuleId,
+                priceIncludesTax: priceIncludesTax,
+                isThirdSchedule: isThirdSchedule,
+                trackStock: trackStock,
+                trackBatch: trackBatch,
+                trackSerial: trackSerial,
+                minStockThousandths: minStockThousandths,
+                openingStockThousandths: openingStockThousandths,
+                openingRateMilliPaisa: openingRateMilliPaisa,
+                imageAttachmentId: imageAttachmentId,
+                isActive: isActive,
+                vipRateMilliPaisa: vipRateMilliPaisa,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -44455,16 +49918,36 @@ class $AuditLogTableManager
                 required String originDeviceId,
                 required String hlc,
                 Value<int> rev = const Value.absent(),
-                required String actionCode,
-                required String entityTable,
-                required String entityId,
-                Value<String?> summary = const Value.absent(),
-                Value<String?> beforeJson = const Value.absent(),
-                Value<String?> afterJson = const Value.absent(),
-                Value<int?> amountPaisa = const Value.absent(),
-                required int atUtc,
+                Value<String?> code = const Value.absent(),
+                required String name,
+                required String nameSearch,
+                Value<String> itemType = const Value.absent(),
+                Value<String?> category = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<String?> barcode = const Value.absent(),
+                required String baseUnitId,
+                Value<String?> displayUnitId = const Value.absent(),
+                Value<int> displayFactorThousandths = const Value.absent(),
+                Value<int> saleRateMilliPaisa = const Value.absent(),
+                Value<int?> wholesaleRateMilliPaisa = const Value.absent(),
+                Value<int?> purchaseRateMilliPaisa = const Value.absent(),
+                Value<int> avgCostMilliPaisa = const Value.absent(),
+                Value<int?> mrpPaisa = const Value.absent(),
+                Value<String?> hsCode = const Value.absent(),
+                Value<String?> taxRuleId = const Value.absent(),
+                Value<int> priceIncludesTax = const Value.absent(),
+                Value<int> isThirdSchedule = const Value.absent(),
+                Value<int> trackStock = const Value.absent(),
+                Value<int> trackBatch = const Value.absent(),
+                Value<int> trackSerial = const Value.absent(),
+                Value<int> minStockThousandths = const Value.absent(),
+                Value<int> openingStockThousandths = const Value.absent(),
+                Value<int> openingRateMilliPaisa = const Value.absent(),
+                Value<String?> imageAttachmentId = const Value.absent(),
+                Value<int> isActive = const Value.absent(),
+                Value<int?> vipRateMilliPaisa = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => AuditLogCompanion.insert(
+              }) => ItemsCompanion.insert(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -44475,21 +49958,41 @@ class $AuditLogTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                actionCode: actionCode,
-                entityTable: entityTable,
-                entityId: entityId,
-                summary: summary,
-                beforeJson: beforeJson,
-                afterJson: afterJson,
-                amountPaisa: amountPaisa,
-                atUtc: atUtc,
+                code: code,
+                name: name,
+                nameSearch: nameSearch,
+                itemType: itemType,
+                category: category,
+                description: description,
+                barcode: barcode,
+                baseUnitId: baseUnitId,
+                displayUnitId: displayUnitId,
+                displayFactorThousandths: displayFactorThousandths,
+                saleRateMilliPaisa: saleRateMilliPaisa,
+                wholesaleRateMilliPaisa: wholesaleRateMilliPaisa,
+                purchaseRateMilliPaisa: purchaseRateMilliPaisa,
+                avgCostMilliPaisa: avgCostMilliPaisa,
+                mrpPaisa: mrpPaisa,
+                hsCode: hsCode,
+                taxRuleId: taxRuleId,
+                priceIncludesTax: priceIncludesTax,
+                isThirdSchedule: isThirdSchedule,
+                trackStock: trackStock,
+                trackBatch: trackBatch,
+                trackSerial: trackSerial,
+                minStockThousandths: minStockThousandths,
+                openingStockThousandths: openingStockThousandths,
+                openingRateMilliPaisa: openingRateMilliPaisa,
+                imageAttachmentId: imageAttachmentId,
+                isActive: isActive,
+                vipRateMilliPaisa: vipRateMilliPaisa,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<AuditLog, AuditLogData>(table),
-                  $AuditLogReferences(db, table, e),
+                  e.readTable<Items, Item>(table),
+                  $ItemsReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -44499,10 +50002,31 @@ class $AuditLogTableManager
                 createdBy = false,
                 updatedBy = false,
                 originDeviceId = false,
+                baseUnitId = false,
+                displayUnitId = false,
+                taxRuleId = false,
+                imageAttachmentId = false,
+                bomsRefs = false,
+                bomLinesRefs = false,
+                assembliesRefs = false,
+                journalLinesRefs = false,
+                stockLotsRefs = false,
+                documentLinesRefs = false,
+                stockLedgerRefs = false,
+                unitConversionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [],
+                  explicitlyWatchedTables: [
+                    if (bomsRefs) db.boms,
+                    if (bomLinesRefs) db.bomLines,
+                    if (assembliesRefs) db.assemblies,
+                    if (journalLinesRefs) db.journalLines,
+                    if (stockLotsRefs) db.stockLots,
+                    if (documentLinesRefs) db.documentLines,
+                    if (stockLedgerRefs) db.stockLedger,
+                    if (unitConversionsRefs) db.unitConversions,
+                  ],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -44524,9 +50048,9 @@ class $AuditLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.firmId,
-                                    referencedTable: $AuditLogReferences
+                                    referencedTable: $ItemsReferences
                                         ._firmIdTable(db),
-                                    referencedColumn: $AuditLogReferences
+                                    referencedColumn: $ItemsReferences
                                         ._firmIdTable(db)
                                         .id,
                                   )
@@ -44537,9 +50061,9 @@ class $AuditLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.createdBy,
-                                    referencedTable: $AuditLogReferences
+                                    referencedTable: $ItemsReferences
                                         ._createdByTable(db),
-                                    referencedColumn: $AuditLogReferences
+                                    referencedColumn: $ItemsReferences
                                         ._createdByTable(db)
                                         .id,
                                   )
@@ -44550,9 +50074,9 @@ class $AuditLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.updatedBy,
-                                    referencedTable: $AuditLogReferences
+                                    referencedTable: $ItemsReferences
                                         ._updatedByTable(db),
-                                    referencedColumn: $AuditLogReferences
+                                    referencedColumn: $ItemsReferences
                                         ._updatedByTable(db)
                                         .id,
                                   )
@@ -44563,10 +50087,62 @@ class $AuditLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.originDeviceId,
-                                    referencedTable: $AuditLogReferences
+                                    referencedTable: $ItemsReferences
                                         ._originDeviceIdTable(db),
-                                    referencedColumn: $AuditLogReferences
+                                    referencedColumn: $ItemsReferences
                                         ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (baseUnitId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.baseUnitId,
+                                    referencedTable: $ItemsReferences
+                                        ._baseUnitIdTable(db),
+                                    referencedColumn: $ItemsReferences
+                                        ._baseUnitIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (displayUnitId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.displayUnitId,
+                                    referencedTable: $ItemsReferences
+                                        ._displayUnitIdTable(db),
+                                    referencedColumn: $ItemsReferences
+                                        ._displayUnitIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (taxRuleId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.taxRuleId,
+                                    referencedTable: $ItemsReferences
+                                        ._taxRuleIdTable(db),
+                                    referencedColumn: $ItemsReferences
+                                        ._taxRuleIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (imageAttachmentId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.imageAttachmentId,
+                                    referencedTable: $ItemsReferences
+                                        ._imageAttachmentIdTable(db),
+                                    referencedColumn: $ItemsReferences
+                                        ._imageAttachmentIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -44575,7 +50151,116 @@ class $AuditLogTableManager
                         return state;
                       },
                   getPrefetchedDataCallback: (items) async {
-                    return [];
+                    return [
+                      if (bomsRefs)
+                        await $_getPrefetchedData<Item, Items, Bom>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences._bomsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).bomsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.outputItemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (bomLinesRefs)
+                        await $_getPrefetchedData<Item, Items, BomLine>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences._bomLinesRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).bomLinesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.componentItemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (assembliesRefs)
+                        await $_getPrefetchedData<Item, Items, Assembly>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences
+                              ._assembliesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).assembliesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.outputItemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (journalLinesRefs)
+                        await $_getPrefetchedData<Item, Items, JournalLine>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences
+                              ._journalLinesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).journalLinesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (stockLotsRefs)
+                        await $_getPrefetchedData<Item, Items, StockLot>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences._stockLotsRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).stockLotsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (documentLinesRefs)
+                        await $_getPrefetchedData<Item, Items, DocumentLine>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences
+                              ._documentLinesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).documentLinesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (stockLedgerRefs)
+                        await $_getPrefetchedData<Item, Items, StockLedgerData>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences
+                              ._stockLedgerRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).stockLedgerRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (unitConversionsRefs)
+                        await $_getPrefetchedData<Item, Items, UnitConversion>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences
+                              ._unitConversionsRefsTable(db),
+                          managerFromTypedResult: (p0) => $ItemsReferences(
+                            db,
+                            table,
+                            p0,
+                          ).unitConversionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
                   },
                 );
               },
@@ -44583,27 +50268,39 @@ class $AuditLogTableManager
       );
 }
 
-typedef $AuditLogProcessedTableManager =
+typedef $ItemsProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      AuditLog,
-      AuditLogData,
-      $AuditLogFilterComposer,
-      $AuditLogOrderingComposer,
-      $AuditLogAnnotationComposer,
-      $AuditLogCreateCompanionBuilder,
-      $AuditLogUpdateCompanionBuilder,
-      (AuditLogData, $AuditLogReferences),
-      AuditLogData,
+      Items,
+      Item,
+      $ItemsFilterComposer,
+      $ItemsOrderingComposer,
+      $ItemsAnnotationComposer,
+      $ItemsCreateCompanionBuilder,
+      $ItemsUpdateCompanionBuilder,
+      (Item, $ItemsReferences),
+      Item,
       PrefetchHooks Function({
         bool firmId,
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
+        bool baseUnitId,
+        bool displayUnitId,
+        bool taxRuleId,
+        bool imageAttachmentId,
+        bool bomsRefs,
+        bool bomLinesRefs,
+        bool assembliesRefs,
+        bool journalLinesRefs,
+        bool stockLotsRefs,
+        bool documentLinesRefs,
+        bool stockLedgerRefs,
+        bool unitConversionsRefs,
       })
     >;
-typedef $ChangeLogCreateCompanionBuilder =
-    ChangeLogCompanion Function({
+typedef $BomsCreateCompanionBuilder =
+    BomsCompanion Function({
       required String id,
       required String firmId,
       required int createdAtUtc,
@@ -44614,20 +50311,14 @@ typedef $ChangeLogCreateCompanionBuilder =
       required String originDeviceId,
       required String hlc,
       Value<int> rev,
-      required int seq,
-      required String entityTable,
-      required String entityId,
-      required String op,
-      required String payloadJson,
-      required String entityHlc,
-      required int entityRev,
-      required int atUtc,
-      Value<String> syncState,
-      Value<int?> syncedAtUtc,
+      required String name,
+      required String outputItemId,
+      required int outputQtyThousandths,
+      Value<int> overheadPaisa,
       Value<int> rowid,
     });
-typedef $ChangeLogUpdateCompanionBuilder =
-    ChangeLogCompanion Function({
+typedef $BomsUpdateCompanionBuilder =
+    BomsCompanion Function({
       Value<String> id,
       Value<String> firmId,
       Value<int> createdAtUtc,
@@ -44638,25 +50329,18 @@ typedef $ChangeLogUpdateCompanionBuilder =
       Value<String> originDeviceId,
       Value<String> hlc,
       Value<int> rev,
-      Value<int> seq,
-      Value<String> entityTable,
-      Value<String> entityId,
-      Value<String> op,
-      Value<String> payloadJson,
-      Value<String> entityHlc,
-      Value<int> entityRev,
-      Value<int> atUtc,
-      Value<String> syncState,
-      Value<int?> syncedAtUtc,
+      Value<String> name,
+      Value<String> outputItemId,
+      Value<int> outputQtyThousandths,
+      Value<int> overheadPaisa,
       Value<int> rowid,
     });
 
-final class $ChangeLogReferences
-    extends BaseReferences<_$AppDatabase, ChangeLog, ChangeLogData> {
-  $ChangeLogReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $BomsReferences extends BaseReferences<_$AppDatabase, Boms, Bom> {
+  $BomsReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias('change_log__firm_id__firms__id');
+      db.firms.createAlias('boms__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -44673,7 +50357,7 @@ final class $ChangeLogReferences
   }
 
   static Users _createdByTable(_$AppDatabase db) =>
-      db.users.createAlias('change_log__created_by__users__id');
+      db.users.createAlias('boms__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -44690,7 +50374,7 @@ final class $ChangeLogReferences
   }
 
   static Users _updatedByTable(_$AppDatabase db) =>
-      db.users.createAlias('change_log__updated_by__users__id');
+      db.users.createAlias('boms__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -44707,7 +50391,7 @@ final class $ChangeLogReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias('change_log__origin_device_id__devices__id');
+      db.devices.createAlias('boms__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -44722,10 +50406,65 @@ final class $ChangeLogReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
+
+  static Items _outputItemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('boms__output_item_id__items__id');
+
+  $ItemsProcessedTableManager get outputItemId {
+    final $_column = $_itemColumn<String>('output_item_id')!;
+
+    final manager = $ItemsTableManager(
+      $_db,
+      $_db.items,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_outputItemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<BomLines, List<BomLine>> _bomLinesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.bomLines,
+    aliasName: 'boms__id__bom_lines__bom_id',
+  );
+
+  $BomLinesProcessedTableManager get bomLinesRefs {
+    final manager = $BomLinesTableManager(
+      $_db,
+      $_db.bomLines,
+    ).filter((f) => f.bomId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_bomLinesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<Assemblies, List<Assembly>> _assembliesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.assemblies,
+    aliasName: 'boms__id__assemblies__bom_id',
+  );
+
+  $AssembliesProcessedTableManager get assembliesRefs {
+    final manager = $AssembliesTableManager(
+      $_db,
+      $_db.assemblies,
+    ).filter((f) => f.bomId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_assembliesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
-class $ChangeLogFilterComposer extends Composer<_$AppDatabase, ChangeLog> {
-  $ChangeLogFilterComposer({
+class $BomsFilterComposer extends Composer<_$AppDatabase, Boms> {
+  $BomsFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -44762,53 +50501,18 @@ class $ChangeLogFilterComposer extends Composer<_$AppDatabase, ChangeLog> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get seq => $composableBuilder(
-    column: $table.seq,
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get entityTable => $composableBuilder(
-    column: $table.entityTable,
+  ColumnFilters<int> get outputQtyThousandths => $composableBuilder(
+    column: $table.outputQtyThousandths,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get entityId => $composableBuilder(
-    column: $table.entityId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get op => $composableBuilder(
-    column: $table.op,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get payloadJson => $composableBuilder(
-    column: $table.payloadJson,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get entityHlc => $composableBuilder(
-    column: $table.entityHlc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get entityRev => $composableBuilder(
-    column: $table.entityRev,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get atUtc => $composableBuilder(
-    column: $table.atUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get syncState => $composableBuilder(
-    column: $table.syncState,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get syncedAtUtc => $composableBuilder(
-    column: $table.syncedAtUtc,
+  ColumnFilters<int> get overheadPaisa => $composableBuilder(
+    column: $table.overheadPaisa,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -44903,10 +50607,83 @@ class $ChangeLogFilterComposer extends Composer<_$AppDatabase, ChangeLog> {
     );
     return composer;
   }
+
+  $ItemsFilterComposer get outputItemId {
+    final $ItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.outputItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsFilterComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> bomLinesRefs(
+    Expression<bool> Function($BomLinesFilterComposer f) f,
+  ) {
+    final $BomLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.bomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesFilterComposer(
+            $db: $db,
+            $table: $db.bomLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> assembliesRefs(
+    Expression<bool> Function($AssembliesFilterComposer f) f,
+  ) {
+    final $AssembliesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.assemblies,
+      getReferencedColumn: (t) => t.bomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AssembliesFilterComposer(
+            $db: $db,
+            $table: $db.assemblies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
-class $ChangeLogOrderingComposer extends Composer<_$AppDatabase, ChangeLog> {
-  $ChangeLogOrderingComposer({
+class $BomsOrderingComposer extends Composer<_$AppDatabase, Boms> {
+  $BomsOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -44943,53 +50720,18 @@ class $ChangeLogOrderingComposer extends Composer<_$AppDatabase, ChangeLog> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get seq => $composableBuilder(
-    column: $table.seq,
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get entityTable => $composableBuilder(
-    column: $table.entityTable,
+  ColumnOrderings<int> get outputQtyThousandths => $composableBuilder(
+    column: $table.outputQtyThousandths,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get entityId => $composableBuilder(
-    column: $table.entityId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get op => $composableBuilder(
-    column: $table.op,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get payloadJson => $composableBuilder(
-    column: $table.payloadJson,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get entityHlc => $composableBuilder(
-    column: $table.entityHlc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get entityRev => $composableBuilder(
-    column: $table.entityRev,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get atUtc => $composableBuilder(
-    column: $table.atUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get syncState => $composableBuilder(
-    column: $table.syncState,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get syncedAtUtc => $composableBuilder(
-    column: $table.syncedAtUtc,
+  ColumnOrderings<int> get overheadPaisa => $composableBuilder(
+    column: $table.overheadPaisa,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -45084,10 +50826,33 @@ class $ChangeLogOrderingComposer extends Composer<_$AppDatabase, ChangeLog> {
     );
     return composer;
   }
+
+  $ItemsOrderingComposer get outputItemId {
+    final $ItemsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.outputItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsOrderingComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
-class $ChangeLogAnnotationComposer extends Composer<_$AppDatabase, ChangeLog> {
-  $ChangeLogAnnotationComposer({
+class $BomsAnnotationComposer extends Composer<_$AppDatabase, Boms> {
+  $BomsAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -45118,39 +50883,16 @@ class $ChangeLogAnnotationComposer extends Composer<_$AppDatabase, ChangeLog> {
   GeneratedColumn<int> get rev =>
       $composableBuilder(column: $table.rev, builder: (column) => column);
 
-  GeneratedColumn<int> get seq =>
-      $composableBuilder(column: $table.seq, builder: (column) => column);
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<String> get entityTable => $composableBuilder(
-    column: $table.entityTable,
+  GeneratedColumn<int> get outputQtyThousandths => $composableBuilder(
+    column: $table.outputQtyThousandths,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get entityId =>
-      $composableBuilder(column: $table.entityId, builder: (column) => column);
-
-  GeneratedColumn<String> get op =>
-      $composableBuilder(column: $table.op, builder: (column) => column);
-
-  GeneratedColumn<String> get payloadJson => $composableBuilder(
-    column: $table.payloadJson,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get entityHlc =>
-      $composableBuilder(column: $table.entityHlc, builder: (column) => column);
-
-  GeneratedColumn<int> get entityRev =>
-      $composableBuilder(column: $table.entityRev, builder: (column) => column);
-
-  GeneratedColumn<int> get atUtc =>
-      $composableBuilder(column: $table.atUtc, builder: (column) => column);
-
-  GeneratedColumn<String> get syncState =>
-      $composableBuilder(column: $table.syncState, builder: (column) => column);
-
-  GeneratedColumn<int> get syncedAtUtc => $composableBuilder(
-    column: $table.syncedAtUtc,
+  GeneratedColumn<int> get overheadPaisa => $composableBuilder(
+    column: $table.overheadPaisa,
     builder: (column) => column,
   );
 
@@ -45245,39 +50987,115 @@ class $ChangeLogAnnotationComposer extends Composer<_$AppDatabase, ChangeLog> {
     );
     return composer;
   }
+
+  $ItemsAnnotationComposer get outputItemId {
+    final $ItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.outputItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> bomLinesRefs<T extends Object>(
+    Expression<T> Function($BomLinesAnnotationComposer a) f,
+  ) {
+    final $BomLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.bomLines,
+      getReferencedColumn: (t) => t.bomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.bomLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> assembliesRefs<T extends Object>(
+    Expression<T> Function($AssembliesAnnotationComposer a) f,
+  ) {
+    final $AssembliesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.assemblies,
+      getReferencedColumn: (t) => t.bomId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AssembliesAnnotationComposer(
+            $db: $db,
+            $table: $db.assemblies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
-class $ChangeLogTableManager
+class $BomsTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          ChangeLog,
-          ChangeLogData,
-          $ChangeLogFilterComposer,
-          $ChangeLogOrderingComposer,
-          $ChangeLogAnnotationComposer,
-          $ChangeLogCreateCompanionBuilder,
-          $ChangeLogUpdateCompanionBuilder,
-          (ChangeLogData, $ChangeLogReferences),
-          ChangeLogData,
+          Boms,
+          Bom,
+          $BomsFilterComposer,
+          $BomsOrderingComposer,
+          $BomsAnnotationComposer,
+          $BomsCreateCompanionBuilder,
+          $BomsUpdateCompanionBuilder,
+          (Bom, $BomsReferences),
+          Bom,
           PrefetchHooks Function({
             bool firmId,
             bool createdBy,
             bool updatedBy,
             bool originDeviceId,
+            bool outputItemId,
+            bool bomLinesRefs,
+            bool assembliesRefs,
           })
         > {
-  $ChangeLogTableManager(_$AppDatabase db, ChangeLog table)
+  $BomsTableManager(_$AppDatabase db, Boms table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $ChangeLogFilterComposer($db: db, $table: table),
+              $BomsFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $ChangeLogOrderingComposer($db: db, $table: table),
+              $BomsOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $ChangeLogAnnotationComposer($db: db, $table: table),
+              $BomsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -45290,18 +51108,12 @@ class $ChangeLogTableManager
                 Value<String> originDeviceId = const Value.absent(),
                 Value<String> hlc = const Value.absent(),
                 Value<int> rev = const Value.absent(),
-                Value<int> seq = const Value.absent(),
-                Value<String> entityTable = const Value.absent(),
-                Value<String> entityId = const Value.absent(),
-                Value<String> op = const Value.absent(),
-                Value<String> payloadJson = const Value.absent(),
-                Value<String> entityHlc = const Value.absent(),
-                Value<int> entityRev = const Value.absent(),
-                Value<int> atUtc = const Value.absent(),
-                Value<String> syncState = const Value.absent(),
-                Value<int?> syncedAtUtc = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> outputItemId = const Value.absent(),
+                Value<int> outputQtyThousandths = const Value.absent(),
+                Value<int> overheadPaisa = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ChangeLogCompanion(
+              }) => BomsCompanion(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -45312,16 +51124,10 @@ class $ChangeLogTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                seq: seq,
-                entityTable: entityTable,
-                entityId: entityId,
-                op: op,
-                payloadJson: payloadJson,
-                entityHlc: entityHlc,
-                entityRev: entityRev,
-                atUtc: atUtc,
-                syncState: syncState,
-                syncedAtUtc: syncedAtUtc,
+                name: name,
+                outputItemId: outputItemId,
+                outputQtyThousandths: outputQtyThousandths,
+                overheadPaisa: overheadPaisa,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -45336,18 +51142,12 @@ class $ChangeLogTableManager
                 required String originDeviceId,
                 required String hlc,
                 Value<int> rev = const Value.absent(),
-                required int seq,
-                required String entityTable,
-                required String entityId,
-                required String op,
-                required String payloadJson,
-                required String entityHlc,
-                required int entityRev,
-                required int atUtc,
-                Value<String> syncState = const Value.absent(),
-                Value<int?> syncedAtUtc = const Value.absent(),
+                required String name,
+                required String outputItemId,
+                required int outputQtyThousandths,
+                Value<int> overheadPaisa = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ChangeLogCompanion.insert(
+              }) => BomsCompanion.insert(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -45358,23 +51158,17 @@ class $ChangeLogTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                seq: seq,
-                entityTable: entityTable,
-                entityId: entityId,
-                op: op,
-                payloadJson: payloadJson,
-                entityHlc: entityHlc,
-                entityRev: entityRev,
-                atUtc: atUtc,
-                syncState: syncState,
-                syncedAtUtc: syncedAtUtc,
+                name: name,
+                outputItemId: outputItemId,
+                outputQtyThousandths: outputQtyThousandths,
+                overheadPaisa: overheadPaisa,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<ChangeLog, ChangeLogData>(table),
-                  $ChangeLogReferences(db, table, e),
+                  e.readTable<Boms, Bom>(table),
+                  $BomsReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -45384,6 +51178,974 @@ class $ChangeLogTableManager
                 createdBy = false,
                 updatedBy = false,
                 originDeviceId = false,
+                outputItemId = false,
+                bomLinesRefs = false,
+                assembliesRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (bomLinesRefs) db.bomLines,
+                    if (assembliesRefs) db.assemblies,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (firmId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.firmId,
+                                    referencedTable: $BomsReferences
+                                        ._firmIdTable(db),
+                                    referencedColumn: $BomsReferences
+                                        ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $BomsReferences
+                                        ._createdByTable(db),
+                                    referencedColumn: $BomsReferences
+                                        ._createdByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (updatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.updatedBy,
+                                    referencedTable: $BomsReferences
+                                        ._updatedByTable(db),
+                                    referencedColumn: $BomsReferences
+                                        ._updatedByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $BomsReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $BomsReferences
+                                        ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (outputItemId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.outputItemId,
+                                    referencedTable: $BomsReferences
+                                        ._outputItemIdTable(db),
+                                    referencedColumn: $BomsReferences
+                                        ._outputItemIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (bomLinesRefs)
+                        await $_getPrefetchedData<Bom, Boms, BomLine>(
+                          currentTable: table,
+                          referencedTable: $BomsReferences._bomLinesRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $BomsReferences(db, table, p0).bomLinesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.bomId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (assembliesRefs)
+                        await $_getPrefetchedData<Bom, Boms, Assembly>(
+                          currentTable: table,
+                          referencedTable: $BomsReferences._assembliesRefsTable(
+                            db,
+                          ),
+                          managerFromTypedResult: (p0) =>
+                              $BomsReferences(db, table, p0).assembliesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.bomId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $BomsProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      Boms,
+      Bom,
+      $BomsFilterComposer,
+      $BomsOrderingComposer,
+      $BomsAnnotationComposer,
+      $BomsCreateCompanionBuilder,
+      $BomsUpdateCompanionBuilder,
+      (Bom, $BomsReferences),
+      Bom,
+      PrefetchHooks Function({
+        bool firmId,
+        bool createdBy,
+        bool updatedBy,
+        bool originDeviceId,
+        bool outputItemId,
+        bool bomLinesRefs,
+        bool assembliesRefs,
+      })
+    >;
+typedef $BomLinesCreateCompanionBuilder =
+    BomLinesCompanion Function({
+      required String id,
+      required String firmId,
+      required int createdAtUtc,
+      required int updatedAtUtc,
+      required String createdBy,
+      required String updatedBy,
+      Value<int?> deletedAtUtc,
+      required String originDeviceId,
+      required String hlc,
+      Value<int> rev,
+      required String bomId,
+      required int lineNo,
+      required String componentItemId,
+      required int qtyThousandths,
+      Value<int> rowid,
+    });
+typedef $BomLinesUpdateCompanionBuilder =
+    BomLinesCompanion Function({
+      Value<String> id,
+      Value<String> firmId,
+      Value<int> createdAtUtc,
+      Value<int> updatedAtUtc,
+      Value<String> createdBy,
+      Value<String> updatedBy,
+      Value<int?> deletedAtUtc,
+      Value<String> originDeviceId,
+      Value<String> hlc,
+      Value<int> rev,
+      Value<String> bomId,
+      Value<int> lineNo,
+      Value<String> componentItemId,
+      Value<int> qtyThousandths,
+      Value<int> rowid,
+    });
+
+final class $BomLinesReferences
+    extends BaseReferences<_$AppDatabase, BomLines, BomLine> {
+  $BomLinesReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('bom_lines__firm_id__firms__id');
+
+  $FirmsProcessedTableManager get firmId {
+    final $_column = $_itemColumn<String>('firm_id')!;
+
+    final manager = $FirmsTableManager(
+      $_db,
+      $_db.firms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_firmIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('bom_lines__created_by__users__id');
+
+  $UsersProcessedTableManager get createdBy {
+    final $_column = $_itemColumn<String>('created_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('bom_lines__updated_by__users__id');
+
+  $UsersProcessedTableManager get updatedBy {
+    final $_column = $_itemColumn<String>('updated_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Devices _originDeviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('bom_lines__origin_device_id__devices__id');
+
+  $DevicesProcessedTableManager get originDeviceId {
+    final $_column = $_itemColumn<String>('origin_device_id')!;
+
+    final manager = $DevicesTableManager(
+      $_db,
+      $_db.devices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Boms _bomIdTable(_$AppDatabase db) =>
+      db.boms.createAlias('bom_lines__bom_id__boms__id');
+
+  $BomsProcessedTableManager get bomId {
+    final $_column = $_itemColumn<String>('bom_id')!;
+
+    final manager = $BomsTableManager(
+      $_db,
+      $_db.boms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_bomIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Items _componentItemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('bom_lines__component_item_id__items__id');
+
+  $ItemsProcessedTableManager get componentItemId {
+    final $_column = $_itemColumn<String>('component_item_id')!;
+
+    final manager = $ItemsTableManager(
+      $_db,
+      $_db.items,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_componentItemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $BomLinesFilterComposer extends Composer<_$AppDatabase, BomLines> {
+  $BomLinesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lineNo => $composableBuilder(
+    column: $table.lineNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get qtyThousandths => $composableBuilder(
+    column: $table.qtyThousandths,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $FirmsFilterComposer get firmId {
+    final $FirmsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsFilterComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get createdBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get updatedBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesFilterComposer get originDeviceId {
+    final $DevicesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesFilterComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $BomsFilterComposer get bomId {
+    final $BomsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bomId,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsFilterComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsFilterComposer get componentItemId {
+    final $ItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsFilterComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $BomLinesOrderingComposer extends Composer<_$AppDatabase, BomLines> {
+  $BomLinesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lineNo => $composableBuilder(
+    column: $table.lineNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get qtyThousandths => $composableBuilder(
+    column: $table.qtyThousandths,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $FirmsOrderingComposer get firmId {
+    final $FirmsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsOrderingComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get createdBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get updatedBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesOrderingComposer get originDeviceId {
+    final $DevicesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesOrderingComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $BomsOrderingComposer get bomId {
+    final $BomsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bomId,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsOrderingComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsOrderingComposer get componentItemId {
+    final $ItemsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsOrderingComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $BomLinesAnnotationComposer extends Composer<_$AppDatabase, BomLines> {
+  $BomLinesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => column);
+
+  GeneratedColumn<int> get rev =>
+      $composableBuilder(column: $table.rev, builder: (column) => column);
+
+  GeneratedColumn<int> get lineNo =>
+      $composableBuilder(column: $table.lineNo, builder: (column) => column);
+
+  GeneratedColumn<int> get qtyThousandths => $composableBuilder(
+    column: $table.qtyThousandths,
+    builder: (column) => column,
+  );
+
+  $FirmsAnnotationComposer get firmId {
+    final $FirmsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsAnnotationComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get createdBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get updatedBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesAnnotationComposer get originDeviceId {
+    final $DevicesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesAnnotationComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $BomsAnnotationComposer get bomId {
+    final $BomsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bomId,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsAnnotationComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsAnnotationComposer get componentItemId {
+    final $ItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.componentItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $BomLinesTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          BomLines,
+          BomLine,
+          $BomLinesFilterComposer,
+          $BomLinesOrderingComposer,
+          $BomLinesAnnotationComposer,
+          $BomLinesCreateCompanionBuilder,
+          $BomLinesUpdateCompanionBuilder,
+          (BomLine, $BomLinesReferences),
+          BomLine,
+          PrefetchHooks Function({
+            bool firmId,
+            bool createdBy,
+            bool updatedBy,
+            bool originDeviceId,
+            bool bomId,
+            bool componentItemId,
+          })
+        > {
+  $BomLinesTableManager(_$AppDatabase db, BomLines table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $BomLinesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $BomLinesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $BomLinesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> firmId = const Value.absent(),
+                Value<int> createdAtUtc = const Value.absent(),
+                Value<int> updatedAtUtc = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> updatedBy = const Value.absent(),
+                Value<int?> deletedAtUtc = const Value.absent(),
+                Value<String> originDeviceId = const Value.absent(),
+                Value<String> hlc = const Value.absent(),
+                Value<int> rev = const Value.absent(),
+                Value<String> bomId = const Value.absent(),
+                Value<int> lineNo = const Value.absent(),
+                Value<String> componentItemId = const Value.absent(),
+                Value<int> qtyThousandths = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => BomLinesCompanion(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                bomId: bomId,
+                lineNo: lineNo,
+                componentItemId: componentItemId,
+                qtyThousandths: qtyThousandths,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String firmId,
+                required int createdAtUtc,
+                required int updatedAtUtc,
+                required String createdBy,
+                required String updatedBy,
+                Value<int?> deletedAtUtc = const Value.absent(),
+                required String originDeviceId,
+                required String hlc,
+                Value<int> rev = const Value.absent(),
+                required String bomId,
+                required int lineNo,
+                required String componentItemId,
+                required int qtyThousandths,
+                Value<int> rowid = const Value.absent(),
+              }) => BomLinesCompanion.insert(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                bomId: bomId,
+                lineNo: lineNo,
+                componentItemId: componentItemId,
+                qtyThousandths: qtyThousandths,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<BomLines, BomLine>(table),
+                  $BomLinesReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                firmId = false,
+                createdBy = false,
+                updatedBy = false,
+                originDeviceId = false,
+                bomId = false,
+                componentItemId = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -45409,9 +52171,9 @@ class $ChangeLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.firmId,
-                                    referencedTable: $ChangeLogReferences
+                                    referencedTable: $BomLinesReferences
                                         ._firmIdTable(db),
-                                    referencedColumn: $ChangeLogReferences
+                                    referencedColumn: $BomLinesReferences
                                         ._firmIdTable(db)
                                         .id,
                                   )
@@ -45422,9 +52184,9 @@ class $ChangeLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.createdBy,
-                                    referencedTable: $ChangeLogReferences
+                                    referencedTable: $BomLinesReferences
                                         ._createdByTable(db),
-                                    referencedColumn: $ChangeLogReferences
+                                    referencedColumn: $BomLinesReferences
                                         ._createdByTable(db)
                                         .id,
                                   )
@@ -45435,9 +52197,9 @@ class $ChangeLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.updatedBy,
-                                    referencedTable: $ChangeLogReferences
+                                    referencedTable: $BomLinesReferences
                                         ._updatedByTable(db),
-                                    referencedColumn: $ChangeLogReferences
+                                    referencedColumn: $BomLinesReferences
                                         ._updatedByTable(db)
                                         .id,
                                   )
@@ -45448,10 +52210,36 @@ class $ChangeLogTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.originDeviceId,
-                                    referencedTable: $ChangeLogReferences
+                                    referencedTable: $BomLinesReferences
                                         ._originDeviceIdTable(db),
-                                    referencedColumn: $ChangeLogReferences
+                                    referencedColumn: $BomLinesReferences
                                         ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (bomId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.bomId,
+                                    referencedTable: $BomLinesReferences
+                                        ._bomIdTable(db),
+                                    referencedColumn: $BomLinesReferences
+                                        ._bomIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (componentItemId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.componentItemId,
+                                    referencedTable: $BomLinesReferences
+                                        ._componentItemIdTable(db),
+                                    referencedColumn: $BomLinesReferences
+                                        ._componentItemIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -45468,23 +52256,25 @@ class $ChangeLogTableManager
       );
 }
 
-typedef $ChangeLogProcessedTableManager =
+typedef $BomLinesProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      ChangeLog,
-      ChangeLogData,
-      $ChangeLogFilterComposer,
-      $ChangeLogOrderingComposer,
-      $ChangeLogAnnotationComposer,
-      $ChangeLogCreateCompanionBuilder,
-      $ChangeLogUpdateCompanionBuilder,
-      (ChangeLogData, $ChangeLogReferences),
-      ChangeLogData,
+      BomLines,
+      BomLine,
+      $BomLinesFilterComposer,
+      $BomLinesOrderingComposer,
+      $BomLinesAnnotationComposer,
+      $BomLinesCreateCompanionBuilder,
+      $BomLinesUpdateCompanionBuilder,
+      (BomLine, $BomLinesReferences),
+      BomLine,
       PrefetchHooks Function({
         bool firmId,
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
+        bool bomId,
+        bool componentItemId,
       })
     >;
 typedef $PartiesCreateCompanionBuilder =
@@ -47239,6 +54029,24 @@ final class $DocumentsReferences
     );
   }
 
+  static MultiTypedResultKey<JournalEntries, List<JournalEntry>>
+  _journalEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.journalEntries,
+    aliasName: 'documents__id__journal_entries__document_id',
+  );
+
+  $JournalEntriesProcessedTableManager get journalEntriesRefs {
+    final manager = $JournalEntriesTableManager(
+      $_db,
+      $_db.journalEntries,
+    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_journalEntriesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<PrintJobs, List<PrintJob>> _printJobsRefsTable(
     _$AppDatabase db,
   ) => MultiTypedResultKey.fromTable(
@@ -47253,24 +54061,6 @@ final class $DocumentsReferences
     ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_printJobsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<JournalEntries, List<JournalEntry>>
-  _journalEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.journalEntries,
-    aliasName: 'documents__id__journal_entries__document_id',
-  );
-
-  $JournalEntriesProcessedTableManager get journalEntriesRefs {
-    final manager = $JournalEntriesTableManager(
-      $_db,
-      $_db.journalEntries,
-    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_journalEntriesRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -47782,31 +54572,6 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
     return composer;
   }
 
-  Expression<bool> printJobsRefs(
-    Expression<bool> Function($PrintJobsFilterComposer f) f,
-  ) {
-    final $PrintJobsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.printJobs,
-      getReferencedColumn: (t) => t.documentId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $PrintJobsFilterComposer(
-            $db: $db,
-            $table: $db.printJobs,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<bool> journalEntriesRefs(
     Expression<bool> Function($JournalEntriesFilterComposer f) f,
   ) {
@@ -47823,6 +54588,31 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
           }) => $JournalEntriesFilterComposer(
             $db: $db,
             $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> printJobsRefs(
+    Expression<bool> Function($PrintJobsFilterComposer f) f,
+  ) {
+    final $PrintJobsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.printJobs,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrintJobsFilterComposer(
+            $db: $db,
+            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -48752,31 +55542,6 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
     return composer;
   }
 
-  Expression<T> printJobsRefs<T extends Object>(
-    Expression<T> Function($PrintJobsAnnotationComposer a) f,
-  ) {
-    final $PrintJobsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.printJobs,
-      getReferencedColumn: (t) => t.documentId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $PrintJobsAnnotationComposer(
-            $db: $db,
-            $table: $db.printJobs,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> journalEntriesRefs<T extends Object>(
     Expression<T> Function($JournalEntriesAnnotationComposer a) f,
   ) {
@@ -48793,6 +55558,31 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
           }) => $JournalEntriesAnnotationComposer(
             $db: $db,
             $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> printJobsRefs<T extends Object>(
+    Expression<T> Function($PrintJobsAnnotationComposer a) f,
+  ) {
+    final $PrintJobsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.printJobs,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrintJobsAnnotationComposer(
+            $db: $db,
+            $table: $db.printJobs,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -48925,8 +55715,8 @@ class $DocumentsTableManager
             bool supersedesId,
             bool voidedById,
             bool salespersonId,
-            bool printJobsRefs,
             bool journalEntriesRefs,
+            bool printJobsRefs,
             bool documentLinesRefs,
             bool stockLedgerRefs,
             bool paymentAllocationsRefs,
@@ -49194,8 +55984,8 @@ class $DocumentsTableManager
                 supersedesId = false,
                 voidedById = false,
                 salespersonId = false,
-                printJobsRefs = false,
                 journalEntriesRefs = false,
+                printJobsRefs = false,
                 documentLinesRefs = false,
                 stockLedgerRefs = false,
                 paymentAllocationsRefs = false,
@@ -49204,8 +55994,8 @@ class $DocumentsTableManager
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (printJobsRefs) db.printJobs,
                     if (journalEntriesRefs) db.journalEntries,
+                    if (printJobsRefs) db.printJobs,
                     if (documentLinesRefs) db.documentLines,
                     if (stockLedgerRefs) db.stockLedger,
                     if (paymentAllocationsRefs) db.paymentAllocations,
@@ -49336,23 +56126,6 @@ class $DocumentsTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (printJobsRefs)
-                        await $_getPrefetchedData<
-                          Document,
-                          Documents,
-                          PrintJob
-                        >(
-                          currentTable: table,
-                          referencedTable: $DocumentsReferences
-                              ._printJobsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $DocumentsReferences(db, table, p0).printJobsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.documentId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
                       if (journalEntriesRefs)
                         await $_getPrefetchedData<
                           Document,
@@ -49367,6 +56140,23 @@ class $DocumentsTableManager
                             table,
                             p0,
                           ).journalEntriesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.documentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (printJobsRefs)
+                        await $_getPrefetchedData<
+                          Document,
+                          Documents,
+                          PrintJob
+                        >(
+                          currentTable: table,
+                          referencedTable: $DocumentsReferences
+                              ._printJobsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $DocumentsReferences(db, table, p0).printJobsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.documentId == item.id,
@@ -49482,1053 +56272,12 @@ typedef $DocumentsProcessedTableManager =
         bool supersedesId,
         bool voidedById,
         bool salespersonId,
-        bool printJobsRefs,
         bool journalEntriesRefs,
+        bool printJobsRefs,
         bool documentLinesRefs,
         bool stockLedgerRefs,
         bool paymentAllocationsRefs,
         bool documentLineTaxesRefs,
-      })
-    >;
-typedef $PrintJobsCreateCompanionBuilder =
-    PrintJobsCompanion Function({
-      required String id,
-      required String firmId,
-      required int createdAtUtc,
-      required int updatedAtUtc,
-      required String createdBy,
-      required String updatedBy,
-      Value<int?> deletedAtUtc,
-      required String originDeviceId,
-      required String hlc,
-      Value<int> rev,
-      required String jobKey,
-      Value<String?> documentId,
-      required String transportKind,
-      required String targetAddress,
-      required int columnsUsed,
-      Value<int> copyIndex,
-      required int byteCount,
-      required String payloadSha256,
-      required String status,
-      Value<int> bytesWritten,
-      Value<String?> failureReason,
-      required int startedAtUtc,
-      Value<int?> finishedAtUtc,
-      Value<int> rowid,
-    });
-typedef $PrintJobsUpdateCompanionBuilder =
-    PrintJobsCompanion Function({
-      Value<String> id,
-      Value<String> firmId,
-      Value<int> createdAtUtc,
-      Value<int> updatedAtUtc,
-      Value<String> createdBy,
-      Value<String> updatedBy,
-      Value<int?> deletedAtUtc,
-      Value<String> originDeviceId,
-      Value<String> hlc,
-      Value<int> rev,
-      Value<String> jobKey,
-      Value<String?> documentId,
-      Value<String> transportKind,
-      Value<String> targetAddress,
-      Value<int> columnsUsed,
-      Value<int> copyIndex,
-      Value<int> byteCount,
-      Value<String> payloadSha256,
-      Value<String> status,
-      Value<int> bytesWritten,
-      Value<String?> failureReason,
-      Value<int> startedAtUtc,
-      Value<int?> finishedAtUtc,
-      Value<int> rowid,
-    });
-
-final class $PrintJobsReferences
-    extends BaseReferences<_$AppDatabase, PrintJobs, PrintJob> {
-  $PrintJobsReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias('print_jobs__firm_id__firms__id');
-
-  $FirmsProcessedTableManager get firmId {
-    final $_column = $_itemColumn<String>('firm_id')!;
-
-    final manager = $FirmsTableManager(
-      $_db,
-      $_db.firms,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_firmIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static Users _createdByTable(_$AppDatabase db) =>
-      db.users.createAlias('print_jobs__created_by__users__id');
-
-  $UsersProcessedTableManager get createdBy {
-    final $_column = $_itemColumn<String>('created_by')!;
-
-    final manager = $UsersTableManager(
-      $_db,
-      $_db.users,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static Users _updatedByTable(_$AppDatabase db) =>
-      db.users.createAlias('print_jobs__updated_by__users__id');
-
-  $UsersProcessedTableManager get updatedBy {
-    final $_column = $_itemColumn<String>('updated_by')!;
-
-    final manager = $UsersTableManager(
-      $_db,
-      $_db.users,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias('print_jobs__origin_device_id__devices__id');
-
-  $DevicesProcessedTableManager get originDeviceId {
-    final $_column = $_itemColumn<String>('origin_device_id')!;
-
-    final manager = $DevicesTableManager(
-      $_db,
-      $_db.devices,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static Documents _documentIdTable(_$AppDatabase db) =>
-      db.documents.createAlias('print_jobs__document_id__documents__id');
-
-  $DocumentsProcessedTableManager? get documentId {
-    final $_column = $_itemColumn<String>('document_id');
-    if ($_column == null) return null;
-    final manager = $DocumentsTableManager(
-      $_db,
-      $_db.documents,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $PrintJobsFilterComposer extends Composer<_$AppDatabase, PrintJobs> {
-  $PrintJobsFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get createdAtUtc => $composableBuilder(
-    column: $table.createdAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get updatedAtUtc => $composableBuilder(
-    column: $table.updatedAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get deletedAtUtc => $composableBuilder(
-    column: $table.deletedAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get hlc => $composableBuilder(
-    column: $table.hlc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get rev => $composableBuilder(
-    column: $table.rev,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get jobKey => $composableBuilder(
-    column: $table.jobKey,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get transportKind => $composableBuilder(
-    column: $table.transportKind,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get targetAddress => $composableBuilder(
-    column: $table.targetAddress,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get columnsUsed => $composableBuilder(
-    column: $table.columnsUsed,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get copyIndex => $composableBuilder(
-    column: $table.copyIndex,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get byteCount => $composableBuilder(
-    column: $table.byteCount,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get payloadSha256 => $composableBuilder(
-    column: $table.payloadSha256,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get bytesWritten => $composableBuilder(
-    column: $table.bytesWritten,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get failureReason => $composableBuilder(
-    column: $table.failureReason,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get startedAtUtc => $composableBuilder(
-    column: $table.startedAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get finishedAtUtc => $composableBuilder(
-    column: $table.finishedAtUtc,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $FirmsFilterComposer get firmId {
-    final $FirmsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.firmId,
-      referencedTable: $db.firms,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $FirmsFilterComposer(
-            $db: $db,
-            $table: $db.firms,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UsersFilterComposer get createdBy {
-    final $UsersFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.createdBy,
-      referencedTable: $db.users,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UsersFilterComposer(
-            $db: $db,
-            $table: $db.users,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UsersFilterComposer get updatedBy {
-    final $UsersFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.updatedBy,
-      referencedTable: $db.users,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UsersFilterComposer(
-            $db: $db,
-            $table: $db.users,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $DevicesFilterComposer get originDeviceId {
-    final $DevicesFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.originDeviceId,
-      referencedTable: $db.devices,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DevicesFilterComposer(
-            $db: $db,
-            $table: $db.devices,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $DocumentsFilterComposer get documentId {
-    final $DocumentsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.documentId,
-      referencedTable: $db.documents,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DocumentsFilterComposer(
-            $db: $db,
-            $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $PrintJobsOrderingComposer extends Composer<_$AppDatabase, PrintJobs> {
-  $PrintJobsOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get createdAtUtc => $composableBuilder(
-    column: $table.createdAtUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
-    column: $table.updatedAtUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get deletedAtUtc => $composableBuilder(
-    column: $table.deletedAtUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get hlc => $composableBuilder(
-    column: $table.hlc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get rev => $composableBuilder(
-    column: $table.rev,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get jobKey => $composableBuilder(
-    column: $table.jobKey,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get transportKind => $composableBuilder(
-    column: $table.transportKind,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get targetAddress => $composableBuilder(
-    column: $table.targetAddress,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get columnsUsed => $composableBuilder(
-    column: $table.columnsUsed,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get copyIndex => $composableBuilder(
-    column: $table.copyIndex,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get byteCount => $composableBuilder(
-    column: $table.byteCount,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get payloadSha256 => $composableBuilder(
-    column: $table.payloadSha256,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get status => $composableBuilder(
-    column: $table.status,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get bytesWritten => $composableBuilder(
-    column: $table.bytesWritten,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get failureReason => $composableBuilder(
-    column: $table.failureReason,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get startedAtUtc => $composableBuilder(
-    column: $table.startedAtUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get finishedAtUtc => $composableBuilder(
-    column: $table.finishedAtUtc,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $FirmsOrderingComposer get firmId {
-    final $FirmsOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.firmId,
-      referencedTable: $db.firms,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $FirmsOrderingComposer(
-            $db: $db,
-            $table: $db.firms,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UsersOrderingComposer get createdBy {
-    final $UsersOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.createdBy,
-      referencedTable: $db.users,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UsersOrderingComposer(
-            $db: $db,
-            $table: $db.users,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UsersOrderingComposer get updatedBy {
-    final $UsersOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.updatedBy,
-      referencedTable: $db.users,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UsersOrderingComposer(
-            $db: $db,
-            $table: $db.users,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $DevicesOrderingComposer get originDeviceId {
-    final $DevicesOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.originDeviceId,
-      referencedTable: $db.devices,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DevicesOrderingComposer(
-            $db: $db,
-            $table: $db.devices,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $DocumentsOrderingComposer get documentId {
-    final $DocumentsOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.documentId,
-      referencedTable: $db.documents,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DocumentsOrderingComposer(
-            $db: $db,
-            $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $PrintJobsAnnotationComposer extends Composer<_$AppDatabase, PrintJobs> {
-  $PrintJobsAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<int> get createdAtUtc => $composableBuilder(
-    column: $table.createdAtUtc,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get updatedAtUtc => $composableBuilder(
-    column: $table.updatedAtUtc,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
-    column: $table.deletedAtUtc,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get hlc =>
-      $composableBuilder(column: $table.hlc, builder: (column) => column);
-
-  GeneratedColumn<int> get rev =>
-      $composableBuilder(column: $table.rev, builder: (column) => column);
-
-  GeneratedColumn<String> get jobKey =>
-      $composableBuilder(column: $table.jobKey, builder: (column) => column);
-
-  GeneratedColumn<String> get transportKind => $composableBuilder(
-    column: $table.transportKind,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get targetAddress => $composableBuilder(
-    column: $table.targetAddress,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get columnsUsed => $composableBuilder(
-    column: $table.columnsUsed,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get copyIndex =>
-      $composableBuilder(column: $table.copyIndex, builder: (column) => column);
-
-  GeneratedColumn<int> get byteCount =>
-      $composableBuilder(column: $table.byteCount, builder: (column) => column);
-
-  GeneratedColumn<String> get payloadSha256 => $composableBuilder(
-    column: $table.payloadSha256,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get status =>
-      $composableBuilder(column: $table.status, builder: (column) => column);
-
-  GeneratedColumn<int> get bytesWritten => $composableBuilder(
-    column: $table.bytesWritten,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get failureReason => $composableBuilder(
-    column: $table.failureReason,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get startedAtUtc => $composableBuilder(
-    column: $table.startedAtUtc,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get finishedAtUtc => $composableBuilder(
-    column: $table.finishedAtUtc,
-    builder: (column) => column,
-  );
-
-  $FirmsAnnotationComposer get firmId {
-    final $FirmsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.firmId,
-      referencedTable: $db.firms,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $FirmsAnnotationComposer(
-            $db: $db,
-            $table: $db.firms,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UsersAnnotationComposer get createdBy {
-    final $UsersAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.createdBy,
-      referencedTable: $db.users,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UsersAnnotationComposer(
-            $db: $db,
-            $table: $db.users,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UsersAnnotationComposer get updatedBy {
-    final $UsersAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.updatedBy,
-      referencedTable: $db.users,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UsersAnnotationComposer(
-            $db: $db,
-            $table: $db.users,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $DevicesAnnotationComposer get originDeviceId {
-    final $DevicesAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.originDeviceId,
-      referencedTable: $db.devices,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DevicesAnnotationComposer(
-            $db: $db,
-            $table: $db.devices,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $DocumentsAnnotationComposer get documentId {
-    final $DocumentsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.documentId,
-      referencedTable: $db.documents,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DocumentsAnnotationComposer(
-            $db: $db,
-            $table: $db.documents,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $PrintJobsTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          PrintJobs,
-          PrintJob,
-          $PrintJobsFilterComposer,
-          $PrintJobsOrderingComposer,
-          $PrintJobsAnnotationComposer,
-          $PrintJobsCreateCompanionBuilder,
-          $PrintJobsUpdateCompanionBuilder,
-          (PrintJob, $PrintJobsReferences),
-          PrintJob,
-          PrefetchHooks Function({
-            bool firmId,
-            bool createdBy,
-            bool updatedBy,
-            bool originDeviceId,
-            bool documentId,
-          })
-        > {
-  $PrintJobsTableManager(_$AppDatabase db, PrintJobs table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $PrintJobsFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $PrintJobsOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $PrintJobsAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<String> id = const Value.absent(),
-                Value<String> firmId = const Value.absent(),
-                Value<int> createdAtUtc = const Value.absent(),
-                Value<int> updatedAtUtc = const Value.absent(),
-                Value<String> createdBy = const Value.absent(),
-                Value<String> updatedBy = const Value.absent(),
-                Value<int?> deletedAtUtc = const Value.absent(),
-                Value<String> originDeviceId = const Value.absent(),
-                Value<String> hlc = const Value.absent(),
-                Value<int> rev = const Value.absent(),
-                Value<String> jobKey = const Value.absent(),
-                Value<String?> documentId = const Value.absent(),
-                Value<String> transportKind = const Value.absent(),
-                Value<String> targetAddress = const Value.absent(),
-                Value<int> columnsUsed = const Value.absent(),
-                Value<int> copyIndex = const Value.absent(),
-                Value<int> byteCount = const Value.absent(),
-                Value<String> payloadSha256 = const Value.absent(),
-                Value<String> status = const Value.absent(),
-                Value<int> bytesWritten = const Value.absent(),
-                Value<String?> failureReason = const Value.absent(),
-                Value<int> startedAtUtc = const Value.absent(),
-                Value<int?> finishedAtUtc = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PrintJobsCompanion(
-                id: id,
-                firmId: firmId,
-                createdAtUtc: createdAtUtc,
-                updatedAtUtc: updatedAtUtc,
-                createdBy: createdBy,
-                updatedBy: updatedBy,
-                deletedAtUtc: deletedAtUtc,
-                originDeviceId: originDeviceId,
-                hlc: hlc,
-                rev: rev,
-                jobKey: jobKey,
-                documentId: documentId,
-                transportKind: transportKind,
-                targetAddress: targetAddress,
-                columnsUsed: columnsUsed,
-                copyIndex: copyIndex,
-                byteCount: byteCount,
-                payloadSha256: payloadSha256,
-                status: status,
-                bytesWritten: bytesWritten,
-                failureReason: failureReason,
-                startedAtUtc: startedAtUtc,
-                finishedAtUtc: finishedAtUtc,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required String id,
-                required String firmId,
-                required int createdAtUtc,
-                required int updatedAtUtc,
-                required String createdBy,
-                required String updatedBy,
-                Value<int?> deletedAtUtc = const Value.absent(),
-                required String originDeviceId,
-                required String hlc,
-                Value<int> rev = const Value.absent(),
-                required String jobKey,
-                Value<String?> documentId = const Value.absent(),
-                required String transportKind,
-                required String targetAddress,
-                required int columnsUsed,
-                Value<int> copyIndex = const Value.absent(),
-                required int byteCount,
-                required String payloadSha256,
-                required String status,
-                Value<int> bytesWritten = const Value.absent(),
-                Value<String?> failureReason = const Value.absent(),
-                required int startedAtUtc,
-                Value<int?> finishedAtUtc = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => PrintJobsCompanion.insert(
-                id: id,
-                firmId: firmId,
-                createdAtUtc: createdAtUtc,
-                updatedAtUtc: updatedAtUtc,
-                createdBy: createdBy,
-                updatedBy: updatedBy,
-                deletedAtUtc: deletedAtUtc,
-                originDeviceId: originDeviceId,
-                hlc: hlc,
-                rev: rev,
-                jobKey: jobKey,
-                documentId: documentId,
-                transportKind: transportKind,
-                targetAddress: targetAddress,
-                columnsUsed: columnsUsed,
-                copyIndex: copyIndex,
-                byteCount: byteCount,
-                payloadSha256: payloadSha256,
-                status: status,
-                bytesWritten: bytesWritten,
-                failureReason: failureReason,
-                startedAtUtc: startedAtUtc,
-                finishedAtUtc: finishedAtUtc,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable<PrintJobs, PrintJob>(table),
-                  $PrintJobsReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback:
-              ({
-                firmId = false,
-                createdBy = false,
-                updatedBy = false,
-                originDeviceId = false,
-                documentId = false,
-              }) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [],
-                  addJoins:
-                      <
-                        T extends TableManagerState<
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic,
-                          dynamic
-                        >
-                      >(state) {
-                        if (firmId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.firmId,
-                                    referencedTable: $PrintJobsReferences
-                                        ._firmIdTable(db),
-                                    referencedColumn: $PrintJobsReferences
-                                        ._firmIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (createdBy) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.createdBy,
-                                    referencedTable: $PrintJobsReferences
-                                        ._createdByTable(db),
-                                    referencedColumn: $PrintJobsReferences
-                                        ._createdByTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (updatedBy) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.updatedBy,
-                                    referencedTable: $PrintJobsReferences
-                                        ._updatedByTable(db),
-                                    referencedColumn: $PrintJobsReferences
-                                        ._updatedByTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (originDeviceId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.originDeviceId,
-                                    referencedTable: $PrintJobsReferences
-                                        ._originDeviceIdTable(db),
-                                    referencedColumn: $PrintJobsReferences
-                                        ._originDeviceIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (documentId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.documentId,
-                                    referencedTable: $PrintJobsReferences
-                                        ._documentIdTable(db),
-                                    referencedColumn: $PrintJobsReferences
-                                        ._documentIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-
-                        return state;
-                      },
-                  getPrefetchedDataCallback: (items) async {
-                    return [];
-                  },
-                );
-              },
-        ),
-      );
-}
-
-typedef $PrintJobsProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      PrintJobs,
-      PrintJob,
-      $PrintJobsFilterComposer,
-      $PrintJobsOrderingComposer,
-      $PrintJobsAnnotationComposer,
-      $PrintJobsCreateCompanionBuilder,
-      $PrintJobsUpdateCompanionBuilder,
-      (PrintJob, $PrintJobsReferences),
-      PrintJob,
-      PrefetchHooks Function({
-        bool firmId,
-        bool createdBy,
-        bool updatedBy,
-        bool originDeviceId,
-        bool documentId,
       })
     >;
 typedef $AccountsCreateCompanionBuilder =
@@ -54556,6 +60305,25 @@ final class $JournalEntriesReferences
     );
   }
 
+  static MultiTypedResultKey<Assemblies, List<Assembly>> _assembliesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.assemblies,
+    aliasName: 'journal_entries__id__assemblies__journal_entry_id',
+  );
+
+  $AssembliesProcessedTableManager get assembliesRefs {
+    final manager = $AssembliesTableManager(
+      $_db,
+      $_db.assemblies,
+    ).filter((f) => f.journalEntryId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_assembliesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<JournalLines, List<JournalLine>>
   _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.journalLines,
@@ -54813,6 +60581,31 @@ class $JournalEntriesFilterComposer
           ),
     );
     return composer;
+  }
+
+  Expression<bool> assembliesRefs(
+    Expression<bool> Function($AssembliesFilterComposer f) f,
+  ) {
+    final $AssembliesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.assemblies,
+      getReferencedColumn: (t) => t.journalEntryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AssembliesFilterComposer(
+            $db: $db,
+            $table: $db.assemblies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 
   Expression<bool> journalLinesRefs(
@@ -55312,6 +61105,31 @@ class $JournalEntriesAnnotationComposer
     return composer;
   }
 
+  Expression<T> assembliesRefs<T extends Object>(
+    Expression<T> Function($AssembliesAnnotationComposer a) f,
+  ) {
+    final $AssembliesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.assemblies,
+      getReferencedColumn: (t) => t.journalEntryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $AssembliesAnnotationComposer(
+            $db: $db,
+            $table: $db.assemblies,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> journalLinesRefs<T extends Object>(
     Expression<T> Function($JournalLinesAnnotationComposer a) f,
   ) {
@@ -55359,6 +61177,7 @@ class $JournalEntriesTableManager
             bool documentId,
             bool paymentId,
             bool reversesEntryId,
+            bool assembliesRefs,
             bool journalLinesRefs,
           })
         > {
@@ -55486,11 +61305,13 @@ class $JournalEntriesTableManager
                 documentId = false,
                 paymentId = false,
                 reversesEntryId = false,
+                assembliesRefs = false,
                 journalLinesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
+                    if (assembliesRefs) db.assemblies,
                     if (journalLinesRefs) db.journalLines,
                   ],
                   addJoins:
@@ -55605,6 +61426,27 @@ class $JournalEntriesTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
+                      if (assembliesRefs)
+                        await $_getPrefetchedData<
+                          JournalEntry,
+                          JournalEntries,
+                          Assembly
+                        >(
+                          currentTable: table,
+                          referencedTable: $JournalEntriesReferences
+                              ._assembliesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $JournalEntriesReferences(
+                                db,
+                                table,
+                                p0,
+                              ).assembliesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.journalEntryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (journalLinesRefs)
                         await $_getPrefetchedData<
                           JournalEntry,
@@ -55654,11 +61496,12 @@ typedef $JournalEntriesProcessedTableManager =
         bool documentId,
         bool paymentId,
         bool reversesEntryId,
+        bool assembliesRefs,
         bool journalLinesRefs,
       })
     >;
-typedef $UnitsCreateCompanionBuilder =
-    UnitsCompanion Function({
+typedef $AssembliesCreateCompanionBuilder =
+    AssembliesCompanion Function({
       required String id,
       required String firmId,
       required int createdAtUtc,
@@ -55669,17 +61512,19 @@ typedef $UnitsCreateCompanionBuilder =
       required String originDeviceId,
       required String hlc,
       Value<int> rev,
-      required String code,
-      required String nameEn,
-      required String nameUr,
-      required String kind,
-      Value<int> isBase,
-      Value<int> decimals,
-      Value<int> isActive,
+      required String bomId,
+      required String assemblyNo,
+      required int runs,
+      required String outputItemId,
+      required int outputQtyThousandths,
+      required int componentsCostPaisa,
+      required int overheadPaisa,
+      Value<String?> journalEntryId,
+      required String madeOnLocal,
       Value<int> rowid,
     });
-typedef $UnitsUpdateCompanionBuilder =
-    UnitsCompanion Function({
+typedef $AssembliesUpdateCompanionBuilder =
+    AssembliesCompanion Function({
       Value<String> id,
       Value<String> firmId,
       Value<int> createdAtUtc,
@@ -55690,22 +61535,24 @@ typedef $UnitsUpdateCompanionBuilder =
       Value<String> originDeviceId,
       Value<String> hlc,
       Value<int> rev,
-      Value<String> code,
-      Value<String> nameEn,
-      Value<String> nameUr,
-      Value<String> kind,
-      Value<int> isBase,
-      Value<int> decimals,
-      Value<int> isActive,
+      Value<String> bomId,
+      Value<String> assemblyNo,
+      Value<int> runs,
+      Value<String> outputItemId,
+      Value<int> outputQtyThousandths,
+      Value<int> componentsCostPaisa,
+      Value<int> overheadPaisa,
+      Value<String?> journalEntryId,
+      Value<String> madeOnLocal,
       Value<int> rowid,
     });
 
-final class $UnitsReferences
-    extends BaseReferences<_$AppDatabase, Units, Unit> {
-  $UnitsReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $AssembliesReferences
+    extends BaseReferences<_$AppDatabase, Assemblies, Assembly> {
+  $AssembliesReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias('units__firm_id__firms__id');
+      db.firms.createAlias('assemblies__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -55722,7 +61569,7 @@ final class $UnitsReferences
   }
 
   static Users _createdByTable(_$AppDatabase db) =>
-      db.users.createAlias('units__created_by__users__id');
+      db.users.createAlias('assemblies__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -55739,7 +61586,7 @@ final class $UnitsReferences
   }
 
   static Users _updatedByTable(_$AppDatabase db) =>
-      db.users.createAlias('units__updated_by__users__id');
+      db.users.createAlias('assemblies__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -55756,7 +61603,7 @@ final class $UnitsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias('units__origin_device_id__devices__id');
+      db.devices.createAlias('assemblies__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -55772,27 +61619,61 @@ final class $UnitsReferences
     );
   }
 
-  static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
-  _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.documentLines,
-    aliasName: 'units__id__document_lines__unit_id',
-  );
+  static Boms _bomIdTable(_$AppDatabase db) =>
+      db.boms.createAlias('assemblies__bom_id__boms__id');
 
-  $DocumentLinesProcessedTableManager get documentLinesRefs {
-    final manager = $DocumentLinesTableManager(
+  $BomsProcessedTableManager get bomId {
+    final $_column = $_itemColumn<String>('bom_id')!;
+
+    final manager = $BomsTableManager(
       $_db,
-      $_db.documentLines,
-    ).filter((f) => f.unitId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_documentLinesRefsTable($_db));
+      $_db.boms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_bomIdTable($_db));
+    if (item == null) return manager;
     return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Items _outputItemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('assemblies__output_item_id__items__id');
+
+  $ItemsProcessedTableManager get outputItemId {
+    final $_column = $_itemColumn<String>('output_item_id')!;
+
+    final manager = $ItemsTableManager(
+      $_db,
+      $_db.items,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_outputItemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static JournalEntries _journalEntryIdTable(_$AppDatabase db) => db
+      .journalEntries
+      .createAlias('assemblies__journal_entry_id__journal_entries__id');
+
+  $JournalEntriesProcessedTableManager? get journalEntryId {
+    final $_column = $_itemColumn<String>('journal_entry_id');
+    if ($_column == null) return null;
+    final manager = $JournalEntriesTableManager(
+      $_db,
+      $_db.journalEntries,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_journalEntryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
     );
   }
 }
 
-class $UnitsFilterComposer extends Composer<_$AppDatabase, Units> {
-  $UnitsFilterComposer({
+class $AssembliesFilterComposer extends Composer<_$AppDatabase, Assemblies> {
+  $AssembliesFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -55829,38 +61710,33 @@ class $UnitsFilterComposer extends Composer<_$AppDatabase, Units> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get code => $composableBuilder(
-    column: $table.code,
+  ColumnFilters<String> get assemblyNo => $composableBuilder(
+    column: $table.assemblyNo,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nameEn => $composableBuilder(
-    column: $table.nameEn,
+  ColumnFilters<int> get runs => $composableBuilder(
+    column: $table.runs,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nameUr => $composableBuilder(
-    column: $table.nameUr,
+  ColumnFilters<int> get outputQtyThousandths => $composableBuilder(
+    column: $table.outputQtyThousandths,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get kind => $composableBuilder(
-    column: $table.kind,
+  ColumnFilters<int> get componentsCostPaisa => $composableBuilder(
+    column: $table.componentsCostPaisa,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get isBase => $composableBuilder(
-    column: $table.isBase,
+  ColumnFilters<int> get overheadPaisa => $composableBuilder(
+    column: $table.overheadPaisa,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get decimals => $composableBuilder(
-    column: $table.decimals,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get isActive => $composableBuilder(
-    column: $table.isActive,
+  ColumnFilters<String> get madeOnLocal => $composableBuilder(
+    column: $table.madeOnLocal,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -55956,34 +61832,78 @@ class $UnitsFilterComposer extends Composer<_$AppDatabase, Units> {
     return composer;
   }
 
-  Expression<bool> documentLinesRefs(
-    Expression<bool> Function($DocumentLinesFilterComposer f) f,
-  ) {
-    final $DocumentLinesFilterComposer composer = $composerBuilder(
+  $BomsFilterComposer get bomId {
+    final $BomsFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.documentLines,
-      getReferencedColumn: (t) => t.unitId,
+      getCurrentColumn: (t) => t.bomId,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $DocumentLinesFilterComposer(
+          }) => $BomsFilterComposer(
             $db: $db,
-            $table: $db.documentLines,
+            $table: $db.boms,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
                 $removeJoinBuilderFromRootComposer,
           ),
     );
-    return f(composer);
+    return composer;
+  }
+
+  $ItemsFilterComposer get outputItemId {
+    final $ItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.outputItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsFilterComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $JournalEntriesFilterComposer get journalEntryId {
+    final $JournalEntriesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.journalEntryId,
+      referencedTable: $db.journalEntries,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalEntriesFilterComposer(
+            $db: $db,
+            $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
   }
 }
 
-class $UnitsOrderingComposer extends Composer<_$AppDatabase, Units> {
-  $UnitsOrderingComposer({
+class $AssembliesOrderingComposer extends Composer<_$AppDatabase, Assemblies> {
+  $AssembliesOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -56020,38 +61940,1069 @@ class $UnitsOrderingComposer extends Composer<_$AppDatabase, Units> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get code => $composableBuilder(
-    column: $table.code,
+  ColumnOrderings<String> get assemblyNo => $composableBuilder(
+    column: $table.assemblyNo,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameEn => $composableBuilder(
-    column: $table.nameEn,
+  ColumnOrderings<int> get runs => $composableBuilder(
+    column: $table.runs,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameUr => $composableBuilder(
-    column: $table.nameUr,
+  ColumnOrderings<int> get outputQtyThousandths => $composableBuilder(
+    column: $table.outputQtyThousandths,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get kind => $composableBuilder(
-    column: $table.kind,
+  ColumnOrderings<int> get componentsCostPaisa => $composableBuilder(
+    column: $table.componentsCostPaisa,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get isBase => $composableBuilder(
-    column: $table.isBase,
+  ColumnOrderings<int> get overheadPaisa => $composableBuilder(
+    column: $table.overheadPaisa,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get decimals => $composableBuilder(
-    column: $table.decimals,
+  ColumnOrderings<String> get madeOnLocal => $composableBuilder(
+    column: $table.madeOnLocal,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get isActive => $composableBuilder(
-    column: $table.isActive,
+  $FirmsOrderingComposer get firmId {
+    final $FirmsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsOrderingComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get createdBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get updatedBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesOrderingComposer get originDeviceId {
+    final $DevicesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesOrderingComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $BomsOrderingComposer get bomId {
+    final $BomsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bomId,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsOrderingComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsOrderingComposer get outputItemId {
+    final $ItemsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.outputItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsOrderingComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $JournalEntriesOrderingComposer get journalEntryId {
+    final $JournalEntriesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.journalEntryId,
+      referencedTable: $db.journalEntries,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalEntriesOrderingComposer(
+            $db: $db,
+            $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $AssembliesAnnotationComposer
+    extends Composer<_$AppDatabase, Assemblies> {
+  $AssembliesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => column);
+
+  GeneratedColumn<int> get rev =>
+      $composableBuilder(column: $table.rev, builder: (column) => column);
+
+  GeneratedColumn<String> get assemblyNo => $composableBuilder(
+    column: $table.assemblyNo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get runs =>
+      $composableBuilder(column: $table.runs, builder: (column) => column);
+
+  GeneratedColumn<int> get outputQtyThousandths => $composableBuilder(
+    column: $table.outputQtyThousandths,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get componentsCostPaisa => $composableBuilder(
+    column: $table.componentsCostPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get overheadPaisa => $composableBuilder(
+    column: $table.overheadPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get madeOnLocal => $composableBuilder(
+    column: $table.madeOnLocal,
+    builder: (column) => column,
+  );
+
+  $FirmsAnnotationComposer get firmId {
+    final $FirmsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsAnnotationComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get createdBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get updatedBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesAnnotationComposer get originDeviceId {
+    final $DevicesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesAnnotationComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $BomsAnnotationComposer get bomId {
+    final $BomsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.bomId,
+      referencedTable: $db.boms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $BomsAnnotationComposer(
+            $db: $db,
+            $table: $db.boms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsAnnotationComposer get outputItemId {
+    final $ItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.outputItemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $JournalEntriesAnnotationComposer get journalEntryId {
+    final $JournalEntriesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.journalEntryId,
+      referencedTable: $db.journalEntries,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $JournalEntriesAnnotationComposer(
+            $db: $db,
+            $table: $db.journalEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $AssembliesTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          Assemblies,
+          Assembly,
+          $AssembliesFilterComposer,
+          $AssembliesOrderingComposer,
+          $AssembliesAnnotationComposer,
+          $AssembliesCreateCompanionBuilder,
+          $AssembliesUpdateCompanionBuilder,
+          (Assembly, $AssembliesReferences),
+          Assembly,
+          PrefetchHooks Function({
+            bool firmId,
+            bool createdBy,
+            bool updatedBy,
+            bool originDeviceId,
+            bool bomId,
+            bool outputItemId,
+            bool journalEntryId,
+          })
+        > {
+  $AssembliesTableManager(_$AppDatabase db, Assemblies table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $AssembliesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $AssembliesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $AssembliesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> firmId = const Value.absent(),
+                Value<int> createdAtUtc = const Value.absent(),
+                Value<int> updatedAtUtc = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> updatedBy = const Value.absent(),
+                Value<int?> deletedAtUtc = const Value.absent(),
+                Value<String> originDeviceId = const Value.absent(),
+                Value<String> hlc = const Value.absent(),
+                Value<int> rev = const Value.absent(),
+                Value<String> bomId = const Value.absent(),
+                Value<String> assemblyNo = const Value.absent(),
+                Value<int> runs = const Value.absent(),
+                Value<String> outputItemId = const Value.absent(),
+                Value<int> outputQtyThousandths = const Value.absent(),
+                Value<int> componentsCostPaisa = const Value.absent(),
+                Value<int> overheadPaisa = const Value.absent(),
+                Value<String?> journalEntryId = const Value.absent(),
+                Value<String> madeOnLocal = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AssembliesCompanion(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                bomId: bomId,
+                assemblyNo: assemblyNo,
+                runs: runs,
+                outputItemId: outputItemId,
+                outputQtyThousandths: outputQtyThousandths,
+                componentsCostPaisa: componentsCostPaisa,
+                overheadPaisa: overheadPaisa,
+                journalEntryId: journalEntryId,
+                madeOnLocal: madeOnLocal,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String firmId,
+                required int createdAtUtc,
+                required int updatedAtUtc,
+                required String createdBy,
+                required String updatedBy,
+                Value<int?> deletedAtUtc = const Value.absent(),
+                required String originDeviceId,
+                required String hlc,
+                Value<int> rev = const Value.absent(),
+                required String bomId,
+                required String assemblyNo,
+                required int runs,
+                required String outputItemId,
+                required int outputQtyThousandths,
+                required int componentsCostPaisa,
+                required int overheadPaisa,
+                Value<String?> journalEntryId = const Value.absent(),
+                required String madeOnLocal,
+                Value<int> rowid = const Value.absent(),
+              }) => AssembliesCompanion.insert(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                bomId: bomId,
+                assemblyNo: assemblyNo,
+                runs: runs,
+                outputItemId: outputItemId,
+                outputQtyThousandths: outputQtyThousandths,
+                componentsCostPaisa: componentsCostPaisa,
+                overheadPaisa: overheadPaisa,
+                journalEntryId: journalEntryId,
+                madeOnLocal: madeOnLocal,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<Assemblies, Assembly>(table),
+                  $AssembliesReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                firmId = false,
+                createdBy = false,
+                updatedBy = false,
+                originDeviceId = false,
+                bomId = false,
+                outputItemId = false,
+                journalEntryId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (firmId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.firmId,
+                                    referencedTable: $AssembliesReferences
+                                        ._firmIdTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $AssembliesReferences
+                                        ._createdByTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._createdByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (updatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.updatedBy,
+                                    referencedTable: $AssembliesReferences
+                                        ._updatedByTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._updatedByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $AssembliesReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (bomId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.bomId,
+                                    referencedTable: $AssembliesReferences
+                                        ._bomIdTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._bomIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (outputItemId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.outputItemId,
+                                    referencedTable: $AssembliesReferences
+                                        ._outputItemIdTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._outputItemIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (journalEntryId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.journalEntryId,
+                                    referencedTable: $AssembliesReferences
+                                        ._journalEntryIdTable(db),
+                                    referencedColumn: $AssembliesReferences
+                                        ._journalEntryIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $AssembliesProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      Assemblies,
+      Assembly,
+      $AssembliesFilterComposer,
+      $AssembliesOrderingComposer,
+      $AssembliesAnnotationComposer,
+      $AssembliesCreateCompanionBuilder,
+      $AssembliesUpdateCompanionBuilder,
+      (Assembly, $AssembliesReferences),
+      Assembly,
+      PrefetchHooks Function({
+        bool firmId,
+        bool createdBy,
+        bool updatedBy,
+        bool originDeviceId,
+        bool bomId,
+        bool outputItemId,
+        bool journalEntryId,
+      })
+    >;
+typedef $AuditLogCreateCompanionBuilder =
+    AuditLogCompanion Function({
+      required String id,
+      required String firmId,
+      required int createdAtUtc,
+      required int updatedAtUtc,
+      required String createdBy,
+      required String updatedBy,
+      Value<int?> deletedAtUtc,
+      required String originDeviceId,
+      required String hlc,
+      Value<int> rev,
+      required String actionCode,
+      required String entityTable,
+      required String entityId,
+      Value<String?> summary,
+      Value<String?> beforeJson,
+      Value<String?> afterJson,
+      Value<int?> amountPaisa,
+      required int atUtc,
+      Value<int> rowid,
+    });
+typedef $AuditLogUpdateCompanionBuilder =
+    AuditLogCompanion Function({
+      Value<String> id,
+      Value<String> firmId,
+      Value<int> createdAtUtc,
+      Value<int> updatedAtUtc,
+      Value<String> createdBy,
+      Value<String> updatedBy,
+      Value<int?> deletedAtUtc,
+      Value<String> originDeviceId,
+      Value<String> hlc,
+      Value<int> rev,
+      Value<String> actionCode,
+      Value<String> entityTable,
+      Value<String> entityId,
+      Value<String?> summary,
+      Value<String?> beforeJson,
+      Value<String?> afterJson,
+      Value<int?> amountPaisa,
+      Value<int> atUtc,
+      Value<int> rowid,
+    });
+
+final class $AuditLogReferences
+    extends BaseReferences<_$AppDatabase, AuditLog, AuditLogData> {
+  $AuditLogReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('audit_log__firm_id__firms__id');
+
+  $FirmsProcessedTableManager get firmId {
+    final $_column = $_itemColumn<String>('firm_id')!;
+
+    final manager = $FirmsTableManager(
+      $_db,
+      $_db.firms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_firmIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('audit_log__created_by__users__id');
+
+  $UsersProcessedTableManager get createdBy {
+    final $_column = $_itemColumn<String>('created_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('audit_log__updated_by__users__id');
+
+  $UsersProcessedTableManager get updatedBy {
+    final $_column = $_itemColumn<String>('updated_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Devices _originDeviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('audit_log__origin_device_id__devices__id');
+
+  $DevicesProcessedTableManager get originDeviceId {
+    final $_column = $_itemColumn<String>('origin_device_id')!;
+
+    final manager = $DevicesTableManager(
+      $_db,
+      $_db.devices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $AuditLogFilterComposer extends Composer<_$AppDatabase, AuditLog> {
+  $AuditLogFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get actionCode => $composableBuilder(
+    column: $table.actionCode,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityTable => $composableBuilder(
+    column: $table.entityTable,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get beforeJson => $composableBuilder(
+    column: $table.beforeJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get afterJson => $composableBuilder(
+    column: $table.afterJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountPaisa => $composableBuilder(
+    column: $table.amountPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get atUtc => $composableBuilder(
+    column: $table.atUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $FirmsFilterComposer get firmId {
+    final $FirmsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsFilterComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get createdBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get updatedBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesFilterComposer get originDeviceId {
+    final $DevicesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesFilterComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $AuditLogOrderingComposer extends Composer<_$AppDatabase, AuditLog> {
+  $AuditLogOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get actionCode => $composableBuilder(
+    column: $table.actionCode,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityTable => $composableBuilder(
+    column: $table.entityTable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get summary => $composableBuilder(
+    column: $table.summary,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get beforeJson => $composableBuilder(
+    column: $table.beforeJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get afterJson => $composableBuilder(
+    column: $table.afterJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountPaisa => $composableBuilder(
+    column: $table.amountPaisa,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get atUtc => $composableBuilder(
+    column: $table.atUtc,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -56148,8 +63099,8 @@ class $UnitsOrderingComposer extends Composer<_$AppDatabase, Units> {
   }
 }
 
-class $UnitsAnnotationComposer extends Composer<_$AppDatabase, Units> {
-  $UnitsAnnotationComposer({
+class $AuditLogAnnotationComposer extends Composer<_$AppDatabase, AuditLog> {
+  $AuditLogAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -56180,26 +63131,37 @@ class $UnitsAnnotationComposer extends Composer<_$AppDatabase, Units> {
   GeneratedColumn<int> get rev =>
       $composableBuilder(column: $table.rev, builder: (column) => column);
 
-  GeneratedColumn<String> get code =>
-      $composableBuilder(column: $table.code, builder: (column) => column);
+  GeneratedColumn<String> get actionCode => $composableBuilder(
+    column: $table.actionCode,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get nameEn =>
-      $composableBuilder(column: $table.nameEn, builder: (column) => column);
+  GeneratedColumn<String> get entityTable => $composableBuilder(
+    column: $table.entityTable,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<String> get nameUr =>
-      $composableBuilder(column: $table.nameUr, builder: (column) => column);
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
 
-  GeneratedColumn<String> get kind =>
-      $composableBuilder(column: $table.kind, builder: (column) => column);
+  GeneratedColumn<String> get summary =>
+      $composableBuilder(column: $table.summary, builder: (column) => column);
 
-  GeneratedColumn<int> get isBase =>
-      $composableBuilder(column: $table.isBase, builder: (column) => column);
+  GeneratedColumn<String> get beforeJson => $composableBuilder(
+    column: $table.beforeJson,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<int> get decimals =>
-      $composableBuilder(column: $table.decimals, builder: (column) => column);
+  GeneratedColumn<String> get afterJson =>
+      $composableBuilder(column: $table.afterJson, builder: (column) => column);
 
-  GeneratedColumn<int> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
+  GeneratedColumn<int> get amountPaisa => $composableBuilder(
+    column: $table.amountPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get atUtc =>
+      $composableBuilder(column: $table.atUtc, builder: (column) => column);
 
   $FirmsAnnotationComposer get firmId {
     final $FirmsAnnotationComposer composer = $composerBuilder(
@@ -56292,65 +63254,39 @@ class $UnitsAnnotationComposer extends Composer<_$AppDatabase, Units> {
     );
     return composer;
   }
-
-  Expression<T> documentLinesRefs<T extends Object>(
-    Expression<T> Function($DocumentLinesAnnotationComposer a) f,
-  ) {
-    final $DocumentLinesAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.documentLines,
-      getReferencedColumn: (t) => t.unitId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DocumentLinesAnnotationComposer(
-            $db: $db,
-            $table: $db.documentLines,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
 }
 
-class $UnitsTableManager
+class $AuditLogTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          Units,
-          Unit,
-          $UnitsFilterComposer,
-          $UnitsOrderingComposer,
-          $UnitsAnnotationComposer,
-          $UnitsCreateCompanionBuilder,
-          $UnitsUpdateCompanionBuilder,
-          (Unit, $UnitsReferences),
-          Unit,
+          AuditLog,
+          AuditLogData,
+          $AuditLogFilterComposer,
+          $AuditLogOrderingComposer,
+          $AuditLogAnnotationComposer,
+          $AuditLogCreateCompanionBuilder,
+          $AuditLogUpdateCompanionBuilder,
+          (AuditLogData, $AuditLogReferences),
+          AuditLogData,
           PrefetchHooks Function({
             bool firmId,
             bool createdBy,
             bool updatedBy,
             bool originDeviceId,
-            bool documentLinesRefs,
           })
         > {
-  $UnitsTableManager(_$AppDatabase db, Units table)
+  $AuditLogTableManager(_$AppDatabase db, AuditLog table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $UnitsFilterComposer($db: db, $table: table),
+              $AuditLogFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $UnitsOrderingComposer($db: db, $table: table),
+              $AuditLogOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $UnitsAnnotationComposer($db: db, $table: table),
+              $AuditLogAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -56363,15 +63299,16 @@ class $UnitsTableManager
                 Value<String> originDeviceId = const Value.absent(),
                 Value<String> hlc = const Value.absent(),
                 Value<int> rev = const Value.absent(),
-                Value<String> code = const Value.absent(),
-                Value<String> nameEn = const Value.absent(),
-                Value<String> nameUr = const Value.absent(),
-                Value<String> kind = const Value.absent(),
-                Value<int> isBase = const Value.absent(),
-                Value<int> decimals = const Value.absent(),
-                Value<int> isActive = const Value.absent(),
+                Value<String> actionCode = const Value.absent(),
+                Value<String> entityTable = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<String?> summary = const Value.absent(),
+                Value<String?> beforeJson = const Value.absent(),
+                Value<String?> afterJson = const Value.absent(),
+                Value<int?> amountPaisa = const Value.absent(),
+                Value<int> atUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => UnitsCompanion(
+              }) => AuditLogCompanion(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -56382,13 +63319,14 @@ class $UnitsTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                code: code,
-                nameEn: nameEn,
-                nameUr: nameUr,
-                kind: kind,
-                isBase: isBase,
-                decimals: decimals,
-                isActive: isActive,
+                actionCode: actionCode,
+                entityTable: entityTable,
+                entityId: entityId,
+                summary: summary,
+                beforeJson: beforeJson,
+                afterJson: afterJson,
+                amountPaisa: amountPaisa,
+                atUtc: atUtc,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -56403,15 +63341,16 @@ class $UnitsTableManager
                 required String originDeviceId,
                 required String hlc,
                 Value<int> rev = const Value.absent(),
-                required String code,
-                required String nameEn,
-                required String nameUr,
-                required String kind,
-                Value<int> isBase = const Value.absent(),
-                Value<int> decimals = const Value.absent(),
-                Value<int> isActive = const Value.absent(),
+                required String actionCode,
+                required String entityTable,
+                required String entityId,
+                Value<String?> summary = const Value.absent(),
+                Value<String?> beforeJson = const Value.absent(),
+                Value<String?> afterJson = const Value.absent(),
+                Value<int?> amountPaisa = const Value.absent(),
+                required int atUtc,
                 Value<int> rowid = const Value.absent(),
-              }) => UnitsCompanion.insert(
+              }) => AuditLogCompanion.insert(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -56422,20 +63361,21 @@ class $UnitsTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                code: code,
-                nameEn: nameEn,
-                nameUr: nameUr,
-                kind: kind,
-                isBase: isBase,
-                decimals: decimals,
-                isActive: isActive,
+                actionCode: actionCode,
+                entityTable: entityTable,
+                entityId: entityId,
+                summary: summary,
+                beforeJson: beforeJson,
+                afterJson: afterJson,
+                amountPaisa: amountPaisa,
+                atUtc: atUtc,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<Units, Unit>(table),
-                  $UnitsReferences(db, table, e),
+                  e.readTable<AuditLog, AuditLogData>(table),
+                  $AuditLogReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -56445,13 +63385,10 @@ class $UnitsTableManager
                 createdBy = false,
                 updatedBy = false,
                 originDeviceId = false,
-                documentLinesRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [
-                    if (documentLinesRefs) db.documentLines,
-                  ],
+                  explicitlyWatchedTables: [],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -56473,9 +63410,9 @@ class $UnitsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.firmId,
-                                    referencedTable: $UnitsReferences
+                                    referencedTable: $AuditLogReferences
                                         ._firmIdTable(db),
-                                    referencedColumn: $UnitsReferences
+                                    referencedColumn: $AuditLogReferences
                                         ._firmIdTable(db)
                                         .id,
                                   )
@@ -56486,9 +63423,9 @@ class $UnitsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.createdBy,
-                                    referencedTable: $UnitsReferences
+                                    referencedTable: $AuditLogReferences
                                         ._createdByTable(db),
-                                    referencedColumn: $UnitsReferences
+                                    referencedColumn: $AuditLogReferences
                                         ._createdByTable(db)
                                         .id,
                                   )
@@ -56499,9 +63436,9 @@ class $UnitsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.updatedBy,
-                                    referencedTable: $UnitsReferences
+                                    referencedTable: $AuditLogReferences
                                         ._updatedByTable(db),
-                                    referencedColumn: $UnitsReferences
+                                    referencedColumn: $AuditLogReferences
                                         ._updatedByTable(db)
                                         .id,
                                   )
@@ -56512,9 +63449,9 @@ class $UnitsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.originDeviceId,
-                                    referencedTable: $UnitsReferences
+                                    referencedTable: $AuditLogReferences
                                         ._originDeviceIdTable(db),
-                                    referencedColumn: $UnitsReferences
+                                    referencedColumn: $AuditLogReferences
                                         ._originDeviceIdTable(db)
                                         .id,
                                   )
@@ -56524,21 +63461,7 @@ class $UnitsTableManager
                         return state;
                       },
                   getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (documentLinesRefs)
-                        await $_getPrefetchedData<Unit, Units, DocumentLine>(
-                          currentTable: table,
-                          referencedTable: $UnitsReferences
-                              ._documentLinesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $UnitsReferences(db, table, p0).documentLinesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.unitId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
+                    return [];
                   },
                 );
               },
@@ -56546,28 +63469,27 @@ class $UnitsTableManager
       );
 }
 
-typedef $UnitsProcessedTableManager =
+typedef $AuditLogProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      Units,
-      Unit,
-      $UnitsFilterComposer,
-      $UnitsOrderingComposer,
-      $UnitsAnnotationComposer,
-      $UnitsCreateCompanionBuilder,
-      $UnitsUpdateCompanionBuilder,
-      (Unit, $UnitsReferences),
-      Unit,
+      AuditLog,
+      AuditLogData,
+      $AuditLogFilterComposer,
+      $AuditLogOrderingComposer,
+      $AuditLogAnnotationComposer,
+      $AuditLogCreateCompanionBuilder,
+      $AuditLogUpdateCompanionBuilder,
+      (AuditLogData, $AuditLogReferences),
+      AuditLogData,
       PrefetchHooks Function({
         bool firmId,
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
-        bool documentLinesRefs,
       })
     >;
-typedef $ItemsCreateCompanionBuilder =
-    ItemsCompanion Function({
+typedef $ChangeLogCreateCompanionBuilder =
+    ChangeLogCompanion Function({
       required String id,
       required String firmId,
       required int createdAtUtc,
@@ -56578,38 +63500,20 @@ typedef $ItemsCreateCompanionBuilder =
       required String originDeviceId,
       required String hlc,
       Value<int> rev,
-      Value<String?> code,
-      required String name,
-      required String nameSearch,
-      Value<String> itemType,
-      Value<String?> category,
-      Value<String?> description,
-      Value<String?> barcode,
-      required String baseUnitId,
-      Value<String?> displayUnitId,
-      Value<int> displayFactorThousandths,
-      Value<int> saleRateMilliPaisa,
-      Value<int?> wholesaleRateMilliPaisa,
-      Value<int?> purchaseRateMilliPaisa,
-      Value<int> avgCostMilliPaisa,
-      Value<int?> mrpPaisa,
-      Value<String?> hsCode,
-      Value<String?> taxRuleId,
-      Value<int> priceIncludesTax,
-      Value<int> isThirdSchedule,
-      Value<int> trackStock,
-      Value<int> trackBatch,
-      Value<int> trackSerial,
-      Value<int> minStockThousandths,
-      Value<int> openingStockThousandths,
-      Value<int> openingRateMilliPaisa,
-      Value<String?> imageAttachmentId,
-      Value<int> isActive,
-      Value<int?> vipRateMilliPaisa,
+      required int seq,
+      required String entityTable,
+      required String entityId,
+      required String op,
+      required String payloadJson,
+      required String entityHlc,
+      required int entityRev,
+      required int atUtc,
+      Value<String> syncState,
+      Value<int?> syncedAtUtc,
       Value<int> rowid,
     });
-typedef $ItemsUpdateCompanionBuilder =
-    ItemsCompanion Function({
+typedef $ChangeLogUpdateCompanionBuilder =
+    ChangeLogCompanion Function({
       Value<String> id,
       Value<String> firmId,
       Value<int> createdAtUtc,
@@ -56620,43 +63524,25 @@ typedef $ItemsUpdateCompanionBuilder =
       Value<String> originDeviceId,
       Value<String> hlc,
       Value<int> rev,
-      Value<String?> code,
-      Value<String> name,
-      Value<String> nameSearch,
-      Value<String> itemType,
-      Value<String?> category,
-      Value<String?> description,
-      Value<String?> barcode,
-      Value<String> baseUnitId,
-      Value<String?> displayUnitId,
-      Value<int> displayFactorThousandths,
-      Value<int> saleRateMilliPaisa,
-      Value<int?> wholesaleRateMilliPaisa,
-      Value<int?> purchaseRateMilliPaisa,
-      Value<int> avgCostMilliPaisa,
-      Value<int?> mrpPaisa,
-      Value<String?> hsCode,
-      Value<String?> taxRuleId,
-      Value<int> priceIncludesTax,
-      Value<int> isThirdSchedule,
-      Value<int> trackStock,
-      Value<int> trackBatch,
-      Value<int> trackSerial,
-      Value<int> minStockThousandths,
-      Value<int> openingStockThousandths,
-      Value<int> openingRateMilliPaisa,
-      Value<String?> imageAttachmentId,
-      Value<int> isActive,
-      Value<int?> vipRateMilliPaisa,
+      Value<int> seq,
+      Value<String> entityTable,
+      Value<String> entityId,
+      Value<String> op,
+      Value<String> payloadJson,
+      Value<String> entityHlc,
+      Value<int> entityRev,
+      Value<int> atUtc,
+      Value<String> syncState,
+      Value<int?> syncedAtUtc,
       Value<int> rowid,
     });
 
-final class $ItemsReferences
-    extends BaseReferences<_$AppDatabase, Items, Item> {
-  $ItemsReferences(super.$_db, super.$_table, super.$_typedResult);
+final class $ChangeLogReferences
+    extends BaseReferences<_$AppDatabase, ChangeLog, ChangeLogData> {
+  $ChangeLogReferences(super.$_db, super.$_table, super.$_typedResult);
 
   static Firms _firmIdTable(_$AppDatabase db) =>
-      db.firms.createAlias('items__firm_id__firms__id');
+      db.firms.createAlias('change_log__firm_id__firms__id');
 
   $FirmsProcessedTableManager get firmId {
     final $_column = $_itemColumn<String>('firm_id')!;
@@ -56673,7 +63559,7 @@ final class $ItemsReferences
   }
 
   static Users _createdByTable(_$AppDatabase db) =>
-      db.users.createAlias('items__created_by__users__id');
+      db.users.createAlias('change_log__created_by__users__id');
 
   $UsersProcessedTableManager get createdBy {
     final $_column = $_itemColumn<String>('created_by')!;
@@ -56690,7 +63576,7 @@ final class $ItemsReferences
   }
 
   static Users _updatedByTable(_$AppDatabase db) =>
-      db.users.createAlias('items__updated_by__users__id');
+      db.users.createAlias('change_log__updated_by__users__id');
 
   $UsersProcessedTableManager get updatedBy {
     final $_column = $_itemColumn<String>('updated_by')!;
@@ -56707,7 +63593,7 @@ final class $ItemsReferences
   }
 
   static Devices _originDeviceIdTable(_$AppDatabase db) =>
-      db.devices.createAlias('items__origin_device_id__devices__id');
+      db.devices.createAlias('change_log__origin_device_id__devices__id');
 
   $DevicesProcessedTableManager get originDeviceId {
     final $_column = $_itemColumn<String>('origin_device_id')!;
@@ -56722,171 +63608,10 @@ final class $ItemsReferences
       manager.$state.copyWith(prefetchedData: [item]),
     );
   }
-
-  static Units _baseUnitIdTable(_$AppDatabase db) =>
-      db.units.createAlias('items__base_unit_id__units__id');
-
-  $UnitsProcessedTableManager get baseUnitId {
-    final $_column = $_itemColumn<String>('base_unit_id')!;
-
-    final manager = $UnitsTableManager(
-      $_db,
-      $_db.units,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_baseUnitIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static Units _displayUnitIdTable(_$AppDatabase db) =>
-      db.units.createAlias('items__display_unit_id__units__id');
-
-  $UnitsProcessedTableManager? get displayUnitId {
-    final $_column = $_itemColumn<String>('display_unit_id');
-    if ($_column == null) return null;
-    final manager = $UnitsTableManager(
-      $_db,
-      $_db.units,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_displayUnitIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static TaxRules _taxRuleIdTable(_$AppDatabase db) =>
-      db.taxRules.createAlias('items__tax_rule_id__tax_rules__id');
-
-  $TaxRulesProcessedTableManager? get taxRuleId {
-    final $_column = $_itemColumn<String>('tax_rule_id');
-    if ($_column == null) return null;
-    final manager = $TaxRulesTableManager(
-      $_db,
-      $_db.taxRules,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_taxRuleIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static Attachments _imageAttachmentIdTable(_$AppDatabase db) =>
-      db.attachments.createAlias('items__image_attachment_id__attachments__id');
-
-  $AttachmentsProcessedTableManager? get imageAttachmentId {
-    final $_column = $_itemColumn<String>('image_attachment_id');
-    if ($_column == null) return null;
-    final manager = $AttachmentsTableManager(
-      $_db,
-      $_db.attachments,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_imageAttachmentIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-
-  static MultiTypedResultKey<JournalLines, List<JournalLine>>
-  _journalLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.journalLines,
-    aliasName: 'items__id__journal_lines__item_id',
-  );
-
-  $JournalLinesProcessedTableManager get journalLinesRefs {
-    final manager = $JournalLinesTableManager(
-      $_db,
-      $_db.journalLines,
-    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_journalLinesRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<StockLots, List<StockLot>> _stockLotsRefsTable(
-    _$AppDatabase db,
-  ) => MultiTypedResultKey.fromTable(
-    db.stockLots,
-    aliasName: 'items__id__stock_lots__item_id',
-  );
-
-  $StockLotsProcessedTableManager get stockLotsRefs {
-    final manager = $StockLotsTableManager(
-      $_db,
-      $_db.stockLots,
-    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_stockLotsRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<DocumentLines, List<DocumentLine>>
-  _documentLinesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.documentLines,
-    aliasName: 'items__id__document_lines__item_id',
-  );
-
-  $DocumentLinesProcessedTableManager get documentLinesRefs {
-    final manager = $DocumentLinesTableManager(
-      $_db,
-      $_db.documentLines,
-    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_documentLinesRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<StockLedger, List<StockLedgerData>>
-  _stockLedgerRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.stockLedger,
-    aliasName: 'items__id__stock_ledger__item_id',
-  );
-
-  $StockLedgerProcessedTableManager get stockLedgerRefs {
-    final manager = $StockLedgerTableManager(
-      $_db,
-      $_db.stockLedger,
-    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_stockLedgerRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<UnitConversions, List<UnitConversion>>
-  _unitConversionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.unitConversions,
-    aliasName: 'items__id__unit_conversions__item_id',
-  );
-
-  $UnitConversionsProcessedTableManager get unitConversionsRefs {
-    final manager = $UnitConversionsTableManager(
-      $_db,
-      $_db.unitConversions,
-    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _unitConversionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
 }
 
-class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
-  $ItemsFilterComposer({
+class $ChangeLogFilterComposer extends Composer<_$AppDatabase, ChangeLog> {
+  $ChangeLogFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -56923,123 +63648,971 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get code => $composableBuilder(
-    column: $table.code,
+  ColumnFilters<int> get seq => $composableBuilder(
+    column: $table.seq,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get name => $composableBuilder(
-    column: $table.name,
+  ColumnFilters<String> get entityTable => $composableBuilder(
+    column: $table.entityTable,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get nameSearch => $composableBuilder(
-    column: $table.nameSearch,
+  ColumnFilters<String> get entityId => $composableBuilder(
+    column: $table.entityId,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get itemType => $composableBuilder(
-    column: $table.itemType,
+  ColumnFilters<String> get op => $composableBuilder(
+    column: $table.op,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get category => $composableBuilder(
-    column: $table.category,
+  ColumnFilters<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
+  ColumnFilters<String> get entityHlc => $composableBuilder(
+    column: $table.entityHlc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get barcode => $composableBuilder(
-    column: $table.barcode,
+  ColumnFilters<int> get entityRev => $composableBuilder(
+    column: $table.entityRev,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get displayFactorThousandths => $composableBuilder(
-    column: $table.displayFactorThousandths,
+  ColumnFilters<int> get atUtc => $composableBuilder(
+    column: $table.atUtc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get saleRateMilliPaisa => $composableBuilder(
-    column: $table.saleRateMilliPaisa,
+  ColumnFilters<String> get syncState => $composableBuilder(
+    column: $table.syncState,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get wholesaleRateMilliPaisa => $composableBuilder(
-    column: $table.wholesaleRateMilliPaisa,
+  ColumnFilters<int> get syncedAtUtc => $composableBuilder(
+    column: $table.syncedAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get purchaseRateMilliPaisa => $composableBuilder(
-    column: $table.purchaseRateMilliPaisa,
+  $FirmsFilterComposer get firmId {
+    final $FirmsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsFilterComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get createdBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get updatedBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesFilterComposer get originDeviceId {
+    final $DevicesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesFilterComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $ChangeLogOrderingComposer extends Composer<_$AppDatabase, ChangeLog> {
+  $ChangeLogOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get seq => $composableBuilder(
+    column: $table.seq,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityTable => $composableBuilder(
+    column: $table.entityTable,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityId => $composableBuilder(
+    column: $table.entityId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get op => $composableBuilder(
+    column: $table.op,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get entityHlc => $composableBuilder(
+    column: $table.entityHlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get entityRev => $composableBuilder(
+    column: $table.entityRev,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get atUtc => $composableBuilder(
+    column: $table.atUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get syncState => $composableBuilder(
+    column: $table.syncState,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get syncedAtUtc => $composableBuilder(
+    column: $table.syncedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $FirmsOrderingComposer get firmId {
+    final $FirmsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsOrderingComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get createdBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get updatedBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesOrderingComposer get originDeviceId {
+    final $DevicesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesOrderingComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $ChangeLogAnnotationComposer extends Composer<_$AppDatabase, ChangeLog> {
+  $ChangeLogAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => column);
+
+  GeneratedColumn<int> get rev =>
+      $composableBuilder(column: $table.rev, builder: (column) => column);
+
+  GeneratedColumn<int> get seq =>
+      $composableBuilder(column: $table.seq, builder: (column) => column);
+
+  GeneratedColumn<String> get entityTable => $composableBuilder(
+    column: $table.entityTable,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityId =>
+      $composableBuilder(column: $table.entityId, builder: (column) => column);
+
+  GeneratedColumn<String> get op =>
+      $composableBuilder(column: $table.op, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadJson => $composableBuilder(
+    column: $table.payloadJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get entityHlc =>
+      $composableBuilder(column: $table.entityHlc, builder: (column) => column);
+
+  GeneratedColumn<int> get entityRev =>
+      $composableBuilder(column: $table.entityRev, builder: (column) => column);
+
+  GeneratedColumn<int> get atUtc =>
+      $composableBuilder(column: $table.atUtc, builder: (column) => column);
+
+  GeneratedColumn<String> get syncState =>
+      $composableBuilder(column: $table.syncState, builder: (column) => column);
+
+  GeneratedColumn<int> get syncedAtUtc => $composableBuilder(
+    column: $table.syncedAtUtc,
+    builder: (column) => column,
+  );
+
+  $FirmsAnnotationComposer get firmId {
+    final $FirmsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsAnnotationComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get createdBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get updatedBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesAnnotationComposer get originDeviceId {
+    final $DevicesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesAnnotationComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $ChangeLogTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          ChangeLog,
+          ChangeLogData,
+          $ChangeLogFilterComposer,
+          $ChangeLogOrderingComposer,
+          $ChangeLogAnnotationComposer,
+          $ChangeLogCreateCompanionBuilder,
+          $ChangeLogUpdateCompanionBuilder,
+          (ChangeLogData, $ChangeLogReferences),
+          ChangeLogData,
+          PrefetchHooks Function({
+            bool firmId,
+            bool createdBy,
+            bool updatedBy,
+            bool originDeviceId,
+          })
+        > {
+  $ChangeLogTableManager(_$AppDatabase db, ChangeLog table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $ChangeLogFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $ChangeLogOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $ChangeLogAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> firmId = const Value.absent(),
+                Value<int> createdAtUtc = const Value.absent(),
+                Value<int> updatedAtUtc = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> updatedBy = const Value.absent(),
+                Value<int?> deletedAtUtc = const Value.absent(),
+                Value<String> originDeviceId = const Value.absent(),
+                Value<String> hlc = const Value.absent(),
+                Value<int> rev = const Value.absent(),
+                Value<int> seq = const Value.absent(),
+                Value<String> entityTable = const Value.absent(),
+                Value<String> entityId = const Value.absent(),
+                Value<String> op = const Value.absent(),
+                Value<String> payloadJson = const Value.absent(),
+                Value<String> entityHlc = const Value.absent(),
+                Value<int> entityRev = const Value.absent(),
+                Value<int> atUtc = const Value.absent(),
+                Value<String> syncState = const Value.absent(),
+                Value<int?> syncedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ChangeLogCompanion(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                seq: seq,
+                entityTable: entityTable,
+                entityId: entityId,
+                op: op,
+                payloadJson: payloadJson,
+                entityHlc: entityHlc,
+                entityRev: entityRev,
+                atUtc: atUtc,
+                syncState: syncState,
+                syncedAtUtc: syncedAtUtc,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String firmId,
+                required int createdAtUtc,
+                required int updatedAtUtc,
+                required String createdBy,
+                required String updatedBy,
+                Value<int?> deletedAtUtc = const Value.absent(),
+                required String originDeviceId,
+                required String hlc,
+                Value<int> rev = const Value.absent(),
+                required int seq,
+                required String entityTable,
+                required String entityId,
+                required String op,
+                required String payloadJson,
+                required String entityHlc,
+                required int entityRev,
+                required int atUtc,
+                Value<String> syncState = const Value.absent(),
+                Value<int?> syncedAtUtc = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ChangeLogCompanion.insert(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                seq: seq,
+                entityTable: entityTable,
+                entityId: entityId,
+                op: op,
+                payloadJson: payloadJson,
+                entityHlc: entityHlc,
+                entityRev: entityRev,
+                atUtc: atUtc,
+                syncState: syncState,
+                syncedAtUtc: syncedAtUtc,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<ChangeLog, ChangeLogData>(table),
+                  $ChangeLogReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                firmId = false,
+                createdBy = false,
+                updatedBy = false,
+                originDeviceId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (firmId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.firmId,
+                                    referencedTable: $ChangeLogReferences
+                                        ._firmIdTable(db),
+                                    referencedColumn: $ChangeLogReferences
+                                        ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $ChangeLogReferences
+                                        ._createdByTable(db),
+                                    referencedColumn: $ChangeLogReferences
+                                        ._createdByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (updatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.updatedBy,
+                                    referencedTable: $ChangeLogReferences
+                                        ._updatedByTable(db),
+                                    referencedColumn: $ChangeLogReferences
+                                        ._updatedByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $ChangeLogReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $ChangeLogReferences
+                                        ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $ChangeLogProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      ChangeLog,
+      ChangeLogData,
+      $ChangeLogFilterComposer,
+      $ChangeLogOrderingComposer,
+      $ChangeLogAnnotationComposer,
+      $ChangeLogCreateCompanionBuilder,
+      $ChangeLogUpdateCompanionBuilder,
+      (ChangeLogData, $ChangeLogReferences),
+      ChangeLogData,
+      PrefetchHooks Function({
+        bool firmId,
+        bool createdBy,
+        bool updatedBy,
+        bool originDeviceId,
+      })
+    >;
+typedef $PrintJobsCreateCompanionBuilder =
+    PrintJobsCompanion Function({
+      required String id,
+      required String firmId,
+      required int createdAtUtc,
+      required int updatedAtUtc,
+      required String createdBy,
+      required String updatedBy,
+      Value<int?> deletedAtUtc,
+      required String originDeviceId,
+      required String hlc,
+      Value<int> rev,
+      required String jobKey,
+      Value<String?> documentId,
+      required String transportKind,
+      required String targetAddress,
+      required int columnsUsed,
+      Value<int> copyIndex,
+      required int byteCount,
+      required String payloadSha256,
+      required String status,
+      Value<int> bytesWritten,
+      Value<String?> failureReason,
+      required int startedAtUtc,
+      Value<int?> finishedAtUtc,
+      Value<int> rowid,
+    });
+typedef $PrintJobsUpdateCompanionBuilder =
+    PrintJobsCompanion Function({
+      Value<String> id,
+      Value<String> firmId,
+      Value<int> createdAtUtc,
+      Value<int> updatedAtUtc,
+      Value<String> createdBy,
+      Value<String> updatedBy,
+      Value<int?> deletedAtUtc,
+      Value<String> originDeviceId,
+      Value<String> hlc,
+      Value<int> rev,
+      Value<String> jobKey,
+      Value<String?> documentId,
+      Value<String> transportKind,
+      Value<String> targetAddress,
+      Value<int> columnsUsed,
+      Value<int> copyIndex,
+      Value<int> byteCount,
+      Value<String> payloadSha256,
+      Value<String> status,
+      Value<int> bytesWritten,
+      Value<String?> failureReason,
+      Value<int> startedAtUtc,
+      Value<int?> finishedAtUtc,
+      Value<int> rowid,
+    });
+
+final class $PrintJobsReferences
+    extends BaseReferences<_$AppDatabase, PrintJobs, PrintJob> {
+  $PrintJobsReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('print_jobs__firm_id__firms__id');
+
+  $FirmsProcessedTableManager get firmId {
+    final $_column = $_itemColumn<String>('firm_id')!;
+
+    final manager = $FirmsTableManager(
+      $_db,
+      $_db.firms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_firmIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('print_jobs__created_by__users__id');
+
+  $UsersProcessedTableManager get createdBy {
+    final $_column = $_itemColumn<String>('created_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('print_jobs__updated_by__users__id');
+
+  $UsersProcessedTableManager get updatedBy {
+    final $_column = $_itemColumn<String>('updated_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Devices _originDeviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('print_jobs__origin_device_id__devices__id');
+
+  $DevicesProcessedTableManager get originDeviceId {
+    final $_column = $_itemColumn<String>('origin_device_id')!;
+
+    final manager = $DevicesTableManager(
+      $_db,
+      $_db.devices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Documents _documentIdTable(_$AppDatabase db) =>
+      db.documents.createAlias('print_jobs__document_id__documents__id');
+
+  $DocumentsProcessedTableManager? get documentId {
+    final $_column = $_itemColumn<String>('document_id');
+    if ($_column == null) return null;
+    final manager = $DocumentsTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $PrintJobsFilterComposer extends Composer<_$AppDatabase, PrintJobs> {
+  $PrintJobsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get avgCostMilliPaisa => $composableBuilder(
-    column: $table.avgCostMilliPaisa,
+  ColumnFilters<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get mrpPaisa => $composableBuilder(
-    column: $table.mrpPaisa,
+  ColumnFilters<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get hsCode => $composableBuilder(
-    column: $table.hsCode,
+  ColumnFilters<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get priceIncludesTax => $composableBuilder(
-    column: $table.priceIncludesTax,
+  ColumnFilters<String> get hlc => $composableBuilder(
+    column: $table.hlc,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get isThirdSchedule => $composableBuilder(
-    column: $table.isThirdSchedule,
+  ColumnFilters<int> get rev => $composableBuilder(
+    column: $table.rev,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get trackStock => $composableBuilder(
-    column: $table.trackStock,
+  ColumnFilters<String> get jobKey => $composableBuilder(
+    column: $table.jobKey,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get trackBatch => $composableBuilder(
-    column: $table.trackBatch,
+  ColumnFilters<String> get transportKind => $composableBuilder(
+    column: $table.transportKind,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get trackSerial => $composableBuilder(
-    column: $table.trackSerial,
+  ColumnFilters<String> get targetAddress => $composableBuilder(
+    column: $table.targetAddress,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get minStockThousandths => $composableBuilder(
-    column: $table.minStockThousandths,
+  ColumnFilters<int> get columnsUsed => $composableBuilder(
+    column: $table.columnsUsed,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get openingStockThousandths => $composableBuilder(
-    column: $table.openingStockThousandths,
+  ColumnFilters<int> get copyIndex => $composableBuilder(
+    column: $table.copyIndex,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get openingRateMilliPaisa => $composableBuilder(
-    column: $table.openingRateMilliPaisa,
+  ColumnFilters<int> get byteCount => $composableBuilder(
+    column: $table.byteCount,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get isActive => $composableBuilder(
-    column: $table.isActive,
+  ColumnFilters<String> get payloadSha256 => $composableBuilder(
+    column: $table.payloadSha256,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get vipRateMilliPaisa => $composableBuilder(
-    column: $table.vipRateMilliPaisa,
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get bytesWritten => $composableBuilder(
+    column: $table.bytesWritten,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get failureReason => $composableBuilder(
+    column: $table.failureReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get startedAtUtc => $composableBuilder(
+    column: $table.startedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get finishedAtUtc => $composableBuilder(
+    column: $table.finishedAtUtc,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -57135,20 +64708,20 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
     return composer;
   }
 
-  $UnitsFilterComposer get baseUnitId {
-    final $UnitsFilterComposer composer = $composerBuilder(
+  $DocumentsFilterComposer get documentId {
+    final $DocumentsFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.baseUnitId,
-      referencedTable: $db.units,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsFilterComposer(
+          }) => $DocumentsFilterComposer(
             $db: $db,
-            $table: $db.units,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -57156,205 +64729,11 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
           ),
     );
     return composer;
-  }
-
-  $UnitsFilterComposer get displayUnitId {
-    final $UnitsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.displayUnitId,
-      referencedTable: $db.units,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UnitsFilterComposer(
-            $db: $db,
-            $table: $db.units,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $TaxRulesFilterComposer get taxRuleId {
-    final $TaxRulesFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.taxRuleId,
-      referencedTable: $db.taxRules,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $TaxRulesFilterComposer(
-            $db: $db,
-            $table: $db.taxRules,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $AttachmentsFilterComposer get imageAttachmentId {
-    final $AttachmentsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.imageAttachmentId,
-      referencedTable: $db.attachments,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $AttachmentsFilterComposer(
-            $db: $db,
-            $table: $db.attachments,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<bool> journalLinesRefs(
-    Expression<bool> Function($JournalLinesFilterComposer f) f,
-  ) {
-    final $JournalLinesFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.journalLines,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $JournalLinesFilterComposer(
-            $db: $db,
-            $table: $db.journalLines,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> stockLotsRefs(
-    Expression<bool> Function($StockLotsFilterComposer f) f,
-  ) {
-    final $StockLotsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.stockLots,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $StockLotsFilterComposer(
-            $db: $db,
-            $table: $db.stockLots,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> documentLinesRefs(
-    Expression<bool> Function($DocumentLinesFilterComposer f) f,
-  ) {
-    final $DocumentLinesFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.documentLines,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DocumentLinesFilterComposer(
-            $db: $db,
-            $table: $db.documentLines,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> stockLedgerRefs(
-    Expression<bool> Function($StockLedgerFilterComposer f) f,
-  ) {
-    final $StockLedgerFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.stockLedger,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $StockLedgerFilterComposer(
-            $db: $db,
-            $table: $db.stockLedger,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> unitConversionsRefs(
-    Expression<bool> Function($UnitConversionsFilterComposer f) f,
-  ) {
-    final $UnitConversionsFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.unitConversions,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UnitConversionsFilterComposer(
-            $db: $db,
-            $table: $db.unitConversions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
   }
 }
 
-class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
-  $ItemsOrderingComposer({
+class $PrintJobsOrderingComposer extends Composer<_$AppDatabase, PrintJobs> {
+  $PrintJobsOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -57391,123 +64770,63 @@ class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get code => $composableBuilder(
-    column: $table.code,
+  ColumnOrderings<String> get jobKey => $composableBuilder(
+    column: $table.jobKey,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get name => $composableBuilder(
-    column: $table.name,
+  ColumnOrderings<String> get transportKind => $composableBuilder(
+    column: $table.transportKind,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get nameSearch => $composableBuilder(
-    column: $table.nameSearch,
+  ColumnOrderings<String> get targetAddress => $composableBuilder(
+    column: $table.targetAddress,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get itemType => $composableBuilder(
-    column: $table.itemType,
+  ColumnOrderings<int> get columnsUsed => $composableBuilder(
+    column: $table.columnsUsed,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get category => $composableBuilder(
-    column: $table.category,
+  ColumnOrderings<int> get copyIndex => $composableBuilder(
+    column: $table.copyIndex,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
+  ColumnOrderings<int> get byteCount => $composableBuilder(
+    column: $table.byteCount,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get barcode => $composableBuilder(
-    column: $table.barcode,
+  ColumnOrderings<String> get payloadSha256 => $composableBuilder(
+    column: $table.payloadSha256,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get displayFactorThousandths => $composableBuilder(
-    column: $table.displayFactorThousandths,
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get saleRateMilliPaisa => $composableBuilder(
-    column: $table.saleRateMilliPaisa,
+  ColumnOrderings<int> get bytesWritten => $composableBuilder(
+    column: $table.bytesWritten,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get wholesaleRateMilliPaisa => $composableBuilder(
-    column: $table.wholesaleRateMilliPaisa,
+  ColumnOrderings<String> get failureReason => $composableBuilder(
+    column: $table.failureReason,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get purchaseRateMilliPaisa => $composableBuilder(
-    column: $table.purchaseRateMilliPaisa,
+  ColumnOrderings<int> get startedAtUtc => $composableBuilder(
+    column: $table.startedAtUtc,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get avgCostMilliPaisa => $composableBuilder(
-    column: $table.avgCostMilliPaisa,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get mrpPaisa => $composableBuilder(
-    column: $table.mrpPaisa,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get hsCode => $composableBuilder(
-    column: $table.hsCode,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get priceIncludesTax => $composableBuilder(
-    column: $table.priceIncludesTax,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get isThirdSchedule => $composableBuilder(
-    column: $table.isThirdSchedule,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get trackStock => $composableBuilder(
-    column: $table.trackStock,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get trackBatch => $composableBuilder(
-    column: $table.trackBatch,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get trackSerial => $composableBuilder(
-    column: $table.trackSerial,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get minStockThousandths => $composableBuilder(
-    column: $table.minStockThousandths,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get openingStockThousandths => $composableBuilder(
-    column: $table.openingStockThousandths,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get openingRateMilliPaisa => $composableBuilder(
-    column: $table.openingRateMilliPaisa,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get isActive => $composableBuilder(
-    column: $table.isActive,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get vipRateMilliPaisa => $composableBuilder(
-    column: $table.vipRateMilliPaisa,
+  ColumnOrderings<int> get finishedAtUtc => $composableBuilder(
+    column: $table.finishedAtUtc,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -57603,89 +64922,20 @@ class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
     return composer;
   }
 
-  $UnitsOrderingComposer get baseUnitId {
-    final $UnitsOrderingComposer composer = $composerBuilder(
+  $DocumentsOrderingComposer get documentId {
+    final $DocumentsOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.baseUnitId,
-      referencedTable: $db.units,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsOrderingComposer(
+          }) => $DocumentsOrderingComposer(
             $db: $db,
-            $table: $db.units,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $UnitsOrderingComposer get displayUnitId {
-    final $UnitsOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.displayUnitId,
-      referencedTable: $db.units,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UnitsOrderingComposer(
-            $db: $db,
-            $table: $db.units,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $TaxRulesOrderingComposer get taxRuleId {
-    final $TaxRulesOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.taxRuleId,
-      referencedTable: $db.taxRules,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $TaxRulesOrderingComposer(
-            $db: $db,
-            $table: $db.taxRules,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $AttachmentsOrderingComposer get imageAttachmentId {
-    final $AttachmentsOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.imageAttachmentId,
-      referencedTable: $db.attachments,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $AttachmentsOrderingComposer(
-            $db: $db,
-            $table: $db.attachments,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -57696,8 +64946,8 @@ class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
   }
 }
 
-class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
-  $ItemsAnnotationComposer({
+class $PrintJobsAnnotationComposer extends Composer<_$AppDatabase, PrintJobs> {
+  $PrintJobsAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -57728,107 +64978,55 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
   GeneratedColumn<int> get rev =>
       $composableBuilder(column: $table.rev, builder: (column) => column);
 
-  GeneratedColumn<String> get code =>
-      $composableBuilder(column: $table.code, builder: (column) => column);
+  GeneratedColumn<String> get jobKey =>
+      $composableBuilder(column: $table.jobKey, builder: (column) => column);
 
-  GeneratedColumn<String> get name =>
-      $composableBuilder(column: $table.name, builder: (column) => column);
-
-  GeneratedColumn<String> get nameSearch => $composableBuilder(
-    column: $table.nameSearch,
+  GeneratedColumn<String> get transportKind => $composableBuilder(
+    column: $table.transportKind,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get itemType =>
-      $composableBuilder(column: $table.itemType, builder: (column) => column);
-
-  GeneratedColumn<String> get category =>
-      $composableBuilder(column: $table.category, builder: (column) => column);
-
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
+  GeneratedColumn<String> get targetAddress => $composableBuilder(
+    column: $table.targetAddress,
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get barcode =>
-      $composableBuilder(column: $table.barcode, builder: (column) => column);
-
-  GeneratedColumn<int> get displayFactorThousandths => $composableBuilder(
-    column: $table.displayFactorThousandths,
+  GeneratedColumn<int> get columnsUsed => $composableBuilder(
+    column: $table.columnsUsed,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get saleRateMilliPaisa => $composableBuilder(
-    column: $table.saleRateMilliPaisa,
+  GeneratedColumn<int> get copyIndex =>
+      $composableBuilder(column: $table.copyIndex, builder: (column) => column);
+
+  GeneratedColumn<int> get byteCount =>
+      $composableBuilder(column: $table.byteCount, builder: (column) => column);
+
+  GeneratedColumn<String> get payloadSha256 => $composableBuilder(
+    column: $table.payloadSha256,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get wholesaleRateMilliPaisa => $composableBuilder(
-    column: $table.wholesaleRateMilliPaisa,
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<int> get bytesWritten => $composableBuilder(
+    column: $table.bytesWritten,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get purchaseRateMilliPaisa => $composableBuilder(
-    column: $table.purchaseRateMilliPaisa,
+  GeneratedColumn<String> get failureReason => $composableBuilder(
+    column: $table.failureReason,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get avgCostMilliPaisa => $composableBuilder(
-    column: $table.avgCostMilliPaisa,
+  GeneratedColumn<int> get startedAtUtc => $composableBuilder(
+    column: $table.startedAtUtc,
     builder: (column) => column,
   );
 
-  GeneratedColumn<int> get mrpPaisa =>
-      $composableBuilder(column: $table.mrpPaisa, builder: (column) => column);
-
-  GeneratedColumn<String> get hsCode =>
-      $composableBuilder(column: $table.hsCode, builder: (column) => column);
-
-  GeneratedColumn<int> get priceIncludesTax => $composableBuilder(
-    column: $table.priceIncludesTax,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get isThirdSchedule => $composableBuilder(
-    column: $table.isThirdSchedule,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get trackStock => $composableBuilder(
-    column: $table.trackStock,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get trackBatch => $composableBuilder(
-    column: $table.trackBatch,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get trackSerial => $composableBuilder(
-    column: $table.trackSerial,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get minStockThousandths => $composableBuilder(
-    column: $table.minStockThousandths,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get openingStockThousandths => $composableBuilder(
-    column: $table.openingStockThousandths,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get openingRateMilliPaisa => $composableBuilder(
-    column: $table.openingRateMilliPaisa,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get isActive =>
-      $composableBuilder(column: $table.isActive, builder: (column) => column);
-
-  GeneratedColumn<int> get vipRateMilliPaisa => $composableBuilder(
-    column: $table.vipRateMilliPaisa,
+  GeneratedColumn<int> get finishedAtUtc => $composableBuilder(
+    column: $table.finishedAtUtc,
     builder: (column) => column,
   );
 
@@ -57924,20 +65122,20 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
     return composer;
   }
 
-  $UnitsAnnotationComposer get baseUnitId {
-    final $UnitsAnnotationComposer composer = $composerBuilder(
+  $DocumentsAnnotationComposer get documentId {
+    final $DocumentsAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.baseUnitId,
-      referencedTable: $db.units,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
       getReferencedColumn: (t) => t.id,
       builder:
           (
             joinBuilder, {
             $addJoinBuilderToRootComposer,
             $removeJoinBuilderFromRootComposer,
-          }) => $UnitsAnnotationComposer(
+          }) => $DocumentsAnnotationComposer(
             $db: $db,
-            $table: $db.units,
+            $table: $db.documents,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -57945,243 +65143,41 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
           ),
     );
     return composer;
-  }
-
-  $UnitsAnnotationComposer get displayUnitId {
-    final $UnitsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.displayUnitId,
-      referencedTable: $db.units,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UnitsAnnotationComposer(
-            $db: $db,
-            $table: $db.units,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $TaxRulesAnnotationComposer get taxRuleId {
-    final $TaxRulesAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.taxRuleId,
-      referencedTable: $db.taxRules,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $TaxRulesAnnotationComposer(
-            $db: $db,
-            $table: $db.taxRules,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  $AttachmentsAnnotationComposer get imageAttachmentId {
-    final $AttachmentsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.imageAttachmentId,
-      referencedTable: $db.attachments,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $AttachmentsAnnotationComposer(
-            $db: $db,
-            $table: $db.attachments,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-
-  Expression<T> journalLinesRefs<T extends Object>(
-    Expression<T> Function($JournalLinesAnnotationComposer a) f,
-  ) {
-    final $JournalLinesAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.journalLines,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $JournalLinesAnnotationComposer(
-            $db: $db,
-            $table: $db.journalLines,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> stockLotsRefs<T extends Object>(
-    Expression<T> Function($StockLotsAnnotationComposer a) f,
-  ) {
-    final $StockLotsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.stockLots,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $StockLotsAnnotationComposer(
-            $db: $db,
-            $table: $db.stockLots,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> documentLinesRefs<T extends Object>(
-    Expression<T> Function($DocumentLinesAnnotationComposer a) f,
-  ) {
-    final $DocumentLinesAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.documentLines,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $DocumentLinesAnnotationComposer(
-            $db: $db,
-            $table: $db.documentLines,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> stockLedgerRefs<T extends Object>(
-    Expression<T> Function($StockLedgerAnnotationComposer a) f,
-  ) {
-    final $StockLedgerAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.stockLedger,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $StockLedgerAnnotationComposer(
-            $db: $db,
-            $table: $db.stockLedger,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> unitConversionsRefs<T extends Object>(
-    Expression<T> Function($UnitConversionsAnnotationComposer a) f,
-  ) {
-    final $UnitConversionsAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.unitConversions,
-      getReferencedColumn: (t) => t.itemId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $UnitConversionsAnnotationComposer(
-            $db: $db,
-            $table: $db.unitConversions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
   }
 }
 
-class $ItemsTableManager
+class $PrintJobsTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          Items,
-          Item,
-          $ItemsFilterComposer,
-          $ItemsOrderingComposer,
-          $ItemsAnnotationComposer,
-          $ItemsCreateCompanionBuilder,
-          $ItemsUpdateCompanionBuilder,
-          (Item, $ItemsReferences),
-          Item,
+          PrintJobs,
+          PrintJob,
+          $PrintJobsFilterComposer,
+          $PrintJobsOrderingComposer,
+          $PrintJobsAnnotationComposer,
+          $PrintJobsCreateCompanionBuilder,
+          $PrintJobsUpdateCompanionBuilder,
+          (PrintJob, $PrintJobsReferences),
+          PrintJob,
           PrefetchHooks Function({
             bool firmId,
             bool createdBy,
             bool updatedBy,
             bool originDeviceId,
-            bool baseUnitId,
-            bool displayUnitId,
-            bool taxRuleId,
-            bool imageAttachmentId,
-            bool journalLinesRefs,
-            bool stockLotsRefs,
-            bool documentLinesRefs,
-            bool stockLedgerRefs,
-            bool unitConversionsRefs,
+            bool documentId,
           })
         > {
-  $ItemsTableManager(_$AppDatabase db, Items table)
+  $PrintJobsTableManager(_$AppDatabase db, PrintJobs table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $ItemsFilterComposer($db: db, $table: table),
+              $PrintJobsFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $ItemsOrderingComposer($db: db, $table: table),
+              $PrintJobsOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $ItemsAnnotationComposer($db: db, $table: table),
+              $PrintJobsAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
@@ -58194,36 +65190,21 @@ class $ItemsTableManager
                 Value<String> originDeviceId = const Value.absent(),
                 Value<String> hlc = const Value.absent(),
                 Value<int> rev = const Value.absent(),
-                Value<String?> code = const Value.absent(),
-                Value<String> name = const Value.absent(),
-                Value<String> nameSearch = const Value.absent(),
-                Value<String> itemType = const Value.absent(),
-                Value<String?> category = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> barcode = const Value.absent(),
-                Value<String> baseUnitId = const Value.absent(),
-                Value<String?> displayUnitId = const Value.absent(),
-                Value<int> displayFactorThousandths = const Value.absent(),
-                Value<int> saleRateMilliPaisa = const Value.absent(),
-                Value<int?> wholesaleRateMilliPaisa = const Value.absent(),
-                Value<int?> purchaseRateMilliPaisa = const Value.absent(),
-                Value<int> avgCostMilliPaisa = const Value.absent(),
-                Value<int?> mrpPaisa = const Value.absent(),
-                Value<String?> hsCode = const Value.absent(),
-                Value<String?> taxRuleId = const Value.absent(),
-                Value<int> priceIncludesTax = const Value.absent(),
-                Value<int> isThirdSchedule = const Value.absent(),
-                Value<int> trackStock = const Value.absent(),
-                Value<int> trackBatch = const Value.absent(),
-                Value<int> trackSerial = const Value.absent(),
-                Value<int> minStockThousandths = const Value.absent(),
-                Value<int> openingStockThousandths = const Value.absent(),
-                Value<int> openingRateMilliPaisa = const Value.absent(),
-                Value<String?> imageAttachmentId = const Value.absent(),
-                Value<int> isActive = const Value.absent(),
-                Value<int?> vipRateMilliPaisa = const Value.absent(),
+                Value<String> jobKey = const Value.absent(),
+                Value<String?> documentId = const Value.absent(),
+                Value<String> transportKind = const Value.absent(),
+                Value<String> targetAddress = const Value.absent(),
+                Value<int> columnsUsed = const Value.absent(),
+                Value<int> copyIndex = const Value.absent(),
+                Value<int> byteCount = const Value.absent(),
+                Value<String> payloadSha256 = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<int> bytesWritten = const Value.absent(),
+                Value<String?> failureReason = const Value.absent(),
+                Value<int> startedAtUtc = const Value.absent(),
+                Value<int?> finishedAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ItemsCompanion(
+              }) => PrintJobsCompanion(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -58234,34 +65215,19 @@ class $ItemsTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                code: code,
-                name: name,
-                nameSearch: nameSearch,
-                itemType: itemType,
-                category: category,
-                description: description,
-                barcode: barcode,
-                baseUnitId: baseUnitId,
-                displayUnitId: displayUnitId,
-                displayFactorThousandths: displayFactorThousandths,
-                saleRateMilliPaisa: saleRateMilliPaisa,
-                wholesaleRateMilliPaisa: wholesaleRateMilliPaisa,
-                purchaseRateMilliPaisa: purchaseRateMilliPaisa,
-                avgCostMilliPaisa: avgCostMilliPaisa,
-                mrpPaisa: mrpPaisa,
-                hsCode: hsCode,
-                taxRuleId: taxRuleId,
-                priceIncludesTax: priceIncludesTax,
-                isThirdSchedule: isThirdSchedule,
-                trackStock: trackStock,
-                trackBatch: trackBatch,
-                trackSerial: trackSerial,
-                minStockThousandths: minStockThousandths,
-                openingStockThousandths: openingStockThousandths,
-                openingRateMilliPaisa: openingRateMilliPaisa,
-                imageAttachmentId: imageAttachmentId,
-                isActive: isActive,
-                vipRateMilliPaisa: vipRateMilliPaisa,
+                jobKey: jobKey,
+                documentId: documentId,
+                transportKind: transportKind,
+                targetAddress: targetAddress,
+                columnsUsed: columnsUsed,
+                copyIndex: copyIndex,
+                byteCount: byteCount,
+                payloadSha256: payloadSha256,
+                status: status,
+                bytesWritten: bytesWritten,
+                failureReason: failureReason,
+                startedAtUtc: startedAtUtc,
+                finishedAtUtc: finishedAtUtc,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -58276,36 +65242,21 @@ class $ItemsTableManager
                 required String originDeviceId,
                 required String hlc,
                 Value<int> rev = const Value.absent(),
-                Value<String?> code = const Value.absent(),
-                required String name,
-                required String nameSearch,
-                Value<String> itemType = const Value.absent(),
-                Value<String?> category = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> barcode = const Value.absent(),
-                required String baseUnitId,
-                Value<String?> displayUnitId = const Value.absent(),
-                Value<int> displayFactorThousandths = const Value.absent(),
-                Value<int> saleRateMilliPaisa = const Value.absent(),
-                Value<int?> wholesaleRateMilliPaisa = const Value.absent(),
-                Value<int?> purchaseRateMilliPaisa = const Value.absent(),
-                Value<int> avgCostMilliPaisa = const Value.absent(),
-                Value<int?> mrpPaisa = const Value.absent(),
-                Value<String?> hsCode = const Value.absent(),
-                Value<String?> taxRuleId = const Value.absent(),
-                Value<int> priceIncludesTax = const Value.absent(),
-                Value<int> isThirdSchedule = const Value.absent(),
-                Value<int> trackStock = const Value.absent(),
-                Value<int> trackBatch = const Value.absent(),
-                Value<int> trackSerial = const Value.absent(),
-                Value<int> minStockThousandths = const Value.absent(),
-                Value<int> openingStockThousandths = const Value.absent(),
-                Value<int> openingRateMilliPaisa = const Value.absent(),
-                Value<String?> imageAttachmentId = const Value.absent(),
-                Value<int> isActive = const Value.absent(),
-                Value<int?> vipRateMilliPaisa = const Value.absent(),
+                required String jobKey,
+                Value<String?> documentId = const Value.absent(),
+                required String transportKind,
+                required String targetAddress,
+                required int columnsUsed,
+                Value<int> copyIndex = const Value.absent(),
+                required int byteCount,
+                required String payloadSha256,
+                required String status,
+                Value<int> bytesWritten = const Value.absent(),
+                Value<String?> failureReason = const Value.absent(),
+                required int startedAtUtc,
+                Value<int?> finishedAtUtc = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ItemsCompanion.insert(
+              }) => PrintJobsCompanion.insert(
                 id: id,
                 firmId: firmId,
                 createdAtUtc: createdAtUtc,
@@ -58316,41 +65267,26 @@ class $ItemsTableManager
                 originDeviceId: originDeviceId,
                 hlc: hlc,
                 rev: rev,
-                code: code,
-                name: name,
-                nameSearch: nameSearch,
-                itemType: itemType,
-                category: category,
-                description: description,
-                barcode: barcode,
-                baseUnitId: baseUnitId,
-                displayUnitId: displayUnitId,
-                displayFactorThousandths: displayFactorThousandths,
-                saleRateMilliPaisa: saleRateMilliPaisa,
-                wholesaleRateMilliPaisa: wholesaleRateMilliPaisa,
-                purchaseRateMilliPaisa: purchaseRateMilliPaisa,
-                avgCostMilliPaisa: avgCostMilliPaisa,
-                mrpPaisa: mrpPaisa,
-                hsCode: hsCode,
-                taxRuleId: taxRuleId,
-                priceIncludesTax: priceIncludesTax,
-                isThirdSchedule: isThirdSchedule,
-                trackStock: trackStock,
-                trackBatch: trackBatch,
-                trackSerial: trackSerial,
-                minStockThousandths: minStockThousandths,
-                openingStockThousandths: openingStockThousandths,
-                openingRateMilliPaisa: openingRateMilliPaisa,
-                imageAttachmentId: imageAttachmentId,
-                isActive: isActive,
-                vipRateMilliPaisa: vipRateMilliPaisa,
+                jobKey: jobKey,
+                documentId: documentId,
+                transportKind: transportKind,
+                targetAddress: targetAddress,
+                columnsUsed: columnsUsed,
+                copyIndex: copyIndex,
+                byteCount: byteCount,
+                payloadSha256: payloadSha256,
+                status: status,
+                bytesWritten: bytesWritten,
+                failureReason: failureReason,
+                startedAtUtc: startedAtUtc,
+                finishedAtUtc: finishedAtUtc,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
-                  e.readTable<Items, Item>(table),
-                  $ItemsReferences(db, table, e),
+                  e.readTable<PrintJobs, PrintJob>(table),
+                  $PrintJobsReferences(db, table, e),
                 ),
               )
               .toList(),
@@ -58360,25 +65296,11 @@ class $ItemsTableManager
                 createdBy = false,
                 updatedBy = false,
                 originDeviceId = false,
-                baseUnitId = false,
-                displayUnitId = false,
-                taxRuleId = false,
-                imageAttachmentId = false,
-                journalLinesRefs = false,
-                stockLotsRefs = false,
-                documentLinesRefs = false,
-                stockLedgerRefs = false,
-                unitConversionsRefs = false,
+                documentId = false,
               }) {
                 return PrefetchHooks(
                   db: db,
-                  explicitlyWatchedTables: [
-                    if (journalLinesRefs) db.journalLines,
-                    if (stockLotsRefs) db.stockLots,
-                    if (documentLinesRefs) db.documentLines,
-                    if (stockLedgerRefs) db.stockLedger,
-                    if (unitConversionsRefs) db.unitConversions,
-                  ],
+                  explicitlyWatchedTables: [],
                   addJoins:
                       <
                         T extends TableManagerState<
@@ -58400,9 +65322,9 @@ class $ItemsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.firmId,
-                                    referencedTable: $ItemsReferences
+                                    referencedTable: $PrintJobsReferences
                                         ._firmIdTable(db),
-                                    referencedColumn: $ItemsReferences
+                                    referencedColumn: $PrintJobsReferences
                                         ._firmIdTable(db)
                                         .id,
                                   )
@@ -58413,9 +65335,9 @@ class $ItemsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.createdBy,
-                                    referencedTable: $ItemsReferences
+                                    referencedTable: $PrintJobsReferences
                                         ._createdByTable(db),
-                                    referencedColumn: $ItemsReferences
+                                    referencedColumn: $PrintJobsReferences
                                         ._createdByTable(db)
                                         .id,
                                   )
@@ -58426,9 +65348,9 @@ class $ItemsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.updatedBy,
-                                    referencedTable: $ItemsReferences
+                                    referencedTable: $PrintJobsReferences
                                         ._updatedByTable(db),
-                                    referencedColumn: $ItemsReferences
+                                    referencedColumn: $PrintJobsReferences
                                         ._updatedByTable(db)
                                         .id,
                                   )
@@ -58439,62 +65361,23 @@ class $ItemsTableManager
                               state.withJoin(
                                     currentTable: table,
                                     currentColumn: table.originDeviceId,
-                                    referencedTable: $ItemsReferences
+                                    referencedTable: $PrintJobsReferences
                                         ._originDeviceIdTable(db),
-                                    referencedColumn: $ItemsReferences
+                                    referencedColumn: $PrintJobsReferences
                                         ._originDeviceIdTable(db)
                                         .id,
                                   )
                                   as T;
                         }
-                        if (baseUnitId) {
+                        if (documentId) {
                           state =
                               state.withJoin(
                                     currentTable: table,
-                                    currentColumn: table.baseUnitId,
-                                    referencedTable: $ItemsReferences
-                                        ._baseUnitIdTable(db),
-                                    referencedColumn: $ItemsReferences
-                                        ._baseUnitIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (displayUnitId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.displayUnitId,
-                                    referencedTable: $ItemsReferences
-                                        ._displayUnitIdTable(db),
-                                    referencedColumn: $ItemsReferences
-                                        ._displayUnitIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (taxRuleId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.taxRuleId,
-                                    referencedTable: $ItemsReferences
-                                        ._taxRuleIdTable(db),
-                                    referencedColumn: $ItemsReferences
-                                        ._taxRuleIdTable(db)
-                                        .id,
-                                  )
-                                  as T;
-                        }
-                        if (imageAttachmentId) {
-                          state =
-                              state.withJoin(
-                                    currentTable: table,
-                                    currentColumn: table.imageAttachmentId,
-                                    referencedTable: $ItemsReferences
-                                        ._imageAttachmentIdTable(db),
-                                    referencedColumn: $ItemsReferences
-                                        ._imageAttachmentIdTable(db)
+                                    currentColumn: table.documentId,
+                                    referencedTable: $PrintJobsReferences
+                                        ._documentIdTable(db),
+                                    referencedColumn: $PrintJobsReferences
+                                        ._documentIdTable(db)
                                         .id,
                                   )
                                   as T;
@@ -58503,77 +65386,7 @@ class $ItemsTableManager
                         return state;
                       },
                   getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (journalLinesRefs)
-                        await $_getPrefetchedData<Item, Items, JournalLine>(
-                          currentTable: table,
-                          referencedTable: $ItemsReferences
-                              ._journalLinesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $ItemsReferences(db, table, p0).journalLinesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.itemId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (stockLotsRefs)
-                        await $_getPrefetchedData<Item, Items, StockLot>(
-                          currentTable: table,
-                          referencedTable: $ItemsReferences._stockLotsRefsTable(
-                            db,
-                          ),
-                          managerFromTypedResult: (p0) =>
-                              $ItemsReferences(db, table, p0).stockLotsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.itemId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (documentLinesRefs)
-                        await $_getPrefetchedData<Item, Items, DocumentLine>(
-                          currentTable: table,
-                          referencedTable: $ItemsReferences
-                              ._documentLinesRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $ItemsReferences(db, table, p0).documentLinesRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.itemId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (stockLedgerRefs)
-                        await $_getPrefetchedData<Item, Items, StockLedgerData>(
-                          currentTable: table,
-                          referencedTable: $ItemsReferences
-                              ._stockLedgerRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $ItemsReferences(db, table, p0).stockLedgerRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.itemId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (unitConversionsRefs)
-                        await $_getPrefetchedData<Item, Items, UnitConversion>(
-                          currentTable: table,
-                          referencedTable: $ItemsReferences
-                              ._unitConversionsRefsTable(db),
-                          managerFromTypedResult: (p0) => $ItemsReferences(
-                            db,
-                            table,
-                            p0,
-                          ).unitConversionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.itemId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
+                    return [];
                   },
                 );
               },
@@ -58581,32 +65394,24 @@ class $ItemsTableManager
       );
 }
 
-typedef $ItemsProcessedTableManager =
+typedef $PrintJobsProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      Items,
-      Item,
-      $ItemsFilterComposer,
-      $ItemsOrderingComposer,
-      $ItemsAnnotationComposer,
-      $ItemsCreateCompanionBuilder,
-      $ItemsUpdateCompanionBuilder,
-      (Item, $ItemsReferences),
-      Item,
+      PrintJobs,
+      PrintJob,
+      $PrintJobsFilterComposer,
+      $PrintJobsOrderingComposer,
+      $PrintJobsAnnotationComposer,
+      $PrintJobsCreateCompanionBuilder,
+      $PrintJobsUpdateCompanionBuilder,
+      (PrintJob, $PrintJobsReferences),
+      PrintJob,
       PrefetchHooks Function({
         bool firmId,
         bool createdBy,
         bool updatedBy,
         bool originDeviceId,
-        bool baseUnitId,
-        bool displayUnitId,
-        bool taxRuleId,
-        bool imageAttachmentId,
-        bool journalLinesRefs,
-        bool stockLotsRefs,
-        bool documentLinesRefs,
-        bool stockLedgerRefs,
-        bool unitConversionsRefs,
+        bool documentId,
       })
     >;
 typedef $JournalLinesCreateCompanionBuilder =
@@ -69981,19 +76786,18 @@ class $AppDatabaseManager {
   $FirmsTableManager get firms => $FirmsTableManager(_db, _db.firms);
   $DevicesTableManager get devices => $DevicesTableManager(_db, _db.devices);
   $UsersTableManager get users => $UsersTableManager(_db, _db.users);
+  $UnitsTableManager get units => $UnitsTableManager(_db, _db.units);
   $TaxRulesTableManager get taxRules =>
       $TaxRulesTableManager(_db, _db.taxRules);
   $AttachmentsTableManager get attachments =>
       $AttachmentsTableManager(_db, _db.attachments);
-  $AuditLogTableManager get auditLog =>
-      $AuditLogTableManager(_db, _db.auditLog);
-  $ChangeLogTableManager get changeLog =>
-      $ChangeLogTableManager(_db, _db.changeLog);
+  $ItemsTableManager get items => $ItemsTableManager(_db, _db.items);
+  $BomsTableManager get boms => $BomsTableManager(_db, _db.boms);
+  $BomLinesTableManager get bomLines =>
+      $BomLinesTableManager(_db, _db.bomLines);
   $PartiesTableManager get parties => $PartiesTableManager(_db, _db.parties);
   $DocumentsTableManager get documents =>
       $DocumentsTableManager(_db, _db.documents);
-  $PrintJobsTableManager get printJobs =>
-      $PrintJobsTableManager(_db, _db.printJobs);
   $AccountsTableManager get accounts =>
       $AccountsTableManager(_db, _db.accounts);
   $PaymentAccountsTableManager get paymentAccounts =>
@@ -70002,8 +76806,14 @@ class $AppDatabaseManager {
       $PaymentsTableManager(_db, _db.payments);
   $JournalEntriesTableManager get journalEntries =>
       $JournalEntriesTableManager(_db, _db.journalEntries);
-  $UnitsTableManager get units => $UnitsTableManager(_db, _db.units);
-  $ItemsTableManager get items => $ItemsTableManager(_db, _db.items);
+  $AssembliesTableManager get assemblies =>
+      $AssembliesTableManager(_db, _db.assemblies);
+  $AuditLogTableManager get auditLog =>
+      $AuditLogTableManager(_db, _db.auditLog);
+  $ChangeLogTableManager get changeLog =>
+      $ChangeLogTableManager(_db, _db.changeLog);
+  $PrintJobsTableManager get printJobs =>
+      $PrintJobsTableManager(_db, _db.printJobs);
   $JournalLinesTableManager get journalLines =>
       $JournalLinesTableManager(_db, _db.journalLines);
   $StockLotsTableManager get stockLots =>

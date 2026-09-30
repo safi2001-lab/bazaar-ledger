@@ -15,6 +15,7 @@ import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
 import '../time/clock.dart';
 import 'catalogue_writer.dart';
+import 'manufacturing.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
 
@@ -448,6 +449,9 @@ abstract interface class AppQueries {
   /// The item whose own code is [code], leading zeros aside: how a scale
   /// label's PLU finds what was weighed (M16).
   Future<ItemSummary?> itemByCode(String firmId, String code);
+
+  /// Every recipe the shop keeps (M17), by name.
+  Future<List<BomView>> boms(String firmId);
 
   Future<List<PartySummary>> searchParties(
     String firmId, {

@@ -25,6 +25,7 @@ part 'app_database.g.dart';
     'tables/stock.drift',
     'tables/ledger.drift',
     'tables/system.drift',
+    'tables/manufacturing.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {
@@ -39,7 +40,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 5;
+  static const currentSchemaVersion = 6;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -108,8 +109,31 @@ class AppDatabase extends _$AppDatabase {
           // 'vip' and SQLite cannot change a CHECK any other way. Every row
           // is copied across as it was.
           from4To5: (migrator, schema) async {
-            await migrator.addColumn(schema.items, schema.items.vipRateMilliPaisa);
+            await migrator.addColumn(
+              schema.items,
+              schema.items.vipRateMilliPaisa,
+            );
             await migrator.alterTable(TableMigration(schema.parties));
+          },
+          // v5 → v6 (M17): bills of materials and production runs. Three
+          // new tables and their indexes; nothing existing is touched.
+          from5To6: (migrator, schema) async {
+            await migrator.createTable(schema.boms);
+            await migrator.createTable(schema.bomLines);
+            await migrator.createTable(schema.assemblies);
+            for (final index in [
+              schema.idxBomsFirm,
+              schema.idxBomsOutput,
+              schema.idxBomlinesFirm,
+              schema.idxBomlinesBom,
+              schema.idxBomlinesItem,
+              schema.idxAssembliesNo,
+              schema.idxAssembliesBom,
+              schema.idxAssembliesOutput,
+              schema.idxAssembliesJournal,
+            ]) {
+              await migrator.create(index);
+            }
           },
         )(m, from, to);
       } on ArgumentError {

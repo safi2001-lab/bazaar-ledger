@@ -327,7 +327,41 @@ const _tablesByVersion = <int, List<String>>{
   4: _tablesV2,
   // v5 added a column and rebuilt parties, not a table.
   5: _tablesV2,
+  6: _tablesV6,
 };
+
+/// v6 (M17): bills of materials and production runs.
+const _tablesV6 = <String>[
+  'accounts',
+  'assemblies',
+  'attachments',
+  'audit_log',
+  'bom_lines',
+  'boms',
+  'change_log',
+  'devices',
+  'doc_links',
+  'document_line_taxes',
+  'document_lines',
+  'documents',
+  'firms',
+  'items',
+  'journal_entries',
+  'journal_lines',
+  'numbering_sequences',
+  'parties',
+  'payment_accounts',
+  'payment_allocations',
+  'payments',
+  'print_jobs',
+  'settings',
+  'stock_ledger',
+  'stock_lots',
+  'tax_rules',
+  'unit_conversions',
+  'units',
+  'users',
+];
 
 const _tablesV1 = <String>[
   'accounts',

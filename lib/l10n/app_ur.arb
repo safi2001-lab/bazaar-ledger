@@ -1388,5 +1388,47 @@
   "scalePriceInPaisa": "Qeemat paison mein chhapti hai",
   "scaleSave": "Save karein",
   "scaleSaved": "Tarazu ke labels save ho gaye",
+  "recipesTitle": "Banana (recipe)",
+  "recipesNew": "Nayi recipe",
+  "recipesEmpty": "Abhi koi recipe nahin. Jo cheez aap khud banate hain, us ki recipe likhein.",
+  "recipesMakes": "Ek batch: {qty} {unit} {name}",
+  "@recipesMakes": {
+    "placeholders": {
+      "qty": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipesMake": "Banayein",
+  "recipesRuns": "Kitne batch",
+  "recipesMade": "{no}: {qty} {name} ban gaye",
+  "@recipesMade": {
+    "placeholders": {
+      "no": {
+        "type": "String"
+      },
+      "qty": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "recipesName": "Recipe ka naam",
+  "recipesOutput": "Kya banta hai",
+  "recipesPickItem": "Maal chunein",
+  "recipesBatchMakes": "Ek batch mein kitna",
+  "recipesOverhead": "Mazdoori aur packing (Rs)",
+  "recipesComponents": "Kya lagta hai (ek batch mein)",
+  "recipesPerBatch": "Ek batch mein",
+  "recipesAddComponent": "Aur cheez",
+  "recipesSave": "Save karein",
   "chequeDone": "Ho gaya"
 }

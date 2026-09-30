@@ -216,6 +216,13 @@ final class AppServices {
     return PaySupplierUseCase(writer: DriftPaymentWriter(runner: _runner));
   }
 
+  /// Recipes and production runs (M17). Stock-moving, so it takes the
+  /// purchases permission, as receiving goods does.
+  ManufacturingWriter get manufacturing {
+    require(Permission.purchases);
+    return DriftManufacturingWriter(runner: _runner);
+  }
+
   RecordPurchaseUseCase get recordPurchase {
     require(Permission.purchases);
     return RecordPurchaseUseCase(writer: DriftPurchaseWriter(runner: _runner));

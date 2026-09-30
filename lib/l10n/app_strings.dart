@@ -4304,6 +4304,102 @@ abstract class AppStrings {
   /// **'Tarazu ke labels save ho gaye'**
   String get scaleSaved;
 
+  /// No description provided for @recipesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Banana (recipe)'**
+  String get recipesTitle;
+
+  /// No description provided for @recipesNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi recipe'**
+  String get recipesNew;
+
+  /// No description provided for @recipesEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi recipe nahin. Jo cheez aap khud banate hain, us ki recipe likhein.'**
+  String get recipesEmpty;
+
+  /// No description provided for @recipesMakes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek batch: {qty} {unit} {name}'**
+  String recipesMakes(String qty, String unit, String name);
+
+  /// No description provided for @recipesMake.
+  ///
+  /// In ur, this message translates to:
+  /// **'Banayein'**
+  String get recipesMake;
+
+  /// No description provided for @recipesRuns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne batch'**
+  String get recipesRuns;
+
+  /// No description provided for @recipesMade.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no}: {qty} {name} ban gaye'**
+  String recipesMade(String no, String qty, String name);
+
+  /// No description provided for @recipesName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recipe ka naam'**
+  String get recipesName;
+
+  /// No description provided for @recipesOutput.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya banta hai'**
+  String get recipesOutput;
+
+  /// No description provided for @recipesPickItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal chunein'**
+  String get recipesPickItem;
+
+  /// No description provided for @recipesBatchMakes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek batch mein kitna'**
+  String get recipesBatchMakes;
+
+  /// No description provided for @recipesOverhead.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mazdoori aur packing (Rs)'**
+  String get recipesOverhead;
+
+  /// No description provided for @recipesComponents.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya lagta hai (ek batch mein)'**
+  String get recipesComponents;
+
+  /// No description provided for @recipesPerBatch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek batch mein'**
+  String get recipesPerBatch;
+
+  /// No description provided for @recipesAddComponent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur cheez'**
+  String get recipesAddComponent;
+
+  /// No description provided for @recipesSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save karein'**
+  String get recipesSave;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

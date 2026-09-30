@@ -2385,5 +2385,58 @@ class AppStringsEn extends AppStrings {
   String get scaleSaved => 'Scale labels saved';
 
   @override
+  String get recipesTitle => 'Making (recipes)';
+
+  @override
+  String get recipesNew => 'New recipe';
+
+  @override
+  String get recipesEmpty =>
+      'No recipes yet. Write one for anything the shop makes itself.';
+
+  @override
+  String recipesMakes(String qty, String unit, String name) {
+    return 'One batch: $qty $unit of $name';
+  }
+
+  @override
+  String get recipesMake => 'Make';
+
+  @override
+  String get recipesRuns => 'How many batches';
+
+  @override
+  String recipesMade(String no, String qty, String name) {
+    return '$no: $qty of $name made';
+  }
+
+  @override
+  String get recipesName => 'Recipe name';
+
+  @override
+  String get recipesOutput => 'What it makes';
+
+  @override
+  String get recipesPickItem => 'Choose an item';
+
+  @override
+  String get recipesBatchMakes => 'How much one batch makes';
+
+  @override
+  String get recipesOverhead => 'Work and packing (Rs)';
+
+  @override
+  String get recipesComponents => 'What goes in (per batch)';
+
+  @override
+  String get recipesPerBatch => 'Per batch';
+
+  @override
+  String get recipesAddComponent => 'Add a component';
+
+  @override
+  String get recipesSave => 'Save';
+
+  @override
   String get chequeDone => 'Done';
 }

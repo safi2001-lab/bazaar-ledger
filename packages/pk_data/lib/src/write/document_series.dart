@@ -49,6 +49,7 @@ final class DocumentSeries {
     DocumentSeries(docType: 'delivery_challan', prefix: 'CHL', padWidth: 4),
     DocumentSeries(docType: 'sale_order', prefix: 'SO', padWidth: 4),
     DocumentSeries(docType: 'purchase_order', prefix: 'PO', padWidth: 4),
+    DocumentSeries(docType: 'assembly', prefix: 'ASM', padWidth: 4),
   ];
 
   static DocumentSeries? forType(String docType) {
