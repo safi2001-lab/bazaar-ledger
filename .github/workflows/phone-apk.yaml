@@ -43,11 +43,23 @@ jobs:
           for dir in packages/*/ .; do
             (cd "$dir" && flutter pub get)
           done
+      # The same credentials a release gets, when the secrets are there, so
+      # Drive backup and the plans can be tried on a phone. Missing ones
+      # leave those features off, as on any build without them. The plan
+      # picker for testing is in this build and never in a release one.
+      - name: Credentials from secrets
+        env:
+          GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+          PLAY_BILLING_PUBLIC_KEY: ${{ secrets.PLAY_BILLING_PUBLIC_KEY }}
+        run: dart run tool/release_env.dart
+
       # One APK per processor type, each a third of the size of one that
       # carries all three. Almost every phone sold in the last eight years
       # wants arm64-v8a.
       - name: Build
-        run: flutter build apk --profile --split-per-abi
+        run: >-
+          flutter build apk --profile --split-per-abi
+          --dart-define-from-file=config/app_config.json
       - uses: actions/upload-artifact@v4
         with:
           name: phone-apk

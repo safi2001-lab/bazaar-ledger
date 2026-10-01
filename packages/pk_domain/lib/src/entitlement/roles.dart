@@ -10,6 +10,8 @@
 /// link or one forgotten screen away from being pressed.
 library;
 
+import 'package:pk_money/pk_money.dart';
+
 /// The things a role can be allowed to do.
 enum Permission {
   /// Ring up a bill at the counter.
@@ -134,4 +136,24 @@ enum Role {
 int discountShareBp({required int discountPaisa, required int grossPaisa}) {
   if (grossPaisa <= 0 || discountPaisa <= 0) return 0;
   return (discountPaisa * 10000 + grossPaisa - 1) ~/ grossPaisa;
+}
+
+/// Whether [role] may give [discount] off a bill whose goods come to
+/// [subtotal], on its own say-so.
+///
+/// The ceiling is the role's, or the party's standing discount when that is
+/// higher: the owner set it on the khata, so a cashier ringing that customer
+/// is applying the owner's decision, not making one. Exactly at the ceiling
+/// is allowed.
+bool discountAllowed({
+  required Role role,
+  required Money subtotal,
+  required Money discount,
+  int standingBp = 0,
+}) {
+  if (discount.inPaisa <= 0 || subtotal.inPaisa <= 0) return true;
+  final limit = role.maxDiscountBp > standingBp
+      ? role.maxDiscountBp
+      : standingBp;
+  return discount.inPaisa * 10000 <= subtotal.inPaisa * limit;
 }

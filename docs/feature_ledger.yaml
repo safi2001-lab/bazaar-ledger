@@ -204,9 +204,8 @@ milestones:
     #
     # Sealed 26 Sep 2026 at 6/6. Roles, staff with their own PINs, sign-in
     # and a lock, refusals at the service, the activity log and the day
-    # close. Not built, and said here: the subscription plans (built in
-    # M21); and the discount ceiling each role carries on its row is not yet
-    # checked at the counter.
+    # close. The subscription plans came in M21, and the discount ceiling
+    # each role carries is checked at the counter since M22.
     state: sealed
     owns:
       - lib/features/users/**
@@ -473,6 +472,33 @@ milestones:
       - packages/pk_platform/lib/src/billing/**
       - packages/pk_bootstrap/lib/src/plan_services.dart
       - packages/pk_bootstrap/lib/src/plan_gates.dart
+
+  - id: M22
+    title: Ready to release — credentials from the environment, a signed bundle, the policy
+    # Opened and sealed 1 Oct 2026 at 1/1. Every credential a store release
+    # needs is an environment variable: GitHub Actions secrets in CI, a
+    # gitignored .env on a laptop. tool/release_env.dart turns them into
+    # the gitignored files the build reads, prints which are present and
+    # never their values, and with --release refuses unless all of them
+    # are there. The release workflow runs every gate, then builds a
+    # signed, obfuscated app bundle with a rising version code, keeps it
+    # with its mapping and symbols, and uploads it to Play's internal track
+    # when a service account is given. The phone APK workflow takes the same
+    # secrets. docs/RELEASE.md walks through the Play Console, the
+    # subscriptions, the OAuth client and the listing. docs/privacy_policy.md
+    # is the policy, with the contact address left for the owner to fill.
+    # Found on the way: since M9 each role had a discount ceiling that
+    # nothing read, so a cashier could take any amount off a bill. It is
+    # now refused at the service, past the party's own standing discount.
+    #
+    # Not run here: the release workflow itself, which needs the secrets;
+    # its steps are the ones Tier B and the phone APK workflow already run.
+    state: sealed
+    owns:
+      - tool/release_env.dart
+      - .github/workflows/release.yaml
+      - docs/RELEASE.md
+      - docs/privacy_policy.md
 
 features:
   # ---------------------------------------------------------------------------
@@ -4295,3 +4321,21 @@ features:
       - plans a plan can be picked by hand on a test build, never on a release
       - a free shop reaching for a paid feature meets the plans, and a test build can try one without paying
       - a plan bought through Play unlocks it, and only a signed purchase does
+  - id: M22-RELEASE-01
+    milestone: M22
+    title: Release credentials come from the environment and never into the repository
+    status: done
+    proof:
+      - a release with every secret writes the config and the upload key, and prints none of them
+      - a release missing a secret is refused and says which
+      - a .env file works on a laptop, and the real environment wins
+      - none of the files it writes can be committed
+  - id: M22-DISCOUNT-01
+    milestone: M22
+    title: A role cannot give more discount than its ceiling at the counter
+    status: done
+    proof:
+      - discount ceiling the rule: up to the ceiling, or the party's own discount
+      - discount ceiling a cashier's 5% goes through; 8% is refused and nothing is written
+      - discount ceiling a customer the owner gave 10% off is rung at 10% by a cashier
+      - discount ceiling the owner gives what they like

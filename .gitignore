@@ -96,3 +96,7 @@ zz_*_test.dart
 # key is public — but they belong to whoever owns the Play listing, and this
 # repository may outlive that. The committed example documents every key.
 config/app_config.json
+
+# Credentials as environment variables (see .env.example). Never committed.
+.env
+android/upload.jks

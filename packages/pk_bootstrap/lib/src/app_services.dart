@@ -174,7 +174,10 @@ final class AppServices {
   PostSaleUseCase get postSale {
     require(Permission.sell);
     return PostSaleUseCase(
-      writer: _PlanSales(DriftSaleWriter(runner: _runner), plans),
+      writer: _CeilingSales(
+        _PlanSales(DriftSaleWriter(runner: _runner), plans),
+        this,
+      ),
       calculator: taxCalculator,
     );
   }

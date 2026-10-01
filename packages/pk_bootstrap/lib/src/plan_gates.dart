@@ -196,3 +196,81 @@ final class _PlanSaleContext implements SaleWriteContext {
     return _inner.apply(posting);
   }
 }
+
+/// Sales: a discount past what the signed-in role may give on its own is
+/// refused (M22). Each role has carried its ceiling since M9; until now
+/// nothing read it, and a cashier could knock any amount off a bill.
+final class _CeilingSales implements SaleWriter {
+  _CeilingSales(this._inner, this._app);
+
+  final SaleWriter _inner;
+  final AppServices _app;
+
+  @override
+  Future<T> inTransaction<T>(
+    ActorContext actor,
+    Future<T> Function(SaleWriteContext write) body,
+  ) => _inner.inTransaction(actor, (w) => body(_CeilingSaleContext(w, _app)));
+}
+
+final class _CeilingSaleContext implements SaleWriteContext {
+  _CeilingSaleContext(this._inner, this._app);
+
+  final SaleWriteContext _inner;
+  final AppServices _app;
+
+  @override
+  ActorContext get actor => _inner.actor;
+
+  @override
+  Future<TaxContext> taxContextFor(String? partyId) =>
+      _inner.taxContextFor(partyId);
+
+  @override
+  Future<AllocatedNumber> nextNumber(String docType) =>
+      _inner.nextNumber(docType);
+
+  @override
+  Future<Map<String, Rate>> averageCostFor(Iterable<String> itemIds) =>
+      _inner.averageCostFor(itemIds);
+
+  @override
+  Future<Map<String, String>> ledgerAccountsFor(
+    Iterable<String> paymentAccountIds,
+  ) => _inner.ledgerAccountsFor(paymentAccountIds);
+
+  @override
+  Future<ChallanGoods?> deliveredOn(String documentId) =>
+      _inner.deliveredOn(documentId);
+
+  @override
+  Future<PostedSale> apply(SalePosting posting) async {
+    final doc = posting.document;
+    final role = _app.currentUser?.role ?? Role.owner;
+    final discount = doc.lineDiscount + doc.billDiscount;
+    var standing = 0;
+    if (doc.partyId case final party?) {
+      standing =
+          (await _app.queries.partyDraft(
+            actor.firmId,
+            party,
+          ))?.defaultDiscountBp ??
+          0;
+    }
+    if (!discountAllowed(
+      role: role,
+      subtotal: doc.subtotal,
+      discount: discount,
+      standingBp: standing,
+    )) {
+      final pct = role.maxDiscountBp / 100;
+      throw PermissionDenied(
+        Permission.sell,
+        'A ${role.name} can take up to '
+        '${pct == pct.roundToDouble() ? pct.toInt() : pct}% off a bill on '
+        'their own. Ask the owner or a manager to ring this one.',
+      );
+    }
+    return _inner.apply(posting);
+  }
+}

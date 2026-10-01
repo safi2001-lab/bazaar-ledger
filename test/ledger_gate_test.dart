@@ -388,9 +388,9 @@ features:
     expect(result.output, contains('declares no milestones'));
   });
 
-  test('the real ledger declares every milestone from M0 to M21', () {
+  test('the real ledger declares every milestone from M0 to M22', () {
     final text = File('docs/feature_ledger.yaml').readAsStringSync();
-    for (var i = 0; i <= 21; i++) {
+    for (var i = 0; i <= 22; i++) {
       expect(
         text,
         contains('- id: M$i\n'),
