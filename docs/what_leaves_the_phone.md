@@ -72,6 +72,8 @@ the owner turns it on in *Tax → FBR digital invoicing*:
   to the shop.
 - FBR's answer — its invoice number, or why it refused — is kept on the
   bill, and the number is printed with a QR of it.
+- Goods a customer returns off a bill FBR has heard about go to FBR as a
+  credit note naming that bill (M28): the same fields, for what came back.
 - Bills made before it was turned on are never sent. Turning it off stops
   sending at once.
 

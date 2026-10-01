@@ -95,5 +95,27 @@ void main() {
         expect(readFbrResponse(401, null), isA<FbrRejected>());
       },
     );
+
+    test('a credit note names the invoice it takes goods back from', () {
+      final base = _sale();
+      FbrSale credit(String? ref) => FbrSale(
+        invoiceRef: 'RET-2627-0001',
+        dateUtc: base.dateUtc,
+        sellerNtn: base.sellerNtn,
+        sellerStrn: base.sellerStrn,
+        buyerNtn: base.buyerNtn,
+        buyerName: base.buyerName,
+        buyerRegistered: true,
+        lines: base.lines,
+        invoiceType: 'Credit Note',
+        referenceFbrNo: ref,
+      );
+      final json = fbrPayload(credit('7000007DI0000000001'));
+      expect(json, contains('"InvoiceType":"Credit Note"'));
+      expect(json, contains('"ReferenceInvoiceNo":"7000007DI0000000001"'));
+      expect(fbrProblems(credit('7000007DI0000000001')), isEmpty);
+      expect(fbrProblems(credit(null)), hasLength(1));
+      expect(fbrPayload(base), isNot(contains('ReferenceInvoiceNo')));
+    });
   });
 }

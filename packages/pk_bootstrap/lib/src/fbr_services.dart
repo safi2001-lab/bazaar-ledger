@@ -182,7 +182,28 @@ final class FbrServices {
     });
   }
 
-  /// Every bill made since reporting began, newest first.
+  /// Marks goods a customer brought back as a credit note waiting for FBR
+  /// (M28), when the bill they came off was reported. A return against a
+  /// bill made before reporting began is not FBR's to hear about.
+  Future<void> afterReturn(String returnDocumentId) async {
+    final s = await settings();
+    if (!s.enabled || !_app.plans.has(PlanFeature.fbr)) return;
+    final original = await _app.database
+        .customSelect(
+          'SELECT d.fbr_status FROM doc_links l '
+          'JOIN documents d ON d.id = l.from_document_id '
+          "WHERE l.to_document_id = ? AND l.link_type = 'returns' "
+          'AND l.deleted_at_utc IS NULL',
+          variables: [Variable<String>(returnDocumentId)],
+        )
+        .getSingleOrNull();
+    if (original?.readNullable<String>('fbr_status') == null) return;
+    await _app._runner.run(_actor(), (tx) async {
+      await tx.update('documents', returnDocumentId, {'fbr_status': 'pending'});
+    });
+  }
+
+  /// Every bill (and credit note) made since reporting began, newest first.
   Future<List<FbrBill>> bills({int limit = 100}) async {
     final id = _app._identity;
     final s = await settings();
@@ -193,9 +214,13 @@ final class FbrServices {
           SELECT id, doc_no, created_at_utc, fbr_status, fbr_invoice_no,
                  fbr_error
           FROM documents
-          WHERE firm_id = ? AND doc_type = 'sale_invoice' AND status = 'posted'
+          WHERE firm_id = ? AND doc_type IN ('sale_invoice', 'sale_return')
+            AND status = 'posted'
+            AND (doc_type = 'sale_invoice' OR fbr_status IS NOT NULL)
             AND deleted_at_utc IS NULL AND created_at_utc >= ?
-          ORDER BY created_at_utc DESC
+          -- Newest first; within one moment a credit note after its bill.
+          ORDER BY created_at_utc DESC,
+                   CASE doc_type WHEN 'sale_return' THEN 0 ELSE 1 END
           LIMIT ?
           ''',
           variables: [
@@ -234,9 +259,18 @@ final class FbrServices {
     var posted = 0;
     var rejected = 0;
     var waiting = 0;
-    for (final bill in await bills(limit: 500)) {
+    // Oldest first, so a bill reaches FBR before the credit note that
+    // takes goods back off it.
+    for (final bill in (await bills(limit: 500)).reversed) {
       if (bill.status != 'pending') continue;
       final sale = await _saleFor(bill.documentId);
+      if (sale != null &&
+          sale.isCreditNote &&
+          (sale.referenceFbrNo ?? '').isEmpty) {
+        // The bill it credits has not been numbered by FBR yet; it waits.
+        waiting++;
+        continue;
+      }
       final problems = sale == null ? ['The bill is gone.'] : fbrProblems(sale);
       final FbrOutcome outcome = problems.isNotEmpty
           ? FbrRejected(problems.first.split(':').first, problems.join('\n'))
@@ -288,9 +322,13 @@ final class FbrServices {
     final doc = await _app.database
         .customSelect(
           '''
-          SELECT d.doc_no, d.doc_date_utc, f.ntn AS seller_ntn,
+          SELECT d.doc_no, d.doc_date_utc, d.doc_type, f.ntn AS seller_ntn,
                  f.strn AS seller_strn, d.party_ntn_snapshot, p.name AS buyer,
-                 p.ntn AS party_ntn, p.buyer_registration_type
+                 p.ntn AS party_ntn, p.buyer_registration_type,
+                 (SELECT o.fbr_invoice_no FROM doc_links l
+                  JOIN documents o ON o.id = l.from_document_id
+                  WHERE l.to_document_id = d.id AND l.link_type = 'returns'
+                    AND l.deleted_at_utc IS NULL) AS credits_fbr_no
           FROM documents d
           JOIN firms f ON f.id = d.firm_id
           LEFT JOIN parties p ON p.id = d.party_id
@@ -307,7 +345,10 @@ final class FbrServices {
         .customSelect(
           '''
           SELECT l.id, l.item_name_snapshot, l.item_code_snapshot,
-                 l.hs_code_snapshot, l.qty_thousandths, l.unit_code_snapshot,
+                 COALESCE(l.hs_code_snapshot,
+                          (SELECT i.hs_code FROM items i WHERE i.id = l.item_id))
+                   AS hs_code_snapshot,
+                 l.qty_thousandths, l.unit_code_snapshot,
                  l.rate_milli_paisa, l.taxable_paisa, l.discount_paisa,
                  l.line_total_paisa,
                  COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
@@ -331,7 +372,12 @@ final class FbrServices {
         .get();
     final registered =
         doc.readNullable<String>('buyer_registration_type') == 'registered';
+    final isReturn = doc.read<String>('doc_type') == 'sale_return';
     return FbrSale(
+      invoiceType: isReturn ? 'Credit Note' : 'Sale Invoice',
+      referenceFbrNo: isReturn
+          ? doc.readNullable<String>('credits_fbr_no') ?? ''
+          : null,
       invoiceRef: doc.read<String>('doc_no'),
       dateUtc: DateTime.fromMillisecondsSinceEpoch(
         doc.read<int>('doc_date_utc'),

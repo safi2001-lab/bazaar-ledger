@@ -396,9 +396,9 @@ milestones:
     # Not exercised against FBR itself: there are no PRAL credentials on
     # this bench, so the payload, the answers and the retry are proved
     # against a stand-in, and the field names follow the plan document's
-    # DI v1.12 summary rather than PRAL's published schema. Not built:
-    # credit notes to FBR for returns, amending a bill inside the 72 hours
-    # (a late bill is flagged), and provincial sales tax on services.
+    # DI v1.12 summary rather than PRAL's published schema. Credit notes
+    # for returns came in M28. Not built: amending a bill inside the 72
+    # hours (a late bill is flagged), and provincial sales tax on services.
     state: sealed
     owns:
       - packages/pk_domain/lib/src/tax/fbr/**
@@ -583,6 +583,22 @@ milestones:
     # tied to the run, so undoing it from the recipe would put back what
     # the recipe says today, which is not what was used if the recipe has
     # changed; a stock adjustment corrects a mistaken run exactly.
+    state: sealed
+    owns: []
+
+  - id: M28
+    title: Goods returned off a reported bill go to FBR as a credit note
+    # Opened and sealed 1 Oct 2026 at 1/1. A return off a bill FBR has
+    # heard about is queued as a credit note: InvoiceType "Credit Note",
+    # with ReferenceInvoiceNo carrying the FBR number of the bill it takes
+    # goods back from. It waits until that bill has its FBR number, and the
+    # queue sends oldest first so a bill and its return can go in one pass.
+    # A return off a bill made before reporting began is not sent. Found on
+    # the way: return lines carry no HS code, so every credit note would
+    # have been refused for it; the item's HS code stands in.
+    #
+    # Not exercised against PRAL: the field names follow the plan
+    # document's DI summary, as M19's do.
     state: sealed
     owns: []
 
@@ -4477,3 +4493,12 @@ features:
       - strips that come back go back into the batches they left from
       - van sales goods a customer gives back on the round go back onto the van
       - van sales a rider back too late is settled for yesterday the next morning
+  - id: M28-FBR-01
+    milestone: M28
+    title: Returns off reported bills reach FBR as credit notes naming the bill
+    status: done
+    proof:
+      - fbr invoice a credit note names the invoice it takes goods back from
+      - fbr reporting goods returned off a reported bill go to FBR as a credit note naming it
+      - fbr reporting a credit note waits until the bill it returns has its FBR number
+      - fbr reporting a return off a bill made before reporting began is not sent

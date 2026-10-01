@@ -119,6 +119,10 @@ class _SheetState extends ConsumerState<_ReturnSheet> {
           locationCode: await services.counterLocation(),
         ),
       );
+      // A return off a bill FBR has heard about goes to FBR as a credit
+      // note (M28).
+      await services.fbr.afterReturn(recorded.documentId);
+      unawaited(services.fbr.sendPending());
       container.bumpRefresh();
       if (!mounted) return;
       ScaffoldMessenger.of(

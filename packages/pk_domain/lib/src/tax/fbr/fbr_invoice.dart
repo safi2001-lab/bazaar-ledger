@@ -60,7 +60,17 @@ final class FbrSale {
     this.buyerNtn,
     this.buyerName,
     this.buyerRegistered = false,
+    this.invoiceType = 'Sale Invoice',
+    this.referenceFbrNo,
   });
+
+  /// `Sale Invoice`, or `Credit Note` for goods a customer returned (M28).
+  final String invoiceType;
+
+  /// For a credit note, the FBR number of the invoice it credits.
+  final String? referenceFbrNo;
+
+  bool get isCreditNote => invoiceType == 'Credit Note';
 
   /// The shop's own bill number.
   final String invoiceRef;
@@ -102,6 +112,8 @@ List<String> fbrProblems(FbrSale sale) => [
     if (l.hsCode == null || !_hs.hasMatch(l.hsCode!.trim()))
       '1002: ${l.description} has no 8-digit HS code (like 1512.1900)',
   if (sale.lines.isEmpty) 'The bill has no lines.',
+  if (sale.isCreditNote && (sale.referenceFbrNo ?? '').trim().isEmpty)
+    'A credit note has to name the FBR number of the bill it returns.',
 ];
 
 /// The JSON body the gateway reads, written by hand so every amount is the
@@ -118,9 +130,13 @@ String fbrPayload(FbrSale sale) {
       ..write(rawJson);
   }
 
-  field('InvoiceType', _str('Sale Invoice'));
+  field('InvoiceType', _str(sale.invoiceType));
   field('InvoiceDate', _str(_isoSeconds(sale.dateUtc)));
   field('InvoiceRefNo', _str(sale.invoiceRef));
+  if (sale.referenceFbrNo case final ref?) {
+    // The invoice a credit note takes goods back from (M28).
+    field('ReferenceInvoiceNo', _str(ref.trim()));
+  }
   field('SellerNTN', _str(sale.sellerNtn?.trim() ?? ''));
   field('SellerSTRN', _str(sale.sellerStrn?.trim() ?? ''));
   field('BuyerNTN', _str(sale.buyerNtn?.trim() ?? ''));

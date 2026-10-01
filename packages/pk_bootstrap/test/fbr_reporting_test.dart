@@ -171,5 +171,84 @@ void main() {
         await expectLater(turnOn(), throwsA(isA<PermissionDenied>()));
       },
     );
+
+    Future<String> giveBack(String bill) async {
+      final line =
+          (await shop.database
+                  .customSelect(
+                    'SELECT id FROM document_lines WHERE document_id = ?',
+                    variables: [Variable<String>(bill)],
+                  )
+                  .getSingle())
+              .read<String>('id');
+      final cash = (await shop.queries.paymentAccounts(
+        firmId,
+      )).firstWhere((a) => a.modeLabel == 'cash');
+      final back = await shop.recordReturn(
+        shop.actorNow(),
+        ReturnDraft(
+          originalDocumentId: bill,
+          reason: 'Seal toota hua',
+          refundNow: const Money.rupees(2950),
+          paymentAccountId: cash.id,
+          lines: [ReturnLineDraft(documentLineId: line, qty: Qty.units(1))],
+        ),
+      );
+      await shop.fbr.afterReturn(back.documentId);
+      return back.documentId;
+    }
+
+    test('goods returned off a reported bill go to FBR as a credit note '
+        'naming it', () async {
+      await turnOn();
+      final bill = await sell();
+      await shop.fbr.sendPending();
+      fbr.answer = () => const FbrPosted('7000007DI0000000002');
+      final back = await giveBack(bill);
+      expect((await fbrOf(back))['fbr_status'], 'pending');
+
+      final report = await shop.fbr.sendPending();
+      expect(report.posted, 1);
+      expect(fbr.sent.last, contains('"InvoiceType":"Credit Note"'));
+      expect(
+        fbr.sent.last,
+        contains('"ReferenceInvoiceNo":"7000007DI0000000001"'),
+      );
+      expect((await fbrOf(back))['fbr_invoice_no'], '7000007DI0000000002');
+    });
+
+    test(
+      'a credit note waits until the bill it returns has its FBR number',
+      () async {
+        await turnOn();
+        final bill = await sell();
+        fbr.answer = () => const FbrTryLater('FBR is down.');
+        await shop.fbr.sendPending();
+        final back = await giveBack(bill);
+        fbr.sent.clear();
+
+        fbr.answer = () => const FbrPosted('7000007DI0000000009');
+        // One pass: the bill goes first, oldest first, and then its credit
+        // note can name it.
+        final report = await shop.fbr.sendPending();
+        expect(report.posted, 2);
+        expect(fbr.sent.first, contains('"InvoiceType":"Sale Invoice"'));
+        expect(fbr.sent.last, contains('"InvoiceType":"Credit Note"'));
+        expect((await fbrOf(back))['fbr_status'], 'posted');
+      },
+    );
+
+    test(
+      'a return off a bill made before reporting began is not sent',
+      () async {
+        final bill = await sell();
+        (shop.clock as FixedClock).advance(const Duration(minutes: 1));
+        await turnOn();
+        final back = await giveBack(bill);
+        expect((await fbrOf(back))['fbr_status'], isNull);
+        await shop.fbr.sendPending();
+        expect(fbr.sent, isEmpty);
+      },
+    );
   });
 }
