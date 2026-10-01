@@ -2702,5 +2702,27 @@ class AppStringsEn extends AppStrings {
       'No master found. Put both phones on the same wi-fi, or type its address.';
 
   @override
+  String get reportPurchaseRegister => 'Purchase register';
+
+  @override
+  String get reportPurchaseRegisterHint =>
+      'Every purchase bill, with the supplier\'s NTN and tax';
+
+  @override
+  String get statementShare => 'Statement of account (PDF)';
+
+  @override
+  String get statementThisMonth => 'This month';
+
+  @override
+  String get statementLastMonth => 'Last month';
+
+  @override
+  String get statementThisYear => 'This year';
+
+  @override
+  String get statementAll => 'From the start';
+
+  @override
   String get chequeDone => 'Done';
 }

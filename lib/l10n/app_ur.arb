@@ -1588,5 +1588,12 @@
   "planUsersUnlimited": "Jitne chahein log",
   "syncFind": "Wi-fi par master dhoondein",
   "syncFindNone": "Koi master nahi mila. Dono phone ek hi wi-fi par hon, ya address khud likhein.",
+  "reportPurchaseRegister": "Khareed register",
+  "reportPurchaseRegisterHint": "Har khareed ka bill, supplier ka NTN aur tax",
+  "statementShare": "Hisaab ka statement (PDF)",
+  "statementThisMonth": "Is mahine",
+  "statementLastMonth": "Pichhle mahine",
+  "statementThisYear": "Is saal",
+  "statementAll": "Shuru se ab tak",
   "chequeDone": "Ho gaya"
 }

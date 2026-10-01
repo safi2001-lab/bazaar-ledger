@@ -94,6 +94,7 @@ class ReportsScreen extends ConsumerWidget {
     ReportKind.trialBalance => Icons.balance_outlined,
     ReportKind.balanceSheet => Icons.account_balance_outlined,
     ReportKind.expiry => Icons.event_busy_outlined,
+    ReportKind.purchaseRegister => Icons.inventory_outlined,
     ReportKind.salesByItem => Icons.shopping_basket_outlined,
     ReportKind.expenses => Icons.receipt_outlined,
     ReportKind.cashBook => Icons.point_of_sale_outlined,
@@ -111,6 +112,7 @@ class ReportsScreen extends ConsumerWidget {
     ReportKind.trialBalance => s.reportTrialBalanceHint,
     ReportKind.balanceSheet => s.reportBalanceSheetHint,
     ReportKind.expiry => s.reportExpiryHint,
+    ReportKind.purchaseRegister => s.reportPurchaseRegisterHint,
     ReportKind.salesByItem => s.reportSalesByItemHint,
     ReportKind.expenses => s.reportExpensesHint,
     ReportKind.cashBook => s.reportCashBookHint,
@@ -127,7 +129,8 @@ bool isAccountingReport(ReportKind kind) => switch (kind) {
   ReportKind.trialBalance ||
   ReportKind.balanceSheet ||
   ReportKind.salesTax ||
-  ReportKind.tajirDost => true,
+  ReportKind.tajirDost ||
+  ReportKind.purchaseRegister => true,
   _ => false,
 };
 
@@ -141,6 +144,7 @@ String reportName(AppStrings s, ReportKind kind) => switch (kind) {
   ReportKind.trialBalance => s.reportTrialBalance,
   ReportKind.balanceSheet => s.reportBalanceSheet,
   ReportKind.expiry => s.reportExpiry,
+  ReportKind.purchaseRegister => s.reportPurchaseRegister,
   ReportKind.salesByItem => s.reportSalesByItem,
   ReportKind.expenses => s.reportExpenses,
   ReportKind.cashBook => s.reportCashBook,

@@ -4862,6 +4862,48 @@ abstract class AppStrings {
   /// **'Koi master nahi mila. Dono phone ek hi wi-fi par hon, ya address khud likhein.'**
   String get syncFindNone;
 
+  /// No description provided for @reportPurchaseRegister.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed register'**
+  String get reportPurchaseRegister;
+
+  /// No description provided for @reportPurchaseRegisterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har khareed ka bill, supplier ka NTN aur tax'**
+  String get reportPurchaseRegisterHint;
+
+  /// No description provided for @statementShare.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab ka statement (PDF)'**
+  String get statementShare;
+
+  /// No description provided for @statementThisMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine'**
+  String get statementThisMonth;
+
+  /// No description provided for @statementLastMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichhle mahine'**
+  String get statementLastMonth;
+
+  /// No description provided for @statementThisYear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is saal'**
+  String get statementThisYear;
+
+  /// No description provided for @statementAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shuru se ab tak'**
+  String get statementAll;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

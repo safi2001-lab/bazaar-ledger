@@ -2702,5 +2702,27 @@ class AppStringsUr extends AppStrings {
       'Koi master nahi mila. Dono phone ek hi wi-fi par hon, ya address khud likhein.';
 
   @override
+  String get reportPurchaseRegister => 'Khareed register';
+
+  @override
+  String get reportPurchaseRegisterHint =>
+      'Har khareed ka bill, supplier ka NTN aur tax';
+
+  @override
+  String get statementShare => 'Hisaab ka statement (PDF)';
+
+  @override
+  String get statementThisMonth => 'Is mahine';
+
+  @override
+  String get statementLastMonth => 'Pichhle mahine';
+
+  @override
+  String get statementThisYear => 'Is saal';
+
+  @override
+  String get statementAll => 'Shuru se ab tak';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

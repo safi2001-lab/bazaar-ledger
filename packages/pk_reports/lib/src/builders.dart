@@ -754,3 +754,150 @@ const tajirDostBp = 100;
 const _lessUtilityWht =
     'Take off the withholding tax already paid with the electricity bill for '
     'each month; what is left is what is paid.';
+
+/// Every purchase bill in a period, and what went back: the register a
+/// registered shop's accountant files input tax from (M24).
+ReportTable purchaseRegister(
+  ReportPeriod period,
+  List<PurchaseRegisterLine> lines,
+) {
+  Money signed(PurchaseRegisterLine l, Money m) => l.isReturn ? -m : m;
+  final taxable = Money.sum([for (final l in lines) signed(l, l.taxable)]);
+  final tax = Money.sum([for (final l in lines) signed(l, l.tax)]);
+  final total = Money.sum([for (final l in lines) signed(l, l.total)]);
+  final owed = Money.sum([for (final l in lines) l.owed]);
+  return ReportTable(
+    id: 'purchase_register',
+    title: 'Purchase register',
+    period: period,
+    columns: const [
+      ReportColumn('Date', CellKind.text),
+      ReportColumn('Bill', CellKind.text),
+      ReportColumn('Supplier', CellKind.text),
+      ReportColumn('Their bill no', CellKind.text),
+      ReportColumn('NTN', CellKind.text),
+      ReportColumn('Value', CellKind.money),
+      ReportColumn('Sales tax', CellKind.money),
+      ReportColumn('Total', CellKind.money),
+      ReportColumn('Unpaid', CellKind.money),
+    ],
+    rows: [
+      for (final l in lines)
+        ReportRow([
+          l.date.value,
+          l.isReturn ? '${l.docNo} (return)' : l.docNo,
+          l.supplier,
+          l.supplierBillNo ?? '',
+          l.supplierNtn ?? '',
+          signed(l, l.taxable),
+          signed(l, l.tax),
+          signed(l, l.total),
+          l.owed,
+        ]),
+      ReportRow([
+        'Total',
+        '${lines.length}',
+        '',
+        '',
+        '',
+        taxable,
+        tax,
+        total,
+        owed,
+      ], style: RowStyle.total),
+    ],
+    notes: const [_returnsNote],
+  );
+}
+
+/// One party's account over a period, as a statement to hand them (M24):
+/// what they owed when it began, every bill, payment and charge in it with
+/// the balance after each, and what they owe at the end.
+///
+/// [entries] is the party's whole ledger, oldest first, as the khata reads
+/// it; the opening is the balance after the last entry before the period.
+/// [owedToUs] is false for a supplier's statement, where the figures are
+/// what the shop owes them.
+ReportTable partyStatement({
+  required String partyName,
+  required ReportPeriod period,
+  required List<LedgerEntry> entries,
+  bool owedToUs = true,
+}) {
+  final before = entries
+      .where((e) => e.dateLocal.compareTo(period.from.value) < 0)
+      .toList();
+  final opening = before.isEmpty ? Money.zero : before.last.balanceAfter;
+  final within = entries
+      .where((e) => period.contains(BusinessDate(e.dateLocal)))
+      .toList();
+  final closing = within.isEmpty ? opening : within.last.balanceAfter;
+  final up = Money.sum([
+    for (final e in within)
+      if (!e.amount.isNegative) e.amount,
+  ]);
+  final down = -Money.sum([
+    for (final e in within)
+      if (e.amount.isNegative) e.amount,
+  ]);
+  String what(String kind) => switch (kind) {
+    'sale' => 'Bill',
+    'charge' => 'Charge',
+    'payment' => 'Payment',
+    'bounce' => 'Cheque bounced',
+    'purchase' => 'Delivery',
+    'expense' => 'Expense',
+    'opening' => 'Opening balance',
+    _ => kind,
+  };
+  return ReportTable(
+    id: 'statement',
+    title: 'Statement of account: $partyName',
+    period: period,
+    columns: [
+      const ReportColumn('Date', CellKind.text),
+      const ReportColumn('Details', CellKind.text),
+      const ReportColumn('Reference', CellKind.text),
+      ReportColumn(owedToUs ? 'Debit' : 'Credit', CellKind.money),
+      ReportColumn(owedToUs ? 'Credit' : 'Debit', CellKind.money),
+      const ReportColumn('Balance', CellKind.money),
+    ],
+    rows: [
+      ReportRow([
+        period.from.value,
+        'Opening balance',
+        '',
+        null,
+        null,
+        opening,
+      ], style: RowStyle.subtotal),
+      for (final e in within)
+        ReportRow([
+          e.dateLocal,
+          what(e.kind),
+          e.reference,
+          e.amount.isNegative ? null : e.amount,
+          e.amount.isNegative ? -e.amount : null,
+          e.balanceAfter,
+        ]),
+      ReportRow([
+        period.to.value,
+        owedToUs ? 'Balance owed to us' : 'Balance we owe',
+        '',
+        up,
+        down,
+        closing,
+      ], style: RowStyle.total),
+    ],
+    notes: [
+      if (closing.isNegative)
+        owedToUs
+            ? 'A minus balance is an advance: we owe it back.'
+            : 'A minus balance is an advance we have paid them.',
+    ],
+  );
+}
+
+const _returnsNote =
+    'Returns to suppliers are shown as minus amounts and taken off the '
+    'totals.';

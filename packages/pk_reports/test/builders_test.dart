@@ -478,4 +478,88 @@ void main() {
       );
     });
   });
+
+  group('statement of account', () {
+    LedgerEntry e(String date, String kind, int amount, int after) =>
+        LedgerEntry(
+          id: '$date$kind',
+          kind: kind,
+          reference: '${kind.toUpperCase()}-$date',
+          dateLocal: date,
+          amount: Money.rupees(amount),
+          balanceAfter: Money.rupees(after),
+        );
+    final ledger = [
+      e('2026-08-20', 'sale', 5000, 5000),
+      e('2026-09-03', 'sale', 3000, 8000),
+      e('2026-09-10', 'payment', -6000, 2000),
+      e('2026-09-25', 'charge', 500, 2500),
+      e('2026-10-02', 'sale', 1000, 3500),
+    ];
+
+    test('opens on what was owed before, and closes on what is owed at the '
+        'end', () {
+      final t = partyStatement(
+        partyName: 'Rashid Traders',
+        period: _september,
+        entries: ledger,
+      );
+      expect(t.title, 'Statement of account: Rashid Traders');
+      expect(t.rows.first.cells.last, const Money.rupees(5000));
+      expect(t.rows, hasLength(5), reason: 'opening, three in September, end');
+      final end = t.rows.last.cells;
+      expect(end[3], const Money.rupees(3500), reason: 'billed and charged');
+      expect(end[4], const Money.rupees(6000), reason: 'paid');
+      expect(end[5], const Money.rupees(2500));
+      expect(_cell(t, '2026-09-10', 4), const Money.rupees(6000));
+    });
+
+    test('a month with nothing in it still says what is owed', () {
+      final t = partyStatement(
+        partyName: 'Rashid Traders',
+        period: ReportPeriod(
+          const BusinessDate('2026-07-01'),
+          const BusinessDate('2026-07-31'),
+        ),
+        entries: ledger,
+      );
+      expect(t.rows, hasLength(2));
+      expect(t.rows.last.cells.last, Money.zero);
+    });
+  });
+
+  group('purchase register', () {
+    test('every bill in the period, returns taken off the totals', () {
+      final t = purchaseRegister(_september, [
+        PurchaseRegisterLine(
+          date: const BusinessDate('2026-09-02'),
+          docNo: 'PB-1',
+          supplier: 'Punjab Rice Mills',
+          supplierBillNo: 'PRM/771',
+          supplierNtn: '1234567-8',
+          taxable: const Money.rupees(10000),
+          tax: const Money.rupees(1800),
+          total: const Money.rupees(11800),
+          owed: const Money.rupees(5000),
+        ),
+        PurchaseRegisterLine(
+          date: const BusinessDate('2026-09-09'),
+          docNo: 'PR-1',
+          supplier: 'Punjab Rice Mills',
+          taxable: const Money.rupees(1000),
+          tax: const Money.rupees(180),
+          total: const Money.rupees(1180),
+          owed: Money.zero,
+          isReturn: true,
+        ),
+      ]);
+      final total = t.rows.last.cells;
+      expect(total[5], const Money.rupees(9000));
+      expect(total[6], const Money.rupees(1620));
+      expect(total[7], const Money.rupees(10620));
+      expect(total[8], const Money.rupees(5000));
+      expect(t.rows[1].cells[1], 'PR-1 (return)');
+      expect(t.rows[1].cells[7], const Money.rupees(-1180));
+    });
+  });
 }

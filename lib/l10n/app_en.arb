@@ -1509,5 +1509,12 @@
   "planUsersUnlimited": "Unlimited people",
   "syncFind": "Find the master on wi-fi",
   "syncFindNone": "No master found. Put both phones on the same wi-fi, or type its address.",
+  "reportPurchaseRegister": "Purchase register",
+  "reportPurchaseRegisterHint": "Every purchase bill, with the supplier's NTN and tax",
+  "statementShare": "Statement of account (PDF)",
+  "statementThisMonth": "This month",
+  "statementLastMonth": "Last month",
+  "statementThisYear": "This year",
+  "statementAll": "From the start",
   "chequeDone": "Done"
 }

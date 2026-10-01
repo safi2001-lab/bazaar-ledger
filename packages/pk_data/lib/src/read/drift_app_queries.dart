@@ -597,6 +597,28 @@ final class DriftAppQueries implements AppQueries {
               AND p.status = 'bounced'
               AND je.source_type = 'reversal'
               AND je.deleted_at_utc IS NULL
+
+            UNION ALL
+
+            -- What they owed when the shop started keeping them here (M24).
+            -- Left out until now, so the khata's running balance was short
+            -- by exactly the opening for every customer entered with one,
+            -- and never matched the balance shown above it.
+            SELECT pa.id AS id,
+                   'opening' AS kind,
+                   'Opening balance' AS reference,
+                   -- Set whenever a party is saved with an opening; a row
+                   -- from before that falls back to its first document.
+                   COALESCE(pa.opening_balance_as_of_local,
+                            (SELECT MIN(d0.doc_date_local) FROM documents d0
+                             WHERE d0.party_id = pa.id),
+                            '2000-01-01') AS date_local,
+                   pa.opening_balance_paisa AS amount_paisa,
+                   pa.created_at_utc AS recorded
+            FROM parties pa
+            WHERE pa.firm_id = ? AND pa.id = ?
+              AND pa.opening_balance_paisa <> 0
+              AND pa.deleted_at_utc IS NULL
           )
           -- Within a day, in the order things were recorded. Sorting by a
           -- per-type sequence put every payment ahead of the bill it paid on
@@ -612,9 +634,16 @@ final class DriftAppQueries implements AppQueries {
             Variable<String>(partyId),
             Variable<String>(firmId),
             Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<String>(partyId),
             Variable<int>(limit),
           ],
-          readsFrom: {_db.documents, _db.payments, _db.journalEntries},
+          readsFrom: {
+            _db.documents,
+            _db.payments,
+            _db.journalEntries,
+            _db.parties,
+          },
         )
         .get();
 

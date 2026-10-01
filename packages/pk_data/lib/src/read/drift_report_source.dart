@@ -561,4 +561,55 @@ final class DriftReportSource implements ReportSource {
         r.read<String>('month'): Money.paisa(r.read<int>('turnover')),
     };
   }
+
+  @override
+  Future<List<PurchaseRegisterLine>> purchaseRegister(
+    String firmId,
+    ReportPeriod period,
+  ) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT d.doc_date_local, d.doc_no, d.doc_type,
+                 COALESCE(d.party_name_snapshot, p.name) AS supplier,
+                 COALESCE(d.party_ntn_snapshot, p.ntn) AS ntn,
+                 d.supplier_bill_no, d.taxable_paisa, d.tax_paisa,
+                 d.further_tax_paisa, d.total_paisa, d.balance_paisa
+          FROM documents d
+          LEFT JOIN parties p ON p.id = d.party_id
+          WHERE d.firm_id = ?1
+            AND d.doc_type IN ('purchase_bill', 'purchase_return')
+            AND d.status = 'posted'
+            AND d.doc_date_local BETWEEN ?2 AND ?3
+            AND d.deleted_at_utc IS NULL
+          ORDER BY d.doc_date_local, d.doc_seq, d.id
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(period.from.value),
+            Variable<String>(period.to.value),
+          ],
+          readsFrom: {_db.documents, _db.parties},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PurchaseRegisterLine(
+          date: BusinessDate(r.read<String>('doc_date_local')),
+          docNo: r.read<String>('doc_no'),
+          supplier: r.readNullable<String>('supplier') ?? '',
+          supplierBillNo: r.readNullable<String>('supplier_bill_no'),
+          supplierNtn: r.readNullable<String>('ntn'),
+          taxable: Money.paisa(r.read<int>('taxable_paisa')),
+          tax: Money.paisa(
+            r.read<int>('tax_paisa') + r.read<int>('further_tax_paisa'),
+          ),
+          total: Money.paisa(r.read<int>('total_paisa')),
+          owed: r.read<String>('doc_type') == 'purchase_return'
+              ? Money.zero
+              : Money.paisa(r.read<int>('balance_paisa')),
+          isReturn: r.read<String>('doc_type') == 'purchase_return',
+        ),
+    ];
+  }
 }

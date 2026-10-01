@@ -187,8 +187,8 @@ milestones:
     # age and Owed to suppliers. Not in this pack, and owned elsewhere: the
     # Trial Balance and Balance Sheet (M10, with the rest of full
     # accounting), and every tax report including the Tajir Dost 1% ledger
-    # (M12). Not built at all yet: a purchase register, and a single
-    # customer's statement as a PDF (the khata screen shows the history).
+    # (M12). The purchase register and a party's statement as a PDF came in
+    # M24.
     state: sealed
     owns:
       - packages/pk_reports/**
@@ -523,6 +523,22 @@ milestones:
     owns:
       - packages/pk_sync/lib/src/seal.dart
       - packages/pk_sync/lib/src/beacon.dart
+
+  - id: M24
+    title: A party's statement of account as a PDF, and the purchase register
+    # Opened and sealed 1 Oct 2026 at 1/1. The khata screen sends a
+    # customer's (or a supplier's) statement for this month, last month,
+    # this year or from the start: what they owed when it began, every
+    # bill, payment, charge and bounced cheque with the balance after each,
+    # and what they owe at the end, as a PDF through the share sheet. The
+    # reports gain the purchase register, every purchase bill and return in
+    # the period with the supplier's bill number, NTN and tax, for the
+    # input-tax side of a return. Found on the way: the khata's own history
+    # left out the party's opening balance, so its running balance never
+    # matched the balance shown above it for anybody entered owing money.
+    state: sealed
+    owns:
+      - lib/features/khata/statement.dart
 
 features:
   # ---------------------------------------------------------------------------
@@ -4376,3 +4392,13 @@ features:
       - finding the master a counter hears the master say where it is, and nothing more
       - finding the master nobody there is an empty list, not a wait for ever
       - a new phone joins the master from the welcome screen
+  - id: M24-STATEMENT-01
+    milestone: M24
+    title: A party's statement goes out as a PDF, and purchases have a register
+    status: done
+    proof:
+      - statement of account opens on what was owed before, and closes on what is owed at the end
+      - statement of account a month with nothing in it still says what is owed
+      - purchase register every bill in the period, returns taken off the totals
+      - a customer's statement goes to the share sheet as a PDF
+      - a purchase shows on the purchase register

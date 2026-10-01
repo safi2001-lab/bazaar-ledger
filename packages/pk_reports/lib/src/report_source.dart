@@ -192,6 +192,37 @@ final class TaxLine {
   final bool isReturn;
 }
 
+/// One purchase bill, for the purchase register (M24).
+final class PurchaseRegisterLine {
+  const PurchaseRegisterLine({
+    required this.date,
+    required this.docNo,
+    required this.supplier,
+    required this.taxable,
+    required this.tax,
+    required this.total,
+    required this.owed,
+    this.supplierBillNo,
+    this.supplierNtn,
+    this.isReturn = false,
+  });
+
+  final BusinessDate date;
+  final String docNo;
+  final String supplier;
+  final String? supplierBillNo;
+  final String? supplierNtn;
+  final Money taxable;
+  final Money tax;
+  final Money total;
+
+  /// Still unpaid on it.
+  final Money owed;
+
+  /// Goods sent back: the register shows it against the purchases.
+  final bool isReturn;
+}
+
 /// Where the reports read from. Implemented against the database in
 /// pk_data; every method is a read, and none of them adds anything up that a
 /// builder then adds up again.
@@ -247,4 +278,11 @@ abstract interface class ReportSource {
 
   /// Every supplier the shop owes, aged on [asOf].
   Future<List<PartyReceivable>> payables(String firmId, BusinessDate asOf);
+
+  /// Every posted purchase bill and purchase return in [period], in date
+  /// order.
+  Future<List<PurchaseRegisterLine>> purchaseRegister(
+    String firmId,
+    ReportPeriod period,
+  );
 }

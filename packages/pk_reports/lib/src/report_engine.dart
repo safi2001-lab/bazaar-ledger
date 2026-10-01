@@ -33,6 +33,9 @@ enum ReportKind {
 
   /// As of today; the period is ignored.
   expiry,
+
+  /// Every purchase bill in the period (M24).
+  purchaseRegister,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -106,6 +109,10 @@ final class ReportEngine {
       await source.cashMovements(firmId, period),
     ),
     ReportKind.dayBook => dayBook(period, await source.dayBook(firmId, period)),
+    ReportKind.purchaseRegister => purchaseRegister(
+      period,
+      await source.purchaseRegister(firmId, period),
+    ),
     ReportKind.stockValue => stockValue(
       today,
       await source.stockPositions(firmId),

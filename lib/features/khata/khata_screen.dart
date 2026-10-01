@@ -15,6 +15,7 @@ import 'pay_supplier_sheet.dart';
 import 'payables_section.dart';
 import 'receive_payment_sheet.dart';
 import 'send_reminder.dart';
+import 'statement.dart';
 
 /// One customer's khata: what they owe, on which bills, and a way to take it.
 ///
@@ -51,6 +52,14 @@ class KhataScreen extends ConsumerWidget {
       appBar: AppBar(
         title: Text(current.name),
         actions: [
+          // The account on paper, to hand them or send them (M24).
+          BlIconButton(
+            icon: Icons.picture_as_pdf_outlined,
+            label: s.statementShare,
+            onPressed: () => unawaited(
+              shareStatement(context, ref, current, owedToUs: receivable),
+            ),
+          ),
           if (current.balance.isPositive)
             BlIconButton(
               icon: Icons.chat_outlined,
