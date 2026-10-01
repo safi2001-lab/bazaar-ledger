@@ -1507,5 +1507,7 @@
     }
   },
   "planUsersUnlimited": "Unlimited people",
+  "syncFind": "Find the master on wi-fi",
+  "syncFindNone": "No master found. Put both phones on the same wi-fi, or type its address.",
   "chequeDone": "Done"
 }

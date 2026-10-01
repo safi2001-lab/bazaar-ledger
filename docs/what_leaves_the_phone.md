@@ -39,15 +39,20 @@ own wi-fi**, and nowhere else:
   It then answers on port 47470 of its local address, and stops when it is
   turned off.
 - A counter joins only with the six-digit code the master shows while joining
-  is open; one code lets one phone in, and five wrong codes close it. Every
-  request after that carries the shop's sync key, which never leaves the
-  shop's phones.
+  is open; one code lets one phone in, and five wrong codes close it. The
+  code itself never crosses the wi-fi: the two phones make a key between
+  them (X25519) with the code mixed in (PBKDF2, 100,000 rounds), so only a
+  master showing the same code can read what the counter sends.
+- **Everything after that is encrypted** (AES-256-GCM) with a key made from
+  the shop's sync key, which never leaves the shop's phones and never
+  crosses the wi-fi. Someone watching the wi-fi sees sizes and timing, not
+  the books (M23).
 - What travels is the outbox every write already keeps: the rows of the
   shop's books, staff PIN hashes included, so staff sign in at any counter.
-- **The traffic is not encrypted.** Anyone on the same wi-fi who can watch
-  packets could read the books as they pass. A shop that shares its wi-fi
-  with customers should keep sync off, or put the tills on a network of
-  their own. Encrypting the traffic is not built.
+- While it hosts, the master broadcasts on the wi-fi every two seconds that
+  it is there: its port and the shop's name, nothing else, so a joining
+  counter can find it without typing an address. A broadcast does not
+  leave the local network.
 
 No server is involved at any point, and the counters bill on their own when
 the master is off; they catch up the next time both are on the wi-fi.

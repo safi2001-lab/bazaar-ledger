@@ -76,6 +76,8 @@ void main() {
     await typeInto(tester, 'Master par dikhaya code', code);
     await typeInto(tester, 'Is counter ka naam', 'Counter 2');
     await tester.tap(find.text('Jurein'));
+    // Joining derives its key the slow way on purpose (M23): real seconds.
+    await settleReal(tester, done: () => app.services.isSetUp);
     await _settleIo(tester);
 
     expect(app.services.isSetUp, isTrue);

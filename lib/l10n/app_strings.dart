@@ -4850,6 +4850,18 @@ abstract class AppStrings {
   /// **'Jitne chahein log'**
   String get planUsersUnlimited;
 
+  /// No description provided for @syncFind.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wi-fi par master dhoondein'**
+  String get syncFind;
+
+  /// No description provided for @syncFindNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi master nahi mila. Dono phone ek hi wi-fi par hon, ya address khud likhein.'**
+  String get syncFindNone;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

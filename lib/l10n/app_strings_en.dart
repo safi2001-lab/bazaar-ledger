@@ -2695,5 +2695,12 @@ class AppStringsEn extends AppStrings {
   String get planUsersUnlimited => 'Unlimited people';
 
   @override
+  String get syncFind => 'Find the master on wi-fi';
+
+  @override
+  String get syncFindNone =>
+      'No master found. Put both phones on the same wi-fi, or type its address.';
+
+  @override
   String get chequeDone => 'Done';
 }

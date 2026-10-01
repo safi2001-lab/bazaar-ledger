@@ -14,6 +14,7 @@ import 'package:pk_import/pk_import.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:pk_reports/pk_reports.dart';
 import 'package:pk_sync/pk_sync.dart';
+import 'package:pk_sync/pk_sync.dart' as pk_sync show findMasters;
 import 'app_config.dart';
 import 'backup_service.dart';
 import 'encrypted_database.dart';

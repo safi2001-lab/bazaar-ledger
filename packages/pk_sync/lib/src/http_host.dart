@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'peer.dart';
+import 'seal.dart';
 import 'wire.dart';
 
 export 'wire.dart' show defaultSyncPort;
@@ -20,14 +21,19 @@ typedef AdmitCounter =
 ///
 /// Nothing is listened for until the owner turns it on, and a counter gets
 /// in only with the six-digit code the master shows while it is open for
-/// joining. Every request after that carries the shop's sync key.
+/// joining. Everything after that is sealed with the shop's sync key, which
+/// never crosses the wire (see [WireSeal]).
 final class SyncHost {
   SyncHost({
     required this.peer,
     required this.syncKey,
     required this.admit,
     Random? random,
+    this.joinWork = defaultJoinWork,
   }) : _random = random ?? Random.secure();
+
+  /// PBKDF2 rounds per guess of the joining code; lowered only in tests.
+  final int joinWork;
 
   final SyncPeer peer;
   final String Function() syncKey;
@@ -36,6 +42,8 @@ final class SyncHost {
 
   HttpServer? _server;
   String? _pairingCode;
+  Future<JoinKeys>? _joinKeys;
+  (String, WireSeal)? _seal;
   int _wrongCodes = 0;
   final _changed = StreamController<ApplyResult>.broadcast();
 
@@ -72,15 +80,33 @@ final class SyncHost {
     final code = _random.nextInt(1000000).toString().padLeft(6, '0');
     _pairingCode = code;
     _wrongCodes = 0;
+    // A key pair for this joining only, so nothing learnt from one join
+    // helps with the next.
+    _joinKeys = JoinKeys.make();
     return code;
   }
 
-  void closeJoining() => _pairingCode = null;
+  void closeJoining() {
+    _pairingCode = null;
+    _joinKeys = null;
+  }
+
+  /// The seal for the sync key as it stands, made once per key.
+  Future<WireSeal?> _shopSeal() async {
+    final key = syncKey();
+    if (key.isEmpty) return null;
+    final held = _seal;
+    if (held != null && held.$1 == key) return held.$2;
+    final seal = await WireSeal.forShop(key);
+    _seal = (key, seal);
+    return seal;
+  }
 
   Future<void> stop() async {
     final server = _server;
     _server = null;
     _pairingCode = null;
+    _joinKeys = null;
     await server?.close(force: true);
   }
 
@@ -93,10 +119,12 @@ final class SyncHost {
     final response = request.response;
     try {
       final path = request.uri.path;
-      if (request.method == 'GET' && path == '/v1/hello') {
+      if (request.method == 'GET' && path == '/v2/hello') {
+        final keys = _pairingCode == null ? null : await _joinKeys;
         return _send(response, {
           'app': 'bazaar-ledger',
           'protocol': syncProtocolVersion,
+          'join_key': keys?.publicKey,
         });
       }
       if (request.method != 'POST') {
@@ -107,10 +135,14 @@ final class SyncHost {
           ? body
           : const <String, Object?>{};
 
-      if (path == '/v1/join') return await _join(response, json);
-
-      final key = request.headers.value(syncKeyHeader) ?? '';
-      if (!sameKey(key, syncKey())) {
+      if (path == '/v2/join') return await _join(response, json);
+      final seal = await _shopSeal();
+      Map<String, Object?> opened;
+      try {
+        if (seal == null) throw const SyncRefused('no key');
+        final inner = await seal.open(json);
+        opened = inner is Map<String, Object?> ? inner : const {};
+      } on SyncRefused {
         return _fail(
           response,
           HttpStatus.unauthorized,
@@ -118,26 +150,28 @@ final class SyncHost {
           'master.',
         );
       }
+      Future<void> answer(Object body) async =>
+          _send(response, await seal.seal(body));
       switch (path) {
-        case '/v1/vector':
-          return _send(response, {'vector': await peer.vector()});
-        case '/v1/pull':
-          final known = (json['vector'] as Map<String, Object?>?) ?? const {};
+        case '/v2/vector':
+          return answer({'vector': await peer.vector()});
+        case '/v2/pull':
+          final known = (opened['vector'] as Map<String, Object?>?) ?? const {};
           final changes = await peer.changesSince({
             for (final e in known.entries) e.key: e.value! as int,
           });
-          return _send(response, {
+          return answer({
             'changes': [for (final c in changes) c.row],
           });
-        case '/v1/push':
-          final raw = (json['changes'] as List<Object?>?) ?? const [];
+        case '/v2/push':
+          final raw = (opened['changes'] as List<Object?>?) ?? const [];
           final result = await peer.apply([
             for (final r in raw) SyncChange(r! as Map<String, Object?>),
           ]);
           if (result.applied > 0 || result.conflicts > 0) {
             _changed.add(result);
           }
-          return _send(response, result.toJson());
+          return answer(result.toJson());
       }
       return _fail(response, HttpStatus.notFound, 'no such path');
     } on SyncRefused catch (e) {
@@ -151,7 +185,8 @@ final class SyncHost {
 
   Future<void> _join(HttpResponse response, Map<String, Object?> json) async {
     final expected = _pairingCode;
-    if (expected == null) {
+    final keys = await _joinKeys;
+    if (expected == null || keys == null) {
       return _fail(
         response,
         HttpStatus.forbidden,
@@ -159,9 +194,28 @@ final class SyncHost {
         'master first.',
       );
     }
-    if (!sameKey('${json['code'] ?? ''}', expected)) {
+    // The counter's request opens only under the key both sides derive
+    // from the exchange and the same code: a wrong code is a box that will
+    // not open.
+    final counterKey = '${json['pub'] ?? ''}';
+    WireSeal? seal;
+    Map<String, Object?>? asked;
+    try {
+      seal = await keys.sealWith(
+        otherPublicKey: counterKey,
+        code: expected,
+        masterKey: keys.publicKey,
+        counterKey: counterKey,
+        work: joinWork,
+      );
+      final opened = await seal.open(json);
+      if (opened is Map<String, Object?>) asked = opened;
+    } on Object {
+      asked = null;
+    }
+    if (asked == null || seal == null) {
       _wrongCodes++;
-      if (_wrongCodes >= 5) _pairingCode = null;
+      if (_wrongCodes >= 5) closeJoining();
       return _fail(
         response,
         HttpStatus.forbidden,
@@ -170,13 +224,13 @@ final class SyncHost {
             : 'That is not the code the master shows.',
       );
     }
-    _pairingCode = null;
-    final label = '${json['label'] ?? ''}'.trim();
+    closeJoining();
+    final label = '${asked['label'] ?? ''}'.trim();
     final grant = await admit(
       label: label.isEmpty ? 'Counter' : label,
-      platform: '${json['platform'] ?? 'android'}',
+      platform: '${asked['platform'] ?? 'android'}',
     );
-    return _send(response, grant.toJson());
+    return _send(response, await seal.seal(grant.toJson()));
   }
 
   static Future<void> _send(HttpResponse response, Object body) async {

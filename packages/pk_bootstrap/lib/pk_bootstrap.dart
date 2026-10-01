@@ -37,7 +37,7 @@ export 'package:pk_platform/pk_platform.dart'
         isPrintableLatin;
 export 'package:pk_reports/pk_reports.dart';
 export 'package:pk_sync/pk_sync.dart'
-    show ApplyResult, SyncRefused, SyncReport, defaultSyncPort;
+    show ApplyResult, FoundMaster, SyncRefused, SyncReport, defaultSyncPort;
 
 export 'src/app_config.dart';
 export 'src/app_services.dart';

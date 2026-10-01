@@ -23,6 +23,8 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
   final _code = TextEditingController();
   final _name = TextEditingController();
   bool _busy = false;
+  bool _looking = false;
+  List<FoundMaster>? _found;
   String? _error;
 
   @override
@@ -42,6 +44,22 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
       if (port != null) return (text.substring(0, colon), port);
     }
     return (text, defaultSyncPort);
+  }
+
+  /// Listens for a master saying where it is (M23).
+  Future<void> _find() async {
+    if (_looking) return;
+    setState(() {
+      _looking = true;
+      _error = null;
+    });
+    final found = await ref.read(appServicesProvider).sync.findMasters();
+    if (!mounted) return;
+    setState(() {
+      _looking = false;
+      _found = found;
+      if (found.length == 1) _address.text = found.single.hostAndPort;
+    });
   }
 
   Future<void> _join() async {
@@ -93,6 +111,36 @@ class _JoinScreenState extends ConsumerState<JoinScreen> {
           children: [
             BlOfflineNote(message: s.syncJoinHint),
             const SizedBox(height: BlTokens.space4),
+            BlButton(
+              label: s.syncFind,
+              icon: Icons.wifi_find_outlined,
+              kind: BlButtonKind.secondary,
+              busy: _looking,
+              onPressed: _looking ? null : () => unawaited(_find()),
+            ),
+            if (_found case final found?) ...[
+              const SizedBox(height: BlTokens.space2),
+              if (found.isEmpty)
+                Text(s.syncFindNone, style: TextStyle(color: t.inkMuted))
+              else
+                Wrap(
+                  spacing: BlTokens.space2,
+                  children: [
+                    for (final m in found)
+                      ChoiceChip(
+                        selected: _address.text == m.hostAndPort,
+                        label: Text(
+                          m.shopName.isEmpty
+                              ? m.hostAndPort
+                              : '${m.shopName} · ${m.address}',
+                        ),
+                        onSelected: (_) =>
+                            setState(() => _address.text = m.hostAndPort),
+                      ),
+                  ],
+                ),
+            ],
+            const SizedBox(height: BlTokens.space3),
             BlField(
               controller: _address,
               label: s.syncMasterAddress,

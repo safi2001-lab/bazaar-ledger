@@ -115,8 +115,23 @@ final class SyncServices {
     _hostEvents ??= host.changed.listen(_received.add);
     final bound = await host.start(port: port, address: address);
     await _app.drafts.write(syncHostingSlot, firmId);
+    // Says where it is on the wi-fi, so a counter can find it (M23). A
+    // network that will not carry a broadcast still has the typed address.
+    try {
+      await (_beacon ??= SyncBeacon()).start(
+        port: bound,
+        shopName: (await _app.queries.currentFirm())?.name ?? '',
+      );
+    } on Object {
+      _beacon = null;
+    }
     return bound;
   }
+
+  SyncBeacon? _beacon;
+
+  /// Masters heard on this wi-fi in the next few seconds.
+  Future<List<FoundMaster>> findMasters() => pk_sync.findMasters();
 
   Future<JoinGrant> _admit({
     required String label,
@@ -151,6 +166,8 @@ final class SyncServices {
   Future<void> stopHosting({bool forget = true}) async {
     final host = _host;
     _host = null;
+    _beacon?.stop();
+    _beacon = null;
     await _hostEvents?.cancel();
     _hostEvents = null;
     await host?.dispose();

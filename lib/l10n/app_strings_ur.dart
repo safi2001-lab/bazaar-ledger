@@ -2695,5 +2695,12 @@ class AppStringsUr extends AppStrings {
   String get planUsersUnlimited => 'Jitne chahein log';
 
   @override
+  String get syncFind => 'Wi-fi par master dhoondein';
+
+  @override
+  String get syncFindNone =>
+      'Koi master nahi mila. Dono phone ek hi wi-fi par hon, ya address khud likhein.';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

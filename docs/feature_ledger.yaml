@@ -279,11 +279,11 @@ milestones:
     # under its own letter, and syncs every half minute. Rows merge last
     # writer wins by HLC, the ledgers are append-only so no sale or stock
     # movement is merged away, and the stock balances are rebuilt from the
-    # whole ledger after each merge. Not built: finding the master without
-    # typing its address (mDNS), encrypting the traffic, counter-to-counter
-    # sync without the master, merging an edit column by column rather than
-    # row by row, and a screen for resolving a clash (they are counted, and
-    # kept under a marked name).
+    # whole ledger after each merge. Finding the master and encrypting the
+    # traffic came in M23. Not built: counter-to-counter sync without the
+    # master, merging an edit column by column rather than row by row, and
+    # a screen for resolving a clash (they are counted, and kept under a
+    # marked name).
     state: sealed
     owns:
       - lib/features/sync/**
@@ -499,6 +499,30 @@ milestones:
       - .github/workflows/release.yaml
       - docs/RELEASE.md
       - docs/privacy_policy.md
+
+  - id: M23
+    title: Wi-fi sync sealed end to end, and the master found without typing
+    # Opened and sealed 1 Oct 2026 at 1/1. Until now a counter's changes
+    # crossed the shop's wi-fi as plain JSON, and the shop's sync key rode
+    # in a header on every request: anybody on the same wi-fi could read
+    # the books and then join them. Protocol 2: joining is an X25519
+    # exchange with the six-digit code mixed in through PBKDF2 (100,000
+    # rounds), so the code never crosses the wire and a wrong one is a box
+    # that will not open; after joining, every body both ways is
+    # AES-256-GCM under a key derived from the sync key, which itself never
+    # crosses again. A relay that keeps every byte between two phones is
+    # the proof: no key, no code, no row, no shop name. The master also
+    # says where it is with a UDP broadcast while it hosts, and the join
+    # screen lists what it hears.
+    #
+    # Not exercised on a handset: some Android phones drop broadcasts while
+    # the screen is off or without a multicast lock, so the typed address
+    # stays. Protocol 1 counters must join again, which matters to nobody
+    # yet: no shop has a release build.
+    state: sealed
+    owns:
+      - packages/pk_sync/lib/src/seal.dart
+      - packages/pk_sync/lib/src/beacon.dart
 
 features:
   # ---------------------------------------------------------------------------
@@ -4339,3 +4363,16 @@ features:
       - discount ceiling a cashier's 5% goes through; 8% is refused and nothing is written
       - discount ceiling a customer the owner gave 10% off is rung at 10% by a cashier
       - discount ceiling the owner gives what they like
+  - id: M23-SYNC-01
+    milestone: M23
+    title: Nothing crosses the shop's wi-fi in the clear, and a counter finds the master
+    status: done
+    proof:
+      - sealed wire someone listening on the wi-fi sees no key, no code and no books
+      - sealed wire a box sealed with another shop's key does not open
+      - sync over http a counter joins with the code and then syncs with the key
+      - sync over http a wrong key is refused and nothing moves
+      - sync over http joining is shut until opened, and five wrong codes shut it
+      - finding the master a counter hears the master say where it is, and nothing more
+      - finding the master nobody there is an empty list, not a wait for ever
+      - a new phone joins the master from the welcome screen

@@ -7,10 +7,7 @@ import 'dart:typed_data';
 const defaultSyncPort = 47470;
 
 /// Bumped when the wire format changes in a way an older build cannot read.
-const syncProtocolVersion = 1;
-
-/// The header every request after joining carries.
-const syncKeyHeader = 'x-bazaar-sync-key';
+const syncProtocolVersion = 2;
 
 /// The largest body either side will read. A shop's whole history as JSON
 /// is a few megabytes; this is a ceiling against a stray client, not a

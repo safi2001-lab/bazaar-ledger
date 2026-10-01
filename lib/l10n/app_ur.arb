@@ -1586,5 +1586,7 @@
     }
   },
   "planUsersUnlimited": "Jitne chahein log",
+  "syncFind": "Wi-fi par master dhoondein",
+  "syncFindNone": "Koi master nahi mila. Dono phone ek hi wi-fi par hon, ya address khud likhein.",
   "chequeDone": "Ho gaya"
 }
