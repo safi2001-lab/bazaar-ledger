@@ -36,6 +36,37 @@ void main() {
     expect(sales, 0);
   });
 
+  testWidgets('a charge put on by mistake is taken back from the khata', (
+    tester,
+  ) async {
+    final app = await Harness.startWithShop(tester);
+    final rashid = await app.seedParty(name: 'Rashid Traders');
+
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Gahak');
+    await tapText(tester, 'Rashid Traders');
+    await tester.tap(find.byTooltip('Khate mein charge dalein'));
+    await tester.pumpAndSettle();
+    await typeInto(tester, 'Kitne ka charge', '800');
+    await typeInto(tester, 'Kis cheez ka (zaroori)', 'Bilty ka kiraya');
+    await tapButton(tester, 'Khate mein dalein');
+
+    await tester.tap(find.textContaining('Bilty ka kiraya'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Yeh charge wapas lein').last);
+    await settleReal(tester, until: find.text('Charge wapas ho gaya'));
+
+    final firm = await app.services.queries.currentFirm();
+    final party = await app.services.queries.partyById(firm!.id, rashid);
+    expect(party!.balance, Money.zero);
+    expect(
+      await app.scalar<String>(
+        "SELECT status FROM documents WHERE doc_type = 'other_income'",
+      ),
+      'void',
+    );
+  });
+
   testWidgets('a charge with no reason is not saved', (tester) async {
     final app = await Harness.startWithShop(tester);
     await app.seedParty(name: 'Rashid Traders');
@@ -71,7 +102,9 @@ void main() {
         partyId: rashid,
         amount: const Money.rupees(45000),
         mode: 'cheque',
-        paymentAccountId: accounts.firstWhere((a) => a.modeLabel == 'cheque').id,
+        paymentAccountId: accounts
+            .firstWhere((a) => a.modeLabel == 'cheque')
+            .id,
         chequeNo: '004512',
         chequeBank: 'Meezan',
         chequeDateUtcMillis: chequeDueUtcMillis(

@@ -38,6 +38,7 @@ abstract final class CartDraft {
     'partyDiscountBp': cart.partyDiscountBp,
     'sourceId': cart.sourceId,
     'sourceNo': cart.sourceNo,
+    'alsoSourceIds': cart.alsoSourceIds,
     'lines': [
       for (final line in cart.lines)
         {
@@ -109,6 +110,11 @@ abstract final class CartDraft {
         partyDiscountBp: partyDiscountBp,
         sourceId: root['sourceId'] as String?,
         sourceNo: root['sourceNo'] as String?,
+        alsoSourceIds: [
+          for (final id
+              in (root['alsoSourceIds'] as List<Object?>?) ?? const [])
+            if (id is String) id,
+        ],
       );
     } on Object {
       return null;

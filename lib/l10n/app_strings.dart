@@ -4904,6 +4904,36 @@ abstract class AppStrings {
   /// **'Shuru se ab tak'**
   String get statementAll;
 
+  /// No description provided for @chargeCancel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh charge wapas lein'**
+  String get chargeCancel;
+
+  /// No description provided for @chargeCancelConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no} wapas lena hai? Khata se hat jayega.'**
+  String chargeCancelConfirm(String no);
+
+  /// No description provided for @chargeCancelReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Charge wapas liya'**
+  String get chargeCancelReason;
+
+  /// No description provided for @chargeCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Charge wapas ho gaya'**
+  String get chargeCancelled;
+
+  /// No description provided for @challanBillAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ke {count} aur challan bhi isi bill mein'**
+  String challanBillAll(int count);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

@@ -44,9 +44,7 @@ void main() {
     );
   });
 
-  testWidgets('a challan with no customer is refused in words', (
-    tester,
-  ) async {
+  testWidgets('a challan with no customer is refused in words', (tester) async {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
@@ -118,6 +116,39 @@ void main() {
       'void',
     );
     expect(find.text('Maal wapas aa gaya'), findsOne, reason: 'the chip');
+  });
+
+  testWidgets('a week of challans to one customer is billed on one bill', (
+    tester,
+  ) async {
+    final app = await Harness.startWithShop(tester);
+    await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
+    await app.seedParty(name: 'Rashid Traders');
+
+    await _sendOil(tester);
+    await _sendOil(tester);
+    await _home(tester);
+    await tapText(tester, 'Challan');
+    await tester.tap(find.text('Rashid Traders').first);
+    await tester.pumpAndSettle();
+    await tapButton(tester, 'Is gahak ke 1 aur challan bhi isi bill mein');
+    await tapButton(tester, 'Paisay lein');
+    await tester.tap(find.byType(SwitchListTile).first);
+    await tester.pumpAndSettle();
+    await tapButton(tester, 'Save karein');
+
+    final bill = await app.rowsOf(
+      "SELECT id, total_paisa FROM documents WHERE doc_type = 'sale_invoice'",
+    );
+    expect(bill.single['total_paisa'], 500000);
+    expect(
+      await app.scalar<int>(
+        'SELECT COUNT(*) FROM doc_links WHERE to_document_id = '
+        "'${bill.single['id']}'",
+      ),
+      2,
+    );
+    expect(await app.countIn('stock_ledger'), 3, reason: 'no third exit');
   });
 
   testWidgets('a challan is shared as a PDF titled Delivery Challan', (

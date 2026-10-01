@@ -1516,5 +1516,20 @@
   "statementLastMonth": "Last month",
   "statementThisYear": "This year",
   "statementAll": "From the start",
+  "chargeCancel": "Cancel this charge",
+  "chargeCancelConfirm": "Cancel {no}? It comes off the khata.",
+  "@chargeCancelConfirm": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "chargeCancelReason": "Charge cancelled",
+  "chargeCancelled": "Charge cancelled",
+  "challanBillAll": "Bill with this customer's {count} other challans",
+  "@challanBillAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "chequeDone": "Done"
 }

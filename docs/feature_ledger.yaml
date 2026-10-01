@@ -162,11 +162,10 @@ milestones:
     # discount; a price is given as a quotation and billed from later; goods
     # go out on a challan and are billed from it without leaving the shelf
     # twice; and a charge that is not a sale goes on the khata as a debit
-    # note. Not built, and said here rather than left to be discovered: a
-    # sale order as a document of its own (a quotation the customer has
-    # accepted is billed or sent on a challan directly), a proforma invoice,
-    # a challan made from a quotation, billing part of a challan or several
-    # challans on one bill, and cancelling a debit note.
+    # note. A challan made from a quotation, several challans on one bill
+    # and cancelling a debit note came in M25. Not built: a sale order or a
+    # proforma as documents of their own (a quotation does both jobs), and
+    # billing part of a challan (cancel it and send what stays).
     state: sealed
     owns:
       - lib/features/documents/**
@@ -539,6 +538,19 @@ milestones:
     state: sealed
     owns:
       - lib/features/khata/statement.dart
+
+  - id: M25
+    title: The document gaps — a challan from a quotation, a week of challans on one bill, a charge taken back
+    # Opened and sealed 1 Oct 2026 at 1/1. A quotation loaded on the counter
+    # and sent on a challan is tied to it, so it reads as done and cannot be
+    # sent or billed again; a challan is billed, never sent on another. A
+    # customer's unbilled challans can be billed together on one bill, each
+    # at the cost its goods left at and each linked, and challans to two
+    # customers are refused as one bill. A charge (debit note) put on a
+    # khata by mistake is taken back from the khata screen, its entry
+    # mirrored, unless a payment was taken against it.
+    state: sealed
+    owns: []
 
 features:
   # ---------------------------------------------------------------------------
@@ -4402,3 +4414,14 @@ features:
       - purchase register every bill in the period, returns taken off the totals
       - a customer's statement goes to the share sheet as a PDF
       - a purchase shows on the purchase register
+  - id: M25-DOCS-01
+    milestone: M25
+    title: Quotations go on challans, challans go on one bill, charges can be taken back
+    status: done
+    proof:
+      - several challans to one customer are billed on one bill, at what the goods left at
+      - challans to two customers are not one bill
+      - a quotation sent on a challan is tied to it, and goes only once
+      - a charge put on by mistake is cancelled and leaves the khata as it was
+      - a week of challans to one customer is billed on one bill
+      - a charge put on by mistake is taken back from the khata

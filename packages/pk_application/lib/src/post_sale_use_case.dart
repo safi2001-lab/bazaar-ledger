@@ -68,10 +68,18 @@ final class PostSaleUseCase {
         for (final t in priced.tenders) t.paymentAccountId,
       });
 
-      // A bill made from a challan sells what the challan already sent.
-      final delivered = draft.convertedFromId == null
-          ? null
-          : await write.deliveredOn(draft.convertedFromId!);
+      // A bill made from a challan sells what the challan already sent; a
+      // bill for several, what they sent between them (M25).
+      final sent = <ChallanGoods>[];
+      for (final id in draft.sourceIds) {
+        if (await write.deliveredOn(id) case final goods?) sent.add(goods);
+      }
+      if (sent.isNotEmpty && sent.length != draft.sourceIds.length) {
+        throw const ChallanRefused(
+          'Only challans can be billed together on one bill.',
+        );
+      }
+      final delivered = sent.isEmpty ? null : ChallanGoods.combine(sent);
 
       final posting = builder.build(
         actor: actor,

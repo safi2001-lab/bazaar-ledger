@@ -259,8 +259,21 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
     }
   }
 
-  /// Puts the quotation on the counter, at the prices quoted.
-  Future<void> _bill() async {
+  /// This customer's other challans not yet billed (M25).
+  List<QuotationRow> _others() {
+    final q = widget.quotation;
+    if (!q.isChallan || q.partyId == null) return const [];
+    final all = ref.watch(challansProvider).valueOrNull ?? const [];
+    return [
+      for (final c in all)
+        if (c.id != q.id && c.partyId == q.partyId && !c.isBilled && !c.isVoid)
+          c,
+    ];
+  }
+
+  /// Puts the quotation on the counter, at the prices quoted; with
+  /// [together], this customer's other unbilled challans with it.
+  Future<void> _bill({bool together = false}) async {
     if (_busy) return;
     final s = AppStrings.of(context);
     if (!ref.read(cartProvider).isEmpty) {
@@ -277,7 +290,11 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
       final services = ref.read(appServicesProvider);
       final firm = (await ref.read(firmProvider.future))!;
       final q = widget.quotation;
-      final quoted = await services.queries.quotedLines(firm.id, q.id);
+      final also = together ? _others() : const <QuotationRow>[];
+      final quoted = [
+        for (final doc in [q, ...also])
+          ...await services.queries.quotedLines(firm.id, doc.id),
+      ];
       final lines = <(ItemSummary, QuotedLine)>[];
       for (final line in quoted) {
         final item = await services.queries.itemById(firm.id, line.itemId);
@@ -289,7 +306,9 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
       final party = q.partyId == null
           ? null
           : await services.queries.partyById(firm.id, q.partyId!);
-      ref.read(cartProvider.notifier).loadQuotation(q, lines, party: party);
+      ref
+          .read(cartProvider.notifier)
+          .loadQuotation(q, lines, party: party, alsoFrom: also);
       navigator.pop();
       unawaited(
         navigator.push(
@@ -351,6 +370,15 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
               icon: Icons.point_of_sale_outlined,
               big: true,
               onPressed: _busy ? null : () => unawaited(_bill()),
+            ),
+          ],
+          if (!q.isBilled && !q.isVoid && _others().isNotEmpty) ...[
+            const SizedBox(height: BlTokens.space2),
+            BlButton(
+              label: s.challanBillAll(_others().length),
+              icon: Icons.merge_type,
+              kind: BlButtonKind.secondary,
+              onPressed: _busy ? null : () => unawaited(_bill(together: true)),
             ),
           ],
           if (q.isChallan && !q.isBilled && !q.isVoid) ...[

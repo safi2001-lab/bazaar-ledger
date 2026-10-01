@@ -128,4 +128,27 @@ void main() {
       0,
     );
   });
+
+  test('a charge put on by mistake is cancelled and leaves the khata as it '
+      'was', () async {
+    final note = await charge(actor, fee(rupees: 1500, note: 'Bank fee'));
+    final cancel = VoidDocumentUseCase(writer: DriftVoidWriter(runner: runner));
+    await cancel(actor, documentId: note.id, reason: 'Put on by mistake');
+
+    final party = await queries.partyById(firm.firmId, rashidId);
+    expect(party!.balance, Money.zero);
+    final ledger = await queries.partyLedger(firm.firmId, rashidId);
+    expect(ledger, isEmpty);
+    final books = await db
+        .customSelect(
+          'SELECT COALESCE(SUM(debit_paisa), 0) AS d, '
+          'COALESCE(SUM(credit_paisa), 0) AS c FROM journal_lines',
+        )
+        .getSingle();
+    expect(books.read<int>('d'), books.read<int>('c'));
+    await expectLater(
+      cancel(actor, documentId: note.id, reason: 'Again'),
+      throwsA(isA<VoidRefused>()),
+    );
+  });
 }

@@ -39,11 +39,16 @@ final class ChallanPosting {
     required this.stockMovements,
     required this.journal,
     required this.auditSummary,
+    this.fromQuotationId,
   });
 
   final DocumentPosting document;
   final List<DocumentLinePosting> lines;
   final List<StockMovementPosting> stockMovements;
+
+  /// The quotation these goods were sent against, linked `converted_from`
+  /// (M25): the customer said yes, and the goods went before the bill.
+  final String? fromQuotationId;
 
   /// Null only when nothing on it had a cost to move.
   final JournalEntryPosting? journal;
@@ -133,6 +138,7 @@ final class DeliveryChallanBuilder {
         ? '1 item'
         : '${calculated.lines.length} items';
     return ChallanPosting(
+      fromQuotationId: draft.convertedFromId,
       document: DocumentPosting(
         docType: 'delivery_challan',
         docNo: number.formatted,
@@ -195,6 +201,36 @@ final class ChallanGoods {
   final Map<String, ({Qty qty, Money cost})> byItem;
 
   Money get cost => Money.sum([for (final g in byItem.values) g.cost]);
+
+  /// Several challans to one party, billed together (M25): what they sent
+  /// between them, item by item.
+  static ChallanGoods combine(List<ChallanGoods> challans) {
+    if (challans.length == 1) return challans.single;
+    final first = challans.first;
+    for (final c in challans.skip(1)) {
+      if (c.partyId != first.partyId) {
+        throw ChallanRefused(
+          '${c.docNo} went to somebody else than ${first.docNo}. One bill '
+          'is for one customer.',
+        );
+      }
+    }
+    final byItem = <String, ({Qty qty, Money cost})>{};
+    for (final c in challans) {
+      for (final MapEntry(key: item, value: sent) in c.byItem.entries) {
+        final held = byItem[item];
+        byItem[item] = held == null
+            ? sent
+            : (qty: held.qty + sent.qty, cost: held.cost + sent.cost);
+      }
+    }
+    return ChallanGoods(
+      challanId: first.challanId,
+      docNo: [for (final c in challans) c.docNo].join(', '),
+      partyId: first.partyId,
+      byItem: byItem,
+    );
+  }
 
   /// The cost of each calculated line, taken from what the challan sent.
   ///

@@ -90,7 +90,10 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
           '${billed.read<String>('doc_no')}. Cancel that bill first.',
         );
       }
-    } else if (docType != 'sale_invoice') {
+    } else if (docType != 'sale_invoice' && docType != 'other_income') {
+      // A debit note (`other_income`, M25) is a charge on the khata with no
+      // goods behind it: undoing it is its entry mirrored, exactly as a bill
+      // with nothing on the shelf to put back.
       throw VoidRefused(
         '${doc.read<String>('doc_no')} is not a sale bill, and only a sale '
         'bill can be cancelled this way.',

@@ -1595,5 +1595,20 @@
   "statementLastMonth": "Pichhle mahine",
   "statementThisYear": "Is saal",
   "statementAll": "Shuru se ab tak",
+  "chargeCancel": "Yeh charge wapas lein",
+  "chargeCancelConfirm": "{no} wapas lena hai? Khata se hat jayega.",
+  "@chargeCancelConfirm": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "chargeCancelReason": "Charge wapas liya",
+  "chargeCancelled": "Charge wapas ho gaya",
+  "challanBillAll": "Is gahak ke {count} aur challan bhi isi bill mein",
+  "@challanBillAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
   "chequeDone": "Ho gaya"
 }

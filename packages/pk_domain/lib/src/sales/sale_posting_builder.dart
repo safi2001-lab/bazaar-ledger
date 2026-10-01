@@ -306,6 +306,7 @@ final class SalePostingBuilder {
       document: document,
       lines: lines,
       convertedFromId: draft.convertedFromId,
+      alsoFromIds: draft.alsoFromIds,
       payments: payments,
       stockMovements: stock,
       journal: JournalEntryPosting(

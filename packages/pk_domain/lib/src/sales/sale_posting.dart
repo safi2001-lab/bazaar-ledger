@@ -287,6 +287,7 @@ final class SalePosting {
     required this.journal,
     required this.auditSummary,
     this.convertedFromId,
+    this.alsoFromIds = const [],
   });
 
   final DocumentPosting document;
@@ -294,6 +295,9 @@ final class SalePosting {
 
   /// The document this bill was made from, linked `converted_from`.
   final String? convertedFromId;
+
+  /// More challans on the same bill, each linked the same way (M25).
+  final List<String> alsoFromIds;
   final List<PaymentPosting> payments;
   final List<StockMovementPosting> stockMovements;
   final JournalEntryPosting journal;

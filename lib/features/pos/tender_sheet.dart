@@ -125,6 +125,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         partyName: cart.partyName,
         billDiscount: cart.billDiscount,
         roundToRupee: firm.roundInvoiceToRupee,
+        // A quotation on the counter sent on a challan stays tied to it
+        // (M25), so it reads as done rather than still open.
+        convertedFromId: challan ? cart.sourceId : null,
       );
       final String message;
       if (challan) {
@@ -380,6 +383,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           billDiscount: cart.billDiscount,
           roundToRupee: firm.roundInvoiceToRupee,
           convertedFromId: cart.sourceId,
+          alsoFromIds: cart.alsoSourceIds,
         ),
       );
 

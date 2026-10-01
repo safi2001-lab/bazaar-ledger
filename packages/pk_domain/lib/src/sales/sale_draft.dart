@@ -155,6 +155,7 @@ final class SaleDraft {
     this.notes,
     this.salespersonId,
     this.convertedFromId,
+    this.alsoFromIds = const [],
     this.locationCode = 'MAIN',
   });
 
@@ -166,6 +167,13 @@ final class SaleDraft {
 
   /// The quotation (or order) this bill was made from, if any.
   final String? convertedFromId;
+
+  /// More challans billed on the same bill as [convertedFromId] (M25): a
+  /// week of deliveries to one customer, settled on one bill.
+  final List<String> alsoFromIds;
+
+  /// Every document this bill is made from.
+  List<String> get sourceIds => [?convertedFromId, ...alsoFromIds];
 
   /// A walk-in has no party row at all. That is the common case at a kiryana
   /// counter and must never be an obstacle to billing.
@@ -204,6 +212,7 @@ final class SaleDraft {
     notes: notes,
     salespersonId: salespersonId,
     convertedFromId: convertedFromId,
+    alsoFromIds: alsoFromIds,
     locationCode: locationCode,
   );
 }

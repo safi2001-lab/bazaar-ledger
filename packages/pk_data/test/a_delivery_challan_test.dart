@@ -202,6 +202,119 @@ void main() {
     expect(await onShelf(), -40000);
   });
 
+  test('several challans to one customer are billed on one bill, at what '
+      'the goods left at', () async {
+    final monday = await send(actor, cartons(10));
+    await runner.run(actor, (tx) async {
+      await tx.update('items', oilId, {
+        'avg_cost_milli_paisa': Rate.rupees(2100).inMilliPaisa,
+      });
+    });
+    final thursday = await send(actor, cartons(5));
+
+    final bill = await sell(
+      actor,
+      SaleDraft(
+        partyId: rashidId,
+        partyName: 'Rashid Traders',
+        convertedFromId: monday.id,
+        alsoFromIds: [thursday.id],
+        lines: [
+          SaleLineDraft(
+            itemId: oilId,
+            itemName: 'Cooking Oil 5L',
+            qty: Qty.units(15),
+            baseQty: Qty.units(15),
+            unitId: pcsUnitId,
+            unitCode: 'pcs',
+            rate: Rate.rupees(2400),
+          ),
+        ],
+      ),
+    );
+
+    // 10 at Rs 2,000 and 5 at Rs 2,100: the cost each van-load left at.
+    expect(await net('cogs'), 3050000);
+    expect(await net('goods_on_challan'), 0);
+    expect(await onShelf(), -15000);
+    expect(await net('accounts_receivable'), 3600000);
+    final links = await count(
+      "SELECT COUNT(*) FROM doc_links WHERE to_document_id = '${bill.documentId}'",
+    );
+    expect(links, 2);
+    final challans = await DriftAppQueries(db).challans(firm.firmId);
+    expect(challans.every((c) => c.isBilled), isTrue);
+
+    // Neither can be billed again.
+    await expectLater(
+      sell(actor, cartons(5, from: thursday.id)),
+      throwsA(anything),
+    );
+  });
+
+  test('challans to two customers are not one bill', () async {
+    final a = await send(actor, cartons(10));
+    final b = await send(actor, cartons(5, to: bilalId));
+    await expectLater(
+      sell(
+        actor,
+        SaleDraft(
+          partyId: rashidId,
+          partyName: 'Rashid Traders',
+          convertedFromId: a.id,
+          alsoFromIds: [b.id],
+          lines: [
+            SaleLineDraft(
+              itemId: oilId,
+              itemName: 'Cooking Oil 5L',
+              qty: Qty.units(15),
+              baseQty: Qty.units(15),
+              unitId: pcsUnitId,
+              unitCode: 'pcs',
+              rate: Rate.rupees(2400),
+            ),
+          ],
+        ),
+      ),
+      throwsA(isA<ChallanRefused>()),
+    );
+    expect(
+      await count(
+        "SELECT COUNT(*) FROM documents WHERE doc_type = 'sale_invoice'",
+      ),
+      0,
+    );
+  });
+
+  test(
+    'a quotation sent on a challan is tied to it, and goes only once',
+    () async {
+      final quote = await SaveQuotationUseCase(
+        writer: DriftQuotationWriter(runner: runner),
+      )(actor, cartons(10));
+      final c = await send(actor, cartons(10, from: quote.id));
+      final link = await count(
+        "SELECT COUNT(*) FROM doc_links WHERE from_document_id = '${quote.id}' "
+        "AND to_document_id = '${c.id}'",
+      );
+      expect(link, 1);
+      await expectLater(
+        send(actor, cartons(10, from: quote.id)),
+        throwsA(isA<ChallanRefused>()),
+      );
+      await expectLater(
+        sell(actor, cartons(10, from: quote.id)),
+        throwsA(anything),
+        reason: 'the quotation is already done; it is the challan to bill',
+      );
+      // A challan is billed, never sent on another challan.
+      await expectLater(
+        send(actor, cartons(10, from: c.id)),
+        throwsA(isA<ChallanRefused>()),
+      );
+    },
+  );
+
   test('a challan has to name its customer', () async {
     await expectLater(
       send(actor, cartons(40).withParty(null)),

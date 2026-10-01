@@ -85,6 +85,38 @@ final class _Context implements ChallanWriteContext {
     if (posting.journal case final entry?) {
       await insertJournal(_tx, id, entry);
     }
+    if (posting.fromQuotationId case final quotationId?) {
+      final source = await _tx.selectOne(
+        'SELECT doc_no, doc_type FROM documents WHERE id = ? AND firm_id = ? '
+        "AND status = 'posted' AND deleted_at_utc IS NULL",
+        [quotationId, actor.firmId],
+      );
+      if (source == null || source.read<String>('doc_type') != 'quotation') {
+        throw const ChallanRefused(
+          'Only a quotation can be sent on a challan. A challan already '
+          'sent is billed, not sent again.',
+        );
+      }
+      final taken = await _tx.selectOne(
+        'SELECT d.doc_no FROM doc_links link '
+        'JOIN documents d ON d.id = link.to_document_id '
+        "WHERE link.from_document_id = ? AND link.link_type = 'converted_from' "
+        "  AND link.deleted_at_utc IS NULL AND d.status <> 'void'",
+        [quotationId],
+      );
+      if (taken != null) {
+        throw ChallanRefused(
+          '${source.read<String>('doc_no')} is already '
+          '${taken.read<String>('doc_no')}.',
+        );
+      }
+      await _tx.insert('doc_links', {
+        'from_document_id': quotationId,
+        'to_document_id': id,
+        'link_type': 'converted_from',
+        'amount_paisa': posting.document.total.inPaisa,
+      });
+    }
     _tx.audit(
       action: 'CHALLAN_ISSUED',
       entityTable: 'documents',

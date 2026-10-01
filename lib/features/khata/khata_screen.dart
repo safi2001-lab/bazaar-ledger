@@ -345,6 +345,15 @@ class _History extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: BlTokens.space2),
                     child: BlCard(
+                      // A charge put on the khata by mistake can be taken
+                      // back (M25); bills are cancelled from the bill.
+                      onTap:
+                          entry.kind == 'charge' &&
+                              ref
+                                  .read(appServicesProvider)
+                                  .can(Permission.voidDocuments)
+                          ? () => unawaited(_cancelCharge(context, ref, entry))
+                          : null,
                       child: Row(
                         children: [
                           Icon(
@@ -394,5 +403,47 @@ class _History extends ConsumerWidget {
               ],
             ),
     );
+  }
+}
+
+/// Takes a charge back off the khata: its entry mirrored, its balance gone.
+Future<void> _cancelCharge(
+  BuildContext context,
+  WidgetRef ref,
+  LedgerEntry entry,
+) async {
+  final s = AppStrings.of(context);
+  final no = entry.reference.split(' · ').first;
+  final yes = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(s.chargeCancel),
+      content: Text(s.chargeCancelConfirm(no)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(s.actionCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(s.chargeCancel),
+        ),
+      ],
+    ),
+  );
+  if (yes != true || !context.mounted) return;
+  final services = ref.read(appServicesProvider);
+  final messenger = ScaffoldMessenger.of(context);
+  final container = ProviderScope.containerOf(context, listen: false);
+  try {
+    await services.voidDocument(
+      services.actorNow(),
+      documentId: entry.id,
+      reason: s.chargeCancelReason,
+    );
+    container.bumpRefresh();
+    messenger.showSnackBar(SnackBar(content: Text(s.chargeCancelled)));
+  } on VoidRefused catch (refused) {
+    messenger.showSnackBar(SnackBar(content: Text(refused.reason)));
   }
 }

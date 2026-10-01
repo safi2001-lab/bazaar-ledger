@@ -178,6 +178,7 @@ final class Cart {
     this.partyDiscountBp = 0,
     this.sourceId,
     this.sourceNo,
+    this.alsoSourceIds = const [],
   });
 
   final List<CartLine> lines;
@@ -194,6 +195,9 @@ final class Cart {
   /// The quotation this bill is being made from, and its number.
   final String? sourceId;
   final String? sourceNo;
+
+  /// More challans billed on this one bill with [sourceId] (M25).
+  final List<String> alsoSourceIds;
 
   bool get isEmpty => lines.isEmpty;
 
@@ -217,6 +221,7 @@ final class Cart {
   }) => Cart(
     sourceId: sourceId,
     sourceNo: sourceNo,
+    alsoSourceIds: alsoSourceIds,
     lines: lines ?? this.lines,
     partyId: clearParty ? null : partyId ?? this.partyId,
     partyName: clearParty ? null : partyName ?? this.partyName,
@@ -512,6 +517,7 @@ class CartNotifier extends Notifier<Cart> {
     QuotationRow quotation,
     List<(ItemSummary, QuotedLine)> lines, {
     PartySummary? party,
+    List<QuotationRow> alsoFrom = const [],
   }) {
     state = Cart(
       lines: [
@@ -535,7 +541,8 @@ class CartNotifier extends Notifier<Cart> {
       priceTier: party?.priceTier ?? PriceTier.retail,
       partyDiscountBp: party?.defaultDiscountBp ?? 0,
       sourceId: quotation.id,
-      sourceNo: quotation.docNo,
+      sourceNo: [quotation.docNo, for (final q in alsoFrom) q.docNo].join(', '),
+      alsoSourceIds: [for (final q in alsoFrom) q.id],
     );
   }
 }

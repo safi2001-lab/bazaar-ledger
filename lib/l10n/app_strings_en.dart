@@ -2724,5 +2724,24 @@ class AppStringsEn extends AppStrings {
   String get statementAll => 'From the start';
 
   @override
+  String get chargeCancel => 'Cancel this charge';
+
+  @override
+  String chargeCancelConfirm(String no) {
+    return 'Cancel $no? It comes off the khata.';
+  }
+
+  @override
+  String get chargeCancelReason => 'Charge cancelled';
+
+  @override
+  String get chargeCancelled => 'Charge cancelled';
+
+  @override
+  String challanBillAll(int count) {
+    return 'Bill with this customer\'s $count other challans';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

@@ -154,7 +154,8 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
     // A bill made from a quotation says so, once. Billing the same
     // quotation twice is two bills for one order, and the second is almost
     // always a double tap or a second till.
-    if (posting.convertedFromId case final sourceId?) {
+    // Several challans on one bill (M25) are each linked, and each checked.
+    for (final sourceId in [?posting.convertedFromId, ...posting.alsoFromIds]) {
       final billed = await _tx.selectOne(
         'SELECT d.doc_no FROM doc_links link '
         'JOIN documents d ON d.id = link.to_document_id '

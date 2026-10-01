@@ -2724,5 +2724,24 @@ class AppStringsUr extends AppStrings {
   String get statementAll => 'Shuru se ab tak';
 
   @override
+  String get chargeCancel => 'Yeh charge wapas lein';
+
+  @override
+  String chargeCancelConfirm(String no) {
+    return '$no wapas lena hai? Khata se hat jayega.';
+  }
+
+  @override
+  String get chargeCancelReason => 'Charge wapas liya';
+
+  @override
+  String get chargeCancelled => 'Charge wapas ho gaya';
+
+  @override
+  String challanBillAll(int count) {
+    return 'Is gahak ke $count aur challan bhi isi bill mein';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }
