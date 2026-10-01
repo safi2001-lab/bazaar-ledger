@@ -2780,5 +2780,12 @@ class AppStringsUr extends AppStrings {
   String get vansSettleYesterday => 'Kal ka hisaab (aaj nahi)';
 
   @override
+  String get syncClashHint =>
+      'Do counters par ek hi code ya barcode se do cheezen ban gayin. Dono rakhi gayin, doosri ke naam par ~ nishaan hai. Theek kar ke \'Ho gaya\' dabayein.';
+
+  @override
+  String get syncClashDone => 'Ho gaya';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

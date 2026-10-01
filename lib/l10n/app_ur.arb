@@ -1631,5 +1631,7 @@
     }
   },
   "vansSettleYesterday": "Kal ka hisaab (aaj nahi)",
+  "syncClashHint": "Do counters par ek hi code ya barcode se do cheezen ban gayin. Dono rakhi gayin, doosri ke naam par ~ nishaan hai. Theek kar ke 'Ho gaya' dabayein.",
+  "syncClashDone": "Ho gaya",
   "chequeDone": "Ho gaya"
 }

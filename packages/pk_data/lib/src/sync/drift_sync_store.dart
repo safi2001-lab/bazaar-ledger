@@ -181,6 +181,49 @@ final class DriftSyncStore implements SyncPeer {
     return row.read<int>('n');
   }
 
+  /// Each clash still to be looked at (M29): what clashed, by the name a
+  /// shopkeeper knows it by. The row itself is already kept under a marked
+  /// code or number; this is the list of what to put right.
+  Future<List<({String changeId, String table, String label})>>
+  clashes() async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT c.id, c.entity_table,
+                 CASE c.entity_table
+                   WHEN 'items' THEN (SELECT name || COALESCE(' · ' || barcode, '')
+                                      FROM items WHERE id = c.entity_id)
+                   WHEN 'parties' THEN (SELECT name FROM parties
+                                        WHERE id = c.entity_id)
+                   WHEN 'documents' THEN (SELECT doc_no FROM documents
+                                          WHERE id = c.entity_id)
+                 END AS label
+          FROM change_log c
+          WHERE c.firm_id = ? AND c.sync_state = 'conflict'
+          ORDER BY c.created_at_utc, c.id
+          ''',
+          variables: [Variable<String>(firmId)],
+        )
+        .get();
+    return [
+      for (final r in rows)
+        (
+          changeId: r.read<String>('id'),
+          table: r.read<String>('entity_table'),
+          label:
+              r.readNullable<String>('label') ?? r.read<String>('entity_table'),
+        ),
+    ];
+  }
+
+  /// Marks a clash as looked at. The change log's state is this device's
+  /// own and never travels, so this is a local note, not a change.
+  Future<void> resolveClash(String changeId) => _db.customStatement(
+    "UPDATE change_log SET sync_state = 'acked' "
+    "WHERE id = ? AND firm_id = ? AND sync_state = 'conflict'",
+    [changeId, firmId],
+  );
+
   static String _entityHlc(SyncChange c) => c.row['entity_hlc']! as String;
 
   Future<_Outcome> _merge(SyncChange change) async {

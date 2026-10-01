@@ -5000,6 +5000,18 @@ abstract class AppStrings {
   /// **'Kal ka hisaab (aaj nahi)'**
   String get vansSettleYesterday;
 
+  /// No description provided for @syncClashHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Do counters par ek hi code ya barcode se do cheezen ban gayin. Dono rakhi gayin, doosri ke naam par ~ nishaan hai. Theek kar ke \'Ho gaya\' dabayein.'**
+  String get syncClashHint;
+
+  /// No description provided for @syncClashDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ho gaya'**
+  String get syncClashDone;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

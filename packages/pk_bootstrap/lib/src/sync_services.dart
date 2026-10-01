@@ -342,6 +342,16 @@ final class SyncServices {
   /// number, kept under a marked name.
   Future<int> conflicts() => _store(_id.firmId).conflictCount();
 
+  /// The clashes still to be looked at, by name (M29).
+  Future<List<({String changeId, String table, String label})>> clashes() =>
+      _store(_id.firmId).clashes();
+
+  /// Marks a clash as put right. Owner or manager.
+  Future<void> resolveClash(String changeId) {
+    _app.require(Permission.settings);
+    return _store(_id.firmId).resolveClash(changeId);
+  }
+
   /// Every device of the shop this phone knows of.
   Future<List<SyncDevice>> devices() async {
     final rows = await _app.database

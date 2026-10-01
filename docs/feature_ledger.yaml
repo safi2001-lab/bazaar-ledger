@@ -278,10 +278,9 @@ milestones:
     # writer wins by HLC, the ledgers are append-only so no sale or stock
     # movement is merged away, and the stock balances are rebuilt from the
     # whole ledger after each merge. Finding the master and encrypting the
-    # traffic came in M23. Not built: counter-to-counter sync without the
-    # master, merging an edit column by column rather than row by row, and
-    # a screen for resolving a clash (they are counted, and kept under a
-    # marked name).
+    # traffic came in M23, and the list of clashes to put right in M29. Not
+    # built: counter-to-counter sync without the master, and merging an
+    # edit column by column rather than row by row.
     state: sealed
     owns:
       - lib/features/sync/**
@@ -599,6 +598,17 @@ milestones:
     #
     # Not exercised against PRAL: the field names follow the plan
     # document's DI summary, as M19's do.
+    state: sealed
+    owns: []
+
+  - id: M29
+    title: The clashes two counters made, listed by name to put right
+    # Opened and sealed 1 Oct 2026 at 1/1. When two counters made two things
+    # with the same code, barcode or number, both are kept and the second
+    # carries a ~ mark; until now the sync screen only counted them. It now
+    # lists each by the name the shop knows it by, with the marked value,
+    # and once it has been renamed or checked it is marked done and leaves
+    # the list. Marking is this phone's own note and never travels.
     state: sealed
     owns: []
 
@@ -4502,3 +4512,9 @@ features:
       - fbr reporting goods returned off a reported bill go to FBR as a credit note naming it
       - fbr reporting a credit note waits until the bill it returns has its FBR number
       - fbr reporting a return off a bill made before reporting began is not sent
+  - id: M29-CLASH-01
+    milestone: M29
+    title: Sync clashes are listed by name and can be marked done
+    status: done
+    proof:
+      - lan sync two items given the same barcode apart are both kept

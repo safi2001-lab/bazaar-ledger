@@ -19,6 +19,7 @@ final class SyncView {
     required this.devices,
     required this.conflicts,
     required this.addresses,
+    this.clashes = const [],
   });
 
   final bool isCounter;
@@ -26,6 +27,9 @@ final class SyncView {
   final List<SyncDevice> devices;
   final int conflicts;
   final List<String> addresses;
+
+  /// Each clash to look at, by name (M29).
+  final List<({String changeId, String table, String label})> clashes;
 }
 
 final syncViewProvider = FutureProvider.autoDispose<SyncView>((ref) async {
@@ -37,6 +41,7 @@ final syncViewProvider = FutureProvider.autoDispose<SyncView>((ref) async {
     master: await sync.master(),
     devices: await sync.devices(),
     conflicts: await sync.conflicts(),
+    clashes: await sync.clashes(),
     addresses: sync.isHosting ? await SyncServices.addresses() : const [],
   );
 });
@@ -55,6 +60,12 @@ class _SyncScreenState extends ConsumerState<SyncScreen> {
   String? _message;
   String? _code;
   Timer? _watchJoin;
+
+  Future<void> _resolve(String changeId) async {
+    final container = ProviderScope.containerOf(context, listen: false);
+    await ref.read(appServicesProvider).sync.resolveClash(changeId);
+    container.bumpRefresh();
+  }
 
   @override
   void dispose() {
@@ -239,6 +250,22 @@ class _SyncScreenState extends ConsumerState<SyncScreen> {
                   s.syncConflicts('${v.conflicts}'),
                   tone: BlChipTone.warn,
                 ),
+                const SizedBox(height: BlTokens.space2),
+                Text(
+                  s.syncClashHint,
+                  style: TextStyle(fontSize: 13, color: t.inkMuted),
+                ),
+                // Each one by name, to rename or check and then mark done.
+                for (final clash in v.clashes)
+                  ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.call_split),
+                    title: Text(clash.label),
+                    trailing: TextButton(
+                      onPressed: () => unawaited(_resolve(clash.changeId)),
+                      child: Text(s.syncClashDone),
+                    ),
+                  ),
               ],
               const SizedBox(height: BlTokens.space4),
               BlSectionHeader(s.syncDevices),

@@ -287,6 +287,14 @@ void main() {
             .read<String>('barcode'),
         '8964000123',
       );
+
+      // The clash is listed by name, and once looked at it is cleared.
+      final clashes = await master.sync.clashes();
+      expect(clashes.single.label, startsWith('Lipton 95g'));
+      expect(clashes.single.label, contains('8964000123~'));
+      await master.sync.resolveClash(clashes.single.changeId);
+      expect(await master.sync.conflicts(), 0);
+      expect(await master.sync.clashes(), isEmpty);
     });
 
     test('staff PINs travel, so staff sign in at the counter', () async {

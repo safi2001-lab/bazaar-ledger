@@ -2780,5 +2780,12 @@ class AppStringsEn extends AppStrings {
   String get vansSettleYesterday => 'Settle yesterday, not today';
 
   @override
+  String get syncClashHint =>
+      'Two counters made two things with the same code or barcode. Both are kept; the second carries a ~ mark. Put it right, then tap Done.';
+
+  @override
+  String get syncClashDone => 'Done';
+
+  @override
   String get chequeDone => 'Done';
 }
