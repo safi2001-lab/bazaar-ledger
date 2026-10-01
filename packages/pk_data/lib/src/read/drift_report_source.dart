@@ -42,6 +42,10 @@ final class DriftReportSource implements ReportSource {
             AND je.entry_date_local BETWEEN ?2 AND ?3
             AND je.deleted_at_utc IS NULL
             AND jl.deleted_at_utc IS NULL
+            -- A year's closing entry (M26) moves its profit into the owner's
+            -- equity; it is not itself income or spending, and counting it
+            -- would show every closed year as having made nothing.
+            AND je.source_type <> 'year_close'
           GROUP BY a.id
           ORDER BY a.code
           ''',

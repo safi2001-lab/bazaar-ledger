@@ -323,6 +323,27 @@ final class AppServices {
     );
   }
 
+  /// Closes a fiscal year (`2526` for 2025-26) into retained earnings
+  /// (M26). Whoever may post journal vouchers may close a year.
+  Future<({String id, String entryNo})> closeYear(int fiscalYear) {
+    require(Permission.journal);
+    return DriftYearClose(runner: _runner).close(
+      actorNow(),
+      fiscalYear: fiscalYear,
+    );
+  }
+
+  /// Adds an account of the shop's own to the chart (M26): `asset`,
+  /// `liability`, `equity`, `income` or `expense`.
+  Future<String> addAccount({required String name, required String type}) {
+    require(Permission.journal);
+    return DriftYearClose(runner: _runner).addAccount(
+      actorNow(),
+      name: name,
+      type: type,
+    );
+  }
+
   CloseDayUseCase get closeDay {
     require(Permission.closeDay);
     return CloseDayUseCase(writer: DriftDayCloseWriter(runner: _runner));

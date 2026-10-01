@@ -224,10 +224,8 @@ milestones:
     # Sealed 26 Sep 2026 at 6/6. Openings are in the books, the trial balance
     # and balance sheet are in the report pack, the chart and every account's
     # entries are on the phone, vouchers are written by hand, and one phone
-    # keeps more than one firm. Not built: closing a year into retained
-    # earnings (the balance sheet shows profit to date instead), accounts of
-    # the shop's own beyond the shipped chart, and a firm's books
-    # consolidated with another's.
+    # keeps more than one firm. Closing a year and the shop's own accounts
+    # came in M26. Not built: a firm's books consolidated with another's.
     state: sealed
     owns:
       - lib/features/accounting/**
@@ -551,6 +549,23 @@ milestones:
     # mirrored, unless a payment was taken against it.
     state: sealed
     owns: []
+
+  - id: M26
+    title: The year closed into retained earnings, and accounts of the shop's own
+    # Opened and sealed 1 Oct 2026 at 1/1. After 30 June, Accounts closes
+    # the year just ended: one entry dated 30 June empties every income and
+    # expense account into Retained Earnings, so the new year's profit and
+    # loss starts at nothing and the balance sheet carries the year's profit
+    # as the owner's. The closed year's own profit and loss still reads as
+    # it was (closing entries are not income or spending). Closing again
+    # closes only what was posted into the year since, so a June bill found
+    # in July is not lost; a year with nothing left is refused in words, as
+    # is a year not yet over. The shop adds its own accounts (a generator's
+    # diesel, a second bank, a loan), numbered after the last of their kind.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/accounting/year_close.dart
+      - packages/pk_data/lib/src/write/drift_year_close.dart
 
 features:
   # ---------------------------------------------------------------------------
@@ -4425,3 +4440,13 @@ features:
       - a charge put on by mistake is cancelled and leaves the khata as it was
       - a week of challans to one customer is billed on one bill
       - a charge put on by mistake is taken back from the khata
+  - id: M26-YEAR-01
+    milestone: M26
+    title: A year is closed into retained earnings, and the chart takes the shop's own accounts
+    status: done
+    proof:
+      - year close the year's profit moves into retained earnings, and the year still reads as it was
+      - year close a year cannot be closed before it ends, nor twice
+      - year close a bill entered late for June is closed by closing again
+      - accounts of the shop's own an expense head is added after the last one, and can be spent against
+      - the shop adds an account of its own, and a year with nothing in it is not closed

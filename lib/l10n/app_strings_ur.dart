@@ -2743,5 +2743,39 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get accountsAdd => 'Naya account';
+
+  @override
+  String get accountsAddName => 'Account ka naam';
+
+  @override
+  String get accountsTypeAsset => 'Asaasa (asset)';
+
+  @override
+  String get accountsTypeLiability => 'Qarz (liability)';
+
+  @override
+  String get accountsTypeEquity => 'Malik ka (equity)';
+
+  @override
+  String get accountsTypeIncome => 'Aamdani';
+
+  @override
+  String get accountsTypeExpense => 'Kharcha';
+
+  @override
+  String get accountsCloseYear => 'Saal band karein';
+
+  @override
+  String accountsCloseYearConfirm(String year) {
+    return 'Saal $year ka munafa retained earnings mein chala jayega. Band karein?';
+  }
+
+  @override
+  String accountsYearClosed(String no) {
+    return 'Saal band ho gaya ($no)';
+  }
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

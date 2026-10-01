@@ -1531,5 +1531,25 @@
       "count": {"type": "int"}
     }
   },
+  "accountsAdd": "New account",
+  "accountsAddName": "Account name",
+  "accountsTypeAsset": "Asset",
+  "accountsTypeLiability": "Liability",
+  "accountsTypeEquity": "Equity",
+  "accountsTypeIncome": "Income",
+  "accountsTypeExpense": "Expense",
+  "accountsCloseYear": "Close the year",
+  "accountsCloseYearConfirm": "The profit of {year} moves into retained earnings. Close it?",
+  "@accountsCloseYearConfirm": {
+    "placeholders": {
+      "year": {"type": "String"}
+    }
+  },
+  "accountsYearClosed": "Year closed ({no})",
+  "@accountsYearClosed": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
   "chequeDone": "Done"
 }

@@ -35,6 +35,7 @@ export 'src/write/drift_sale_writer.dart';
 export 'src/write/drift_staff_store.dart';
 export 'src/write/drift_van_writer.dart' show DriftVanWriter;
 export 'src/write/drift_void_writer.dart';
+export 'src/write/drift_year_close.dart';
 export 'src/write/first_run.dart';
 export 'src/write/opening_entries.dart' show postMissingOpenings;
 export 'src/write/sequence_allocator.dart';

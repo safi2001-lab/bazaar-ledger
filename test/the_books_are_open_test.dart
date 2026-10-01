@@ -7,7 +7,9 @@ import 'support/harness.dart';
 /// The books themselves, from the screen: every account, a voucher written
 /// by hand, and the balance sheet.
 void main() {
-  testWidgets('a voucher moves cash from the drawer to the bank', (tester) async {
+  testWidgets('a voucher moves cash from the drawer to the bank', (
+    tester,
+  ) async {
     final app = await Harness.startWithShop(tester);
 
     await tapText(tester, 'Hisaab kitaab');
@@ -94,5 +96,37 @@ void main() {
 
     expect(find.text('Total liabilities and equity'), findsOneWidget);
     expect(find.textContaining('What the shop has equals'), findsOneWidget);
+  });
+
+  testWidgets('the shop adds an account of its own, and a year with nothing '
+      'in it is not closed', (tester) async {
+    final app = await Harness.startWithShop(tester);
+
+    await tapText(tester, 'Hisaab kitaab');
+    await tester.tap(find.byTooltip('Naya account'));
+    await tester.pumpAndSettle();
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Account ka naam'),
+      'Generator diesel',
+    );
+    await tester.tap(find.text('Naya account').last);
+    await settleReal(tester, until: find.text('Generator diesel'));
+    final added = await app.scalar<int>(
+      "SELECT COUNT(*) FROM accounts WHERE name = 'Generator diesel' "
+      "AND account_type = 'expense'",
+    );
+    expect(added, 1);
+
+    await tester.tap(find.byTooltip('Saal band karein'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Saal band karein').last);
+    await settleReal(tester, until: find.textContaining('left to close'));
+    expect(find.textContaining('left to close'), findsOneWidget);
+    expect(
+      await app.scalar<int>(
+        "SELECT COUNT(*) FROM journal_entries WHERE source_type = 'year_close'",
+      ),
+      0,
+    );
   });
 }

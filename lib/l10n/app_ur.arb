@@ -1610,5 +1610,25 @@
       "count": {"type": "int"}
     }
   },
+  "accountsAdd": "Naya account",
+  "accountsAddName": "Account ka naam",
+  "accountsTypeAsset": "Asaasa (asset)",
+  "accountsTypeLiability": "Qarz (liability)",
+  "accountsTypeEquity": "Malik ka (equity)",
+  "accountsTypeIncome": "Aamdani",
+  "accountsTypeExpense": "Kharcha",
+  "accountsCloseYear": "Saal band karein",
+  "accountsCloseYearConfirm": "Saal {year} ka munafa retained earnings mein chala jayega. Band karein?",
+  "@accountsCloseYearConfirm": {
+    "placeholders": {
+      "year": {"type": "String"}
+    }
+  },
+  "accountsYearClosed": "Saal band ho gaya ({no})",
+  "@accountsYearClosed": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
   "chequeDone": "Ho gaya"
 }

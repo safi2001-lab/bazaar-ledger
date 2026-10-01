@@ -2743,5 +2743,39 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get accountsAdd => 'New account';
+
+  @override
+  String get accountsAddName => 'Account name';
+
+  @override
+  String get accountsTypeAsset => 'Asset';
+
+  @override
+  String get accountsTypeLiability => 'Liability';
+
+  @override
+  String get accountsTypeEquity => 'Equity';
+
+  @override
+  String get accountsTypeIncome => 'Income';
+
+  @override
+  String get accountsTypeExpense => 'Expense';
+
+  @override
+  String get accountsCloseYear => 'Close the year';
+
+  @override
+  String accountsCloseYearConfirm(String year) {
+    return 'The profit of $year moves into retained earnings. Close it?';
+  }
+
+  @override
+  String accountsYearClosed(String no) {
+    return 'Year closed ($no)';
+  }
+
+  @override
   String get chequeDone => 'Done';
 }

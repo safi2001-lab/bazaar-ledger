@@ -4934,6 +4934,66 @@ abstract class AppStrings {
   /// **'Is gahak ke {count} aur challan bhi isi bill mein'**
   String challanBillAll(int count);
 
+  /// No description provided for @accountsAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya account'**
+  String get accountsAdd;
+
+  /// No description provided for @accountsAddName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Account ka naam'**
+  String get accountsAddName;
+
+  /// No description provided for @accountsTypeAsset.
+  ///
+  /// In ur, this message translates to:
+  /// **'Asaasa (asset)'**
+  String get accountsTypeAsset;
+
+  /// No description provided for @accountsTypeLiability.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarz (liability)'**
+  String get accountsTypeLiability;
+
+  /// No description provided for @accountsTypeEquity.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik ka (equity)'**
+  String get accountsTypeEquity;
+
+  /// No description provided for @accountsTypeIncome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aamdani'**
+  String get accountsTypeIncome;
+
+  /// No description provided for @accountsTypeExpense.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharcha'**
+  String get accountsTypeExpense;
+
+  /// No description provided for @accountsCloseYear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Saal band karein'**
+  String get accountsCloseYear;
+
+  /// No description provided for @accountsCloseYearConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Saal {year} ka munafa retained earnings mein chala jayega. Band karein?'**
+  String accountsCloseYearConfirm(String year);
+
+  /// No description provided for @accountsYearClosed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Saal band ho gaya ({no})'**
+  String accountsYearClosed(String no);
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

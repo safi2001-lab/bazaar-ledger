@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
@@ -33,7 +35,25 @@ class AccountsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.accountsTitle)),
+      appBar: AppBar(
+        title: Text(s.accountsTitle),
+        actions: [
+          if (services.can(Permission.journal)) ...[
+            // The shop's own heads beside the shipped chart (M26).
+            BlIconButton(
+              icon: Icons.add_card_outlined,
+              label: s.accountsAdd,
+              onPressed: () => unawaited(_addAccount(context, ref)),
+            ),
+            // June's books into retained earnings (M26).
+            BlIconButton(
+              icon: Icons.event_available_outlined,
+              label: s.accountsCloseYear,
+              onPressed: () => unawaited(_closeYear(context, ref)),
+            ),
+          ],
+        ],
+      ),
       floatingActionButton: services.can(Permission.journal)
           ? FloatingActionButton.extended(
               onPressed: () => Navigator.of(context).push(
@@ -217,6 +237,129 @@ class AccountLedgerScreen extends ConsumerWidget {
                     ),
             ),
       ),
+    );
+  }
+}
+
+/// Asks for a name and a kind, and adds the account.
+Future<void> _addAccount(BuildContext context, WidgetRef ref) async {
+  final s = AppStrings.of(context);
+  final made = await showDialog<(String, String)>(
+    context: context,
+    builder: (_) => const _AddAccountDialog(),
+  );
+  if (made == null || !context.mounted) return;
+  final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+  final container = ProviderScope.containerOf(context, listen: false);
+  try {
+    await ref
+        .read(appServicesProvider)
+        .addAccount(name: made.$1, type: made.$2);
+    container.bumpRefresh();
+    messenger.showSnackBar(SnackBar(content: Text(s.accountsAdd)));
+  } on YearCloseRefused catch (refused) {
+    messenger.showSnackBar(SnackBar(content: Text(refused.reason)));
+  }
+}
+
+/// Closes the last year that has ended, after asking.
+Future<void> _closeYear(BuildContext context, WidgetRef ref) async {
+  final s = AppStrings.of(context);
+  final services = ref.read(appServicesProvider);
+  final current = BusinessDate.now(services.clock).fiscalYear;
+  final last = current - 101;
+  final label =
+      '20${(last ~/ 100).toString().padLeft(2, '0')}-'
+      '${(last % 100).toString().padLeft(2, '0')}';
+  final yes = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text(s.accountsCloseYear),
+      content: Text(s.accountsCloseYearConfirm(label)),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(s.actionCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(true),
+          child: Text(s.accountsCloseYear),
+        ),
+      ],
+    ),
+  );
+  if (yes != true || !context.mounted) return;
+  final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+  final container = ProviderScope.containerOf(context, listen: false);
+  try {
+    final closed = await services.closeYear(last);
+    container.bumpRefresh();
+    messenger.showSnackBar(
+      SnackBar(content: Text(s.accountsYearClosed(closed.entryNo))),
+    );
+  } on YearCloseRefused catch (refused) {
+    messenger.showSnackBar(SnackBar(content: Text(refused.reason)));
+  }
+}
+
+class _AddAccountDialog extends StatefulWidget {
+  const _AddAccountDialog();
+
+  @override
+  State<_AddAccountDialog> createState() => _AddAccountDialogState();
+}
+
+class _AddAccountDialogState extends State<_AddAccountDialog> {
+  final _name = TextEditingController();
+  String _type = 'expense';
+
+  @override
+  void dispose() {
+    _name.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    return AlertDialog(
+      title: Text(s.accountsAdd),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BlField(controller: _name, label: s.accountsAddName, autofocus: true),
+          const SizedBox(height: BlTokens.space3),
+          Wrap(
+            spacing: BlTokens.space2,
+            runSpacing: BlTokens.space2,
+            children: [
+              for (final (type, label) in [
+                ('expense', s.accountsTypeExpense),
+                ('income', s.accountsTypeIncome),
+                ('asset', s.accountsTypeAsset),
+                ('liability', s.accountsTypeLiability),
+                ('equity', s.accountsTypeEquity),
+              ])
+                ChoiceChip(
+                  label: Text(label),
+                  selected: _type == type,
+                  onSelected: (_) => setState(() => _type = type),
+                ),
+            ],
+          ),
+        ],
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(s.actionCancel),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(context).pop((_name.text, _type)),
+          child: Text(s.accountsAdd),
+        ),
+      ],
     );
   }
 }
