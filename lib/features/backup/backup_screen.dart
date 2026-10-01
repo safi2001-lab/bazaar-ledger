@@ -12,6 +12,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../subscription/plans_screen.dart';
 import 'backup_providers.dart';
 import 'drive_access.dart';
 import 'restore_screen.dart';
@@ -84,6 +85,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   Future<void> _driveOn(CloudBackupStore store) async {
     if (_busy || !_passphraseOk()) return;
+    if (!await ensurePlan(context, ref, PlanFeature.autoDriveBackup)) return;
     final passphrase = _passphrase.text;
     final connect = ref.read(connectDriveProvider);
     await _drive((services) async {

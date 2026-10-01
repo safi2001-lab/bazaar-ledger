@@ -11,6 +11,7 @@ import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
 import '../parties/party_picker.dart';
 import '../sales/receipt_screen.dart';
+import '../subscription/plans_screen.dart';
 import 'cart.dart';
 import 'pos_screen.dart';
 
@@ -906,14 +907,14 @@ class _CustomerRow extends ConsumerWidget {
   }
 }
 
-class _ModePicker extends StatelessWidget {
+class _ModePicker extends ConsumerWidget {
   const _ModePicker({required this.mode, required this.onChanged});
 
   final String mode;
   final ValueChanged<String> onChanged;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final modes = <String, ({String label, IconData icon})>{
       'cash': (label: s.tenderModeCash, icon: Icons.payments_outlined),
@@ -937,7 +938,14 @@ class _ModePicker extends StatelessWidget {
             selected: mode == entry.key,
             avatar: Icon(entry.value.icon, size: 16),
             label: Text(entry.value.label),
-            onSelected: (_) => onChanged(entry.key),
+            onSelected: (_) async {
+              // A new cheque needs a plan with cheques (M21).
+              if (entry.key == 'cheque' &&
+                  !await ensurePlan(context, ref, PlanFeature.cheques)) {
+                return;
+              }
+              onChanged(entry.key);
+            },
           ),
       ],
     );

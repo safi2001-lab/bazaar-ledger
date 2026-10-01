@@ -28,7 +28,7 @@
   "GOOGLE_OAUTH_CLIENT_ID": "",
 
   "_PLAY_BILLING_PUBLIC_KEY": [
-    "M9, subscriptions. Play Console > Monetisation setup > Licensing.",
+    "M21, subscriptions. Play Console > Monetisation setup > Licensing.",
     "This is Google's PUBLIC key, base64. It verifies that a purchase payload",
     "was signed by Google; it cannot mint one. Entitlement is written only",
     "after that signature verifies on the device.",

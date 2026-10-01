@@ -19,6 +19,7 @@ import '../purchases/purchases_screen.dart';
 import '../reports/reports_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
+import '../subscription/plans_screen.dart';
 import '../vans/vans_screen.dart';
 
 /// The day, at a glance, and the way to everything else.
@@ -175,7 +176,12 @@ class HomeScreen extends ConsumerWidget {
                     _NavTile(
                       label: s.vansTitle,
                       icon: Icons.local_shipping_outlined,
-                      onTap: () => _open(context, const VansScreen()),
+                      onTap: () => openWithPlan(
+                        context,
+                        ref,
+                        PlanFeature.vans,
+                        () => const VansScreen(),
+                      ),
                     ),
                   // What to buy on the way in tomorrow. The query behind this
                   // has been written, tested and fast since M1, and until now

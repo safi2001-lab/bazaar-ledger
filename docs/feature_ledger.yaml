@@ -204,19 +204,17 @@ milestones:
     #
     # Sealed 26 Sep 2026 at 6/6. Roles, staff with their own PINs, sign-in
     # and a lock, refusals at the service, the activity log and the day
-    # close. Not built, and said here: the subscription plans and their
-    # entitlement (pk_billing, lib/features/subscription) wait on the Play
-    # listing and its billing key, which do not exist yet -- AppConfig
-    # reports them missing and billing never falls open; and the discount
-    # ceiling each role carries on its row is not yet checked at the counter.
+    # close. Not built, and said here: the subscription plans (built in
+    # M21); and the discount ceiling each role carries on its row is not yet
+    # checked at the counter.
     state: sealed
     owns:
       - lib/features/users/**
       - lib/features/audit/**
       - lib/features/day_close/**
-      - lib/features/subscription/**
-      - packages/pk_billing/**
-      - packages/pk_domain/lib/src/entitlement/**
+      - packages/pk_domain/lib/src/entitlement/roles.dart
+      - packages/pk_domain/lib/src/entitlement/staff.dart
+      - packages/pk_domain/lib/src/entitlement/activity.dart
 
   - id: M10
     title: Multi-firm and full accounting
@@ -439,6 +437,42 @@ milestones:
       - packages/pk_platform/lib/src/backup/cloud_store.dart
       - packages/pk_bootstrap/lib/src/drive_backup_services.dart
       - lib/features/backup/drive_access.dart
+
+  - id: M21
+    title: Subscription plans — Free, Silver, Gold, Platinum, bought through Google Play
+    # Opened and sealed 1 Oct 2026 at 1/1. The plans and prices are the
+    # plan document's (section 15): Free for ever with bills, khatas, stock,
+    # cash book, printing and backup by hand, and a "made with" line on
+    # bills; Silver Rs 1,999 a year (no line, three firms, the daily Drive
+    # backup, post-dated cheques, wholesale and VIP prices, the books and
+    # tax reports); Gold Rs 3,499 (five people with PINs, batches and
+    # serials, scale labels, godowns, counters on wi-fi); Platinum Rs 5,999
+    # (no limits, recipes, vans, live FBR). One table in pk_domain says
+    # which plan has what. Every paid feature is refused at the service, as
+    # permissions are, and the screens lock it and offer the plan that has
+    # it. Losing a plan locks nothing already made.
+    #
+    # Bought through Google Play Billing (in_app_purchase). Each purchase is
+    # kept on the phone exactly as Play signed it and the RSA signature is
+    # checked against the key built into the app every time the app opens;
+    # Play is asked again whenever it can be reached, and a plan Play has
+    # not confirmed for 30 days lapses. No key in the build: everything is
+    # Free, never open. A test build has a switch to try any plan without
+    # paying; a release build has none.
+    #
+    # Not exercised against Google Play itself: there is no Play listing or
+    # licensing key on this bench, so the purchase sheet has never opened.
+    # The signature check is proved against signatures openssl made, and
+    # the purchase flow against a stand-in for Play. Live FBR is Platinum
+    # as the plan document has it; Gold's "FBR formatting and QR" has no
+    # separate meaning here, because the QR carries FBR's own number.
+    state: sealed
+    owns:
+      - lib/features/subscription/**
+      - packages/pk_domain/lib/src/entitlement/plans.dart
+      - packages/pk_platform/lib/src/billing/**
+      - packages/pk_bootstrap/lib/src/plan_services.dart
+      - packages/pk_bootstrap/lib/src/plan_gates.dart
 
 features:
   # ---------------------------------------------------------------------------
@@ -4241,3 +4275,23 @@ features:
       - turning Drive backup on sends the first one straight away
       - a backup that is due goes when the app comes back to the front
       - a new phone brings the books back from Drive
+  - id: M21-PLANS-01
+    milestone: M21
+    title: Paid features follow the plan bought through Google Play, checked on the phone
+    status: done
+    proof:
+      - play signature openssl's signature of a purchase checks out
+      - play signature a purchase edited after signing is refused
+      - play signature a signature made with another key is refused
+      - play signature anything malformed is false, never a crash
+      - plans a phone with no purchase is on free, and its bills say what made them
+      - plans every paid feature is refused on free, naming the plan that has it
+      - plans a plan includes every plan below it
+      - plans a purchase Play signed unlocks its plan; edited, it unlocks nothing
+      - plans the plan is kept on the phone, checked again when the app opens, and lapses when Play stops confirming it
+      - plans with no key in the build, nothing verifies: it never falls open
+      - plans losing a plan locks nothing already made
+      - plans staff need Gold, and Gold has five people
+      - plans a plan can be picked by hand on a test build, never on a release
+      - a free shop reaching for a paid feature meets the plans, and a test build can try one without paying
+      - a plan bought through Play unlocks it, and only a signed purchase does

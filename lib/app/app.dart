@@ -7,6 +7,7 @@ import '../design/tokens.dart';
 import '../features/backup/drive_access.dart';
 import '../features/home/home_screen.dart';
 import '../features/setup/setup_screen.dart';
+import '../features/subscription/play_billing.dart';
 import '../features/sync/sync_keeper.dart';
 import '../features/tax/fbr_keeper.dart';
 import '../features/users/sign_in_screen.dart';
@@ -118,9 +119,12 @@ class _Root extends ConsumerWidget {
                 key: ValueKey('fbr-${profile.id}'),
                 child: DriveBackupKeeper(
                   key: ValueKey('drive-${profile.id}'),
-                  child: ref.read(appServicesProvider).isLocked
-                      ? const SignInScreen()
-                      : const HomeScreen(),
+                  child: BillingKeeper(
+                    key: ValueKey('billing-${profile.id}'),
+                    child: ref.read(appServicesProvider).isLocked
+                        ? const SignInScreen()
+                        : const HomeScreen(),
+                  ),
                 ),
               ),
             ),

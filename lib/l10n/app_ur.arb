@@ -1527,5 +1527,64 @@
   "driveRestore": "Google Drive se wapas layein",
   "driveNone": "Drive par koi backup nahi mila",
   "drivePick": "Kaunsi backup wapas layein?",
+  "planTitle": "Plan",
+  "planCurrent": "Aap ka plan: {plan}",
+  "@planCurrent": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "planPerYear": "{price} / saal",
+  "@planPerYear": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "planBuy": "Yeh plan lein",
+  "planIsYours": "Yeh aap ka plan hai",
+  "planRestore": "Pehle se khareeda hai? Wapas layein",
+  "planNoBilling": "Is build mein plan khareedne ka intezam nahi. Play Store wali app se khareedein.",
+  "planNeeded": "Iske liye {plan} plan chahiye",
+  "@planNeeded": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "planTestTitle": "Sirf test ke liye: plan chunein",
+  "planTestNote": "Yeh sirf test build mein hai, asal app mein nahi. Koi paisa nahi lagta.",
+  "planTestReal": "Jo khareeda hai",
+  "planTestActive": "Test plan chal raha hai: {plan}",
+  "@planTestActive": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "planFreeIncludes": "Hamesha muft: bill, khata, stock, cash book, printing, WhatsApp aur hath se backup.",
+  "planFeatNoWatermark": "Bill par 'Bazaar Ledger' ki line nahi",
+  "planFeatAutoDriveBackup": "Roz Google Drive backup",
+  "planFeatCheques": "Post-dated cheque",
+  "planFeatPriceLists": "Wholesale aur VIP rate",
+  "planFeatAccountingReports": "Munafa-nuqsan, balance sheet aur tax reports",
+  "planFeatTracking": "Batch, expiry aur serial/IMEI",
+  "planFeatScaleLabels": "Tarazu ke labels",
+  "planFeatGodowns": "Godown aur stock transfer",
+  "planFeatLanSync": "Wi-fi par kai counter",
+  "planFeatFbr": "FBR ko bill live bhejna",
+  "planFeatManufacturing": "Recipe aur maal banana",
+  "planFeatVans": "Gaari (van) sales",
+  "planFirms": "{count} firms tak",
+  "@planFirms": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "planFirmsUnlimited": "Jitni chahein firms",
+  "planUsers": "{count} log, apne PIN ke sath",
+  "@planUsers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "planUsersUnlimited": "Jitne chahein log",
   "chequeDone": "Ho gaya"
 }

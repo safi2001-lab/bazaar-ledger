@@ -4676,6 +4676,180 @@ abstract class AppStrings {
   /// **'Kaunsi backup wapas layein?'**
   String get drivePick;
 
+  /// No description provided for @planTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Plan'**
+  String get planTitle;
+
+  /// No description provided for @planCurrent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aap ka plan: {plan}'**
+  String planCurrent(String plan);
+
+  /// No description provided for @planPerYear.
+  ///
+  /// In ur, this message translates to:
+  /// **'{price} / saal'**
+  String planPerYear(String price);
+
+  /// No description provided for @planBuy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh plan lein'**
+  String get planBuy;
+
+  /// No description provided for @planIsYours.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh aap ka plan hai'**
+  String get planIsYours;
+
+  /// No description provided for @planRestore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle se khareeda hai? Wapas layein'**
+  String get planRestore;
+
+  /// No description provided for @planNoBilling.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is build mein plan khareedne ka intezam nahi. Play Store wali app se khareedein.'**
+  String get planNoBilling;
+
+  /// No description provided for @planNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Iske liye {plan} plan chahiye'**
+  String planNeeded(String plan);
+
+  /// No description provided for @planTestTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf test ke liye: plan chunein'**
+  String get planTestTitle;
+
+  /// No description provided for @planTestNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh sirf test build mein hai, asal app mein nahi. Koi paisa nahi lagta.'**
+  String get planTestNote;
+
+  /// No description provided for @planTestReal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo khareeda hai'**
+  String get planTestReal;
+
+  /// No description provided for @planTestActive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Test plan chal raha hai: {plan}'**
+  String planTestActive(String plan);
+
+  /// No description provided for @planFreeIncludes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hamesha muft: bill, khata, stock, cash book, printing, WhatsApp aur hath se backup.'**
+  String get planFreeIncludes;
+
+  /// No description provided for @planFeatNoWatermark.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill par \'Bazaar Ledger\' ki line nahi'**
+  String get planFeatNoWatermark;
+
+  /// No description provided for @planFeatAutoDriveBackup.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roz Google Drive backup'**
+  String get planFeatAutoDriveBackup;
+
+  /// No description provided for @planFeatCheques.
+  ///
+  /// In ur, this message translates to:
+  /// **'Post-dated cheque'**
+  String get planFeatCheques;
+
+  /// No description provided for @planFeatPriceLists.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wholesale aur VIP rate'**
+  String get planFeatPriceLists;
+
+  /// No description provided for @planFeatAccountingReports.
+  ///
+  /// In ur, this message translates to:
+  /// **'Munafa-nuqsan, balance sheet aur tax reports'**
+  String get planFeatAccountingReports;
+
+  /// No description provided for @planFeatTracking.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch, expiry aur serial/IMEI'**
+  String get planFeatTracking;
+
+  /// No description provided for @planFeatScaleLabels.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tarazu ke labels'**
+  String get planFeatScaleLabels;
+
+  /// No description provided for @planFeatGodowns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Godown aur stock transfer'**
+  String get planFeatGodowns;
+
+  /// No description provided for @planFeatLanSync.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wi-fi par kai counter'**
+  String get planFeatLanSync;
+
+  /// No description provided for @planFeatFbr.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR ko bill live bhejna'**
+  String get planFeatFbr;
+
+  /// No description provided for @planFeatManufacturing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recipe aur maal banana'**
+  String get planFeatManufacturing;
+
+  /// No description provided for @planFeatVans.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaari (van) sales'**
+  String get planFeatVans;
+
+  /// No description provided for @planFirms.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} firms tak'**
+  String planFirms(int count);
+
+  /// No description provided for @planFirmsUnlimited.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jitni chahein firms'**
+  String get planFirmsUnlimited;
+
+  /// No description provided for @planUsers.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} log, apne PIN ke sath'**
+  String planUsers(int count);
+
+  /// No description provided for @planUsersUnlimited.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jitne chahein log'**
+  String get planUsersUnlimited;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

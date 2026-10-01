@@ -87,12 +87,14 @@ final class SyncServices {
   // The master
   // -------------------------------------------------------------------------
 
-  /// Starts serving the counters. Owner or manager.
+  /// Starts serving the counters. Owner or manager, on a plan with more
+  /// than one counter; the counters that join need no plan of their own.
   Future<int> startHosting({
     int port = defaultSyncPort,
     InternetAddress? address,
   }) async {
     _app.require(Permission.settings);
+    _app.plans.require(PlanFeature.lanSync);
     return _start(port: port, address: address);
   }
 
@@ -166,6 +168,7 @@ final class SyncServices {
   Future<void> resume() async {
     final id = _app._identity;
     if (id == null || isHosting) return;
+    if (!_app.plans.has(PlanFeature.lanSync)) return;
     if (await _app.drafts.read(syncHostingSlot) != id.firmId) return;
     try {
       await _start(port: defaultSyncPort);

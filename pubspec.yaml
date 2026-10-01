@@ -30,6 +30,8 @@ dependencies:
   # Gallery only. Camera capture would pull in CAMERA, and that permission
   # arrives with barcode scanning or not at all.
   image_picker: ^1.1.2
+  in_app_purchase: ^3.3.1
+  in_app_purchase_android: ^0.5.3
   intl: ^0.20.2
   # Camera barcode scanning, with ML Kit BUNDLED rather than downloaded.
   #
@@ -82,6 +84,8 @@ dependencies:
   url_launcher: ^6.3.1
 
 dev_dependencies:
+  # Test-only: signing a purchase as Google Play would, with a test key.
+  crypto: ^3.0.6
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter

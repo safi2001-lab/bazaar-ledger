@@ -8,6 +8,7 @@ library;
 export 'package:pdf/pdf.dart' show PdfPageFormat;
 export 'src/backup/backup_archive.dart';
 export 'src/backup/cloud_store.dart';
+export 'src/billing/play_signature.dart';
 export 'src/cheques/demand_notice_pdf.dart';
 
 export 'src/fbr/fbr_client.dart';

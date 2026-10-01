@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../subscription/plans_screen.dart';
 import 'pin_field.dart';
 
 final _staffProvider = FutureProvider.autoDispose<List<StaffMember>>((
@@ -62,8 +63,22 @@ class UsersScreen extends ConsumerWidget {
                   BlButton(
                     label: s.usersAdd,
                     icon: Icons.person_add_alt_outlined,
-                    onPressed: () =>
-                        unawaited(_sheet(context, const _AddSheet())),
+                    onPressed: () async {
+                      // How many people sign in is the plan's (M21).
+                      try {
+                        ref
+                            .read(appServicesProvider)
+                            .plans
+                            .requireUserSlot(
+                              rows.where((m) => m.isActive).length,
+                            );
+                      } on PlanRequired catch (refused) {
+                        await offerPlan(context, refused);
+                        return;
+                      }
+                      if (!context.mounted) return;
+                      await _sheet(context, const _AddSheet());
+                    },
                   ),
                   const SizedBox(height: BlTokens.space4),
                   for (final m in rows)

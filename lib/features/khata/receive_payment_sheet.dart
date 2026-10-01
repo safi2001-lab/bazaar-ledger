@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../subscription/plans_screen.dart';
 import 'khata_providers.dart';
 
 /// Taking money against a customer's khata.
@@ -362,7 +363,7 @@ class _Preview extends StatelessWidget {
 }
 
 /// How the money arrived. A label on a ledger row, never an integration.
-class _ModePicker extends StatelessWidget {
+class _ModePicker extends ConsumerWidget {
   const _ModePicker({required this.mode, required this.onChanged});
 
   final String mode;
@@ -377,7 +378,7 @@ class _ModePicker extends StatelessWidget {
   ];
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     return Wrap(
       spacing: BlTokens.space2,
@@ -388,7 +389,14 @@ class _ModePicker extends StatelessWidget {
             selected: mode == value,
             avatar: Icon(icon, size: 18),
             label: Text(_label(s, value)),
-            onSelected: (_) => onChanged(value),
+            onSelected: (_) async {
+              // A new cheque needs a plan with cheques (M21).
+              if (value == 'cheque' &&
+                  !await ensurePlan(context, ref, PlanFeature.cheques)) {
+                return;
+              }
+              onChanged(value);
+            },
           ),
       ],
     );

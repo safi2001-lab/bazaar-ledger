@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../manufacturing/recipes_screen.dart';
+import '../subscription/plans_screen.dart';
 import 'item_editor.dart';
 
 /// Reset when the screen goes, because the search box is reset with it.
@@ -70,8 +71,11 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
           BlIconButton(
             icon: Icons.blender_outlined,
             label: s.recipesTitle,
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const RecipesScreen()),
+            onPressed: () => openWithPlan(
+              context,
+              ref,
+              PlanFeature.manufacturing,
+              () => const RecipesScreen(),
             ),
           ),
         ],

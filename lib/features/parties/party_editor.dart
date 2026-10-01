@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../subscription/plans_screen.dart';
 
 /// Add a customer, or change one.
 class PartyEditorScreen extends ConsumerStatefulWidget {
@@ -328,8 +329,23 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                                 ChoiceChip(
                                   selected: _tier == tier,
                                   label: Text(label),
-                                  onSelected: (_) =>
-                                      setState(() => _tier = tier),
+                                  avatar: tier == PriceTier.retail
+                                      ? null
+                                      : const PlanLock(PlanFeature.priceLists),
+                                  onSelected: (_) async {
+                                    // Wholesale and VIP lists are Silver
+                                    // (M21); a party already on one keeps it.
+                                    if (tier != PriceTier.retail &&
+                                        tier != widget.party?.priceTier &&
+                                        !await ensurePlan(
+                                          context,
+                                          ref,
+                                          PlanFeature.priceLists,
+                                        )) {
+                                      return;
+                                    }
+                                    setState(() => _tier = tier);
+                                  },
                                 ),
                             ],
                           ),

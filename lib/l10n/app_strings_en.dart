@@ -2592,5 +2592,108 @@ class AppStringsEn extends AppStrings {
   String get drivePick => 'Which backup to restore?';
 
   @override
+  String get planTitle => 'Plan';
+
+  @override
+  String planCurrent(String plan) {
+    return 'Your plan: $plan';
+  }
+
+  @override
+  String planPerYear(String price) {
+    return '$price a year';
+  }
+
+  @override
+  String get planBuy => 'Get this plan';
+
+  @override
+  String get planIsYours => 'This is your plan';
+
+  @override
+  String get planRestore => 'Bought already? Restore';
+
+  @override
+  String get planNoBilling =>
+      'Plans cannot be bought in this build. Buy from the Play Store app.';
+
+  @override
+  String planNeeded(String plan) {
+    return 'This needs the $plan plan';
+  }
+
+  @override
+  String get planTestTitle => 'Testing only: pick a plan';
+
+  @override
+  String get planTestNote =>
+      'Only in test builds, never in the released app. Nothing is charged.';
+
+  @override
+  String get planTestReal => 'As bought';
+
+  @override
+  String planTestActive(String plan) {
+    return 'Test plan in use: $plan';
+  }
+
+  @override
+  String get planFreeIncludes =>
+      'Always free: bills, khata, stock, cash book, printing, WhatsApp and backup by hand.';
+
+  @override
+  String get planFeatNoWatermark => 'No \'Bazaar Ledger\' line on bills';
+
+  @override
+  String get planFeatAutoDriveBackup => 'Daily Google Drive backup';
+
+  @override
+  String get planFeatCheques => 'Post-dated cheques';
+
+  @override
+  String get planFeatPriceLists => 'Wholesale and VIP prices';
+
+  @override
+  String get planFeatAccountingReports =>
+      'Profit and loss, balance sheet and tax reports';
+
+  @override
+  String get planFeatTracking => 'Batch, expiry and serial/IMEI';
+
+  @override
+  String get planFeatScaleLabels => 'Weighing-scale labels';
+
+  @override
+  String get planFeatGodowns => 'Godowns and stock transfers';
+
+  @override
+  String get planFeatLanSync => 'Several counters on wi-fi';
+
+  @override
+  String get planFeatFbr => 'Live FBR invoicing';
+
+  @override
+  String get planFeatManufacturing => 'Recipes and production';
+
+  @override
+  String get planFeatVans => 'Van sales';
+
+  @override
+  String planFirms(int count) {
+    return 'Up to $count firms';
+  }
+
+  @override
+  String get planFirmsUnlimited => 'Unlimited firms';
+
+  @override
+  String planUsers(int count) {
+    return 'Up to $count people with their own PIN';
+  }
+
+  @override
+  String get planUsersUnlimited => 'Unlimited people';
+
+  @override
   String get chequeDone => 'Done';
 }

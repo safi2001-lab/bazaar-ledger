@@ -2592,5 +2592,108 @@ class AppStringsUr extends AppStrings {
   String get drivePick => 'Kaunsi backup wapas layein?';
 
   @override
+  String get planTitle => 'Plan';
+
+  @override
+  String planCurrent(String plan) {
+    return 'Aap ka plan: $plan';
+  }
+
+  @override
+  String planPerYear(String price) {
+    return '$price / saal';
+  }
+
+  @override
+  String get planBuy => 'Yeh plan lein';
+
+  @override
+  String get planIsYours => 'Yeh aap ka plan hai';
+
+  @override
+  String get planRestore => 'Pehle se khareeda hai? Wapas layein';
+
+  @override
+  String get planNoBilling =>
+      'Is build mein plan khareedne ka intezam nahi. Play Store wali app se khareedein.';
+
+  @override
+  String planNeeded(String plan) {
+    return 'Iske liye $plan plan chahiye';
+  }
+
+  @override
+  String get planTestTitle => 'Sirf test ke liye: plan chunein';
+
+  @override
+  String get planTestNote =>
+      'Yeh sirf test build mein hai, asal app mein nahi. Koi paisa nahi lagta.';
+
+  @override
+  String get planTestReal => 'Jo khareeda hai';
+
+  @override
+  String planTestActive(String plan) {
+    return 'Test plan chal raha hai: $plan';
+  }
+
+  @override
+  String get planFreeIncludes =>
+      'Hamesha muft: bill, khata, stock, cash book, printing, WhatsApp aur hath se backup.';
+
+  @override
+  String get planFeatNoWatermark => 'Bill par \'Bazaar Ledger\' ki line nahi';
+
+  @override
+  String get planFeatAutoDriveBackup => 'Roz Google Drive backup';
+
+  @override
+  String get planFeatCheques => 'Post-dated cheque';
+
+  @override
+  String get planFeatPriceLists => 'Wholesale aur VIP rate';
+
+  @override
+  String get planFeatAccountingReports =>
+      'Munafa-nuqsan, balance sheet aur tax reports';
+
+  @override
+  String get planFeatTracking => 'Batch, expiry aur serial/IMEI';
+
+  @override
+  String get planFeatScaleLabels => 'Tarazu ke labels';
+
+  @override
+  String get planFeatGodowns => 'Godown aur stock transfer';
+
+  @override
+  String get planFeatLanSync => 'Wi-fi par kai counter';
+
+  @override
+  String get planFeatFbr => 'FBR ko bill live bhejna';
+
+  @override
+  String get planFeatManufacturing => 'Recipe aur maal banana';
+
+  @override
+  String get planFeatVans => 'Gaari (van) sales';
+
+  @override
+  String planFirms(int count) {
+    return '$count firms tak';
+  }
+
+  @override
+  String get planFirmsUnlimited => 'Jitni chahein firms';
+
+  @override
+  String planUsers(int count) {
+    return '$count log, apne PIN ke sath';
+  }
+
+  @override
+  String get planUsersUnlimited => 'Jitne chahein log';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

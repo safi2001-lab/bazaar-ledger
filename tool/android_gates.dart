@@ -66,6 +66,11 @@ const _allowedPermissions = <String>{
   // silently. See docs/what_leaves_the_phone.md for what ML Kit sends and why
   // it does not touch a shopkeeper's books.
   'android.permission.ACCESS_NETWORK_STATE',
+
+  // Google Play Billing (M21), declared by the billing library the
+  // in_app_purchase plugin brings. A normal permission, never prompted: it
+  // lets the app talk to the Play Store app about the shop's plan.
+  'com.android.vending.BILLING',
 };
 
 /// Permissions an app declares against ITSELF, which no user ever sees.

@@ -125,6 +125,7 @@ final class DriveBackupServices {
   /// manager, as any backup is.
   Future<void> turnOn(String passphrase) async {
     _app.require(Permission.backups);
+    _app.plans.require(PlanFeature.autoDriveBackup);
     if (passphrase.length < BackupArchive.minimumPassphraseLength) {
       throw const BackupRefused(
         BackupProblem.weakPassphrase,
@@ -158,6 +159,7 @@ final class DriveBackupServices {
     if (id == null) return DriveBackupRun.off;
     final s = await settings();
     if (!s.enabled || s.passphrase.isEmpty) return DriveBackupRun.off;
+    if (!_app.plans.has(PlanFeature.autoDriveBackup)) return DriveBackupRun.off;
     final now = _app.clock.nowUtc();
     if (!force && !isDue(s.lastUtc, now)) return DriveBackupRun.notDue;
 

@@ -139,7 +139,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     // A weighing scale's own label: the item's PLU and the weight or the
     // price, in one EAN-13 in the 20–29 range (M16).
-    if (scanned == null) {
+    if (scanned == null && services.plans.has(PlanFeature.scaleLabels)) {
       final label = parseScaleBarcode(text, await services.scaleFormat());
       if (label != null) {
         final item = await services.queries.itemByCode(firm.id, label.plu);

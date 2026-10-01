@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../subscription/plans_screen.dart';
 import 'khata_providers.dart';
 
 /// Paying a supplier against what the shop owes them.
@@ -212,11 +213,18 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
               contentPadding: EdgeInsets.zero,
               title: Text(s.payByCheque),
               value: _byCheque,
-              onChanged: (on) => setState(() {
-                _byCheque = on;
-                _accountId = null;
-                _error = null;
-              }),
+              onChanged: (on) async {
+                // A new cheque needs a plan with cheques (M21).
+                if (on &&
+                    !await ensurePlan(context, ref, PlanFeature.cheques)) {
+                  return;
+                }
+                setState(() {
+                  _byCheque = on;
+                  _accountId = null;
+                  _error = null;
+                });
+              },
             ),
             Text(
               _byCheque ? s.payChequeDrawnOn : s.expensePaidFrom,

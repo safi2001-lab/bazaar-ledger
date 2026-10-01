@@ -13,6 +13,8 @@ import '../import/import_screen.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
 import '../scale/scale_screen.dart';
+import '../subscription/plans_screen.dart';
+import '../subscription/play_billing.dart';
 import '../sync/sync_screen.dart';
 import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
@@ -81,6 +83,14 @@ class SettingsScreen extends ConsumerWidget {
 
             BlSectionHeader(s.settingsShop),
             const SizedBox(height: BlTokens.space2),
+            // The plan this phone is on, and the way to another (M21).
+            _Row(
+              icon: Icons.workspace_premium_outlined,
+              label: s.planCurrent(planName(ref.watch(planProvider))),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const PlansScreen()),
+              ),
+            ),
             if (services.can(Permission.manageUsers))
               _Row(
                 icon: Icons.store_mall_directory_outlined,
@@ -161,15 +171,21 @@ class SettingsScreen extends ConsumerWidget {
               _Row(
                 icon: Icons.scale_outlined,
                 label: s.scaleTitle,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(builder: (_) => const ScaleScreen()),
+                onTap: () => openWithPlan(
+                  context,
+                  ref,
+                  PlanFeature.scaleLabels,
+                  () => const ScaleScreen(),
                 ),
               ),
             _Row(
               icon: Icons.wifi_tethering,
               label: s.syncTitle,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const SyncScreen()),
+              onTap: () => openWithPlan(
+                context,
+                ref,
+                PlanFeature.lanSync,
+                () => const SyncScreen(),
               ),
             ),
             if (services.can(Permission.backups))

@@ -8,6 +8,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../batches/stock_places_screen.dart';
 import '../scan/scan_screen.dart';
+import '../subscription/plans_screen.dart';
 import 'item_history_screen.dart';
 import 'item_picture.dart';
 import 'label_print_sheet.dart';
@@ -191,6 +192,13 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
     }
   }
 
+  /// Batch or serial tracking on an item that had none needs Gold (M21).
+  Future<bool> _mayTrack() async {
+    final item = widget.item;
+    if (item != null && (item.tracksBatch || item.tracksSerial)) return true;
+    return ensurePlan(context, ref, PlanFeature.tracking);
+  }
+
   Future<void> _archive() async {
     final s = AppStrings.of(context);
     final yes = await showDialog<bool>(
@@ -306,10 +314,11 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             BlIconButton(
               icon: Icons.warehouse_outlined,
               label: s.placesTitle,
-              onPressed: () => Navigator.of(context).push<void>(
-                MaterialPageRoute(
-                  builder: (_) => StockPlacesScreen(item: widget.item!),
-                ),
+              onPressed: () => openWithPlan(
+                context,
+                ref,
+                PlanFeature.godowns,
+                () => StockPlacesScreen(item: widget.item!),
               ),
             ),
           // "There should be forty and there are thirty-one" is a question
@@ -515,10 +524,13 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                         if (_tracksStock) ...[
                           SwitchListTile.adaptive(
                             value: _tracksBatch,
-                            onChanged: (value) => setState(() {
-                              _tracksBatch = value;
-                              if (value) _tracksSerial = false;
-                            }),
+                            onChanged: (value) async {
+                              if (value && !await _mayTrack()) return;
+                              setState(() {
+                                _tracksBatch = value;
+                                if (value) _tracksSerial = false;
+                              });
+                            },
                             contentPadding: EdgeInsets.zero,
                             title: Text(
                               s.itemTracksBatch,
@@ -527,10 +539,13 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                           ),
                           SwitchListTile.adaptive(
                             value: _tracksSerial,
-                            onChanged: (value) => setState(() {
-                              _tracksSerial = value;
-                              if (value) _tracksBatch = false;
-                            }),
+                            onChanged: (value) async {
+                              if (value && !await _mayTrack()) return;
+                              setState(() {
+                                _tracksSerial = value;
+                                if (value) _tracksBatch = false;
+                              });
+                            },
                             contentPadding: EdgeInsets.zero,
                             title: Text(
                               s.itemTracksSerial,
@@ -598,6 +613,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                 Expanded(
                                   child: BlField(
                                     controller: _wholesaleRate,
+                                    suffix: const PlanLock(
+                                      PlanFeature.priceLists,
+                                    ),
                                     label: s.itemWholesalePrice,
                                     numeric: true,
                                     textInputAction: TextInputAction.next,
@@ -607,6 +625,9 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                 Expanded(
                                   child: BlField(
                                     controller: _vipRate,
+                                    suffix: const PlanLock(
+                                      PlanFeature.priceLists,
+                                    ),
                                     label: s.itemVipPrice,
                                     numeric: true,
                                     textInputAction: TextInputAction.next,

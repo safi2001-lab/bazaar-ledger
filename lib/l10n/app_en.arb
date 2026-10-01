@@ -1448,5 +1448,64 @@
   "driveRestore": "Restore from Google Drive",
   "driveNone": "No backups found on Drive",
   "drivePick": "Which backup to restore?",
+  "planTitle": "Plan",
+  "planCurrent": "Your plan: {plan}",
+  "@planCurrent": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "planPerYear": "{price} a year",
+  "@planPerYear": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "planBuy": "Get this plan",
+  "planIsYours": "This is your plan",
+  "planRestore": "Bought already? Restore",
+  "planNoBilling": "Plans cannot be bought in this build. Buy from the Play Store app.",
+  "planNeeded": "This needs the {plan} plan",
+  "@planNeeded": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "planTestTitle": "Testing only: pick a plan",
+  "planTestNote": "Only in test builds, never in the released app. Nothing is charged.",
+  "planTestReal": "As bought",
+  "planTestActive": "Test plan in use: {plan}",
+  "@planTestActive": {
+    "placeholders": {
+      "plan": {"type": "String"}
+    }
+  },
+  "planFreeIncludes": "Always free: bills, khata, stock, cash book, printing, WhatsApp and backup by hand.",
+  "planFeatNoWatermark": "No 'Bazaar Ledger' line on bills",
+  "planFeatAutoDriveBackup": "Daily Google Drive backup",
+  "planFeatCheques": "Post-dated cheques",
+  "planFeatPriceLists": "Wholesale and VIP prices",
+  "planFeatAccountingReports": "Profit and loss, balance sheet and tax reports",
+  "planFeatTracking": "Batch, expiry and serial/IMEI",
+  "planFeatScaleLabels": "Weighing-scale labels",
+  "planFeatGodowns": "Godowns and stock transfers",
+  "planFeatLanSync": "Several counters on wi-fi",
+  "planFeatFbr": "Live FBR invoicing",
+  "planFeatManufacturing": "Recipes and production",
+  "planFeatVans": "Van sales",
+  "planFirms": "Up to {count} firms",
+  "@planFirms": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "planFirmsUnlimited": "Unlimited firms",
+  "planUsers": "Up to {count} people with their own PIN",
+  "@planUsers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "planUsersUnlimited": "Unlimited people",
   "chequeDone": "Done"
 }

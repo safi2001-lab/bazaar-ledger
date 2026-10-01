@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../reports/reports_screen.dart';
+import '../subscription/plans_screen.dart';
 import 'fbr_screen.dart';
 
 final _thisMonthTurnover = FutureProvider.autoDispose<Money>((ref) async {
@@ -139,8 +140,11 @@ class _TaxScreenState extends ConsumerState<TaxScreen> {
               label: s.fbrTitle,
               icon: Icons.cloud_upload_outlined,
               kind: BlButtonKind.secondary,
-              onPressed: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(builder: (_) => const FbrScreen()),
+              onPressed: () => openWithPlan(
+                context,
+                ref,
+                PlanFeature.fbr,
+                () => const FbrScreen(),
               ),
             ),
             const SizedBox(height: BlTokens.space2),
@@ -151,10 +155,11 @@ class _TaxScreenState extends ConsumerState<TaxScreen> {
                   label: reportName(s, kind),
                   icon: Icons.receipt_long_outlined,
                   kind: BlButtonKind.secondary,
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => ReportScreen(kind: kind),
-                    ),
+                  onPressed: () => openWithPlan(
+                    context,
+                    ref,
+                    PlanFeature.accountingReports,
+                    () => ReportScreen(kind: kind),
                   ),
                 ),
               ),

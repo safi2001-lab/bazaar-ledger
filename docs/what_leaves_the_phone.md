@@ -103,6 +103,16 @@ schedule and the restore against a stand-in store. Google sign-in needs the
 app's Android OAuth client (package name and signing SHA-1) in the owner's
 Google Cloud project; the first real backup is the first time Drive sees one.
 
+## Buying a plan through Google Play (M21)
+
+The paid plans are Google Play subscriptions. Nothing about the shop goes
+to Play: the app asks Play which plan this phone's Google account holds,
+and Play answers with a purchase it has signed. That purchase is kept on
+the phone and checked against Google's public key, which is built into the
+app. The app has no server and sends the purchase nowhere. Payment, card
+details and receipts are Google's, under Google's own terms, exactly as for
+any app bought through Play.
+
 ## What Google's ML Kit sends, and why it is here
 
 Adding camera barcode scanning brought in `com.google.mlkit:barcode-scanning`,

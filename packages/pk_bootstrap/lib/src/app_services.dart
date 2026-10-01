@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart' show kReleaseMode;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:pk_application/pk_application.dart';
@@ -13,6 +14,7 @@ import 'package:pk_import/pk_import.dart';
 import 'package:pk_platform/pk_platform.dart';
 import 'package:pk_reports/pk_reports.dart';
 import 'package:pk_sync/pk_sync.dart';
+import 'app_config.dart';
 import 'backup_service.dart';
 import 'encrypted_database.dart';
 import 'printing_services.dart';
@@ -20,6 +22,8 @@ import 'printing_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
+part 'plan_gates.dart';
+part 'plan_services.dart';
 part 'sync_services.dart';
 
 /// Everything the app can do, wired once.
@@ -159,7 +163,8 @@ final class AppServices {
 
   /// Built from the current runner every time, so a writer handed out before
   /// first run cannot keep writing through the clock that predates the device.
-  CatalogueWriter get catalogue => DriftCatalogueWriter(_runner);
+  CatalogueWriter get catalogue =>
+      _PlanCatalogue(DriftCatalogueWriter(_runner), this);
 
   /// The one calculator every bill, quotation and challan is priced by, and
   /// the counter's own preview with it: the Pakistan tax pack, which charges
@@ -169,14 +174,16 @@ final class AppServices {
   PostSaleUseCase get postSale {
     require(Permission.sell);
     return PostSaleUseCase(
-      writer: DriftSaleWriter(runner: _runner),
+      writer: _PlanSales(DriftSaleWriter(runner: _runner), plans),
       calculator: taxCalculator,
     );
   }
 
   RecordReceiptUseCase get recordReceipt {
     require(Permission.takePayments);
-    return RecordReceiptUseCase(writer: DriftPaymentWriter(runner: _runner));
+    return RecordReceiptUseCase(
+      writer: _PlanPayments(DriftPaymentWriter(runner: _runner), plans),
+    );
   }
 
   SaveQuotationUseCase get saveQuotation {
@@ -215,13 +222,16 @@ final class AppServices {
 
   PaySupplierUseCase get paySupplier {
     require(Permission.purchases);
-    return PaySupplierUseCase(writer: DriftPaymentWriter(runner: _runner));
+    return PaySupplierUseCase(
+      writer: _PlanPayments(DriftPaymentWriter(runner: _runner), plans),
+    );
   }
 
   /// Recipes and production runs (M17). Stock-moving, so it takes the
   /// purchases permission, as receiving goods does.
   ManufacturingWriter get manufacturing {
     require(Permission.purchases);
+    plans.require(PlanFeature.manufacturing);
     return DriftManufacturingWriter(runner: _runner);
   }
 
@@ -229,6 +239,7 @@ final class AppServices {
   /// day-close job, so it takes the day-close permission.
   VanWriter get vans {
     require(Permission.closeDay);
+    plans.require(PlanFeature.vans);
     return DriftVanWriter(runner: _runner);
   }
 
@@ -322,6 +333,9 @@ final class AppServices {
 
   /// Counters on the shop's wi-fi.
   late final SyncServices sync = SyncServices._(this);
+
+  /// Which plan this phone is on (M21).
+  late final PlanServices plans = PlanServices._(this);
 
   /// Daily backups to the shop's own Google Drive (M20).
   late final DriveBackupServices drive = DriveBackupServices._(this);
@@ -418,6 +432,7 @@ final class AppServices {
     String province = 'punjab',
   }) async {
     require(Permission.manageUsers);
+    plans.requireFirmSlot((await queries.firms()).length);
     final name = shopName.trim();
     if (name.isEmpty) {
       throw const PermissionDenied(
@@ -556,6 +571,11 @@ final class AppServices {
         'Set your own PIN first, so staff cannot open your screens.',
       );
     }
+    plans.requireUserSlot(
+      (await staffStore.staff(
+        _identity!.firmId,
+      )).where((m) => m.isActive).length,
+    );
     return staffStore.add(
       actorNow(),
       name: name,
@@ -653,15 +673,21 @@ final class AppServices {
     String appVersion = '0.1.0-test',
     DraftStore? drafts,
     List<PrinterTransport>? transports,
-  }) => _wire(
-    AppDatabase(executor),
-    clock,
-    appVersion,
-    drafts ?? InMemoryDraftStore(),
-    // A test that does not name its transports gets none, so nothing in a
-    // suite can accidentally reach for a real socket or a real radio.
-    transports ?? const [],
-  );
+  }) =>
+      _wire(
+        AppDatabase(executor),
+        clock,
+        appVersion,
+        drafts ?? InMemoryDraftStore(),
+        // A test that does not name its transports gets none, so nothing in a
+        // suite can accidentally reach for a real socket or a real radio.
+        transports ?? const [],
+      ).then((services) {
+        // A suite that is not about plans exercises every feature; one that
+        // is narrows it.
+        services.plans.pinForTests(Plan.platinum);
+        return services;
+      });
 
   static Future<AppServices> _wire(
     AppDatabase database,
@@ -682,6 +708,8 @@ final class AppServices {
     final queries = DriftAppQueries(
       database,
       activeFirmId: () => services._identity?.firmId,
+      // Bills on the free plan carry a line saying what made them.
+      madeWith: () => !services.plans.has(PlanFeature.noWatermark),
     );
 
     // Which device is this? Resolved before anything can be written, because
@@ -739,6 +767,7 @@ final class AppServices {
       appVersion: appVersion,
       runner: runner,
     );
+    await services.plans.load();
 
     if (deviceFirmId != null && deviceId != null) {
       final owner = await database
@@ -848,6 +877,7 @@ final class AppServices {
 
   Future<void> setScaleFormat(ScaleFormat format) async {
     require(Permission.settings);
+    plans.require(PlanFeature.scaleLabels);
     if (!format.isValid) {
       throw const PermissionDenied(
         Permission.settings,

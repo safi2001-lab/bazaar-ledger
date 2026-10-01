@@ -23,13 +23,18 @@ import '../write/drift_van_writer.dart' show vanCashSql, vanStockSql;
 /// paginated on the primary key — which works because a ULID sorts by
 /// creation time, so there is no secondary sort and no OFFSET anywhere.
 final class DriftAppQueries implements AppQueries {
-  const DriftAppQueries(this._db, {this.activeFirmId});
+  const DriftAppQueries(this._db, {this.activeFirmId, this.madeWith});
 
   final AppDatabase _db;
 
   /// The firm the phone has open, when it keeps more than one. Without it,
   /// the current firm is the first one set up.
   final String? Function()? activeFirmId;
+
+  /// Whether a bill carries the line saying what made it: the free plan's
+  /// (M21). Asked as each receipt is read, so a plan bought mid-day shows
+  /// on the next bill.
+  final bool Function()? madeWith;
 
   @override
   Future<FirmProfile?> currentFirm() => _firm(activeFirmId?.call());
@@ -1991,7 +1996,11 @@ final class DriftAppQueries implements AppQueries {
       change: Money.paisa(
         payments.fold(0, (sum, p) => sum + p.read<int>('change_paisa')),
       ),
-      footerLines: [?terms, 'Shukriya! Phir tashreef laayen'],
+      footerLines: [
+        ?terms,
+        'Shukriya! Phir tashreef laayen',
+        if (madeWith?.call() ?? false) madeWithLine,
+      ],
     );
   }
 
@@ -2323,3 +2332,6 @@ final class DriftAppQueries implements AppQueries {
 
   static String _two(int n) => n.toString().padLeft(2, '0');
 }
+
+/// The line a free plan's bills end with.
+const madeWithLine = 'Bazaar Ledger app se banaya gaya';

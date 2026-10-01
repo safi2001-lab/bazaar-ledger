@@ -12,16 +12,17 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../printing/pdf_font.dart';
+import '../subscription/plans_screen.dart';
 
 /// The report pack: did the shop make money this month, and where did it go.
 ///
 /// Every figure is computed by `pk_reports` from the books before it gets
 /// here. This screen lays the table out and adds nothing up itself.
-class ReportsScreen extends StatelessWidget {
+class ReportsScreen extends ConsumerWidget {
   const ReportsScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
     return Scaffold(
@@ -35,11 +36,18 @@ class ReportsScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: BlTokens.space2),
                 child: BlCard(
-                  onTap: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => ReportScreen(kind: kind),
-                    ),
-                  ),
+                  onTap: () => isAccountingReport(kind)
+                      ? openWithPlan(
+                          context,
+                          ref,
+                          PlanFeature.accountingReports,
+                          () => ReportScreen(kind: kind),
+                        )
+                      : Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                            builder: (_) => ReportScreen(kind: kind),
+                          ),
+                        ),
                   child: Row(
                     children: [
                       Icon(_icon(kind), color: t.inkMuted),
@@ -63,6 +71,8 @@ class ReportsScreen extends StatelessWidget {
                           ],
                         ),
                       ),
+                      if (isAccountingReport(kind))
+                        const PlanLock(PlanFeature.accountingReports),
                       Icon(Icons.chevron_right, color: t.inkMuted),
                     ],
                   ),
@@ -110,6 +120,17 @@ class ReportsScreen extends StatelessWidget {
 }
 
 /// A report's name as the shop reads it.
+/// The books and tax reports a paid plan opens (M21); the day's sales,
+/// cash, stock and khatas are free.
+bool isAccountingReport(ReportKind kind) => switch (kind) {
+  ReportKind.profitAndLoss ||
+  ReportKind.trialBalance ||
+  ReportKind.balanceSheet ||
+  ReportKind.salesTax ||
+  ReportKind.tajirDost => true,
+  _ => false,
+};
+
 String reportName(AppStrings s, ReportKind kind) => switch (kind) {
   ReportKind.profitAndLoss => s.reportProfitAndLoss,
   ReportKind.salesTax => s.reportSalesTax,

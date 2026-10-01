@@ -29,6 +29,7 @@ export 'src/documents/debit_note.dart';
 export 'src/documents/delivery_challan.dart';
 export 'src/documents/quotation.dart';
 export 'src/entitlement/activity.dart';
+export 'src/entitlement/plans.dart';
 export 'src/entitlement/roles.dart';
 export 'src/entitlement/staff.dart';
 export 'src/identity/actor_context.dart';

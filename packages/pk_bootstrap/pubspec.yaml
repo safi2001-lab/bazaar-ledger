@@ -37,6 +37,8 @@ dependencies:
   sqlite3: ">=3.4.0 <3.6.0"
 
 dev_dependencies:
+  # Test-only: signing a purchase as Google Play would, with a test key.
+  crypto: ^3.0.6
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter

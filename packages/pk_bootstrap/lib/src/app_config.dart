@@ -47,7 +47,7 @@ abstract final class AppConfig {
     'GOOGLE_OAUTH_CLIENT_ID',
   );
 
-  /// The base64 RSA public key from Play Console → Monetisation setup (M9).
+  /// The base64 RSA public key from Play Console → Monetisation setup (M21).
   ///
   /// Every purchase Google returns is signed with the matching private key.
   /// Entitlement is written only after that signature verifies on the device.

@@ -118,6 +118,7 @@ final class FbrServices {
     _app.require(Permission.settings);
     final firm = await _app.queries.currentFirm();
     if (settings.enabled) {
+      _app.plans.require(PlanFeature.fbr);
       if (firm == null || !firm.isSalesTaxRegistered) {
         throw const PermissionDenied(
           Permission.settings,
@@ -175,7 +176,7 @@ final class FbrServices {
   /// The receipt then says so until FBR has answered.
   Future<void> afterSale(String documentId) async {
     final s = await settings();
-    if (!s.enabled) return;
+    if (!s.enabled || !_app.plans.has(PlanFeature.fbr)) return;
     await _app._runner.run(_actor(), (tx) async {
       await tx.update('documents', documentId, {'fbr_status': 'pending'});
     });
@@ -224,7 +225,9 @@ final class FbrServices {
   /// is the normal state of a shop's connection, not an error.
   Future<FbrSendReport> sendPending() async {
     final s = await settings();
-    if (!s.enabled || _app._identity == null) {
+    if (!s.enabled ||
+        _app._identity == null ||
+        !_app.plans.has(PlanFeature.fbr)) {
       return (posted: 0, rejected: 0, waiting: 0);
     }
     final gateway = gatewayFor(s);

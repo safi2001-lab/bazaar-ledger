@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../pos/cart.dart';
+import '../subscription/plans_screen.dart';
 
 final _firmsProvider = FutureProvider.autoDispose<List<FirmProfile>>((
   ref,
@@ -96,14 +97,25 @@ class FirmsScreen extends ConsumerWidget {
                     label: s.firmsAdd,
                     icon: Icons.add_business_outlined,
                     kind: BlButtonKind.secondary,
-                    onPressed: () => unawaited(
-                      showModalBottomSheet<void>(
+                    onPressed: () async {
+                      // How many firms one phone keeps is the plan's (M21).
+                      try {
+                        ref
+                            .read(appServicesProvider)
+                            .plans
+                            .requireFirmSlot(firms.length);
+                      } on PlanRequired catch (refused) {
+                        await offerPlan(context, refused);
+                        return;
+                      }
+                      if (!context.mounted) return;
+                      await showModalBottomSheet<void>(
                         context: context,
                         isScrollControlled: true,
                         useSafeArea: true,
                         builder: (_) => const _AddFirmSheet(),
-                      ),
-                    ),
+                      );
+                    },
                   ),
                 ],
               ),
