@@ -97,6 +97,7 @@ final class ReturnDraft {
     required this.reason,
     this.refundNow = Money.zero,
     this.paymentAccountId,
+    this.locationCode = 'MAIN',
   });
 
   final String originalDocumentId;
@@ -107,6 +108,10 @@ final class ReturnDraft {
   /// owes, or becomes credit if they owed nothing.
   final Money refundNow;
   final String? paymentAccountId;
+
+  /// Where the goods come back to (M27): the shop floor, or the van the
+  /// phone taking them back is selling from.
+  final String locationCode;
 }
 
 /// Why a return cannot be recorded.
@@ -311,6 +316,7 @@ final class ReturnBuilder {
       movements.add(
         StockMovementPosting(
           itemId: sold.itemId,
+          locationCode: draft.locationCode,
           txnType: 'sale_return',
           qtyDelta: wanted.qty,
           // At the cost it left at. See the library comment: today's average

@@ -239,10 +239,11 @@ milestones:
     # sells the batch that expires first and never an expired one; a mobile
     # shop buys and sells phones by IMEI; goods move to a godown and back;
     # a pack's GS1 code is read at the counter and at the door; and the
-    # expiry list says what to pull off the shelf. Not built: a return from
-    # a customer or to a supplier going back into the batch it came from
-    # (returns land in no batch), drug schedules and prescriptions, and
-    # selling straight from a godown rather than the shop floor.
+    # expiry list says what to pull off the shelf. A customer's return goes
+    # back into the batch it came from since M27. Not built: a return to a
+    # supplier taken out of a named batch, drug schedules and
+    # prescriptions, and selling straight from a godown rather than the
+    # shop floor.
     state: sealed
     owns:
       - lib/features/batches/**
@@ -367,10 +368,10 @@ milestones:
     # rider's cash is settled once a day against what the van's cash sales
     # took, any short or over booked to Cash Short and Over, and what was
     # not sold goes back to the shop floor batch by batch. Schema v7 adds
-    # vans, van_settlements and documents.location_code. Not built: routes
-    # and stops, credit sales collected on the round (the khata handles
-    # them as any udhaar), returns going back onto the van, and settling a
-    # day other than today.
+    # vans, van_settlements and documents.location_code. Returns onto the
+    # van and settling yesterday came in M27. Not built: routes and stops,
+    # and credit sales collected on the round (the khata handles them as
+    # any udhaar).
     state: sealed
     owns:
       - lib/features/vans/**
@@ -566,6 +567,24 @@ milestones:
     owns:
       - packages/pk_domain/lib/src/accounting/year_close.dart
       - packages/pk_data/lib/src/write/drift_year_close.dart
+
+  - id: M27
+    title: Stock that comes back goes where it came from — into its batch, onto its van — and a late van day is settled
+    # Opened and sealed 1 Oct 2026 at 1/1. A customer's return of a batch
+    # item goes back into the batches the bill took it from, as far as
+    # each gave, so a returned strip is back under its own expiry; the
+    # rest, or an item kept without batches, comes back unbatched as
+    # before. A return taken on a van's phone goes back onto the van. A
+    # rider back after the day was closed is settled for yesterday the
+    # next morning, against yesterday's cash sales; a day not yet come is
+    # refused.
+    #
+    # Not built, and why: undoing a production run. Its stock rows are not
+    # tied to the run, so undoing it from the recipe would put back what
+    # the recipe says today, which is not what was used if the recipe has
+    # changed; a stock adjustment corrects a mistaken run exactly.
+    state: sealed
+    owns: []
 
 features:
   # ---------------------------------------------------------------------------
@@ -4450,3 +4469,11 @@ features:
       - year close a bill entered late for June is closed by closing again
       - accounts of the shop's own an expense head is added after the last one, and can be spent against
       - the shop adds an account of its own, and a year with nothing in it is not closed
+  - id: M27-STOCK-01
+    milestone: M27
+    title: Returns go back into their batch or onto their van, and yesterday's van day is settled
+    status: done
+    proof:
+      - strips that come back go back into the batches they left from
+      - van sales goods a customer gives back on the round go back onto the van
+      - van sales a rider back too late is settled for yesterday the next morning

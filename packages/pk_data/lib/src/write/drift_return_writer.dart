@@ -133,6 +133,65 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
     return row?.readNullable<String>('ledger_account_id');
   }
 
+  /// Where goods coming back go (M27): into the batches the bill took them
+  /// from, as far as those batches gave them, so a strip of tablets
+  /// returned is back under its own expiry rather than in no batch at all.
+  /// Anything beyond what the batches gave, or an item kept without
+  /// batches, goes back as it came: unbatched.
+  Future<List<({String? lotId, int qty, Money value})>> _intoLots(
+    String billId,
+    StockMovementPosting movement,
+  ) async {
+    final whole = [
+      (
+        lotId: movement.lotId,
+        qty: movement.qtyDelta.inThousandths,
+        value: movement.valueDelta,
+      ),
+    ];
+    if (movement.lotId != null || !movement.qtyDelta.isPositive) return whole;
+    final taken = await _tx.select(
+      'SELECT s.lot_id, -SUM(s.qty_delta_thousandths) AS taken '
+      'FROM stock_ledger s '
+      'WHERE s.document_id = ? AND s.item_id = ? AND s.lot_id IS NOT NULL '
+      '  AND s.deleted_at_utc IS NULL '
+      'GROUP BY s.lot_id ORDER BY MIN(s.occurred_at_utc), s.lot_id',
+      [billId, movement.itemId],
+    );
+    if (taken.isEmpty) return whole;
+    final back = {
+      for (final r in await _tx.select(
+        'SELECT s.lot_id, SUM(s.qty_delta_thousandths) AS back '
+        'FROM stock_ledger s '
+        'JOIN doc_links l ON l.to_document_id = s.document_id '
+        "  AND l.from_document_id = ? AND l.link_type = 'returns' "
+        '  AND l.deleted_at_utc IS NULL '
+        'WHERE s.item_id = ? AND s.lot_id IS NOT NULL '
+        '  AND s.deleted_at_utc IS NULL '
+        'GROUP BY s.lot_id',
+        [billId, movement.itemId],
+      ))
+        r.read<String>('lot_id'): r.read<int>('back'),
+    };
+    var left = movement.qtyDelta.inThousandths;
+    final parts = <({String? lotId, int qty})>[];
+    for (final r in taken) {
+      if (left <= 0) break;
+      final lot = r.read<String>('lot_id');
+      final room = r.read<int>('taken') - (back[lot] ?? 0);
+      if (room <= 0) continue;
+      final q = room < left ? room : left;
+      parts.add((lotId: lot, qty: q));
+      left -= q;
+    }
+    if (left > 0) parts.add((lotId: null, qty: left));
+    final values = movement.valueDelta.allocate([for (final p in parts) p.qty]);
+    return [
+      for (var i = 0; i < parts.length; i++)
+        (lotId: parts[i].lotId, qty: parts[i].qty, value: values[i]),
+    ];
+  }
+
   @override
   Future<RecordedReturn> apply(ReturnPosting posting) async {
     posting.assertBalanced();
@@ -205,29 +264,34 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
     }
 
     for (final movement in posting.stockMovements) {
-      final running = await _tx.selectOne(
-        'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS balance '
-        'FROM stock_ledger '
-        'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
-        '  AND deleted_at_utc IS NULL',
-        [actor.firmId, movement.itemId, movement.locationCode],
-      );
+      for (final part in await _intoLots(
+        posting.originalDocumentId,
+        movement,
+      )) {
+        final running = await _tx.selectOne(
+          'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS balance '
+          'FROM stock_ledger '
+          'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
+          '  AND deleted_at_utc IS NULL',
+          [actor.firmId, movement.itemId, movement.locationCode],
+        );
 
-      await _tx.insert('stock_ledger', {
-        'item_id': movement.itemId,
-        'location_code': movement.locationCode,
-        'document_id': documentId,
-        'document_line_id': lineIdByNo[movement.lineNo],
-        'txn_type': movement.txnType,
-        'qty_delta_thousandths': movement.qtyDelta.inThousandths,
-        'rate_milli_paisa': movement.rate.inMilliPaisa,
-        'value_delta_paisa': movement.valueDelta.inPaisa,
-        'balance_after_thousandths':
-            (running?.read<int>('balance') ?? 0) +
-            movement.qtyDelta.inThousandths,
-        'occurred_at_utc': movement.occurredAtUtcMillis,
-        'occurred_on_local': movement.occurredOnLocal,
-      });
+        await _tx.insert('stock_ledger', {
+          'item_id': movement.itemId,
+          'location_code': movement.locationCode,
+          'lot_id': part.lotId,
+          'document_id': documentId,
+          'document_line_id': lineIdByNo[movement.lineNo],
+          'txn_type': movement.txnType,
+          'qty_delta_thousandths': part.qty,
+          'rate_milli_paisa': movement.rate.inMilliPaisa,
+          'value_delta_paisa': part.value.inPaisa,
+          'balance_after_thousandths':
+              (running?.read<int>('balance') ?? 0) + part.qty,
+          'occurred_at_utc': movement.occurredAtUtcMillis,
+          'occurred_on_local': movement.occurredOnLocal,
+        });
+      }
     }
 
     // The link, which is what lets a second return know what the first took.

@@ -2777,5 +2777,8 @@ class AppStringsEn extends AppStrings {
   }
 
   @override
+  String get vansSettleYesterday => 'Settle yesterday, not today';
+
+  @override
   String get chequeDone => 'Done';
 }

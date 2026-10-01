@@ -1551,5 +1551,6 @@
       "no": {"type": "String"}
     }
   },
+  "vansSettleYesterday": "Settle yesterday, not today",
   "chequeDone": "Done"
 }

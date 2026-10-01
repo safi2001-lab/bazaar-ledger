@@ -1630,5 +1630,6 @@
       "no": {"type": "String"}
     }
   },
+  "vansSettleYesterday": "Kal ka hisaab (aaj nahi)",
   "chequeDone": "Ho gaya"
 }

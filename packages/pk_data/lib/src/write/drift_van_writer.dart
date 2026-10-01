@@ -84,6 +84,7 @@ final class DriftVanWriter implements VanWriter {
     String vanId, {
     required Money counted,
     bool returnStock = true,
+    BusinessDate? day,
   }) {
     if (counted.isNegative) {
       throw const VanRefused('Counted cash cannot be less than nothing.');
@@ -97,26 +98,32 @@ final class DriftVanWriter implements VanWriter {
       if (van == null) throw const VanRefused('That van is not kept.');
       final name = van.read<String>('name');
       final location = van.read<String>('location_code');
-      final day = actor.businessDate.value;
+      final on = day ?? actor.businessDate;
+      if (on.value.compareTo(actor.businessDate.value) > 0) {
+        throw const VanRefused(
+          'A day that has not come yet cannot be settled.',
+        );
+      }
+      final onDay = on.value;
       final done = await tx.selectOne(
         'SELECT 1 FROM van_settlements WHERE firm_id = ? AND van_id = ? '
         'AND settled_on_local = ? AND deleted_at_utc IS NULL',
-        [actor.firmId, vanId, day],
+        [actor.firmId, vanId, onDay],
       );
       if (done != null) {
-        throw VanRefused('$name has already been settled today.');
+        throw VanRefused('$name has already been settled for $onDay.');
       }
 
       final cash = await tx.selectOne(vanCashSql, [
         actor.firmId,
         location,
-        day,
+        onDay,
       ]);
       final expected = Money.paisa(cash?.read<int>('cash') ?? 0);
 
       // The rider's short or over, where the till's own is booked.
       String? journalId;
-      final narration = 'Van $name settled for $day';
+      final narration = 'Van $name settled for $onDay';
       final lines = settlementLines(
         expected: expected,
         counted: counted,
@@ -126,7 +133,7 @@ final class DriftVanWriter implements VanWriter {
         final number = await sequences.allocate(
           tx,
           docType: 'journal_entry',
-          fiscalYear: actor.businessDate.fiscalYear,
+          fiscalYear: on.fiscalYear,
         );
         final amount = (counted - expected).abs;
         journalId = await insertJournal(
@@ -135,8 +142,8 @@ final class DriftVanWriter implements VanWriter {
           JournalEntryPosting(
             entryNo: number.formatted,
             entryDateUtcMillis: actor.epochMillis,
-            entryDateLocal: day,
-            fiscalYear: actor.businessDate.fiscalYear,
+            entryDateLocal: onDay,
+            fiscalYear: on.fiscalYear,
             sourceType: 'adjustment',
             totalDebit: amount,
             totalCredit: amount,
@@ -182,7 +189,7 @@ final class DriftVanWriter implements VanWriter {
                   rate: cost,
                   valueDelta: value,
                   occurredAtUtcMillis: actor.epochMillis,
-                  occurredOnLocal: day,
+                  occurredOnLocal: onDay,
                   lineNo: 0,
                   locationCode: place,
                 ),
@@ -198,7 +205,7 @@ final class DriftVanWriter implements VanWriter {
 
       final id = await tx.insert('van_settlements', {
         'van_id': vanId,
-        'settled_on_local': day,
+        'settled_on_local': onDay,
         'cash_expected_paisa': expected.inPaisa,
         'cash_counted_paisa': counted.inPaisa,
         'lines_returned_count': returned,

@@ -115,6 +115,8 @@ class _SheetState extends ConsumerState<_ReturnSheet> {
                   services.identity!.firmId,
                 )).firstWhere((a) => a.isDefault).id
               : null,
+          // A van phone takes goods back onto the van (M27).
+          locationCode: await services.counterLocation(),
         ),
       );
       container.bumpRefresh();

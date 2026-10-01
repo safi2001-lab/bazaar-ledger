@@ -4994,6 +4994,12 @@ abstract class AppStrings {
   /// **'Saal band ho gaya ({no})'**
   String accountsYearClosed(String no);
 
+  /// No description provided for @vansSettleYesterday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kal ka hisaab (aaj nahi)'**
+  String get vansSettleYesterday;
+
   /// No description provided for @chequeDone.
   ///
   /// In ur, this message translates to:

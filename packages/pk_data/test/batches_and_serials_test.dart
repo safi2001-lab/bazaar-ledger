@@ -274,4 +274,64 @@ void main() {
     ]);
     expect(t.rows, hasLength(2), reason: 'NEW is years away');
   });
+
+  test(
+    'strips that come back go back into the batches they left from',
+    () async {
+      await receive(panadol, 10, batch: 'B1', expiry: '2026-12-31');
+      await receive(panadol, 20, batch: 'B2', expiry: '2027-06-30');
+      final sale = await sell(
+        actor,
+        SaleDraft(
+          lines: [
+            SaleLineDraft(
+              itemId: panadol,
+              itemName: 'Panadol strip',
+              qty: Qty.units(12),
+              baseQty: Qty.units(12),
+              unitId: pcs,
+              unitCode: 'pcs',
+              rate: Rate.rupees(40),
+            ),
+          ],
+          tenders: [
+            TenderDraft(
+              paymentAccountId: cash,
+              mode: 'cash',
+              amount: Money.rupees(480),
+            ),
+          ],
+          roundToRupee: false,
+        ),
+      );
+      expect(await onHandByLot(panadol), {'B1': 0, 'B2': 18});
+      final line =
+          (await db
+                  .customSelect(
+                    'SELECT id FROM document_lines WHERE document_id = ?',
+                    variables: [Variable<String>(sale.documentId)],
+                  )
+                  .getSingle())
+              .read<String>('id');
+      final takeBack = RecordReturnUseCase(
+        writer: DriftReturnWriter(runner: runner),
+      );
+      Future<void> back(int units) => takeBack(
+        actor,
+        ReturnDraft(
+          originalDocumentId: sale.documentId,
+          reason: 'Not needed',
+          refundNow: Money.rupees(40 * units),
+          paymentAccountId: cash,
+          lines: [ReturnLineDraft(documentLineId: line, qty: Qty.units(units))],
+        ),
+      ).then((_) {});
+
+      await back(9);
+      expect(await onHandByLot(panadol), {'B1': 9, 'B2': 18});
+      // The rest of B1's ten, then what came out of B2.
+      await back(3);
+      expect(await onHandByLot(panadol), {'B1': 10, 'B2': 20});
+    },
+  );
 }

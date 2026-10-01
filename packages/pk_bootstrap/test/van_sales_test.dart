@@ -132,6 +132,101 @@ void main() {
       );
     });
 
+    test(
+      'a rider back too late is settled for yesterday the next morning',
+      () async {
+        final vanId = await shop.vans.addVan(shop.actorNow(), name: 'Suzuki 1');
+        final van = (await shop.queries.vans(firmId)).single;
+        await shop.catalogue.transferStock(
+          shop.actorNow(),
+          StockTransferDraft(
+            itemId: oil,
+            from: 'MAIN',
+            to: van.locationCode,
+            qty: Qty.units(10),
+          ),
+        );
+        await sell(van.locationCode, 3);
+        final yesterday = BusinessDate.now(shop.clock);
+        (shop.clock as FixedClock).advance(const Duration(days: 1));
+
+        await expectLater(
+          shop.vans.settle(
+            shop.actorNow(),
+            vanId,
+            counted: Money.zero,
+            day: BusinessDate.now(shop.clock).addDays(1),
+          ),
+          throwsA(isA<VanRefused>()),
+        );
+        final settled = await shop.vans.settle(
+          shop.actorNow(),
+          vanId,
+          counted: const Money.rupees(7500),
+          day: yesterday,
+        );
+        expect(settled.difference, Money.zero);
+        expect(
+          (await shop.queries.vanDay(
+            firmId,
+            vanId,
+            yesterday,
+          )).settled?.counted,
+          const Money.rupees(7500),
+        );
+        expect(await at('MAIN'), 47000, reason: '50 - 10 + 7 back');
+        // Today is still open.
+        await shop.vans.settle(shop.actorNow(), vanId, counted: Money.zero);
+      },
+    );
+
+    test(
+      'goods a customer gives back on the round go back onto the van',
+      () async {
+        final van = await shop.vans.addVan(shop.actorNow(), name: 'Suzuki 1');
+        final code = (await shop.queries.vans(firmId)).single.locationCode;
+        await shop.catalogue.transferStock(
+          shop.actorNow(),
+          StockTransferDraft(
+            itemId: oil,
+            from: 'MAIN',
+            to: code,
+            qty: Qty.units(5),
+          ),
+        );
+        await sell(code, 2);
+        final bill = await shop.database
+            .customSelect(
+              'SELECT d.id, l.id AS line FROM documents d '
+              'JOIN document_lines l ON l.document_id = d.id '
+              "WHERE d.doc_type = 'sale_invoice'",
+            )
+            .getSingle();
+        final cash = (await shop.queries.paymentAccounts(
+          firmId,
+        )).firstWhere((a) => a.modeLabel == 'cash');
+        await shop.recordReturn(
+          shop.actorNow(),
+          ReturnDraft(
+            originalDocumentId: bill.read<String>('id'),
+            reason: 'Dabba toota hua',
+            refundNow: const Money.rupees(2500),
+            paymentAccountId: cash.id,
+            locationCode: code,
+            lines: [
+              ReturnLineDraft(
+                documentLineId: bill.read<String>('line'),
+                qty: Qty.units(1),
+              ),
+            ],
+          ),
+        );
+        expect(await at(code), 4000, reason: '5 loaded, 2 sold, 1 back');
+        expect(await at('MAIN'), 45000);
+        expect(van, isNotEmpty);
+      },
+    );
+
     test('a day is settled once', () async {
       final vanId = await shop.vans.addVan(shop.actorNow(), name: 'Suzuki 1');
       await shop.vans.settle(shop.actorNow(), vanId, counted: Money.zero);

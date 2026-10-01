@@ -387,6 +387,9 @@ class _SettleSheet extends ConsumerStatefulWidget {
 class _SettleSheetState extends ConsumerState<_SettleSheet> {
   final _counted = TextEditingController();
   bool _returnStock = true;
+
+  /// The rider came back after the day was closed (M27).
+  bool _yesterday = false;
   String? _error;
   bool _busy = false;
 
@@ -410,6 +413,7 @@ class _SettleSheetState extends ConsumerState<_SettleSheet> {
         widget.van.id,
         counted: Money.tryParse(_counted.text) ?? Money.zero,
         returnStock: _returnStock,
+        day: _yesterday ? BusinessDate.now(services.clock).addDays(-1) : null,
       );
       container.bumpRefresh();
       messenger.showSnackBar(
@@ -453,10 +457,17 @@ class _SettleSheetState extends ConsumerState<_SettleSheet> {
             s.vansExpected,
             style: TextStyle(fontSize: 13, color: t.inkMuted),
           ),
-          BlMoney(
-            widget.day?.expectedCash ?? Money.zero,
-            size: 22,
-            withSymbol: true,
+          if (!_yesterday)
+            BlMoney(
+              widget.day?.expectedCash ?? Money.zero,
+              size: 22,
+              withSymbol: true,
+            ),
+          SwitchListTile.adaptive(
+            value: _yesterday,
+            onChanged: (v) => setState(() => _yesterday = v),
+            contentPadding: EdgeInsets.zero,
+            title: Text(s.vansSettleYesterday),
           ),
           const SizedBox(height: BlTokens.space3),
           BlField(controller: _counted, label: s.vansCounted, numeric: true),

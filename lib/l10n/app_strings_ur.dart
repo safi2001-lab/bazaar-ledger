@@ -2777,5 +2777,8 @@ class AppStringsUr extends AppStrings {
   }
 
   @override
+  String get vansSettleYesterday => 'Kal ka hisaab (aaj nahi)';
+
+  @override
   String get chequeDone => 'Ho gaya';
 }

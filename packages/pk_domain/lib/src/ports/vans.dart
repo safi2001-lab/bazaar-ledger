@@ -67,13 +67,15 @@ abstract interface class VanWriter {
     String? riderUserId,
   });
 
-  /// Settles today for [vanId]: the rider's [counted] cash against what the
-  /// van's cash sales took, and, when [returnStock], every unsold piece
+  /// Settles today for [vanId] — or an earlier [day] a rider came back too
+  /// late to settle (M27): the rider's [counted] cash against what the van's
+  /// cash sales took that day, and, when [returnStock], every unsold piece
   /// back to the shop floor. Once a day.
   Future<VanSettlementView> settle(
     ActorContext actor,
     String vanId, {
     required Money counted,
     bool returnStock = true,
+    BusinessDate? day,
   });
 }
