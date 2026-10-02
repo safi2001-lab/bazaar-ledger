@@ -5407,6 +5407,204 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{name} ne {when} ko mansookh kiya'**
   String entryCancelledBy(String name, String when);
+
+  /// No description provided for @salesSearch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill talash karein'**
+  String get salesSearch;
+
+  /// No description provided for @salesSearchHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill number, naam, phone ya raqam'**
+  String get salesSearchHint;
+
+  /// No description provided for @salesClearSearch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Talash saaf karein'**
+  String get salesClearSearch;
+
+  /// No description provided for @salesPeriodAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab din'**
+  String get salesPeriodAll;
+
+  /// No description provided for @salesPeriodToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj'**
+  String get salesPeriodToday;
+
+  /// No description provided for @salesPeriodWeek.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is hafte'**
+  String get salesPeriodWeek;
+
+  /// No description provided for @salesPeriodMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine'**
+  String get salesPeriodMonth;
+
+  /// No description provided for @salesPeriodLastMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichhle mahine'**
+  String get salesPeriodLastMonth;
+
+  /// No description provided for @salesPeriodPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekhen chunein'**
+  String get salesPeriodPick;
+
+  /// No description provided for @salesPeriodRange.
+  ///
+  /// In ur, this message translates to:
+  /// **'{from} se {to}'**
+  String salesPeriodRange(String from, String to);
+
+  /// No description provided for @salesStandingAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab bill'**
+  String get salesStandingAll;
+
+  /// No description provided for @salesStandingPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ada ho chuke'**
+  String get salesStandingPaid;
+
+  /// No description provided for @salesStandingUdhaar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar wale'**
+  String get salesStandingUdhaar;
+
+  /// No description provided for @salesStandingCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh kiye'**
+  String get salesStandingCancelled;
+
+  /// No description provided for @salesNoneFound.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is talash par koi bill nahi'**
+  String get salesNoneFound;
+
+  /// No description provided for @salesNoneFoundHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doosra naam, number ya tareekh aazma kar dekhein'**
+  String get salesNoneFoundHint;
+
+  /// No description provided for @salesClearFilters.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab bill dikhayein'**
+  String get salesClearFilters;
+
+  /// No description provided for @sendAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bhejein'**
+  String get sendAction;
+
+  /// No description provided for @sendTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bhejein: {docNo}'**
+  String sendTitle(String docNo);
+
+  /// No description provided for @sendWalkIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aam gahak, koi number nahi'**
+  String get sendWalkIn;
+
+  /// No description provided for @sendWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp par bhejein'**
+  String get sendWhatsApp;
+
+  /// No description provided for @sendWhatsAppShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp'**
+  String get sendWhatsAppShort;
+
+  /// No description provided for @sendWhatsAppTo.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ki chat khulegi, bill ki tafseel likhi hui'**
+  String sendWhatsAppTo(String name);
+
+  /// No description provided for @sendWhatsAppNoNumber.
+  ///
+  /// In ur, this message translates to:
+  /// **'Number nahi hai, PDF share sheet se jayegi'**
+  String get sendWhatsAppNoNumber;
+
+  /// No description provided for @sendNoNumber.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ka WhatsApp number nahi, PDF share sheet se bheji'**
+  String get sendNoNumber;
+
+  /// No description provided for @sendNoWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone par WhatsApp nahi mila, PDF share sheet se bheji'**
+  String get sendNoWhatsApp;
+
+  /// No description provided for @sendPdfHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'File, saath mein bill ki tafseel'**
+  String get sendPdfHint;
+
+  /// No description provided for @sendPicture.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer bhejein'**
+  String get sendPicture;
+
+  /// No description provided for @sendPictureShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer'**
+  String get sendPictureShort;
+
+  /// No description provided for @sendPictureHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ki tasveer, chat mein seedha khulti hai'**
+  String get sendPictureHint;
+
+  /// No description provided for @sendPrintHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is counter ke printer par'**
+  String get sendPrintHint;
+
+  /// No description provided for @documentView.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poora dekhein'**
+  String get documentView;
+
+  /// No description provided for @purchaseSendBack.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal wapas karein'**
+  String get purchaseSendBack;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

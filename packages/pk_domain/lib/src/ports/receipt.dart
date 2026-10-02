@@ -120,8 +120,10 @@ final class ReceiptData {
     this.fbrInvoiceNo,
     this.fbrPending = false,
     this.isReprint = false,
+    this.isCancelled = false,
     this.docTitle = 'Invoice',
     this.docLabel = 'Bill No',
+    this.partyLabel = 'Customer',
   });
 
   /// What the paper is: Invoice, or Quotation. A quotation printed as an
@@ -130,6 +132,11 @@ final class ReceiptData {
 
   /// How the number is labelled on paper: "Bill No", "Quotation No".
   final String docLabel;
+
+  /// Who [customerName] is, on paper: "Customer", or "Supplier" on a purchase
+  /// bill (M30). A delivery shown back with the mill as its "Customer" is a
+  /// bill that says the shop sold the mill its own rice.
+  final String partyLabel;
 
   final ReceiptShop shop;
   final String docNo;
@@ -175,9 +182,53 @@ final class ReceiptData {
   /// Sent to FBR and not yet answered.
   final bool fbrPending;
 
+  /// A copy of a bill whose original has already gone to paper: printed
+  /// "DUPLICATE" (M30), as the shop's own carbon book says on its second
+  /// sheet. Set when a printed bill is sent again, never on the first copy.
   final bool isReprint;
 
+  /// A bill that was cancelled after it was made, marked so on what is sent
+  /// (M30). A cancelled bill sent on without the mark reads, to a customer
+  /// holding it, exactly like one they still owe on.
+  ///
+  /// Set by whoever sends it, never by the receipt read itself: the paper a
+  /// thermal printer hands over keeps printing as it did on the day.
+  final bool isCancelled;
+
   int get itemCount => lines.length;
+
+  /// The same receipt, marked as a copy or as cancelled.
+  ReceiptData copyWith({bool? isReprint, bool? isCancelled}) => ReceiptData(
+    shop: shop,
+    docNo: docNo,
+    dateTimeLabel: dateTimeLabel,
+    lines: lines,
+    subtotal: subtotal,
+    total: total,
+    tenders: tenders,
+    paid: paid,
+    balance: balance,
+    change: change,
+    cashierName: cashierName,
+    customerName: customerName,
+    customerPhone: customerPhone,
+    discount: discount,
+    tax: tax,
+    furtherTax: furtherTax,
+    withholding: withholding,
+    extraCharges: extraCharges,
+    roundOff: roundOff,
+    previousBalance: previousBalance,
+    footerLines: footerLines,
+    bankQr: bankQr,
+    fbrInvoiceNo: fbrInvoiceNo,
+    fbrPending: fbrPending,
+    isReprint: isReprint ?? this.isReprint,
+    isCancelled: isCancelled ?? this.isCancelled,
+    docTitle: docTitle,
+    docLabel: docLabel,
+    partyLabel: partyLabel,
+  );
 
   Money get runningBalance =>
       previousBalance == null ? balance : previousBalance! + balance;

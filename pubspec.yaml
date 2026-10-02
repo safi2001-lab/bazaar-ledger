@@ -115,6 +115,11 @@ dev_dependencies:
   # channel is never called. A test that stubbed the channel would record
   # nothing while asserting it had.
   share_plus_platform_interface: ^7.2.0
+  # Test-only, and for the same reason as the line above: a bill sent on
+  # WhatsApp (M30) is asserted at the url_launcher platform seam, where the
+  # test can be WhatsApp and read the chat it was asked to open. Already in
+  # the tree under url_launcher; nothing new reaches the APK.
+  url_launcher_platform_interface: ^2.3.2
 
 flutter:
   uses-material-design: true

@@ -8,6 +8,8 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../documents/document_screen.dart';
+import '../sales/send_sheet.dart';
 import 'purchase_screen.dart';
 import 'send_back_sheet.dart';
 
@@ -100,15 +102,38 @@ class _PurchaseTile extends StatelessWidget {
     final s = AppStrings.of(context);
     final t = context.bl;
 
-    // A tap opens what can go back on this delivery. The only correction a
-    // delivery has: it cannot be voided, because its cost moved the average.
+    // A tap opens the delivery itself, to be read and sent on (M30). It
+    // used to open straight onto sending goods back, so a delivery could
+    // be looked at only by starting to return it. Sending back is still one
+    // tap from there: the only correction a delivery has, since it cannot
+    // be voided once its cost has moved the average.
     return BlCard(
-      onTap: () => unawaited(
-        showSendBackSheet(context, documentId: row.id, docNo: row.docNo),
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (context) => DocumentScreen(
+            documentId: row.id,
+            docNo: row.docNo,
+            showOwed: true,
+            actions: [
+              BlIconButton(
+                icon: Icons.assignment_return_outlined,
+                label: s.purchaseSendBack,
+                onPressed: () => unawaited(
+                  showSendBackSheet(
+                    context,
+                    documentId: row.id,
+                    docNo: row.docNo,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
       child: Row(
         children: [
           Expanded(
+            flex: 3,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -139,7 +164,25 @@ class _PurchaseTile extends StatelessWidget {
             ),
           ),
           const SizedBox(width: BlTokens.space2),
-          BlMoney(row.total, size: 16),
+          // Scaled down inside its share of the row, never cut, now that
+          // the row also carries a send button.
+          Flexible(
+            flex: 2,
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: BlMoney(row.total, size: 16),
+            ),
+          ),
+          // Sent on from the list as a bill is (M30): to the supplier on
+          // WhatsApp, or as a PDF or a picture for the accountant.
+          BlIconButton(
+            icon: Icons.share_outlined,
+            label: s.sendAction,
+            onPressed: () => unawaited(
+              showSendSheet(context, documentId: row.id, docNo: row.docNo),
+            ),
+          ),
         ],
       ),
     );

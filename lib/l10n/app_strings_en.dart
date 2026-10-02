@@ -3027,4 +3027,113 @@ class AppStringsEn extends AppStrings {
   String entryCancelledBy(String name, String when) {
     return 'Cancelled by $name, $when';
   }
+
+  @override
+  String get salesSearch => 'Find a bill';
+
+  @override
+  String get salesSearchHint => 'Bill number, name, phone or amount';
+
+  @override
+  String get salesClearSearch => 'Clear the search';
+
+  @override
+  String get salesPeriodAll => 'Any day';
+
+  @override
+  String get salesPeriodToday => 'Today';
+
+  @override
+  String get salesPeriodWeek => 'This week';
+
+  @override
+  String get salesPeriodMonth => 'This month';
+
+  @override
+  String get salesPeriodLastMonth => 'Last month';
+
+  @override
+  String get salesPeriodPick => 'Pick dates';
+
+  @override
+  String salesPeriodRange(String from, String to) {
+    return '$from to $to';
+  }
+
+  @override
+  String get salesStandingAll => 'Every bill';
+
+  @override
+  String get salesStandingPaid => 'Paid up';
+
+  @override
+  String get salesStandingUdhaar => 'Still owed';
+
+  @override
+  String get salesStandingCancelled => 'Cancelled ones';
+
+  @override
+  String get salesNoneFound => 'No bill matches';
+
+  @override
+  String get salesNoneFoundHint => 'Try another name, number or date';
+
+  @override
+  String get salesClearFilters => 'Show every bill';
+
+  @override
+  String get sendAction => 'Send';
+
+  @override
+  String sendTitle(String docNo) {
+    return 'Send $docNo';
+  }
+
+  @override
+  String get sendWalkIn => 'Walk-in customer, no number';
+
+  @override
+  String get sendWhatsApp => 'Send on WhatsApp';
+
+  @override
+  String get sendWhatsAppShort => 'WhatsApp';
+
+  @override
+  String sendWhatsAppTo(String name) {
+    return 'Opens the chat with $name, the bill written out';
+  }
+
+  @override
+  String get sendWhatsAppNoNumber =>
+      'No number, so the PDF goes through the share sheet';
+
+  @override
+  String get sendNoNumber =>
+      'No WhatsApp number for this customer, so the PDF went to the share sheet';
+
+  @override
+  String get sendNoWhatsApp =>
+      'WhatsApp is not on this phone, so the PDF went to the share sheet';
+
+  @override
+  String get sendPdfHint => 'The file, with the bill written out beside it';
+
+  @override
+  String get sendPicture => 'Send a picture';
+
+  @override
+  String get sendPictureShort => 'Picture';
+
+  @override
+  String get sendPictureHint =>
+      'A picture of the bill, opens right in the chat';
+
+  @override
+  String get sendPrintHint => 'On the printer at this counter';
+
+  @override
+  String get documentView => 'Open it';
+
+  @override
+  String get purchaseSendBack => 'Send goods back';
 }

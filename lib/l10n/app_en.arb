@@ -1701,5 +1701,54 @@
       "name": {"type": "String"},
       "when": {"type": "String"}
     }
-  }
+  },
+  "salesSearch": "Find a bill",
+  "salesSearchHint": "Bill number, name, phone or amount",
+  "salesClearSearch": "Clear the search",
+  "salesPeriodAll": "Any day",
+  "salesPeriodToday": "Today",
+  "salesPeriodWeek": "This week",
+  "salesPeriodMonth": "This month",
+  "salesPeriodLastMonth": "Last month",
+  "salesPeriodPick": "Pick dates",
+  "salesPeriodRange": "{from} to {to}",
+  "@salesPeriodRange": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "salesStandingAll": "Every bill",
+  "salesStandingPaid": "Paid up",
+  "salesStandingUdhaar": "Still owed",
+  "salesStandingCancelled": "Cancelled ones",
+  "salesNoneFound": "No bill matches",
+  "salesNoneFoundHint": "Try another name, number or date",
+  "salesClearFilters": "Show every bill",
+  "sendAction": "Send",
+  "sendTitle": "Send {docNo}",
+  "@sendTitle": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "sendWalkIn": "Walk-in customer, no number",
+  "sendWhatsApp": "Send on WhatsApp",
+  "sendWhatsAppShort": "WhatsApp",
+  "sendWhatsAppTo": "Opens the chat with {name}, the bill written out",
+  "@sendWhatsAppTo": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sendWhatsAppNoNumber": "No number, so the PDF goes through the share sheet",
+  "sendNoNumber": "No WhatsApp number for this customer, so the PDF went to the share sheet",
+  "sendNoWhatsApp": "WhatsApp is not on this phone, so the PDF went to the share sheet",
+  "sendPdfHint": "The file, with the bill written out beside it",
+  "sendPicture": "Send a picture",
+  "sendPictureShort": "Picture",
+  "sendPictureHint": "A picture of the bill, opens right in the chat",
+  "sendPrintHint": "On the printer at this counter",
+  "documentView": "Open it",
+  "purchaseSendBack": "Send goods back"
 }

@@ -1,21 +1,17 @@
 import 'dart:async';
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
-import '../printing/pdf_font.dart';
 import '../printing/printing_providers.dart';
-import 'receipt_file_name.dart';
+import 'print_bill.dart';
 import 'return_sheet.dart';
+import 'send_sheet.dart';
 import 'void_bill_sheet.dart';
 
 /// One bill, exactly as it will print.
@@ -25,8 +21,11 @@ import 'void_bill_sheet.dart';
 /// including the column width, which is a per-printer setting because ESC/POS
 /// has no query for it and 80 mm printers ship as both 42 and 48.
 ///
-/// Three things happen here: look at it, print it, and send
-/// the PDF.
+/// Three things happen here: look at it, print it, and send it — as a PDF,
+/// as a picture, or into the customer's WhatsApp chat (M30). The same screen
+/// opens after a sale and from the bill's row in the sales list, so a bill
+/// can be sent again whenever it is wanted, not only while the customer is
+/// still at the counter.
 class ReceiptScreen extends ConsumerWidget {
   const ReceiptScreen({
     super.key,
@@ -101,7 +100,15 @@ class ReceiptScreen extends ConsumerWidget {
             }
             return Column(
               children: [
-                Expanded(child: _Paper(data: data)),
+                // A cancelled bill is shown marked, as it is sent marked
+                // (M30); the thermal paper of it still prints as it did.
+                Expanded(
+                  child: PaperPreview(
+                    data: status.valueOrNull == 'void'
+                        ? data.copyWith(isCancelled: true)
+                        : data,
+                  ),
+                ),
                 _Actions(documentId: documentId, data: data),
               ],
             );
@@ -118,8 +125,11 @@ class ReceiptScreen extends ConsumerWidget {
 /// on-screen layout is a second implementation that drifts, and the first
 /// anybody notices is when a customer's printed copy disagrees with what the
 /// shopkeeper was shown.
-class _Paper extends ConsumerWidget {
-  const _Paper({required this.data});
+///
+/// Public since M30: a delivery, a quotation or a challan opened from its
+/// list is shown on the same paper.
+class PaperPreview extends ConsumerWidget {
+  const PaperPreview({super.key, required this.data});
 
   final ReceiptData data;
 
@@ -176,149 +186,20 @@ class _Actions extends ConsumerStatefulWidget {
 class _ActionsState extends ConsumerState<_Actions> {
   bool _busy = false;
 
-  Future<void> _sharePdf() async {
-    // First statement. Setting `_busy` inside the `setState` below let two
-    // taps in one frame both through, and each one renders a PDF and opens
-    // its own share sheet.
-    if (_busy) return;
-    final s = AppStrings.of(context);
-    setState(() => _busy = true);
-    try {
-      final services = ref.read(appServicesProvider);
-      final bytes = await services.receipts.toPdf(
-        widget.data,
-        // A PDF carries its own fonts: it is read on the customer's phone,
-        // not this one, so there is no system fallback to fall back to.
-        // Without this the shop's name is simply absent from the copy they
-        // are handed.
-        unicodeFont: await PdfUnicodeFont.bytes(),
-      );
-      final dir = await getTemporaryDirectory();
-      final file = File(
-        '${dir.path}${Platform.pathSeparator}'
-        '${receiptFileName(widget.data.docNo)}',
-      );
-      await file.writeAsBytes(bytes, flush: true);
-
-      if (!mounted) return;
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path, mimeType: 'application/pdf')],
-          subject: widget.data.docNo,
-        ),
-      );
-    } on Object catch (error) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${s.commonSomethingWentWrong}: $error')),
-      );
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
-  /// Sends the bill to the configured printer, once.
-  ///
-  /// The job key is deterministic and carries the column width, so a reprint
-  /// at a different width is honestly a different piece of paper rather than
-  /// the same job asked for twice. [copyIndex] is what a person increments
-  /// when they have looked at the paper and decided they want another.
-  Future<void> _print({int copyIndex = 1}) async {
+  /// Sends the bill to the configured printer, once. The printing itself is
+  /// [printBill], shared with the sales list's row so there is one print
+  /// path; this keeps the second tap out while the first is on its way.
+  Future<void> _print() async {
     // First statement, before any await. A disabled button only disables on
     // the next build, so two taps in one frame both reach here -- and this is
     // the one path in the app where that costs a customer a second receipt.
     if (_busy) return;
-    final s = AppStrings.of(context);
     setState(() => _busy = true);
-
-    final messenger = ScaffoldMessenger.of(context);
     try {
-      final settings = await ref.read(printerSettingsProvider.future);
-      if (settings == null) {
-        messenger.showSnackBar(SnackBar(content: Text(s.receiptNoPrinter)));
-        return;
-      }
-      final bytes = await ref.read(
-        receiptBytesProvider(widget.documentId).future,
-      );
-      if (bytes == null) {
-        messenger.showSnackBar(SnackBar(content: Text(s.receiptNoPrinter)));
-        return;
-      }
-
-      final services = ref.read(appServicesProvider);
-      final result = await services.printing.print(
-        actor: services.actorNow(),
-        settings: settings,
-        jobKey: printJobKey(
-          documentId: widget.documentId,
-          revision: 1,
-          columns: settings.columns,
-          copyIndex: copyIndex,
-        ),
-        bytes: bytes,
-        documentId: widget.documentId,
-        copyIndex: copyIndex,
-      );
-      if (!mounted) return;
-
-      // Re-read the log, or the button keeps saying Print after a successful
-      // one and a shopkeeper has no way to tell the first attempt worked.
-      ref.invalidate(printHistoryProvider(widget.documentId));
-
-      switch (result.outcome) {
-        case PrintOutcome.printed:
-          messenger.showSnackBar(SnackBar(content: Text(s.printerDone)));
-        case PrintOutcome.notSent:
-          messenger.showSnackBar(SnackBar(content: Text(s.printerNotSent)));
-        case PrintOutcome.partial:
-          // Paper has already moved. Never offered as a retry -- the
-          // shopkeeper is told to look at what came out.
-          messenger.showSnackBar(SnackBar(content: Text(s.printerPartial)));
-        case PrintOutcome.unknown:
-          // The app was killed mid-print. Nobody can say whether paper moved,
-          // so the only honest thing is to ask the person holding it.
-          await _askWhetherItPrinted(copyIndex: copyIndex);
-      }
-    } on Object catch (error) {
-      if (!mounted) return;
-      messenger.showSnackBar(
-        SnackBar(content: Text('${s.commonSomethingWentWrong}: $error')),
-      );
+      await printBill(context, documentId: widget.documentId);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
-  }
-
-  /// The question a killed print leaves behind.
-  ///
-  /// There is no correct automatic answer here. The row says `sending`, which
-  /// means the app died holding the job, and on a Transsion ROM that happens
-  /// after the printer has already taken part of the receipt. Only the person
-  /// looking at the paper knows.
-  Future<void> _askWhetherItPrinted({required int copyIndex}) async {
-    final s = AppStrings.of(context);
-    final again = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: Text(s.printerUnknownAsk),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text(s.actionCancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(s.printerPrintAgain),
-          ),
-        ],
-      ),
-    );
-    if (again != true || !mounted) return;
-    // A new copy index, so it is recorded as the deliberate second print it
-    // is rather than overwriting the record of the first.
-    setState(() => _busy = false);
-    await _print(copyIndex: copyIndex + 1);
   }
 
   @override
@@ -374,13 +255,7 @@ class _ActionsState extends ConsumerState<_Actions> {
                   onPressed: _busy ? null : _print,
                 ),
               ),
-            BlButton(
-              label: s.receiptSharePdf,
-              icon: Icons.picture_as_pdf_outlined,
-              kind: BlButtonKind.secondary,
-              busy: _busy,
-              onPressed: _busy ? null : _sharePdf,
-            ),
+            SendButtons(documentId: widget.documentId),
           ],
         ),
       ),

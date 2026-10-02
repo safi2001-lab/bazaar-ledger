@@ -17,12 +17,15 @@ library;
 ///
 /// Never empty: a bill whose number reduces to nothing still has to be shared,
 /// and a file called `.pdf` is one a share sheet will not offer.
-String receiptFileName(String docNo) {
+///
+/// [extension] is `png` for the picture of a bill (M30), which goes through
+/// the same filesystem and the same WhatsApp as the PDF.
+String receiptFileName(String docNo, {String extension = 'pdf'}) {
   final safe = docNo.replaceAll(RegExp(r'[^A-Za-z0-9-]'), '_');
 
   // Dashes come off the ends as well as underscores. An Urdu prefix like
   // `بل-0001` reduces to `__-0001`, and a leading dash is legal but reads as
   // a command-line flag to half the tools a shared file passes through.
   final trimmed = safe.replaceAll(RegExp(r'^[_-]+|[_-]+$'), '');
-  return '${trimmed.isEmpty ? 'bill' : trimmed}.pdf';
+  return '${trimmed.isEmpty ? 'bill' : trimmed}.$extension';
 }

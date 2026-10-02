@@ -202,6 +202,16 @@ string exactly the way a share does. What happens next is between the
 shopkeeper and WhatsApp, under WhatsApp's own privacy policy — the same as if
 they had typed it themselves.
 
+Bills go the same way (M30). From a bill's row in the sales list, or from the
+bill itself, *WhatsApp par bhejein* opens the customer's own chat with the
+bill number, date, total, what was paid and what is still owed typed out;
+the shopkeeper presses send. The number is the one in the khata. A PDF or a
+picture of a bill, a delivery, a quotation or a challan goes through
+Android's share sheet with the same few lines beside it, because a
+`whatsapp://` link carries text only. The PDF and the picture are made on
+the phone, in its temporary folder; nothing is uploaded, and there is no
+web link to a bill, because a web link needs a server.
+
 **Deliberately never `wa.me/…`.** That URL is the recipe every tutorial gives
 and it is wrong for this app: with WhatsApp absent it opens a browser to
 Meta's servers, which is a network request this product does not make on a

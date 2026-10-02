@@ -88,17 +88,20 @@ final class PagedItems
   }
 }
 
-/// The sales list, paged.
-final pagedSalesProvider =
-    AsyncNotifierProvider.autoDispose<PagedSales, Page<SaleListRow>>(
-      PagedSales.new,
-    );
+/// The sales list, paged, narrowed to one [SaleFilter] (M30).
+///
+/// Keyed on the filter, so each search is its own list with its own cursor:
+/// the next page of "Rashid, this month" is read with that filter, never by
+/// filtering the next forty of everything.
+final pagedSalesProvider = AsyncNotifierProvider.autoDispose
+    .family<PagedSales, Page<SaleListRow>, SaleFilter>(PagedSales.new);
 
-final class PagedSales extends AutoDisposeAsyncNotifier<Page<SaleListRow>> {
+final class PagedSales
+    extends AutoDisposeFamilyAsyncNotifier<Page<SaleListRow>, SaleFilter> {
   static const _pageSize = 40;
 
   @override
-  Future<Page<SaleListRow>> build() async {
+  Future<Page<SaleListRow>> build(SaleFilter filter) async {
     ref.watch(refreshTickProvider);
     final rows = await _read();
     return Page(items: rows, hasMore: rows.length == _pageSize);
@@ -112,6 +115,7 @@ final class PagedSales extends AutoDisposeAsyncNotifier<Page<SaleListRow>> {
       firm.id,
       afterId: afterId,
       limit: _pageSize,
+      filter: arg,
     );
   }
 

@@ -3027,4 +3027,113 @@ class AppStringsUr extends AppStrings {
   String entryCancelledBy(String name, String when) {
     return '$name ne $when ko mansookh kiya';
   }
+
+  @override
+  String get salesSearch => 'Bill talash karein';
+
+  @override
+  String get salesSearchHint => 'Bill number, naam, phone ya raqam';
+
+  @override
+  String get salesClearSearch => 'Talash saaf karein';
+
+  @override
+  String get salesPeriodAll => 'Sab din';
+
+  @override
+  String get salesPeriodToday => 'Aaj';
+
+  @override
+  String get salesPeriodWeek => 'Is hafte';
+
+  @override
+  String get salesPeriodMonth => 'Is mahine';
+
+  @override
+  String get salesPeriodLastMonth => 'Pichhle mahine';
+
+  @override
+  String get salesPeriodPick => 'Tareekhen chunein';
+
+  @override
+  String salesPeriodRange(String from, String to) {
+    return '$from se $to';
+  }
+
+  @override
+  String get salesStandingAll => 'Sab bill';
+
+  @override
+  String get salesStandingPaid => 'Ada ho chuke';
+
+  @override
+  String get salesStandingUdhaar => 'Udhaar wale';
+
+  @override
+  String get salesStandingCancelled => 'Mansookh kiye';
+
+  @override
+  String get salesNoneFound => 'Is talash par koi bill nahi';
+
+  @override
+  String get salesNoneFoundHint =>
+      'Doosra naam, number ya tareekh aazma kar dekhein';
+
+  @override
+  String get salesClearFilters => 'Sab bill dikhayein';
+
+  @override
+  String get sendAction => 'Bhejein';
+
+  @override
+  String sendTitle(String docNo) {
+    return 'Bhejein: $docNo';
+  }
+
+  @override
+  String get sendWalkIn => 'Aam gahak, koi number nahi';
+
+  @override
+  String get sendWhatsApp => 'WhatsApp par bhejein';
+
+  @override
+  String get sendWhatsAppShort => 'WhatsApp';
+
+  @override
+  String sendWhatsAppTo(String name) {
+    return '$name ki chat khulegi, bill ki tafseel likhi hui';
+  }
+
+  @override
+  String get sendWhatsAppNoNumber =>
+      'Number nahi hai, PDF share sheet se jayegi';
+
+  @override
+  String get sendNoNumber =>
+      'Is gahak ka WhatsApp number nahi, PDF share sheet se bheji';
+
+  @override
+  String get sendNoWhatsApp =>
+      'Is phone par WhatsApp nahi mila, PDF share sheet se bheji';
+
+  @override
+  String get sendPdfHint => 'File, saath mein bill ki tafseel';
+
+  @override
+  String get sendPicture => 'Tasveer bhejein';
+
+  @override
+  String get sendPictureShort => 'Tasveer';
+
+  @override
+  String get sendPictureHint => 'Bill ki tasveer, chat mein seedha khulti hai';
+
+  @override
+  String get sendPrintHint => 'Is counter ke printer par';
+
+  @override
+  String get documentView => 'Poora dekhein';
+
+  @override
+  String get purchaseSendBack => 'Maal wapas karein';
 }

@@ -1,11 +1,8 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
@@ -13,8 +10,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../pos/cart.dart';
 import '../pos/pos_screen.dart';
-import '../printing/pdf_font.dart';
-import '../sales/receipt_file_name.dart';
+import '../sales/send_sheet.dart';
+import 'document_screen.dart';
 
 /// Quotations, newest first.
 final quotationsProvider = FutureProvider.autoDispose<List<QuotationRow>>((
@@ -221,44 +218,6 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
     }
   }
 
-  Future<void> _share() async {
-    if (_busy) return;
-    setState(() {
-      _busy = true;
-      _failure = null;
-    });
-    try {
-      final services = ref.read(appServicesProvider);
-      final firm = await ref.read(firmProvider.future);
-      final data = await services.queries.receiptFor(
-        firm!.id,
-        widget.quotation.id,
-      );
-      if (data == null) throw StateError(widget.quotation.docNo);
-      final bytes = await services.receipts.toPdf(
-        data,
-        unicodeFont: await PdfUnicodeFont.bytes(),
-      );
-      final dir = await getTemporaryDirectory();
-      final file = File(
-        '${dir.path}${Platform.pathSeparator}'
-        '${receiptFileName(widget.quotation.docNo)}',
-      );
-      await file.writeAsBytes(bytes, flush: true);
-      if (!mounted) return;
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [XFile(file.path, mimeType: 'application/pdf')],
-          subject: widget.quotation.docNo,
-        ),
-      );
-    } on Object catch (error) {
-      if (mounted) setState(() => _failure = '$error');
-    } finally {
-      if (mounted) setState(() => _busy = false);
-    }
-  }
-
   /// This customer's other challans not yet billed (M25).
   List<QuotationRow> _others() {
     final q = widget.quotation;
@@ -356,12 +315,29 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
             style: TextStyle(fontSize: 14, color: t.inkMuted),
           ),
           const SizedBox(height: BlTokens.space4),
+          // Sent as a bill is (M30): a PDF, a picture, or the customer's
+          // WhatsApp chat with the quotation written out. Shared by every
+          // document so a quotation is not the one that still only goes as
+          // a file.
+          SendButtons(
+            documentId: q.id,
+            onFailure: (message) {
+              if (mounted) setState(() => _failure = message);
+            },
+          ),
+          const SizedBox(height: BlTokens.space2),
           BlButton(
-            label: s.quotationSharePdf,
-            icon: Icons.picture_as_pdf_outlined,
-            kind: BlButtonKind.secondary,
-            busy: _busy,
-            onPressed: _busy ? null : () => unawaited(_share()),
+            label: s.documentView,
+            icon: Icons.visibility_outlined,
+            kind: BlButtonKind.ghost,
+            onPressed: _busy
+                ? null
+                : () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          DocumentScreen(documentId: q.id, docNo: q.docNo),
+                    ),
+                  ),
           ),
           if (!q.isBilled && !q.isVoid) ...[
             const SizedBox(height: BlTokens.space2),

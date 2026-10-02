@@ -19,6 +19,7 @@ import 'entry_details.dart';
 import 'manufacturing.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
+import 'sale_search.dart';
 import 'vans.dart';
 
 /// The shop, as the app needs it on screen.
@@ -238,6 +239,8 @@ final class SaleListRow {
     required this.lineCount,
     required this.status,
     this.partyName,
+    this.partyId,
+    this.partyPhone,
   });
 
   final String id;
@@ -245,6 +248,13 @@ final class SaleListRow {
   final String dateLocal;
   final String timeLabel;
   final String? partyName;
+
+  /// The khata the bill is on, when it is not a walk-in's (M30).
+  final String? partyId;
+
+  /// The customer's number as the khata has it now, so a bill can be sent
+  /// to them from the list without opening it first.
+  final String? partyPhone;
   final Money total;
   final Money balance;
   final int lineCount;
@@ -550,12 +560,23 @@ abstract interface class AppQueries {
     int limit = 200,
   });
 
+  /// Bills, newest first, keyset-paged on [afterId].
+  ///
+  /// [filter] narrows the rows in SQL rather than over a page in memory, so
+  /// the next page is the next page of what was asked for (M30). A filter
+  /// applied to forty rows already fetched says "nothing found" about a bill
+  /// that is simply further down.
   Future<List<SaleListRow>> recentSales(
     String firmId, {
     String? afterId,
     int limit = 40,
     String? onDateLocal,
+    SaleFilter filter = SaleFilter.none,
   });
+
+  /// Who one document is addressed to and the number they can be reached on
+  /// now, for sending it to them again (M30). Null for a walk-in's bill.
+  Future<DocumentRecipient?> recipientOf(String firmId, String documentId);
 
   Future<DayTotals> dayTotals(String firmId, String dateLocal);
 

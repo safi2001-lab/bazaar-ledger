@@ -612,6 +612,48 @@ milestones:
     state: sealed
     owns: []
 
+  - id: M30
+    title: A bill is found again and sent again, whenever it is wanted
+    # Opened and sealed 2 Oct 2026 at 1/1. Shopkeepers testing the app said
+    # a bill could be shared on the screen that opens after the sale and
+    # never again. The sales list now finds a bill by its number, the
+    # customer's name or phone, or its amount, narrowed to today, this week,
+    # this month, last month or dates picked, and to paid, still owed or
+    # cancelled, every narrowing in SQL under the paging cursor. Every row,
+    # in the list and on the home screen, sends its bill without opening it:
+    # a PDF, a picture of the paper, the customer's own WhatsApp chat with
+    # the bill written out (whatsapp://, never wa.me; with no number the PDF
+    # goes through the share sheet and says why), or the printer, through
+    # the receipt screen's own print path moved where both can reach it. The
+    # receipt, a delivery, a quotation and a challan carry the same buttons.
+    # A cancelled bill goes out marked CANCELLED / MANSOOKH, and a bill whose
+    # original was printed goes out as DUPLICATE / DOBARA COPY. The picture
+    # is the printer's own 48-column layout drawn by Flutter's text engine,
+    # QRs included; no dependency was added for it.
+    #
+    # Found on the way: a delivery could not be opened at all. A tap went
+    # straight to sending goods back, and a delivery read through the
+    # receipt query would have called itself an Invoice with the mill as its
+    # Customer. It opens read-only now, titled Purchase Bill, the mill as
+    # Supplier, its own bill number at the foot, sending back one tap away.
+    #
+    # Not built, and why: a file dropped straight into a named WhatsApp chat
+    # (a whatsapp:// link carries text only, and the intent that names a
+    # chat with a file is undocumented), so files go through the share sheet
+    # with the message as their caption; neither mark on thermal paper, so
+    # the reprint path stays exactly as it was; a list of returns, which do
+    # not have one to open them from; and a record of each share, so only a
+    # printed bill is sent as the duplicate.
+    state: sealed
+    owns:
+      - lib/features/sales/send_bill.dart
+      - lib/features/sales/send_sheet.dart
+      - lib/features/sales/print_bill.dart
+      - lib/features/printing/receipt_picture.dart
+      - lib/features/documents/document_screen.dart
+      - packages/pk_domain/lib/src/documents/bill_message.dart
+      - packages/pk_domain/lib/src/ports/sale_search.dart
+
   - id: M31
     title: Every entry in a khata can be opened and put right; a bill stays as it was printed
     # Opened and sealed 2 Oct 2026 at 1/1. Shopkeepers testing the app said
@@ -4603,6 +4645,33 @@ features:
     status: done
     proof:
       - lan sync two items given the same barcode apart are both kept
+  - id: M30-RESEND-01
+    milestone: M30
+    title: Any bill, delivery, quotation or challan is found again and sent as a PDF, a picture, on WhatsApp or to the printer
+    status: done
+    proof:
+      - finding a bill by its number, its customer, their phone, or its amount
+      - finding a bill a period and a standing narrow it, and cancelled bills are found apart
+      - finding a bill a narrowed list still pages past its first forty
+      - finding a bill a bill knows who it goes to, and where to reach them
+      - the message beside a bill says whose bill, which one, what day, and what is still owed
+      - the message beside a bill a cancelled bill says so and asks for nothing
+      - what a search could mean an amount, however it is written
+      - what a search could mean a phone number, without the 0 or the 92 in front
+      - 80mm layout a reprint says so
+      - 80mm layout a cancelled bill says so above its lines, on paper and in the PDF
+      - a past bill is found by its customer and sent again as a PDF from its row
+      - the list narrows to what is owed, what was cancelled, and a period, and says so when nothing matches
+      - a bill goes into its customer's own WhatsApp chat with the amounts written out
+      - a bill with nobody to message goes through the share sheet, and says why
+      - a bill goes as a picture of its paper
+      - the row prints the bill, and asking again prints nothing more
+      - a cancelled bill goes out marked cancelled, and a printed one as the duplicate
+      - a delivery opens to be read, and goes on as a PDF titled Purchase Bill
+      - a quotation opens to be read and goes as a picture
+      - this week starts on Monday, and last month ends on its own last day
+      - a bill is never sent through a browser
+      - the sales list, its filters and the send sheet fit a small phone at 200%
   - id: M31-CORRECT-01
     milestone: M31
     title: Khata entries open and can be cancelled or corrected append-only; a sale bill never edits

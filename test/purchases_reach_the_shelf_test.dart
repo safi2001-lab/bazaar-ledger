@@ -191,7 +191,10 @@ void main() {
     await tapText(tester, 'Kharidari save karein');
     await tester.pumpAndSettle();
 
+    // The delivery opens to be read (M30); sending back is one tap from it.
     await tapText(tester, 'Punjab Rice Mills');
+    await tester.tap(find.byTooltip('Maal wapas karein'));
+    await tester.pumpAndSettle();
     expect(find.text('Supplier ko maal wapas'), findsOneWidget);
     await tester.tap(find.byIcon(Icons.add_circle_outline).last);
     await tester.pumpAndSettle();

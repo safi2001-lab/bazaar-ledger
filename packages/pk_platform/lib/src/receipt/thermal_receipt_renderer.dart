@@ -143,9 +143,8 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   }) {
     final layout = ReceiptLayout(paper: paper);
     final needed = <String>{};
-    for (final line in layout.render(data).skip(
-      _headerNameLineCount(data, layout),
-    )) {
+    for (final line
+        in layout.render(data).skip(_headerNameLineCount(data, layout))) {
       if (line.trim().isEmpty) continue;
       if (!isPrintableLatin(line)) needed.add(line);
     }
@@ -189,7 +188,13 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
         : pw.Font.ttf(ByteData.view(unicodeFont.buffer));
 
     final doc = pw.Document(
-      title: '${data.docTitle} ${data.docNo}',
+      // The marks in the title too (M30), so a viewer's title bar and a
+      // file list say what the page says before anybody scrolls.
+      title: [
+        '${data.docTitle} ${data.docNo}',
+        if (data.isCancelled) 'CANCELLED',
+        if (data.isReprint) 'DUPLICATE',
+      ].join(' - '),
       author: data.shop.name,
       // A fallback, not a replacement. Every Latin run keeps Courier's
       // tabular figures — which is the whole reason a column of money is
@@ -310,6 +315,30 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
           pw.SizedBox(height: 10),
           pw.Divider(thickness: 1, height: 1),
           pw.SizedBox(height: 8),
+          // Above the lines and the amounts, boxed, so nobody pays it: a
+          // cancelled bill sent on reads exactly like one still owed (M30).
+          if (data.isCancelled) ...[
+            pw.Center(
+              child: pw.Container(
+                padding: const pw.EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
+                decoration: pw.BoxDecoration(
+                  border: pw.Border.all(color: PdfColors.red800, width: 2),
+                ),
+                child: pw.Text(
+                  'CANCELLED / MANSOOKH',
+                  style: pw.TextStyle(
+                    font: sansBold,
+                    fontSize: 16,
+                    color: PdfColors.red800,
+                  ),
+                ),
+              ),
+            ),
+            pw.SizedBox(height: 8),
+          ],
           pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
@@ -345,7 +374,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
                     ),
                   if (data.isReprint)
                     pw.Text(
-                      'REPRINT',
+                      'DUPLICATE / DOBARA COPY',
                       style: pw.TextStyle(font: sansBold, fontSize: 9),
                     ),
                 ],

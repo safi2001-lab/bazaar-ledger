@@ -1785,5 +1785,54 @@
       "name": {"type": "String"},
       "when": {"type": "String"}
     }
-  }
+  },
+  "salesSearch": "Bill talash karein",
+  "salesSearchHint": "Bill number, naam, phone ya raqam",
+  "salesClearSearch": "Talash saaf karein",
+  "salesPeriodAll": "Sab din",
+  "salesPeriodToday": "Aaj",
+  "salesPeriodWeek": "Is hafte",
+  "salesPeriodMonth": "Is mahine",
+  "salesPeriodLastMonth": "Pichhle mahine",
+  "salesPeriodPick": "Tareekhen chunein",
+  "salesPeriodRange": "{from} se {to}",
+  "@salesPeriodRange": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "salesStandingAll": "Sab bill",
+  "salesStandingPaid": "Ada ho chuke",
+  "salesStandingUdhaar": "Udhaar wale",
+  "salesStandingCancelled": "Mansookh kiye",
+  "salesNoneFound": "Is talash par koi bill nahi",
+  "salesNoneFoundHint": "Doosra naam, number ya tareekh aazma kar dekhein",
+  "salesClearFilters": "Sab bill dikhayein",
+  "sendAction": "Bhejein",
+  "sendTitle": "Bhejein: {docNo}",
+  "@sendTitle": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "sendWalkIn": "Aam gahak, koi number nahi",
+  "sendWhatsApp": "WhatsApp par bhejein",
+  "sendWhatsAppShort": "WhatsApp",
+  "sendWhatsAppTo": "{name} ki chat khulegi, bill ki tafseel likhi hui",
+  "@sendWhatsAppTo": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sendWhatsAppNoNumber": "Number nahi hai, PDF share sheet se jayegi",
+  "sendNoNumber": "Is gahak ka WhatsApp number nahi, PDF share sheet se bheji",
+  "sendNoWhatsApp": "Is phone par WhatsApp nahi mila, PDF share sheet se bheji",
+  "sendPdfHint": "File, saath mein bill ki tafseel",
+  "sendPicture": "Tasveer bhejein",
+  "sendPictureShort": "Tasveer",
+  "sendPictureHint": "Bill ki tasveer, chat mein seedha khulti hai",
+  "sendPrintHint": "Is counter ke printer par",
+  "documentView": "Poora dekhein",
+  "purchaseSendBack": "Maal wapas karein"
 }

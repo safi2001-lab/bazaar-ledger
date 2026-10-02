@@ -1037,21 +1037,91 @@ final class DriftAppQueries implements AppQueries {
     String? afterId,
     int limit = 40,
     String? onDateLocal,
+    SaleFilter filter = SaleFilter.none,
   }) async {
+    // Every narrowing is a predicate here, under the same keyset cursor, so
+    // page two of "Rashid's bills this month" is page two of exactly that
+    // (M30). The date range rides idx_documents_list; the text search is a
+    // scan of one firm's bills, which a LIKE with a leading wildcard always
+    // is, and a shop's bills are tens of thousands of rows, not millions.
+    final where = StringBuffer();
+    final variables = <Variable<Object>>[];
+
+    if (filter.from case final from?) {
+      where.write(' AND d.doc_date_local >= ?');
+      variables.add(Variable<String>(from.value));
+    }
+    if (filter.to case final to?) {
+      where.write(' AND d.doc_date_local <= ?');
+      variables.add(Variable<String>(to.value));
+    }
+
+    where.write(switch (filter.standing) {
+      SaleStanding.all => '',
+      // Nothing left to pay. A return can take a settled bill below zero,
+      // and that bill is not udhaar either.
+      SaleStanding.paid =>
+        " AND d.status = 'posted' AND d.balance_paisa <= 0",
+      SaleStanding.udhaar =>
+        " AND d.status = 'posted' AND d.balance_paisa > 0",
+      SaleStanding.cancelled => " AND d.status = 'void'",
+    });
+
+    final search = filter.search;
+    if (!search.isEmpty) {
+      final like = '%${_escapeLike(search.text)}%';
+      final either = <String>[
+        r"d.doc_no LIKE ? ESCAPE '\'",
+        r"d.party_name_snapshot LIKE ? ESCAPE '\'",
+      ];
+      variables
+        ..add(Variable<String>(like))
+        ..add(Variable<String>(like));
+      // The khata's own name as well as the one printed, so a customer
+      // renamed since still finds their old bills. Only when the search has
+      // a letter or a digit left once normalised: `%%` matches every name.
+      final name = _normalise(search.text);
+      if (name.isNotEmpty) {
+        either.add(r"p.name_search LIKE ? ESCAPE '\'");
+        variables.add(Variable<String>('%${_escapeLike(name)}%'));
+      }
+      if (search.phoneDigits case final digits?) {
+        // The khata's number with its punctuation taken out, because the
+        // shop typed it one way into the khata and another into this box.
+        either.add(
+          'REPLACE(REPLACE(REPLACE(REPLACE(REPLACE('
+          "COALESCE(NULLIF(TRIM(p.whatsapp), ''), p.phone, ''),"
+          " '-', ''), ' ', ''), '+', ''), '(', ''), ')', '') LIKE ?",
+        );
+        variables.add(Variable<String>('%$digits%'));
+      }
+      if (search.paisa case (final low, final high)) {
+        either.add('d.total_paisa BETWEEN ? AND ?');
+        variables
+          ..add(Variable<int>(low))
+          ..add(Variable<int>(high));
+      }
+      where.write(' AND (${either.join(' OR ')})');
+    }
+
     final rows = await _db
         .customSelect(
           '''
           SELECT d.id, d.doc_no, d.doc_date_local, d.doc_date_utc,
-                 d.party_name_snapshot, d.total_paisa, d.balance_paisa,
-                 d.status,
+                 d.party_id, d.party_name_snapshot, d.total_paisa,
+                 d.balance_paisa, d.status,
+                 COALESCE(NULLIF(TRIM(p.whatsapp), ''), p.phone) AS party_phone,
                  (SELECT COUNT(*) FROM document_lines dl
                     WHERE dl.document_id = d.id
                       AND dl.deleted_at_utc IS NULL) AS line_count
           FROM documents d
+          LEFT JOIN parties p
+            ON p.id = d.party_id AND p.firm_id = d.firm_id
           WHERE d.firm_id = ?
             AND d.doc_type = 'sale_invoice'
             AND d.deleted_at_utc IS NULL
             AND (? IS NULL OR d.doc_date_local = ?)
+            $where
             AND (? IS NULL OR d.id < ?)
           ORDER BY d.id DESC
           LIMIT ?
@@ -1060,10 +1130,12 @@ final class DriftAppQueries implements AppQueries {
             Variable<String>(firmId),
             Variable<String>(onDateLocal),
             Variable<String>(onDateLocal),
+            ...variables,
             Variable<String>(afterId),
             Variable<String>(afterId),
             Variable<int>(limit),
           ],
+          readsFrom: {_db.documents, _db.parties, _db.documentLines},
         )
         .get();
     return [
@@ -1076,6 +1148,8 @@ final class DriftAppQueries implements AppQueries {
           partyName: _blankToNull(
             r.readNullable<String>('party_name_snapshot'),
           ),
+          partyId: r.readNullable<String>('party_id'),
+          partyPhone: _blankToNull(r.readNullable<String>('party_phone')),
           total: Money.paisa(r.read<int>('total_paisa')),
           balance: Money.paisa(r.read<int>('balance_paisa')),
           lineCount: r.read<int>('line_count'),
@@ -1083,6 +1157,43 @@ final class DriftAppQueries implements AppQueries {
         ),
     ];
   }
+
+  @override
+  Future<DocumentRecipient?> recipientOf(
+    String firmId,
+    String documentId,
+  ) async {
+    // The name on the paper, and the number on the khata now. A customer who
+    // changed their number since the bill is reached on the new one; a
+    // customer renamed since is still addressed as the bill names them.
+    final row = await _db
+        .customSelect(
+          '''
+          SELECT p.id, COALESCE(NULLIF(TRIM(d.party_name_snapshot), ''),
+                                p.name) AS name,
+                 COALESCE(NULLIF(TRIM(p.whatsapp), ''), p.phone) AS phone
+          FROM documents d
+          JOIN parties p ON p.id = d.party_id AND p.firm_id = d.firm_id
+          WHERE d.id = ? AND d.firm_id = ? AND d.deleted_at_utc IS NULL
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.documents, _db.parties},
+        )
+        .getSingleOrNull();
+    if (row == null) return null;
+    return DocumentRecipient(
+      partyId: row.read<String>('id'),
+      name: row.read<String>('name'),
+      phone: _blankToNull(row.readNullable<String>('phone')),
+    );
+  }
+
+  /// [raw] with LIKE's own wildcards taken literally. A bill series written
+  /// `INV_26` is a shop's choice, and `_` would otherwise match any letter.
+  static String _escapeLike(String raw) => raw
+      .replaceAll(r'\', r'\\')
+      .replaceAll('%', r'\%')
+      .replaceAll('_', r'\_');
 
   @override
   Future<DayTotals> dayTotals(String firmId, String dateLocal) async {
@@ -1956,13 +2067,22 @@ final class DriftAppQueries implements AppQueries {
 
     final cashier = await userName(doc.read<String>('created_by'));
 
-    final (docTitle, docLabel) = switch (doc.read<String>('doc_type')) {
+    final docType = doc.read<String>('doc_type');
+    final (docTitle, docLabel) = switch (docType) {
       'quotation' => ('Quotation', 'Quotation No'),
       'delivery_challan' => ('Delivery Challan', 'Challan No'),
       'other_income' => ('Debit Note', 'Note No'),
+      // A delivery, shown back and sent on (M30). Nothing read one through
+      // here before, and it would have fallen to the default and called
+      // itself an Invoice, with the mill as its customer.
+      'purchase_bill' => ('Purchase Bill', 'Purchase No'),
       _ => ('Invoice', 'Bill No'),
     };
+    final isPurchase = docType == 'purchase_bill';
     final terms = _blankToNull(doc.readNullable<String>('terms'));
+    final supplierBillNo = _blankToNull(
+      doc.readNullable<String>('supplier_bill_no'),
+    );
     return ReceiptData(
       shop: firm.toReceiptShop(),
       docNo: doc.read<String>('doc_no'),
@@ -1970,6 +2090,7 @@ final class DriftAppQueries implements AppQueries {
       fbrPending: doc.readNullable<String>('fbr_status') == 'pending',
       docTitle: docTitle,
       docLabel: docLabel,
+      partyLabel: isPurchase ? 'Supplier' : 'Customer',
       dateTimeLabel: _dateTimeLabel(doc.read<int>('doc_date_utc')),
       cashierName: cashier,
       customerName: _blankToNull(
@@ -2033,7 +2154,12 @@ final class DriftAppQueries implements AppQueries {
       ),
       footerLines: [
         ?terms,
-        'Shukriya! Phir tashreef laayen',
+        // The number on the supplier's own paper is the one they quote; the
+        // shop's thanks for visiting is for a customer, not a mill.
+        if (isPurchase) ...[
+          if (supplierBillNo != null) 'Supplier bill: $supplierBillNo',
+        ] else
+          'Shukriya! Phir tashreef laayen',
         if (madeWith?.call() ?? false) madeWithLine,
       ],
     );

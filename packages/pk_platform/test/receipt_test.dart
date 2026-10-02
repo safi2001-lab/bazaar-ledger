@@ -69,9 +69,44 @@ void main() {
     });
 
     test('a reprint says so', () {
+      // Worded as the shop's own carbon book words its second sheet (M30).
       final lines = renderer.toPreview(receipt(reprint: true));
-      expect(lines.any((l) => l.contains('** REPRINT **')), isTrue);
+      expect(
+        lines.any((l) => l.contains('** DUPLICATE / DOBARA COPY **')),
+        isTrue,
+      );
+      expect(
+        renderer.toPreview(receipt()).any((l) => l.contains('DUPLICATE')),
+        isFalse,
+        reason: 'the first copy is the original',
+      );
     });
+
+    test(
+      'a cancelled bill says so above its lines, on paper and in the PDF',
+      () async {
+        // A cancelled bill sent on without a mark reads, to the customer
+        // holding it, exactly like one they still owe on (M30).
+        final cancelled = receipt().copyWith(isCancelled: true);
+        final lines = renderer.toPreview(cancelled);
+        final mark = lines.indexWhere(
+          (l) => l.contains('** CANCELLED / MANSOOKH **'),
+        );
+        expect(mark, greaterThan(0));
+        expect(
+          mark,
+          lessThan(lines.indexWhere((l) => l.contains('TOTAL'))),
+          reason: 'the mark comes before what is owed',
+        );
+        expect(
+          renderer.toPreview(receipt()).any((l) => l.contains('CANCELLED')),
+          isFalse,
+        );
+
+        final pdf = String.fromCharCodes(await renderer.toPdf(cancelled));
+        expect(pdf, contains('INV-2627-0001 - CANCELLED'));
+      },
+    );
 
     test('a long item name wraps instead of being cut off', () {
       final lines = renderer.toPreview(

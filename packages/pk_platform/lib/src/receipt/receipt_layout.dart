@@ -43,8 +43,15 @@ final class ReceiptLayout {
     if (_has(d.shop.strn)) centred('STRN ${d.shop.strn}');
 
     rule('=');
+    // Before anything else on the bill, so neither can be missed (M30). A
+    // cancelled bill says so above its lines, where a customer reading what
+    // they owe looks first; a copy says it is not the original.
+    if (d.isCancelled) {
+      centred('** CANCELLED / MANSOOKH **');
+      rule('-');
+    }
     if (d.isReprint) {
-      centred('** REPRINT **');
+      centred('** DUPLICATE / DOBARA COPY **');
       rule('-');
     }
 
@@ -53,7 +60,9 @@ final class ReceiptLayout {
     out.add(_row('Date', d.dateTimeLabel));
     out.add(_row('Cashier', _clip(d.cashierName, width - 10)));
     if (_has(d.customerName)) {
-      out.add(_row('Customer', _clip(d.customerName!, width - 11)));
+      // "Supplier" on a purchase bill shown back (M30); "Customer" on
+      // everything the shop issues. The same width either way.
+      out.add(_row(d.partyLabel, _clip(d.customerName!, width - 11)));
     }
     if (_has(d.customerPhone)) {
       out.add(_row('Phone', d.customerPhone!));
