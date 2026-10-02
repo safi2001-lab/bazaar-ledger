@@ -4485,4 +4485,243 @@ class AppStringsUr extends AppStrings {
   String itemStockLeft(String amount) {
     return '$amount mojood';
   }
+
+  @override
+  String get expenseWhose => 'Kis ka kharcha';
+
+  @override
+  String get expenseForShop => 'Dukaan ka kharcha';
+
+  @override
+  String get expenseForHome => 'Ghar ka kharcha';
+
+  @override
+  String get expenseHomeChip => 'Ghar';
+
+  @override
+  String get expenseHomeExplain =>
+      'Ghar ka kharcha malik ka apna paisa hai jo dukaan se nikla. Yeh dukaan ka kharcha nahi, is liye munafa kam nahi karta; malik ka hissa kam karta hai.';
+
+  @override
+  String get expenseHomeGoodsLink => 'Dukaan ka maal ghar le gaye?';
+
+  @override
+  String get expenseRemind => 'Har mahine yaad dilayen';
+
+  @override
+  String get expenseRemindDay => 'Mahine ki tareekh';
+
+  @override
+  String get expenseRemindDayInvalid => 'Mahine ki tareekh 1 se 31 tak likhein';
+
+  @override
+  String get expenseMonthShop => 'Is mahine dukaan';
+
+  @override
+  String get expenseMonthHome => 'Is mahine ghar';
+
+  @override
+  String get expenseGoodsCancelOnly =>
+      'Ghar le gaye maal ko badla nahi jata: mansookh kar ke dobara likhein.';
+
+  @override
+  String get expenseHomeNotAllowed =>
+      'Ghar ka kharcha sirf malik ya accountant badal sakte hain.';
+
+  @override
+  String get billsTitle => 'Mahana bill';
+
+  @override
+  String get billsEmpty => 'Abhi koi mahana bill nahi';
+
+  @override
+  String get billsEmptyHint =>
+      'Kiraya, bijli, tankhwah: aik dafa likhein, app us tareekh ko yaad dilayegi. Khud se kuch nahi diya jata.';
+
+  @override
+  String get billsNew => 'Naya mahana bill';
+
+  @override
+  String billDue(String name) {
+    return 'Is mahine dena hai: $name';
+  }
+
+  @override
+  String billDueOn(String date) {
+    return '$date ko dena tha';
+  }
+
+  @override
+  String get billPayNow => 'Abhi dein';
+
+  @override
+  String get billSkip => 'Is mahine nahi';
+
+  @override
+  String get billSkipped => 'Is mahine dobara yaad nahi dilaya jayega';
+
+  @override
+  String billEvery(String day) {
+    return 'Har mahine $day tareekh ko';
+  }
+
+  @override
+  String get billName => 'Kis cheez ka bill';
+
+  @override
+  String get billAmount => 'Aam taur par raqam';
+
+  @override
+  String get billSave => 'Bill save karein';
+
+  @override
+  String get monthlyBillSaved => 'Mahana bill save ho gaya';
+
+  @override
+  String get billDelete => 'Yaad dilana band karein';
+
+  @override
+  String get billDeleted => 'Yaad dilana band ho gaya';
+
+  @override
+  String get billPaidFrom => 'Aam taur par kahan se';
+
+  @override
+  String get headsTitle => 'Mad';
+
+  @override
+  String get headsExpense => 'Kharche ki mad';
+
+  @override
+  String get headsIncome => 'Aamdani ki mad';
+
+  @override
+  String get headsAddExpense => 'Kharche ki nayi mad';
+
+  @override
+  String get headsAddIncome => 'Aamdani ki nayi mad';
+
+  @override
+  String get headName => 'Naam';
+
+  @override
+  String get headDirect => 'Maal ki lagat (gross munafe se pehle)';
+
+  @override
+  String get headDirectChip => 'Direct';
+
+  @override
+  String get headIndirectChip => 'Indirect';
+
+  @override
+  String get headHidden => 'Chhupi hui';
+
+  @override
+  String get headHide => 'List se chhupayein';
+
+  @override
+  String get headSave => 'Save karein';
+
+  @override
+  String get headSaved => 'Save ho gaya';
+
+  @override
+  String get headDirectExplain =>
+      'Maal ki lagat (aate maal ka kiraya) bikri se gross munafe se pehle kat-ti hai; baqi (kiraya, tankhwah, bijli) us ke baad. Badalne se har mahine ke munafa nuqsan mein yeh mad jagah badalti hai.';
+
+  @override
+  String get incomeTitle => 'Deegar aamdani';
+
+  @override
+  String get incomeEmpty => 'Abhi koi deegar aamdani nahi';
+
+  @override
+  String get incomeEmptyHint =>
+      'Upar wale kamre ka kiraya, commission, bank ka munafa, raddi: jo paisa bikri ke ilawa aaya yahan likhein.';
+
+  @override
+  String get incomeNew => 'Nayi aamdani';
+
+  @override
+  String get incomeHead => 'Kis mad mein';
+
+  @override
+  String get incomeFrom => 'Kis se mila (marzi se)';
+
+  @override
+  String get incomeFromParty => 'Khate se chunein';
+
+  @override
+  String get incomeInto => 'Kahan aaya';
+
+  @override
+  String get incomeNote => 'Kis cheez ka (marzi se)';
+
+  @override
+  String get incomeSave => 'Aamdani save karein';
+
+  @override
+  String incomeSaved(String docNo) {
+    return 'Aamdani $docNo save ho gayi';
+  }
+
+  @override
+  String get incomeThisMonth => 'Is mahine';
+
+  @override
+  String get incomeNotASale =>
+      'Yeh bikri nahi: munafa nuqsan mein deegar aamdani mein, gross munafe ke baad aati hai.';
+
+  @override
+  String get incomeHeadRent => 'Kiraya mila';
+
+  @override
+  String get incomeHeadCommission => 'Commission';
+
+  @override
+  String get incomeHeadInterest => 'Bank ka munafa';
+
+  @override
+  String get incomeHeadScrap => 'Raddi, khali dabbe';
+
+  @override
+  String get incomeHeadRefund => 'Refund mila';
+
+  @override
+  String get incomeHeadOther => 'Deegar';
+
+  @override
+  String get homeGoodsTitle => 'Ghar le gaye maal';
+
+  @override
+  String get homeGoodsExplain =>
+      'Dukaan ke shelf se ghar ke liye maal. Lagat par nikalta hai, aur malik ke hisse se kat-ta hai, munafe se nahi.';
+
+  @override
+  String get homeGoodsSearch => 'Kaunsa maal';
+
+  @override
+  String get homeGoodsQty => 'Kitna';
+
+  @override
+  String homeGoodsOnHand(String qty) {
+    return 'Shelf par $qty';
+  }
+
+  @override
+  String get homeGoodsNote => 'Note (marzi se)';
+
+  @override
+  String get homeGoodsSave => 'Ghar le gaye, save karein';
+
+  @override
+  String homeGoodsSaved(String docNo, String amount) {
+    return '$docNo: $amount ka maal ghar gaya';
+  }
+
+  @override
+  String get homeGoodsPick => 'Pehle maal chunein';
+
+  @override
+  String get homeGoodsQtyInvalid => 'Kitna likhein, jaise 2 ya 1.5';
 }

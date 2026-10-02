@@ -2590,5 +2590,109 @@
     "placeholders": {
       "amount": {"type": "String"}
     }
-  }
+  },
+  "expenseWhose": "Whose spending",
+  "expenseForShop": "Shop's spending",
+  "expenseForHome": "Home spending",
+  "expenseHomeChip": "Home",
+  "expenseHomeExplain": "Home spending is the owner's own money taken out of the shop. It is not a cost of the shop, so it never lowers the profit; it lowers the owner's share instead.",
+  "expenseHomeGoodsLink": "Took goods home from the shelf?",
+  "expenseRemind": "Remind me every month",
+  "expenseRemindDay": "Day of the month",
+  "expenseRemindDayInvalid": "The day of the month is 1 to 31",
+  "expenseMonthShop": "Shop, this month",
+  "expenseMonthHome": "Home, this month",
+  "expenseGoodsCancelOnly": "Goods taken home are not edited: cancel this and enter it again.",
+  "expenseHomeNotAllowed": "Only the owner or the accountant can change home spending.",
+  "billsTitle": "Monthly bills",
+  "billsEmpty": "No monthly bills yet",
+  "billsEmptyHint": "Rent, bijli, wages: add them once and the app reminds you on the day. Nothing is paid by itself.",
+  "billsNew": "New monthly bill",
+  "billDue": "Due this month: {name}",
+  "@billDue": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "billDueOn": "Due on {date}",
+  "@billDueOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "billPayNow": "Pay now",
+  "billSkip": "Not this month",
+  "billSkipped": "Not reminded again this month",
+  "billEvery": "Every month on the {day}",
+  "@billEvery": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "billName": "What the bill is",
+  "billAmount": "Usual amount",
+  "billSave": "Save the bill",
+  "monthlyBillSaved": "Monthly bill saved",
+  "billDelete": "Stop reminding",
+  "billDeleted": "Reminder stopped",
+  "billPaidFrom": "Usually paid from",
+  "headsTitle": "Heads",
+  "headsExpense": "Spending heads",
+  "headsIncome": "Income heads",
+  "headsAddExpense": "New spending head",
+  "headsAddIncome": "New income head",
+  "headName": "Name",
+  "headDirect": "Cost of the goods (comes off before gross profit)",
+  "headDirectChip": "Direct",
+  "headIndirectChip": "Indirect",
+  "headHidden": "Hidden",
+  "headHide": "Hide from the list",
+  "headSave": "Save",
+  "headSaved": "Saved",
+  "headDirectExplain": "A cost of the goods (freight on goods coming in) comes off the sales before gross profit; the rest (rent, wages, bijli) after it. Changing it moves the head in every month's profit and loss.",
+  "incomeTitle": "Other income",
+  "incomeEmpty": "No other income yet",
+  "incomeEmptyHint": "Rent from a sub-let, commission, bank profit, scrap sold: money that is not a sale goes here.",
+  "incomeNew": "New income",
+  "incomeHead": "Under",
+  "incomeFrom": "From whom (optional)",
+  "incomeFromParty": "Pick from the khata",
+  "incomeInto": "Received into",
+  "incomeNote": "What it was (optional)",
+  "incomeSave": "Save income",
+  "incomeSaved": "Income {docNo} saved",
+  "@incomeSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "incomeThisMonth": "This month",
+  "incomeNotASale": "Not a sale: the profit and loss shows it under other income, below gross profit.",
+  "incomeHeadRent": "Rent received",
+  "incomeHeadCommission": "Commission",
+  "incomeHeadInterest": "Bank profit, interest",
+  "incomeHeadScrap": "Scrap, empties sold",
+  "incomeHeadRefund": "Refund received",
+  "incomeHeadOther": "Other",
+  "homeGoodsTitle": "Goods taken home",
+  "homeGoodsExplain": "Goods off the shop's shelf for the house. They leave at what they cost, and come off the owner's share, not the profit.",
+  "homeGoodsSearch": "Which item",
+  "homeGoodsQty": "How much",
+  "homeGoodsOnHand": "{qty} on the shelf",
+  "@homeGoodsOnHand": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  },
+  "homeGoodsNote": "Note (optional)",
+  "homeGoodsSave": "Save: taken home",
+  "homeGoodsSaved": "{docNo}: goods worth {amount} taken home",
+  "@homeGoodsSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "homeGoodsPick": "Pick an item first",
+  "homeGoodsQtyInvalid": "Write how much, like 2 or 1.5"
 }

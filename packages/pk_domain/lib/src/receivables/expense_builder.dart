@@ -18,6 +18,28 @@
 /// how a shop ends up with a Trial Balance and an expense report that do not
 /// match. Reading it back is a join through `journal_entries.document_id`,
 /// which is what that column is for.
+///
+/// ## The shop's money and the home's (M47)
+///
+/// A shopkeeper pays the shop's bijli and his children's school fees out of
+/// the same drawer, and writes both in the same book. The school fees are
+/// not a cost of running the shop: counted as one, they make every month's
+/// profit look smaller than it was, and the owner stops believing the
+/// report. So an expense marked [ExpenseDraft.forHome] — "ghar ka kharcha" —
+/// is posted to Owner's Drawings, an equity account the profit and loss
+/// never reads: the drawer goes down, the owner's share of the shop goes
+/// down with it, and the profit stays what the shop actually made. It is
+/// still an `expense` document, so it sits in the same list, opens the same
+/// way and is cancelled by the same M31 path as the shop's own.
+///
+/// ## The shop's own heads (M47)
+///
+/// [expenseHeads] is the shipped list. A shop that pays a generator's diesel
+/// every week adds a head of its own: an expense account in the chart, with
+/// no system key, named by the shop. It is handed to the builder as
+/// `#<account id>`, the resolved form every posting already understands, and
+/// the writer checks the account really is one of the shop's expense heads
+/// before anything is written.
 library;
 
 import 'package:pk_money/pk_money.dart';
@@ -44,10 +66,15 @@ final class ExpenseDraft {
     required this.note,
     this.paymentAccountId,
     this.partyId,
+    this.forHome = false,
+    this.tag,
   });
 
   /// Which head it goes under: `rent`, `salaries`, `utilities`, `misc`.
   /// A key rather than an id, so renaming "Bijli" cannot break a posting.
+  ///
+  /// Or `#<account id>` for a head the shop added itself (M47), which has no
+  /// key. Ignored when [forHome]: the owner's drawings have no head.
   final String accountSystemKey;
 
   final Money amount;
@@ -63,8 +90,27 @@ final class ExpenseDraft {
   /// Who it is owed to, when it is not paid now.
   final String? partyId;
 
+  /// Ghar ka kharcha (M47): the home's spending, paid out of the shop. Posted
+  /// to Owner's Drawings, never to a head of expense, so it never reaches
+  /// the profit and loss.
+  final bool forHome;
+
+  /// What every line of its entry carries in `journal_lines.cost_centre`, or
+  /// null for none. Always `expense:...` (see `shop_money/tags.dart`): today
+  /// only `expense:recurring:<id>`, the monthly bill an expense paid.
+  final String? tag;
+
   bool get isPaidNow => paymentAccountId != null;
 }
+
+/// The account the home's spending is posted to (M47).
+const ownerDrawingsKey = 'owner_drawings';
+
+/// Whether [key] names a head an expense can go under: a shipped one, or
+/// one of the shop's own as `#<account id>`. The writer checks the account
+/// behind a `#` key before it posts.
+bool isExpenseHeadKey(String key) =>
+    expenseHeads.contains(key) || (key.startsWith('#') && key.length > 1);
 
 /// Everything one expense writes.
 final class ExpensePosting {
@@ -73,6 +119,8 @@ final class ExpensePosting {
     required this.journal,
     required this.headSystemKey,
     required this.auditSummary,
+    this.costCentre,
+    this.forHome = false,
   });
 
   final DocumentPosting document;
@@ -80,9 +128,18 @@ final class ExpensePosting {
 
   /// Kept on the posting for the audit line only. The stored answer is the
   /// journal line's account, and nothing reads this back from a column.
+  /// `owner_drawings` for the home's spending; `#<id>` for a shop's own head.
   final String headSystemKey;
 
   final String auditSummary;
+
+  /// Written on every line's `cost_centre` (M47), or null.
+  final String? costCentre;
+
+  /// Whether this is the owner's drawings rather than the shop's spending.
+  /// The service boundary asks, because only the owner and the accountant
+  /// may post it.
+  final bool forHome;
 
   void assertBalanced() {
     final debit = Money.sum([for (final l in journal.lines) l.debit]);
@@ -132,9 +189,23 @@ final class ExpenseBuilder {
     if (!draft.amount.isPositive) {
       throw const ExpenseRefused('An expense of nothing is not an expense.');
     }
-    if (!expenseHeads.contains(draft.accountSystemKey)) {
-      throw ExpenseRefused(
-        '"${draft.accountSystemKey}" is not an expense head this shop keeps.',
+    final head = draft.forHome ? ownerDrawingsKey : draft.accountSystemKey;
+    if (!draft.forHome && !isExpenseHeadKey(head)) {
+      throw ExpenseRefused('"$head" is not an expense head this shop keeps.');
+    }
+    final tag = draft.tag;
+    if (tag != null && !tag.startsWith('expense:')) {
+      // The ledger's one free dimension is shared: M48's loans write
+      // `loan:<id>` there. A tag of another prefix on an expense would be
+      // read by whichever feature owns that prefix as one of its own.
+      throw ExpenseRefused('"$tag" is not an expense tag.');
+    }
+    if (draft.forHome && !draft.isPaidNow) {
+      // Money owed for the house is the owner's debt, not the shop's: it
+      // has no place on a supplier's khata the shop settles.
+      throw const ExpenseRefused(
+        'Ghar ka kharcha is money taken out of the shop now. Pick the cash '
+        'or the bank it came out of.',
       );
     }
     if (draft.note.trim().isEmpty) {
@@ -157,10 +228,13 @@ final class ExpenseBuilder {
       );
     }
 
+    // What the book calls it: "Ghar ka kharcha" for the home's, so a day
+    // book read months later says whose money it was without a lookup.
+    final what = draft.forHome ? 'Ghar ka kharcha' : 'Expense';
     final journalLines = <JournalLinePosting>[
       JournalLinePosting(
         lineNo: 1,
-        accountSystemKey: draft.accountSystemKey,
+        accountSystemKey: head,
         debit: draft.amount,
         credit: Money.zero,
         narration: draft.note.trim(),
@@ -173,7 +247,7 @@ final class ExpenseBuilder {
         debit: Money.zero,
         credit: draft.amount,
         partyId: draft.isPaidNow ? null : draft.partyId,
-        narration: 'Expense ${expenseNumber.formatted}',
+        narration: '$what ${expenseNumber.formatted}',
       ),
     ];
 
@@ -213,13 +287,15 @@ final class ExpenseBuilder {
         sourceType: 'expense',
         totalDebit: draft.amount,
         totalCredit: draft.amount,
-        narration: 'Expense ${expenseNumber.formatted}: ${draft.note.trim()}',
+        narration: '$what ${expenseNumber.formatted}: ${draft.note.trim()}',
         lines: journalLines,
       ),
-      headSystemKey: draft.accountSystemKey,
+      headSystemKey: head,
       auditSummary:
-          'Expense ${expenseNumber.formatted} of ${draft.amount.amountOnly} '
-          'under ${draft.accountSystemKey}: ${draft.note.trim()}',
+          '$what ${expenseNumber.formatted} of ${draft.amount.amountOnly} '
+          'under $head: ${draft.note.trim()}',
+      costCentre: tag,
+      forHome: draft.forHome,
     );
 
     posting.assertBalanced();

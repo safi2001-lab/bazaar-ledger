@@ -4484,4 +4484,243 @@ class AppStringsEn extends AppStrings {
   String itemStockLeft(String amount) {
     return '$amount in stock';
   }
+
+  @override
+  String get expenseWhose => 'Whose spending';
+
+  @override
+  String get expenseForShop => 'Shop\'s spending';
+
+  @override
+  String get expenseForHome => 'Home spending';
+
+  @override
+  String get expenseHomeChip => 'Home';
+
+  @override
+  String get expenseHomeExplain =>
+      'Home spending is the owner\'s own money taken out of the shop. It is not a cost of the shop, so it never lowers the profit; it lowers the owner\'s share instead.';
+
+  @override
+  String get expenseHomeGoodsLink => 'Took goods home from the shelf?';
+
+  @override
+  String get expenseRemind => 'Remind me every month';
+
+  @override
+  String get expenseRemindDay => 'Day of the month';
+
+  @override
+  String get expenseRemindDayInvalid => 'The day of the month is 1 to 31';
+
+  @override
+  String get expenseMonthShop => 'Shop, this month';
+
+  @override
+  String get expenseMonthHome => 'Home, this month';
+
+  @override
+  String get expenseGoodsCancelOnly =>
+      'Goods taken home are not edited: cancel this and enter it again.';
+
+  @override
+  String get expenseHomeNotAllowed =>
+      'Only the owner or the accountant can change home spending.';
+
+  @override
+  String get billsTitle => 'Monthly bills';
+
+  @override
+  String get billsEmpty => 'No monthly bills yet';
+
+  @override
+  String get billsEmptyHint =>
+      'Rent, bijli, wages: add them once and the app reminds you on the day. Nothing is paid by itself.';
+
+  @override
+  String get billsNew => 'New monthly bill';
+
+  @override
+  String billDue(String name) {
+    return 'Due this month: $name';
+  }
+
+  @override
+  String billDueOn(String date) {
+    return 'Due on $date';
+  }
+
+  @override
+  String get billPayNow => 'Pay now';
+
+  @override
+  String get billSkip => 'Not this month';
+
+  @override
+  String get billSkipped => 'Not reminded again this month';
+
+  @override
+  String billEvery(String day) {
+    return 'Every month on the $day';
+  }
+
+  @override
+  String get billName => 'What the bill is';
+
+  @override
+  String get billAmount => 'Usual amount';
+
+  @override
+  String get billSave => 'Save the bill';
+
+  @override
+  String get monthlyBillSaved => 'Monthly bill saved';
+
+  @override
+  String get billDelete => 'Stop reminding';
+
+  @override
+  String get billDeleted => 'Reminder stopped';
+
+  @override
+  String get billPaidFrom => 'Usually paid from';
+
+  @override
+  String get headsTitle => 'Heads';
+
+  @override
+  String get headsExpense => 'Spending heads';
+
+  @override
+  String get headsIncome => 'Income heads';
+
+  @override
+  String get headsAddExpense => 'New spending head';
+
+  @override
+  String get headsAddIncome => 'New income head';
+
+  @override
+  String get headName => 'Name';
+
+  @override
+  String get headDirect => 'Cost of the goods (comes off before gross profit)';
+
+  @override
+  String get headDirectChip => 'Direct';
+
+  @override
+  String get headIndirectChip => 'Indirect';
+
+  @override
+  String get headHidden => 'Hidden';
+
+  @override
+  String get headHide => 'Hide from the list';
+
+  @override
+  String get headSave => 'Save';
+
+  @override
+  String get headSaved => 'Saved';
+
+  @override
+  String get headDirectExplain =>
+      'A cost of the goods (freight on goods coming in) comes off the sales before gross profit; the rest (rent, wages, bijli) after it. Changing it moves the head in every month\'s profit and loss.';
+
+  @override
+  String get incomeTitle => 'Other income';
+
+  @override
+  String get incomeEmpty => 'No other income yet';
+
+  @override
+  String get incomeEmptyHint =>
+      'Rent from a sub-let, commission, bank profit, scrap sold: money that is not a sale goes here.';
+
+  @override
+  String get incomeNew => 'New income';
+
+  @override
+  String get incomeHead => 'Under';
+
+  @override
+  String get incomeFrom => 'From whom (optional)';
+
+  @override
+  String get incomeFromParty => 'Pick from the khata';
+
+  @override
+  String get incomeInto => 'Received into';
+
+  @override
+  String get incomeNote => 'What it was (optional)';
+
+  @override
+  String get incomeSave => 'Save income';
+
+  @override
+  String incomeSaved(String docNo) {
+    return 'Income $docNo saved';
+  }
+
+  @override
+  String get incomeThisMonth => 'This month';
+
+  @override
+  String get incomeNotASale =>
+      'Not a sale: the profit and loss shows it under other income, below gross profit.';
+
+  @override
+  String get incomeHeadRent => 'Rent received';
+
+  @override
+  String get incomeHeadCommission => 'Commission';
+
+  @override
+  String get incomeHeadInterest => 'Bank profit, interest';
+
+  @override
+  String get incomeHeadScrap => 'Scrap, empties sold';
+
+  @override
+  String get incomeHeadRefund => 'Refund received';
+
+  @override
+  String get incomeHeadOther => 'Other';
+
+  @override
+  String get homeGoodsTitle => 'Goods taken home';
+
+  @override
+  String get homeGoodsExplain =>
+      'Goods off the shop\'s shelf for the house. They leave at what they cost, and come off the owner\'s share, not the profit.';
+
+  @override
+  String get homeGoodsSearch => 'Which item';
+
+  @override
+  String get homeGoodsQty => 'How much';
+
+  @override
+  String homeGoodsOnHand(String qty) {
+    return '$qty on the shelf';
+  }
+
+  @override
+  String get homeGoodsNote => 'Note (optional)';
+
+  @override
+  String get homeGoodsSave => 'Save: taken home';
+
+  @override
+  String homeGoodsSaved(String docNo, String amount) {
+    return '$docNo: goods worth $amount taken home';
+  }
+
+  @override
+  String get homeGoodsPick => 'Pick an item first';
+
+  @override
+  String get homeGoodsQtyInvalid => 'Write how much, like 2 or 1.5';
 }

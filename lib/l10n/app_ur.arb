@@ -2704,5 +2704,109 @@
     "placeholders": {
       "amount": {"type": "String"}
     }
-  }
+  },
+  "expenseWhose": "Kis ka kharcha",
+  "expenseForShop": "Dukaan ka kharcha",
+  "expenseForHome": "Ghar ka kharcha",
+  "expenseHomeChip": "Ghar",
+  "expenseHomeExplain": "Ghar ka kharcha malik ka apna paisa hai jo dukaan se nikla. Yeh dukaan ka kharcha nahi, is liye munafa kam nahi karta; malik ka hissa kam karta hai.",
+  "expenseHomeGoodsLink": "Dukaan ka maal ghar le gaye?",
+  "expenseRemind": "Har mahine yaad dilayen",
+  "expenseRemindDay": "Mahine ki tareekh",
+  "expenseRemindDayInvalid": "Mahine ki tareekh 1 se 31 tak likhein",
+  "expenseMonthShop": "Is mahine dukaan",
+  "expenseMonthHome": "Is mahine ghar",
+  "expenseGoodsCancelOnly": "Ghar le gaye maal ko badla nahi jata: mansookh kar ke dobara likhein.",
+  "expenseHomeNotAllowed": "Ghar ka kharcha sirf malik ya accountant badal sakte hain.",
+  "billsTitle": "Mahana bill",
+  "billsEmpty": "Abhi koi mahana bill nahi",
+  "billsEmptyHint": "Kiraya, bijli, tankhwah: aik dafa likhein, app us tareekh ko yaad dilayegi. Khud se kuch nahi diya jata.",
+  "billsNew": "Naya mahana bill",
+  "billDue": "Is mahine dena hai: {name}",
+  "@billDue": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "billDueOn": "{date} ko dena tha",
+  "@billDueOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "billPayNow": "Abhi dein",
+  "billSkip": "Is mahine nahi",
+  "billSkipped": "Is mahine dobara yaad nahi dilaya jayega",
+  "billEvery": "Har mahine {day} tareekh ko",
+  "@billEvery": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "billName": "Kis cheez ka bill",
+  "billAmount": "Aam taur par raqam",
+  "billSave": "Bill save karein",
+  "monthlyBillSaved": "Mahana bill save ho gaya",
+  "billDelete": "Yaad dilana band karein",
+  "billDeleted": "Yaad dilana band ho gaya",
+  "billPaidFrom": "Aam taur par kahan se",
+  "headsTitle": "Mad",
+  "headsExpense": "Kharche ki mad",
+  "headsIncome": "Aamdani ki mad",
+  "headsAddExpense": "Kharche ki nayi mad",
+  "headsAddIncome": "Aamdani ki nayi mad",
+  "headName": "Naam",
+  "headDirect": "Maal ki lagat (gross munafe se pehle)",
+  "headDirectChip": "Direct",
+  "headIndirectChip": "Indirect",
+  "headHidden": "Chhupi hui",
+  "headHide": "List se chhupayein",
+  "headSave": "Save karein",
+  "headSaved": "Save ho gaya",
+  "headDirectExplain": "Maal ki lagat (aate maal ka kiraya) bikri se gross munafe se pehle kat-ti hai; baqi (kiraya, tankhwah, bijli) us ke baad. Badalne se har mahine ke munafa nuqsan mein yeh mad jagah badalti hai.",
+  "incomeTitle": "Deegar aamdani",
+  "incomeEmpty": "Abhi koi deegar aamdani nahi",
+  "incomeEmptyHint": "Upar wale kamre ka kiraya, commission, bank ka munafa, raddi: jo paisa bikri ke ilawa aaya yahan likhein.",
+  "incomeNew": "Nayi aamdani",
+  "incomeHead": "Kis mad mein",
+  "incomeFrom": "Kis se mila (marzi se)",
+  "incomeFromParty": "Khate se chunein",
+  "incomeInto": "Kahan aaya",
+  "incomeNote": "Kis cheez ka (marzi se)",
+  "incomeSave": "Aamdani save karein",
+  "incomeSaved": "Aamdani {docNo} save ho gayi",
+  "@incomeSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "incomeThisMonth": "Is mahine",
+  "incomeNotASale": "Yeh bikri nahi: munafa nuqsan mein deegar aamdani mein, gross munafe ke baad aati hai.",
+  "incomeHeadRent": "Kiraya mila",
+  "incomeHeadCommission": "Commission",
+  "incomeHeadInterest": "Bank ka munafa",
+  "incomeHeadScrap": "Raddi, khali dabbe",
+  "incomeHeadRefund": "Refund mila",
+  "incomeHeadOther": "Deegar",
+  "homeGoodsTitle": "Ghar le gaye maal",
+  "homeGoodsExplain": "Dukaan ke shelf se ghar ke liye maal. Lagat par nikalta hai, aur malik ke hisse se kat-ta hai, munafe se nahi.",
+  "homeGoodsSearch": "Kaunsa maal",
+  "homeGoodsQty": "Kitna",
+  "homeGoodsOnHand": "Shelf par {qty}",
+  "@homeGoodsOnHand": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  },
+  "homeGoodsNote": "Note (marzi se)",
+  "homeGoodsSave": "Ghar le gaye, save karein",
+  "homeGoodsSaved": "{docNo}: {amount} ka maal ghar gaya",
+  "@homeGoodsSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "homeGoodsPick": "Pehle maal chunein",
+  "homeGoodsQtyInvalid": "Kitna likhein, jaise 2 ya 1.5"
 }

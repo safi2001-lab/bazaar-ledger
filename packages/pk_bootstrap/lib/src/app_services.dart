@@ -27,6 +27,7 @@ part 'import_services.dart';
 part 'loan_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
+part 'shop_money_services.dart';
 part 'sync_services.dart';
 
 /// Everything the app can do, wired once.
@@ -322,7 +323,12 @@ final class AppServices {
   CorrectEntriesUseCase get corrections {
     require(Permission.correctEntries);
     return CorrectEntriesUseCase(
-      writer: _PlanCorrections(DriftCorrectionWriter(runner: _runner), plans),
+      // The home's spending (M47) is the owner's or the accountant's to
+      // cancel or correct, whoever else may put entries right.
+      writer: _HomeGatedCorrections(
+        _PlanCorrections(DriftCorrectionWriter(runner: _runner), plans),
+        this,
+      ),
     );
   }
 
@@ -370,7 +376,10 @@ final class AppServices {
 
   RecordExpenseUseCase get recordExpense {
     require(Permission.expenses);
-    return RecordExpenseUseCase(writer: DriftExpenseWriter(runner: _runner));
+    // The home's spending (M47) takes the journal permission as well.
+    return RecordExpenseUseCase(
+      writer: _HomeGatedExpenses(DriftExpenseWriter(runner: _runner), this),
+    );
   }
 
   bool get isSetUp => _identity != null;
@@ -392,6 +401,10 @@ final class AppServices {
 
   /// Loans the shop has taken, and their repayments (M48).
   late final LoanServices loans = LoanServices._(this);
+
+  /// The shop's money and the home's, other income, heads and the monthly
+  /// bills (M47).
+  late final ShopMoneyServices shopMoney = ShopMoneyServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

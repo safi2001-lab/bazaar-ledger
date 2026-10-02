@@ -7885,6 +7885,444 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{amount} mojood'**
   String itemStockLeft(String amount);
+
+  /// No description provided for @expenseWhose.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ka kharcha'**
+  String get expenseWhose;
+
+  /// No description provided for @expenseForShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ka kharcha'**
+  String get expenseForShop;
+
+  /// No description provided for @expenseForHome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar ka kharcha'**
+  String get expenseForHome;
+
+  /// No description provided for @expenseHomeChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar'**
+  String get expenseHomeChip;
+
+  /// No description provided for @expenseHomeExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar ka kharcha malik ka apna paisa hai jo dukaan se nikla. Yeh dukaan ka kharcha nahi, is liye munafa kam nahi karta; malik ka hissa kam karta hai.'**
+  String get expenseHomeExplain;
+
+  /// No description provided for @expenseHomeGoodsLink.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ka maal ghar le gaye?'**
+  String get expenseHomeGoodsLink;
+
+  /// No description provided for @expenseRemind.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine yaad dilayen'**
+  String get expenseRemind;
+
+  /// No description provided for @expenseRemindDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine ki tareekh'**
+  String get expenseRemindDay;
+
+  /// No description provided for @expenseRemindDayInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine ki tareekh 1 se 31 tak likhein'**
+  String get expenseRemindDayInvalid;
+
+  /// No description provided for @expenseMonthShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine dukaan'**
+  String get expenseMonthShop;
+
+  /// No description provided for @expenseMonthHome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine ghar'**
+  String get expenseMonthHome;
+
+  /// No description provided for @expenseGoodsCancelOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar le gaye maal ko badla nahi jata: mansookh kar ke dobara likhein.'**
+  String get expenseGoodsCancelOnly;
+
+  /// No description provided for @expenseHomeNotAllowed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar ka kharcha sirf malik ya accountant badal sakte hain.'**
+  String get expenseHomeNotAllowed;
+
+  /// No description provided for @billsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana bill'**
+  String get billsTitle;
+
+  /// No description provided for @billsEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi mahana bill nahi'**
+  String get billsEmpty;
+
+  /// No description provided for @billsEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kiraya, bijli, tankhwah: aik dafa likhein, app us tareekh ko yaad dilayegi. Khud se kuch nahi diya jata.'**
+  String get billsEmptyHint;
+
+  /// No description provided for @billsNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya mahana bill'**
+  String get billsNew;
+
+  /// No description provided for @billDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine dena hai: {name}'**
+  String billDue(String name);
+
+  /// No description provided for @billDueOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ko dena tha'**
+  String billDueOn(String date);
+
+  /// No description provided for @billPayNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi dein'**
+  String get billPayNow;
+
+  /// No description provided for @billSkip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine nahi'**
+  String get billSkip;
+
+  /// No description provided for @billSkipped.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine dobara yaad nahi dilaya jayega'**
+  String get billSkipped;
+
+  /// No description provided for @billEvery.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine {day} tareekh ko'**
+  String billEvery(String day);
+
+  /// No description provided for @billName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis cheez ka bill'**
+  String get billName;
+
+  /// No description provided for @billAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aam taur par raqam'**
+  String get billAmount;
+
+  /// No description provided for @billSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill save karein'**
+  String get billSave;
+
+  /// No description provided for @monthlyBillSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana bill save ho gaya'**
+  String get monthlyBillSaved;
+
+  /// No description provided for @billDelete.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad dilana band karein'**
+  String get billDelete;
+
+  /// No description provided for @billDeleted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad dilana band ho gaya'**
+  String get billDeleted;
+
+  /// No description provided for @billPaidFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aam taur par kahan se'**
+  String get billPaidFrom;
+
+  /// No description provided for @headsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mad'**
+  String get headsTitle;
+
+  /// No description provided for @headsExpense.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharche ki mad'**
+  String get headsExpense;
+
+  /// No description provided for @headsIncome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aamdani ki mad'**
+  String get headsIncome;
+
+  /// No description provided for @headsAddExpense.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharche ki nayi mad'**
+  String get headsAddExpense;
+
+  /// No description provided for @headsAddIncome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aamdani ki nayi mad'**
+  String get headsAddIncome;
+
+  /// No description provided for @headName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam'**
+  String get headName;
+
+  /// No description provided for @headDirect.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal ki lagat (gross munafe se pehle)'**
+  String get headDirect;
+
+  /// No description provided for @headDirectChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Direct'**
+  String get headDirectChip;
+
+  /// No description provided for @headIndirectChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Indirect'**
+  String get headIndirectChip;
+
+  /// No description provided for @headHidden.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhupi hui'**
+  String get headHidden;
+
+  /// No description provided for @headHide.
+  ///
+  /// In ur, this message translates to:
+  /// **'List se chhupayein'**
+  String get headHide;
+
+  /// No description provided for @headSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save karein'**
+  String get headSave;
+
+  /// No description provided for @headSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save ho gaya'**
+  String get headSaved;
+
+  /// No description provided for @headDirectExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal ki lagat (aate maal ka kiraya) bikri se gross munafe se pehle kat-ti hai; baqi (kiraya, tankhwah, bijli) us ke baad. Badalne se har mahine ke munafa nuqsan mein yeh mad jagah badalti hai.'**
+  String get headDirectExplain;
+
+  /// No description provided for @incomeTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Deegar aamdani'**
+  String get incomeTitle;
+
+  /// No description provided for @incomeEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi deegar aamdani nahi'**
+  String get incomeEmpty;
+
+  /// No description provided for @incomeEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Upar wale kamre ka kiraya, commission, bank ka munafa, raddi: jo paisa bikri ke ilawa aaya yahan likhein.'**
+  String get incomeEmptyHint;
+
+  /// No description provided for @incomeNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi aamdani'**
+  String get incomeNew;
+
+  /// No description provided for @incomeHead.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis mad mein'**
+  String get incomeHead;
+
+  /// No description provided for @incomeFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis se mila (marzi se)'**
+  String get incomeFrom;
+
+  /// No description provided for @incomeFromParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khate se chunein'**
+  String get incomeFromParty;
+
+  /// No description provided for @incomeInto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan aaya'**
+  String get incomeInto;
+
+  /// No description provided for @incomeNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis cheez ka (marzi se)'**
+  String get incomeNote;
+
+  /// No description provided for @incomeSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aamdani save karein'**
+  String get incomeSave;
+
+  /// No description provided for @incomeSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aamdani {docNo} save ho gayi'**
+  String incomeSaved(String docNo);
+
+  /// No description provided for @incomeThisMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine'**
+  String get incomeThisMonth;
+
+  /// No description provided for @incomeNotASale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bikri nahi: munafa nuqsan mein deegar aamdani mein, gross munafe ke baad aati hai.'**
+  String get incomeNotASale;
+
+  /// No description provided for @incomeHeadRent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kiraya mila'**
+  String get incomeHeadRent;
+
+  /// No description provided for @incomeHeadCommission.
+  ///
+  /// In ur, this message translates to:
+  /// **'Commission'**
+  String get incomeHeadCommission;
+
+  /// No description provided for @incomeHeadInterest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ka munafa'**
+  String get incomeHeadInterest;
+
+  /// No description provided for @incomeHeadScrap.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raddi, khali dabbe'**
+  String get incomeHeadScrap;
+
+  /// No description provided for @incomeHeadRefund.
+  ///
+  /// In ur, this message translates to:
+  /// **'Refund mila'**
+  String get incomeHeadRefund;
+
+  /// No description provided for @incomeHeadOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Deegar'**
+  String get incomeHeadOther;
+
+  /// No description provided for @homeGoodsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar le gaye maal'**
+  String get homeGoodsTitle;
+
+  /// No description provided for @homeGoodsExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ke shelf se ghar ke liye maal. Lagat par nikalta hai, aur malik ke hisse se kat-ta hai, munafe se nahi.'**
+  String get homeGoodsExplain;
+
+  /// No description provided for @homeGoodsSearch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaunsa maal'**
+  String get homeGoodsSearch;
+
+  /// No description provided for @homeGoodsQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna'**
+  String get homeGoodsQty;
+
+  /// No description provided for @homeGoodsOnHand.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shelf par {qty}'**
+  String homeGoodsOnHand(String qty);
+
+  /// No description provided for @homeGoodsNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Note (marzi se)'**
+  String get homeGoodsNote;
+
+  /// No description provided for @homeGoodsSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghar le gaye, save karein'**
+  String get homeGoodsSave;
+
+  /// No description provided for @homeGoodsSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo}: {amount} ka maal ghar gaya'**
+  String homeGoodsSaved(String docNo, String amount);
+
+  /// No description provided for @homeGoodsPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle maal chunein'**
+  String get homeGoodsPick;
+
+  /// No description provided for @homeGoodsQtyInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna likhein, jaise 2 ya 1.5'**
+  String get homeGoodsQtyInvalid;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -72,6 +72,8 @@ final class _DriftExpenseWriteContext implements ExpenseWriteContext {
   @override
   Future<RecordedExpense> apply(ExpensePosting posting) async {
     posting.assertBalanced();
+    final head = posting.headSystemKey;
+    if (head.startsWith('#')) await _checkOwnHead(head.substring(1));
 
     final doc = posting.document;
     final documentId = await _tx.insert('documents', {
@@ -126,6 +128,9 @@ final class _DriftExpenseWriteContext implements ExpenseWriteContext {
         'debit_paisa': line.debit.inPaisa,
         'credit_paisa': line.credit.inPaisa,
         'party_id': line.partyId,
+        // `expense:recurring:<id>` when it paid a monthly bill (M47); see
+        // shop_money/tags.dart for every prefix the column carries.
+        'cost_centre': posting.costCentre,
         'narration': line.narration,
       });
     }
@@ -145,6 +150,33 @@ final class _DriftExpenseWriteContext implements ExpenseWriteContext {
       head: posting.headSystemKey,
       journalEntryId: journalEntryId,
     );
+  }
+
+  /// Refuses unless [accountId] is one of this shop's expense heads (M47): an
+  /// expense account of this firm, standing, with nothing filed under it
+  /// (Direct and Indirect Expenses are groups, not heads), and either one of
+  /// the shop's own (no system key) or a shipped head. Never Cost of Goods
+  /// Sold, a loan's interest or the cash short: those are posted by their
+  /// own rules, and an expense keyed against one would be counted twice.
+  Future<void> _checkOwnHead(String accountId) async {
+    final row = await _tx.selectOne(
+      'SELECT a.account_type, a.system_key, '
+      '       (SELECT COUNT(*) FROM accounts c WHERE c.parent_id = a.id '
+      '          AND c.deleted_at_utc IS NULL) AS children '
+      'FROM accounts a '
+      'WHERE a.id = ? AND a.firm_id = ? AND a.deleted_at_utc IS NULL',
+      [accountId, actor.firmId],
+    );
+    final key = row?.readNullable<String>('system_key');
+    if (row == null ||
+        row.read<String>('account_type') != 'expense' ||
+        row.read<int>('children') > 0 ||
+        (key != null && !expenseHeads.contains(key))) {
+      throw const ExpenseRefused(
+        'That is not one of this shop\'s expense heads. Pick a head from the '
+        'list, or add one under Heads.',
+      );
+    }
   }
 
   Future<Map<String, String>> _accountsBySystemKey() async {

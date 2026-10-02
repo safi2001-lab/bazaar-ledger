@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../expenses/heads_screen.dart';
 import '../loans/loans_screen.dart';
 import 'journal_voucher_screen.dart';
 
@@ -46,6 +47,15 @@ class AccountsScreen extends ConsumerWidget {
               label: s.loansTitle,
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => const LoansScreen()),
+              ),
+            ),
+            // The heads money goes out and comes in under (M47): named,
+            // hidden, and filed above or below gross profit.
+            BlIconButton(
+              icon: Icons.category_outlined,
+              label: s.headsTitle,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const HeadsScreen()),
               ),
             ),
             // The shop's own heads beside the shipped chart (M26).

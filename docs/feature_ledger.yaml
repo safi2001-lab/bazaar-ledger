@@ -1283,6 +1283,90 @@ milestones:
     state: sealed
     owns: []
 
+  - id: M47
+    title: The shop's money and the home's money kept apart, other income in the books, and the monthly bills remembered
+    # Opened and sealed 3 Oct 2026 at 1/1. A shopkeeper pays the shop's
+    # bijli and his children's school fees from the same drawer and writes
+    # both in the same book. The expense screen now asks first whose it was,
+    # Dukaan ka kharcha or Ghar ka kharcha. The home's is the owner's
+    # drawings: the drawer goes down, Owner's Drawings (3200, equity) goes up,
+    # and the profit and loss never sees it, so the month's profit is what
+    # the shop made and the balance sheet shows the owner's share smaller by
+    # what he took. It is paid now, never left owed to a supplier, and it
+    # sits in the same expense list with a Ghar mark and the month's shop
+    # and home totals side by side above it. Goods taken home off the shelf
+    # ("ghar le gaye") leave at their average cost on an expense document of
+    # the home's, Dr Drawings and Cr Inventory, with the stock row tied to
+    # the same document, so M31's cancel puts the goods and the cost back in
+    # one act. The stock adjustment was not used for it: it posts every
+    # movement against Stock Wastage and ties its row to no document, so it
+    # could neither post to drawings nor be cancelled cleanly.
+    #
+    # Who: the owner and the accountant, who hold the journal permission and
+    # could already post exactly this by hand as a voucher. A manager keeps
+    # the shop's expense book as before and is neither offered the home's
+    # side nor allowed it below the screen: the expense writer, the
+    # correction path (edit into, cancel of) and the monthly bills all
+    # refuse. A cashier keeps no expense book at all.
+    #
+    # Other income: rent from a sub-let, commission, bank profit, scrap,
+    # a refund. Dr Cash or Bank, Cr Other Income (4900), which the profit and
+    # loss already files under Other income below gross profit; the head is
+    # the line's `income:<key>` tag, not an account, because the profit and
+    # loss puts every income account but 4900 under Sales. It is an
+    # `other_income` document with NO party — the line between it and M25's
+    # charges, which carry the party whose khata owes them. Every khata
+    # query reads `other_income` by party, so shop income never reaches one;
+    # who paid it is a name on the document's snapshot, nothing more. Its
+    # number is the INC series the charges share. Cancel and edit are M31's
+    # path extended to it (the void builder's mirror through the same void
+    # handle, an edit as one transaction tied in the activity log); a charge
+    # handed to it is refused and pointed at its khata, and M31's charge
+    # cancel is untouched.
+    #
+    # Heads: a spending head is an account (the P&L split reads is_direct),
+    # added after the last expense account by M26's rule under Direct or
+    # Indirect Expenses, renamed, filed as direct or indirect, or hidden from
+    # the expense screen (a settings note, not is_active, which would take
+    # its history off the chart). Income heads are names kept in settings.
+    # Monthly bills: one settings row each (expense.recurring.<id>, JSON);
+    # on or after its day an unpaid bill is a card on the Expenses screen
+    # with Pay now, which opens the expense filled in and tagged
+    # `expense:recurring:<id>` on its lines. Paid means a standing expense
+    # with that tag this month; one cancelled is due again. Nothing is ever
+    # posted by itself. `journal_lines.cost_centre` prefixes now in use:
+    # loan:<account id> (M48), expense:recurring:<id> and income:<head key>
+    # (M47), listed in shop_money/tags.dart. No schema change.
+    #
+    # For the reports pack (pk_reports was not this milestone's to edit):
+    # the Day Book labels source `other_income` "Charge" and All
+    # Transactions labels the doc type "Charge", so the shop's income reads
+    # as a charge there; a document with no party is the shop's income. An
+    # expense report read from `documents` must leave out, or show apart,
+    # the home's (debit line on owner_drawings). Goods taken home show in
+    # the trading account's "Stock in or out otherwise".
+    #
+    # Not built, and why: a line on the Home screen (another milestone is
+    # adding a due card there now, and the Expenses screen carries the
+    # reminders); heads for the home's spending (the note says what it was);
+    # goods kept by batch or serial taken home (a stock adjustment asks
+    # which); editing goods taken home (cancel and enter again); income
+    # heads as accounts of their own (the profit and loss would file them
+    # under Sales until it reads 4900's children).
+    state: sealed
+    owns:
+      - lib/features/income/**
+      - lib/features/expenses/shop_money_providers.dart
+      - lib/features/expenses/home_goods_screen.dart
+      - lib/features/expenses/monthly_bills_screen.dart
+      - lib/features/expenses/heads_screen.dart
+      - packages/pk_domain/lib/src/shop_money/**
+      - packages/pk_domain/lib/src/ports/other_income_writer.dart
+      - packages/pk_application/lib/src/other_income_use_case.dart
+      - packages/pk_data/lib/src/read/drift_shop_money_reads.dart
+      - packages/pk_data/lib/src/write/drift_shop_money_writer.dart
+      - packages/pk_bootstrap/lib/src/shop_money_services.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5676,3 +5760,45 @@ features:
       - a delivery bought in maunds goes back by the maund, at the maund it was billed at
       - fbr credit note a return off a discounted maund carries what came back
       - the sheet offers a maund back by the maund, at what was paid
+  - id: M47-MONEY-01
+    milestone: M47
+    title: The home's spending kept off the profit and loss, other income in it, the shop's own heads, and the monthly bills remembered
+    status: done
+    # Ghar ka kharcha, in money or in goods off the shelf, is the owner's
+    # drawings: never in the profit and loss, lower equity on the balance
+    # sheet, the owner's and the accountant's alone. Other income reaches
+    # the profit and loss under Other income, is never a charge on a khata,
+    # and is cancelled or edited by M31's path. Heads are added, renamed,
+    # hidden and filed either side of gross profit; a monthly bill is due on
+    # its day, paid from its card, and due again when that is cancelled.
+    proof:
+      - shop money the home's spending is posted to the owner's drawings, its head ignored
+      - shop money a head of the shop's own is named by its account, and a tag must be an expense tag
+      - shop money other income is cash or bank against Other Income, with no party and nothing owed, tagged with its head
+      - shop money other income of nothing, from a day not yet come, or under "other" with no word of what it was is refused
+      - shop money goods taken home leave at their average cost, against the owner, with the stock row that takes them off the shelf
+      - shop money goods kept by batch, with no cost, or more than the shelf holds are refused
+      - shop money a monthly bill keeps what it was told, and refuses a day off the calendar
+      - ghar ka kharcha the home's spending never reaches the profit and loss, and lowers the owner's equity
+      - ghar ka kharcha the home's spending is paid now, never left owed to a party
+      - ghar ka kharcha goods taken home leave the shelf at cost against the owner, and a cancel puts them back
+      - ghar ka kharcha a manager cannot post, correct or cancel the home's spending; a cashier cannot post any expense
+      - other income other income reaches the profit and loss as other income, below gross profit, and a cancel takes it out
+      - other income an edited entry leaves one standing at the new amount, tied to the one it replaced
+      - other income the shop's income never reaches a khata, and a charge is never cancelled as the shop's income
+      - other income income under "other" has to say what it was; a day not yet come and a cheque drawer are refused
+      - other income a head of income of the shop's own is added, used, renamed and hidden
+      - expense heads a head of the shop's own is used, renamed, hidden, and moved across the gross profit line
+      - expense heads an account that is not a head is refused, and so is a name the chart already has
+      - monthly bills a bill is due on its day, paid by the expense it opens, and due again when that is cancelled
+      - monthly bills a bill on the 31st falls due on the last day of a shorter month
+      - monthly bills an expense saved with a reminder keeps the bill, this month already paid
+      - monthly bills the home's monthly bill is kept and shown only to who may pay it
+      - ghar ka kharcha is entered on the expense screen, kept apart from the shop's, and never reaches the profit and loss
+      - a monthly bill shows when its day has come, and Pay now opens the expense filled in
+      - an expense saved with a reminder becomes a monthly bill
+      - other income is entered under its head and cancelled from its page
+      - a head of the shop's own is added under Heads and used for an expense
+      - goods taken home come off the shelf from the home's side of the expense screen
+      - a manager is not offered ghar ka kharcha, and cannot change one the owner entered
+      - at 200% on a small phone the expense, income, heads and monthly bill screens fit

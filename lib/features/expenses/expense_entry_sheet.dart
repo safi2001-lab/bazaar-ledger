@@ -11,6 +11,7 @@ import '../../l10n/app_strings.dart';
 import '../khata/entry_actions.dart';
 import '../khata/khata_providers.dart';
 import 'expense_screen.dart';
+import 'shop_money_providers.dart';
 
 /// One expense, opened from the list (M31).
 ///
@@ -22,6 +23,12 @@ import 'expense_screen.dart';
 /// One left on account to a supplier who has since been paid against it is
 /// not offered either: the payment would be left settling an expense that
 /// no longer stands, so the page names the payment to cancel first.
+///
+/// Since M47 the page says whose money it was. The home's spending is the
+/// owner's or the accountant's to change, and the page offers nothing to
+/// anyone else; goods taken home are cancelled, never edited (the shelf
+/// and the cost both come back with the cancel, and the goods are entered
+/// again from the shelf).
 Future<void> showExpenseEntrySheet(
   BuildContext context, {
   required String documentId,
@@ -76,6 +83,20 @@ class _Body extends ConsumerWidget {
         .where((a) => a.id == expense.paidFromAccountId)
         .firstOrNull;
     final standing = !expense.isCancelled && expense.paidBy.isEmpty;
+    final facts = ref.watch(expenseFactsProvider(expense.id)).valueOrNull;
+    final forHome = facts?.forHome ?? false;
+    final goods = facts?.goods ?? false;
+    final mayChange =
+        canCorrect(ref) &&
+        (!forHome || ref.read(appServicesProvider).shopMoney.canSpendForHome);
+    final title = facts == null
+        ? expenseHeadLabel(s, expense.head ?? 'misc')
+        : expenseTitle(
+            s,
+            forHome: forHome,
+            systemKey: facts.headSystemKey,
+            headName: facts.headName,
+          );
 
     return SingleChildScrollView(
       child: Column(
@@ -83,7 +104,7 @@ class _Body extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            '${expenseHeadLabel(s, expense.head ?? 'misc')} · ${expense.docNo}',
+            '$title · ${expense.docNo}',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -100,7 +121,9 @@ class _Body extends ConsumerWidget {
                   s.entryCancelled,
                   tone: BlChipTone.bad,
                   icon: Icons.block,
-                ),
+                )
+              else if (forHome)
+                BlChip(s.expenseHomeChip, icon: Icons.home_outlined),
             ],
           ),
           const SizedBox(height: BlTokens.space3),
@@ -116,13 +139,16 @@ class _Body extends ConsumerWidget {
           ],
           if (standing) ...[
             const SizedBox(height: BlTokens.space4),
-            if (canCorrect(ref)) ...[
-              BlButton(
-                label: s.actionEdit,
-                icon: Icons.edit_outlined,
-                kind: BlButtonKind.secondary,
-                onPressed: () => unawaited(_edit(context)),
-              ),
+            if (mayChange) ...[
+              if (goods)
+                EntryNote(s.expenseGoodsCancelOnly)
+              else
+                BlButton(
+                  label: s.actionEdit,
+                  icon: Icons.edit_outlined,
+                  kind: BlButtonKind.secondary,
+                  onPressed: () => unawaited(_edit(context, facts)),
+                ),
               const SizedBox(height: BlTokens.space3),
               BlButton(
                 label: s.entryCancel,
@@ -131,17 +157,23 @@ class _Body extends ConsumerWidget {
                 onPressed: () => unawaited(_cancel(context)),
               ),
             ] else
-              EntryNote(s.entryNotAllowed),
+              EntryNote(
+                forHome && canCorrect(ref)
+                    ? s.expenseHomeNotAllowed
+                    : s.entryNotAllowed,
+              ),
           ],
         ],
       ),
     );
   }
 
-  Future<void> _edit(BuildContext context) async {
+  Future<void> _edit(BuildContext context, ExpenseFacts? facts) async {
     final navigator = Navigator.of(context);
     final saved = await navigator.push<bool>(
-      MaterialPageRoute<bool>(builder: (_) => ExpenseScreen(editing: expense)),
+      MaterialPageRoute<bool>(
+        builder: (_) => ExpenseScreen(editing: expense, facts: facts),
+      ),
     );
     // The page was about the expense just cancelled; the list underneath
     // now shows the one that replaced it.

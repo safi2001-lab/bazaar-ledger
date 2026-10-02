@@ -10,6 +10,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../khata/entry_actions.dart';
 import '../parties/party_picker.dart';
+import 'home_goods_screen.dart';
+import 'shop_money_providers.dart';
 
 /// Writing down rent, bijli, or the boy who carries sacks.
 ///
@@ -22,9 +24,10 @@ import '../parties/party_picker.dart';
 /// ## The head is a choice, never typed
 ///
 /// Free text produces "Bijli", "bijli", "Electricity" and "Light bill" as four
-/// lines that add up to nothing anybody can read. The chips are
-/// [expenseHeads], the same closed list the builder refuses anything outside
-/// of, so the screen cannot offer a head the books would reject.
+/// lines that add up to nothing anybody can read. The chips are the shop's
+/// heads: the shipped [expenseHeads] and, since M47, the heads the shop added
+/// itself under Heads, each an account of the chart, so the screen cannot
+/// offer a head the books would reject. A head the shop hid is not offered.
 ///
 /// ## The note is required, and says so before Save
 ///
@@ -32,15 +35,34 @@ import '../parties/party_picker.dart';
 /// builder refuses it too; checking here as well means the shopkeeper is told
 /// which field is empty in their own language rather than shown an exception.
 ///
+/// ## The shop's or the home's (M47)
+///
+/// The first choice on the screen, for the owner and the accountant: is this
+/// the shop's spending or the home's? Ghar ka kharcha is posted to the
+/// owner's drawings and never reaches the profit and loss; it is paid now,
+/// never left owed to a supplier, and has no head. A manager or anyone else
+/// keeping the expense book is not offered it, and the service refuses it
+/// anyway.
+///
+/// ## A monthly bill (M47)
+///
+/// Handed a [bill] — "Pay now" on a due card — the screen opens filled in
+/// from it, and the expense it saves carries the bill's tag, which is how
+/// the card knows this month is paid. A new expense can be kept as a monthly
+/// bill from here too, with the day it falls due.
+///
 /// ## Correcting one (M31)
 ///
 /// Handed [editing], the same screen corrects an expense already saved:
 /// filled in with it, and saved as one act that cancels it and writes the
-/// corrected one. It pops `true` when something was saved.
+/// corrected one. [facts] says whose money it was and which head and bill
+/// it carried. It pops `true` when something was saved.
 class ExpenseScreen extends ConsumerStatefulWidget {
-  const ExpenseScreen({super.key, this.editing});
+  const ExpenseScreen({super.key, this.editing, this.facts, this.bill});
 
   final EntryDocument? editing;
+  final ExpenseFacts? facts;
+  final MonthlyBill? bill;
 
   @override
   ConsumerState<ExpenseScreen> createState() => _ExpenseScreenState();
@@ -49,10 +71,14 @@ class ExpenseScreen extends ConsumerStatefulWidget {
 class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   final _amount = TextEditingController();
   final _note = TextEditingController();
+  final _remindDay = TextEditingController();
   final _reason = ReasonController();
 
   String _head = 'rent';
+  bool _forHome = false;
   bool _paidNow = true;
+  bool _remind = false;
+  String? _tag;
   String? _accountId;
   PartySummary? _payee;
   bool _busy = false;
@@ -62,21 +88,35 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   void initState() {
     super.initState();
     final editing = widget.editing;
-    if (editing == null) return;
-    // The expense being corrected, as it was saved.
-    final head = editing.head;
-    _head = head != null && expenseHeads.contains(head) ? head : 'misc';
-    _amount.text = editing.total.amountOnly.replaceAll(',', '');
-    _note.text = editing.note;
-    _paidNow = editing.partyId == null;
-    _accountId = editing.paidFromAccountId;
-    if (editing.partyId case final partyId?) {
-      _payee = PartySummary(
-        id: partyId,
-        name: editing.partyName ?? '',
-        partyType: 'supplier',
-        balance: Money.zero,
-      );
+    final bill = widget.bill;
+    if (editing != null) {
+      // The expense being corrected, as it was saved.
+      final facts = widget.facts;
+      final head = facts?.headKey ?? editing.head;
+      _head = head != null && isExpenseHeadKey(head) ? head : 'misc';
+      _forHome = facts?.forHome ?? false;
+      _tag = facts?.tag;
+      _amount.text = editing.total.amountOnly.replaceAll(',', '');
+      _note.text = editing.note;
+      _paidNow = editing.partyId == null;
+      _accountId = editing.paidFromAccountId;
+      if (editing.partyId case final partyId?) {
+        _payee = PartySummary(
+          id: partyId,
+          name: editing.partyName ?? '',
+          partyType: 'supplier',
+          balance: Money.zero,
+        );
+      }
+    } else if (bill != null) {
+      // Pay now, from a monthly bill's card: what it usually comes to, to be
+      // changed if this month's bill says otherwise.
+      _forHome = bill.forHome;
+      if (!bill.forHome && isExpenseHeadKey(bill.headKey)) _head = bill.headKey;
+      _amount.text = bill.amount.amountOnly.replaceAll(',', '');
+      _note.text = bill.note;
+      _accountId = bill.paymentAccountId;
+      _tag = bill.tag;
     }
   }
 
@@ -84,6 +124,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   void dispose() {
     _amount.dispose();
     _note.dispose();
+    _remindDay.dispose();
     _reason.dispose();
     super.dispose();
   }
@@ -93,6 +134,10 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     if (raw.isEmpty) return Money.zero;
     return Money.tryParse(raw) ?? Money.zero;
   }
+
+  /// Kept as a monthly bill from here only when it is new, and not already
+  /// paying one.
+  bool get _canRemind => widget.editing == null && widget.bill == null;
 
   Future<void> _pickPayee() async {
     final party = await showModalBottomSheet<PartySummary?>(
@@ -112,6 +157,8 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   Future<void> _save(String? accountId) async {
     if (_busy) return;
     final s = AppStrings.of(context);
+    // The home's spending is paid now, always.
+    final paidNow = _forHome || _paidNow;
 
     if (!_entered.isPositive) {
       setState(() => _failure = s.wasooliAmountRequired);
@@ -121,17 +168,25 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
       setState(() => _failure = s.expenseNoteRequired);
       return;
     }
-    if (_paidNow && accountId == null) {
+    if (paidNow && accountId == null) {
       setState(() => _failure = s.tenderNoAccount);
       return;
     }
-    if (!_paidNow && _payee == null) {
+    if (!paidNow && _payee == null) {
       // Money the shop can never settle, sitting in a total it can never
       // explain. The builder refuses this too; it is caught here so the
       // shopkeeper is pointed at the field rather than shown a sentence
       // about the books.
       setState(() => _failure = s.expensePayeeRequired);
       return;
+    }
+    int? remindOn;
+    if (_canRemind && _remind) {
+      remindOn = int.tryParse(_remindDay.text.trim());
+      if (remindOn == null || remindOn < 1 || remindOn > 31) {
+        setState(() => _failure = s.expenseRemindDayInvalid);
+        return;
+      }
     }
 
     setState(() {
@@ -143,18 +198,20 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     final container = ProviderScope.containerOf(context, listen: false);
     try {
       final draft = ExpenseDraft(
-        accountSystemKey: _head,
+        accountSystemKey: _forHome ? ownerDrawingsKey : _head,
         amount: _entered,
         note: _note.text.trim(),
-        paymentAccountId: _paidNow ? accountId : null,
-        partyId: _paidNow ? null : _payee!.id,
+        paymentAccountId: paidNow ? accountId : null,
+        partyId: paidNow ? null : _payee!.id,
+        forHome: _forHome,
+        tag: _tag,
       );
       final editing = widget.editing;
       final String said;
       if (editing == null) {
-        final recorded = await services.recordExpense(
-          services.actorNow(),
+        final recorded = await services.shopMoney.recordExpense(
           draft,
+          remindOnDay: remindOn,
         );
         said = s.expenseSaved(recorded.docNo);
       } else {
@@ -176,17 +233,42 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _failure = '$error';
+        _failure = switch (error) {
+          PermissionDenied(:final reason) => reason,
+          _ => '$error',
+        };
       });
     }
+  }
+
+  Future<void> _takeGoodsHome() async {
+    final navigator = Navigator.of(context);
+    final saved = await navigator.push<bool>(
+      MaterialPageRoute<bool>(builder: (_) => const HomeGoodsScreen()),
+    );
+    // The goods were the entry; there is no money to write as well.
+    if ((saved ?? false) && mounted) navigator.pop(true);
   }
 
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    final services = ref.watch(appServicesProvider);
     final accounts = ref.watch(paymentAccountsProvider);
     final editing = widget.editing;
+    final canHome = services.shopMoney.canSpendForHome;
+
+    // The shop's heads, the one already chosen kept even if it is hidden.
+    // Until they arrive, the shipped heads, so the screen is never empty.
+    final heads = ref.watch(expenseHeadsProvider).valueOrNull;
+    final offered = <(String, String)>[
+      if (heads == null)
+        for (final key in expenseHeads) (key, expenseHeadLabel(s, key))
+      else
+        for (final h in heads)
+          if (!h.hidden || h.key == _head) (h.key, expenseHeadName(s, h)),
+    ];
 
     // Resolved for this build rather than stored, for the same reason as the
     // receipt sheet: the accounts arrive asynchronously, and a null here is a
@@ -200,13 +282,15 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
       for (final a in accounts.valueOrNull ?? const <PaymentAccountSummary>[])
         if (a.modeLabel != 'cheque') a,
     ];
+    final picked = available.where((a) => a.id == _accountId).firstOrNull;
     final accountId =
-        _accountId ??
+        picked?.id ??
         (available.isEmpty
             ? null
             : available
                   .firstWhere((a) => a.isDefault, orElse: () => available.first)
                   .id);
+    final paidNow = _forHome || _paidNow;
 
     return Scaffold(
       backgroundColor: t.paper,
@@ -231,24 +315,69 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                     EntryNote(s.entryEditExplain),
                     const SizedBox(height: BlTokens.space3),
                   ],
-                  BlSectionHeader(s.expenseHead),
-                  const SizedBox(height: BlTokens.space2),
-                  Wrap(
-                    spacing: BlTokens.space2,
-                    runSpacing: BlTokens.space2,
-                    children: [
-                      for (final head in expenseHeads)
+                  if (canHome) ...[
+                    BlSectionHeader(s.expenseWhose),
+                    const SizedBox(height: BlTokens.space2),
+                    Wrap(
+                      spacing: BlTokens.space2,
+                      runSpacing: BlTokens.space2,
+                      children: [
                         ChoiceChip(
-                          selected: _head == head,
-                          label: Text(expenseHeadLabel(s, head)),
+                          selected: !_forHome,
+                          avatar: const Icon(Icons.storefront, size: 18),
+                          label: Text(s.expenseForShop),
                           onSelected: (_) => setState(() {
-                            _head = head;
+                            _forHome = false;
                             _failure = null;
                           }),
                         ),
+                        ChoiceChip(
+                          selected: _forHome,
+                          avatar: const Icon(Icons.home_outlined, size: 18),
+                          label: Text(s.expenseForHome),
+                          onSelected: (_) => setState(() {
+                            _forHome = true;
+                            _failure = null;
+                          }),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: BlTokens.space4),
+                  ],
+                  if (_forHome) ...[
+                    EntryNote(s.expenseHomeExplain),
+                    if (_canRemind) ...[
+                      const SizedBox(height: BlTokens.space2),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton.icon(
+                          icon: const Icon(Icons.inventory_2_outlined),
+                          label: Text(s.expenseHomeGoodsLink),
+                          onPressed: () => unawaited(_takeGoodsHome()),
+                        ),
+                      ),
                     ],
-                  ),
-                  const SizedBox(height: BlTokens.space4),
+                    const SizedBox(height: BlTokens.space3),
+                  ] else ...[
+                    BlSectionHeader(s.expenseHead),
+                    const SizedBox(height: BlTokens.space2),
+                    Wrap(
+                      spacing: BlTokens.space2,
+                      runSpacing: BlTokens.space2,
+                      children: [
+                        for (final (key, label) in offered)
+                          ChoiceChip(
+                            selected: _head == key,
+                            label: Text(label),
+                            onSelected: (_) => setState(() {
+                              _head = key;
+                              _failure = null;
+                            }),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: BlTokens.space4),
+                  ],
                   BlField(
                     controller: _amount,
                     label: s.expenseAmount,
@@ -262,32 +391,34 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                     onChanged: (_) => setState(() => _failure = null),
                   ),
                   const SizedBox(height: BlTokens.space4),
-                  Wrap(
-                    spacing: BlTokens.space2,
-                    runSpacing: BlTokens.space2,
-                    children: [
-                      ChoiceChip(
-                        selected: _paidNow,
-                        avatar: const Icon(Icons.payments_outlined, size: 18),
-                        label: Text(s.expensePaidNow),
-                        onSelected: (_) => setState(() {
-                          _paidNow = true;
-                          _failure = null;
-                        }),
-                      ),
-                      ChoiceChip(
-                        selected: !_paidNow,
-                        avatar: const Icon(Icons.schedule, size: 18),
-                        label: Text(s.expensePayLater),
-                        onSelected: (_) => setState(() {
-                          _paidNow = false;
-                          _failure = null;
-                        }),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: BlTokens.space3),
-                  if (_paidNow && available.length > 1) ...[
+                  if (!_forHome) ...[
+                    Wrap(
+                      spacing: BlTokens.space2,
+                      runSpacing: BlTokens.space2,
+                      children: [
+                        ChoiceChip(
+                          selected: _paidNow,
+                          avatar: const Icon(Icons.payments_outlined, size: 18),
+                          label: Text(s.expensePaidNow),
+                          onSelected: (_) => setState(() {
+                            _paidNow = true;
+                            _failure = null;
+                          }),
+                        ),
+                        ChoiceChip(
+                          selected: !_paidNow,
+                          avatar: const Icon(Icons.schedule, size: 18),
+                          label: Text(s.expensePayLater),
+                          onSelected: (_) => setState(() {
+                            _paidNow = false;
+                            _failure = null;
+                          }),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: BlTokens.space3),
+                  ],
+                  if (paidNow && available.length > 1) ...[
                     Text(
                       s.expensePaidFrom,
                       style: TextStyle(fontSize: 13, color: t.inkMuted),
@@ -307,7 +438,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                       ],
                     ),
                   ],
-                  if (!_paidNow)
+                  if (!paidNow)
                     BlCard(
                       onTap: () => unawaited(_pickPayee()),
                       child: Row(
@@ -335,6 +466,30 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                         ],
                       ),
                     ),
+                  if (_canRemind) ...[
+                    const SizedBox(height: BlTokens.space3),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      value: _remind,
+                      title: Text(s.expenseRemind),
+                      onChanged: (on) => setState(() {
+                        _remind = on;
+                        _failure = null;
+                        if (on && _remindDay.text.isEmpty) {
+                          _remindDay.text =
+                              '${BusinessDate.now(services.clock).day}';
+                        }
+                      }),
+                    ),
+                    if (_remind)
+                      BlField(
+                        controller: _remindDay,
+                        label: s.expenseRemindDay,
+                        numeric: true,
+                        decimals: 0,
+                        onChanged: (_) => setState(() => _failure = null),
+                      ),
+                  ],
                   if (editing != null) ...[
                     const SizedBox(height: BlTokens.space4),
                     ReasonPicker(reason: _reason),

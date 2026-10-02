@@ -61,6 +61,9 @@ const loanChargesKey = 'loan_charges';
 String loanSettingKey(String loanId) => 'loan.$loanId';
 
 /// What every line of a loan's entries carries in `cost_centre`.
+///
+/// The column is shared since M47, each feature behind its own prefix
+/// (`expense:`, `income:`); `shop_money/tags.dart` lists them all.
 String loanTag(String loanId) => 'loan:$loanId';
 
 /// Why a loan, a repayment or a cancellation was refused, in words.
