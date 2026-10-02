@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/history_screen.dart';
 import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
 import 'bill_again.dart';
@@ -87,6 +88,13 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
       appBar: AppBar(
         title: Text(s.receiptTitle(docNo)),
         actions: [
+          // Everything that ever happened to this bill: made, printed,
+          // paid, returned, cancelled and why (M42). Hidden from a role
+          // that may not read the activity log.
+          HistoryButton(
+            record: RecordRef.document(documentId),
+            label: docNo,
+          ),
           // Offered only while the bill is still standing. A cancel button on
           // a cancelled bill is an action that can only fail, and a shopkeeper
           // who taps it learns to distrust the whole screen.
