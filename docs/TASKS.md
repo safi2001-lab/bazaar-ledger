@@ -116,7 +116,7 @@ time, on the latest master (schema is v8 today).
 
 ### Billing and bills
 - [ ] M36 · Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
-- [ ] M37 · Last 5 rates for this party and item, shown when the item goes on the bill, one tap to reuse; a loose-item line (amount only, never saved as an item)
+- [ ] M37 · (in progress) Last 5 rates for this party and item, shown when the item goes on the bill, one tap to reuse; a loose-item line (amount only, never saved as an item)
 - [ ] M43 · Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
 - [ ] M45 · Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
 - [ ] M51 · Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
@@ -128,7 +128,7 @@ time, on the latest master (schema is v8 today).
 - [ ] M38 · Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
 - [ ] M39 · Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
 - [ ] M44 · Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
-- [ ] M48 · Loan accounts: loan taken, repayments split into principal and interest, loan statement
+- [ ] M48 · (in progress) Loan accounts: loan taken, repayments split into principal and interest, loan statement
 - [ ] M55 · Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
 - [ ] Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
 
@@ -151,6 +151,16 @@ time, on the latest master (schema is v8 today).
 
 ### Getting shops to switch
 - [ ] M52 · Importer presets for Vyapar and Khatabook Excel exports (items, parties, opening balances) — Vyapar's service in Pakistan is disrupted and its users are stranded
+
+### Pakistan specifics (from the research appendix §1–2)
+- [ ] Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
+- [ ] Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
+- [ ] FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
+- [ ] Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
+- [ ] Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
+- [ ] Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams
+- [ ] Photo of a paper parchi attached to an entry (check what attachments already do)
+- [ ] Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
 ### Checks on things we may already do (test, fix if wrong)
 - [ ] An old bill keeps the party's name/address as they were (myBillBook bug +550)
