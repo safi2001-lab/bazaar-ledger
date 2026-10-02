@@ -103,17 +103,17 @@ From the owner's Vyapar screenshots.
   - Found: batch costs were the item average on arrival; batches now valued off their own ledger rows. Khula maal shows as one "Khula maal (no item)" row.
   - Not built: per-item trading account, ageing by expiry date, ABC classification, place filter on ageing/fast-slow.
 
-### M35 · Business status, tax, expense, staff and order reports (in progress)
-- [ ] Bank Statement (per bank account: date, description, withdrawal, deposit, balance)
-- [ ] Discount Report (per party given/received) and discount by cashier
-- [ ] Tax Report (output vs input sales tax, per party); Tax Rate Report (18%, reduced, exempt, zero, further tax, Third Schedule)
-- [ ] Sales by HS code; Annex-C (sales) and Annex-A (purchases) export files for the sales tax return (offline files, nothing sent)
-- [ ] Expense Transaction Report, Expense Category Report, Expense Item Report
-- [ ] Order registers: open quotations, challans not yet billed (and purchase/sale orders once M41 exists)
-- [ ] Beyond Vyapar: sales by cashier/counter, payment-mode summary, hourly sales
-- [ ] Beyond Vyapar: daily summary / Z report screen + 58/80mm print (sales, returns, collections by mode, udhaar given/recovered, expenses, profit, cash expected vs counted)
-- [ ] Beyond Vyapar: customer payment performance (average days late), defaulter list, expected collections this week
-- [ ] Beyond Vyapar: changed / cancelled bills report ("bill value changes")
+### M35 · Business status, tax, expense, staff and order reports — DONE (7d10df0)
+- [x] Bank Statement (per bank account: date, description, withdrawal, deposit, balance)
+- [x] Discount Report (per party given/received) and discount by cashier
+- [x] Tax Report (output vs input sales tax, per party); Tax Rate Report (18%, reduced, exempt, zero, further tax, Third Schedule)
+- [x] Sales by HS code; Annex-C (sales) and Annex-A (purchases) export files for the sales tax return (offline files, nothing sent)
+- [x] Expense Transaction Report, Expense Category Report, Expense Item Report
+- [x] Order registers: open quotations, challans not yet billed (and purchase/sale orders once M41 exists)
+- [x] Beyond Vyapar: sales by cashier/counter, payment-mode summary, hourly sales
+- [x] Beyond Vyapar: daily summary / Z report screen + 58/80mm print (sales, returns, collections by mode, udhaar given/recovered, expenses, profit, cash expected vs counted)
+- [x] Beyond Vyapar: customer payment performance (average days late), defaulter list, expected collections this week
+- [x] Beyond Vyapar: changed / cancelled bills report ("bill value changes")
 
 ## Wave 3 — features from other apps and from Vyapar's bad reviews (queued)
 
@@ -122,20 +122,20 @@ its own milestone; any that changes the database schema runs alone, one at a
 time, on the latest master (schema is v8 today).
 
 ### Billing and bills
-- [ ] M36 · Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
+- [ ] M36 · (in progress) Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
 - [x] M37 · Last rates and khula maal — DONE (80b28aa): customer named first from the counter; "Pichhli dafa Rs X · date" beside every line; tap for the last 5 deals, one tap uses the price (exact unit conversion, never applied silently); supplier's last 5 prices on purchases; cost shown only to roles that may see it; khula maal line (no item, no stock, refused on FBR-reporting shops and on quotations/challans); fixed a standing-discount bug that made bills refuse
 - [x] M57 · DONE (a6a2dea) Returns give back exactly what was charged: line discount and bill-discount share respected; quantity in the unit it was sold in (a maund line was over-refunding 40×) — found by M37
 - [ ] M43 · Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
 - [ ] M45 · Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
 - [x] M51 · DONE (baf5795) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
-- [ ] M53 · Negative stock policy per item (allow / warn / block); app font-size setting
+- [ ] M53 · (in progress, schema v10) Negative stock policy per item (allow / warn / block); app font-size setting
 - [ ] Recurring bills (weekly/monthly for fixed customers), made on the phone when due
 - [x] (M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
 
 ### Udhaar and money
-- [ ] M38 · (in progress) Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
-- [ ] M39 · (in progress) Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
-- [ ] M44 · (in progress) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
+- [x] M38 · DONE (410f560) Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
+- [x] M39 · DONE (038be4f) Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
+- [x] M44 · DONE (d955b94) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
 - [x] M48 · Loan accounts — DONE (895802e): Accounts → Loans; take a loan (fee kept back in one entry), repay with principal/interest/charges split and interest suggested, statement per loan as PDF/CSV, cancel by reversal; interest and fees in P&L, each loan a liability
   - [ ] Loan Statement in the Reports hub (Loans group) — hook `buildLoanStatement` / `DriftLoanReads` into the registry (small follow-up after M35)
 - [ ] M55 · Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
@@ -143,19 +143,19 @@ time, on the latest master (schema is v8 today).
 
 ### Stock and buying
 - [x] M40 · Party groups — DONE: groups on customers/suppliers (form + quick-add), filter/sort/bulk-assign on the Customers list with group totals, rename/merge groups, group chips at the counter, a "Counter ke liye note" shown on the payment sheet
-- [ ] M41 · Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
+- [ ] M41 · (in progress) Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
 - [ ] M49 · Pharmacy pack: near-expiry by supplier, expiry return to the supplier with a return note, salt/generic search with substitutes, Schedule B/D register
 - [ ] M50 · Mobile-shop pack: IMEI search and history, warranty end date, PTA status field + SMS to 8484, used-phone purchase with seller's CNIC and photo, qist (instalment) plans with overdue list and guarantor
 
 ### Trust and control
-- [ ] M42 · Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
+- [ ] M42 · (in progress) Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
 - [ ] Recycle bin for masters with 30-day restore (check what M5 already does)
 
 ### Expenses
 - [x] M47 · DONE (a2592e7) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
 
 ### Reports polish
-- [ ] M46 · Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
+- [ ] M46 · (in progress with M58) Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
 - [ ] Saved report views ("my Monday udhaar list")
 
 ### Getting shops to switch
@@ -180,7 +180,7 @@ time, on the latest master (schema is v8 today).
 - [ ] Urdu PDFs readable; bigger font option
 
 
-### Follow-ups found while merging (small, queued)
+### Follow-ups found while merging (M58 in progress takes the reports ones; M36 the preview text size)
 - [ ] Reports: Day Book / All Transactions call a party-less `other_income` document "Charge" — it is shop income (M47); expense reports must leave out or show apart the owner's drawings
 - [ ] Reports: M8 "Sales by item" inner-joins items, so khula maal lines are missing from it
 - [ ] Reports: Loan Statement in the hub's Loans group (M48 builder exists)
