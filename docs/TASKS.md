@@ -138,8 +138,8 @@ time, on the latest master (schema is v8 today).
 - [x] M44 · DONE (d955b94) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
 - [x] M48 · Loan accounts — DONE (895802e): Accounts → Loans; take a loan (fee kept back in one entry), repay with principal/interest/charges split and interest suggested, statement per loan as PDF/CSV, cancel by reversal; interest and fees in P&L, each loan a liability
   - [ ] Loan Statement in the Reports hub (Loans group) — hook `buildLoanStatement` / `DriftLoanReads` into the registry (small follow-up after M35)
-- [ ] M55 · Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
-- [ ] Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
+- [ ] M55 · (in progress) Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
+- [ ] M55 · (in progress) Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
 
 ### Stock and buying
 - [x] M40 · Party groups — DONE: groups on customers/suppliers (form + quick-add), filter/sort/bulk-assign on the Customers list with group totals, rename/merge groups, group chips at the counter, a "Counter ke liye note" shown on the payment sheet
@@ -149,7 +149,7 @@ time, on the latest master (schema is v8 today).
 
 ### Trust and control
 - [x] M42 · DONE (a1d31f4, d1676e6) Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
-- [ ] Recycle bin for masters with 30-day restore (check what M5 already does)
+- [ ] M60 · (in progress) Recycle bin for masters with 30-day restore (check what M5 already does)
 
 ### Expenses
 - [x] M47 · DONE (a2592e7) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
@@ -169,7 +169,7 @@ time, on the latest master (schema is v8 today).
 - [ ] M59 · (in progress) Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
 - [x] M56 · DONE (88ead47) Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
 - [x] M56 · DONE Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams; app text-size setting
-- [ ] Photo of a paper parchi attached to an entry (check what attachments already do)
+- [ ] M60 · (in progress) Photo of a paper parchi attached to an entry (check what attachments already do)
 - [ ] (in M49) Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
 ### Checks on things we may already do (test, fix if wrong)
