@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
@@ -41,28 +42,87 @@ import '../db/app_database.dart';
 ///  2. hands the body a [Tx] that stamps the envelope on every row;
 ///  3. appends a `change_log` entry for every mutation, so nothing can be
 ///     created that the M13 sync will not know about;
-///  4. writes the buffered `audit_log` rows;
-///  5. asserts every journal entry the body touched balances to the paisa;
-///  6. commits.
+///  4. refuses anything dated inside books the owner has closed, and
+///     anything Data Lock guards, unless somebody's PIN stands behind it
+///     (M42);
+///  5. writes the buffered `audit_log` rows;
+///  6. asserts every journal entry the body touched balances to the paisa;
+///  7. commits.
 ///
 /// If any step throws, the transaction rolls back whole. There is no partial
 /// sale.
+///
+/// ## The locks (M42)
+///
+/// This is the one place every write passes, so it is where the owner's
+/// locks are kept, the way M9's roles are kept at the service every screen
+/// goes through. A lock on a screen protects only that screen; a bill
+/// back-dated by an import, a counter on an older build, or a cancel from a
+/// page nobody thought to guard all come through here.
+///
+/// When a lock refuses, the transaction rolls back with [ApprovalNeeded].
+/// If an [approver] is wired -- the app wires one that shows a PIN prompt --
+/// the runner asks it, outside the transaction, and runs the body again
+/// with the approval it was given. Asking outside is deliberate: a prompt
+/// shown while the transaction is open would hold the books shut for as
+/// long as somebody takes to find their glasses, and a counter syncing in
+/// the meantime would wait on it. The cost is that the body may run twice,
+/// which it already has to survive: everything it wrote the first time was
+/// rolled back, and it reads the books afresh.
 final class TxRunner {
-  TxRunner({required this.database, required this.ids, required this.hlc});
+  TxRunner({
+    required this.database,
+    required this.ids,
+    required this.hlc,
+    this.approver,
+  });
 
   final AppDatabase database;
   final IdGenerator ids;
   final HlcClock hlc;
 
+  /// Who is asked for a PIN when a lock refuses (M42). Null in a test or a
+  /// tool, where the refusal in words is the answer.
+  final Approver? approver;
+
+  /// Marks a zone as already inside [run], so a run nested in another's
+  /// body throws its refusal out to the outermost one instead of asking for
+  /// a PIN with the outer transaction still open.
+  static final Object _inside = Object();
+
   /// Runs [body] as a single atomic unit.
   Future<T> run<T>(ActorContext actor, Future<T> Function(Tx tx) body) async {
-    return database.transaction(() async {
-      final tx = Tx._(database, actor, ids, hlc);
-      await tx._begin();
-      final result = await body(tx);
-      await tx._finish();
-      return result;
-    });
+    final outermost = Zone.current[_inside] == null;
+    final approvals = <Approval>[];
+    while (true) {
+      try {
+        return await runZoned(
+          () => database.transaction(() async {
+            final tx = Tx._(
+              database,
+              actor,
+              ids,
+              hlc,
+              List.unmodifiable(approvals),
+            );
+            await tx._begin();
+            final result = await body(tx);
+            await tx._finish();
+            return result;
+          }),
+          zoneValues: {_inside: true},
+        );
+      } on ApprovalNeeded catch (needed) {
+        final ask = approver;
+        if (!outermost || ask == null) rethrow;
+        // Once per kind. An approval that did not satisfy the check it was
+        // given for is a bug, and asking again would ask for ever.
+        if (approvals.any((a) => a.kind == needed.kind)) rethrow;
+        final given = await ask(needed);
+        if (given == null) rethrow;
+        approvals.add(given);
+      }
+    }
   }
 }
 
@@ -76,11 +136,14 @@ final class Tx {
   // Positional, so the fields can stay private. A use case must not be able
   // to reach the database through the handle it writes with — that would be a
   // second write path, which is the one thing this class exists to prevent.
-  Tx._(this._db, this.actor, this._ids, this._hlc);
+  Tx._(this._db, this.actor, this._ids, this._hlc, this._approvals);
 
   final AppDatabase _db;
   final IdGenerator _ids;
   final HlcClock _hlc;
+
+  /// The PINs given for this run, each already checked (M42).
+  final List<Approval> _approvals;
 
   /// Who is writing, from where, and at what instant. Required, never
   /// inferred, and shared by every row this transaction produces.
@@ -91,6 +154,18 @@ final class Tx {
 
   int _seq = 0;
   int _mutations = 0;
+
+  /// The owner's locks as this transaction found them (M42).
+  BookLocks? _locks;
+
+  /// Rows this transaction writes or strikes out inside closed books.
+  final List<({String table, String id, String date, String what})>
+  _inClosedBooks = [];
+
+  /// Each master row's fields as they were before this transaction and as
+  /// they are now, keyed `table/id` (M42).
+  final Map<String, ({Map<String, Object?> before, Map<String, Object?> after})>
+  _diffs = {};
 
   /// How many rows this transaction has written so far. Used by tests and by
   /// the fault-injection harness.
@@ -113,6 +188,9 @@ final class Tx {
   }
 
   Future<void> _finish() async {
+    _checkClosedBooks();
+    await _checkDataLock();
+    _mergeDiffs();
     for (final audit in _audits) {
       await _writeAudit(audit);
     }
@@ -168,6 +246,8 @@ final class Tx {
       ...values,
     };
 
+    await _guardRow(table, rowId, row);
+
     final columns = row.keys.toList();
     final placeholders = List.filled(columns.length, '?').join(', ');
     await _db.customStatement(
@@ -204,6 +284,8 @@ final class Tx {
     }
     _refuseAppendOnly(table, 'rewritten');
     _rejectEnvelopeColumns(table, values);
+    await _guardUpdate(table, id, values);
+    final was = await _fieldsBefore(table, id, values);
 
     final hlc = _hlc.next().value;
     final assignments = <String>[
@@ -248,6 +330,7 @@ final class Tx {
 
     _mutations++;
     _noteJournalTouch(table, id, after.data);
+    if (was != null) _noteDiff(table, id, was, values);
     await _recordChange(
       table: table,
       entityId: id,
@@ -322,6 +405,7 @@ final class Tx {
       );
     }
     _noteJournalTouch(table, id, before.data);
+    await _guardRow(table, id, before.data, undoing: true);
 
     final hlc = _hlc.next().value;
     await _db.customStatement(
@@ -383,6 +467,315 @@ final class Tx {
         after: after,
       ),
     );
+  }
+
+  // ---------------------------------------------------------------------
+  // The owner's locks (M42)
+  // ---------------------------------------------------------------------
+
+  /// The owner's locks as this transaction found them.
+  ///
+  /// Read once, on first use, inside the transaction, and kept. Kept so a
+  /// transaction that changes a lock is judged by the lock it found: turning
+  /// Data Lock off is itself guarded by Data Lock, which only works if the
+  /// check at commit still sees it on. Read inside the transaction so a lock
+  /// that has just arrived from the master by sync binds this counter's very
+  /// next write.
+  Future<BookLocks> bookLocks() async {
+    final held = _locks;
+    if (held != null) return held;
+    final rows = await select(
+      'SELECT setting_key, setting_value FROM settings '
+      'WHERE firm_id = ? AND setting_key IN (?, ?) AND deleted_at_utc IS NULL',
+      [actor.firmId, booksClosedThroughSetting, dataLockSetting],
+    );
+    String? value(String key) => rows
+        .where((r) => r.read<String>('setting_key') == key)
+        .map((r) => r.read<String>('setting_value'))
+        .firstOrNull;
+    final through = value(booksClosedThroughSetting);
+    return _locks = BookLocks(
+      closedThrough: through == null ? null : BusinessDate.tryParse(through),
+      dataLock: value(dataLockSetting) == '1',
+    );
+  }
+
+  /// The date each kind of row carries, which is the date the books file it
+  /// under. Everything that reaches the books writes at least one of these:
+  /// a sale its bill, its journal entry and its stock; a receipt its payment
+  /// and its entry; a correction its reversal.
+  static const _dateOf = {
+    'documents': 'doc_date_local',
+    'journal_entries': 'entry_date_local',
+    'payments': 'payment_date_local',
+    'stock_ledger': 'occurred_on_local',
+  };
+
+  /// Papers that are not in the books at all. A quotation dated last month
+  /// changes no figure anybody was given.
+  static const _offTheBooks = {
+    'quotation',
+    'proforma',
+    'sale_order',
+    'purchase_order',
+  };
+
+  /// Refuses a row about to be written or struck out inside closed books.
+  ///
+  /// A row written is judged by its own date. A row struck out is judged by
+  /// the date it already carries, because striking it out changes what that
+  /// day's books say.
+  Future<void> _guardRow(
+    String table,
+    String id,
+    Map<String, Object?> row, {
+    bool undoing = false,
+  }) async {
+    final column = _dateOf[table];
+    if (column == null) return;
+    final date = row[column];
+    if (date is! String) return;
+    if (table == 'documents') {
+      if (_offTheBooks.contains(row['doc_type'])) return;
+      // A draft is not in the books until it is posted, which is an update
+      // and is judged there.
+      final status = row['status'];
+      if (!undoing && (status == null || status == 'draft')) return;
+    }
+    await _guardDate(table, id, date, _describe(table, row, undoing: undoing));
+  }
+
+  /// Refuses an update that would change what a closed day's books say.
+  ///
+  /// Two kinds of update do: a status that takes a row out of the books
+  /// (`void`) or puts a draft into them (`posted`), and a change of date. A
+  /// payment's cheque clearing or bouncing is neither -- the bank's news is
+  /// dated the day it comes, and is posted then -- and nor is a later
+  /// receipt settling an old bill, which moves only its balance. Those are
+  /// today's events touching an old row, and they go through.
+  Future<void> _guardUpdate(
+    String table,
+    String id,
+    Map<String, Object?> values,
+  ) async {
+    final column = _dateOf[table];
+    if (column == null) return;
+    final status = values['status'];
+    final undoes = status == 'void';
+    if (!undoes && status != 'posted' && !values.containsKey(column)) return;
+    final was = await selectOne(
+      'SELECT * FROM $table WHERE id = ? AND firm_id = ?',
+      [id, actor.firmId],
+    );
+    // Missing, the update itself refuses in words.
+    if (was == null) return;
+    final row = was.data;
+    if (table == 'documents' && _offTheBooks.contains(row['doc_type'])) return;
+    final moved = values.containsKey(column) && values[column] != row[column];
+    if (!moved && (status == null || status == row['status'])) return;
+    final dates = <String>{
+      if (row[column] case final String d) d,
+      if (values[column] case final String d) d,
+    };
+    for (final date in dates) {
+      await _guardDate(table, id, date, _describe(table, row, undoing: undoes));
+    }
+  }
+
+  /// Notes a row dated inside closed books. Judged at commit, once the
+  /// whole act is known, so the refusal names what the shopkeeper did -- the
+  /// bill they cancelled -- rather than whichever of its rows came first,
+  /// which for a cancel is the tender at the counter.
+  Future<void> _guardDate(
+    String table,
+    String id,
+    String date,
+    String what,
+  ) async {
+    final locks = await bookLocks();
+    if (!locks.closes(date)) return;
+    _inClosedBooks.add((table: table, id: id, date: date, what: what));
+  }
+
+  Approval? _approval(ApprovalKind kind) =>
+      _approvals.where((a) => a.kind == kind).firstOrNull;
+
+  /// A row as the refusal names it: "Sale bill INV-0007", "Cancelling
+  /// receipt RCPT-0003".
+  static String _describe(
+    String table,
+    Map<String, Object?> row, {
+    bool undoing = false,
+  }) {
+    final what = switch (table) {
+      'documents' => switch (row['doc_type']) {
+        'sale_invoice' => 'Sale bill',
+        'sale_return' => 'Sale return',
+        'purchase_bill' => 'Purchase',
+        'purchase_return' => 'Return to a supplier',
+        'expense' => 'Expense',
+        'other_income' => 'Charge',
+        'delivery_challan' => 'Delivery challan',
+        _ => 'Paper',
+      },
+      'payments' => 'Payment',
+      'journal_entries' => 'Journal entry',
+      _ => 'A stock movement',
+    };
+    final no = row['doc_no'] ?? row['payment_no'] ?? row['entry_no'];
+    final named = no is String ? '$what $no' : what;
+    return undoing
+        ? 'Cancelling ${named[0].toLowerCase()}${named.substring(1)}'
+        : named;
+  }
+
+  /// Refuses everything this transaction did inside closed books, or, with
+  /// the owner's approval, leaves one audit row for it naming whose PIN let
+  /// it in and why.
+  ///
+  /// Named by the bill where there is one, then the payment, so the refusal
+  /// and the record's own history speak of the paper the shopkeeper knows
+  /// rather than the journal entry nobody opens.
+  void _checkClosedBooks() {
+    if (_inClosedBooks.isEmpty) return;
+    const rank = ['documents', 'payments', 'journal_entries', 'stock_ledger'];
+    final first =
+        ([..._inClosedBooks]..sort(
+              (a, b) => rank.indexOf(a.table).compareTo(rank.indexOf(b.table)),
+            ))
+            .first;
+    final through = _locks!.closedThrough!.value;
+    final given = _approval(ApprovalKind.closedBooks);
+    if (given == null) {
+      throw ApprovalNeeded.closedBooks(
+        closedThrough: through,
+        dateLocal: first.date,
+        what: first.what,
+        actorUserId: actor.userId,
+      );
+    }
+    final dates = {for (final r in _inClosedBooks) r.date}.toList()..sort();
+    audit(
+      action: closedBooksOverrideAction,
+      entityTable: first.table,
+      entityId: first.id,
+      summary:
+          '${first.what}, dated ${dates.first}, let into books closed up to '
+          '$through by ${given.userName}: ${given.reason ?? ''}',
+      after: {
+        'closed_through': through,
+        'dates': dates,
+        'reason': given.reason,
+        'approved_by': given.userId,
+        'approved_by_name': given.userName,
+      },
+    );
+  }
+
+  /// Asks for a PIN before anything Data Lock guards may commit.
+  ///
+  /// Checked at commit, against the audit rows the transaction is about to
+  /// leave, because every cancel, write-off and hiding leaves exactly one
+  /// and no other mark this file could rely on. An owner who has just let
+  /// something into closed books has given their PIN already, and is not
+  /// asked twice.
+  Future<void> _checkDataLock() async {
+    final undoing = [
+      for (final a in _audits)
+        if (undoingActions.contains(a.action)) a,
+    ];
+    if (undoing.isEmpty) return;
+    if (!(await bookLocks()).dataLock) return;
+    final first = undoing.first;
+    final what = first.summary ?? first.action;
+    final given = _approvals.firstOrNull;
+    if (given == null) {
+      throw ApprovalNeeded.dataLock(what: what, actorUserId: actor.userId);
+    }
+    if (given.kind != ApprovalKind.dataLock) return;
+    audit(
+      action: dataLockPinAction,
+      entityTable: first.entityTable,
+      entityId: first.entityId,
+      summary: 'PIN given by ${given.userName}: $what',
+      after: {
+        'approved_by': given.userId,
+        'approved_by_name': given.userName,
+        'for': first.action,
+      },
+    );
+  }
+
+  /// The masters whose edits are kept field by field: what a customer's
+  /// phone number was before somebody changed it, and what an item's price
+  /// was. Their writers name the fields they mean to change; this keeps the
+  /// before of each, so every edit is kept whole without each writer having
+  /// to remember to, and a writer added later cannot forget.
+  static const _diffed = {'items', 'parties'};
+
+  /// Columns worked out from others, which only repeat what changed.
+  static const _derived = {'name_search'};
+
+  Future<Map<String, Object?>?> _fieldsBefore(
+    String table,
+    String id,
+    Map<String, Object?> values,
+  ) async {
+    if (!_diffed.contains(table)) return null;
+    final columns = [
+      for (final c in values.keys)
+        if (!_derived.contains(c)) c,
+    ];
+    if (columns.isEmpty) return null;
+    final row = await selectOne(
+      'SELECT ${columns.join(', ')} FROM $table '
+      'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+      [id, actor.firmId],
+    );
+    return row?.data;
+  }
+
+  void _noteDiff(
+    String table,
+    String id,
+    Map<String, Object?> before,
+    Map<String, Object?> values,
+  ) {
+    final diff = _diffs.putIfAbsent(
+      '$table/$id',
+      () => (before: <String, Object?>{}, after: <String, Object?>{}),
+    );
+    for (final e in before.entries) {
+      final now = switch (values[e.key]) {
+        final bool b => b ? 1 : 0,
+        final Object? v => v,
+      };
+      // A picture or anything else that is not a plain value says nothing
+      // a person could read, and would not survive JSON.
+      if (now is! String? && now is! int?) continue;
+      diff.before.putIfAbsent(e.key, () => e.value);
+      diff.after[e.key] = now;
+    }
+  }
+
+  /// Puts each master's before and after on the audit row written about it,
+  /// keeping whatever the writer set itself.
+  void _mergeDiffs() {
+    if (_diffs.isEmpty) return;
+    for (var i = 0; i < _audits.length; i++) {
+      final a = _audits[i];
+      final diff = _diffs['${a.entityTable}/${a.entityId}'];
+      if (diff == null) continue;
+      final changed = [
+        for (final k in diff.after.keys)
+          if (diff.before[k] != diff.after[k]) k,
+      ];
+      if (changed.isEmpty) continue;
+      _audits[i] = a.withChanges(
+        before: {for (final k in changed) k: diff.before[k], ...?a.before},
+        after: {for (final k in changed) k: diff.after[k], ...?a.after},
+      );
+    }
   }
 
   // ---------------------------------------------------------------------
@@ -653,4 +1046,17 @@ class _PendingAudit {
   final int? amountPaisa;
   final Map<String, Object?>? before;
   final Map<String, Object?>? after;
+
+  _PendingAudit withChanges({
+    required Map<String, Object?> before,
+    required Map<String, Object?> after,
+  }) => _PendingAudit(
+    action: action,
+    entityTable: entityTable,
+    entityId: entityId,
+    summary: summary,
+    amountPaisa: amountPaisa,
+    before: before,
+    after: after,
+  );
 }

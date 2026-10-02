@@ -5515,4 +5515,210 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get copyHint => 'Wohi cheezein aur gahak, naye bill mein';
+
+  @override
+  String get trailAction => 'Tareekh';
+
+  @override
+  String trailTitle(String no) {
+    return 'Tareekh · $no';
+  }
+
+  @override
+  String get trailEmpty => 'Is par abhi kuch likha nahi gaya';
+
+  @override
+  String trailByOn(String who, String device, String when) {
+    return '$who, $device par · $when';
+  }
+
+  @override
+  String trailBy(String who, String when) {
+    return '$who · $when';
+  }
+
+  @override
+  String trailWhy(String reason) {
+    return 'Wajah: $reason';
+  }
+
+  @override
+  String get trailMade => 'Banaya gaya';
+
+  @override
+  String get trailPrinted => 'Print hua';
+
+  @override
+  String get trailPrintFailed => 'Print nahi hua';
+
+  @override
+  String get trailCancelled => 'Cancel hua';
+
+  @override
+  String get trailReturned => 'Maal wapas aaya';
+
+  @override
+  String get trailPaid => 'Is par raqam lagi';
+
+  @override
+  String get trailPaidAtCounter => 'Counter par diye';
+
+  @override
+  String get trailLetGo => 'Chhor diye';
+
+  @override
+  String get trailSettled => 'Is bill par laga';
+
+  @override
+  String get trailReleased => 'Is bill se hata (cancel)';
+
+  @override
+  String get trailCorrected => 'Durust kiya';
+
+  @override
+  String get trailChanged => 'Badla gaya';
+
+  @override
+  String get trailApproved => 'PIN se ijazat';
+
+  @override
+  String get trailMadeFrom => 'Is se bana';
+
+  @override
+  String get trailBecame => 'Bill bana';
+
+  @override
+  String get trailReturnOf => 'Is bill ki wapsi';
+
+  @override
+  String trailOpen(String no) {
+    return '$no kholein';
+  }
+
+  @override
+  String get trailFieldName => 'Naam';
+
+  @override
+  String get trailFieldPhone => 'Phone';
+
+  @override
+  String get trailFieldAddress => 'Pata';
+
+  @override
+  String get trailFieldSaleRate => 'Bechne ka rate';
+
+  @override
+  String get trailFieldPurchaseRate => 'Khareed ka rate';
+
+  @override
+  String get trailFieldCreditLimit => 'Udhaar ki hadd';
+
+  @override
+  String get trailFieldOpening => 'Pichla baqaya';
+
+  @override
+  String get trailFieldAmount => 'Raqam';
+
+  @override
+  String get trailFieldActive => 'Nazar aata hai';
+
+  @override
+  String get trailFieldGroup => 'Group';
+
+  @override
+  String get trailFieldBarcode => 'Barcode';
+
+  @override
+  String get trailYes => 'Haan';
+
+  @override
+  String get trailNo => 'Nahi';
+
+  @override
+  String get approvalClosedTitle => 'Hisaab band hai';
+
+  @override
+  String approvalClosedBody(String date, String entryDate) {
+    return '$date tak ka hisaab band hai, aur yeh $entryDate ki entry hai. Sirf Malik apne PIN aur wajah ke saath ise andar daal sakta hai.';
+  }
+
+  @override
+  String get approvalLockTitle => 'Data Lock: PIN chahiye';
+
+  @override
+  String get approvalLockBody =>
+      'Kuch bhi cancel, chhorne ya chhupane se pehle PIN chahiye.';
+
+  @override
+  String get approvalWho => 'Kis ka PIN';
+
+  @override
+  String get approvalReason => 'Wajah (zaroori)';
+
+  @override
+  String get approvalAllow => 'Ijazat dein';
+
+  @override
+  String get approvalWrongPin => 'Ghalat PIN';
+
+  @override
+  String get approvalTooMany =>
+      'Bohat ghalat PIN. Aadha minute ruk kar dobara.';
+
+  @override
+  String get approvalReasonNeeded => 'Wajah likhein';
+
+  @override
+  String get approvalNoPin => 'Is ka koi PIN nahi, kisi aur ka PIN dein';
+
+  @override
+  String get booksLockTitle => 'Hisaab band aur Data Lock';
+
+  @override
+  String booksClosedThrough(String date) {
+    return '$date tak hisaab band hai';
+  }
+
+  @override
+  String get booksOpenNow => 'Abhi koi din band nahi';
+
+  @override
+  String get booksCloseExplain =>
+      'Band din par ya us se pehle ki koi nayi entry, cancel ya durustagi nahi hogi, jab tak Malik PIN aur wajah se ijazat na de. Aaj ki wapsi purane bill par bhi aaj ki hai, woh ho jati hai.';
+
+  @override
+  String booksCloseThrough(String date) {
+    return '$date tak band karein';
+  }
+
+  @override
+  String get booksClosePick => 'Koi aur din chunein';
+
+  @override
+  String get booksReopen => 'Hisaab dobara kholein';
+
+  @override
+  String booksClosedDone(String date) {
+    return 'Hisaab $date tak band';
+  }
+
+  @override
+  String get booksReopened => 'Hisaab dobara khul gaya';
+
+  @override
+  String get dataLockTitle => 'Cancel se pehle PIN (Data Lock)';
+
+  @override
+  String get dataLockExplain =>
+      'Bill ya payment cancel karna, payment durust karna, udhaar chhorna, cheez ya customer chhupana, ya backup wapas lana: har ek se pehle PIN. Jo kar raha hai us ka apna PIN, ya Malik ka.';
+
+  @override
+  String get dataLockNeedsPin => 'Pehle apna PIN rakhein (Staff aur PIN)';
+
+  @override
+  String get lateArrivalsTitle => 'Band hone ke baad counter se aayi entries';
+
+  @override
+  String get lateArrivalsExplain =>
+      'Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein.';
 }

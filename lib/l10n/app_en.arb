@@ -3051,5 +3051,115 @@
   "billReplaces": "Replaces {docNo}",
   "billReplacedBy": "Replaced by {docNo}",
   "billReplacedByVoid": "Replaced by {docNo} (cancelled too)",
-  "copyHint": "The same goods and customer, on a new bill"
+  "copyHint": "The same goods and customer, on a new bill",
+  "trailAction": "History",
+  "trailTitle": "History · {no}",
+  "@trailTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "trailEmpty": "Nothing has been recorded for this yet",
+  "trailByOn": "{who} on {device} · {when}",
+  "@trailByOn": {
+    "placeholders": {
+      "who": {"type": "String"},
+      "device": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "trailBy": "{who} · {when}",
+  "@trailBy": {
+    "placeholders": {
+      "who": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "trailWhy": "Why: {reason}",
+  "@trailWhy": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "trailMade": "Made",
+  "trailPrinted": "Printed",
+  "trailPrintFailed": "Print did not come out",
+  "trailCancelled": "Cancelled",
+  "trailReturned": "Goods came back",
+  "trailPaid": "Money went against it",
+  "trailPaidAtCounter": "Paid at the counter",
+  "trailLetGo": "Let go",
+  "trailSettled": "Went against this bill",
+  "trailReleased": "Taken off this bill (cancelled)",
+  "trailCorrected": "Corrected",
+  "trailChanged": "Changed",
+  "trailApproved": "Allowed with a PIN",
+  "trailMadeFrom": "Made from",
+  "trailBecame": "Became a bill",
+  "trailReturnOf": "Return against",
+  "trailOpen": "Open {no}",
+  "@trailOpen": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "trailFieldName": "Name",
+  "trailFieldPhone": "Phone",
+  "trailFieldAddress": "Address",
+  "trailFieldSaleRate": "Sale rate",
+  "trailFieldPurchaseRate": "Purchase rate",
+  "trailFieldCreditLimit": "Credit limit",
+  "trailFieldOpening": "Opening balance",
+  "trailFieldAmount": "Amount",
+  "trailFieldActive": "Shown",
+  "trailFieldGroup": "Group",
+  "trailFieldBarcode": "Barcode",
+  "trailYes": "Yes",
+  "trailNo": "No",
+  "approvalClosedTitle": "These books are closed",
+  "approvalClosedBody": "The books are closed up to {date}, and this is dated {entryDate}. Only the owner can let it in, with their PIN and a reason.",
+  "@approvalClosedBody": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "entryDate": {"type": "String"}
+    }
+  },
+  "approvalLockTitle": "Data Lock: a PIN is needed",
+  "approvalLockBody": "A PIN is asked before anything is cancelled, written off or hidden.",
+  "approvalWho": "Whose PIN",
+  "approvalReason": "Reason (required)",
+  "approvalAllow": "Allow",
+  "approvalWrongPin": "Wrong PIN",
+  "approvalTooMany": "Too many wrong PINs. Wait half a minute.",
+  "approvalReasonNeeded": "Say why",
+  "approvalNoPin": "They have no PIN; choose somebody who has",
+  "booksLockTitle": "Closed books and Data Lock",
+  "booksClosedThrough": "Books closed up to {date}",
+  "@booksClosedThrough": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "booksOpenNow": "No days are closed",
+  "booksCloseExplain": "Nothing dated on or before that day can be added, cancelled or corrected unless the owner allows it with their PIN and a reason. A return today against an old bill is dated today and goes through.",
+  "booksCloseThrough": "Close up to {date}",
+  "@booksCloseThrough": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "booksClosePick": "Pick another day",
+  "booksReopen": "Open the books again",
+  "booksClosedDone": "Books closed up to {date}",
+  "@booksClosedDone": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "booksReopened": "The books are open again",
+  "dataLockTitle": "A PIN before cancelling (Data Lock)",
+  "dataLockExplain": "Cancelling a bill or a payment, correcting a payment, writing off udhaar, hiding an item or a customer, or restoring a backup: each asks a PIN first. The PIN of whoever is doing it, or the owner's.",
+  "dataLockNeedsPin": "Set your own PIN first (Staff and PINs)",
+  "lateArrivalsTitle": "Entries that arrived from counters after closing",
+  "lateArrivalsExplain": "These were made on another counter before it knew the books were closed, so they were taken in. Look over the closed days again with them."
 }

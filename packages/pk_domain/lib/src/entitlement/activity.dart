@@ -9,6 +9,8 @@ final class ActivityEntry {
     required this.actionCode,
     this.summary,
     this.amount,
+    this.entityTable,
+    this.entityId,
   });
 
   final int atUtcMillis;
@@ -21,4 +23,9 @@ final class ActivityEntry {
   /// One line in English, written when it happened.
   final String? summary;
   final Money? amount;
+
+  /// The record it was done to, so a line in the log opens that record's
+  /// history (M42). Null on a line read without them.
+  final String? entityTable;
+  final String? entityId;
 }

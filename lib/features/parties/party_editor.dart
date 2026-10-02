@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/history_screen.dart';
 import '../khata/opening_balance_sheet.dart';
 import '../khata/reminder_queue_screen.dart' show reminderLanguageName;
 import '../subscription/plans_screen.dart';
@@ -290,6 +291,12 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? s.actionEdit : s.partiesAdd),
         actions: [
+          // Who changed their phone number, and when (M42).
+          if (_isEdit)
+            HistoryButton(
+              record: RecordRef.party(widget.party!.id),
+              label: widget.party!.name,
+            ),
           if (_isEdit)
             BlIconButton(
               icon: Icons.archive_outlined,

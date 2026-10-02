@@ -11,6 +11,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/history_screen.dart';
 import '../printing/pdf_font.dart';
 import '../sales/receipt_screen.dart';
 import 'entry_actions.dart';
@@ -172,6 +173,11 @@ class _Body extends ConsumerWidget {
             payment.enteredAt == null
                 ? payment.enteredBy
                 : '${payment.enteredBy} · ${payment.enteredAt}',
+          ),
+          // Everything that happened to it since, in one place (M42).
+          HistoryButton.wide(
+            record: RecordRef.payment(payment.id),
+            label: payment.paymentNo,
           ),
           // Its history: the entry it corrected, or the one that corrected
           // it, each a tap away, so a receipt edited twice can be followed

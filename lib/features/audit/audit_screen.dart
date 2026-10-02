@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
@@ -6,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'history_screen.dart';
 import 'when.dart';
 
 final _activityProvider = FutureProvider.autoDispose
@@ -32,6 +35,10 @@ final _peopleProvider = FutureProvider.autoDispose<List<StaffMember>>((
 /// place anybody can read it. The owner asks it the questions a shop with
 /// staff asks: who cancelled that bill, who signed in on Sunday, why the
 /// drawer was short.
+///
+/// Since M42 a line about a bill, a payment, a customer or an item opens
+/// that record's whole history: the log answers "who", the history "and
+/// what else happened to it".
 class AuditScreen extends ConsumerStatefulWidget {
   const AuditScreen({super.key});
 
@@ -41,6 +48,11 @@ class AuditScreen extends ConsumerStatefulWidget {
 
 class _AuditScreenState extends ConsumerState<AuditScreen> {
   String? _userId;
+
+  static bool _opens(ActivityEntry e) =>
+      e.entityTable != null &&
+      e.entityId != null &&
+      RecordRef.supports(e.entityTable!);
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +100,18 @@ class _AuditScreenState extends ConsumerState<AuditScreen> {
                               bottom: BlTokens.space2,
                             ),
                             child: BlCard(
+                              onTap: _opens(e)
+                                  ? () => unawaited(
+                                      openHistory(
+                                        context,
+                                        record: RecordRef(
+                                          e.entityTable!,
+                                          e.entityId!,
+                                        ),
+                                        label: e.summary ?? e.actionCode,
+                                      ),
+                                    )
+                                  : null,
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [

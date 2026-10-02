@@ -5516,4 +5516,210 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get copyHint => 'The same goods and customer, on a new bill';
+
+  @override
+  String get trailAction => 'History';
+
+  @override
+  String trailTitle(String no) {
+    return 'History · $no';
+  }
+
+  @override
+  String get trailEmpty => 'Nothing has been recorded for this yet';
+
+  @override
+  String trailByOn(String who, String device, String when) {
+    return '$who on $device · $when';
+  }
+
+  @override
+  String trailBy(String who, String when) {
+    return '$who · $when';
+  }
+
+  @override
+  String trailWhy(String reason) {
+    return 'Why: $reason';
+  }
+
+  @override
+  String get trailMade => 'Made';
+
+  @override
+  String get trailPrinted => 'Printed';
+
+  @override
+  String get trailPrintFailed => 'Print did not come out';
+
+  @override
+  String get trailCancelled => 'Cancelled';
+
+  @override
+  String get trailReturned => 'Goods came back';
+
+  @override
+  String get trailPaid => 'Money went against it';
+
+  @override
+  String get trailPaidAtCounter => 'Paid at the counter';
+
+  @override
+  String get trailLetGo => 'Let go';
+
+  @override
+  String get trailSettled => 'Went against this bill';
+
+  @override
+  String get trailReleased => 'Taken off this bill (cancelled)';
+
+  @override
+  String get trailCorrected => 'Corrected';
+
+  @override
+  String get trailChanged => 'Changed';
+
+  @override
+  String get trailApproved => 'Allowed with a PIN';
+
+  @override
+  String get trailMadeFrom => 'Made from';
+
+  @override
+  String get trailBecame => 'Became a bill';
+
+  @override
+  String get trailReturnOf => 'Return against';
+
+  @override
+  String trailOpen(String no) {
+    return 'Open $no';
+  }
+
+  @override
+  String get trailFieldName => 'Name';
+
+  @override
+  String get trailFieldPhone => 'Phone';
+
+  @override
+  String get trailFieldAddress => 'Address';
+
+  @override
+  String get trailFieldSaleRate => 'Sale rate';
+
+  @override
+  String get trailFieldPurchaseRate => 'Purchase rate';
+
+  @override
+  String get trailFieldCreditLimit => 'Credit limit';
+
+  @override
+  String get trailFieldOpening => 'Opening balance';
+
+  @override
+  String get trailFieldAmount => 'Amount';
+
+  @override
+  String get trailFieldActive => 'Shown';
+
+  @override
+  String get trailFieldGroup => 'Group';
+
+  @override
+  String get trailFieldBarcode => 'Barcode';
+
+  @override
+  String get trailYes => 'Yes';
+
+  @override
+  String get trailNo => 'No';
+
+  @override
+  String get approvalClosedTitle => 'These books are closed';
+
+  @override
+  String approvalClosedBody(String date, String entryDate) {
+    return 'The books are closed up to $date, and this is dated $entryDate. Only the owner can let it in, with their PIN and a reason.';
+  }
+
+  @override
+  String get approvalLockTitle => 'Data Lock: a PIN is needed';
+
+  @override
+  String get approvalLockBody =>
+      'A PIN is asked before anything is cancelled, written off or hidden.';
+
+  @override
+  String get approvalWho => 'Whose PIN';
+
+  @override
+  String get approvalReason => 'Reason (required)';
+
+  @override
+  String get approvalAllow => 'Allow';
+
+  @override
+  String get approvalWrongPin => 'Wrong PIN';
+
+  @override
+  String get approvalTooMany => 'Too many wrong PINs. Wait half a minute.';
+
+  @override
+  String get approvalReasonNeeded => 'Say why';
+
+  @override
+  String get approvalNoPin => 'They have no PIN; choose somebody who has';
+
+  @override
+  String get booksLockTitle => 'Closed books and Data Lock';
+
+  @override
+  String booksClosedThrough(String date) {
+    return 'Books closed up to $date';
+  }
+
+  @override
+  String get booksOpenNow => 'No days are closed';
+
+  @override
+  String get booksCloseExplain =>
+      'Nothing dated on or before that day can be added, cancelled or corrected unless the owner allows it with their PIN and a reason. A return today against an old bill is dated today and goes through.';
+
+  @override
+  String booksCloseThrough(String date) {
+    return 'Close up to $date';
+  }
+
+  @override
+  String get booksClosePick => 'Pick another day';
+
+  @override
+  String get booksReopen => 'Open the books again';
+
+  @override
+  String booksClosedDone(String date) {
+    return 'Books closed up to $date';
+  }
+
+  @override
+  String get booksReopened => 'The books are open again';
+
+  @override
+  String get dataLockTitle => 'A PIN before cancelling (Data Lock)';
+
+  @override
+  String get dataLockExplain =>
+      'Cancelling a bill or a payment, correcting a payment, writing off udhaar, hiding an item or a customer, or restoring a backup: each asks a PIN first. The PIN of whoever is doing it, or the owner\'s.';
+
+  @override
+  String get dataLockNeedsPin => 'Set your own PIN first (Staff and PINs)';
+
+  @override
+  String get lateArrivalsTitle =>
+      'Entries that arrived from counters after closing';
+
+  @override
+  String get lateArrivalsExplain =>
+      'These were made on another counter before it knew the books were closed, so they were taken in. Look over the closed days again with them.';
 }

@@ -11,6 +11,7 @@ export 'package:drift/drift.dart' show QueryExecutor, QueryRow, Value, Variable;
 export 'src/db/app_database.dart';
 export 'src/read/drift_app_queries.dart';
 export 'src/read/drift_loan_reads.dart';
+export 'src/read/drift_record_history.dart';
 export 'src/read/drift_report_source.dart';
 export 'src/read/drift_shop_money_reads.dart';
 export 'src/read/drift_udhaar_queries.dart';

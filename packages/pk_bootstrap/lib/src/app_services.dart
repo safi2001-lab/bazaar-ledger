@@ -20,6 +20,7 @@ import 'backup_service.dart';
 import 'encrypted_database.dart';
 import 'printing_services.dart';
 
+part 'audit_services.dart';
 part 'bill_design_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
@@ -70,7 +71,12 @@ final class AppServices {
   /// timestamps on a tie — exactly what the HLC exists to break — and 'u'
   /// sorts above every hex digit, so those rows win every conflict forever.
   void _adoptDevice(HlcClock resumed) {
-    _runner = TxRunner(database: database, ids: ids, hlc: resumed);
+    _runner = TxRunner(
+      database: database,
+      ids: ids,
+      hlc: resumed,
+      approver: audit._approve,
+    );
   }
 
   final AppDatabase database;
@@ -409,6 +415,10 @@ final class AppServices {
 
   /// Chasing udhaar: due dates, promises (M38).
   late final UdhaarServices udhaar = UdhaarServices._(this);
+
+  /// A record's history, the books closed up to a date, and Data Lock
+  /// (M42).
+  late final AuditServices audit = AuditServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone
@@ -830,7 +840,14 @@ final class AppServices {
         ? HlcClock(deviceId: 'unregistered', clock: clock)
         : await resumeHlcClock(database, deviceId: deviceId, clock: clock);
 
-    final runner = TxRunner(database: database, ids: ids, hlc: hlc);
+    // Asks for a PIN through whatever prompt the app has put up (M42).
+    // Through the closure, because `services` does not exist yet.
+    final runner = TxRunner(
+      database: database,
+      ids: ids,
+      hlc: hlc,
+      approver: (needed) => services.audit._approve(needed),
+    );
 
     final printing = PrintingServices(
       store: DriftPrinterSettings(database, () => services._runner),

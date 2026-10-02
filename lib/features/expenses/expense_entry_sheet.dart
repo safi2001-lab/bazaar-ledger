@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/history_screen.dart';
 import '../khata/entry_actions.dart';
 import '../khata/khata_providers.dart';
 import 'expense_screen.dart';
@@ -133,6 +134,11 @@ class _Body extends ConsumerWidget {
           if (expense.partyName case final name?)
             EntryLine(s.expensePayee, name),
           EntryLine(s.entryEnteredBy, expense.enteredBy),
+          // Everything that happened to it since, in one place (M42).
+          HistoryButton.wide(
+            record: RecordRef.document(expense.id),
+            label: expense.docNo,
+          ),
           if (expense.paidBy.isNotEmpty) ...[
             const SizedBox(height: BlTokens.space3),
             EntryNote(s.entryPaidBy(expense.paidBy.join(', '))),

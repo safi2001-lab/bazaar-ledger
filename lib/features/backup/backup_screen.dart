@@ -321,8 +321,13 @@ Widget restoreRoute(WidgetRef ref, {Future<Uint8List?> Function()? pickFile}) {
   final services = ref.read(appServicesProvider);
   return RestoreScreen(
     pickFile: pickFile ?? ref.read(pickBackupFileProvider),
-    databasePath: () async =>
-        services.databasePath ?? await AppServices.defaultDatabasePath(),
+    // Asked for the moment the restore is staged, so Data Lock's PIN (M42)
+    // stands between the last tap and the books being replaced; refused,
+    // nothing is staged and the screen says why.
+    databasePath: () async {
+      await services.audit.confirmUndo('Restoring a backup over the books');
+      return services.databasePath ?? await AppServices.defaultDatabasePath();
+    },
     onRestored: ref.read(restartAppProvider),
   );
 }

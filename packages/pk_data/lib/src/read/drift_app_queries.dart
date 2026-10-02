@@ -1370,7 +1370,7 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           '''
           SELECT a.at_utc, a.created_by, u.name AS user_name, a.action_code,
-                 a.summary, a.amount_paisa
+                 a.summary, a.amount_paisa, a.entity_table, a.entity_id
           FROM audit_log a
           JOIN users u ON u.id = a.created_by
           WHERE a.firm_id = ?1 AND (?2 IS NULL OR a.created_by = ?2)
@@ -1394,7 +1394,7 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           '''
           SELECT a.at_utc, a.created_by, u.name AS user_name, a.action_code,
-                 a.summary, a.amount_paisa
+                 a.summary, a.amount_paisa, a.entity_table, a.entity_id
           FROM audit_log a
           JOIN users u ON u.id = a.created_by
           WHERE a.firm_id = ? AND a.action_code = 'DAY_CLOSED'
@@ -1418,6 +1418,8 @@ final class DriftAppQueries implements AppQueries {
       final int p => Money.paisa(p),
       null => null,
     },
+    entityTable: r.readNullable<String>('entity_table'),
+    entityId: r.readNullable<String>('entity_id'),
   );
 
   @override

@@ -3283,5 +3283,115 @@
       "docNo": {"type": "String"}
     }
   },
-  "copyHint": "Wohi cheezein aur gahak, naye bill mein"
+  "copyHint": "Wohi cheezein aur gahak, naye bill mein",
+  "trailAction": "Tareekh",
+  "trailTitle": "Tareekh · {no}",
+  "@trailTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "trailEmpty": "Is par abhi kuch likha nahi gaya",
+  "trailByOn": "{who}, {device} par · {when}",
+  "@trailByOn": {
+    "placeholders": {
+      "who": {"type": "String"},
+      "device": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "trailBy": "{who} · {when}",
+  "@trailBy": {
+    "placeholders": {
+      "who": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "trailWhy": "Wajah: {reason}",
+  "@trailWhy": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "trailMade": "Banaya gaya",
+  "trailPrinted": "Print hua",
+  "trailPrintFailed": "Print nahi hua",
+  "trailCancelled": "Cancel hua",
+  "trailReturned": "Maal wapas aaya",
+  "trailPaid": "Is par raqam lagi",
+  "trailPaidAtCounter": "Counter par diye",
+  "trailLetGo": "Chhor diye",
+  "trailSettled": "Is bill par laga",
+  "trailReleased": "Is bill se hata (cancel)",
+  "trailCorrected": "Durust kiya",
+  "trailChanged": "Badla gaya",
+  "trailApproved": "PIN se ijazat",
+  "trailMadeFrom": "Is se bana",
+  "trailBecame": "Bill bana",
+  "trailReturnOf": "Is bill ki wapsi",
+  "trailOpen": "{no} kholein",
+  "@trailOpen": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "trailFieldName": "Naam",
+  "trailFieldPhone": "Phone",
+  "trailFieldAddress": "Pata",
+  "trailFieldSaleRate": "Bechne ka rate",
+  "trailFieldPurchaseRate": "Khareed ka rate",
+  "trailFieldCreditLimit": "Udhaar ki hadd",
+  "trailFieldOpening": "Pichla baqaya",
+  "trailFieldAmount": "Raqam",
+  "trailFieldActive": "Nazar aata hai",
+  "trailFieldGroup": "Group",
+  "trailFieldBarcode": "Barcode",
+  "trailYes": "Haan",
+  "trailNo": "Nahi",
+  "approvalClosedTitle": "Hisaab band hai",
+  "approvalClosedBody": "{date} tak ka hisaab band hai, aur yeh {entryDate} ki entry hai. Sirf Malik apne PIN aur wajah ke saath ise andar daal sakta hai.",
+  "@approvalClosedBody": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "entryDate": {"type": "String"}
+    }
+  },
+  "approvalLockTitle": "Data Lock: PIN chahiye",
+  "approvalLockBody": "Kuch bhi cancel, chhorne ya chhupane se pehle PIN chahiye.",
+  "approvalWho": "Kis ka PIN",
+  "approvalReason": "Wajah (zaroori)",
+  "approvalAllow": "Ijazat dein",
+  "approvalWrongPin": "Ghalat PIN",
+  "approvalTooMany": "Bohat ghalat PIN. Aadha minute ruk kar dobara.",
+  "approvalReasonNeeded": "Wajah likhein",
+  "approvalNoPin": "Is ka koi PIN nahi, kisi aur ka PIN dein",
+  "booksLockTitle": "Hisaab band aur Data Lock",
+  "booksClosedThrough": "{date} tak hisaab band hai",
+  "@booksClosedThrough": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "booksOpenNow": "Abhi koi din band nahi",
+  "booksCloseExplain": "Band din par ya us se pehle ki koi nayi entry, cancel ya durustagi nahi hogi, jab tak Malik PIN aur wajah se ijazat na de. Aaj ki wapsi purane bill par bhi aaj ki hai, woh ho jati hai.",
+  "booksCloseThrough": "{date} tak band karein",
+  "@booksCloseThrough": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "booksClosePick": "Koi aur din chunein",
+  "booksReopen": "Hisaab dobara kholein",
+  "booksClosedDone": "Hisaab {date} tak band",
+  "@booksClosedDone": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "booksReopened": "Hisaab dobara khul gaya",
+  "dataLockTitle": "Cancel se pehle PIN (Data Lock)",
+  "dataLockExplain": "Bill ya payment cancel karna, payment durust karna, udhaar chhorna, cheez ya customer chhupana, ya backup wapas lana: har ek se pehle PIN. Jo kar raha hai us ka apna PIN, ya Malik ka.",
+  "dataLockNeedsPin": "Pehle apna PIN rakhein (Staff aur PIN)",
+  "lateArrivalsTitle": "Band hone ke baad counter se aayi entries",
+  "lateArrivalsExplain": "Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein."
 }

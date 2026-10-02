@@ -5,6 +5,7 @@ import '../design/components.dart';
 import '../design/text_size.dart';
 import '../design/theme.dart';
 import '../design/tokens.dart';
+import '../features/audit/approval_prompt.dart';
 import '../features/backup/drive_access.dart';
 import '../features/home/home_screen.dart';
 import '../features/setup/setup_screen.dart';
@@ -121,9 +122,12 @@ class _Root extends ConsumerWidget {
                   key: ValueKey('drive-${profile.id}'),
                   child: BillingKeeper(
                     key: ValueKey('billing-${profile.id}'),
-                    child: ref.read(appServicesProvider).isLocked
-                        ? const SignInScreen()
-                        : const HomeScreen(),
+                    // Answers the books when they ask for a PIN (M42).
+                    child: ApprovalKeeper(
+                      child: ref.read(appServicesProvider).isLocked
+                          ? const SignInScreen()
+                          : const HomeScreen(),
+                    ),
                   ),
                 ),
               ),

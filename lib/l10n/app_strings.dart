@@ -9565,6 +9565,372 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Wohi cheezein aur gahak, naye bill mein'**
   String get copyHint;
+
+  /// No description provided for @trailAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh'**
+  String get trailAction;
+
+  /// No description provided for @trailTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh · {no}'**
+  String trailTitle(String no);
+
+  /// No description provided for @trailEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is par abhi kuch likha nahi gaya'**
+  String get trailEmpty;
+
+  /// No description provided for @trailByOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who}, {device} par · {when}'**
+  String trailByOn(String who, String device, String when);
+
+  /// No description provided for @trailBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who} · {when}'**
+  String trailBy(String who, String when);
+
+  /// No description provided for @trailWhy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah: {reason}'**
+  String trailWhy(String reason);
+
+  /// No description provided for @trailMade.
+  ///
+  /// In ur, this message translates to:
+  /// **'Banaya gaya'**
+  String get trailMade;
+
+  /// No description provided for @trailPrinted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Print hua'**
+  String get trailPrinted;
+
+  /// No description provided for @trailPrintFailed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Print nahi hua'**
+  String get trailPrintFailed;
+
+  /// No description provided for @trailCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel hua'**
+  String get trailCancelled;
+
+  /// No description provided for @trailReturned.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal wapas aaya'**
+  String get trailReturned;
+
+  /// No description provided for @trailPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is par raqam lagi'**
+  String get trailPaid;
+
+  /// No description provided for @trailPaidAtCounter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter par diye'**
+  String get trailPaidAtCounter;
+
+  /// No description provided for @trailLetGo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhor diye'**
+  String get trailLetGo;
+
+  /// No description provided for @trailSettled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill par laga'**
+  String get trailSettled;
+
+  /// No description provided for @trailReleased.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill se hata (cancel)'**
+  String get trailReleased;
+
+  /// No description provided for @trailCorrected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Durust kiya'**
+  String get trailCorrected;
+
+  /// No description provided for @trailChanged.
+  ///
+  /// In ur, this message translates to:
+  /// **'Badla gaya'**
+  String get trailChanged;
+
+  /// No description provided for @trailApproved.
+  ///
+  /// In ur, this message translates to:
+  /// **'PIN se ijazat'**
+  String get trailApproved;
+
+  /// No description provided for @trailMadeFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is se bana'**
+  String get trailMadeFrom;
+
+  /// No description provided for @trailBecame.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill bana'**
+  String get trailBecame;
+
+  /// No description provided for @trailReturnOf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill ki wapsi'**
+  String get trailReturnOf;
+
+  /// No description provided for @trailOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no} kholein'**
+  String trailOpen(String no);
+
+  /// No description provided for @trailFieldName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam'**
+  String get trailFieldName;
+
+  /// No description provided for @trailFieldPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone'**
+  String get trailFieldPhone;
+
+  /// No description provided for @trailFieldAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pata'**
+  String get trailFieldAddress;
+
+  /// No description provided for @trailFieldSaleRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne ka rate'**
+  String get trailFieldSaleRate;
+
+  /// No description provided for @trailFieldPurchaseRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed ka rate'**
+  String get trailFieldPurchaseRate;
+
+  /// No description provided for @trailFieldCreditLimit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ki hadd'**
+  String get trailFieldCreditLimit;
+
+  /// No description provided for @trailFieldOpening.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichla baqaya'**
+  String get trailFieldOpening;
+
+  /// No description provided for @trailFieldAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam'**
+  String get trailFieldAmount;
+
+  /// No description provided for @trailFieldActive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nazar aata hai'**
+  String get trailFieldActive;
+
+  /// No description provided for @trailFieldGroup.
+  ///
+  /// In ur, this message translates to:
+  /// **'Group'**
+  String get trailFieldGroup;
+
+  /// No description provided for @trailFieldBarcode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Barcode'**
+  String get trailFieldBarcode;
+
+  /// No description provided for @trailYes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haan'**
+  String get trailYes;
+
+  /// No description provided for @trailNo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nahi'**
+  String get trailNo;
+
+  /// No description provided for @approvalClosedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab band hai'**
+  String get approvalClosedTitle;
+
+  /// No description provided for @approvalClosedBody.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak ka hisaab band hai, aur yeh {entryDate} ki entry hai. Sirf Malik apne PIN aur wajah ke saath ise andar daal sakta hai.'**
+  String approvalClosedBody(String date, String entryDate);
+
+  /// No description provided for @approvalLockTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Data Lock: PIN chahiye'**
+  String get approvalLockTitle;
+
+  /// No description provided for @approvalLockBody.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch bhi cancel, chhorne ya chhupane se pehle PIN chahiye.'**
+  String get approvalLockBody;
+
+  /// No description provided for @approvalWho.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ka PIN'**
+  String get approvalWho;
+
+  /// No description provided for @approvalReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah (zaroori)'**
+  String get approvalReason;
+
+  /// No description provided for @approvalAllow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ijazat dein'**
+  String get approvalAllow;
+
+  /// No description provided for @approvalWrongPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghalat PIN'**
+  String get approvalWrongPin;
+
+  /// No description provided for @approvalTooMany.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bohat ghalat PIN. Aadha minute ruk kar dobara.'**
+  String get approvalTooMany;
+
+  /// No description provided for @approvalReasonNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah likhein'**
+  String get approvalReasonNeeded;
+
+  /// No description provided for @approvalNoPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ka koi PIN nahi, kisi aur ka PIN dein'**
+  String get approvalNoPin;
+
+  /// No description provided for @booksLockTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab band aur Data Lock'**
+  String get booksLockTitle;
+
+  /// No description provided for @booksClosedThrough.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak hisaab band hai'**
+  String booksClosedThrough(String date);
+
+  /// No description provided for @booksOpenNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi din band nahi'**
+  String get booksOpenNow;
+
+  /// No description provided for @booksCloseExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Band din par ya us se pehle ki koi nayi entry, cancel ya durustagi nahi hogi, jab tak Malik PIN aur wajah se ijazat na de. Aaj ki wapsi purane bill par bhi aaj ki hai, woh ho jati hai.'**
+  String get booksCloseExplain;
+
+  /// No description provided for @booksCloseThrough.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak band karein'**
+  String booksCloseThrough(String date);
+
+  /// No description provided for @booksClosePick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi aur din chunein'**
+  String get booksClosePick;
+
+  /// No description provided for @booksReopen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab dobara kholein'**
+  String get booksReopen;
+
+  /// No description provided for @booksClosedDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab {date} tak band'**
+  String booksClosedDone(String date);
+
+  /// No description provided for @booksReopened.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisaab dobara khul gaya'**
+  String get booksReopened;
+
+  /// No description provided for @dataLockTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel se pehle PIN (Data Lock)'**
+  String get dataLockTitle;
+
+  /// No description provided for @dataLockExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ya payment cancel karna, payment durust karna, udhaar chhorna, cheez ya customer chhupana, ya backup wapas lana: har ek se pehle PIN. Jo kar raha hai us ka apna PIN, ya Malik ka.'**
+  String get dataLockExplain;
+
+  /// No description provided for @dataLockNeedsPin.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle apna PIN rakhein (Staff aur PIN)'**
+  String get dataLockNeedsPin;
+
+  /// No description provided for @lateArrivalsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Band hone ke baad counter se aayi entries'**
+  String get lateArrivalsTitle;
+
+  /// No description provided for @lateArrivalsExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein.'**
+  String get lateArrivalsExplain;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -1709,6 +1709,89 @@ milestones:
       - lib/features/sales/correct_bill_sheet.dart
       - packages/pk_domain/lib/src/sales/bill_copy.dart
 
+  - id: M42
+    title: Who changed what and when, a day once closed stays closed, and a PIN before anything is undone
+    # Opened and sealed 3 Oct 2026 at 1/1. Vyapar sells "View History" on
+    # its premium plan; Tally keeps an edit log and a period lock, Zoho a
+    # lock date, Marg a freeze; Khatabook's most-asked-for setting is a Data
+    # Lock PIN. A Pakistani shop wants all three for one reason: the counter
+    # boy, the son and the owner use one phone, and when the bill in the
+    # customer's hand says Rs 4,200 and the books say Rs 3,800, the owner
+    # needs to know which hand, when, and what it said at the time.
+    #
+    # History: every bill, payment, expense, customer and item has one, read
+    # from what the books already keep -- the audit row each write has left
+    # inside its own transaction since M0, the print jobs (M2), the return
+    # and conversion links, the allocations of every receipt, settlement
+    # discount and write-off (M44), the cancel with its reason, and M31's
+    # corrections both ways (the replaced entry points on to its
+    # replacement, the replacement back). Who, on which counter, when; an
+    # edit of a customer or an item now keeps every field's before and after,
+    # taken by the write path itself from the row before it is updated, so
+    # no writer has to remember and none added later can forget. Opened from
+    # the payment page, the expense page, the customer's editor and every
+    # line of the activity log; a line about another paper opens its
+    # history. The activity log's permission: owner, manager, accountant.
+    #
+    # Closed books: the owner closes the books up to a day -- the last day
+    # counted at the drawer (M9) is offered first, the end of last month
+    # otherwise -- and anything dated on or before it is refused in words:
+    # a back-dated bill, purchase, payment, expense or journal, a cancel of
+    # a bill, payment, charge or expense dated inside, a correction that
+    # would post there. A return today against an old bill is dated today
+    # and goes through, and so does a receipt today settling an old bill,
+    # or an old cheque clearing or bouncing today. The owner may let one
+    # entry in with their PIN and a reason; the write is made and a
+    # CLOSED_BOOKS_OVERRIDDEN row names who agreed and why. Kept in settings,
+    # so it reaches every counter with the rest of the books and binds there
+    # from its next write.
+    #
+    # Data Lock: off until the owner turns it on, and only once the owner
+    # has a PIN. Then cancelling a bill or a payment, correcting a payment,
+    # charge, expense or opening balance, writing off udhaar, hiding an item
+    # or a customer, cancelling a loan entry, reopening closed books,
+    # turning Data Lock off, and restoring a backup each ask a PIN first:
+    # the PIN of whoever is doing it (their role already let them; the PIN
+    # proves it is them and not whoever picked the phone up) or the owner's,
+    # standing beside them. M9's hasher checks it and the digits are never
+    # kept; wrong PINs count towards sign-in's half-minute block. The PIN
+    # given is itself an audit row. Only the owner closes the books or
+    # changes Data Lock.
+    #
+    # Where the locks are kept: TxRunner, the one write path, as M9's roles
+    # are kept at the service. Every dated row (documents, journal entries,
+    # payments, stock) is judged as it is written; a status taking a row out
+    # of the books, or a date moved, as it is updated; Data Lock at commit,
+    # against the audit codes the transaction is about to leave (every
+    # cancel, write-off and hiding leaves exactly one). A refusal rolls the
+    # transaction back with ApprovalNeeded; the app's shell answers it with a
+    # PIN prompt over whatever screen asked and the write is tried again,
+    # outside the transaction, so no screen that cancels or posts anything
+    # has to know a lock exists. With no prompt -- a test, a tool -- the
+    # refusal in words is the answer.
+    #
+    # Counters: an entry a counter made before it heard of the closing
+    # arrives by sync and is taken in (the money really moved; refusing it
+    # would leave the two phones disagreeing about the drawer), and is listed
+    # for the owner under the closing as having arrived afterwards.
+    #
+    # Not built, and why: the receipt screen's History button and the item
+    # editor's (both one line, in files other milestones hold open); a share
+    # of a bill is not recorded anywhere, so the history shows prints but not
+    # shares; history for a purchase, a cheque's own page or a loan (their
+    # pages belong to others); an edit window in hours, Marg-style (a closed
+    # day covers the shop's case); a field-by-field diff of a posted bill,
+    # which is never edited -- it is cancelled and rung again, and both show.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/entitlement/book_locks.dart
+      - packages/pk_domain/lib/src/entitlement/record_history.dart
+      - packages/pk_data/lib/src/read/drift_record_history.dart
+      - packages/pk_bootstrap/lib/src/audit_services.dart
+      - lib/features/audit/history_screen.dart
+      - lib/features/audit/approval_prompt.dart
+      - lib/features/settings/books_lock_screen.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6381,3 +6464,28 @@ features:
       - discounts as billed with no discount on the bill, rupees typed on a line come back as typed
       - the cart draft a bill being put right survives the app being killed, the bill it replaces and the money already taken with it
       - the cart draft a draft from the build before it is read as a bill putting nothing right
+  - id: M42-LOCKS-01
+    milestone: M42
+    title: Every record's history, the books closed up to a day with an owner override, and a PIN before anything is undone
+    status: done
+    # Checked against a real database through the services every screen
+    # uses, over a real socket between two phones, and through the screens.
+    proof:
+      - closed books a sale dated inside closed books is refused in words, and nothing is written
+      - closed books the owner lets a late bill in with their PIN and a reason, and the log says who and why
+      - closed books a reason is required, and nobody but the owner may give it
+      - closed books cancelling a bill dated inside closed books is refused, and a return today against it goes through
+      - closed books only the owner closes the books or changes Data Lock
+      - closed books the day offered is the last day closed at the drawer
+      - data lock with Data Lock on, a cancel asks for a PIN before it is made
+      - data lock a manager's own PIN will do, and so will the owner's
+      - data lock Data Lock needs the owner to have a PIN, and turning it off asks for that PIN
+      - data lock hiding a customer and reopening closed books are guarded too
+      - history a bill's history shows its print, its cancel and the reason, in order
+      - history a customer edited keeps what each field was
+      - history an item repriced keeps the old price beside the new
+      - history a corrected receipt and its replacement point at each other
+      - history a cashier may not read a history
+      - closed books on the counters a bill the counter made before it knew is taken in and shown to the owner, and the closing then binds the counter too
+      - the owner closes the books from settings, and a bill dated inside them asks for the PIN and a reason on screen
+      - with Data Lock on, cancelling a bill asks for a PIN, and the bill's history shows the cancel and why

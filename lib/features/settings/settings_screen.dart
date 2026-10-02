@@ -20,6 +20,7 @@ import '../sync/sync_screen.dart';
 import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
 import 'bill_design_screen.dart';
+import 'books_lock_screen.dart';
 import 'payment_details_screen.dart';
 import 'reminder_templates_screen.dart';
 import 'shop_details_screen.dart';
@@ -146,6 +147,18 @@ class SettingsScreen extends ConsumerWidget {
                 label: s.usersTitle,
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(builder: (_) => const UsersScreen()),
+                ),
+              ),
+            // Beside staff and PINs, because Data Lock asks for those PINs
+            // (M42). The owner's alone: nobody else may close the books.
+            if (services.audit.isOwner)
+              _Row(
+                icon: Icons.lock_clock_outlined,
+                label: s.booksLockTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const BooksLockScreen(),
+                  ),
                 ),
               ),
             if (services.can(Permission.settings))
