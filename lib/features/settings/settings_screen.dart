@@ -4,6 +4,7 @@ import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
+import '../../design/text_size.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../audit/audit_screen.dart';
@@ -79,6 +80,36 @@ class SettingsScreen extends ConsumerWidget {
               ],
               selected: {prefs.themeMode},
               onSelectionChanged: (v) => notifier.setThemeMode(v.first),
+            ),
+            const SizedBox(height: BlTokens.space5),
+
+            // How big the words are, on top of the phone's own setting (M56).
+            // Applied the moment it is tapped, so the shopkeeper sees the
+            // answer on this very screen rather than being told about it.
+            BlSectionHeader(s.settingsTextSize),
+            const SizedBox(height: BlTokens.space2),
+            SegmentedButton<BlTextSize>(
+              segments: [
+                ButtonSegment(
+                  value: BlTextSize.normal,
+                  label: Text(s.settingsTextSizeNormal),
+                ),
+                ButtonSegment(
+                  value: BlTextSize.large,
+                  label: Text(s.settingsTextSizeLarge),
+                ),
+                ButtonSegment(
+                  value: BlTextSize.larger,
+                  label: Text(s.settingsTextSizeLarger),
+                ),
+              ],
+              selected: {prefs.textSize},
+              onSelectionChanged: (v) => notifier.setTextSize(v.first),
+            ),
+            const SizedBox(height: BlTokens.space2),
+            Text(
+              s.settingsTextSizeHint,
+              style: TextStyle(fontSize: 13, color: t.inkMuted),
             ),
             const SizedBox(height: BlTokens.space5),
 

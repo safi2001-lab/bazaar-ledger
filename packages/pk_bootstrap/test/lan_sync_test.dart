@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:drift/drift.dart' show Variable;
@@ -295,6 +296,62 @@ void main() {
       await master.sync.resolveClash(clashes.single.changeId);
       expect(await master.sync.conflicts(), 0);
       expect(await master.sync.clashes(), isEmpty);
+    });
+
+    test('an item from a counter is found here however it is spelled, '
+        'whatever search key the counter sent', () async {
+      // M56: name_search is worked out from the name, so the copy that
+      // arrives is not trusted. A counter on a build from before M56 sends
+      // the plain name alone; the change below is made to look like one.
+      final firm = (await counter.queries.currentFirm())!;
+      final unit = (await counter.queries.units(firm.id)).first;
+      final id = await counter.catalogue.addItem(
+        counter.actorNow(),
+        ItemDraft(
+          name: 'Chini 1kg',
+          baseUnitId: unit.id,
+          saleRate: Rate.rupees(150),
+        ),
+      );
+      final sent = await counter.database
+          .customSelect(
+            'SELECT id, payload_json FROM change_log '
+            "WHERE entity_table = 'items' AND entity_id = ?",
+            variables: [Variable<String>(id)],
+          )
+          .getSingle();
+      final payload =
+          jsonDecode(sent.read<String>('payload_json')) as Map<String, Object?>;
+      payload['name_search'] = 'chini 1kg';
+      await counter.database.customStatement(
+        'UPDATE change_log SET payload_json = ? WHERE id = ?',
+        [jsonEncode(payload), sent.read<String>('id')],
+      );
+      await counter.sync.syncNow();
+
+      Future<List<String>> found(String query) async => [
+        for (final item in await master.queries.searchItems(
+          firm.id,
+          query: query,
+        ))
+          item.name,
+      ];
+      expect(await found('cheeni'), ['Chini 1kg']);
+      expect(await found('چینی'), ['Chini 1kg']);
+
+      // And renamed there, it is found here by its new name.
+      await counter.catalogue.updateItem(
+        counter.actorNow(),
+        id,
+        ItemDraft(
+          name: 'Shakkar 1kg',
+          baseUnitId: unit.id,
+          saleRate: Rate.rupees(150),
+        ),
+      );
+      await counter.sync.syncNow();
+      expect(await found('shakar'), ['Shakkar 1kg']);
+      expect(await found('chini'), isEmpty);
     });
 
     test('staff PINs travel, so staff sign in at the counter', () async {

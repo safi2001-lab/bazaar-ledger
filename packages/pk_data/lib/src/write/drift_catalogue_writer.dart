@@ -695,7 +695,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
 
   static Map<String, Object?> _itemColumns(ItemDraft d) => {
     'name': d.name.trim(),
-    'name_search': d.searchKey,
+    'name_search': nameSearchColumn(d.name),
     'code': _blank(d.code),
     'barcode': _blank(d.barcode),
     'category': _blank(d.category),
@@ -733,7 +733,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
   static Map<String, Object?> _partyColumns(PartyDraft d, ActorContext actor) =>
       {
         'name': d.name.trim(),
-        'name_search': d.searchKey,
+        'name_search': nameSearchColumn(d.name),
         'party_type': d.partyType,
         'phone': _blank(d.phone),
         'whatsapp': _blank(d.whatsapp),

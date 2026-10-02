@@ -16,6 +16,7 @@ import '../write/drift_day_close_writer.dart' show cashInDrawerSql;
 import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
 import '../write/drift_van_writer.dart' show vanCashSql, vanStockSql;
+import 'spelling_search.dart';
 
 /// Every read the app performs, as indexed SQL.
 ///
@@ -134,7 +135,10 @@ final class DriftAppQueries implements AppQueries {
     String? afterId,
     int limit = 40,
   }) async {
-    final term = _normalise(query);
+    final typed = SpellingQuery.of(query);
+    if (!typed.isEmpty) {
+      return _searchItemsBySpelling(firmId, typed, afterId, limit);
+    }
     final rows = await _db
         .customSelect(
           '''
@@ -149,24 +153,84 @@ final class DriftAppQueries implements AppQueries {
           WHERE i.firm_id = ?
             AND i.deleted_at_utc IS NULL
             AND i.is_active = 1
-            AND (? = '' OR i.name_search LIKE ? OR i.code = ? OR i.barcode = ?)
             AND (? IS NULL OR i.id > ?)
           -- Ordered by id, which is what the cursor pages on. Ordering by
           -- name while paginating on id silently drops and repeats rows on
           -- page two, and a 20,000-SKU catalogue is exactly where nobody
           -- would notice. ULIDs sort by creation, so this is "most recently
-          -- stocked last" — and the counter's own search is a filter, not a
-          -- browse. Alphabetical browsing arrives in M1 on an FTS5 index with
-          -- a matching composite cursor.
+          -- stocked last" — the browse. A search is ranked; see below.
           ORDER BY i.id
           LIMIT ?
           ''',
           variables: [
             Variable<String>(firmId),
-            Variable<String>(term),
-            Variable<String>('%$term%'),
-            Variable<String>(query.trim()),
-            Variable<String>(query.trim()),
+            Variable<String>(afterId),
+            Variable<String>(afterId),
+            Variable<int>(limit),
+          ],
+        )
+        .get();
+    return [for (final r in rows) _itemFrom(r)];
+  }
+
+  /// A search, however it was spelled (M56), best matches first.
+  ///
+  /// Ranked rather than ordered by id, so the cursor is the pair (rank, id)
+  /// of the last row shown, and the rank of that row is worked out again
+  /// from the row itself. Only the page's ids are joined back to their
+  /// stock, so the stock subquery runs forty times, not once per match.
+  Future<List<ItemSummary>> _searchItemsBySpelling(
+    String firmId,
+    SpellingQuery typed,
+    String? afterId,
+    int limit,
+  ) async {
+    final search = SpellingSearch(
+      typed,
+      column: 'i.name_search',
+      exactColumns: const ['i.code', 'i.barcode'],
+    );
+    final rows = await _db
+        .customSelect(
+          '''
+          WITH hits AS (
+            SELECT i.id AS id, ${search.rank} AS rnk
+            FROM items i
+            WHERE i.firm_id = ?
+              -- The name first: it is near the front of the row, and on a
+              -- row it rules out, the flags at the back are never read.
+              AND ${search.where}
+              AND i.is_active = 1
+              AND i.deleted_at_utc IS NULL
+          ),
+          after_row AS (
+            SELECT ${search.rank} AS rnk FROM items i WHERE i.id = ?
+          ),
+          page AS (
+            SELECT h.id, h.rnk FROM hits h
+            WHERE ? IS NULL
+               OR h.rnk > (SELECT rnk FROM after_row)
+               OR (h.rnk = (SELECT rnk FROM after_row) AND h.id > ?)
+            ORDER BY h.rnk, h.id
+            LIMIT ?
+          )
+          SELECT i.*, u.code AS unit_code, u.decimals AS unit_decimals,
+                 COALESCE((
+                   SELECT SUM(sl.qty_delta_thousandths)
+                   FROM stock_ledger sl
+                   WHERE sl.item_id = i.id AND sl.deleted_at_utc IS NULL
+                 ), 0) AS stock_thousandths
+          FROM page
+          JOIN items i ON i.id = page.id
+          JOIN units u ON u.id = i.base_unit_id
+          ORDER BY page.rnk, page.id
+          ''',
+          variables: [
+            ...search.rankVariables,
+            Variable<String>(firmId),
+            ...search.whereVariables,
+            ...search.rankVariables,
+            Variable<String>(afterId),
             Variable<String>(afterId),
             Variable<String>(afterId),
             Variable<int>(limit),
@@ -437,23 +501,51 @@ final class DriftAppQueries implements AppQueries {
     String query = '',
     int limit = 40,
   }) async {
-    final term = _normalise(query);
+    final typed = SpellingQuery.of(query);
+    if (typed.isEmpty) {
+      final rows = await _db
+          .customSelect(
+            '''
+            $_partySelect
+            WHERE p.firm_id = ?
+              AND p.deleted_at_utc IS NULL
+              AND p.is_active = 1
+            ORDER BY p.name_search
+            LIMIT ?
+            ''',
+            variables: [Variable<String>(firmId), Variable<int>(limit)],
+          )
+          .get();
+      return [for (final r in rows) _party(r)];
+    }
+    // However the name was spelled (M56), best matches first; then by name,
+    // which `name_search` sorts by because its plain half comes first.
+    final search = SpellingSearch(
+      typed,
+      column: 'p.name_search',
+      containsColumns: const ['p.phone'],
+    );
     final rows = await _db
         .customSelect(
-          """
+          '''
+          WITH hits AS (
+            SELECT p.id AS id, ${search.rank} AS rnk, p.name_search AS sort
+            FROM parties p
+            WHERE p.firm_id = ?
+              AND ${search.where}
+              AND p.deleted_at_utc IS NULL
+              AND p.is_active = 1
+            ORDER BY rnk, sort
+            LIMIT ?
+          )
           $_partySelect
-          WHERE p.firm_id = ?
-            AND p.deleted_at_utc IS NULL
-            AND p.is_active = 1
-            AND (? = '' OR p.name_search LIKE ? OR p.phone LIKE ?)
-          ORDER BY p.name_search
-          LIMIT ?
-          """,
+          JOIN hits h ON h.id = p.id
+          ORDER BY h.rnk, h.sort
+          ''',
           variables: [
+            ...search.rankVariables,
             Variable<String>(firmId),
-            Variable<String>(term),
-            Variable<String>('%$term%'),
-            Variable<String>('%${query.trim()}%'),
+            ...search.whereVariables,
             Variable<int>(limit),
           ],
         )
@@ -1097,7 +1189,7 @@ final class DriftAppQueries implements AppQueries {
       // The khata's own name as well as the one printed, so a customer
       // renamed since still finds their old bills. Only when the search has
       // a letter or a digit left once normalised: `%%` matches every name.
-      final name = _normalise(search.text);
+      final name = plainSearchText(search.text);
       if (name.isNotEmpty) {
         either.add(r"p.name_search LIKE ? ESCAPE '\'");
         variables.add(Variable<String>('%${_escapeLike(name)}%'));
@@ -2813,7 +2905,7 @@ final class DriftAppQueries implements AppQueries {
     PartyListFilter filter = const PartyListFilter(),
     int limit = 300,
   }) async {
-    final term = _normalise(filter.query);
+    final term = plainSearchText(filter.query);
     // Matched exactly as stored: the chips offer the names the groups query
     // returned, and a tidied copy of one would match nobody.
     final group = filter.group;
@@ -2999,18 +3091,6 @@ final class DriftAppQueries implements AppQueries {
     final raw = r.readNullable<int>(column);
     return raw == null ? null : Money.paisa(raw);
   }
-
-  /// Lowercased, punctuation-stripped, space-collapsed.
-  ///
-  /// The same transformation `items.name_search` is stored with, so a search
-  /// for "cooking oil" finds "Cooking Oil 5L" and a search for "dalda" finds
-  /// it too.
-  static String _normalise(String raw) => raw
-      .trim()
-      .toLowerCase()
-      .replaceAll(RegExp(r'[^\w\s]'), ' ')
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .trim();
 
   static String? _blankToNull(String? s) =>
       s == null || s.trim().isEmpty ? null : s;

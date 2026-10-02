@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:drift_dev/api/migrations_native.dart';
 import 'package:pk_data/pk_data.dart';
+import 'package:pk_domain/pk_domain.dart';
 import 'package:test/test.dart';
 
 import 'generated/schema.dart';
@@ -10,6 +11,7 @@ import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v8.dart' as v8;
 
 /// Migrations, and the machinery that makes them testable at all.
 ///
@@ -373,6 +375,98 @@ void main() {
     });
   });
 
+  group('v8 to v9 — names found however they are spelled', () {
+    test(
+      'every item and party is re-keyed, and nothing else is touched',
+      () async {
+        // A shop with an item and two customers entered under v8, whose
+        // search keys are the plain name and nothing more — one of them in
+        // Urdu, which v8 keyed as an empty string. v9 changes no table,
+        // column or index; it rewrites those keys, and only those keys.
+        final schema = await verifier.schemaAt(8);
+        final old = v8.DatabaseAtV8(schema.newConnection());
+        const firmId = 'FIRM0000000000000000000001';
+        const userId = 'USER0000000000000000000001';
+        const deviceId = 'DEV00000000000000000000001';
+        await old.customStatement('PRAGMA foreign_keys = OFF');
+        await old.customStatement(
+          'INSERT INTO items (id, firm_id, created_at_utc, updated_at_utc, '
+          'created_by, updated_by, origin_device_id, hlc, rev, name, '
+          'name_search, base_unit_id, sale_rate_milli_paisa) '
+          'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 4, ?, ?, ?, ?)',
+          [
+            'ITM00000000000000000000001',
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'a-0000-$deviceId',
+            'Cheeni 1kg',
+            'cheeni 1kg',
+            'UNIT0000000000000000000001',
+            15000000,
+          ],
+        );
+        for (final (id, name, key) in const [
+          ('PTY00000000000000000000001', 'Rehman Traders', 'rehman traders'),
+          ('PTY00000000000000000000002', 'محمد علی', ''),
+        ]) {
+          await old.customStatement(
+            'INSERT INTO parties (id, firm_id, created_at_utc, '
+            'updated_at_utc, created_by, updated_by, origin_device_id, hlc, '
+            'rev, name, name_search, party_type) '
+            'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 2, ?, ?, ?)',
+            [
+              id,
+              firmId,
+              userId,
+              userId,
+              deviceId,
+              'b-0000-$deviceId',
+              name,
+              key,
+              'customer',
+            ],
+          );
+        }
+        await old.close();
+
+        final db = AppDatabase(schema.newConnection());
+        addTearDown(db.close);
+        await verifier.migrateAndValidate(db, 9);
+
+        final item = await db
+            .customSelect(
+              'SELECT name, name_search, rev, hlc, sale_rate_milli_paisa '
+              'FROM items',
+            )
+            .getSingle();
+        expect(item.data['name'], 'Cheeni 1kg');
+        expect(item.data['name_search'], 'cheeni 1kg|cini1kg~CN1KG');
+        // A derived key, not an edit: the row's revision and clock are
+        // what they were, so no counter is told the item changed.
+        expect(item.data['rev'], 4);
+        expect(item.data['hlc'], 'a-0000-$deviceId');
+        expect(item.data['sale_rate_milli_paisa'], 15000000);
+
+        final parties = await db
+            .customSelect('SELECT name_search, rev FROM parties ORDER BY id')
+            .get();
+        expect(parties.map((r) => r.data['name_search']), [
+          'rehman traders|rahmantraders~RHMNTRDRS',
+          'محمد علی|mhmdali~MHMDL',
+        ]);
+        expect(parties.map((r) => r.data['rev']), [2, 2]);
+
+        // So "chini", spelled the other way, is in the key "Cheeni" now has.
+        expect(
+          item.data['name_search']! as String,
+          contains('$nameSearchSeparator${spellingKey('chini')}'),
+        );
+      },
+    );
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -401,4 +495,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 8;
+const _currentVersion = 9;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:pk_domain/pk_domain.dart' show quantityWords;
 import 'package:pk_money/pk_money.dart';
 
 import '../l10n/app_strings.dart';
@@ -100,7 +101,10 @@ class BlQty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = unit == null ? qty.display : '${qty.display} $unit';
+    // Kilos with grams in them read as kilos and grams, "1 kg 500 g", the
+    // way the shop says them (M56); everything else as the number and its
+    // unit.
+    final label = unit == null ? qty.display : quantityWords(qty, unit!);
     return Semantics(
       label: label,
       excludeSemantics: true,

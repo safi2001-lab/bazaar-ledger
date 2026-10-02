@@ -257,7 +257,7 @@ class _MovementRow extends StatelessWidget {
               if (movement.balanceAfter case final Qty balance) ...[
                 const SizedBox(height: 2),
                 Text(
-                  s.historyBalance('${balance.display} $unitCode'),
+                  s.historyBalance(quantityWords(balance, unitCode)),
                   style: TextStyle(fontSize: 11, color: t.inkMuted),
                 ),
               ],

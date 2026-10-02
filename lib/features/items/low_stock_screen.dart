@@ -134,7 +134,7 @@ class _LowStockRow extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     s.stockLowFloor(
-                      '${item.minStock.display} ${item.unitCode}',
+                      quantityWords(item.minStock, item.unitCode),
                     ),
                     style: TextStyle(fontSize: 12, color: t.inkMuted),
                   ),

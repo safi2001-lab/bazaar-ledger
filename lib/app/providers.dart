@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../design/text_size.dart';
 import 'preferences.dart';
 
 /// Overridden in `main` once the database is open. Reading it before that is a
@@ -30,12 +31,30 @@ class PreferencesNotifier extends Notifier<AppPreferences> {
   AppPreferences build() => ref.watch(initialPreferencesProvider);
 
   Future<void> setLocale(Locale locale) async {
-    state = AppPreferences(locale: locale, themeMode: state.themeMode);
+    state = AppPreferences(
+      locale: locale,
+      themeMode: state.themeMode,
+      textSize: state.textSize,
+    );
     await state.save();
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    state = AppPreferences(locale: state.locale, themeMode: mode);
+    state = AppPreferences(
+      locale: state.locale,
+      themeMode: mode,
+      textSize: state.textSize,
+    );
+    await state.save();
+  }
+
+  /// The app's own text size, on top of the phone's (M56).
+  Future<void> setTextSize(BlTextSize size) async {
+    state = AppPreferences(
+      locale: state.locale,
+      themeMode: state.themeMode,
+      textSize: size,
+    );
     await state.save();
   }
 }

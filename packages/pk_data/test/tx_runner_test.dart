@@ -51,8 +51,10 @@ void main() {
       // 40 since M9 added Cash Short and Over, 41 since M10 added Opening
       // Balances.
       expect(await count('accounts'), 42);
-      // pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz.
-      expect(await count('units'), 12);
+      // pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz; and the
+      // packs M56 added, carton, dabba, packet, strip and tablet, which
+      // ship with no conversion because their size belongs to the item.
+      expect(await count('units'), 17);
       // dozen→pcs, g→kg, maund→kg, seer→kg, tola→g, ml→l, m→cm, gaz→cm.
       // No bori: flour ships in 10, 40, 50 and 80 kg sacks and the shop says
       // which it means, so a bori is created per firm rather than shipped

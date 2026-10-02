@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:bazaar_ledger/app/preferences.dart';
+import 'package:bazaar_ledger/design/text_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -34,6 +35,26 @@ void main() {
     final reloaded = await AppPreferences.load(directory: dir);
     expect(reloaded.locale.languageCode, 'en');
     expect(reloaded.themeMode, ThemeMode.dark);
+  });
+
+  test('the text size survives a restart, and an older file reads as Normal',
+      () async {
+    await AppPreferences(
+      locale: const Locale('ur'),
+      themeMode: ThemeMode.light,
+      textSize: BlTextSize.large,
+    ).save(directory: dir);
+    expect(
+      (await AppPreferences.load(directory: dir)).textSize,
+      BlTextSize.large,
+    );
+
+    // Written by a build from before M56: no text size in it at all.
+    File('${dir.path}${Platform.pathSeparator}preferences.json')
+        .writeAsStringSync('{"locale":"en","theme":"dark"}');
+    final older = await AppPreferences.load(directory: dir);
+    expect(older.locale.languageCode, 'en');
+    expect(older.textSize, BlTextSize.normal);
   });
 
   test('a corrupt file gives defaults rather than a crash', () async {

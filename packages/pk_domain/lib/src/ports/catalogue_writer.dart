@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../catalogue/spelling.dart';
 import '../identity/actor_context.dart';
 import '../pricing/price_tier.dart';
 import 'party_groups.dart';
@@ -55,14 +56,16 @@ final class ItemDraft {
   final bool tracksSerial;
   final bool isActive;
 
-  /// Lowercased, punctuation-stripped, space-collapsed — what type-ahead
-  /// matches against, and what M1's FTS5 index is built over.
-  String get searchKey => name
-      .trim()
-      .toLowerCase()
-      .replaceAll(RegExp(r'[^\w\s]'), ' ')
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .trim();
+  /// The name with capitals, spaces and punctuation set aside, in any
+  /// script: what "the same name" means when the quick-add sheet looks for
+  /// an item already in the shop.
+  ///
+  /// Not what is stored in `name_search` any more. That is
+  /// [nameSearchColumn], which carries this and a spelling key besides
+  /// (M56), so a search for "cheeni" finds "Chini". A twin is still the
+  /// same name, not a name that sounds the same: "Chini" and "Cheeni" are
+  /// offered to each other by the search, and a shopkeeper decides.
+  String get searchKey => plainSearchText(name);
 }
 
 /// A customer or supplier as the party editor describes them.
@@ -128,12 +131,9 @@ final class PartyDraft {
   final Money? creditLimit;
   final int? creditDays;
 
-  String get searchKey => name
-      .trim()
-      .toLowerCase()
-      .replaceAll(RegExp(r'[^\w\s]'), ' ')
-      .replaceAll(RegExp(r'\s+'), ' ')
-      .trim();
+  /// The name with capitals, spaces and punctuation set aside: what "the
+  /// same name" means to the khata's twin check. See [ItemDraft.searchKey].
+  String get searchKey => plainSearchText(name);
 }
 
 /// Writes to the catalogue.

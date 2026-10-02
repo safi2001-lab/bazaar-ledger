@@ -145,12 +145,70 @@ const List<UnitSpec> defaultUnits = [
   // a kilo exactly. It is kept as its own unit because the older trades still
   // price and order in seer, and printing "1 seer" on a bill a shopkeeper
   // asked for in seer matters more than the arithmetic, which is a no-op.
+  //
+  // Checked again in M56, because the reference books give another figure.
+  // The seer of the tables is 80 tola: 933.10 g (933.104 g, by the 11.6638 g
+  // tola), the "UN definition" Pakistan's agricultural conversion factors
+  // carry. That seer belongs to the 37.324 kg maund of forty seer, which is
+  // the maund this file already refuses. Pakistan went metric in October
+  // 1967, its bazaar mann is 40 kg, and forty seer to a 40 kg mann is a kilo
+  // a seer; the pao the retail trade weighs out today is a quarter of THAT
+  // seer (250 g, or 200 g in some places), not a quarter of 933 g. So the
+  // seer stays the kilo the mann is made of. The 933.10 g seer could not be
+  // held exactly in any case: stock kept in kilos is whole grams, and
+  // 933.104 g is not a whole number of them. It would be rounded to 933 g,
+  // a tenth of a gram given away on every seer sold.
   UnitSpec(
     code: 'seer',
     nameEn: 'Seer (1 kg)',
     nameUr: 'Seer',
     kind: UnitKind.weight,
     decimals: 3,
+  ),
+  // No pao. Retail sells a 250 g pao in most of the country and a 200 g one
+  // in parts of it, and the books' pao is a quarter of 933 g. A unit that
+  // means three weights charges somebody wrongly; the counter takes 0.25 kg
+  // and shows it as "250 g".
+
+  // The packs a shop counts in (M56): an item kept and sold by the carton,
+  // the dabba or the packet, and a pharmacy's strips and tablets. They are
+  // counts in their own right and ship with no conversion: how many pieces
+  // a carton holds is a fact about one item, not about cartons, so it
+  // belongs to that item (M45's two-unit quantities), never to the shop.
+  UnitSpec(
+    code: 'carton',
+    nameEn: 'Carton',
+    nameUr: 'Carton',
+    kind: UnitKind.count,
+    decimals: 0,
+  ),
+  UnitSpec(
+    code: 'dabba',
+    nameEn: 'Box (dabba)',
+    nameUr: 'Dabba',
+    kind: UnitKind.count,
+    decimals: 0,
+  ),
+  UnitSpec(
+    code: 'packet',
+    nameEn: 'Packet',
+    nameUr: 'Packet',
+    kind: UnitKind.count,
+    decimals: 0,
+  ),
+  UnitSpec(
+    code: 'strip',
+    nameEn: 'Strip',
+    nameUr: 'Patta',
+    kind: UnitKind.count,
+    decimals: 0,
+  ),
+  UnitSpec(
+    code: 'tablet',
+    nameEn: 'Tablet',
+    nameUr: 'Goli',
+    kind: UnitKind.count,
+    decimals: 0,
   ),
 ];
 

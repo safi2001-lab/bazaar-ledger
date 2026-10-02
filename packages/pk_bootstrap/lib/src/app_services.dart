@@ -464,6 +464,31 @@ final class AppServices {
     );
   }
 
+  /// Gives a shop set up before M56 the units shipped since (the carton, the
+  /// dabba, the packet, the strip and the tablet), on the phone that keeps
+  /// the books. A counter that joined it gets them from there, not by adding
+  /// its own: two phones adding a carton apart would each have one.
+  Future<void> _addMissingUnits() async {
+    final id = _identity;
+    if (id == null) return;
+    final device = await database
+        .customSelect(
+          'SELECT device_role FROM devices WHERE id = ?',
+          variables: [Variable<String>(id.deviceId)],
+        )
+        .getSingleOrNull();
+    if (device?.read<String>('device_role') == 'counter') return;
+    await _runner.run(
+      ActorContext(
+        firmId: id.firmId,
+        userId: id.userId,
+        deviceId: id.deviceId,
+        startedAtUtc: clock.nowUtc(),
+      ),
+      addMissingUnits,
+    );
+  }
+
   // ---------------------------------------------------------------------
   // More than one firm
   // ---------------------------------------------------------------------
@@ -548,6 +573,7 @@ final class AppServices {
     _pinsBlockedUntil = null;
     await _resumeSession();
     await _postMissingOpenings();
+    await _addMissingUnits();
   }
 
   /// Locks the app until somebody signs in. Does nothing in a shop where
@@ -832,6 +858,7 @@ final class AppServices {
         );
         await services._resumeSession();
         await services._postMissingOpenings();
+        await services._addMissingUnits();
       }
     }
 

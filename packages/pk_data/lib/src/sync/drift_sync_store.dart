@@ -47,6 +47,22 @@ final class DriftSyncStore implements SyncPeer {
 
   final Map<String, Set<String>> _columns = {};
 
+  /// Rows whose `name_search` is worked out here, from their name (M56).
+  ///
+  /// The column is derived, so the copy that arrives is not trusted to be
+  /// the copy this build would write. A counter still on an older build
+  /// sends the old key — the plain name alone — and an item it adds would
+  /// otherwise be found here by its exact spelling only. Working the key
+  /// out on arrival means a merged row is found exactly as one made on this
+  /// phone, whatever sent it.
+  static const _respelled = {'items', 'parties'};
+
+  static Map<String, Object?> _respell(String table, Map<String, Object?> row) {
+    final name = row['name'];
+    if (!_respelled.contains(table) || name is! String) return row;
+    return {...row, 'name_search': nameSearchColumn(name)};
+  }
+
   @override
   Future<VersionVector> vector() async {
     final rows = await _db
@@ -265,7 +281,7 @@ final class DriftSyncStore implements SyncPeer {
     }
     final rev = change.row['entity_rev']! as int;
     final values = <String, Object?>{
-      for (final e in payload.entries)
+      for (final e in _respell(table, payload).entries)
         if (e.key != 'id') e.key: e.value,
       'hlc': hlc,
       'rev': rev > existing.read<int>('rev') ? rev : existing.read<int>('rev'),
@@ -290,11 +306,17 @@ final class DriftSyncStore implements SyncPeer {
     Map<String, Object?> row,
     String origin,
   ) async {
-    Future<void> write(Map<String, Object?> r) => _db.customStatement(
-      'INSERT INTO $table (${r.keys.join(', ')}) '
-      'VALUES (${List.filled(r.length, '?').join(', ')})',
-      [...r.values],
-    );
+    Future<void> write(Map<String, Object?> row) {
+      // Keyed after any renaming below, so a name that came in marked is
+      // found by the name it is kept under.
+      final r = _respell(table, row);
+      return _db.customStatement(
+        'INSERT INTO $table (${r.keys.join(', ')}) '
+        'VALUES (${List.filled(r.length, '?').join(', ')})',
+        [...r.values],
+      );
+    }
+
     try {
       await write(row);
       return _Outcome.applied;

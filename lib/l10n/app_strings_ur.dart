@@ -4464,4 +4464,25 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get billDesignSaved => 'Bill ka design mehfooz ho gaya';
+
+  @override
+  String get settingsTextSize => 'Likhai ka size';
+
+  @override
+  String get settingsTextSizeNormal => 'Aam';
+
+  @override
+  String get settingsTextSizeLarge => 'Bara';
+
+  @override
+  String get settingsTextSizeLarger => 'Aur bara';
+
+  @override
+  String get settingsTextSizeHint =>
+      'Sirf is phone ki screen par. Bill, raseed aur PDF har size par aik jaise chhapte hain.';
+
+  @override
+  String itemStockLeft(String amount) {
+    return '$amount mojood';
+  }
 }

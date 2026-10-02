@@ -2579,5 +2579,16 @@
   "billDesignPreviewSlip": "Till slip",
   "billDesignPreviewNote": "A sketch of the look. To see the real PDF, use the button below.",
   "billDesignSamplePdf": "See a sample PDF",
-  "billDesignSaved": "Bill design saved"
+  "billDesignSaved": "Bill design saved",
+  "settingsTextSize": "Text size",
+  "settingsTextSizeNormal": "Normal",
+  "settingsTextSizeLarge": "Large",
+  "settingsTextSizeLarger": "Larger",
+  "settingsTextSizeHint": "On this phone's screens only. Bills, receipts and PDFs print the same at every size.",
+  "itemStockLeft": "{amount} in stock",
+  "@itemStockLeft": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  }
 }

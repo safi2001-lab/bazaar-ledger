@@ -331,6 +331,8 @@ const _tablesByVersion = <int, List<String>>{
   7: _tablesV7,
   // v8 added columns and an index, not a table.
   8: _tablesV7,
+  // v9 (M56) re-keyed names, and changed no table at all.
+  9: _tablesV7,
 };
 
 /// v7 (M18): vans and their daily settlements.

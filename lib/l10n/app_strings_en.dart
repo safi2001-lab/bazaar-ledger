@@ -4463,4 +4463,25 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get billDesignSaved => 'Bill design saved';
+
+  @override
+  String get settingsTextSize => 'Text size';
+
+  @override
+  String get settingsTextSizeNormal => 'Normal';
+
+  @override
+  String get settingsTextSizeLarge => 'Large';
+
+  @override
+  String get settingsTextSizeLarger => 'Larger';
+
+  @override
+  String get settingsTextSizeHint =>
+      'On this phone\'s screens only. Bills, receipts and PDFs print the same at every size.';
+
+  @override
+  String itemStockLeft(String amount) {
+    return '$amount in stock';
+  }
 }

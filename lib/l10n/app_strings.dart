@@ -7849,6 +7849,42 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Bill ka design mehfooz ho gaya'**
   String get billDesignSaved;
+
+  /// No description provided for @settingsTextSize.
+  ///
+  /// In ur, this message translates to:
+  /// **'Likhai ka size'**
+  String get settingsTextSize;
+
+  /// No description provided for @settingsTextSizeNormal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aam'**
+  String get settingsTextSizeNormal;
+
+  /// No description provided for @settingsTextSizeLarge.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bara'**
+  String get settingsTextSizeLarge;
+
+  /// No description provided for @settingsTextSizeLarger.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur bara'**
+  String get settingsTextSizeLarger;
+
+  /// No description provided for @settingsTextSizeHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf is phone ki screen par. Bill, raseed aur PDF har size par aik jaise chhapte hain.'**
+  String get settingsTextSizeHint;
+
+  /// No description provided for @itemStockLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} mojood'**
+  String itemStockLeft(String amount);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -16,6 +16,8 @@ export 'src/accounting/year_close.dart';
 export 'src/barcode/gs1.dart';
 export 'src/barcode/scale.dart';
 export 'src/catalogue/barcode_key.dart';
+export 'src/catalogue/quantity_words.dart';
+export 'src/catalogue/spelling.dart';
 export 'src/catalogue/unit_converter.dart';
 export 'src/catalogue/units.dart';
 export 'src/cheques/cheque_dates.dart';

@@ -142,9 +142,10 @@ void main() {
       isEmpty,
       reason: 'and not one row of it is shared between them',
     );
-    // Twelve: pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz.
-    expect(await queries.units(first.firmId), hasLength(12));
-    expect(await queries.units(second.firmId), hasLength(12));
+    // Seventeen: pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz,
+    // and since M56 carton, dabba, packet, strip and tablet.
+    expect(await queries.units(first.firmId), hasLength(17));
+    expect(await queries.units(second.firmId), hasLength(17));
   });
 }
 

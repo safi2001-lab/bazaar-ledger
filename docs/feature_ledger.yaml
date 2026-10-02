@@ -1184,6 +1184,51 @@ milestones:
       - lib/features/settings/bill_design_screen.dart
       - lib/features/settings/shop_pictures.dart
 
+  - id: M56
+    title: Found however it is spelt, weighed the way the bazaar weighs, and readable at any size
+    # Opened and sealed 3 Oct 2026 at 1/1. Nobody in a Pakistani shop spells
+    # an item the same way twice, and the search only matched letters for
+    # letters. Every item's and party's name is now kept with a spelling key
+    # and that key's consonants, so the counter, the item list and the khata
+    # find aata, atta and آٹا alike, cheeni and chini, zeera and jeera, doodh
+    # and dudh, t.v. and tv, 7 up and 7up, Rehman and Rahman; a word typed in
+    # Urdu script finds the Roman name, and a name kept in Urdu is found by
+    # its Roman spelling. What was typed comes first: the whole name, then
+    # its start, then a word's start, then what only sounds like it. Kept
+    # apart on purpose, because the shop sells both: chini and chana, tel
+    # and til, dal and dil. Schema v9 changes no table; it re-keys every
+    # name, and a row merged from another counter is keyed on arrival
+    # whatever key it carried. A ranked search reads the whole catalogue,
+    # so a search that finds something now costs what one that finds
+    # nothing did: 20-45ms on twenty thousand items, measured.
+    #
+    # Units, checked: a mann is 40 kg and a sale in mann moves kilos and
+    # money exactly (proved at Rs 4,833.33 a mann, rounded once). The books'
+    # seer is 80 tola, 933.10 g, and belongs to the 37.324 kg maund Pakistan
+    # left in 1967; forty seer to the bazaar's 40 kg mann is a kilo, so the
+    # seer stays the kilo. No pao ships: retail sells 250 g in most places
+    # and 200 g in some. Carton, dabba, packet, strip and tablet ship as
+    # counts, and a shop set up before is given them on the phone that keeps
+    # the books. Kilos with grams read "1 kg 500 g" on the bill being rung
+    # up and in the stock lists; the printed bill keeps "1.5 kg x rate". Text
+    # size (Normal, Large, Larger) is in Settings, on top of the phone's own
+    # and held with it at 200%, and kept on the phone; paper and PDFs are
+    # not touched by it.
+    #
+    # Not built: a pack's size per item (1 carton = 24 pcs). The per-item
+    # conversion's unique index keeps tombstoned rows, so a pack taken off
+    # an item could never be put back without a schema change, and packs
+    # with two-unit quantities are M45's. The receipt preview on screen
+    # follows the text size; it lives in sales/, which was being edited
+    # elsewhere, and scrolls sideways when large.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/catalogue/spelling.dart
+      - packages/pk_domain/lib/src/catalogue/quantity_words.dart
+      - packages/pk_data/lib/src/read/spelling_search.dart
+      - packages/pk_data/lib/src/write/unit_top_up.dart
+      - lib/design/text_size.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5504,3 +5549,40 @@ features:
       - the bill on screen is the sheet chosen, as it will print
       - the shop's own payment QR is shown where it was promised and goes on the PDF; none is made when there is none
       - the bill design screen fits a small phone at 200%
+  - id: M56-BAZAAR-01
+    milestone: M56
+    title: Names are found however they are spelt, the bazaar's units sell exactly, and the text size is the shop's to choose
+    status: done
+    proof:
+      - spelling key Rehman = Rahman = Rehmaan are one key
+      - spelling key t.v. = tv = TV = T.V are one key
+      - spelling key chini is not chana
+      - spelling key tel is not til
+      - spelling key the documented examples come out as the comment says
+      - spelling key a word typed in Urdu is read into Roman letters first
+      - spelling key Urdu that cannot be spelled back is still found by its bones
+      - spelling key a skeleton is trusted only when it is long enough
+      - spelling key a name in Urdu is a name, not an empty string
+      - kilos and grams a weight with grams in it reads as kilos and grams
+      - bazaar units a mann is forty kilos exactly, both ways
+      - bazaar units a price per mann is the price per kilo times forty, exactly
+      - bazaar units a sale written in mann or in kilos comes to the same paisa, rounded once
+      - bazaar units a seer is the kilo forty of which make the 40 kg mann
+      - bazaar units a new shop counts in cartons, dabbas, packets, strips and tablets, and has no pao
+      - spelling search aata and atta typed in Urdu find Atta, and what was typed comes first
+      - spelling search chini finds Cheeni, and never Chana
+      - spelling search dots, hyphens and spaces do not matter
+      - spelling search an item named in Urdu is found by its Roman spelling
+      - spelling search a search of punctuation finds nothing rather than everything
+      - spelling search paging a ranked search neither drops a row nor repeats one
+      - spelling search the khata finds Rahman when Rehman is typed, and by phone
+      - spelling search a name edited is found by its new spelling
+      - v8 to v9 — names found however they are spelled every item and party is re-keyed, and nothing else is touched
+      - units shipped since a shop from before M56 is given the packs, once
+      - units shipped since a unit the shop hid stays hidden
+      - lan sync an item from a counter is found here however it is spelled, whatever search key the counter sent
+      - aata, or atta typed in Urdu, finds Atta at the counter, and chini finds Cheeni but not Chana
+      - a kilo and a half on the bill reads 1 kg 500 g, and 1.5 kg leaves the shelf
+      - Larger text is applied the moment it is chosen, and the phone remembers it
+      - the shop's Larger text on a phone already at 200% is held at 200%, and the counter still fits
+      - the text size survives a restart, and an older file reads as Normal

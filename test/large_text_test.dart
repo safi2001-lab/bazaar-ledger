@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:bazaar_ledger/app/preferences.dart';
+import 'package:bazaar_ledger/app/providers.dart';
 import 'package:bazaar_ledger/design/components.dart';
+import 'package:bazaar_ledger/design/text_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -300,6 +303,40 @@ void main() {
     await tester.tap(find.text('Ho gaya'));
     await tester.pumpAndSettle();
     expect(find.text('Ho gaya'), findsNothing);
+  });
+
+  testWidgets("the shop's Larger text on a phone already at 200% is held at "
+      '200%, and the counter still fits', (tester) async {
+    // M56: the app's own text size goes on top of the phone's. Two hundred
+    // percent times Larger would be 260%, past anything these screens were
+    // laid out for, so the two together are held at 200%.
+    useASmallPhone(tester);
+    final app = await Harness.startWithShop(
+      tester,
+      overrides: [
+        initialPreferencesProvider.overrideWithValue(
+          AppPreferences(
+            locale: const Locale('ur'),
+            themeMode: ThemeMode.light,
+            textSize: BlTextSize.larger,
+          ),
+        ),
+      ],
+    );
+    await app.seedItem(name: 'Cooking Oil 5L Tin', rupees: 12500);
+
+    await tester.tap(find.text('Naya Bill').first);
+    await tester.pumpAndSettle();
+    await _addToCart(tester, 'Cooking Oil');
+
+    final scaler = MediaQuery.textScalerOf(
+      tester.element(find.text('Cooking Oil 5L Tin').first),
+    );
+    expect(scaler.scale(10), 20, reason: 'held at 200%, not 260%');
+    expectNothingPaintsOffScreen(tester);
+
+    await tapButton(tester, 'Paisay lein');
+    expectNothingPaintsOffScreen(tester);
   });
 
   testWidgets('a six-figure bill still fits at 200%', (tester) async {

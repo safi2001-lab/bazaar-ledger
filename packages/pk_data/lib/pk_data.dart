@@ -43,3 +43,4 @@ export 'src/write/first_run.dart';
 export 'src/write/opening_entries.dart' show postMissingOpenings;
 export 'src/write/sequence_allocator.dart';
 export 'src/write/tx_runner.dart';
+export 'src/write/unit_top_up.dart' show addMissingUnits;

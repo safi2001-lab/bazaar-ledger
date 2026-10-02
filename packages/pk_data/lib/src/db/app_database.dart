@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 8;
+  static const currentSchemaVersion = 9;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -168,6 +168,14 @@ class AppDatabase extends _$AppDatabase {
               await migrator.addColumn(schema.documents, column);
             }
             await migrator.create(schema.idxDocumentsFbr);
+          },
+          // v8 → v9 (M56): no table, column or index changes — the search
+          // key every item and party is found by changed shape, from the
+          // plain name to the plain name and its spelling key, so a search
+          // for "cheeni" finds "Chini". Every existing row is re-keyed here,
+          // and a backup from before M56 is re-keyed when it is restored.
+          from8To9: (migrator, schema) async {
+            await respellNames();
           },
         )(m, from, to);
       } on ArgumentError {
@@ -390,6 +398,43 @@ class AppDatabase extends _$AppDatabase {
     ''');
     final remaining = await findStockLedgerDrift();
     return remaining.length;
+  }
+
+  /// Re-keys every item's and party's `name_search` from its name, and
+  /// returns how many rows it wrote.
+  ///
+  /// The column is derived: [nameSearchColumn] of the name, nothing a person
+  /// typed and nothing another counter needs to be told about, because every
+  /// device works it out from the same name with the same function. So, like
+  /// [rebuildStockBalances], it goes straight to the database rather than
+  /// through the write path — there is no new fact here for an audit trail
+  /// or a peer, and stamping twenty thousand items as "edited" by whoever
+  /// happened to open the app after an update would put a lie in both.
+  ///
+  /// Archived and deleted rows are re-keyed too: an item brought back from
+  /// the recycle bin has to be findable the moment it is back.
+  Future<int> respellNames() async {
+    const rewrite = {
+      'items': '''
+        UPDATE items -- arch_check: allow no_raw_dml — derived search key
+        SET name_search = ? WHERE id = ?''',
+      'parties': '''
+        UPDATE parties -- arch_check: allow no_raw_dml — derived search key
+        SET name_search = ? WHERE id = ?''',
+    };
+    var written = 0;
+    for (final MapEntry(key: table, value: sql) in rewrite.entries) {
+      final rows = await customSelect(
+        'SELECT id, name, name_search FROM $table',
+      ).get();
+      for (final r in rows) {
+        final key = nameSearchColumn(r.read<String>('name'));
+        if (key == r.read<String>('name_search')) continue;
+        await customStatement(sql, [key, r.read<String>('id')]);
+        written++;
+      }
+    }
+    return written;
   }
 
   /// Rows struck out of a ledger that may only be appended to.

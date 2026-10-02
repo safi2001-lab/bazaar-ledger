@@ -217,9 +217,12 @@ class _ItemRow extends StatelessWidget {
                         Flexible(
                           child: Text(
                             item.tracksStock
-                                ? s.itemInStock(
-                                    item.stockOnHand.display,
-                                    item.unitCode,
+                                // "1 kg 500 g in stock" (M56).
+                                ? s.itemStockLeft(
+                                    quantityWords(
+                                      item.stockOnHand,
+                                      item.unitCode,
+                                    ),
                                   )
                                 : item.unitCode,
                             maxLines: 1,

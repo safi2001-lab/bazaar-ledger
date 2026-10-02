@@ -1,4 +1,5 @@
 import 'package:pk_data/pk_data.dart';
+import 'package:pk_domain/pk_domain.dart';
 
 /// Twenty thousand SKUs, seeded the fast way.
 ///
@@ -109,7 +110,9 @@ Future<void> seedLargeCatalogue(
           deviceId,
           'FIX-${i.toString().padLeft(8, '0')}',
           name,
-          name.toLowerCase(),
+          // The key the app writes (M56), so the search measured here is the
+          // search the counter runs.
+          nameSearchColumn(name),
           'SKU$i',
           '890${i.toString().padLeft(9, '0')}',
           baseUnitId,

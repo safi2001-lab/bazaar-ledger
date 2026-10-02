@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
-/// The two choices that have to survive a restart and exist before the shop
-/// does: which language, and light or dark.
+import '../design/text_size.dart';
+
+/// The choices that have to survive a restart and exist before the shop
+/// does: which language, light or dark, and how big the words are (M56).
 ///
 /// Deliberately a small file rather than a row in `settings`. Settings rows are
 /// firm-scoped and the first-run wizard has to be readable before any firm
@@ -13,14 +15,23 @@ import 'package:path_provider/path_provider.dart';
 /// Urdu, which is why Roman Urdu is also the default rather than a preference
 /// they have to find.
 final class AppPreferences {
-  AppPreferences({required this.locale, required this.themeMode});
+  AppPreferences({
+    required this.locale,
+    required this.themeMode,
+    this.textSize = BlTextSize.normal,
+  });
 
   AppPreferences.defaults()
     : locale = const Locale('ur'),
-      themeMode = ThemeMode.system;
+      themeMode = ThemeMode.system,
+      textSize = BlTextSize.normal;
 
   Locale locale;
   ThemeMode themeMode;
+
+  /// The app's own text size, on top of the phone's. Kept on this phone
+  /// only: it is about the eyes of whoever holds it, not about the shop.
+  BlTextSize textSize;
 
   static const String _fileName = 'preferences.json';
 
@@ -36,6 +47,12 @@ final class AppPreferences {
           'light' => ThemeMode.light,
           'dark' => ThemeMode.dark,
           _ => ThemeMode.system,
+        },
+        // Absent from every file written before M56, which is Normal.
+        textSize: switch (raw['textSize']) {
+          'large' => BlTextSize.large,
+          'larger' => BlTextSize.larger,
+          _ => BlTextSize.normal,
         },
       );
     } on Object {
@@ -54,6 +71,7 @@ final class AppPreferences {
         ThemeMode.dark => 'dark',
         ThemeMode.system => 'system',
       },
+      'textSize': textSize.name,
     });
 
     // Written beside, then renamed over. `writeAsString` truncates first, so a

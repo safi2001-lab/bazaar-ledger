@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../design/components.dart';
+import '../design/text_size.dart';
 import '../design/theme.dart';
 import '../design/tokens.dart';
 import '../features/backup/drive_access.dart';
@@ -34,14 +35,13 @@ class BazaarLedgerApp extends ConsumerWidget {
       builder: (context, child) {
         // Text scales to 200% without clipping, but a shopkeeper who has set
         // their phone to 300% would lose the money column entirely, so it is
-        // clamped rather than left unbounded.
+        // clamped rather than left unbounded. The shop's own text size (M56)
+        // goes on top of the phone's, inside the same clamp: the cap is on
+        // what reaches the screen, however it was asked for.
         final media = MediaQuery.of(context);
         return MediaQuery(
           data: media.copyWith(
-            textScaler: media.textScaler.clamp(
-              minScaleFactor: 0.85,
-              maxScaleFactor: 2.0,
-            ),
+            textScaler: shopTextScaler(media.textScaler, prefs.textSize),
           ),
           child: child ?? const SizedBox.shrink(),
         );
