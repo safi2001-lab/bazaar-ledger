@@ -120,7 +120,8 @@ time, on the latest master (schema is v8 today).
 
 ### Billing and bills
 - [ ] M36 · Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
-- [ ] M37 · (in progress) Last 5 rates for this party and item, shown when the item goes on the bill, one tap to reuse; a loose-item line (amount only, never saved as an item)
+- [x] M37 · Last rates and khula maal — DONE (80b28aa): customer named first from the counter; "Pichhli dafa Rs X · date" beside every line; tap for the last 5 deals, one tap uses the price (exact unit conversion, never applied silently); supplier's last 5 prices on purchases; cost shown only to roles that may see it; khula maal line (no item, no stock, refused on FBR-reporting shops and on quotations/challans); fixed a standing-discount bug that made bills refuse
+- [ ] M57 · (in progress) Returns give back exactly what was charged: line discount and bill-discount share respected; quantity in the unit it was sold in (a maund line was over-refunding 40×) — found by M37
 - [ ] M43 · Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
 - [ ] M45 · Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
 - [ ] M51 · (in progress) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
