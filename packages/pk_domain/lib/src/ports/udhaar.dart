@@ -1,4 +1,5 @@
-/// The udhaar pack's reads and writes: due dates and promises (M38).
+/// The udhaar pack's reads and writes: due dates and promises (M38), and
+/// reminders in each customer's language (M39).
 ///
 /// Its own port rather than more methods on [AppQueries], so the khata's
 /// chasing can grow without every other screen's reader growing with it,
@@ -11,6 +12,7 @@ import 'package:pk_money/pk_money.dart';
 import '../identity/actor_context.dart';
 import '../receivables/due_dates.dart';
 import '../receivables/promise.dart';
+import '../receivables/reminder_templates.dart';
 import 'app_queries.dart';
 
 /// A customer who owes, as the chase list needs them.
@@ -23,6 +25,8 @@ final class DueParty {
     required this.dueToday,
     this.oldestDueLocal,
     this.promise,
+    this.prefs = ReminderPrefs.standard,
+    this.lastRemindedAt,
   });
 
   /// Who, and what they owe overall — the one balance the whole app uses,
@@ -48,6 +52,12 @@ final class DueParty {
 
   /// Their most recent promise, whatever became of it.
   final PaymentPromise? promise;
+
+  /// The language their reminders go in, and whether they get any (M39).
+  final ReminderPrefs prefs;
+
+  /// When they were last sent a reminder, if ever (M39).
+  final DateTime? lastRemindedAt;
 
   DueBucket get bucket => DueBucket.forDaysOverdue(daysOverdue);
   bool get isOverdue => overdue.isPositive;
@@ -86,6 +96,25 @@ final class UdhaarToday {
       dueTodayCount == 0 && overdueCount == 0 && promisedTodayCount == 0;
 
   static const UdhaarToday quiet = UdhaarToday();
+}
+
+/// One customer's reminder, ready to leave the phone (M39): their message,
+/// written in their language from the shop's template, and the number
+/// WhatsApp and the messages app can reach them on.
+final class ReminderReady {
+  const ReminderReady({
+    required this.party,
+    required this.message,
+    required this.prefs,
+    this.whatsappNumber,
+  });
+
+  final PartySummary party;
+  final String message;
+  final ReminderPrefs prefs;
+
+  /// `923004471203`, or null when the khata has no Pakistani mobile.
+  final String? whatsappNumber;
 }
 
 /// Why an udhaar write was refused, in words the counter can act on.
@@ -127,6 +156,24 @@ abstract interface class UdhaarQueries {
     String firmId, {
     required String asOfDateLocal,
   });
+
+  /// The owner's own words for [language], or null while the shop's
+  /// defaults stand (M39).
+  Future<String?> customReminderTemplate(
+    String firmId,
+    ReminderLanguage language,
+  );
+
+  /// One customer's reminder language and opt-out (M39).
+  Future<ReminderPrefs> reminderPrefs(String firmId, String partyId);
+
+  /// The reminders sent to one customer, newest first: who sent each, when,
+  /// and how (M39).
+  Future<List<ReminderSent>> remindersSent(
+    String firmId,
+    String partyId, {
+    int limit = 20,
+  });
 }
 
 /// What the khata writes about chasing, through the one write path.
@@ -136,4 +183,29 @@ abstract interface class UdhaarStore {
 
   /// Marks a promise withdrawn. It stays in the customer's history.
   Future<void> withdrawPromise(ActorContext actor, String promiseId);
+
+  /// Keeps the owner's words for [language]. Empty text, or the shop's own
+  /// default, puts the default back (M39).
+  Future<void> saveReminderTemplate(
+    ActorContext actor,
+    ReminderLanguage language,
+    String text,
+  );
+
+  /// Keeps one customer's reminder language and opt-out (M39).
+  Future<void> setReminderPrefs(
+    ActorContext actor,
+    String partyId,
+    ReminderPrefs prefs,
+  );
+
+  /// Writes a reminder into the khata's log: to whom, by which channel, in
+  /// which language, for how much. Who and when are the actor (M39).
+  Future<void> recordReminderSent(
+    ActorContext actor,
+    String partyId, {
+    required ReminderChannel channel,
+    required ReminderLanguage language,
+    required Money amount,
+  });
 }

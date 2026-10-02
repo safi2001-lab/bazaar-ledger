@@ -93,4 +93,126 @@ final class DriftUdhaarStore implements UdhaarStore {
           after: {'promise_id': promiseId},
         );
       });
+
+  // -------------------------------------------------------------------------
+  // Reminders (M39)
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<void> saveReminderTemplate(
+    ActorContext actor,
+    ReminderLanguage language,
+    String text,
+  ) => _runner().run(actor, (tx) async {
+    // The shop's own words are kept as an empty value rather than as a
+    // copy of them, so a better default shipped later reaches every shop
+    // that never changed it.
+    final words = text.trim();
+    final own = words.isEmpty || words == defaultReminderTemplate(language);
+    await _put(
+      tx,
+      reminderTemplateKey(language),
+      own ? '' : words,
+      valueType: 'string',
+    );
+    tx.audit(
+      action: own ? 'REMINDER_TEMPLATE_RESET' : 'REMINDER_TEMPLATE_SAVED',
+      entityTable: 'settings',
+      entityId: reminderTemplateKey(language),
+      summary: own
+          ? 'Reminder in ${language.name} back to the shop words'
+          : 'Reminder in ${language.name} rewritten',
+    );
+  });
+
+  @override
+  Future<void> setReminderPrefs(
+    ActorContext actor,
+    String partyId,
+    ReminderPrefs prefs,
+  ) => _runner().run(actor, (tx) async {
+    final party = await tx.selectOne(
+      'SELECT name FROM parties '
+      'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+      [partyId, actor.firmId],
+    );
+    if (party == null) {
+      throw const UdhaarRefused('That customer is not in this khata.');
+    }
+    await _put(tx, reminderPrefsKey(partyId), jsonEncode(prefs.toJson()));
+    tx.audit(
+      action: 'REMINDER_PREFS_SET',
+      entityTable: 'parties',
+      entityId: partyId,
+      summary: prefs.optedOut
+          ? '${party.read<String>('name')} is not to be reminded'
+          : '${party.read<String>('name')} is reminded in '
+                '${prefs.language.name}',
+      after: prefs.toJson(),
+    );
+  });
+
+  @override
+  Future<void> recordReminderSent(
+    ActorContext actor,
+    String partyId, {
+    required ReminderChannel channel,
+    required ReminderLanguage language,
+    required Money amount,
+  }) => _runner().run(actor, (tx) async {
+    final party = await tx.selectOne(
+      'SELECT name FROM parties '
+      'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+      [partyId, actor.firmId],
+    );
+    if (party == null) {
+      throw const UdhaarRefused('That customer is not in this khata.');
+    }
+    // The log is the audit trail and nothing else: one row on the
+    // customer, written in this transaction, carrying who (the actor), when
+    // (now), how and in which language. It reaches the other counters with
+    // the rest of the audit trail, so the owner at the master sees the
+    // evening's round the counter boy sent.
+    tx.audit(
+      action: 'REMINDER_SENT',
+      entityTable: 'parties',
+      entityId: partyId,
+      summary:
+          'Reminder sent to ${party.read<String>('name')} by '
+          '${channel.name} for ${amount.amountOnly}',
+      amountPaisa: amount.inPaisa,
+      after: {'channel': channel.name, 'language': language.code},
+    );
+  });
+
+  /// Writes [value] under [key], adding the row the first time.
+  ///
+  /// Read with tombstones included: `idx_settings_key` is unique on the key
+  /// whatever the row's state, so a key once deleted is written again, not
+  /// inserted twice.
+  static Future<void> _put(
+    Tx tx,
+    String key,
+    String value, {
+    String valueType = 'json',
+  }) async {
+    final held = await tx.selectOne(
+      'SELECT id, deleted_at_utc FROM settings '
+      'WHERE firm_id = ? AND setting_key = ?',
+      [tx.actor.firmId, key],
+    );
+    if (held == null) {
+      await tx.insert('settings', {
+        'setting_key': key,
+        'setting_value': value,
+        'value_type': valueType,
+      });
+    } else if (held.readNullable<int>('deleted_at_utc') == null) {
+      await tx.update('settings', held.read<String>('id'), {
+        'setting_value': value,
+      });
+    } else {
+      throw StateError('Setting $key was deleted and cannot be written.');
+    }
+  }
 }

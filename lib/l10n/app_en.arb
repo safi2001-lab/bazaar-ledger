@@ -2863,5 +2863,71 @@
   "chaseFilterDueToday": "Due today",
   "chaseFilterPromisedToday": "Promised today",
   "promiseToday": "Today",
-  "chaseFilterOverdue": "Late ones"
+  "chaseFilterOverdue": "Late ones",
+  "khataRemindOff": "Not reminded",
+  "remindedToday": "Reminded today",
+  "remindedDaysAgo": "{days, plural, =1{Reminded yesterday} other{Reminded {days} days ago}}",
+  "@remindedDaysAgo": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "remindedBy": "{when} · {name} · {channel}",
+  "@remindedBy": {
+    "placeholders": {
+      "when": {"type": "String"},
+      "name": {"type": "String"},
+      "channel": {"type": "String"}
+    }
+  },
+  "reminderChannelSms": "SMS",
+  "reminderChannelShare": "Share sheet",
+  "reminderLangUrdu": "اردو (Urdu)",
+  "reminderLangRoman": "Roman Urdu",
+  "reminderLangEnglish": "English",
+  "chaseRemind": "Send reminders",
+  "chaseSelectLate": "Tick everyone late",
+  "chaseSendCount": "{count, plural, =1{Remind 1} other{Remind {count}}}",
+  "@chaseSendCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "chasePickHint": "Tick the customers to remind",
+  "roundTitle": "Reminders",
+  "roundResume": "{left, plural, =1{A round of reminders is unfinished: 1 left} other{A round of reminders is unfinished: {left} left}}",
+  "@roundResume": {
+    "placeholders": {
+      "left": {"type": "int"}
+    }
+  },
+  "roundResumeAction": "Carry on",
+  "roundDiscard": "End it",
+  "roundChannelSms": "SMS",
+  "roundOpenWhatsApp": "Open in WhatsApp",
+  "roundOpenSms": "Open in messages",
+  "roundSent": "Sent ✓",
+  "roundSkip": "Skip",
+  "roundLater": "Later",
+  "roundDone": "All done: {sent} sent, {skipped} skipped",
+  "@roundDone": {
+    "placeholders": {
+      "sent": {"type": "int"},
+      "skipped": {"type": "int"}
+    }
+  },
+  "roundFinish": "Finish",
+  "roundNoNumber": "No number: goes by the share sheet",
+  "partyReminders": "Reminders",
+  "partyReminderLanguage": "Which language to send in",
+  "partyReminderOptOut": "Don't send this customer reminders",
+  "settingsReminders": "Reminder messages",
+  "templatesTitle": "Reminder messages",
+  "templatesHint": "Each customer gets the message in their language. The parts in braces fill themselves in; a line whose part is empty is left out.",
+  "templatesField": "Message",
+  "templatesPreview": "It will read",
+  "templatesSaved": "Message saved",
+  "templatesReset": "Back to the shop's words",
+  "templatesResetDone": "The shop's words are back",
+  "templatesSampleName": "Aslam Karyana"
 }

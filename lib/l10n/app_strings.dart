@@ -8887,6 +8887,234 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Der wale'**
   String get chaseFilterOverdue;
+
+  /// No description provided for @khataRemindOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad-dehani band'**
+  String get khataRemindOff;
+
+  /// No description provided for @remindedToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj yaad dilaya'**
+  String get remindedToday;
+
+  /// No description provided for @remindedDaysAgo.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days, plural, =1{Kal yaad dilaya} other{{days} din pehle yaad dilaya}}'**
+  String remindedDaysAgo(int days);
+
+  /// No description provided for @remindedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{when} · {name} · {channel}'**
+  String remindedBy(String when, String name, String channel);
+
+  /// No description provided for @reminderChannelSms.
+  ///
+  /// In ur, this message translates to:
+  /// **'SMS'**
+  String get reminderChannelSms;
+
+  /// No description provided for @reminderChannelShare.
+  ///
+  /// In ur, this message translates to:
+  /// **'Share sheet'**
+  String get reminderChannelShare;
+
+  /// No description provided for @reminderLangUrdu.
+  ///
+  /// In ur, this message translates to:
+  /// **'اردو'**
+  String get reminderLangUrdu;
+
+  /// No description provided for @reminderLangRoman.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roman Urdu'**
+  String get reminderLangRoman;
+
+  /// No description provided for @reminderLangEnglish.
+  ///
+  /// In ur, this message translates to:
+  /// **'English'**
+  String get reminderLangEnglish;
+
+  /// No description provided for @chaseRemind.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad-dehani bhejein'**
+  String get chaseRemind;
+
+  /// No description provided for @chaseSelectLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab der wale chunein'**
+  String get chaseSelectLate;
+
+  /// No description provided for @chaseSendCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 ko yaad dilayein} other{{count} ko yaad dilayein}}'**
+  String chaseSendCount(int count);
+
+  /// No description provided for @chasePickHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jin ko yaad dilana hai un par tick lagayein'**
+  String get chasePickHint;
+
+  /// No description provided for @roundTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad-dehani'**
+  String get roundTitle;
+
+  /// No description provided for @roundResume.
+  ///
+  /// In ur, this message translates to:
+  /// **'{left, plural, =1{Yaad-dehani adhoori hai: 1 baqi} other{Yaad-dehani adhoori hai: {left} baqi}}'**
+  String roundResume(int left);
+
+  /// No description provided for @roundResumeAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jaari rakhein'**
+  String get roundResumeAction;
+
+  /// No description provided for @roundDiscard.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khatam karein'**
+  String get roundDiscard;
+
+  /// No description provided for @roundChannelSms.
+  ///
+  /// In ur, this message translates to:
+  /// **'SMS'**
+  String get roundChannelSms;
+
+  /// No description provided for @roundOpenWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp par kholein'**
+  String get roundOpenWhatsApp;
+
+  /// No description provided for @roundOpenSms.
+  ///
+  /// In ur, this message translates to:
+  /// **'SMS mein kholein'**
+  String get roundOpenSms;
+
+  /// No description provided for @roundSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bhej diya ✓'**
+  String get roundSent;
+
+  /// No description provided for @roundSkip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhor dein'**
+  String get roundSkip;
+
+  /// No description provided for @roundLater.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baad mein'**
+  String get roundLater;
+
+  /// No description provided for @roundDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab ho gaye: {sent} ko bheja, {skipped} chhore'**
+  String roundDone(int sent, int skipped);
+
+  /// No description provided for @roundFinish.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khatam'**
+  String get roundFinish;
+
+  /// No description provided for @roundNoNumber.
+  ///
+  /// In ur, this message translates to:
+  /// **'Number nahi, share sheet se jayega'**
+  String get roundNoNumber;
+
+  /// No description provided for @partyReminders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad-dehani'**
+  String get partyReminders;
+
+  /// No description provided for @partyReminderLanguage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis zabaan mein bhejein'**
+  String get partyReminderLanguage;
+
+  /// No description provided for @partyReminderOptOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ko yaad-dehani na bhejein'**
+  String get partyReminderOptOut;
+
+  /// No description provided for @settingsReminders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad-dehani ke paighamat'**
+  String get settingsReminders;
+
+  /// No description provided for @templatesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad-dehani ke paighamat'**
+  String get templatesTitle;
+
+  /// No description provided for @templatesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har gahak ko unki zabaan wala paigham jata hai. Braces wale khaane khud bhar jate hain; jis line ka khaana khaali ho woh nahi jati.'**
+  String get templatesHint;
+
+  /// No description provided for @templatesField.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paigham'**
+  String get templatesField;
+
+  /// No description provided for @templatesPreview.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aisa jayega'**
+  String get templatesPreview;
+
+  /// No description provided for @templatesSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paigham save ho gaya'**
+  String get templatesSaved;
+
+  /// No description provided for @templatesReset.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ke asal alfaz wapas layein'**
+  String get templatesReset;
+
+  /// No description provided for @templatesResetDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Asal alfaz wapas aa gaye'**
+  String get templatesResetDone;
+
+  /// No description provided for @templatesSampleName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aslam Karyana'**
+  String get templatesSampleName;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

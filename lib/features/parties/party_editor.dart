@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../khata/opening_balance_sheet.dart';
+import '../khata/reminder_queue_screen.dart' show reminderLanguageName;
 import '../subscription/plans_screen.dart';
 import 'party_groups.dart';
 import 'quick_party_sheet.dart' show creditDaysFrom;
@@ -55,6 +56,11 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   bool _buyerRegistered = false;
   bool _buyerOnAtl = false;
 
+  /// Which language their reminders go in, and whether they get any (M39).
+  /// Kept beside the party, in the shop's settings, not on the party row.
+  ReminderPrefs _reminders = ReminderPrefs.standard;
+  ReminderPrefs _remindersSaved = ReminderPrefs.standard;
+
   /// The party as saved, for an edit. Everything this form does not show —
   /// their type, NTN, WhatsApp number — is written back from here. The
   /// editor used to send only what it showed, and the writer stores the
@@ -83,9 +89,12 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
     final saved = firm == null
         ? null
         : await services.queries.partyDraft(firm.id, widget.party!.id);
+    final reminders = await services.udhaar.reminderPrefs(widget.party!.id);
     if (!mounted) return;
     setState(() {
       _saved = saved;
+      _reminders = reminders;
+      _remindersSaved = reminders;
       _loading = false;
       _address.text = saved?.addressLine1 ?? '';
       _city.text = saved?.city ?? '';
@@ -179,10 +188,17 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
       );
 
       final actor = services.actorNow();
+      final String id;
       if (_isEdit) {
-        await services.catalogue.updateParty(actor, widget.party!.id, draft);
+        id = widget.party!.id;
+        await services.catalogue.updateParty(actor, id, draft);
       } else {
-        await services.catalogue.addParty(actor, draft);
+        id = await services.catalogue.addParty(actor, draft);
+      }
+      // Written only when changed, so saving a phone number does not add a
+      // line to the activity log about reminders nobody touched.
+      if (_reminders != _remindersSaved) {
+        await services.udhaar.setReminderPrefs(id, _reminders);
       }
 
       if (!mounted) return;
@@ -513,6 +529,44 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             onChanged: (v) => setState(() => _buyerOnAtl = v),
                             contentPadding: EdgeInsets.zero,
                             title: Text(s.partyOnAtl),
+                          ),
+                          // How they are asked for money (M39): in their
+                          // own language, or not at all.
+                          const SizedBox(height: BlTokens.space4),
+                          Text(
+                            s.partyReminderLanguage,
+                            style: TextStyle(fontSize: 13, color: t.inkMuted),
+                          ),
+                          const SizedBox(height: BlTokens.space2),
+                          Wrap(
+                            spacing: BlTokens.space2,
+                            runSpacing: BlTokens.space2,
+                            children: [
+                              for (final language in ReminderLanguage.values)
+                                ChoiceChip(
+                                  selected: _reminders.language == language,
+                                  label: Text(
+                                    reminderLanguageName(s, language),
+                                  ),
+                                  onSelected: (_) => setState(
+                                    () => _reminders = ReminderPrefs(
+                                      language: language,
+                                      optedOut: _reminders.optedOut,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          SwitchListTile.adaptive(
+                            value: _reminders.optedOut,
+                            onChanged: (v) => setState(
+                              () => _reminders = ReminderPrefs(
+                                language: _reminders.language,
+                                optedOut: v,
+                              ),
+                            ),
+                            contentPadding: EdgeInsets.zero,
+                            title: Text(s.partyReminderOptOut),
                           ),
                           if (_failure != null) ...[
                             const SizedBox(height: BlTokens.space4),

@@ -5076,4 +5076,147 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get chaseFilterOverdue => 'Der wale';
+
+  @override
+  String get khataRemindOff => 'Yaad-dehani band';
+
+  @override
+  String get remindedToday => 'Aaj yaad dilaya';
+
+  @override
+  String remindedDaysAgo(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days din pehle yaad dilaya',
+      one: 'Kal yaad dilaya',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String remindedBy(String when, String name, String channel) {
+    return '$when · $name · $channel';
+  }
+
+  @override
+  String get reminderChannelSms => 'SMS';
+
+  @override
+  String get reminderChannelShare => 'Share sheet';
+
+  @override
+  String get reminderLangUrdu => 'اردو';
+
+  @override
+  String get reminderLangRoman => 'Roman Urdu';
+
+  @override
+  String get reminderLangEnglish => 'English';
+
+  @override
+  String get chaseRemind => 'Yaad-dehani bhejein';
+
+  @override
+  String get chaseSelectLate => 'Sab der wale chunein';
+
+  @override
+  String chaseSendCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ko yaad dilayein',
+      one: '1 ko yaad dilayein',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chasePickHint => 'Jin ko yaad dilana hai un par tick lagayein';
+
+  @override
+  String get roundTitle => 'Yaad-dehani';
+
+  @override
+  String roundResume(int left) {
+    String _temp0 = intl.Intl.pluralLogic(
+      left,
+      locale: localeName,
+      other: 'Yaad-dehani adhoori hai: $left baqi',
+      one: 'Yaad-dehani adhoori hai: 1 baqi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roundResumeAction => 'Jaari rakhein';
+
+  @override
+  String get roundDiscard => 'Khatam karein';
+
+  @override
+  String get roundChannelSms => 'SMS';
+
+  @override
+  String get roundOpenWhatsApp => 'WhatsApp par kholein';
+
+  @override
+  String get roundOpenSms => 'SMS mein kholein';
+
+  @override
+  String get roundSent => 'Bhej diya ✓';
+
+  @override
+  String get roundSkip => 'Chhor dein';
+
+  @override
+  String get roundLater => 'Baad mein';
+
+  @override
+  String roundDone(int sent, int skipped) {
+    return 'Sab ho gaye: $sent ko bheja, $skipped chhore';
+  }
+
+  @override
+  String get roundFinish => 'Khatam';
+
+  @override
+  String get roundNoNumber => 'Number nahi, share sheet se jayega';
+
+  @override
+  String get partyReminders => 'Yaad-dehani';
+
+  @override
+  String get partyReminderLanguage => 'Kis zabaan mein bhejein';
+
+  @override
+  String get partyReminderOptOut => 'Is gahak ko yaad-dehani na bhejein';
+
+  @override
+  String get settingsReminders => 'Yaad-dehani ke paighamat';
+
+  @override
+  String get templatesTitle => 'Yaad-dehani ke paighamat';
+
+  @override
+  String get templatesHint =>
+      'Har gahak ko unki zabaan wala paigham jata hai. Braces wale khaane khud bhar jate hain; jis line ka khaana khaali ho woh nahi jati.';
+
+  @override
+  String get templatesField => 'Paigham';
+
+  @override
+  String get templatesPreview => 'Aisa jayega';
+
+  @override
+  String get templatesSaved => 'Paigham save ho gaya';
+
+  @override
+  String get templatesReset => 'Dukaan ke asal alfaz wapas layein';
+
+  @override
+  String get templatesResetDone => 'Asal alfaz wapas aa gaye';
+
+  @override
+  String get templatesSampleName => 'Aslam Karyana';
 }

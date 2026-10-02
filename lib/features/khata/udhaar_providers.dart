@@ -82,3 +82,17 @@ final creditDaysProvider = FutureProvider.autoDispose.family<int?, String>((
   if (firm == null) return null;
   return (await services.queries.partyDraft(firm.id, partyId))?.creditDays;
 });
+
+/// One customer's reminder language and opt-out (M39).
+final reminderPrefsProvider = FutureProvider.autoDispose
+    .family<ReminderPrefs, String>((ref, partyId) async {
+      ref.watch(refreshTickProvider);
+      return ref.watch(appServicesProvider).udhaar.reminderPrefs(partyId);
+    });
+
+/// The reminders sent to one customer, newest first (M39).
+final remindersSentProvider = FutureProvider.autoDispose
+    .family<List<ReminderSent>, String>((ref, partyId) async {
+      ref.watch(refreshTickProvider);
+      return ref.watch(appServicesProvider).udhaar.remindersSent(partyId);
+    });

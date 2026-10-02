@@ -175,6 +175,8 @@ final class DriftUdhaarQueries implements UdhaarQueries {
         .get();
 
     final latest = _latestByParty(await _promises(firmId));
+    final prefs = await _allPrefs(firmId);
+    final reminded = await _lastReminded(firmId);
     final listed = <String>{};
     final parties = <DueParty>[];
     for (final r in rows) {
@@ -189,6 +191,8 @@ final class DriftUdhaarQueries implements UdhaarQueries {
           overdue: Money.paisa(r.read<int>('overdue')),
           dueToday: Money.paisa(r.read<int>('due_today')),
           promise: latest[party.id],
+          prefs: prefs[party.id] ?? ReminderPrefs.standard,
+          lastRemindedAt: reminded[party.id],
         ),
       );
     }
@@ -210,6 +214,8 @@ final class DriftUdhaarQueries implements UdhaarQueries {
           overdue: Money.zero,
           dueToday: Money.zero,
           promise: promise,
+          prefs: prefs[party.id] ?? ReminderPrefs.standard,
+          lastRemindedAt: reminded[party.id],
         ),
       );
     }
@@ -265,6 +271,156 @@ final class DriftUdhaarQueries implements UdhaarQueries {
       promisedTodayCount: promisedCount,
       promisedToday: promised,
     );
+  }
+
+  // -------------------------------------------------------------------------
+  // Reminders (M39)
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<String?> customReminderTemplate(
+    String firmId,
+    ReminderLanguage language,
+  ) async {
+    final row = await _db
+        .customSelect(
+          'SELECT setting_value FROM settings '
+          'WHERE firm_id = ? AND setting_key = ? AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(reminderTemplateKey(language)),
+          ],
+          readsFrom: {_db.settings},
+        )
+        .getSingleOrNull();
+    final text = row?.read<String>('setting_value') ?? '';
+    // Empty is how "back to the shop's words" is kept.
+    return text.trim().isEmpty ? null : text;
+  }
+
+  @override
+  Future<ReminderPrefs> reminderPrefs(String firmId, String partyId) async {
+    final row = await _db
+        .customSelect(
+          'SELECT setting_value FROM settings '
+          'WHERE firm_id = ? AND setting_key = ? AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(reminderPrefsKey(partyId)),
+          ],
+          readsFrom: {_db.settings},
+        )
+        .getSingleOrNull();
+    return _prefs(row?.read<String>('setting_value'));
+  }
+
+  @override
+  Future<List<ReminderSent>> remindersSent(
+    String firmId,
+    String partyId, {
+    int limit = 20,
+  }) async {
+    // The log is the audit trail: one REMINDER_SENT row per reminder, on
+    // the customer's own entity, so it rides idx_audit_entity and carries
+    // who (created_by) and when (at_utc) the way every audited act does.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT a.at_utc, a.after_json, COALESCE(u.name, '') AS by_name
+          FROM audit_log a
+          LEFT JOIN users u ON u.id = a.created_by
+          WHERE a.entity_table = 'parties' AND a.entity_id = ?1
+            AND a.firm_id = ?2 AND a.action_code = 'REMINDER_SENT'
+          ORDER BY a.at_utc DESC, a.id DESC
+          LIMIT ?3
+          ''',
+          variables: [
+            Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<int>(limit),
+          ],
+          readsFrom: {_db.auditLog, _db.users},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        () {
+          final after = _json(r.readNullable<String>('after_json'));
+          return ReminderSent(
+            partyId: partyId,
+            atUtc: DateTime.fromMillisecondsSinceEpoch(
+              r.read<int>('at_utc'),
+              isUtc: true,
+            ),
+            byName: r.read<String>('by_name'),
+            channel: ReminderChannel.parse(after['channel'] as String?),
+            language: ReminderLanguage.parse(after['language'] as String?),
+          );
+        }(),
+    ];
+  }
+
+  /// Every customer's reminder settings, by key range on the settings
+  /// index: `reminder.party.` up to `reminder.party/`.
+  Future<Map<String, ReminderPrefs>> _allPrefs(String firmId) async {
+    const prefix = 'reminder.party.';
+    final rows = await _db
+        .customSelect(
+          'SELECT setting_key, setting_value FROM settings '
+          'WHERE firm_id = ?1 AND setting_key >= ?2 AND setting_key < ?3 '
+          '  AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(prefix),
+            Variable<String>('reminder.party/'),
+          ],
+          readsFrom: {_db.settings},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        r.read<String>('setting_key').substring(prefix.length): _prefs(
+          r.read<String>('setting_value'),
+        ),
+    };
+  }
+
+  /// When each customer was last reminded, from the log.
+  Future<Map<String, DateTime>> _lastReminded(String firmId) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT entity_id, MAX(at_utc) AS at
+          FROM audit_log
+          WHERE firm_id = ?1 AND action_code = 'REMINDER_SENT'
+          GROUP BY entity_id
+          ''',
+          variables: [Variable<String>(firmId)],
+          readsFrom: {_db.auditLog},
+        )
+        .get();
+    return {
+      for (final r in rows)
+        r.read<String>('entity_id'): DateTime.fromMillisecondsSinceEpoch(
+          r.read<int>('at'),
+          isUtc: true,
+        ),
+    };
+  }
+
+  static ReminderPrefs _prefs(String? text) {
+    final json = _json(text);
+    return json.isEmpty ? ReminderPrefs.standard : ReminderPrefs.fromJson(json);
+  }
+
+  static Map<String, Object?> _json(String? text) {
+    if (text == null || text.isEmpty) return const {};
+    try {
+      final decoded = jsonDecode(text);
+      return decoded is Map<String, Object?> ? decoded : const {};
+    } on FormatException {
+      return const {};
+    }
   }
 
   // -------------------------------------------------------------------------

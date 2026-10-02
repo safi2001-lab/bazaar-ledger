@@ -5078,4 +5078,147 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get chaseFilterOverdue => 'Late ones';
+
+  @override
+  String get khataRemindOff => 'Not reminded';
+
+  @override
+  String get remindedToday => 'Reminded today';
+
+  @override
+  String remindedDaysAgo(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Reminded $days days ago',
+      one: 'Reminded yesterday',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String remindedBy(String when, String name, String channel) {
+    return '$when · $name · $channel';
+  }
+
+  @override
+  String get reminderChannelSms => 'SMS';
+
+  @override
+  String get reminderChannelShare => 'Share sheet';
+
+  @override
+  String get reminderLangUrdu => 'اردو (Urdu)';
+
+  @override
+  String get reminderLangRoman => 'Roman Urdu';
+
+  @override
+  String get reminderLangEnglish => 'English';
+
+  @override
+  String get chaseRemind => 'Send reminders';
+
+  @override
+  String get chaseSelectLate => 'Tick everyone late';
+
+  @override
+  String chaseSendCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Remind $count',
+      one: 'Remind 1',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chasePickHint => 'Tick the customers to remind';
+
+  @override
+  String get roundTitle => 'Reminders';
+
+  @override
+  String roundResume(int left) {
+    String _temp0 = intl.Intl.pluralLogic(
+      left,
+      locale: localeName,
+      other: 'A round of reminders is unfinished: $left left',
+      one: 'A round of reminders is unfinished: 1 left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get roundResumeAction => 'Carry on';
+
+  @override
+  String get roundDiscard => 'End it';
+
+  @override
+  String get roundChannelSms => 'SMS';
+
+  @override
+  String get roundOpenWhatsApp => 'Open in WhatsApp';
+
+  @override
+  String get roundOpenSms => 'Open in messages';
+
+  @override
+  String get roundSent => 'Sent ✓';
+
+  @override
+  String get roundSkip => 'Skip';
+
+  @override
+  String get roundLater => 'Later';
+
+  @override
+  String roundDone(int sent, int skipped) {
+    return 'All done: $sent sent, $skipped skipped';
+  }
+
+  @override
+  String get roundFinish => 'Finish';
+
+  @override
+  String get roundNoNumber => 'No number: goes by the share sheet';
+
+  @override
+  String get partyReminders => 'Reminders';
+
+  @override
+  String get partyReminderLanguage => 'Which language to send in';
+
+  @override
+  String get partyReminderOptOut => 'Don\'t send this customer reminders';
+
+  @override
+  String get settingsReminders => 'Reminder messages';
+
+  @override
+  String get templatesTitle => 'Reminder messages';
+
+  @override
+  String get templatesHint =>
+      'Each customer gets the message in their language. The parts in braces fill themselves in; a line whose part is empty is left out.';
+
+  @override
+  String get templatesField => 'Message';
+
+  @override
+  String get templatesPreview => 'It will read';
+
+  @override
+  String get templatesSaved => 'Message saved';
+
+  @override
+  String get templatesReset => 'Back to the shop\'s words';
+
+  @override
+  String get templatesResetDone => 'The shop\'s words are back';
+
+  @override
+  String get templatesSampleName => 'Aslam Karyana';
 }

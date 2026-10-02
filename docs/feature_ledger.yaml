@@ -1519,6 +1519,67 @@ milestones:
       - lib/features/khata/promise_sheet.dart
       - lib/features/khata/udhaar_due_card.dart
 
+  - id: M39
+    title: Forty reminders sent in an evening, each in the customer's own language
+    # Opened and sealed 3 Oct 2026 at 1/1. The chase list's "Send reminders"
+    # turns it into a tick list: tick the customers, or everyone late at
+    # once, and the round walks through them one by one. Each comes up with
+    # their message already written; one tap opens their WhatsApp chat with
+    # it typed (the same whatsapp:// intent as M3 and M30, never wa.me), or
+    # the phone's own messages app through the sms: intent — the shopkeeper
+    # taps Send there, from their own SIM, and the app never holds
+    # SEND_SMS. Back in the app: Sent, Skip, or Later (to the end of the
+    # round). The round is kept in the draft store after every step, beside
+    # the half-rung bill, so a ROM that kills the app while WhatsApp is open
+    # leaves the chase list offering to carry on from the next name.
+    #
+    # Messages come from a template per language — Urdu in its own script,
+    # Roman Urdu, English — with {name} {amount} {due} {shop} {phone}
+    # {wallet} {oldest_bill_date}; a line whose placeholder has nothing to
+    # say is left out whole rather than sent half-empty. The owner edits
+    # each in Settings with the message shown filled in, and puts the
+    # shop's own words back with one tap (kept as an empty value, so a
+    # better default shipped later still reaches shops that never changed
+    # theirs). The defaults greet, name the shop and the amount, ask kindly,
+    # threaten nothing, cite no law, and fit a lock screen — the rules M3's
+    # reminder kept; they now also say the oldest bill's due date, which is
+    # the term the shop gave, not a threat. {wallet} is the shop's Raast
+    # alias and bank account from Payment details, as plain text — never a
+    # payment link or a QR payload. The Urdu-script template is data, not an
+    # ARB string: the app speaks Roman Urdu and English; the customer's
+    # message is written in what the customer reads.
+    #
+    # Each customer has a reminder language and a "don't remind" switch on
+    # their form; one who opted out cannot be ticked, and their khata
+    # offers no Remind and says why. The khata's own Remind uses the same
+    # template and language.
+    #
+    # Storage, decided: templates and each customer's language/opt-out are
+    # rows in the firm's `settings` (`reminder.template.<lang>`,
+    # `reminder.party.<id>`), through TxRunner, audited, synced like every
+    # setting. The reminder log is the audit trail itself — one
+    # REMINDER_SENT row on the customer, with the channel and language in
+    # its JSON, who and when in its envelope — because "who reminded whom,
+    # when, and how" is exactly what an audit row is. The khata says "Aaj
+    # yaad dilaya · Malik Sahib · WhatsApp"; the chase list says when each
+    # was last reminded. A reminder sent from the round is logged when the
+    # shopkeeper says Sent; one sent from the khata's own button is logged
+    # when it is handed to WhatsApp, because that customer was chosen and
+    # the button pressed on purpose.
+    #
+    # Not built, and why: sending without the shopkeeper pressing Send (it
+    # needs SEND_SMS, which Play reserves for SMS apps, or WhatsApp's
+    # Business API, an account and a server); knowing whether WhatsApp
+    # actually delivered (the intent tells nobody); a picture of the bill
+    # attached to a reminder (a whatsapp:// link carries text only).
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/receivables/reminder_templates.dart
+      - lib/features/khata/reminder_queue.dart
+      - lib/features/khata/reminder_queue_screen.dart
+      - lib/features/khata/send_reminder.dart
+      - lib/features/settings/reminder_templates_screen.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6086,3 +6147,40 @@ features:
       - the chase list splits what is not yet due from what is late, and reads by the day promised
       - at 200% on a small phone the khata with its due days and promise, and the promise sheet, fit
       - at 200% on a small phone the chase list fits
+  - id: M39-REMIND-01
+    milestone: M39
+    title: Reminders go out in bulk, one by one, each in the customer's language from the owner's templates, and every one is logged
+    status: done
+    # The round is driven through the real screens against stand-ins for
+    # WhatsApp and the messages app at their platform seam; templates and
+    # preferences are settings rows; the log is the audit trail.
+    proof:
+      - a template has every placeholder filled from the khata
+      - a template leaves out a line that would say nothing
+      - a template leaves anything else in braces as the owner typed it
+      - a template says dates the way each language reads them
+      - the shop words in urdu greet, name the shop and the amount, and ask kindly
+      - the shop words in romanUrdu greet, name the shop and the amount, and ask kindly
+      - the shop words in english greet, name the shop and the amount, and ask kindly
+      - the shop words in urdu threaten nothing and cite no law
+      - the shop words in romanUrdu threaten nothing and cite no law
+      - the shop words in english threaten nothing and cite no law
+      - the shop words in urdu are short enough for a lock screen
+      - the shop words in romanUrdu are short enough for a lock screen
+      - the shop words in english are short enough for a lock screen
+      - the shop words in Urdu are written in Urdu script
+      - a customer reads Roman Urdu until told otherwise, and is reminded
+      - a customer keeps a language and an opt-out across a save
+      - the shop's payment details are its Raast alias and its bank account, as plain text
+      - reminders a template the owner writes is kept, and the shop words come back on reset
+      - reminders a customer keeps a language and an opt-out, and the chase list carries them
+      - reminders each reminder sent is logged with who, when and how, newest first, and the chase list knows the last
+      - reminders a reminder for somebody not in the khata is refused in words
+      - everyone late is ticked at once, and each reminder opens in WhatsApp in the customer's own language
+      - a round left half way picks up at the next name after the app is killed
+      - by SMS the phone's own messages app opens with the words typed, and the log says so
+      - the owner rewrites a reminder, the khata sends it, and the shop words come back
+      - a customer who asks not to be messaged is not offered a reminder, and the language picked is kept
+      - the shop's payment details reach the message
+      - at 200% on a small phone the round and the tick list fit
+      - at 200% on a small phone the reminder messages screen fits

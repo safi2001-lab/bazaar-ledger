@@ -117,6 +117,10 @@
       goes through the system share sheet, which needs no query at all; this
       entry exists so a future "send to WhatsApp" button can tell whether
       WhatsApp is installed before offering itself.
+
+      The sms intent (M39) lets a reminder open the phone's own messages app
+      with the words typed, so the shopkeeper taps Send from their own SIM.
+      It is a query, not a permission: the app never holds SEND_SMS.
     -->
     <queries>
         <package android:name="com.whatsapp" />
@@ -124,6 +128,10 @@
         <intent>
             <action android:name="android.intent.action.SEND" />
             <data android:mimeType="application/pdf" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="sms" />
         </intent>
     </queries>
 </manifest>

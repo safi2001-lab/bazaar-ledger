@@ -2977,5 +2977,71 @@
   "chaseFilterDueToday": "Aaj dena hai",
   "chaseFilterPromisedToday": "Aaj ka wada",
   "promiseToday": "Aaj",
-  "chaseFilterOverdue": "Der wale"
+  "chaseFilterOverdue": "Der wale",
+  "khataRemindOff": "Yaad-dehani band",
+  "remindedToday": "Aaj yaad dilaya",
+  "remindedDaysAgo": "{days, plural, =1{Kal yaad dilaya} other{{days} din pehle yaad dilaya}}",
+  "@remindedDaysAgo": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "remindedBy": "{when} · {name} · {channel}",
+  "@remindedBy": {
+    "placeholders": {
+      "when": {"type": "String"},
+      "name": {"type": "String"},
+      "channel": {"type": "String"}
+    }
+  },
+  "reminderChannelSms": "SMS",
+  "reminderChannelShare": "Share sheet",
+  "reminderLangUrdu": "اردو",
+  "reminderLangRoman": "Roman Urdu",
+  "reminderLangEnglish": "English",
+  "chaseRemind": "Yaad-dehani bhejein",
+  "chaseSelectLate": "Sab der wale chunein",
+  "chaseSendCount": "{count, plural, =1{1 ko yaad dilayein} other{{count} ko yaad dilayein}}",
+  "@chaseSendCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "chasePickHint": "Jin ko yaad dilana hai un par tick lagayein",
+  "roundTitle": "Yaad-dehani",
+  "roundResume": "{left, plural, =1{Yaad-dehani adhoori hai: 1 baqi} other{Yaad-dehani adhoori hai: {left} baqi}}",
+  "@roundResume": {
+    "placeholders": {
+      "left": {"type": "int"}
+    }
+  },
+  "roundResumeAction": "Jaari rakhein",
+  "roundDiscard": "Khatam karein",
+  "roundChannelSms": "SMS",
+  "roundOpenWhatsApp": "WhatsApp par kholein",
+  "roundOpenSms": "SMS mein kholein",
+  "roundSent": "Bhej diya ✓",
+  "roundSkip": "Chhor dein",
+  "roundLater": "Baad mein",
+  "roundDone": "Sab ho gaye: {sent} ko bheja, {skipped} chhore",
+  "@roundDone": {
+    "placeholders": {
+      "sent": {"type": "int"},
+      "skipped": {"type": "int"}
+    }
+  },
+  "roundFinish": "Khatam",
+  "roundNoNumber": "Number nahi, share sheet se jayega",
+  "partyReminders": "Yaad-dehani",
+  "partyReminderLanguage": "Kis zabaan mein bhejein",
+  "partyReminderOptOut": "Is gahak ko yaad-dehani na bhejein",
+  "settingsReminders": "Yaad-dehani ke paighamat",
+  "templatesTitle": "Yaad-dehani ke paighamat",
+  "templatesHint": "Har gahak ko unki zabaan wala paigham jata hai. Braces wale khaane khud bhar jate hain; jis line ka khaana khaali ho woh nahi jati.",
+  "templatesField": "Paigham",
+  "templatesPreview": "Aisa jayega",
+  "templatesSaved": "Paigham save ho gaya",
+  "templatesReset": "Dukaan ke asal alfaz wapas layein",
+  "templatesResetDone": "Asal alfaz wapas aa gaye",
+  "templatesSampleName": "Aslam Karyana"
 }

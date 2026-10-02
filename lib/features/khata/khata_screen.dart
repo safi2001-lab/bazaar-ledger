@@ -48,6 +48,12 @@ class KhataScreen extends ConsumerWidget {
     // fetched when its list was drawn, and a payment taken here changes it.
     final current = ref.watch(partyProvider(party.id)).valueOrNull ?? party;
 
+    // A customer who asked not to be messaged is not offered a reminder
+    // (M39); the balance card says so instead.
+    final optedOut =
+        ref.watch(reminderPrefsProvider(party.id)).valueOrNull?.optedOut ??
+        false;
+
     // A supplier's khata is what the shop owes them; a customer's is what
     // they owe the shop. A party who is both gets both, each against its own
     // bills, and never one netted figure neither side agreed to.
@@ -67,12 +73,11 @@ class KhataScreen extends ConsumerWidget {
               shareStatement(context, ref, current, owedToUs: receivable),
             ),
           ),
-          if (current.balance.isPositive)
+          if (current.balance.isPositive && !optedOut)
             BlIconButton(
               icon: Icons.chat_outlined,
               label: s.khataRemind,
-              onPressed: () =>
-                  unawaited(_remind(context, ref, current, bills.valueOrNull)),
+              onPressed: () => unawaited(_remind(context, ref, current)),
             ),
           // A charge with no sale behind it: a bank's bounce fee, a
           // transporter's fare.
@@ -282,47 +287,71 @@ class KhataScreen extends ConsumerWidget {
 /// Chasing udhaar is the work a khata exists for. A shopkeeper with forty
 /// names spends their evening on it, and the reason to move the book onto a
 /// phone is that the phone can also send the message.
+///
+/// Since M39 the message is the shop's template in the customer's own
+/// language, with the oldest bill, its due date and the shop's payment
+/// details filled in; and once it has been handed over it goes in the
+/// khata's log, with who sent it and how. The shopkeeper chose this one
+/// customer and tapped Remind, so handing it over is taken as sending it;
+/// the evening round asks instead.
 Future<void> _remind(
   BuildContext context,
   WidgetRef ref,
   PartySummary party,
-  List<OpenBill>? bills,
 ) async {
   final s = AppStrings.of(context);
-  final firm = ref.read(firmProvider).valueOrNull;
-  if (firm == null) return;
+  final services = ref.read(appServicesProvider);
+  final messenger = ScaffoldMessenger.of(context);
+  final container = ProviderScope.containerOf(context, listen: false);
 
-  final outcome = await sendReminder(
-    shopName: firm.name,
-    party: party,
-    // Oldest first already, so the first is the one the customer has been
-    // sitting on. "Since June" is what makes a reminder land.
-    oldestBillDate: (bills ?? const []).firstOrNull?.dateLocal,
-  );
+  final ready = await services.udhaar.reminderFor(party.id);
+  final outcome = ready == null
+      ? ReminderOutcome.nothingOwed
+      : await sendReminder(message: ready.message, party: ready.party);
 
-  if (!context.mounted) return;
+  final channel = channelOf(outcome);
+  if (ready != null && channel != null) {
+    try {
+      await services.udhaar.recordReminderSent(
+        party.id,
+        channel: channel,
+        language: ready.prefs.language,
+        amount: ready.party.balance,
+      );
+      container.bumpRefresh();
+    } on PermissionDenied {
+      // A role that may not keep the khata's log still sent the message;
+      // the message is not taken back for want of a line in the log.
+    }
+  }
+
   final message = switch (outcome) {
     ReminderOutcome.noNumber => s.khataRemindNoPhone,
     ReminderOutcome.nothingOwed => s.khataRemindNothingOwed,
     _ => null,
   };
   if (message != null) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
+    messenger.showSnackBar(SnackBar(content: Text(message)));
   }
 }
 
 /// What this customer owes, or what the shop is holding for them.
-class _BalanceCard extends StatelessWidget {
+class _BalanceCard extends ConsumerWidget {
   const _BalanceCard({required this.party});
 
   final PartySummary party;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    final optedOut =
+        ref.watch(reminderPrefsProvider(party.id)).valueOrNull?.optedOut ??
+        false;
+    final lastSent = ref
+        .watch(remindersSentProvider(party.id))
+        .valueOrNull
+        ?.firstOrNull;
 
     // A negative balance is money the shop is holding, not a debt that has
     // gone the wrong way, and it is labelled as such. "Owes −2,000" is a
@@ -362,10 +391,37 @@ class _BalanceCard extends StatelessWidget {
               icon: Icons.report_gmailerrorred_outlined,
             ),
           ],
+          // They asked not to be messaged (M39): the Remind button is gone,
+          // and this says why.
+          if (optedOut) ...[
+            const SizedBox(height: BlTokens.space2),
+            BlChip(s.khataRemindOff, icon: Icons.notifications_off_outlined),
+          ],
+          // When the shop last asked, who asked, and how (M39): the first
+          // thing to know before asking again.
+          if (lastSent != null) ...[
+            const SizedBox(height: BlTokens.space2),
+            Text(
+              remindedLine(s, lastSent, ref.watch(appServicesProvider)),
+              style: TextStyle(fontSize: 12, color: t.inkMuted),
+            ),
+          ],
         ],
       ),
     );
   }
+}
+
+/// "Reminded 3 days ago · Malik Sahib · WhatsApp".
+String remindedLine(AppStrings s, ReminderSent sent, AppServices services) {
+  final days = sent.daysAgo(services.udhaar.today);
+  final when = days <= 0 ? s.remindedToday : s.remindedDaysAgo(days);
+  final channel = switch (sent.channel) {
+    ReminderChannel.whatsapp => s.sendWhatsAppShort,
+    ReminderChannel.sms => s.reminderChannelSms,
+    ReminderChannel.share => s.reminderChannelShare,
+  };
+  return s.remindedBy(when, sent.byName, channel);
 }
 
 /// What has happened on this khata, newest first.

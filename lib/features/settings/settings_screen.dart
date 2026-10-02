@@ -21,6 +21,7 @@ import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
 import 'bill_design_screen.dart';
 import 'payment_details_screen.dart';
+import 'reminder_templates_screen.dart';
 import 'shop_details_screen.dart';
 
 /// Language, theme, shop, how customers can pay, and whether the books are
@@ -176,6 +177,18 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const BillDesignScreen(),
+                  ),
+                ),
+              ),
+            // The words reminders go out in, per language (M39). Beside the
+            // payment details, which fill their {wallet}.
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.campaign_outlined,
+                label: s.settingsReminders,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ReminderTemplatesScreen(),
                   ),
                 ),
               ),
