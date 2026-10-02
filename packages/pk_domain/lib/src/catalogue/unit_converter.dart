@@ -182,6 +182,13 @@ final class UnitConverter {
     return seen;
   }
 
+  /// The conversions that belong to [itemId] alone: its packs (M53), its
+  /// own size of bori. Not the shop's, which every item shares.
+  List<UnitEdge> ownEdgesOf(String itemId) => [
+    for (final e in _edges)
+      if (e.itemId == itemId) e,
+  ];
+
   /// An item's own conversions shadow the shop's for the same pair.
   ///
   /// One shop can sell flour in 50 kg bori and rice in 25 kg bori and call

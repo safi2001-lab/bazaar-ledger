@@ -10,8 +10,10 @@ import '../batches/stock_places_screen.dart';
 import '../scan/scan_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'item_history_screen.dart';
+import 'item_packs_field.dart';
 import 'item_picture.dart';
 import 'label_print_sheet.dart';
+import 'shelf_rule.dart';
 import 'stock_adjust_sheet.dart';
 
 /// Add an item, or change one.
@@ -88,6 +90,16 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   );
 
   String? _unitId;
+
+  /// What the counter does when this runs out (M53); null follows the
+  /// shop's rule.
+  late NegativeStock? _rule = widget.item?.negativeStock;
+
+  /// The packs as edited here, or null while untouched — and an untouched
+  /// list is not sent, so a save that changes the price never rewrites the
+  /// carton (M53).
+  List<ItemPack>? _packs;
+
   bool _busy = false;
   String? _failure;
 
@@ -170,6 +182,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
             : Qty.tryParse(_openingStock.text) ?? Qty.zero,
         openingRate: Rate.tryParse(_purchaseRate.text) ?? Rate.zero,
         minStock: Qty.tryParse(_minStock.text) ?? Qty.zero,
+        negativeStock: _rule,
+        packs: _packs,
       );
 
       final actor = services.actorNow();
@@ -266,6 +280,19 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       if (u.code == 'pcs') return u.id;
     }
     return units.first.id;
+  }
+
+  /// The packs the item already has, from the shop's conversions (M53).
+  List<ItemPack> _savedPacks(String baseUnitId, List<ShopUnit> units) {
+    final item = widget.item;
+    final converter = ref.watch(unitConverterProvider).valueOrNull;
+    if (item == null || converter == null) return const [];
+    return packsOf(
+      converter,
+      itemId: item.id,
+      baseUnitId: baseUnitId,
+      codes: {for (final u in units) u.id: u.code},
+    );
   }
 
   /// Reads a barcode off the packet into the field.
@@ -668,6 +695,32 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                 if (!_busy) _save();
                               },
                             ),
+                            // M53, folded here with the trade price: most
+                            // items follow the shop's rule and come loose,
+                            // and the wholesaler who packs by the carton is
+                            // the one who opens this.
+                            //
+                            // What happens when it runs out: the shop's
+                            // rule unless the owner gives this one its own.
+                            if (_tracksStock) ...[
+                              const SizedBox(height: BlTokens.space4),
+                              ShelfRuleField(
+                                value: _rule,
+                                onChanged: (rule) =>
+                                    setState(() => _rule = rule),
+                              ),
+                            ],
+                            // The packs it comes in, each with its size.
+                            if (unitId != null) ...[
+                              const SizedBox(height: BlTokens.space4),
+                              ItemPacksField(
+                                packs: _packs ?? _savedPacks(unitId, unitList),
+                                baseUnitId: unitId,
+                                units: unitList,
+                                onChanged: (packs) =>
+                                    setState(() => _packs = packs),
+                              ),
+                            ],
                           ],
                         ),
                         if (_failure != null) ...[

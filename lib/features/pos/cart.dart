@@ -540,6 +540,17 @@ class CartNotifier extends Notifier<Cart> {
     state = lines.isEmpty ? const Cart() : state.copyWith(lines: lines);
   }
 
+  // M53: the line put back as it last stood within the shelf, or taken off
+  // when it never did — what the counter does when the shelf says no
+  // (shelf_guard.dart).
+  void putBack(String itemId, CartLine? before) {
+    final lines = [
+      for (final l in state.lines)
+        if (l.item.id != itemId) l else ?before,
+    ];
+    state = lines.isEmpty ? const Cart() : state.copyWith(lines: lines);
+  }
+
   /// Sells this line in a different unit, carrying the price with it.
   ///
   /// The quantity is NOT converted: a cashier who switches from pieces to

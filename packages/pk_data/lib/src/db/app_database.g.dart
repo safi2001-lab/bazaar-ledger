@@ -20093,6 +20093,18 @@ class Items extends Table with TableInfo<Items, Item> {
     requiredDuringInsert: false,
     $customConstraints: '',
   );
+  static const VerificationMeta _negativeStockMeta = const VerificationMeta(
+    'negativeStock',
+  );
+  late final GeneratedColumn<String> negativeStock = GeneratedColumn<String>(
+    'negative_stock',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'CHECK (negative_stock IN (\'allow\', \'warn\', \'block\'))',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -20133,6 +20145,7 @@ class Items extends Table with TableInfo<Items, Item> {
     imageAttachmentId,
     isActive,
     vipRateMilliPaisa,
+    negativeStock,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -20453,6 +20466,15 @@ class Items extends Table with TableInfo<Items, Item> {
         ),
       );
     }
+    if (data.containsKey('negative_stock')) {
+      context.handle(
+        _negativeStockMeta,
+        negativeStock.isAcceptableOrUnknown(
+          data['negative_stock']!,
+          _negativeStockMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -20614,6 +20636,10 @@ class Items extends Table with TableInfo<Items, Item> {
         DriftSqlType.int,
         data['${effectivePrefix}vip_rate_milli_paisa'],
       ),
+      negativeStock: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}negative_stock'],
+      ),
     );
   }
 
@@ -20686,6 +20712,14 @@ class Item extends DataClass implements Insertable<Item> {
   /// the end. Empty means the item has none, and a VIP buyer pays the
   /// wholesale price, or the retail one where there is no wholesale price.
   final int? vipRateMilliPaisa;
+
+  /// What the counter does when a sale would take this item below nothing
+  /// (M53): sell on ('allow'), ask the cashier first ('warn'), or refuse
+  /// ('block'). Empty follows the shop's own setting, which is what nearly
+  /// every item does; a column rather than a settings row so it travels to
+  /// the other counters with the item it belongs to. Added in v10, last
+  /// because SQLite adds a column at the end.
+  final String? negativeStock;
   const Item({
     required this.id,
     required this.firmId,
@@ -20725,6 +20759,7 @@ class Item extends DataClass implements Insertable<Item> {
     this.imageAttachmentId,
     required this.isActive,
     this.vipRateMilliPaisa,
+    this.negativeStock,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -20795,6 +20830,9 @@ class Item extends DataClass implements Insertable<Item> {
     if (!nullToAbsent || vipRateMilliPaisa != null) {
       map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa);
     }
+    if (!nullToAbsent || negativeStock != null) {
+      map['negative_stock'] = Variable<String>(negativeStock);
+    }
     return map;
   }
 
@@ -20862,6 +20900,9 @@ class Item extends DataClass implements Insertable<Item> {
       vipRateMilliPaisa: vipRateMilliPaisa == null && nullToAbsent
           ? const Value.absent()
           : Value(vipRateMilliPaisa),
+      negativeStock: negativeStock == null && nullToAbsent
+          ? const Value.absent()
+          : Value(negativeStock),
     );
   }
 
@@ -20927,6 +20968,7 @@ class Item extends DataClass implements Insertable<Item> {
       vipRateMilliPaisa: serializer.fromJson<int?>(
         json['vip_rate_milli_paisa'],
       ),
+      negativeStock: serializer.fromJson<String?>(json['negative_stock']),
     );
   }
   @override
@@ -20979,6 +21021,7 @@ class Item extends DataClass implements Insertable<Item> {
       'image_attachment_id': serializer.toJson<String?>(imageAttachmentId),
       'is_active': serializer.toJson<int>(isActive),
       'vip_rate_milli_paisa': serializer.toJson<int?>(vipRateMilliPaisa),
+      'negative_stock': serializer.toJson<String?>(negativeStock),
     };
   }
 
@@ -21021,6 +21064,7 @@ class Item extends DataClass implements Insertable<Item> {
     Value<String?> imageAttachmentId = const Value.absent(),
     int? isActive,
     Value<int?> vipRateMilliPaisa = const Value.absent(),
+    Value<String?> negativeStock = const Value.absent(),
   }) => Item(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
@@ -21072,6 +21116,9 @@ class Item extends DataClass implements Insertable<Item> {
     vipRateMilliPaisa: vipRateMilliPaisa.present
         ? vipRateMilliPaisa.value
         : this.vipRateMilliPaisa,
+    negativeStock: negativeStock.present
+        ? negativeStock.value
+        : this.negativeStock,
   );
   Item copyWithCompanion(ItemsCompanion data) {
     return Item(
@@ -21159,6 +21206,9 @@ class Item extends DataClass implements Insertable<Item> {
       vipRateMilliPaisa: data.vipRateMilliPaisa.present
           ? data.vipRateMilliPaisa.value
           : this.vipRateMilliPaisa,
+      negativeStock: data.negativeStock.present
+          ? data.negativeStock.value
+          : this.negativeStock,
     );
   }
 
@@ -21202,7 +21252,8 @@ class Item extends DataClass implements Insertable<Item> {
           ..write('openingRateMilliPaisa: $openingRateMilliPaisa, ')
           ..write('imageAttachmentId: $imageAttachmentId, ')
           ..write('isActive: $isActive, ')
-          ..write('vipRateMilliPaisa: $vipRateMilliPaisa')
+          ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
+          ..write('negativeStock: $negativeStock')
           ..write(')'))
         .toString();
   }
@@ -21247,6 +21298,7 @@ class Item extends DataClass implements Insertable<Item> {
     imageAttachmentId,
     isActive,
     vipRateMilliPaisa,
+    negativeStock,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -21289,7 +21341,8 @@ class Item extends DataClass implements Insertable<Item> {
           other.openingRateMilliPaisa == this.openingRateMilliPaisa &&
           other.imageAttachmentId == this.imageAttachmentId &&
           other.isActive == this.isActive &&
-          other.vipRateMilliPaisa == this.vipRateMilliPaisa);
+          other.vipRateMilliPaisa == this.vipRateMilliPaisa &&
+          other.negativeStock == this.negativeStock);
 }
 
 class ItemsCompanion extends UpdateCompanion<Item> {
@@ -21331,6 +21384,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
   final Value<String?> imageAttachmentId;
   final Value<int> isActive;
   final Value<int?> vipRateMilliPaisa;
+  final Value<String?> negativeStock;
   final Value<int> rowid;
   const ItemsCompanion({
     this.id = const Value.absent(),
@@ -21371,6 +21425,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.imageAttachmentId = const Value.absent(),
     this.isActive = const Value.absent(),
     this.vipRateMilliPaisa = const Value.absent(),
+    this.negativeStock = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ItemsCompanion.insert({
@@ -21412,6 +21467,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.imageAttachmentId = const Value.absent(),
     this.isActive = const Value.absent(),
     this.vipRateMilliPaisa = const Value.absent(),
+    this.negativeStock = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -21463,6 +21519,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Expression<String>? imageAttachmentId,
     Expression<int>? isActive,
     Expression<int>? vipRateMilliPaisa,
+    Expression<String>? negativeStock,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -21511,6 +21568,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
       if (imageAttachmentId != null) 'image_attachment_id': imageAttachmentId,
       if (isActive != null) 'is_active': isActive,
       if (vipRateMilliPaisa != null) 'vip_rate_milli_paisa': vipRateMilliPaisa,
+      if (negativeStock != null) 'negative_stock': negativeStock,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -21554,6 +21612,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Value<String?>? imageAttachmentId,
     Value<int>? isActive,
     Value<int?>? vipRateMilliPaisa,
+    Value<String?>? negativeStock,
     Value<int>? rowid,
   }) {
     return ItemsCompanion(
@@ -21600,6 +21659,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
       imageAttachmentId: imageAttachmentId ?? this.imageAttachmentId,
       isActive: isActive ?? this.isActive,
       vipRateMilliPaisa: vipRateMilliPaisa ?? this.vipRateMilliPaisa,
+      negativeStock: negativeStock ?? this.negativeStock,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -21731,6 +21791,9 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     if (vipRateMilliPaisa.present) {
       map['vip_rate_milli_paisa'] = Variable<int>(vipRateMilliPaisa.value);
     }
+    if (negativeStock.present) {
+      map['negative_stock'] = Variable<String>(negativeStock.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -21778,6 +21841,7 @@ class ItemsCompanion extends UpdateCompanion<Item> {
           ..write('imageAttachmentId: $imageAttachmentId, ')
           ..write('isActive: $isActive, ')
           ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
+          ..write('negativeStock: $negativeStock, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -39384,11 +39448,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final UnitConversions unitConversions = UnitConversions(this);
   late final Index idxUconvFirmwide = Index(
     'idx_uconv_firmwide',
-    'CREATE UNIQUE INDEX idx_uconv_firmwide ON unit_conversions (firm_id, from_unit_id, to_unit_id) WHERE item_id IS NULL',
+    'CREATE UNIQUE INDEX idx_uconv_firmwide ON unit_conversions (firm_id, from_unit_id, to_unit_id) WHERE item_id IS NULL AND deleted_at_utc IS NULL',
   );
   late final Index idxUconvPeritem = Index(
     'idx_uconv_peritem',
-    'CREATE UNIQUE INDEX idx_uconv_peritem ON unit_conversions (firm_id, item_id, from_unit_id, to_unit_id) WHERE item_id IS NOT NULL',
+    'CREATE UNIQUE INDEX idx_uconv_peritem ON unit_conversions (firm_id, item_id, from_unit_id, to_unit_id) WHERE item_id IS NOT NULL AND deleted_at_utc IS NULL',
   );
   late final Index idxUconvFirmItem = Index(
     'idx_uconv_firm_item',
@@ -61827,6 +61891,7 @@ typedef $ItemsCreateCompanionBuilder =
       Value<String?> imageAttachmentId,
       Value<int> isActive,
       Value<int?> vipRateMilliPaisa,
+      Value<String?> negativeStock,
       Value<int> rowid,
     });
 typedef $ItemsUpdateCompanionBuilder =
@@ -61869,6 +61934,7 @@ typedef $ItemsUpdateCompanionBuilder =
       Value<String?> imageAttachmentId,
       Value<int> isActive,
       Value<int?> vipRateMilliPaisa,
+      Value<String?> negativeStock,
       Value<int> rowid,
     });
 
@@ -62317,6 +62383,11 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
 
   ColumnFilters<int> get vipRateMilliPaisa => $composableBuilder(
     column: $table.vipRateMilliPaisa,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get negativeStock => $composableBuilder(
+    column: $table.negativeStock,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -62863,6 +62934,11 @@ class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get negativeStock => $composableBuilder(
+    column: $table.negativeStock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $FirmsOrderingComposer get firmId {
     final $FirmsOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -63181,6 +63257,11 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
 
   GeneratedColumn<int> get vipRateMilliPaisa => $composableBuilder(
     column: $table.vipRateMilliPaisa,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get negativeStock => $composableBuilder(
+    column: $table.negativeStock,
     builder: (column) => column,
   );
 
@@ -63652,6 +63733,7 @@ class $ItemsTableManager
                 Value<String?> imageAttachmentId = const Value.absent(),
                 Value<int> isActive = const Value.absent(),
                 Value<int?> vipRateMilliPaisa = const Value.absent(),
+                Value<String?> negativeStock = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion(
                 id: id,
@@ -63692,6 +63774,7 @@ class $ItemsTableManager
                 imageAttachmentId: imageAttachmentId,
                 isActive: isActive,
                 vipRateMilliPaisa: vipRateMilliPaisa,
+                negativeStock: negativeStock,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -63734,6 +63817,7 @@ class $ItemsTableManager
                 Value<String?> imageAttachmentId = const Value.absent(),
                 Value<int> isActive = const Value.absent(),
                 Value<int?> vipRateMilliPaisa = const Value.absent(),
+                Value<String?> negativeStock = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion.insert(
                 id: id,
@@ -63774,6 +63858,7 @@ class $ItemsTableManager
                 imageAttachmentId: imageAttachmentId,
                 isActive: isActive,
                 vipRateMilliPaisa: vipRateMilliPaisa,
+                negativeStock: negativeStock,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

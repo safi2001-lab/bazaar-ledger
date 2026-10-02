@@ -353,6 +353,10 @@ final class ImportServices {
               tracksStock: item.tracksStock,
               tracksBatch: item.tracksBatch,
               tracksSerial: item.tracksSerial,
+              // The sheet says nothing of it, so the item keeps its own
+              // rule for selling below nothing (M53); its packs are left
+              // alone by saying nothing of them either.
+              negativeStock: item.negativeStock,
             ),
           );
           updated++;

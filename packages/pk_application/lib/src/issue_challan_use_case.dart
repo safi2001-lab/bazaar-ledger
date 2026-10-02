@@ -8,11 +8,16 @@ final class IssueChallanUseCase {
     required this.writer,
     this.calculator = const SaleCalculator(),
     this.builder = const DeliveryChallanBuilder(),
+    this.shelf,
   });
 
   final ChallanWriter writer;
   final SaleCalculator calculator;
   final DeliveryChallanBuilder builder;
+
+  /// The shelf at the moment the goods go (M53): a challan takes them off
+  /// it as a bill does, so a blocked item it cannot cover is refused.
+  final ShelfReader? shelf;
 
   /// Returns the challan's id and number.
   Future<({String id, String docNo})> call(
@@ -26,6 +31,17 @@ final class IssueChallanUseCase {
     if (draft.partyId == null) {
       throw const ChallanRefused(
         'A challan has to name the customer the goods are going to.',
+      );
+    }
+    // Never into thin air (M53): the goods leave on the challan, not on the
+    // bill made from it later, so this is where the shelf is asked — the
+    // shop floor's, which is where a challan's goods are taken from.
+    if (shelf case final reader?) {
+      await refuseBlockedShortfalls(
+        reader,
+        actor,
+        draft.lines,
+        locationCode: 'MAIN',
       );
     }
     // The goods leave at the average as it stands now, as a sale's do; the

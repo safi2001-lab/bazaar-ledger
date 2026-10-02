@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 9;
+  static const currentSchemaVersion = 10;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -176,6 +176,25 @@ class AppDatabase extends _$AppDatabase {
           // and a backup from before M56 is re-keyed when it is restored.
           from8To9: (migrator, schema) async {
             await respellNames();
+          },
+          // v9 → v10 (M53): what the counter does when an item would go
+          // below nothing, and packs that can come back. items gains one
+          // column in place, empty on every existing item, which follows
+          // the shop's own setting exactly as it would have. The two unique
+          // indexes on unit_conversions are dropped and made again counting
+          // live rows only, so a carton struck off an item no longer holds
+          // its place against a new one. Dropping an index touches no row,
+          // and every pair that was unique among all rows is unique among
+          // the live ones, so the new index always builds.
+          from9To10: (migrator, schema) async {
+            await migrator.addColumn(schema.items, schema.items.negativeStock);
+            for (final index in [
+              schema.idxUconvFirmwide,
+              schema.idxUconvPeritem,
+            ]) {
+              await migrator.drop(index);
+              await migrator.create(index);
+            }
           },
         )(m, from, to);
       } on ArgumentError {

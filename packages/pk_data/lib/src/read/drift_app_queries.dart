@@ -2320,19 +2320,28 @@ final class DriftAppQueries implements AppQueries {
             -- Only where the shop has set a floor. Defaulting to zero would
             -- turn every item that has ever sold out into a permanent alert,
             -- and a list that is always full is a list nobody reads.
-            AND i.min_stock_thousandths > 0
-            AND stock_thousandths <= i.min_stock_thousandths
-          -- Worst first: how far below the floor, as a fraction of it, so a
-          -- staple that is 90% gone outranks a slow-moving line that is one
-          -- unit short. Ordering by the raw shortfall would put a 500-piece
-          -- line that is ten short above a 2-piece line nearly out.
+            --
+            -- And anything below nothing, floor or none (M53): sold past
+            -- what it had, by two counters each selling the last one while
+            -- apart or by a cashier who was asked and said sell anyway. That
+            -- is not a reorder, it is a count somebody has to make, and it
+            -- is rare enough never to fill the list.
+            AND (stock_thousandths < 0
+                 OR (i.min_stock_thousandths > 0
+                     AND stock_thousandths <= i.min_stock_thousandths))
+          -- Below nothing first (M53). Then worst: how far below the floor,
+          -- as a fraction of it, so a staple that is 90% gone outranks a
+          -- slow-moving line that is one unit short. Ordering by the raw
+          -- shortfall would put a 500-piece line that is ten short above a
+          -- 2-piece line nearly out.
           --
           -- Both operands are INTEGER columns, so this is SQLite's integer
           -- division and there is no floating point in it anywhere. The
           -- result is a truncated per-mille used as a sort key, never a
           -- number anyone is shown.
-          ORDER BY (stock_thousandths * 1000) -- arch_check: allow no_floating_point_money — integer sort key
-                     / i.min_stock_thousandths,
+          ORDER BY stock_thousandths < 0 DESC,
+                   (stock_thousandths * 1000) -- arch_check: allow no_floating_point_money — integer sort key
+                     / NULLIF(i.min_stock_thousandths, 0),
                    i.name_search
           LIMIT ?
           ''',
@@ -3060,6 +3069,11 @@ final class DriftAppQueries implements AppQueries {
     tracksStock: r.read<int>('track_stock') == 1,
     tracksBatch: r.read<int>('track_batch') == 1,
     tracksSerial: r.read<int>('track_serial') == 1,
+    // The item's own rule (M53); every query here reads `i.*`, so the
+    // column is there, and an item that follows the shop's reads null.
+    negativeStock: NegativeStock.fromCode(
+      r.readNullable<String>('negative_stock'),
+    ),
   );
 
   /// Null stays null rather than becoming zero.

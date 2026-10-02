@@ -10453,6 +10453,156 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Likhein'**
   String get shortageWrite;
+
+  /// No description provided for @shelfRuleTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock khatam ho to'**
+  String get shelfRuleTitle;
+
+  /// No description provided for @shelfRuleAllow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechte rahein'**
+  String get shelfRuleAllow;
+
+  /// No description provided for @shelfRuleAllowHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi sawal nahi. Stock minus mein chala jaye ga aur list mein laal dikhe ga.'**
+  String get shelfRuleAllowHint;
+
+  /// No description provided for @shelfRuleWarn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle poochein'**
+  String get shelfRuleWarn;
+
+  /// No description provided for @shelfRuleWarnHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier se poocha jaye ga: stock itna hi hai, phir bhi bechein?'**
+  String get shelfRuleWarnHint;
+
+  /// No description provided for @shelfRuleBlock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Na bechein'**
+  String get shelfRuleBlock;
+
+  /// No description provided for @shelfRuleBlockHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock se zyada nahi bikta. Maalik stock theek kare ya item ki setting badle.'**
+  String get shelfRuleBlockHint;
+
+  /// No description provided for @shelfRuleShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ki setting ({rule})'**
+  String shelfRuleShop(String rule);
+
+  /// No description provided for @shelfRuleShopHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har us item par lagti hai jis ki apni setting nahi. Har item apni bhi rakh sakta hai.'**
+  String get shelfRuleShopHint;
+
+  /// No description provided for @shelfRuleOwnerOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh setting sirf maalik badal sakta hai.'**
+  String get shelfRuleOwnerOnly;
+
+  /// No description provided for @shelfWarnTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock kam hai'**
+  String get shelfWarnTitle;
+
+  /// No description provided for @shelfWarnAsk.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock sirf {onHand} hai — phir bhi bechein?'**
+  String shelfWarnAsk(String onHand);
+
+  /// No description provided for @shelfOnBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'{item}: bill par {wanted}'**
+  String shelfOnBill(String item, String wanted);
+
+  /// No description provided for @shelfSellAnyway.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haan, bechein'**
+  String get shelfSellAnyway;
+
+  /// No description provided for @shelfBlockedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock se zyada nahi bik sakta'**
+  String get shelfBlockedTitle;
+
+  /// No description provided for @shelfBlocked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock sirf {onHand} hai — is se zyada nahi bikta. Maalik stock theek kare ya item ki setting badle.'**
+  String shelfBlocked(String onHand);
+
+  /// No description provided for @itemsBelowNothing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock minus mein'**
+  String get itemsBelowNothing;
+
+  /// No description provided for @itemPacksTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Packing (carton, dabba, bori)'**
+  String get itemPacksTitle;
+
+  /// No description provided for @itemPacksHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aik pack mein kitna maal hai. Bill aur khareed pack se bhi ho sakti hai; stock {unit} mein hi ginta hai.'**
+  String itemPacksHint(String unit);
+
+  /// No description provided for @itemPackAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pack jorein'**
+  String get itemPackAdd;
+
+  /// No description provided for @itemPackUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pack'**
+  String get itemPackUnit;
+
+  /// No description provided for @itemPackSize.
+  ///
+  /// In ur, this message translates to:
+  /// **'1 {pack} mein kitne {unit}?'**
+  String itemPackSize(String pack, String unit);
+
+  /// No description provided for @itemPackRemove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pack hatayein'**
+  String get itemPackRemove;
+
+  /// No description provided for @itemPackNoneLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har pack lag chuka hai.'**
+  String get itemPackNoneLeft;
+
+  /// No description provided for @purchaseInPack.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis mein aaya'**
+  String get purchaseInPack;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

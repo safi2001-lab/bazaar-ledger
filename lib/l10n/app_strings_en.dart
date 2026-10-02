@@ -6029,4 +6029,95 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get shortageWrite => 'Write';
+
+  @override
+  String get shelfRuleTitle => 'When stock runs out';
+
+  @override
+  String get shelfRuleAllow => 'Keep selling';
+
+  @override
+  String get shelfRuleAllowHint =>
+      'Nothing is asked. The stock goes below nothing and shows red in the list.';
+
+  @override
+  String get shelfRuleWarn => 'Ask first';
+
+  @override
+  String get shelfRuleWarnHint =>
+      'The cashier is asked: this is all the stock there is, sell anyway?';
+
+  @override
+  String get shelfRuleBlock => 'Don\'t sell';
+
+  @override
+  String get shelfRuleBlockHint =>
+      'Nothing sells past the stock. The owner corrects the stock or changes the item\'s rule.';
+
+  @override
+  String shelfRuleShop(String rule) {
+    return 'The shop\'s rule ($rule)';
+  }
+
+  @override
+  String get shelfRuleShopHint =>
+      'Applies to every item without a rule of its own. Any item can have its own.';
+
+  @override
+  String get shelfRuleOwnerOnly => 'Only the owner can change this.';
+
+  @override
+  String get shelfWarnTitle => 'Not enough stock';
+
+  @override
+  String shelfWarnAsk(String onHand) {
+    return 'Only $onHand in stock — sell anyway?';
+  }
+
+  @override
+  String shelfOnBill(String item, String wanted) {
+    return '$item: $wanted on the bill';
+  }
+
+  @override
+  String get shelfSellAnyway => 'Yes, sell';
+
+  @override
+  String get shelfBlockedTitle => 'Cannot sell past the stock';
+
+  @override
+  String shelfBlocked(String onHand) {
+    return 'Only $onHand in stock — it does not sell past that. The owner can correct the stock or change the item\'s rule.';
+  }
+
+  @override
+  String get itemsBelowNothing => 'Below nothing';
+
+  @override
+  String get itemPacksTitle => 'Packs (carton, box, sack)';
+
+  @override
+  String itemPacksHint(String unit) {
+    return 'How much one pack holds. Bills and deliveries can be in packs; stock is still counted in $unit.';
+  }
+
+  @override
+  String get itemPackAdd => 'Add a pack';
+
+  @override
+  String get itemPackUnit => 'Pack';
+
+  @override
+  String itemPackSize(String pack, String unit) {
+    return 'How many $unit in 1 $pack?';
+  }
+
+  @override
+  String get itemPackRemove => 'Remove pack';
+
+  @override
+  String get itemPackNoneLeft => 'Every pack is already on.';
+
+  @override
+  String get purchaseInPack => 'Came in';
 }

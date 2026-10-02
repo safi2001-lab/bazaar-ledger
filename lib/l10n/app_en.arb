@@ -3248,5 +3248,62 @@
   "reportOrderItemsDue": "Items on open orders",
   "reportOrderItemsDueHint": "Each item: ordered, received or delivered, still to come",
   "orderItemAdd": "Put on the order",
-  "shortageWrite": "Write"
+  "shortageWrite": "Write",
+  "shelfRuleTitle": "When stock runs out",
+  "shelfRuleAllow": "Keep selling",
+  "shelfRuleAllowHint": "Nothing is asked. The stock goes below nothing and shows red in the list.",
+  "shelfRuleWarn": "Ask first",
+  "shelfRuleWarnHint": "The cashier is asked: this is all the stock there is, sell anyway?",
+  "shelfRuleBlock": "Don't sell",
+  "shelfRuleBlockHint": "Nothing sells past the stock. The owner corrects the stock or changes the item's rule.",
+  "shelfRuleShop": "The shop's rule ({rule})",
+  "@shelfRuleShop": {
+    "placeholders": {
+      "rule": {"type": "String"}
+    }
+  },
+  "shelfRuleShopHint": "Applies to every item without a rule of its own. Any item can have its own.",
+  "shelfRuleOwnerOnly": "Only the owner can change this.",
+  "shelfWarnTitle": "Not enough stock",
+  "shelfWarnAsk": "Only {onHand} in stock — sell anyway?",
+  "@shelfWarnAsk": {
+    "placeholders": {
+      "onHand": {"type": "String"}
+    }
+  },
+  "shelfOnBill": "{item}: {wanted} on the bill",
+  "@shelfOnBill": {
+    "placeholders": {
+      "item": {"type": "String"},
+      "wanted": {"type": "String"}
+    }
+  },
+  "shelfSellAnyway": "Yes, sell",
+  "shelfBlockedTitle": "Cannot sell past the stock",
+  "shelfBlocked": "Only {onHand} in stock — it does not sell past that. The owner can correct the stock or change the item's rule.",
+  "@shelfBlocked": {
+    "placeholders": {
+      "onHand": {"type": "String"}
+    }
+  },
+  "itemsBelowNothing": "Below nothing",
+  "itemPacksTitle": "Packs (carton, box, sack)",
+  "itemPacksHint": "How much one pack holds. Bills and deliveries can be in packs; stock is still counted in {unit}.",
+  "@itemPacksHint": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "itemPackAdd": "Add a pack",
+  "itemPackUnit": "Pack",
+  "itemPackSize": "How many {unit} in 1 {pack}?",
+  "@itemPackSize": {
+    "placeholders": {
+      "pack": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "itemPackRemove": "Remove pack",
+  "itemPackNoneLeft": "Every pack is already on.",
+  "purchaseInPack": "Came in"
 }

@@ -27,6 +27,11 @@ final class _PlanCatalogue implements CatalogueWriter {
         (draft.tracksBatch && !(before?.tracksBatch ?? false)) ||
         (draft.tracksSerial && !(before?.tracksSerial ?? false));
     if (trackingNew) _plans.require(PlanFeature.tracking);
+    // The owner's call (M53): a cashier who could set an item to sell on
+    // could talk past the one answer meant to stop him.
+    if (draft.negativeStock != before?.negativeStock) {
+      _app.require(Permission.settings);
+    }
   }
 
   void _checkParty(PartyDraft draft, PriceTier? before) {

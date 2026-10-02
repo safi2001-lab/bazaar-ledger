@@ -210,13 +210,26 @@ const List<UnitSpec> defaultUnits = [
     kind: UnitKind.count,
     decimals: 0,
   ),
+  // The sack (M53). A weight, because what is in a bori is atta, rice,
+  // cheeni or cement, weighed; and with no size, because flour ships in 10,
+  // 40, 50 and 80 kg sacks and the shop says which it means, item by item,
+  // as a pack of that item. Shipped now and not before because until an
+  // item could carry its own size, a bori could only have been one size for
+  // the whole shop, and that is the bori this list always refused.
+  UnitSpec(
+    code: 'bori',
+    nameEn: 'Sack (bori)',
+    nameUr: 'Bori',
+    kind: UnitKind.weight,
+    decimals: 0,
+  ),
 ];
 
 /// The conversions that come with [defaultUnits].
 ///
 /// A bori is deliberately absent. Flour ships in 10, 40, 50 and 80 kg sacks
-/// and the shop decides which one it means, so a bori is created per firm — or
-/// per item — rather than shipped with a number baked into it.
+/// and the shop decides which one it means, so a bori's size is given per
+/// item, as a pack of it (M53), rather than shipped with a number baked in.
 const List<UnitConversionSpec> defaultUnitConversions = [
   UnitConversionSpec(
     fromCode: 'dozen',

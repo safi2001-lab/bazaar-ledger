@@ -33,6 +33,9 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       await _assertItemCodeFree(tx, draft, null);
 
       final itemId = await tx.insert('items', _itemColumns(draft));
+      if (draft.packs case final packs? when packs.isNotEmpty) {
+        await _keepPacks(tx, itemId, draft.name, draft.baseUnitId, packs);
+      }
 
       // Opening stock is a stock-ledger row like any other, not a magic
       // column. A balance is a SUM over the ledger, so an opening quantity
@@ -78,8 +81,8 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     _validateItem(draft);
     return _runner.run(actor, (tx) async {
       final before = await tx.selectOne(
-        'SELECT name, sale_rate_milli_paisa FROM items '
-        'WHERE id = ? AND firm_id = ?',
+        'SELECT name, sale_rate_milli_paisa, base_unit_id, negative_stock '
+        'FROM items WHERE id = ? AND firm_id = ?',
         [itemId, actor.firmId],
       );
       if (before == null) {
@@ -112,8 +115,22 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         // is measured in is a new item, or a conversion that leaves a trail.
         ..remove('base_unit_id');
       await tx.update('items', itemId, columns);
+      // Into the base unit the item already has, whatever the draft says:
+      // the base unit is never edited (above), so neither is what a pack is
+      // counted against.
+      if (draft.packs case final packs?) {
+        await _keepPacks(
+          tx,
+          itemId,
+          draft.name,
+          before.read<String>('base_unit_id'),
+          packs,
+        );
+      }
 
       final oldRate = Rate.raw(before.read<int>('sale_rate_milli_paisa'));
+      final oldRule = before.readNullable<String>('negative_stock');
+      final newRule = draft.negativeStock?.code;
       tx.audit(
         action: 'ITEM_UPDATED',
         entityTable: 'items',
@@ -122,13 +139,17 @@ final class DriftCatalogueWriter implements CatalogueWriter {
             ? '${draft.name} edited'
             : '${draft.name} repriced from ${oldRate.amountOnly} to '
                   '${draft.saleRate.amountOnly}',
+        // Who let an item sell below nothing, and when, is a question the
+        // owner will ask (M53), so a change of rule is kept with the edit.
         before: {
           'name': before.read<String>('name'),
           'sale_rate_milli_paisa': oldRate.inMilliPaisa,
+          if (oldRule != newRule) 'negative_stock': oldRule,
         },
         after: {
           'name': draft.name,
           'sale_rate_milli_paisa': draft.saleRate.inMilliPaisa,
+          if (oldRule != newRule) 'negative_stock': newRule,
         },
       );
     });
@@ -728,7 +749,113 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     'track_batch': d.tracksBatch ? 1 : 0,
     'track_serial': d.tracksSerial ? 1 : 0,
     'is_active': d.isActive ? 1 : 0,
+    // Null follows the shop's own rule (M53).
+    'negative_stock': d.negativeStock?.code,
   };
+
+  /// Makes [itemId]'s packs exactly [packs] (M53): each one its own
+  /// conversion from the pack's unit into the item's [baseUnitId], at the
+  /// pack's size.
+  ///
+  /// A pack still wanted at the same size is left alone, so a save that
+  /// changes only the price writes nothing here and tells no counter that
+  /// the carton changed. A new size is an update of the row the counters
+  /// already have. A pack taken off is struck out, never destroyed, and one
+  /// put back later is a new row: the unique index counts live rows only
+  /// since v10, which is what lets a carton come off an item and go back on.
+  ///
+  /// Bills already written keep the size they were sold at — every line
+  /// stores its own quantity in the base unit — so changing a carton from 24
+  /// to 20 changes the next bill and no earlier one.
+  static Future<void> _keepPacks(
+    Tx tx,
+    String itemId,
+    String itemName,
+    String baseUnitId,
+    List<ItemPack> packs,
+  ) async {
+    final firmId = tx.actor.firmId;
+    final shopEdges = [
+      for (final r in await tx.select(
+        'SELECT from_unit_id, to_unit_id, factor_thousandths '
+        'FROM unit_conversions '
+        'WHERE firm_id = ? AND item_id IS NULL AND deleted_at_utc IS NULL',
+        [firmId],
+      ))
+        UnitEdge(
+          fromUnitId: r.read<String>('from_unit_id'),
+          toUnitId: r.read<String>('to_unit_id'),
+          factorThousandths: r.read<int>('factor_thousandths'),
+        ),
+    ];
+    final problem = packProblem(
+      packs,
+      baseUnitId: baseUnitId,
+      shopUnits: UnitConverter(shopEdges),
+    );
+    if (problem != null) {
+      throw ArgumentError.value(packs, 'packs', problem);
+    }
+    final live = {
+      for (final r in await tx.select(
+        'SELECT id, code FROM units '
+        'WHERE firm_id = ? AND deleted_at_utc IS NULL',
+        [firmId],
+      ))
+        r.read<String>('id'): r.read<String>('code'),
+    };
+    for (final pack in packs) {
+      if (!live.containsKey(pack.unitId)) {
+        throw StateError(
+          'No unit ${pack.unitCode ?? pack.unitId} in this shop to pack '
+          '$itemName in.',
+        );
+      }
+    }
+
+    final wanted = {for (final p in packs) p.unitId: p};
+    final changes = <String>[];
+    final held = await tx.select(
+      'SELECT id, from_unit_id, factor_thousandths FROM unit_conversions '
+      'WHERE firm_id = ? AND item_id = ? AND to_unit_id = ? '
+      '  AND deleted_at_utc IS NULL '
+      'ORDER BY id',
+      [firmId, itemId, baseUnitId],
+    );
+    for (final row in held) {
+      final unitId = row.read<String>('from_unit_id');
+      final pack = wanted.remove(unitId);
+      final code = live[unitId] ?? unitId;
+      if (pack == null) {
+        await tx.softDelete('unit_conversions', row.read<String>('id'));
+        changes.add('$code taken off');
+      } else if (pack.size.inThousandths !=
+          row.read<int>('factor_thousandths')) {
+        await tx.update('unit_conversions', row.read<String>('id'), {
+          'factor_thousandths': pack.size.inThousandths,
+        });
+        changes.add('1 $code = ${pack.size.display}');
+      }
+    }
+    for (final pack in wanted.values) {
+      await tx.insert('unit_conversions', {
+        'from_unit_id': pack.unitId,
+        'to_unit_id': baseUnitId,
+        'factor_thousandths': pack.size.inThousandths,
+        'item_id': itemId,
+      });
+      changes.add('1 ${live[pack.unitId]} = ${pack.size.display}');
+    }
+    if (changes.isEmpty) return;
+    tx.audit(
+      action: 'ITEM_PACKS_SET',
+      entityTable: 'items',
+      entityId: itemId,
+      summary:
+          '$itemName packs, in ${live[baseUnitId] ?? 'its unit'}: '
+          '${changes.join(', ')}',
+    );
+  }
 
   static Map<String, Object?> _partyColumns(PartyDraft d, ActorContext actor) =>
       {

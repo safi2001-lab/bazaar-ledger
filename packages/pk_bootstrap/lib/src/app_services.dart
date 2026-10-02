@@ -29,6 +29,7 @@ part 'loan_services.dart';
 part 'order_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
+part 'shelf_services.dart';
 part 'shop_money_services.dart';
 part 'sync_services.dart';
 part 'udhaar_services.dart';
@@ -194,6 +195,8 @@ final class AppServices {
         this,
       ),
       calculator: taxCalculator,
+      // M53: a blocked item is refused beneath every screen.
+      shelf: DriftShelfReader(database),
     );
   }
 
@@ -217,6 +220,8 @@ final class AppServices {
     return IssueChallanUseCase(
       writer: DriftChallanWriter(runner: _runner),
       calculator: taxCalculator,
+      // M53: a challan takes goods off the shelf as a bill does.
+      shelf: DriftShelfReader(database),
     );
   }
 
@@ -413,6 +418,10 @@ final class AppServices {
   /// The shop's money and the home's, other income, heads and the monthly
   /// bills (M47).
   late final ShopMoneyServices shopMoney = ShopMoneyServices._(this);
+
+  /// Selling below nothing: the shop's rule, and the shelf the counter is
+  /// about to sell from (M53).
+  late final ShelfServices shelf = ShelfServices._(this);
 
   /// Chasing udhaar: due dates, promises (M38).
   late final UdhaarServices udhaar = UdhaarServices._(this);

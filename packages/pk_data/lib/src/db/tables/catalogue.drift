@@ -61,12 +61,20 @@ CREATE TABLE unit_conversions (
 -- Two partial indexes rather than one composite: SQLite treats NULLs as
 -- distinct, so a plain UNIQUE containing item_id would not constrain the
 -- firm-wide rows at all.
+--
+-- Live rows only, since v10 (M53). Nothing in this product is destroyed: a
+-- conversion taken away is struck out and stays as a tombstone, and a
+-- tombstone cannot be brought back to life through the write path. So an
+-- index that counted struck-out rows meant a carton of 24 taken off an item
+-- could never be put on it again, at 24 or at 20 — the old row held the
+-- pair for ever. One live conversion per pair is the rule that matters; how
+-- many dead ones lie under it is history.
 CREATE UNIQUE INDEX idx_uconv_firmwide
   ON unit_conversions (firm_id, from_unit_id, to_unit_id)
-  WHERE item_id IS NULL;
+  WHERE item_id IS NULL AND deleted_at_utc IS NULL;
 CREATE UNIQUE INDEX idx_uconv_peritem
   ON unit_conversions (firm_id, item_id, from_unit_id, to_unit_id)
-  WHERE item_id IS NOT NULL;
+  WHERE item_id IS NOT NULL AND deleted_at_utc IS NULL;
 CREATE INDEX idx_uconv_firm_item ON unit_conversions (firm_id, item_id);
 CREATE INDEX idx_uconv_from_unit ON unit_conversions (from_unit_id);
 CREATE INDEX idx_uconv_to_unit ON unit_conversions (to_unit_id);
@@ -133,7 +141,15 @@ CREATE TABLE items (
   -- The price a VIP buyer pays (M15). Last, because SQLite adds a column at
   -- the end. Empty means the item has none, and a VIP buyer pays the
   -- wholesale price, or the retail one where there is no wholesale price.
-  vip_rate_milli_paisa INTEGER
+  vip_rate_milli_paisa INTEGER,
+
+  -- What the counter does when a sale would take this item below nothing
+  -- (M53): sell on ('allow'), ask the cashier first ('warn'), or refuse
+  -- ('block'). Empty follows the shop's own setting, which is what nearly
+  -- every item does; a column rather than a settings row so it travels to
+  -- the other counters with the item it belongs to. Added in v10, last
+  -- because SQLite adds a column at the end.
+  negative_stock TEXT CHECK (negative_stock IN ('allow', 'warn', 'block'))
 ) STRICT;
 
 CREATE INDEX idx_items_firm_name ON items (firm_id, name_search);

@@ -1,6 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
 import '../accounting/chart_view.dart';
+import '../catalogue/shelf.dart';
 import '../catalogue/unit_converter.dart';
 import '../cheques/cheque_lifecycle.dart';
 import '../cheques/demand_notice.dart';
@@ -100,6 +101,7 @@ final class ItemSummary {
     this.vipRate,
     this.mrp,
     this.hsCode,
+    this.negativeStock,
   });
 
   final String id;
@@ -142,8 +144,18 @@ final class ItemSummary {
   /// Bought and sold by serial number.
   final bool tracksSerial;
 
+  /// The item's own rule for selling below nothing (M53); null when it
+  /// follows the shop's.
+  final NegativeStock? negativeStock;
+
   bool get isLowOnStock =>
       tracksStock && !minStock.isZero && stockOnHand <= minStock;
+
+  /// Sold past what it had (M53): two counters that each sold the last one
+  /// while apart, a cashier who was asked and said sell anyway, or an item
+  /// that sells on. Shown, not hidden — a shelf below nothing is a count
+  /// somebody has to make.
+  bool get isBelowNothing => tracksStock && stockOnHand.isNegative;
 }
 
 /// A cheque the bank returned, and what the shop has to do about it.

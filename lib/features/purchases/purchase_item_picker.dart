@@ -9,6 +9,7 @@ import '../../design/add_offer.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../items/pack_choice.dart';
 import '../items/quick_item_sheet.dart';
 import '../pos/past_deals.dart';
 
@@ -63,6 +64,10 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   /// (M37).
   Rate? _followRate;
 
+  /// M53: the pack this line is counted in, or null for the item's own
+  /// unit (pack_choice.dart). The cost still follows per base unit.
+  ItemPack? _pack;
+
   @override
   void dispose() {
     _debounce?.cancel();
@@ -95,6 +100,7 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
       _cost.text = item.purchaseRate?.amountOnly ?? '';
       _costTyped = false;
       _followRate = item.purchaseRate;
+      _pack = null; // M53
     });
   }
 
@@ -107,7 +113,14 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
       _followRate = rate;
       _costTyped = false;
       _cost.text = rate
-          .amountFor(qty != null && qty.isPositive ? qty : Qty.one)
+          .amountFor(
+            // M53: a carton of 24 costs 24 pieces' worth.
+            PackChoice.inBase(
+                  qty != null && qty.isPositive ? qty : Qty.one,
+                  _pack,
+                ) ??
+                Qty.one,
+          )
           .amountOnly;
     });
   }
@@ -123,8 +136,10 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     final rate = _followRate;
     final qty = Qty.tryParse(value);
     setState(() {
-      if (!_costTyped && rate != null && qty != null && qty.isPositive) {
-        _cost.text = rate.amountFor(qty).amountOnly;
+      // M53: in the base unit, so a carton follows at 24 pieces' worth.
+      final base = qty == null ? null : PackChoice.inBase(qty, _pack);
+      if (!_costTyped && rate != null && base != null && base.isPositive) {
+        _cost.text = rate.amountFor(base).amountOnly;
       }
     });
   }
@@ -167,7 +182,15 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         ? Qty.units(serials.length)
         : Qty.tryParse(_qty.text);
     final cost = Money.tryParse(_cost.text);
-    if (qty == null || !qty.isPositive || cost == null || !cost.isPositive) {
+    // M53: what the shelf receives, a carton being 24 pieces.
+    final base = qty == null || item.tracksSerial
+        ? qty
+        : PackChoice.inBase(qty, _pack);
+    if (qty == null ||
+        base == null ||
+        !qty.isPositive ||
+        cost == null ||
+        !cost.isPositive) {
       setState(
         () => _problem = item.tracksSerial ? s.purchaseSerialsNeeded : null,
       );
@@ -186,13 +209,14 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         itemId: item.id,
         itemName: item.name,
         qty: qty,
-        // The picker deals in the item's own unit, which is already its base
-        // unit here. A supplier billing in bori rather than kilos is a
-        // conversion, and it belongs where every other conversion in this app
-        // lives rather than being redone on a sheet.
-        baseQty: qty,
-        unitId: item.unitId,
-        unitCode: item.unitCode,
+        // The item's own unit, or one of its packs (M53): ten cartons of 24
+        // are billed as ten cartons and put 240 pieces on the shelf, the
+        // size coming from the item's own conversion, exactly.
+        baseQty: base,
+        unitId: item.tracksSerial ? item.unitId : _pack?.unitId ?? item.unitId,
+        unitCode: item.tracksSerial
+            ? item.unitCode
+            : _pack?.unitCode ?? item.unitCode,
         rate: Rate.fromPack(cost, qty),
         batchNo: item.tracksBatch ? _batch.text.trim() : null,
         expiry: item.tracksBatch ? expiry : null,
@@ -310,13 +334,24 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                   onPick: _usePrice,
                 ),
               ),
+            // M53: by the piece, or by the carton (pack_choice.dart).
+            if (!chosen.tracksSerial)
+              PackChoice(
+                item: chosen,
+                selected: _pack,
+                onChanged: (pack) {
+                  setState(() => _pack = pack);
+                  _onQty(_qty.text);
+                },
+              ),
             const SizedBox(height: BlTokens.space3),
             Row(
               children: [
                 Expanded(
                   child: BlField(
                     controller: _qty,
-                    label: '${s.posQty} (${chosen.unitCode})',
+                    label:
+                        '${s.posQty} (${_pack?.unitCode ?? chosen.unitCode})',
                     numeric: true,
                     autofocus: true,
                     onChanged: _onQty,

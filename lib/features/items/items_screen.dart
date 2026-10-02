@@ -12,6 +12,7 @@ import '../manufacturing/recipes_screen.dart';
 import '../orders/shortage_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'item_editor.dart';
+import 'shelf_rule.dart';
 
 /// Reset when the screen goes, because the search box is reset with it.
 ///
@@ -233,7 +234,12 @@ class _ItemRow extends StatelessWidget {
                             style: TextStyle(fontSize: 12, color: t.inkMuted),
                           ),
                         ),
-                        if (item.isLowOnStock) ...[
+                        // Sold past what it had (M53): red, not amber — a
+                        // count somebody has to make, not a reorder.
+                        if (item.isBelowNothing) ...[
+                          const SizedBox(width: BlTokens.space2),
+                          const BelowNothingChip(),
+                        ] else if (item.isLowOnStock) ...[
                           const SizedBox(width: BlTokens.space2),
                           BlChip(s.itemLowStock, tone: BlChipTone.warn),
                         ],

@@ -1,5 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../catalogue/packs.dart';
+import '../catalogue/shelf.dart';
 import '../catalogue/spelling.dart';
 import '../identity/actor_context.dart';
 import '../pricing/price_tier.dart';
@@ -27,6 +29,8 @@ final class ItemDraft {
     this.tracksBatch = false,
     this.tracksSerial = false,
     this.isActive = true,
+    this.negativeStock,
+    this.packs,
   });
 
   final String name;
@@ -55,6 +59,20 @@ final class ItemDraft {
   /// One serial number per piece, bought and sold by it: phones by IMEI.
   final bool tracksSerial;
   final bool isActive;
+
+  /// What the counter does when a sale would take this below nothing
+  /// (M53). Null follows the shop's own setting, which is what nearly every
+  /// item does; an edit that leaves it null puts the item back on the
+  /// shop's rule.
+  final NegativeStock? negativeStock;
+
+  /// The packs it comes in, each with its size (M53): a carton of 24, a
+  /// bori of 50 kg.
+  ///
+  /// Null leaves the item's packs as they are, so a form that knows nothing
+  /// of packs — the quick-add sheet, the importer — never takes them off.
+  /// An empty list takes every one off.
+  final List<ItemPack>? packs;
 
   /// The name with capitals, spaces and punctuation set aside, in any
   /// script: what "the same name" means when the quick-add sheet looks for

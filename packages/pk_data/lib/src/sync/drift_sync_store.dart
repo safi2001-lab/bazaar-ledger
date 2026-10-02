@@ -327,12 +327,24 @@ final class DriftSyncStore implements SyncPeer {
       if (clash == null) rethrow;
       final mark = '~${origin.substring(origin.length - 4)}';
       final renamed = {...row};
+      var marked = false;
       for (final column in clash.group(1)!.split(',')) {
         final name = column.trim().split('.').last;
         final value = renamed[name];
         if (value is String && name != 'firm_id' && !name.endsWith('_id')) {
           renamed[name] = '$value$mark';
+          marked = true;
         }
+      }
+      // A clash on ids alone has nothing to carry a mark: two counters that
+      // each gave the same item a carton while apart (M53) clash on the
+      // item and the two units, and renaming nothing wrote the same row
+      // into the same clash again — the whole merge failed, and every sync
+      // after it, on that one change. Such a newcomer is kept struck out
+      // instead, as a clash to look at: the index counts live rows only, so
+      // it goes in, the counter's own carton stands, and the merge moves on.
+      if (!marked && row.containsKey('deleted_at_utc')) {
+        renamed['deleted_at_utc'] = _now().toUtc().millisecondsSinceEpoch;
       }
       await write(renamed);
       return _Outcome.conflict;

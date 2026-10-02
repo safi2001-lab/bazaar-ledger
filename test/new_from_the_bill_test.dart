@@ -281,6 +281,12 @@ void main() {
       await _typeOnTop(tester, 'Farokht ki qeemat', '1000');
       await _tapOnTop(tester, 'Save karein');
 
+      // Made with nothing on the shelf, so the counter asks before the
+      // weight goes on the bill (M53), and the cashier says sell.
+      expect(find.text('Stock sirf 0 kg hai — phir bhi bechein?'), findsOne);
+      await tester.tap(find.text('Haan, bechein'));
+      await tester.pumpAndSettle();
+
       expect(find.text('Qeema'), findsOneWidget);
       await tapButton(tester, 'Paisay lein');
       await typeInto(tester, 'Diye gaye', '1500');

@@ -3573,5 +3573,62 @@
   "reportOrderItemsDue": "Orders ki cheezein",
   "reportOrderItemsDueHint": "Har cheez: kitna mangwaya, aaya ya gaya, baqi",
   "orderItemAdd": "Order mein daalein",
-  "shortageWrite": "Likhein"
+  "shortageWrite": "Likhein",
+  "shelfRuleTitle": "Stock khatam ho to",
+  "shelfRuleAllow": "Bechte rahein",
+  "shelfRuleAllowHint": "Koi sawal nahi. Stock minus mein chala jaye ga aur list mein laal dikhe ga.",
+  "shelfRuleWarn": "Pehle poochein",
+  "shelfRuleWarnHint": "Cashier se poocha jaye ga: stock itna hi hai, phir bhi bechein?",
+  "shelfRuleBlock": "Na bechein",
+  "shelfRuleBlockHint": "Stock se zyada nahi bikta. Maalik stock theek kare ya item ki setting badle.",
+  "shelfRuleShop": "Dukaan ki setting ({rule})",
+  "@shelfRuleShop": {
+    "placeholders": {
+      "rule": {"type": "String"}
+    }
+  },
+  "shelfRuleShopHint": "Har us item par lagti hai jis ki apni setting nahi. Har item apni bhi rakh sakta hai.",
+  "shelfRuleOwnerOnly": "Yeh setting sirf maalik badal sakta hai.",
+  "shelfWarnTitle": "Stock kam hai",
+  "shelfWarnAsk": "Stock sirf {onHand} hai — phir bhi bechein?",
+  "@shelfWarnAsk": {
+    "placeholders": {
+      "onHand": {"type": "String"}
+    }
+  },
+  "shelfOnBill": "{item}: bill par {wanted}",
+  "@shelfOnBill": {
+    "placeholders": {
+      "item": {"type": "String"},
+      "wanted": {"type": "String"}
+    }
+  },
+  "shelfSellAnyway": "Haan, bechein",
+  "shelfBlockedTitle": "Stock se zyada nahi bik sakta",
+  "shelfBlocked": "Stock sirf {onHand} hai — is se zyada nahi bikta. Maalik stock theek kare ya item ki setting badle.",
+  "@shelfBlocked": {
+    "placeholders": {
+      "onHand": {"type": "String"}
+    }
+  },
+  "itemsBelowNothing": "Stock minus mein",
+  "itemPacksTitle": "Packing (carton, dabba, bori)",
+  "itemPacksHint": "Aik pack mein kitna maal hai. Bill aur khareed pack se bhi ho sakti hai; stock {unit} mein hi ginta hai.",
+  "@itemPacksHint": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "itemPackAdd": "Pack jorein",
+  "itemPackUnit": "Pack",
+  "itemPackSize": "1 {pack} mein kitne {unit}?",
+  "@itemPackSize": {
+    "placeholders": {
+      "pack": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "itemPackRemove": "Pack hatayein",
+  "itemPackNoneLeft": "Har pack lag chuka hai.",
+  "purchaseInPack": "Kis mein aaya"
 }

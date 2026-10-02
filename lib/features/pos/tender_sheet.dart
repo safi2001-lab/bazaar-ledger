@@ -16,6 +16,7 @@ import '../sales/receipt_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'cart.dart';
 import 'pos_screen.dart';
+import 'shelf_guard.dart';
 
 /// Taking the money.
 ///
@@ -165,6 +166,12 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     final messenger = ScaffoldMessenger.of(context);
     final cartNotifier = ref.read(cartProvider.notifier);
     final container = ProviderScope.containerOf(context, listen: false);
+    // M53: a challan takes the goods off the shelf as a bill does.
+    if (challan &&
+        !await shelfAllowsBill(context, ref, cart, forChallan: true)) {
+      if (mounted) setState(() => _busy = false);
+      return;
+    }
     try {
       final services = ref.read(appServicesProvider);
       final draft = SaleDraft(
@@ -321,6 +328,14 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           return;
         }
       }
+    }
+
+    // M53: the shelf, asked once more before the goods leave
+    // (shelf_guard.dart); the sale path refuses a blocked item again.
+    if (!mounted) return;
+    if (!await shelfAllowsBill(context, ref, cart)) {
+      if (mounted) setState(() => _busy = false);
+      return;
     }
 
     // Held rather than reached for through `ref` after the write. A sheet that

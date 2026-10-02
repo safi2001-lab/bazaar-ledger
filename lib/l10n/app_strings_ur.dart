@@ -6027,4 +6027,95 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get shortageWrite => 'Likhein';
+
+  @override
+  String get shelfRuleTitle => 'Stock khatam ho to';
+
+  @override
+  String get shelfRuleAllow => 'Bechte rahein';
+
+  @override
+  String get shelfRuleAllowHint =>
+      'Koi sawal nahi. Stock minus mein chala jaye ga aur list mein laal dikhe ga.';
+
+  @override
+  String get shelfRuleWarn => 'Pehle poochein';
+
+  @override
+  String get shelfRuleWarnHint =>
+      'Cashier se poocha jaye ga: stock itna hi hai, phir bhi bechein?';
+
+  @override
+  String get shelfRuleBlock => 'Na bechein';
+
+  @override
+  String get shelfRuleBlockHint =>
+      'Stock se zyada nahi bikta. Maalik stock theek kare ya item ki setting badle.';
+
+  @override
+  String shelfRuleShop(String rule) {
+    return 'Dukaan ki setting ($rule)';
+  }
+
+  @override
+  String get shelfRuleShopHint =>
+      'Har us item par lagti hai jis ki apni setting nahi. Har item apni bhi rakh sakta hai.';
+
+  @override
+  String get shelfRuleOwnerOnly => 'Yeh setting sirf maalik badal sakta hai.';
+
+  @override
+  String get shelfWarnTitle => 'Stock kam hai';
+
+  @override
+  String shelfWarnAsk(String onHand) {
+    return 'Stock sirf $onHand hai — phir bhi bechein?';
+  }
+
+  @override
+  String shelfOnBill(String item, String wanted) {
+    return '$item: bill par $wanted';
+  }
+
+  @override
+  String get shelfSellAnyway => 'Haan, bechein';
+
+  @override
+  String get shelfBlockedTitle => 'Stock se zyada nahi bik sakta';
+
+  @override
+  String shelfBlocked(String onHand) {
+    return 'Stock sirf $onHand hai — is se zyada nahi bikta. Maalik stock theek kare ya item ki setting badle.';
+  }
+
+  @override
+  String get itemsBelowNothing => 'Stock minus mein';
+
+  @override
+  String get itemPacksTitle => 'Packing (carton, dabba, bori)';
+
+  @override
+  String itemPacksHint(String unit) {
+    return 'Aik pack mein kitna maal hai. Bill aur khareed pack se bhi ho sakti hai; stock $unit mein hi ginta hai.';
+  }
+
+  @override
+  String get itemPackAdd => 'Pack jorein';
+
+  @override
+  String get itemPackUnit => 'Pack';
+
+  @override
+  String itemPackSize(String pack, String unit) {
+    return '1 $pack mein kitne $unit?';
+  }
+
+  @override
+  String get itemPackRemove => 'Pack hatayein';
+
+  @override
+  String get itemPackNoneLeft => 'Har pack lag chuka hai.';
+
+  @override
+  String get purchaseInPack => 'Kis mein aaya';
 }

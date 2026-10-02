@@ -9,6 +9,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../orders/reorder_screen.dart';
 import 'item_editor.dart';
+import 'shelf_rule.dart';
 
 /// What is about to run out, worst first.
 ///
@@ -148,12 +149,17 @@ class _LowStockRow extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 2),
-                  Text(
-                    s.stockLowFloor(
-                      quantityWords(item.minStock, item.unitCode),
+                  // An item sold below nothing is on this list whether or
+                  // not it has a floor (M53), and says so instead.
+                  if (item.isBelowNothing)
+                    const BelowNothingChip()
+                  else
+                    Text(
+                      s.stockLowFloor(
+                        quantityWords(item.minStock, item.unitCode),
+                      ),
+                      style: TextStyle(fontSize: 12, color: t.inkMuted),
                     ),
-                    style: TextStyle(fontSize: 12, color: t.inkMuted),
-                  ),
                 ],
               ),
             ),

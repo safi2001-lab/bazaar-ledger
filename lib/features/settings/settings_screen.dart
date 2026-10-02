@@ -11,6 +11,7 @@ import '../audit/audit_screen.dart';
 import '../backup/backup_screen.dart';
 import '../firms/firms_screen.dart';
 import '../import/import_screen.dart';
+import '../items/shelf_rule.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
 import '../scale/scale_screen.dart';
@@ -205,6 +206,17 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
               ),
+            // M53: what the counter does when an item would go below
+            // nothing. Everyone may read it; only the owner changes it.
+            _Row(
+              icon: Icons.inventory_outlined,
+              label: s.shelfRuleTitle,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const ShelfRuleScreen(),
+                ),
+              ),
+            ),
             _Row(
               icon: Icons.print_outlined,
               label: s.settingsPrinter,

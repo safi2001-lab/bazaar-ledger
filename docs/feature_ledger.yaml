@@ -1888,6 +1888,98 @@ milestones:
       - lib/features/orders/**
       - lib/features/purchases/delivery_line_sheet.dart
 
+  - id: M53
+    title: Never sold into thin air, and packed by the carton
+    # Opened and sealed 3 Oct 2026 at 1/1. A Pakistani shopkeeper's review
+    # of Vyapar: seven hundred kilos sold against six hundred in stock, and
+    # not a word said. Every item now says what happens when a sale would
+    # take it below nothing, as BUSY lets a shop say it: sell on, ask first,
+    # or refuse. The shop has a rule of its own in Settings, which every
+    # item without one follows; a shop that never chose asks, because the
+    # point is that it is never silent and never stops a sale the
+    # shopkeeper means to make. Only the owner changes a rule, the shop's
+    # or an item's: a cashier who could set an item to sell on could talk
+    # past the one answer meant to stop him.
+    #
+    # At the counter the question is asked the moment a line goes past the
+    # shelf — added, stepped, typed, switched to the carton — in the item's
+    # own terms: "Stock sirf 600 kg hai — phir bhi bechein?" Yes keeps the
+    # line and is not asked again for as much; no puts the line back as it
+    # last stood. A refused item is refused in words and put back. Asked
+    # once more before the bill or the challan is saved, because a bill
+    # restored after a kill, a quotation put on the counter or a sale at the
+    # other till changes the answer. Beneath both, the sale path and the
+    # challan path refuse a blocked item themselves, inside the sale's own
+    # transaction, from the place the goods leave: the shop floor, or the
+    # van a rider's phone sells from (M18), never the godown (M11 does not
+    # sell from one). Nothing of a refused bill survives, not even its
+    # number. Every line of an item counts together; a loose line (M37) and
+    # an item that carries no stock never ask. A bill made from a challan
+    # moves nothing and is not asked. Deliveries, a customer's return and a
+    # return to the supplier never ask (a supplier return keeps its own
+    # rule, that what was sold cannot go back). A batch item is refused past
+    # its whole shelf, where first-expiry-first-out used to take the rest
+    # from no batch; a serial was already refused.
+    #
+    # Decided: an item set to ask is the counter's to ask, not the
+    # service's. The cashier's yes is not a fact the books can check after
+    # the fact, so the sale path lets it through, the shelf reads below
+    # nothing, and the item list and the low-stock list show it in red
+    # whether or not it has a floor. Two counters on the shop's Wi-Fi that
+    # are apart each check at the moment of sale by what they know, so
+    # both may sell the last packet; when they meet the merge keeps both
+    # bills (a sale is never merged away), the shelf reads one below
+    # nothing on both phones, it is flagged in both lists, and neither sells
+    # another until it is counted. Refusing the second after the fact would
+    # unwrite a bill a customer holds.
+    #
+    # Packs: an item carries its own carton, dabba, packet, strip or bori,
+    # each with its size, as its own conversion from the pack into its base
+    # unit. The counter offered an item's own conversions already, so a
+    # carton of 24 sells as one carton at 24 times the piece and takes 24
+    # pieces off the shelf, exactly or refused (M1's converter); the
+    # delivery picker now offers the carton too, so ten cartons at Rs 960
+    # put 240 pieces on the shelf at Rs 40. The bori ships now, a weight
+    # with no size of its own, sized item by item. A dozen or a maund is not
+    # a pack: the shop already sizes those. A bill keeps the size it was
+    # sold at, so changing a carton from 24 to 20 changes the next bill and
+    # no earlier one.
+    #
+    # Schema v10. items gains negative_stock ('allow', 'warn', 'block', or
+    # empty to follow the shop), a column rather than a settings row so it
+    # travels to the other counters with its item in the change it already
+    # makes; the shop's rule is the settings row stock.negative. The two
+    # unique indexes on unit_conversions now count live rows only. Nothing
+    # here is destroyed: a carton taken off an item is struck out and a
+    # tombstone cannot be revived through the write path, so the old index
+    # kept the pair for ever and a carton could never go back on (M56 left
+    # packs unbuilt for exactly this). The migration adds the column in
+    # place and drops and remakes the two indexes; no row is touched.
+    #
+    # Found on the way and fixed: two counters giving one item a carton
+    # while apart clash on ids alone, and the LAN merge, which marks a clash
+    # by renaming a code or a name, had nothing to rename — it wrote the
+    # same row into the same clash and every sync after failed on that one
+    # change. Such a newcomer is now kept struck out, as a clash to look at;
+    # each phone's own carton stands.
+    #
+    # Not built: an owner's PIN to let one bill past a refused item (the
+    # owner changes the rule or puts the stock right, as asked); a rule per
+    # godown or per van; asking on a production run or a transfer (a
+    # transfer already refuses moving what is not there); two-unit
+    # quantities ("2 ctn + 5 pcs") and packs on a quotation's own form,
+    # which are M45's.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/catalogue/shelf.dart
+      - packages/pk_domain/lib/src/catalogue/packs.dart
+      - packages/pk_data/lib/src/read/drift_shelf_reads.dart
+      - packages/pk_bootstrap/lib/src/shelf_services.dart
+      - lib/features/pos/shelf_guard.dart
+      - lib/features/items/shelf_rule.dart
+      - lib/features/items/item_packs_field.dart
+      - lib/features/items/pack_choice.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6625,3 +6717,49 @@ features:
       - the counter writes what a customer asked for, the list is sent, and a line leaves once the goods arrive or are ticked off
       - what to order puts each supplier's items on a purchase order of their own, in one tap
       - at 200% on a small phone an order, what to order and the shortage sheet fit
+  - id: M53-SHELF-01
+    milestone: M53
+    title: Each item says whether the shelf may go below nothing, asked at the counter and refused beneath it, and items are packed by the carton
+    status: done
+    # The rule and the packs are proved against a real database, through
+    # the services over a real socket between two phones, and through the
+    # screens; the schema change by migrating a v9 shop.
+    proof:
+      - the shelf a bill wants every line of an item counts together, and nothing else counts
+      - the shelf a bill wants only what goes below nothing is short, and an item that sells on never is
+      - the shelf a bill wants a shelf already below nothing is short of any sale at all
+      - the shelf a bill wants a rule reads back from what the column holds
+      - the shelf a bill wants only a blocked item is refused at the service, and the refusal says how much there is
+      - packs an item's packs are its own conversions into its unit
+      - packs a carton of 24 sells 24 pieces at 24 times the price, exactly
+      - packs a pack that cannot be kept says why
+      - packs a shop counts in the bori now, a weight with no size of its own
+      - selling below nothing an item set to refuse is refused at the service past its shelf, and nothing of the bill is written
+      - selling below nothing an item set to ask is let through by the service and reads below nothing, in the lists
+      - selling below nothing an item that sells on is never refused
+      - selling below nothing the shop's own rule applies to every item without one, a new shop asks, and the item that has its own keeps it
+      - selling below nothing every line of one item is counted together
+      - selling below nothing a challan is refused as a bill is, and a bill made from a challan is not asked, the goods having gone
+      - selling below nothing a van phone sells from the van's own stock
+      - selling below nothing a delivery, a customer's return and a return to the supplier are never refused
+      - selling below nothing an item kept by batch is refused past its whole shelf, as a serial already was
+      - selling below nothing an item's rule is kept on the item and carried to the other counters in its change
+      - packed by the carton a carton of 24 sells as one carton, takes 24 pieces off the shelf and charges 24 pieces' worth
+      - packed by the carton ten cartons bought put 240 pieces on the shelf at what a carton cost
+      - packed by the carton a bori of 50 kg sells two bori as a hundred kilos
+      - packed by the carton a pack taken off an item can be put back on it, at another size
+      - packed by the carton an edit that says nothing of packs leaves them alone, and a new size is the same row
+      - packed by the carton a pack the shop already sizes, or the item's own unit, is refused
+      - packed by the carton a struck-out conversion does not hold its place against a live one
+      - v9 to v10 — selling below nothing, and packs that come back an item and its carton come through, the item following the shop, and a carton struck off no longer holds its place
+      - selling below nothing two counters apart each sell the last packet: the merge keeps both bills and the shelf reads below nothing on both phones
+      - selling below nothing the owner's rule for the shop reaches the sale path and the challan
+      - selling below nothing only the owner changes a rule, the shop's or an item's
+      - selling below nothing two counters that give one item a carton while apart keep selling, the second carton kept as a clash rather than stopping every sync
+      - an item set to ask asks at the counter as the line goes past the shelf: no takes it back, yes sells it
+      - an item set to refuse is refused at the counter in words, and the line goes back
+      - the owner gives an item a carton of 24 and its own rule; the counter sells it by the carton and 24 pieces leave the shelf
+      - a delivery is entered by the carton and puts 240 pieces on the shelf
+      - the owner sets the shop's own rule in Settings
+      - at 200% on a small phone the question at the counter and the refusal fit
+      - at 200% on a small phone an item's rule and packs, and the shop's rule, fit

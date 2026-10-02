@@ -24,11 +24,17 @@ final class PostSaleUseCase {
     required this.writer,
     this.calculator = const SaleCalculator(),
     this.builder = const SalePostingBuilder(),
+    this.shelf,
   });
 
   final SaleWriter writer;
   final SaleCalculator calculator;
   final SalePostingBuilder builder;
+
+  /// Reads the shelf at the moment of sale, so an item set to refuse
+  /// selling below nothing is refused here, beneath every screen (M53).
+  /// Null checks nothing, as before M53.
+  final ShelfReader? shelf;
 
   Future<PostedSale> call(ActorContext actor, SaleDraft draft) {
     return writer.inTransaction(actor, (write) async {
@@ -84,6 +90,19 @@ final class PostSaleUseCase {
         );
       }
       final delivered = sent.isEmpty ? null : ChallanGoods.combine(sent);
+
+      // Never into thin air (M53). Read inside this transaction, from the
+      // place the goods leave — the shop floor, or the van this phone sells
+      // from — so the figure checked is the figure the sale moves. A bill
+      // made from a challan moves nothing: the challan already did.
+      if (shelf case final reader? when delivered == null) {
+        await refuseBlockedShortfalls(
+          reader,
+          actor,
+          draft.lines,
+          locationCode: draft.locationCode,
+        );
+      }
 
       final posting = builder.build(
         actor: actor,

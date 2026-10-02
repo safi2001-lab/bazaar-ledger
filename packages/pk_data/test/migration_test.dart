@@ -12,6 +12,7 @@ import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v8.dart' as v8;
+import 'generated/schema_v9.dart' as v9;
 
 /// Migrations, and the machinery that makes them testable at all.
 ///
@@ -467,6 +468,148 @@ void main() {
     );
   });
 
+  group('v9 to v10 — selling below nothing, and packs that come back', () {
+    test(
+      'an item and its carton come through, the item following the shop, and '
+      'a carton struck off no longer holds its place',
+      () async {
+        // A shop on v9 with an item and a per-item conversion of its own —
+        // a carton of 24, which nothing in v9 wrote but the schema has
+        // always held — struck out, the way v9's index kept it for ever:
+        // on v9 no other carton could go on this item again.
+        final schema = await verifier.schemaAt(9);
+        final old = v9.DatabaseAtV9(schema.newConnection());
+        const firmId = 'FIRM0000000000000000000001';
+        const userId = 'USER0000000000000000000001';
+        const deviceId = 'DEV00000000000000000000001';
+        const itemId = 'ITM00000000000000000000001';
+        const pcs = 'UNIT0000000000000000000001';
+        const carton = 'UNIT0000000000000000000002';
+        await old.customStatement('PRAGMA foreign_keys = OFF');
+        await old.customStatement(
+          'INSERT INTO items (id, firm_id, created_at_utc, updated_at_utc, '
+          'created_by, updated_by, origin_device_id, hlc, rev, name, '
+          'name_search, base_unit_id, sale_rate_milli_paisa, '
+          'vip_rate_milli_paisa) '
+          'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 3, ?, ?, ?, ?, ?)',
+          [
+            itemId,
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'a-0000-$deviceId',
+            'Gala Biscuit',
+            'gala biscuit|galabiskt~GLBSKT',
+            pcs,
+            5000000,
+            4500000,
+          ],
+        );
+        for (final (id, deleted) in const [('UCV00000000000000000000001', 2)]) {
+          await old.customStatement(
+            'INSERT INTO unit_conversions (id, firm_id, created_at_utc, '
+            'updated_at_utc, created_by, updated_by, deleted_at_utc, '
+            'origin_device_id, hlc, rev, from_unit_id, to_unit_id, '
+            'factor_thousandths, item_id) '
+            'VALUES (?, ?, 1, 1, ?, ?, ?, ?, ?, 1, ?, ?, 24000, ?)',
+            [
+              id,
+              firmId,
+              userId,
+              userId,
+              deleted,
+              deviceId,
+              'b-0000-$deviceId',
+              carton,
+              pcs,
+              itemId,
+            ],
+          );
+        }
+        await old.close();
+
+        final db = AppDatabase(schema.newConnection());
+        addTearDown(db.close);
+        await verifier.migrateAndValidate(db, 10);
+
+        final item = await db
+            .customSelect(
+              'SELECT name, rev, hlc, sale_rate_milli_paisa, '
+              'vip_rate_milli_paisa, negative_stock FROM items',
+            )
+            .getSingle();
+        expect(item.data['name'], 'Gala Biscuit');
+        expect(item.data['rev'], 3);
+        expect(item.data['hlc'], 'a-0000-$deviceId');
+        expect(item.data['sale_rate_milli_paisa'], 5000000);
+        expect(item.data['vip_rate_milli_paisa'], 4500000);
+        expect(
+          item.data['negative_stock'],
+          isNull,
+          reason: "an existing item follows the shop's rule",
+        );
+        final kept = await db
+            .customSelect(
+              'SELECT id, deleted_at_utc, factor_thousandths '
+              'FROM unit_conversions ORDER BY id',
+            )
+            .get();
+        expect(kept.single.data['factor_thousandths'], 24000);
+        expect(kept.single.data['deleted_at_utc'], 2);
+
+        // Another carton put on beside the struck-out one: v9 refused this.
+        // (The fixture has no firm or units behind it, as above.)
+        await db.customStatement('PRAGMA foreign_keys = OFF');
+        await db.customStatement(
+          'INSERT INTO unit_conversions (id, firm_id, created_at_utc, '
+          'updated_at_utc, created_by, updated_by, origin_device_id, hlc, '
+          'rev, from_unit_id, to_unit_id, factor_thousandths, item_id) '
+          'VALUES (?, ?, 4, 4, ?, ?, ?, ?, 1, ?, ?, 20000, ?)',
+          [
+            'UCV00000000000000000000003',
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'c-0000-$deviceId',
+            carton,
+            pcs,
+            itemId,
+          ],
+        );
+        // Two live cartons are still refused.
+        await expectLater(
+          db.customStatement(
+            'INSERT INTO unit_conversions (id, firm_id, created_at_utc, '
+            'updated_at_utc, created_by, updated_by, origin_device_id, hlc, '
+            'rev, from_unit_id, to_unit_id, factor_thousandths, item_id) '
+            'VALUES (?, ?, 5, 5, ?, ?, ?, ?, 1, ?, ?, 12000, ?)',
+            [
+              'UCV00000000000000000000004',
+              firmId,
+              userId,
+              userId,
+              deviceId,
+              'd-0000-$deviceId',
+              carton,
+              pcs,
+              itemId,
+            ],
+          ),
+          throwsA(anything),
+        );
+
+        await db.customStatement("UPDATE items SET negative_stock = 'block'");
+        await expectLater(
+          db.customStatement("UPDATE items SET negative_stock = 'maybe'"),
+          throwsA(anything),
+          reason: 'a rule the counter does not know is refused',
+        );
+      },
+    );
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -495,4 +638,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 9;
+const _currentVersion = 10;

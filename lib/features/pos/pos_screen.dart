@@ -17,6 +17,7 @@ import '../scan/scan_screen.dart';
 import 'cart.dart';
 import 'loose_line_sheet.dart';
 import 'past_deals.dart';
+import 'shelf_guard.dart';
 import 'tender_sheet.dart';
 
 /// What the counter typed, after debouncing. Reset when the screen goes.
@@ -452,6 +453,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       appBar: AppBar(
         title: Text(s.posTitle),
         actions: [
+          // M53: watches the bill against the shelf; draws nothing.
+          const ShelfGuard(),
           // In the bar rather than in the body: sideways with the keyboard
           // up the body has about a hundred points of height, and the money
           // path needs all of them.
