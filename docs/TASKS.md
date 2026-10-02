@@ -22,7 +22,7 @@ Last updated: 2 Oct 2026.
   `dart analyze --fatal-infos`, `tool/arch_check.dart`, ledger shape, every
   package test, the app tests, and ledger proofs.
 - Every string in both English and Roman Urdu.
-- No database schema change without coordinating the version number (v8 now; v9 is reserved for M56 if it needs one).
+- No database schema change without coordinating the version number (v10 now — M53; v11 reserved for M49).
 - Agents building this work alone: a subagent may not launch its own
   subagents. Every subagent brief says so.
 
@@ -122,13 +122,13 @@ its own milestone; any that changes the database schema runs alone, one at a
 time, on the latest master (schema is v8 today).
 
 ### Billing and bills
-- [ ] M36 · (in progress) Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
+- [x] M36 · DONE (adfcfef) Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
 - [x] M37 · Last rates and khula maal — DONE (80b28aa): customer named first from the counter; "Pichhli dafa Rs X · date" beside every line; tap for the last 5 deals, one tap uses the price (exact unit conversion, never applied silently); supplier's last 5 prices on purchases; cost shown only to roles that may see it; khula maal line (no item, no stock, refused on FBR-reporting shops and on quotations/challans); fixed a standing-discount bug that made bills refuse
 - [x] M57 · DONE (a6a2dea) Returns give back exactly what was charged: line discount and bill-discount share respected; quantity in the unit it was sold in (a maund line was over-refunding 40×) — found by M37
-- [ ] M43 · Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
-- [ ] M45 · Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
+- [ ] M43 · (in progress) Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
+- [ ] M45 · (in progress) Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
 - [x] M51 · DONE (baf5795) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
-- [ ] M53 · (in progress, schema v10) Negative stock policy per item (allow / warn / block); app font-size setting
+- [x] M53 · DONE (3f12774, schema v10) Negative stock policy per item (allow / warn / block); app font-size setting
 - [ ] Recurring bills (weekly/monthly for fixed customers), made on the phone when due
 - [x] (M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
 
@@ -143,12 +143,12 @@ time, on the latest master (schema is v8 today).
 
 ### Stock and buying
 - [x] M40 · Party groups — DONE: groups on customers/suppliers (form + quick-add), filter/sort/bulk-assign on the Customers list with group totals, rename/merge groups, group chips at the counter, a "Counter ke liye note" shown on the payment sheet
-- [ ] M41 · (in progress) Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
-- [ ] M49 · Pharmacy pack: near-expiry by supplier, expiry return to the supplier with a return note, salt/generic search with substitutes, Schedule B/D register
+- [x] M41 · DONE (ee1bf11) Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
+- [ ] M49 · (in progress, schema v11) Pharmacy pack: near-expiry by supplier, expiry return to the supplier with a return note, salt/generic search with substitutes, Schedule B/D register
 - [ ] M50 · Mobile-shop pack: IMEI search and history, warranty end date, PTA status field + SMS to 8484, used-phone purchase with seller's CNIC and photo, qist (instalment) plans with overdue list and guarantor
 
 ### Trust and control
-- [ ] M42 · (in progress) Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
+- [x] M42 · DONE (a1d31f4, d1676e6) Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
 - [ ] Recycle bin for masters with 30-day restore (check what M5 already does)
 
 ### Expenses
@@ -163,19 +163,19 @@ time, on the latest master (schema is v8 today).
   - Not verified: Vyapar's exact export headings (no public sample) — by-hand column mapping is the backstop; supplier opening balances still go in as purchase bills
 
 ### Pakistan specifics (from the research appendix §1–2)
-- [ ] Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
-- [ ] Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
-- [ ] FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
-- [ ] Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
+- [ ] M59 · (in progress) Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
+- [ ] M59 · (in progress) Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
+- [ ] M59 · (in progress) FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
+- [ ] M59 · (in progress) Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
 - [x] M56 · DONE (88ead47) Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
 - [x] M56 · DONE Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams; app text-size setting
 - [ ] Photo of a paper parchi attached to an entry (check what attachments already do)
-- [ ] Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
+- [ ] (in M49) Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
 ### Checks on things we may already do (test, fix if wrong)
 - [ ] An old bill keeps the party's name/address as they were (myBillBook bug +550)
 - [ ] Split payments (cash + JazzCash) are separate rows in every report and export (Vyapar's top 2026 complaint)
-- [ ] Never silently sell into negative stock (see M53)
+- [x] Never silently sell into negative stock — M53
 - [ ] Big shop performance: 50,000 bills, lists and reports stay fast
 - [ ] Urdu PDFs readable; bigger font option
 
