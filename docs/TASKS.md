@@ -86,19 +86,22 @@ From the owner's Vyapar screenshots.
 
 ## Wave 2 — the rest of Vyapar's reports (in progress on M33's framework)
 
-### M34 · Item and stock reports (in progress)
-- [ ] Stock Summary (as-of date, category, godown, "in stock only", sale/purchase price, value)
-- [ ] Item Report by Party / Party Report by Item (both directions)
-- [ ] Item Wise Profit & Loss, Item Category Wise Profit & Loss
-- [ ] Low Stock Summary (with reorder suggestion)
-- [ ] Item Detail (one item, date-wise sale/purchase/adjustment/closing)
-- [ ] Stock Detail (every item: opening, in, out, closing — qty and value — for any period)
-- [ ] Sale/Purchase by Item Category; Stock Summary by Item Category
-- [ ] Item Batch Report (batch, expiry, qty); Item Serial/IMEI Report (sold/unsold/returned, search)
-- [ ] Item Wise Discount
-- [ ] Stock Transfer Report (godowns, vans)
-- [ ] Production run register (manufacturing / consumption)
-- [ ] Beyond Vyapar: dead / slow / fast stock (sales in last N days), stock ageing 0-45/45-90/90-180/180+
+### M34 · Item and stock reports — DONE (7db836b)
+- [x] Stock Summary (as-of date, category, godown, "in stock only", sale/purchase price, value)
+- [x] Item Report by Party / Party Report by Item (both directions)
+- [x] Item Wise Profit & Loss, Item Category Wise Profit & Loss
+- [x] Low Stock Summary (with reorder suggestion)
+- [x] Item Detail (one item, date-wise sale/purchase/adjustment/closing)
+- [x] Stock Detail (every item: opening, in, out, closing — qty and value — for any period)
+- [x] Sale/Purchase by Item Category; Stock Summary by Item Category
+- [x] Item Batch Report (batch, expiry, qty); Item Serial/IMEI Report (sold/unsold/returned, search)
+- [x] Item Wise Discount
+- [x] Stock Transfer Report (godowns, vans)
+- [x] Production run register (manufacturing / consumption)
+- [x] Beyond Vyapar: dead / slow / fast stock (sales in last N days), stock ageing 0-45/45-90/90-180/180+
+
+  - Found: batch costs were the item average on arrival; batches now valued off their own ledger rows. Khula maal shows as one "Khula maal (no item)" row.
+  - Not built: per-item trading account, ageing by expiry date, ABC classification, place filter on ageing/fast-slow.
 
 ### M35 · Business status, tax, expense, staff and order reports (in progress)
 - [ ] Bank Statement (per bank account: date, description, withdrawal, deposit, balance)
@@ -121,13 +124,13 @@ time, on the latest master (schema is v8 today).
 ### Billing and bills
 - [ ] M36 · Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
 - [x] M37 · Last rates and khula maal — DONE (80b28aa): customer named first from the counter; "Pichhli dafa Rs X · date" beside every line; tap for the last 5 deals, one tap uses the price (exact unit conversion, never applied silently); supplier's last 5 prices on purchases; cost shown only to roles that may see it; khula maal line (no item, no stock, refused on FBR-reporting shops and on quotations/challans); fixed a standing-discount bug that made bills refuse
-- [ ] M57 · (in progress) Returns give back exactly what was charged: line discount and bill-discount share respected; quantity in the unit it was sold in (a maund line was over-refunding 40×) — found by M37
+- [x] M57 · DONE (a6a2dea) Returns give back exactly what was charged: line discount and bill-discount share respected; quantity in the unit it was sold in (a maund line was over-refunding 40×) — found by M37
 - [ ] M43 · Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
 - [ ] M45 · Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
-- [ ] M51 · (in progress) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
+- [x] M51 · DONE (baf5795) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
 - [ ] M53 · Negative stock policy per item (allow / warn / block); app font-size setting
 - [ ] Recurring bills (weekly/monthly for fixed customers), made on the phone when due
-- [ ] (in M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
+- [x] (M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
 
 ### Udhaar and money
 - [ ] M38 · (in progress) Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
@@ -149,7 +152,7 @@ time, on the latest master (schema is v8 today).
 - [ ] Recycle bin for masters with 30-day restore (check what M5 already does)
 
 ### Expenses
-- [ ] M47 · (in progress) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
+- [x] M47 · DONE (a2592e7) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
 
 ### Reports polish
 - [ ] M46 · Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
@@ -164,8 +167,8 @@ time, on the latest master (schema is v8 today).
 - [ ] Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
 - [ ] FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
 - [ ] Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
-- [ ] M56 · (in progress) Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
-- [ ] M56 · (in progress) Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams; app text-size setting
+- [x] M56 · DONE (88ead47) Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
+- [x] M56 · DONE Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams; app text-size setting
 - [ ] Photo of a paper parchi attached to an entry (check what attachments already do)
 - [ ] Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
@@ -175,6 +178,16 @@ time, on the latest master (schema is v8 today).
 - [ ] Never silently sell into negative stock (see M53)
 - [ ] Big shop performance: 50,000 bills, lists and reports stay fast
 - [ ] Urdu PDFs readable; bigger font option
+
+
+### Follow-ups found while merging (small, queued)
+- [ ] Reports: Day Book / All Transactions call a party-less `other_income` document "Charge" — it is shop income (M47); expense reports must leave out or show apart the owner's drawings
+- [ ] Reports: M8 "Sales by item" inner-joins items, so khula maal lines are missing from it
+- [ ] Reports: Loan Statement in the hub's Loans group (M48 builder exists)
+- [ ] Reports: due-date ageing and bad-debts reports from the udhaar pack's queries
+- [ ] Receipt preview grows with the app text size — wrap it in `MediaQuery.withNoTextScaling` (lib/features/sales)
+- [ ] `recentExpenses` reads the head as required and would throw on a shop's own head (no caller now)
+- [ ] Owner to confirm: seer = 1 kg (40 kg maund) rather than 933 g; separate permissions for quick-add and khula maal lines
 
 ## Finish line for each wave
 
