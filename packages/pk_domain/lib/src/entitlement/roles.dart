@@ -23,6 +23,19 @@ enum Permission {
   /// Cancel a bill, or a challan whose goods came back.
   voidDocuments,
 
+  /// Put right what was entered by hand (M31): cancel or correct a payment
+  /// taken or made, a charge on a khata, an expense, or the opening balance
+  /// a party started with.
+  ///
+  /// Its own permission rather than [voidDocuments], because the two are
+  /// held by different people. Cancelling a bill is the counter's mistake
+  /// and the owner's or manager's call; a receipt keyed in as Rs 5,000 when
+  /// Rs 500 came in is the books' mistake, and the accountant who keeps the
+  /// books has to be able to put it right without being handed the power to
+  /// cancel bills. A cashier gets neither: a cashier who could cancel a
+  /// receipt could take money at the counter and make it never have come in.
+  correctEntries,
+
   /// Take goods back from a customer.
   takeReturns,
 
@@ -80,7 +93,8 @@ enum Role {
   manager(maxDiscountBp: 2000),
 
   /// Keeps the books: payments, purchases, expenses, cheques and reports,
-  /// but not the counter's cancellations.
+  /// and puts right an entry keyed in wrong — but not the counter's
+  /// cancellations.
   accountant(maxDiscountBp: 0),
 
   /// The counter: bills, payments against a khata, and the day's cash.
@@ -105,6 +119,7 @@ enum Role {
       Permission.sell,
       Permission.takePayments,
       Permission.voidDocuments,
+      Permission.correctEntries,
       Permission.takeReturns,
       Permission.purchases,
       Permission.expenses,
@@ -116,6 +131,7 @@ enum Role {
     },
     accountant => {
       Permission.journal,
+      Permission.correctEntries,
       Permission.takePayments,
       Permission.purchases,
       Permission.expenses,

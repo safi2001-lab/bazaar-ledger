@@ -304,6 +304,19 @@ final class AppServices {
     return VoidDocumentUseCase(writer: DriftVoidWriter(runner: _runner));
   }
 
+  /// Cancelling or correcting what was keyed in by hand (M31): a payment
+  /// taken or made, a charge, an expense, an opening balance. Never a sale
+  /// bill — the use case refuses one by name.
+  ///
+  /// A replacement paid by cheque still needs a plan with cheques, so the
+  /// payment handle inside goes through the same gate a new receipt does.
+  CorrectEntriesUseCase get corrections {
+    require(Permission.correctEntries);
+    return CorrectEntriesUseCase(
+      writer: _PlanCorrections(DriftCorrectionWriter(runner: _runner), plans),
+    );
+  }
+
   RecordPurchaseReturnUseCase get recordPurchaseReturn {
     require(Permission.purchases);
     return RecordPurchaseReturnUseCase(
@@ -327,21 +340,18 @@ final class AppServices {
   /// (M26). Whoever may post journal vouchers may close a year.
   Future<({String id, String entryNo})> closeYear(int fiscalYear) {
     require(Permission.journal);
-    return DriftYearClose(runner: _runner).close(
-      actorNow(),
-      fiscalYear: fiscalYear,
-    );
+    return DriftYearClose(
+      runner: _runner,
+    ).close(actorNow(), fiscalYear: fiscalYear);
   }
 
   /// Adds an account of the shop's own to the chart (M26): `asset`,
   /// `liability`, `equity`, `income` or `expense`.
   Future<String> addAccount({required String name, required String type}) {
     require(Permission.journal);
-    return DriftYearClose(runner: _runner).addAccount(
-      actorNow(),
-      name: name,
-      type: type,
-    );
+    return DriftYearClose(
+      runner: _runner,
+    ).addAccount(actorNow(), name: name, type: type);
   }
 
   CloseDayUseCase get closeDay {

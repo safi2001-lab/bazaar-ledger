@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../khata/opening_balance_sheet.dart';
 import '../subscription/plans_screen.dart';
 
 /// Add a customer, or change one.
@@ -146,9 +147,10 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         buyerRegistrationType: _buyerRegistered ? 'registered' : 'unregistered',
         isOnAtl: _buyerOnAtl,
         // An opening balance is what they already owed before the shop
-        // started using this app. Set once, at creation; afterwards the
-        // balance is whatever the documents say it is, and no form may
-        // overwrite it.
+        // started using this app. Set here only at creation; afterwards no
+        // form may overwrite it. It is corrected from the card below (M31),
+        // which reverses the opening entry and posts the right one, and
+        // says why.
         openingBalance: _isEdit
             ? Money.zero
             : Money.tryParse(_opening.text) ?? Money.zero,
@@ -176,6 +178,18 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         });
       }
     }
+  }
+
+  /// Corrects the opening balance the append-only way, then re-reads it so
+  /// the card shows the figure the books now hold.
+  Future<void> _correctOpening() async {
+    final corrected = await showOpeningBalanceSheet(
+      context,
+      partyId: widget.party!.id,
+      partyName: widget.party!.name,
+      current: _saved?.openingBalance ?? Money.zero,
+    );
+    if (corrected && mounted) await _load();
   }
 
   /// Hides this customer or supplier from the khata.
@@ -300,6 +314,50 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                               label: s.partyOpeningBalance,
                               numeric: true,
                               textInputAction: TextInputAction.next,
+                            ),
+                            const SizedBox(height: BlTokens.space4),
+                          ] else ...[
+                            // Shown, not typed over: correcting it is its own
+                            // act with its own reason (M31).
+                            BlCard(
+                              onTap: _busy
+                                  ? null
+                                  : () => unawaited(_correctOpening()),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          s.partyOpeningBalance,
+                                          style: TextStyle(
+                                            fontSize: 13,
+                                            color: t.inkMuted,
+                                          ),
+                                        ),
+                                        BlMoney(
+                                          _saved?.openingBalance ?? Money.zero,
+                                          size: 16,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  Text(
+                                    s.openingCorrect,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: t.accent,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.chevron_right,
+                                    size: 20,
+                                    color: t.inkFaint,
+                                  ),
+                                ],
+                              ),
                             ),
                             const SizedBox(height: BlTokens.space4),
                           ],

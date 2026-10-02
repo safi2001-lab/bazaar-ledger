@@ -5,6 +5,7 @@
 library;
 
 export 'src/close_day_use_case.dart';
+export 'src/correct_entries_use_case.dart';
 export 'src/issue_challan_use_case.dart';
 export 'src/move_cheque_use_case.dart';
 export 'src/pay_supplier_use_case.dart';

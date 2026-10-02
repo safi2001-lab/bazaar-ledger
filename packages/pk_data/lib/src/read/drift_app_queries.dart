@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 
@@ -1000,7 +1002,7 @@ final class DriftAppQueries implements AppQueries {
     final rows = await _db
         .customSelect(
           '''
-          SELECT id, doc_date_local, doc_seq, balance_paisa
+          SELECT id, doc_no, doc_type, doc_date_local, doc_seq, balance_paisa
           FROM documents
           WHERE firm_id = ? AND party_id = ?
             AND $typeFilter
@@ -1021,6 +1023,10 @@ final class DriftAppQueries implements AppQueries {
           dateLocal: r.read<String>('doc_date_local'),
           sequence: r.read<int>('doc_seq'),
           outstanding: Money.paisa(r.read<int>('balance_paisa')),
+          // The number on the paper, which the khata used to show as the
+          // row's database id (M31).
+          docNo: r.read<String>('doc_no'),
+          docType: r.read<String>('doc_type'),
         ),
     ];
   }
@@ -2270,6 +2276,267 @@ final class DriftAppQueries implements AppQueries {
           itemId: r.readNullable<String>('item_id'),
         ),
     ];
+  }
+
+  @override
+  Future<PaymentDetail?> paymentDetail(String firmId, String id) async {
+    // By the payment's own id, or by the id of a journal entry that names
+    // it: a bounced cheque's line in the khata is the bounce entry, and
+    // tapping it should open the cheque it is about.
+    final p = await _db
+        .customSelect(
+          '''
+          SELECT p.id, p.payment_no, p.direction, p.party_id, p.amount_paisa,
+                 p.mode, p.payment_account_id, p.reference, p.notes,
+                 p.payment_date_local, p.status, p.cheque_no, p.cheque_bank,
+                 p.cheque_date_utc, p.cheque_status, p.created_by,
+                 p.created_at_utc,
+                 acct.name AS account_name, party.name AS party_name
+          FROM payments p
+          LEFT JOIN payment_accounts acct ON acct.id = p.payment_account_id
+          LEFT JOIN parties party ON party.id = p.party_id
+          WHERE p.firm_id = ? AND p.deleted_at_utc IS NULL
+            AND (p.id = ? OR p.id = (SELECT je.payment_id
+                                     FROM journal_entries je
+                                     WHERE je.id = ? AND je.firm_id = ?))
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(id),
+            Variable<String>(id),
+            Variable<String>(firmId),
+          ],
+          readsFrom: {
+            _db.payments,
+            _db.paymentAccounts,
+            _db.parties,
+            _db.journalEntries,
+          },
+        )
+        .getSingleOrNull();
+    if (p == null) return null;
+    final paymentId = p.read<String>('id');
+    final status = p.read<String>('status');
+
+    // What it settled. A cancelled payment's allocations were struck out
+    // when it was cancelled, and are read anyway: "which bills did it pay"
+    // is still the question asked about a receipt that was later undone.
+    final bills = await _db
+        .customSelect(
+          '''
+          SELECT pa.document_id, pa.amount_paisa, pa.allocation_mode,
+                 d.doc_no, d.doc_type, d.doc_date_local, d.doc_seq,
+                 d.void_reason
+          FROM payment_allocations pa
+          JOIN documents d ON d.id = pa.document_id
+          WHERE pa.payment_id = ? AND pa.firm_id = ?
+            AND (pa.deleted_at_utc IS NULL OR ? = 'void')
+          ORDER BY d.doc_date_local, d.doc_seq, d.id
+          ''',
+          variables: [
+            Variable<String>(paymentId),
+            Variable<String>(firmId),
+            Variable<String>(status),
+          ],
+          readsFrom: {_db.paymentAllocations, _db.documents},
+        )
+        .get();
+    final counter = bills
+        .where((b) => b.read<String>('allocation_mode') == 'exact')
+        .firstOrNull;
+
+    // Why it was cancelled, and what it replaced or was replaced by, are
+    // kept where the cancellation and the edit wrote them: the activity log.
+    final trail = await _db
+        .customSelect(
+          '''
+          SELECT action_code, entity_id, before_json, after_json,
+                 created_by, at_utc
+          FROM audit_log
+          WHERE firm_id = ?
+            AND ((entity_table = 'payments' AND entity_id = ?
+                  AND action_code IN ('PAYMENT_VOIDED', 'PAYMENT_EDITED'))
+                 OR (action_code = 'PAYMENT_EDITED' AND before_json LIKE ?))
+          ORDER BY at_utc, id
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(paymentId),
+            Variable<String>('%"$paymentId"%'),
+          ],
+          readsFrom: {_db.auditLog},
+        )
+        .get();
+    String? cancelReason;
+    String? cancelledBy;
+    String? cancelledAt;
+    String? replaces;
+    String? replacesId;
+    String? replacedBy;
+    String? replacedById;
+    for (final row in trail) {
+      final action = row.read<String>('action_code');
+      final before = _jsonOf(row.readNullable<String>('before_json'));
+      final after = _jsonOf(row.readNullable<String>('after_json'));
+      if (action == 'PAYMENT_VOIDED') {
+        cancelReason = after['reason'] as String?;
+        cancelledBy = await userName(row.read<String>('created_by'));
+        cancelledAt = _dateTimeLabel(row.read<int>('at_utc'));
+      } else if (row.read<String>('entity_id') == paymentId) {
+        replaces = before['no'] as String?;
+        replacesId = before['id'] as String?;
+      } else if (before['id'] == paymentId) {
+        replacedBy = after['no'] as String?;
+        replacedById = after['id'] as String?;
+      }
+    }
+    // A tender cancelled with its bill has no log of its own; the bill's
+    // reason is its reason.
+    if (status == 'void' && cancelReason == null && counter != null) {
+      cancelReason = _blankToNull(counter.readNullable<String>('void_reason'));
+    }
+
+    final due = p.readNullable<int>('cheque_date_utc');
+    return PaymentDetail(
+      id: paymentId,
+      paymentNo: p.read<String>('payment_no'),
+      direction: p.read<String>('direction'),
+      partyId: p.readNullable<String>('party_id'),
+      partyName: p.readNullable<String>('party_name'),
+      amount: Money.paisa(p.read<int>('amount_paisa')),
+      mode: p.read<String>('mode'),
+      paymentAccountId: p.read<String>('payment_account_id'),
+      paymentAccountName: p.readNullable<String>('account_name') ?? '',
+      reference: _blankToNull(p.readNullable<String>('reference')),
+      notes: _blankToNull(p.readNullable<String>('notes')),
+      dateLocal: p.read<String>('payment_date_local'),
+      status: status,
+      chequeNo: _blankToNull(p.readNullable<String>('cheque_no')),
+      chequeBank: _blankToNull(p.readNullable<String>('cheque_bank')),
+      chequeDue: due == null ? null : chequeDueDate(due),
+      chequeStatus: p.readNullable<String>('cheque_status'),
+      enteredBy: await userName(p.read<String>('created_by')),
+      enteredAt: _dateTimeLabel(p.read<int>('created_at_utc')),
+      settled: [
+        for (final b in bills)
+          SettledBill(
+            documentId: b.read<String>('document_id'),
+            docNo: b.read<String>('doc_no'),
+            docType: b.read<String>('doc_type'),
+            dateLocal: b.read<String>('doc_date_local'),
+            sequence: b.read<int>('doc_seq'),
+            amount: Money.paisa(b.read<int>('amount_paisa')),
+          ),
+      ],
+      counterBillId: counter?.read<String>('document_id'),
+      counterBillNo: counter?.read<String>('doc_no'),
+      cancelReason: cancelReason,
+      cancelledBy: cancelledBy,
+      cancelledAt: cancelledAt,
+      replaces: replaces,
+      replacesId: replacesId,
+      replacedBy: replacedBy,
+      replacedById: replacedById,
+    );
+  }
+
+  @override
+  Future<EntryDocument?> entryDocument(String firmId, String documentId) async {
+    // The head and the account an expense was paid from both come off its
+    // entry's lines, the same join the expense list and the Trial Balance
+    // make: there is no column holding either anywhere else.
+    final d = await _db
+        .customSelect(
+          '''
+          SELECT d.id, d.doc_type, d.doc_no, d.doc_date_local, d.status,
+                 d.party_id, d.total_paisa, d.balance_paisa, d.notes,
+                 d.created_by, p.name AS party_name,
+                 (SELECT a.system_key
+                  FROM journal_entries je
+                  JOIN journal_lines jl ON jl.journal_entry_id = je.id
+                  JOIN accounts a ON a.id = jl.account_id
+                  WHERE je.document_id = d.id
+                    AND je.source_type = 'expense'
+                    AND jl.debit_paisa > 0
+                  ORDER BY jl.line_no LIMIT 1) AS head,
+                 (SELECT jl.account_id
+                  FROM journal_entries je
+                  JOIN journal_lines jl ON jl.journal_entry_id = je.id
+                  WHERE je.document_id = d.id
+                    AND je.source_type = 'expense'
+                    AND jl.credit_paisa > 0
+                    AND jl.party_id IS NULL
+                  ORDER BY jl.line_no LIMIT 1) AS paid_from_ledger
+          FROM documents d
+          LEFT JOIN parties p ON p.id = d.party_id
+          WHERE d.id = ? AND d.firm_id = ? AND d.deleted_at_utc IS NULL
+            AND d.doc_type IN ('other_income', 'expense')
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {
+            _db.documents,
+            _db.parties,
+            _db.journalEntries,
+            _db.journalLines,
+            _db.accounts,
+          },
+        )
+        .getSingleOrNull();
+    if (d == null) return null;
+
+    final ledger = d.readNullable<String>('paid_from_ledger');
+    final paidFrom = ledger == null
+        ? null
+        : await _db
+              .customSelect(
+                'SELECT id FROM payment_accounts '
+                'WHERE firm_id = ? AND ledger_account_id = ? '
+                '  AND deleted_at_utc IS NULL '
+                'ORDER BY is_active DESC, is_default DESC, name LIMIT 1',
+                variables: [Variable<String>(firmId), Variable<String>(ledger)],
+                readsFrom: {_db.paymentAccounts},
+              )
+              .getSingleOrNull();
+
+    // The same payments the cancellation refuses over, so the page says
+    // what is in the way before the shopkeeper is told no.
+    final paidBy = await _db
+        .customSelect(
+          '''
+          SELECT p.payment_no FROM payment_allocations pa
+          JOIN payments p ON p.id = pa.payment_id
+          WHERE pa.document_id = ? AND pa.deleted_at_utc IS NULL
+            AND p.deleted_at_utc IS NULL AND p.status <> 'void'
+            AND pa.allocation_mode <> 'exact'
+          ORDER BY p.payment_no
+          ''',
+          variables: [Variable<String>(documentId)],
+          readsFrom: {_db.paymentAllocations, _db.payments},
+        )
+        .get();
+
+    return EntryDocument(
+      id: documentId,
+      docType: d.read<String>('doc_type'),
+      docNo: d.read<String>('doc_no'),
+      dateLocal: d.read<String>('doc_date_local'),
+      status: d.read<String>('status'),
+      partyId: d.readNullable<String>('party_id'),
+      partyName: d.readNullable<String>('party_name'),
+      total: Money.paisa(d.read<int>('total_paisa')),
+      balance: Money.paisa(d.read<int>('balance_paisa')),
+      note: d.readNullable<String>('notes') ?? '',
+      enteredBy: await userName(d.read<String>('created_by')),
+      head: d.readNullable<String>('head'),
+      paidFromAccountId: paidFrom?.read<String>('id'),
+      paidBy: [for (final r in paidBy) r.read<String>('payment_no')],
+    );
+  }
+
+  static Map<String, Object?> _jsonOf(String? raw) {
+    if (raw == null || raw.isEmpty) return const {};
+    final decoded = jsonDecode(raw);
+    return decoded is Map<String, Object?> ? decoded : const {};
   }
 
   static ItemSummary _itemFrom(QueryRow r) => ItemSummary(

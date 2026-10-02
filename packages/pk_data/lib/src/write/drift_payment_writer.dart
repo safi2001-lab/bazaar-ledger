@@ -26,6 +26,14 @@ final class DriftPaymentWriter implements PaymentWriter {
       runner.run(actor, (tx) => body(_DriftPaymentWriteContext(tx, sequences)));
 }
 
+/// The payment handle on a transaction somebody else opened: an edit (M31)
+/// that cancels a payment and takes its replacement in the same commit, so
+/// the replacement is written by exactly this code and no copy of it.
+PaymentWriteContext paymentContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _DriftPaymentWriteContext(tx, sequences);
+
 final class _DriftPaymentWriteContext implements PaymentWriteContext {
   _DriftPaymentWriteContext(this._tx, this._sequences);
 
@@ -79,7 +87,7 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
   Future<List<OpenBill>> _open(String partyId, String typeFilter) async {
     final rows = await _tx.select(
       '''
-      SELECT id, doc_date_local, doc_seq, balance_paisa
+      SELECT id, doc_no, doc_type, doc_date_local, doc_seq, balance_paisa
       FROM documents
       WHERE firm_id = ? AND party_id = ?
         AND $typeFilter
@@ -98,6 +106,8 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
           dateLocal: row.read<String>('doc_date_local'),
           sequence: row.read<int>('doc_seq'),
           outstanding: Money.paisa(row.read<int>('balance_paisa')),
+          docNo: row.read<String>('doc_no'),
+          docType: row.read<String>('doc_type'),
         ),
     ];
   }
@@ -177,6 +187,10 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
       'entry_date_local': entry.entryDateLocal,
       'fiscal_year': entry.fiscalYear,
       'source_type': entry.sourceType,
+      // The payment it put on the books (M31), so cancelling it finds this
+      // entry by the column made for it rather than by its narration.
+      // Entries written before carry none, and are found by narration.
+      'payment_id': paymentId,
       'narration': entry.narration,
       'total_debit_paisa': entry.totalDebit.inPaisa,
       'total_credit_paisa': entry.totalCredit.inPaisa,

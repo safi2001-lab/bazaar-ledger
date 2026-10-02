@@ -22,6 +22,13 @@ final class DriftDebitNoteWriter implements DebitNoteWriter {
   ) => runner.run(actor, (tx) => body(_Context(tx, sequences)));
 }
 
+/// The charge handle on a transaction somebody else opened: an edit (M31) that takes a charge back and puts the corrected one on in
+/// the same commit.
+DebitNoteWriteContext debitNoteContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _Context(tx, sequences);
+
 final class _Context implements DebitNoteWriteContext {
   _Context(this._tx, this._sequences);
 

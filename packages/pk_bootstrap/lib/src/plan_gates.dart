@@ -144,6 +144,72 @@ final class _PlanPaymentContext implements PaymentWriteContext {
   }
 }
 
+/// Corrections (M31): an edit that turns a cash receipt into a cheque is a
+/// new cheque, and needs the plan a new cheque needs. Cancelling one never
+/// does — a cheque already taken can always be put right.
+final class _PlanCorrections implements CorrectionWriter {
+  _PlanCorrections(this._inner, this._plans);
+
+  final CorrectionWriter _inner;
+  final PlanServices _plans;
+
+  @override
+  Future<T> inTransaction<T>(
+    ActorContext actor,
+    Future<T> Function(CorrectionWriteContext write) body,
+  ) => _inner.inTransaction(
+    actor,
+    (w) => body(
+      _PlanCorrectionContext(w, _PlanPaymentContext(w.payments, _plans)),
+    ),
+  );
+}
+
+final class _PlanCorrectionContext implements CorrectionWriteContext {
+  _PlanCorrectionContext(this._inner, this.payments);
+
+  final CorrectionWriteContext _inner;
+
+  @override
+  final PaymentWriteContext payments;
+
+  @override
+  ActorContext get actor => _inner.actor;
+
+  @override
+  VoidWriteContext get documents => _inner.documents;
+
+  @override
+  ExpenseWriteContext get expenses => _inner.expenses;
+
+  @override
+  DebitNoteWriteContext get charges => _inner.charges;
+
+  @override
+  Future<AllocatedNumber> nextNumber(String docType) =>
+      _inner.nextNumber(docType);
+
+  @override
+  Future<PostedPaymentSnapshot?> paymentSnapshot(String paymentId) =>
+      _inner.paymentSnapshot(paymentId);
+
+  @override
+  Future<VoidedPayment> applyPaymentVoid(PaymentVoidPosting posting) =>
+      _inner.applyPaymentVoid(posting);
+
+  @override
+  Future<OpeningSnapshot?> openingOf(String partyId) =>
+      _inner.openingOf(partyId);
+
+  @override
+  Future<void> applyOpeningCorrection(OpeningCorrectionPosting posting) =>
+      _inner.applyOpeningCorrection(posting);
+
+  @override
+  void recordCorrection(CorrectionRecord record) =>
+      _inner.recordCorrection(record);
+}
+
 /// Sales: a cheque taken at the counter needs a plan with cheques.
 final class _PlanSales implements SaleWriter {
   _PlanSales(this._inner, this._plans);

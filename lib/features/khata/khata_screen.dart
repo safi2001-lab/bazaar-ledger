@@ -9,10 +9,14 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_editor.dart';
+import '../sales/receipt_screen.dart';
 import 'charge_sheet.dart';
+import 'entry_actions.dart';
 import 'khata_providers.dart';
+import 'opening_balance_sheet.dart';
 import 'pay_supplier_sheet.dart';
 import 'payables_section.dart';
+import 'payment_sheet.dart';
 import 'receive_payment_sheet.dart';
 import 'send_reminder.dart';
 import 'statement.dart';
@@ -174,6 +178,19 @@ class KhataScreen extends ConsumerWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: BlTokens.space2),
                       child: BlCard(
+                        // The bill as it was printed, or the charge with its
+                        // reason (M31). This card used to do nothing, and
+                        // named the bill by its database id.
+                        onTap: () => bill.docType == 'other_income'
+                            ? unawaited(
+                                _openCharge(
+                                  context,
+                                  ref,
+                                  current,
+                                  bill.documentId,
+                                ),
+                              )
+                            : _openBill(context, bill.documentId, bill.docNo),
                         child: Row(
                           children: [
                             Expanded(
@@ -181,16 +198,16 @@ class KhataScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    bill.dateLocal,
+                                    bill.docNo,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: t.ink,
                                     ),
                                   ),
                                   Text(
-                                    bill.documentId,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
+                                    bill.dateLocal,
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: t.inkMuted,
@@ -217,7 +234,7 @@ class KhataScreen extends ConsumerWidget {
         ),
       ),
       const SizedBox(height: BlTokens.space2),
-      _History(partyId: party.id),
+      _History(party: current),
     ];
   }
 }
@@ -319,16 +336,22 @@ class _BalanceCard extends StatelessWidget {
 /// question a customer actually asks — "I paid you last week" — and every
 /// line carries the number printed on the paper in their hand, because
 /// without it the shopkeeper is asking them to take a date on trust.
+///
+/// Every line opens what it is about (M31): a bill as it was printed, a
+/// payment with what it settled and who took it, a charge with its reason,
+/// the opening balance to be corrected. Until then only a charge did
+/// anything when tapped, and a payment keyed in wrong could not even be
+/// looked at.
 class _History extends ConsumerWidget {
-  const _History({required this.partyId});
+  const _History({required this.party});
 
-  final String partyId;
+  final PartySummary party;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final entries = ref.watch(partyLedgerProvider(partyId));
+    final entries = ref.watch(partyLedgerProvider(party.id));
 
     return entries.when(
       loading: () => const BlSkeletonList(rows: 3),
@@ -345,15 +368,7 @@ class _History extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: BlTokens.space2),
                     child: BlCard(
-                      // A charge put on the khata by mistake can be taken
-                      // back (M25); bills are cancelled from the bill.
-                      onTap:
-                          entry.kind == 'charge' &&
-                              ref
-                                  .read(appServicesProvider)
-                                  .can(Permission.voidDocuments)
-                          ? () => unawaited(_cancelCharge(context, ref, entry))
-                          : null,
+                      onTap: () => _openEntry(context, ref, party, entry),
                       child: Row(
                         children: [
                           Icon(
@@ -369,7 +384,11 @@ class _History extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  entry.reference,
+                                  // Written by the query in English; said
+                                  // here in the shopkeeper's language.
+                                  entry.kind == 'opening'
+                                      ? s.partyOpeningBalance
+                                      : entry.reference,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 14, color: t.ink),
@@ -406,44 +425,116 @@ class _History extends ConsumerWidget {
   }
 }
 
-/// Takes a charge back off the khata: its entry mirrored, its balance gone.
-Future<void> _cancelCharge(
+/// Opens whatever a khata line is about.
+void _openEntry(
   BuildContext context,
   WidgetRef ref,
+  PartySummary party,
   LedgerEntry entry,
+) {
+  switch (entry.kind) {
+    case 'sale':
+      _openBill(context, entry.id, entry.reference);
+    case 'charge':
+      unawaited(_openCharge(context, ref, party, entry.id));
+    case 'payment' || 'bounce':
+      // A bounce line carries the bounce entry's id, which opens the cheque.
+      unawaited(showPaymentSheet(context, id: entry.id, party: party));
+    case 'opening':
+      unawaited(
+        showOpeningBalanceSheet(
+          context,
+          partyId: party.id,
+          partyName: party.name,
+          current: entry.amount,
+        ),
+      );
+  }
+}
+
+/// A sale bill, exactly as it was printed: shared, printed, returned or
+/// cancelled from there, and never edited — the customer has the paper.
+void _openBill(BuildContext context, String documentId, String docNo) =>
+    unawaited(
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => ReceiptScreen(documentId: documentId, docNo: docNo),
+        ),
+      ),
+    );
+
+enum _ChargeChoice { edit, takeBack }
+
+/// A charge on the khata: what it was for, and — for whoever may put
+/// entries right — correct it or take it back (M25, M31).
+///
+/// Taking it back keeps its fixed reason and its one confirmation, as it
+/// has since M25; correcting it opens the charge sheet filled in with it.
+/// A charge a payment has been taken against says so and offers neither,
+/// because the payment has to be cancelled first.
+Future<void> _openCharge(
+  BuildContext context,
+  WidgetRef ref,
+  PartySummary party,
+  String documentId,
 ) async {
   final s = AppStrings.of(context);
-  final no = entry.reference.split(' · ').first;
-  final yes = await showDialog<bool>(
+  final services = ref.read(appServicesProvider);
+  final firm = await ref.read(firmProvider.future);
+  if (firm == null) return;
+  final charge = await services.queries.entryDocument(firm.id, documentId);
+  if (charge == null || !context.mounted) return;
+  final mayCorrect = canCorrect(ref);
+  final standing = !charge.isCancelled && charge.paidBy.isEmpty;
+
+  final choice = await showDialog<_ChargeChoice>(
     context: context,
     builder: (context) => AlertDialog(
-      title: Text(s.chargeCancel),
-      content: Text(s.chargeCancelConfirm(no)),
+      title: Text('${charge.docNo} · ${charge.note}'),
+      content: Text(
+        charge.paidBy.isNotEmpty
+            ? s.entryPaidBy(charge.paidBy.join(', '))
+            : mayCorrect
+            ? s.chargeEntryHint(charge.total.amountOnly)
+            : s.entryNotAllowed,
+      ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(s.actionCancel),
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(s.actionClose),
         ),
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(s.chargeCancel),
-        ),
+        if (mayCorrect && standing) ...[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(_ChargeChoice.edit),
+            child: Text(s.actionEdit),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(_ChargeChoice.takeBack),
+            child: Text(s.chargeCancel),
+          ),
+        ],
       ],
     ),
   );
-  if (yes != true || !context.mounted) return;
-  final services = ref.read(appServicesProvider);
-  final messenger = ScaffoldMessenger.of(context);
-  final container = ProviderScope.containerOf(context, listen: false);
-  try {
-    await services.voidDocument(
-      services.actorNow(),
-      documentId: entry.id,
-      reason: s.chargeCancelReason,
-    );
-    container.bumpRefresh();
-    messenger.showSnackBar(SnackBar(content: Text(s.chargeCancelled)));
-  } on VoidRefused catch (refused) {
-    messenger.showSnackBar(SnackBar(content: Text(refused.reason)));
+  if (!context.mounted) return;
+  switch (choice) {
+    case _ChargeChoice.edit:
+      await showChargeSheet(context, party: party, editing: charge);
+    case _ChargeChoice.takeBack:
+      final messenger = ScaffoldMessenger.of(context);
+      final container = ProviderScope.containerOf(context, listen: false);
+      try {
+        await services.corrections.cancelCharge(
+          services.actorNow(),
+          documentId: charge.id,
+          reason: s.chargeCancelReason,
+        );
+        container.bumpRefresh();
+        messenger.showSnackBar(SnackBar(content: Text(s.chargeCancelled)));
+      } on VoidRefused catch (refused) {
+        messenger.showSnackBar(SnackBar(content: Text(refused.reason)));
+      }
+    case null:
+      break;
   }
 }

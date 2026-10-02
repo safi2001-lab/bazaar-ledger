@@ -14,7 +14,19 @@ final class RecordDebitNoteUseCase {
   Future<({String id, String docNo})> call(
     ActorContext actor,
     DebitNoteDraft draft,
-  ) => writer.inTransaction(actor, (write) async {
+  ) => writer.inTransaction(
+    actor,
+    (write) => recordOn(write, actor, draft, builder: builder),
+  );
+
+  /// The same steps, on a transaction somebody else opened: an edit (M31)
+  /// takes a charge back and puts the corrected one on in one commit.
+  static Future<({String id, String docNo})> recordOn(
+    DebitNoteWriteContext write,
+    ActorContext actor,
+    DebitNoteDraft draft, {
+    DebitNoteBuilder builder = const DebitNoteBuilder(),
+  }) async {
     final number = await write.nextNumber('other_income');
     final posting = builder.build(
       actor: actor,
@@ -23,5 +35,5 @@ final class RecordDebitNoteUseCase {
       journalNumber: await write.nextNumber('journal_entry'),
     );
     return (id: await write.apply(posting), docNo: number.formatted);
-  });
+  }
 }

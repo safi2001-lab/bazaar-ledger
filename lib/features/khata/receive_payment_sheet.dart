@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
 import '../subscription/plans_screen.dart';
+import 'entry_actions.dart';
 import 'khata_providers.dart';
 
 /// Taking money against a customer's khata.
@@ -32,23 +33,33 @@ import 'khata_providers.dart';
 /// bill between this being drawn and Save being tapped. The writer re-reads
 /// inside the transaction, so the write is right and the preview was stale —
 /// which is the correct direction for that error to run.
+///
+/// ## Editing (M31)
+///
+/// Handed [editing], the same sheet corrects a receipt already taken: filled
+/// in with it, and saved as one act that cancels it and takes the corrected
+/// one. The preview counts the bills it settled as open again, because by
+/// the time the corrected receipt is allocated they will be — the old one's
+/// money comes off them first, in the same transaction.
 Future<bool> showReceivePaymentSheet(
   BuildContext context, {
   required PartySummary party,
+  PaymentDetail? editing,
 }) async {
   final saved = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => _ReceivePaymentSheet(party: party),
+    builder: (_) => _ReceivePaymentSheet(party: party, editing: editing),
   );
   return saved ?? false;
 }
 
 class _ReceivePaymentSheet extends ConsumerStatefulWidget {
-  const _ReceivePaymentSheet({required this.party});
+  const _ReceivePaymentSheet({required this.party, this.editing});
 
   final PartySummary party;
+  final PaymentDetail? editing;
 
   @override
   ConsumerState<_ReceivePaymentSheet> createState() => _SheetState();
@@ -59,6 +70,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
   final _reference = TextEditingController();
   final _chequeNo = TextEditingController();
   final _chequeBank = TextEditingController();
+  final _reason = ReasonController();
 
   String _mode = 'cash';
   String? _accountId;
@@ -71,6 +83,24 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
   @override
   void initState() {
     super.initState();
+    final editing = widget.editing;
+    if (editing != null) {
+      // Filled in with the receipt being corrected, so the shopkeeper
+      // changes the one thing that was wrong and nothing else moves.
+      _amount.text = editing.amount.amountOnly.replaceAll(',', '');
+      _mode = _ModePicker.offers(editing.mode) ? editing.mode : 'cash';
+      // Not a cheque's account. A cheque lands in Cheques in Hand whatever
+      // account is named, so its account says nothing about where money
+      // should go — and carried over, a cheque corrected to cash would put
+      // the cash into the cheques ledger. The default is what a new receipt
+      // uses, so the corrected one is taken exactly as a new one would be.
+      _accountId = editing.isCheque ? null : editing.paymentAccountId;
+      _reference.text = editing.reference ?? '';
+      _chequeNo.text = editing.chequeNo ?? '';
+      _chequeBank.text = editing.chequeBank ?? '';
+      _chequeDue = editing.chequeDue;
+      return;
+    }
     // Prefilled with what they owe, because that is what a customer settling
     // up hands over. The cashier overtypes it when they do not.
     if (widget.party.balance.isPositive) {
@@ -84,6 +114,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
     _reference.dispose();
     _chequeNo.dispose();
     _chequeBank.dispose();
+    _reason.dispose();
     super.dispose();
   }
 
@@ -117,34 +148,46 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
     final services = ref.read(appServicesProvider);
     final container = ProviderScope.containerOf(context, listen: false);
     try {
-      final receipt = await services.recordReceipt(
-        services.actorNow(),
-        ReceiptDraft(
-          partyId: widget.party.id,
-          amount: _entered,
-          mode: _mode,
-          paymentAccountId: accountId,
-          reference: _reference.text.trim().isEmpty
-              ? null
-              : _reference.text.trim(),
-          chequeNo: _mode == 'cheque' ? _chequeNo.text.trim() : null,
-          chequeBank: _mode == 'cheque' && _chequeBank.text.trim().isNotEmpty
-              ? _chequeBank.text.trim()
-              : null,
-          // The day it can be banked. Without it a post-dated cheque is a
-          // number and a bank, and nobody can say when it is due or late.
-          chequeDateUtcMillis: _mode == 'cheque'
-              ? chequeDueUtcMillis(
-                  _chequeDue ?? BusinessDate.now(services.clock),
-                )
-              : null,
-        ),
+      final draft = ReceiptDraft(
+        partyId: widget.party.id,
+        amount: _entered,
+        mode: _mode,
+        paymentAccountId: accountId,
+        reference: _reference.text.trim().isEmpty
+            ? null
+            : _reference.text.trim(),
+        chequeNo: _mode == 'cheque' ? _chequeNo.text.trim() : null,
+        chequeBank: _mode == 'cheque' && _chequeBank.text.trim().isNotEmpty
+            ? _chequeBank.text.trim()
+            : null,
+        // The day it can be banked. Without it a post-dated cheque is a
+        // number and a bank, and nobody can say when it is due or late.
+        chequeDateUtcMillis: _mode == 'cheque'
+            ? chequeDueUtcMillis(_chequeDue ?? BusinessDate.now(services.clock))
+            : null,
       );
+      final editing = widget.editing;
+      final String said;
+      if (editing == null) {
+        final receipt = await services.recordReceipt(
+          services.actorNow(),
+          draft,
+        );
+        said = s.wasooliSaved(receipt.amount.amountOnly);
+      } else {
+        // One act: the old receipt cancelled and the corrected one taken,
+        // or neither.
+        final corrected = await services.corrections.editReceipt(
+          services.actorNow(),
+          paymentId: editing.id,
+          draft: draft,
+          reason: editReason(s, _reason),
+        );
+        said = s.entryEditSaved(corrected.cancelledNo, corrected.no);
+      }
       container.bumpRefresh();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(s.wasooliSaved(receipt.amount.amountOnly))),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(said)));
       Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (!mounted) return;
@@ -159,7 +202,10 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final bills = ref.watch(openBillsProvider(widget.party.id));
+    final editing = widget.editing;
+    final bills = ref
+        .watch(openBillsProvider(widget.party.id))
+        .whenData((open) => reopenedFor(open, editing));
     final accounts = ref.watch(paymentAccountsProvider);
 
     // Chosen when the accounts arrive rather than in initState, because they
@@ -195,7 +241,9 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              s.wasooliTitle,
+              editing == null
+                  ? s.wasooliTitle
+                  : s.entryEditTitle(editing.paymentNo),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -206,6 +254,10 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
               widget.party.name,
               style: TextStyle(fontSize: 14, color: t.inkMuted),
             ),
+            if (editing != null) ...[
+              const SizedBox(height: BlTokens.space2),
+              EntryNote(s.entryEditExplain),
+            ],
             const SizedBox(height: BlTokens.space4),
 
             BlField(
@@ -250,6 +302,11 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
               data: (rows) => _Preview(amount: _entered, bills: rows),
             ),
 
+            if (editing != null) ...[
+              const SizedBox(height: BlTokens.space3),
+              ReasonPicker(reason: _reason),
+            ],
+
             if (_error != null) ...[
               const SizedBox(height: BlTokens.space3),
               Text(_error!, style: TextStyle(color: t.danger, fontSize: 14)),
@@ -257,7 +314,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
 
             const SizedBox(height: BlTokens.space4),
             BlButton(
-              label: s.wasooliSave,
+              label: editing == null ? s.wasooliSave : s.entryEditSave,
               icon: Icons.check,
               big: true,
               busy: _busy,
@@ -299,6 +356,10 @@ class _Preview extends StatelessWidget {
     // The same function the writer runs. Not a reimplementation of it.
     final allocation = allocateFifo(amount, bills);
     final outstanding = {for (final b in bills) b.documentId: b.outstanding};
+    final numbers = {
+      for (final b in bills)
+        if (b.docNo.isNotEmpty) b.documentId: b.docNo,
+    };
 
     return BlCard(
       child: Column(
@@ -320,7 +381,9 @@ class _Preview extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      applied.documentId,
+                      // The number on the paper. This showed the database
+                      // id until M31.
+                      numbers[applied.documentId] ?? applied.documentId,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: 14, color: t.ink),
                     ),
@@ -368,6 +431,10 @@ class _ModePicker extends ConsumerWidget {
 
   final String mode;
   final ValueChanged<String> onChanged;
+
+  /// Whether this picker offers [mode], so a receipt being corrected opens
+  /// on the way it actually came.
+  static bool offers(String mode) => _modes.any((m) => m.$1 == mode);
 
   static const _modes = <(String, IconData)>[
     ('cash', Icons.payments_outlined),

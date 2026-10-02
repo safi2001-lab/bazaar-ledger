@@ -15,6 +15,7 @@ import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
 import '../time/clock.dart';
 import 'catalogue_writer.dart';
+import 'entry_details.dart';
 import 'manufacturing.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
@@ -715,6 +716,16 @@ abstract interface class AppQueries {
   /// single cluster of crash reports against the nearest competitor is reports
   /// on catalogues of a few thousand items, and the cause is exactly that.
   Future<StockSummary> stockSummary(String firmId);
+
+  /// One payment, taken or made, whole (M31).
+  ///
+  /// [id] is the payment's own, or the id of a journal entry that names it —
+  /// which is what a bounced cheque's line in the khata carries, so tapping
+  /// the bounce opens the cheque it is about.
+  Future<PaymentDetail?> paymentDetail(String firmId, String id);
+
+  /// A charge on a khata, or an expense, whole (M31).
+  Future<EntryDocument?> entryDocument(String firmId, String documentId);
 }
 
 /// The shop's stock, in five numbers.

@@ -18,13 +18,14 @@ export 'src/write/drift_attachments.dart';
 export 'src/write/drift_catalogue_writer.dart';
 export 'src/write/drift_challan_writer.dart';
 export 'src/write/drift_cheque_writer.dart' show DriftChequeWriter;
+export 'src/write/drift_correction_writer.dart';
 export 'src/write/drift_day_close_writer.dart';
-export 'src/write/drift_debit_note_writer.dart';
-export 'src/write/drift_expense_writer.dart';
+export 'src/write/drift_debit_note_writer.dart' show DriftDebitNoteWriter;
+export 'src/write/drift_expense_writer.dart' show DriftExpenseWriter;
 export 'src/write/drift_journal_writer.dart';
 export 'src/write/drift_manufacturing_writer.dart'
     show DriftManufacturingWriter;
-export 'src/write/drift_payment_writer.dart';
+export 'src/write/drift_payment_writer.dart' show DriftPaymentWriter;
 export 'src/write/drift_printer_settings.dart';
 export 'src/write/drift_purchase_return_writer.dart'
     show DriftPurchaseReturnWriter;
@@ -34,7 +35,7 @@ export 'src/write/drift_return_writer.dart';
 export 'src/write/drift_sale_writer.dart';
 export 'src/write/drift_staff_store.dart';
 export 'src/write/drift_van_writer.dart' show DriftVanWriter;
-export 'src/write/drift_void_writer.dart';
+export 'src/write/drift_void_writer.dart' show DriftVoidWriter;
 export 'src/write/drift_year_close.dart';
 export 'src/write/first_run.dart';
 export 'src/write/opening_entries.dart' show postMissingOpenings;

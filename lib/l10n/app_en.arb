@@ -1598,5 +1598,108 @@
   "quickItemTwins": "Already an item",
   "quickItemTwinsHint": "If it is this, tap it. If it is something else, add a new one.",
   "quickItemBuyingAt": "Buying price, per unit",
-  "quickItemNoCost": "What it cost and how many are on the shelf are for the owner to add later, from Items."
+  "quickItemNoCost": "What it cost and how many are on the shelf are for the owner to add later, from Items.",
+  "entryReceiptTitle": "Receipt {no}",
+  "@entryReceiptTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryPaymentTitle": "Payment {no}",
+  "@entryPaymentTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryDate": "Date",
+  "entryHow": "How",
+  "entryAccount": "Account",
+  "entryFrom": "Received from",
+  "entryTo": "Paid to",
+  "entryReference": "Reference or note",
+  "entryEnteredBy": "Entered by",
+  "entrySettled": "Bills it went against",
+  "entryShare": "Send the receipt (PDF)",
+  "entryCancel": "Cancel it",
+  "entryCancelTitle": "Cancel this entry",
+  "entryCancelExplain": "Nothing is deleted. A reversing entry is written today, the original stays in the books marked cancelled, and any bills it paid are owed again.",
+  "entryCancelled": "Cancelled",
+  "entryCancelledWhy": "Cancelled: {reason}",
+  "@entryCancelledWhy": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "entryReplaces": "Entered in place of {no}",
+  "@entryReplaces": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryReplacedBy": "Replaced by {no}",
+  "@entryReplacedBy": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryTakenWithBill": "This money was taken at the counter with bill {no}, and goes with it. Open the bill to return or cancel it.",
+  "@entryTakenWithBill": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryChequeAtBank": "The cheque is at the bank. Wait for it to clear or bounce, and mark it on the Cheques screen.",
+  "entryChequeCleared": "The cheque has cleared and the money is in the bank, so it cannot be cancelled.",
+  "entryChequeBounced": "The cheque bounced. What it paid is already back on the khata.",
+  "entryNotAllowed": "Only the owner, a manager or the accountant can change or cancel this.",
+  "entryOpenBill": "Open the bill",
+  "entryEditTitle": "Correct {no}",
+  "@entryEditTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryEditExplain": "The old entry is cancelled and the corrected one written, dated today. Both stay in the books.",
+  "entryEditReason": "What was wrong (optional)",
+  "entryEditReasonDefault": "Entered wrong",
+  "entryEditSave": "Save the correction",
+  "entryEditSaved": "{no} corrected, now {newNo}",
+  "@entryEditSaved": {
+    "placeholders": {
+      "no": {"type": "String"},
+      "newNo": {"type": "String"}
+    }
+  },
+  "entryPaidBy": "{nos} has been paid against this. Open that payment and cancel it first.",
+  "@entryPaidBy": {
+    "placeholders": {
+      "nos": {"type": "String"}
+    }
+  },
+  "chargeEntryHint": "A charge of {amount}. Correct it if the amount or reason is wrong; take it back if it should not be there.",
+  "@chargeEntryHint": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "openingTitle": "Correct the opening balance",
+  "openingNow": "Entered now",
+  "openingNew": "The right opening balance",
+  "openingExplain": "The old opening entry is reversed and the right figure posted. The khata starts from the new figure.",
+  "openingCorrect": "Correct it",
+  "openingSaved": "Opening balance corrected",
+  "reasonPick": "Pick a reason",
+  "reasonWrongEntry": "Wrong entry",
+  "reasonDuplicate": "Duplicate entry",
+  "reasonWrongAmount": "Wrong amount",
+  "reasonDispute": "Customer dispute",
+  "reasonOther": "Other",
+  "reasonDetail": "Details (optional)",
+  "entryCancelledBy": "Cancelled by {name}, {when}",
+  "@entryCancelledBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  }
 }

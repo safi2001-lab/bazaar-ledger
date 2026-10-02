@@ -2860,4 +2860,171 @@ class AppStringsEn extends AppStrings {
   @override
   String get quickItemNoCost =>
       'What it cost and how many are on the shelf are for the owner to add later, from Items.';
+
+  @override
+  String entryReceiptTitle(String no) {
+    return 'Receipt $no';
+  }
+
+  @override
+  String entryPaymentTitle(String no) {
+    return 'Payment $no';
+  }
+
+  @override
+  String get entryDate => 'Date';
+
+  @override
+  String get entryHow => 'How';
+
+  @override
+  String get entryAccount => 'Account';
+
+  @override
+  String get entryFrom => 'Received from';
+
+  @override
+  String get entryTo => 'Paid to';
+
+  @override
+  String get entryReference => 'Reference or note';
+
+  @override
+  String get entryEnteredBy => 'Entered by';
+
+  @override
+  String get entrySettled => 'Bills it went against';
+
+  @override
+  String get entryShare => 'Send the receipt (PDF)';
+
+  @override
+  String get entryCancel => 'Cancel it';
+
+  @override
+  String get entryCancelTitle => 'Cancel this entry';
+
+  @override
+  String get entryCancelExplain =>
+      'Nothing is deleted. A reversing entry is written today, the original stays in the books marked cancelled, and any bills it paid are owed again.';
+
+  @override
+  String get entryCancelled => 'Cancelled';
+
+  @override
+  String entryCancelledWhy(String reason) {
+    return 'Cancelled: $reason';
+  }
+
+  @override
+  String entryReplaces(String no) {
+    return 'Entered in place of $no';
+  }
+
+  @override
+  String entryReplacedBy(String no) {
+    return 'Replaced by $no';
+  }
+
+  @override
+  String entryTakenWithBill(String no) {
+    return 'This money was taken at the counter with bill $no, and goes with it. Open the bill to return or cancel it.';
+  }
+
+  @override
+  String get entryChequeAtBank =>
+      'The cheque is at the bank. Wait for it to clear or bounce, and mark it on the Cheques screen.';
+
+  @override
+  String get entryChequeCleared =>
+      'The cheque has cleared and the money is in the bank, so it cannot be cancelled.';
+
+  @override
+  String get entryChequeBounced =>
+      'The cheque bounced. What it paid is already back on the khata.';
+
+  @override
+  String get entryNotAllowed =>
+      'Only the owner, a manager or the accountant can change or cancel this.';
+
+  @override
+  String get entryOpenBill => 'Open the bill';
+
+  @override
+  String entryEditTitle(String no) {
+    return 'Correct $no';
+  }
+
+  @override
+  String get entryEditExplain =>
+      'The old entry is cancelled and the corrected one written, dated today. Both stay in the books.';
+
+  @override
+  String get entryEditReason => 'What was wrong (optional)';
+
+  @override
+  String get entryEditReasonDefault => 'Entered wrong';
+
+  @override
+  String get entryEditSave => 'Save the correction';
+
+  @override
+  String entryEditSaved(String no, String newNo) {
+    return '$no corrected, now $newNo';
+  }
+
+  @override
+  String entryPaidBy(String nos) {
+    return '$nos has been paid against this. Open that payment and cancel it first.';
+  }
+
+  @override
+  String chargeEntryHint(String amount) {
+    return 'A charge of $amount. Correct it if the amount or reason is wrong; take it back if it should not be there.';
+  }
+
+  @override
+  String get openingTitle => 'Correct the opening balance';
+
+  @override
+  String get openingNow => 'Entered now';
+
+  @override
+  String get openingNew => 'The right opening balance';
+
+  @override
+  String get openingExplain =>
+      'The old opening entry is reversed and the right figure posted. The khata starts from the new figure.';
+
+  @override
+  String get openingCorrect => 'Correct it';
+
+  @override
+  String get openingSaved => 'Opening balance corrected';
+
+  @override
+  String get reasonPick => 'Pick a reason';
+
+  @override
+  String get reasonWrongEntry => 'Wrong entry';
+
+  @override
+  String get reasonDuplicate => 'Duplicate entry';
+
+  @override
+  String get reasonWrongAmount => 'Wrong amount';
+
+  @override
+  String get reasonDispute => 'Customer dispute';
+
+  @override
+  String get reasonOther => 'Other';
+
+  @override
+  String get reasonDetail => 'Details (optional)';
+
+  @override
+  String entryCancelledBy(String name, String when) {
+    return 'Cancelled by $name, $when';
+  }
 }

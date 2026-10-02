@@ -2860,4 +2860,171 @@ class AppStringsUr extends AppStrings {
   @override
   String get quickItemNoCost =>
       'Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge.';
+
+  @override
+  String entryReceiptTitle(String no) {
+    return 'Wasooli $no';
+  }
+
+  @override
+  String entryPaymentTitle(String no) {
+    return 'Adaygi $no';
+  }
+
+  @override
+  String get entryDate => 'Tareekh';
+
+  @override
+  String get entryHow => 'Kis tarah';
+
+  @override
+  String get entryAccount => 'Kis account mein';
+
+  @override
+  String get entryFrom => 'Kis se mile';
+
+  @override
+  String get entryTo => 'Kis ko diye';
+
+  @override
+  String get entryReference => 'Reference ya note';
+
+  @override
+  String get entryEnteredBy => 'Kis ne likha';
+
+  @override
+  String get entrySettled => 'Yeh bill is se chuke';
+
+  @override
+  String get entryShare => 'Raseed bhejein (PDF)';
+
+  @override
+  String get entryCancel => 'Mansookh karein';
+
+  @override
+  String get entryCancelTitle => 'Yeh entry mansookh karein';
+
+  @override
+  String get entryCancelExplain =>
+      'Kuch mit-ta nahi. Ulta ijraa aaj ki tareekh se likha jayega, asal entry \'mansookh\' ke nishan ke sath hisaab mein rahegi, aur jo bill is se chuke thay woh dobara baqi ho jayenge.';
+
+  @override
+  String get entryCancelled => 'Mansookh';
+
+  @override
+  String entryCancelledWhy(String reason) {
+    return 'Mansookh: $reason';
+  }
+
+  @override
+  String entryReplaces(String no) {
+    return '$no ki jagah likhi gayi';
+  }
+
+  @override
+  String entryReplacedBy(String no) {
+    return 'Is ki jagah ab $no hai';
+  }
+
+  @override
+  String entryTakenWithBill(String no) {
+    return 'Yeh paisay bill $no ke sath counter par liye gaye thay, is liye bill ke sath hi jayenge. Bill khol kar wapsi ya mansookhi karein.';
+  }
+
+  @override
+  String get entryChequeAtBank =>
+      'Cheque bank mein hai. Clear ya bounce hone ka intezar karein aur Cheque screen par darj karein.';
+
+  @override
+  String get entryChequeCleared =>
+      'Cheque clear ho chuka, paisay bank mein hain, is liye ab mansookh nahi ho sakta.';
+
+  @override
+  String get entryChequeBounced =>
+      'Cheque bounce ho chuka. Jo is ne chukaya tha woh pehle hi wapas khate mein hai.';
+
+  @override
+  String get entryNotAllowed =>
+      'Isay sirf malik, manager ya accountant badal ya mansookh kar sakte hain.';
+
+  @override
+  String get entryOpenBill => 'Bill kholein';
+
+  @override
+  String entryEditTitle(String no) {
+    return '$no theek karein';
+  }
+
+  @override
+  String get entryEditExplain =>
+      'Purani entry mansookh hogi aur theek wali aaj ki tareekh se likhi jayegi. Dono hisaab mein rahengi.';
+
+  @override
+  String get entryEditReason => 'Kya galat tha (marzi se)';
+
+  @override
+  String get entryEditReasonDefault => 'Galat likha gaya tha';
+
+  @override
+  String get entryEditSave => 'Tabdeeli save karein';
+
+  @override
+  String entryEditSaved(String no, String newNo) {
+    return '$no theek ho gaya, ab $newNo';
+  }
+
+  @override
+  String entryPaidBy(String nos) {
+    return 'Is par $nos ki adaygi ho chuki hai. Pehle woh khol kar mansookh karein.';
+  }
+
+  @override
+  String chargeEntryHint(String amount) {
+    return '$amount ka charge. Raqam ya wajah galat hai to theek karein; ghalti se dala tha to wapas lein.';
+  }
+
+  @override
+  String get openingTitle => 'Purana baqaya theek karein';
+
+  @override
+  String get openingNow => 'Abhi likha hai';
+
+  @override
+  String get openingNew => 'Sahi purana baqaya';
+
+  @override
+  String get openingExplain =>
+      'Purana ijraa ulta ho kar sahi raqam ka naya likha jayega. Khate ki shuruat ka baqaya isi se badlega.';
+
+  @override
+  String get openingCorrect => 'Theek karein';
+
+  @override
+  String get openingSaved => 'Purana baqaya theek ho gaya';
+
+  @override
+  String get reasonPick => 'Wajah chunein';
+
+  @override
+  String get reasonWrongEntry => 'Galat entry';
+
+  @override
+  String get reasonDuplicate => 'Do baar likh di';
+
+  @override
+  String get reasonWrongAmount => 'Galat raqam';
+
+  @override
+  String get reasonDispute => 'Gahak ka ikhtilaf';
+
+  @override
+  String get reasonOther => 'Kuch aur';
+
+  @override
+  String get reasonDetail => 'Tafseel (marzi se)';
+
+  @override
+  String entryCancelledBy(String name, String when) {
+    return '$name ne $when ko mansookh kiya';
+  }
 }

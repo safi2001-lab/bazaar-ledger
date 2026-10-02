@@ -19,28 +19,42 @@ final class PaySupplierUseCase {
   final PaymentWriter writer;
   final SupplierPaymentBuilder builder;
 
-  Future<RecordedReceipt> call(ActorContext actor, SupplierPaymentDraft draft) {
-    return writer.inTransaction(actor, (write) async {
-      final ledgerAccountId = await write.ledgerAccountFor(
-        draft.paymentAccountId,
-      );
-      if (ledgerAccountId == null) {
-        throw const SupplierPaymentRefused(
-          'That payment method is not linked to an account, so money paid '
-          'through it would come from nowhere.',
-        );
-      }
+  Future<RecordedReceipt> call(
+    ActorContext actor,
+    SupplierPaymentDraft draft,
+  ) => writer.inTransaction(
+    actor,
+    (write) => payOn(write, actor, draft, builder: builder),
+  );
 
-      final posting = builder.build(
-        actor: actor,
-        draft: draft,
-        openBills: await write.openPayablesFor(draft.partyId),
-        paymentNumber: await write.nextNumber('payment_out'),
-        journalNumber: await write.nextNumber('journal_entry'),
-        ledgerAccountId: ledgerAccountId,
+  /// The same steps, on a transaction somebody else opened: an edit (M31)
+  /// cancels a payment and makes its replacement in one commit, and the
+  /// replacement is made exactly as any other payment is.
+  static Future<RecordedReceipt> payOn(
+    PaymentWriteContext write,
+    ActorContext actor,
+    SupplierPaymentDraft draft, {
+    SupplierPaymentBuilder builder = const SupplierPaymentBuilder(),
+  }) async {
+    final ledgerAccountId = await write.ledgerAccountFor(
+      draft.paymentAccountId,
+    );
+    if (ledgerAccountId == null) {
+      throw const SupplierPaymentRefused(
+        'That payment method is not linked to an account, so money paid '
+        'through it would come from nowhere.',
       );
+    }
 
-      return write.apply(posting);
-    });
+    final posting = builder.build(
+      actor: actor,
+      draft: draft,
+      openBills: await write.openPayablesFor(draft.partyId),
+      paymentNumber: await write.nextNumber('payment_out'),
+      journalNumber: await write.nextNumber('journal_entry'),
+      ledgerAccountId: ledgerAccountId,
+    );
+
+    return write.apply(posting);
   }
 }

@@ -28,6 +28,8 @@ export 'package:pk_platform/pk_platform.dart'
         LabelData,
         LabelRenderer,
         LabelSpec,
+        paymentReceiptFileName,
+        paymentReceiptPdf,
         PdfPageFormat,
         PrintOutcome,
         PrintResult,

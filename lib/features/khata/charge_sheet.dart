@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'entry_actions.dart';
 
 /// Putting a charge on a customer's khata with no sale behind it: a debit
 /// note.
@@ -15,31 +16,40 @@ import '../../l10n/app_strings.dart';
 /// The bank's fee on a bounced cheque, the transporter's fare for goods sent
 /// to them. Owed like a bill and settled by the same receipts, and never in
 /// the day's sales.
+///
+/// Handed [editing] (M31), it corrects a charge already put on: filled in
+/// with it, and saved as one act that takes it back and puts the corrected
+/// one on.
 Future<bool> showChargeSheet(
   BuildContext context, {
   required PartySummary party,
+  EntryDocument? editing,
 }) async {
   final saved = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => _ChargeSheet(party: party),
+    builder: (_) => _ChargeSheet(party: party, editing: editing),
   );
   return saved ?? false;
 }
 
 class _ChargeSheet extends ConsumerStatefulWidget {
-  const _ChargeSheet({required this.party});
+  const _ChargeSheet({required this.party, this.editing});
 
   final PartySummary party;
+  final EntryDocument? editing;
 
   @override
   ConsumerState<_ChargeSheet> createState() => _ChargeSheetState();
 }
 
 class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
-  final _amount = TextEditingController();
-  final _note = TextEditingController();
+  late final _amount = TextEditingController(
+    text: widget.editing?.total.amountOnly.replaceAll(',', ''),
+  );
+  late final _note = TextEditingController(text: widget.editing?.note);
+  final _reason = ReasonController();
   bool _busy = false;
   String? _error;
 
@@ -47,6 +57,7 @@ class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
   void dispose() {
     _amount.dispose();
     _note.dispose();
+    _reason.dispose();
     super.dispose();
   }
 
@@ -71,25 +82,38 @@ class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final services = ref.read(appServicesProvider);
-      await services.chargeParty(
-        services.actorNow(),
-        DebitNoteDraft(
-          partyId: widget.party.id,
-          partyName: widget.party.name,
-          amount: amount,
-          note: _note.text,
-        ),
+      final draft = DebitNoteDraft(
+        partyId: widget.party.id,
+        partyName: widget.party.name,
+        amount: amount,
+        note: _note.text,
       );
+      final editing = widget.editing;
+      final String said;
+      if (editing == null) {
+        await services.chargeParty(services.actorNow(), draft);
+        said = s.chargeSaved(amount.amountOnly);
+      } else {
+        final corrected = await services.corrections.editCharge(
+          services.actorNow(),
+          documentId: editing.id,
+          draft: draft,
+          reason: editReason(s, _reason),
+        );
+        said = s.entryEditSaved(corrected.cancelledNo, corrected.no);
+      }
       container.bumpRefresh();
-      messenger.showSnackBar(
-        SnackBar(content: Text(s.chargeSaved(amount.amountOnly))),
-      );
+      messenger.showSnackBar(SnackBar(content: Text(said)));
       navigator.pop(true);
     } on Object catch (error) {
       if (!mounted) return;
       setState(() {
         _busy = false;
-        _error = error is DebitNoteRefused ? error.reason : '$error';
+        _error = switch (error) {
+          DebitNoteRefused(:final reason) => reason,
+          VoidRefused(:final reason) => reason,
+          _ => '$error',
+        };
       });
     }
   }
@@ -98,6 +122,7 @@ class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    final editing = widget.editing;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -115,7 +140,7 @@ class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              s.chargeTitle,
+              editing == null ? s.chargeTitle : s.entryEditTitle(editing.docNo),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -126,6 +151,10 @@ class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
               widget.party.name,
               style: TextStyle(fontSize: 14, color: t.inkMuted),
             ),
+            if (editing != null) ...[
+              const SizedBox(height: BlTokens.space2),
+              EntryNote(s.entryEditExplain),
+            ],
             const SizedBox(height: BlTokens.space4),
             BlField(
               controller: _amount,
@@ -140,13 +169,17 @@ class _ChargeSheetState extends ConsumerState<_ChargeSheet> {
               label: s.chargeNote,
               onChanged: (_) => setState(() => _error = null),
             ),
+            if (editing != null) ...[
+              const SizedBox(height: BlTokens.space3),
+              ReasonPicker(reason: _reason),
+            ],
             if (_error != null) ...[
               const SizedBox(height: BlTokens.space3),
               Text(_error!, style: TextStyle(color: t.danger, fontSize: 14)),
             ],
             const SizedBox(height: BlTokens.space4),
             BlButton(
-              label: s.chargeSave,
+              label: editing == null ? s.chargeSave : s.entryEditSave,
               icon: Icons.check,
               big: true,
               busy: _busy,

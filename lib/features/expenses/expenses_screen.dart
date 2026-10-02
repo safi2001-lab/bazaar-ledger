@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'expense_entry_sheet.dart';
 import 'expense_screen.dart';
 
 /// Rent, bijli and wages, newest first.
@@ -96,6 +97,9 @@ class _ExpenseTile extends StatelessWidget {
     final t = context.bl;
 
     return BlCard(
+      // Opens it whole, to correct or cancel (M31). A saved expense used to
+      // be a line that did nothing when tapped.
+      onTap: () => showExpenseEntrySheet(context, documentId: row.id),
       child: Row(
         children: [
           Expanded(

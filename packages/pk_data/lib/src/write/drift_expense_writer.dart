@@ -29,6 +29,13 @@ final class DriftExpenseWriter implements ExpenseWriter {
       runner.run(actor, (tx) => body(_DriftExpenseWriteContext(tx, sequences)));
 }
 
+/// The expense handle on a transaction somebody else opened: an edit (M31) that cancels an expense and writes its replacement in the
+/// same commit.
+ExpenseWriteContext expenseContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _DriftExpenseWriteContext(tx, sequences);
+
 final class _DriftExpenseWriteContext implements ExpenseWriteContext {
   _DriftExpenseWriteContext(this._tx, this._sequences);
 

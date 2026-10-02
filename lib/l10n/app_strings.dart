@@ -5131,6 +5131,282 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge.'**
   String get quickItemNoCost;
+
+  /// No description provided for @entryReceiptTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasooli {no}'**
+  String entryReceiptTitle(String no);
+
+  /// No description provided for @entryPaymentTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Adaygi {no}'**
+  String entryPaymentTitle(String no);
+
+  /// No description provided for @entryDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh'**
+  String get entryDate;
+
+  /// No description provided for @entryHow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis tarah'**
+  String get entryHow;
+
+  /// No description provided for @entryAccount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis account mein'**
+  String get entryAccount;
+
+  /// No description provided for @entryFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis se mile'**
+  String get entryFrom;
+
+  /// No description provided for @entryTo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ko diye'**
+  String get entryTo;
+
+  /// No description provided for @entryReference.
+  ///
+  /// In ur, this message translates to:
+  /// **'Reference ya note'**
+  String get entryReference;
+
+  /// No description provided for @entryEnteredBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ne likha'**
+  String get entryEnteredBy;
+
+  /// No description provided for @entrySettled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill is se chuke'**
+  String get entrySettled;
+
+  /// No description provided for @entryShare.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raseed bhejein (PDF)'**
+  String get entryShare;
+
+  /// No description provided for @entryCancel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh karein'**
+  String get entryCancel;
+
+  /// No description provided for @entryCancelTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh entry mansookh karein'**
+  String get entryCancelTitle;
+
+  /// No description provided for @entryCancelExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch mit-ta nahi. Ulta ijraa aaj ki tareekh se likha jayega, asal entry \'mansookh\' ke nishan ke sath hisaab mein rahegi, aur jo bill is se chuke thay woh dobara baqi ho jayenge.'**
+  String get entryCancelExplain;
+
+  /// No description provided for @entryCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh'**
+  String get entryCancelled;
+
+  /// No description provided for @entryCancelledWhy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh: {reason}'**
+  String entryCancelledWhy(String reason);
+
+  /// No description provided for @entryReplaces.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no} ki jagah likhi gayi'**
+  String entryReplaces(String no);
+
+  /// No description provided for @entryReplacedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ki jagah ab {no} hai'**
+  String entryReplacedBy(String no);
+
+  /// No description provided for @entryTakenWithBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh paisay bill {no} ke sath counter par liye gaye thay, is liye bill ke sath hi jayenge. Bill khol kar wapsi ya mansookhi karein.'**
+  String entryTakenWithBill(String no);
+
+  /// No description provided for @entryChequeAtBank.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque bank mein hai. Clear ya bounce hone ka intezar karein aur Cheque screen par darj karein.'**
+  String get entryChequeAtBank;
+
+  /// No description provided for @entryChequeCleared.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque clear ho chuka, paisay bank mein hain, is liye ab mansookh nahi ho sakta.'**
+  String get entryChequeCleared;
+
+  /// No description provided for @entryChequeBounced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque bounce ho chuka. Jo is ne chukaya tha woh pehle hi wapas khate mein hai.'**
+  String get entryChequeBounced;
+
+  /// No description provided for @entryNotAllowed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Isay sirf malik, manager ya accountant badal ya mansookh kar sakte hain.'**
+  String get entryNotAllowed;
+
+  /// No description provided for @entryOpenBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill kholein'**
+  String get entryOpenBill;
+
+  /// No description provided for @entryEditTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no} theek karein'**
+  String entryEditTitle(String no);
+
+  /// No description provided for @entryEditExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purani entry mansookh hogi aur theek wali aaj ki tareekh se likhi jayegi. Dono hisaab mein rahengi.'**
+  String get entryEditExplain;
+
+  /// No description provided for @entryEditReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya galat tha (marzi se)'**
+  String get entryEditReason;
+
+  /// No description provided for @entryEditReasonDefault.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat likha gaya tha'**
+  String get entryEditReasonDefault;
+
+  /// No description provided for @entryEditSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tabdeeli save karein'**
+  String get entryEditSave;
+
+  /// No description provided for @entryEditSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no} theek ho gaya, ab {newNo}'**
+  String entryEditSaved(String no, String newNo);
+
+  /// No description provided for @entryPaidBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is par {nos} ki adaygi ho chuki hai. Pehle woh khol kar mansookh karein.'**
+  String entryPaidBy(String nos);
+
+  /// No description provided for @chargeEntryHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} ka charge. Raqam ya wajah galat hai to theek karein; ghalti se dala tha to wapas lein.'**
+  String chargeEntryHint(String amount);
+
+  /// No description provided for @openingTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purana baqaya theek karein'**
+  String get openingTitle;
+
+  /// No description provided for @openingNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi likha hai'**
+  String get openingNow;
+
+  /// No description provided for @openingNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sahi purana baqaya'**
+  String get openingNew;
+
+  /// No description provided for @openingExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purana ijraa ulta ho kar sahi raqam ka naya likha jayega. Khate ki shuruat ka baqaya isi se badlega.'**
+  String get openingExplain;
+
+  /// No description provided for @openingCorrect.
+  ///
+  /// In ur, this message translates to:
+  /// **'Theek karein'**
+  String get openingCorrect;
+
+  /// No description provided for @openingSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purana baqaya theek ho gaya'**
+  String get openingSaved;
+
+  /// No description provided for @reasonPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah chunein'**
+  String get reasonPick;
+
+  /// No description provided for @reasonWrongEntry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat entry'**
+  String get reasonWrongEntry;
+
+  /// No description provided for @reasonDuplicate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Do baar likh di'**
+  String get reasonDuplicate;
+
+  /// No description provided for @reasonWrongAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat raqam'**
+  String get reasonWrongAmount;
+
+  /// No description provided for @reasonDispute.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ka ikhtilaf'**
+  String get reasonDispute;
+
+  /// No description provided for @reasonOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch aur'**
+  String get reasonOther;
+
+  /// No description provided for @reasonDetail.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tafseel (marzi se)'**
+  String get reasonDetail;
+
+  /// No description provided for @entryCancelledBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ne {when} ko mansookh kiya'**
+  String entryCancelledBy(String name, String when);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

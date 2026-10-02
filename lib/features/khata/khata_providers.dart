@@ -100,3 +100,24 @@ final payablesLedgerProvider = FutureProvider.autoDispose
       final entries = await services.queries.payablesLedger(firm.id, partyId);
       return entries.reversed.toList();
     });
+
+/// One payment, taken or made, whole — for the page a khata line opens
+/// (M31). [id] may be the payment's own, or a bounce entry's that names it.
+final paymentDetailProvider = FutureProvider.autoDispose
+    .family<PaymentDetail?, String>((ref, id) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return null;
+      return services.queries.paymentDetail(firm.id, id);
+    });
+
+/// A charge on a khata or an expense, whole (M31).
+final entryDocumentProvider = FutureProvider.autoDispose
+    .family<EntryDocument?, String>((ref, documentId) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      final firm = await ref.watch(firmProvider.future);
+      if (firm == null) return null;
+      return services.queries.entryDocument(firm.id, documentId);
+    });

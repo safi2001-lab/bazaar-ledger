@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../khata/entry_actions.dart';
 import '../parties/party_picker.dart';
 
 /// Writing down rent, bijli, or the boy who carries sacks.
@@ -30,8 +31,16 @@ import '../parties/party_picker.dart';
 /// "Misc — Rs 4,000" six months later is a number nobody can defend. The
 /// builder refuses it too; checking here as well means the shopkeeper is told
 /// which field is empty in their own language rather than shown an exception.
+///
+/// ## Correcting one (M31)
+///
+/// Handed [editing], the same screen corrects an expense already saved:
+/// filled in with it, and saved as one act that cancels it and writes the
+/// corrected one. It pops `true` when something was saved.
 class ExpenseScreen extends ConsumerStatefulWidget {
-  const ExpenseScreen({super.key});
+  const ExpenseScreen({super.key, this.editing});
+
+  final EntryDocument? editing;
 
   @override
   ConsumerState<ExpenseScreen> createState() => _ExpenseScreenState();
@@ -40,6 +49,7 @@ class ExpenseScreen extends ConsumerStatefulWidget {
 class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   final _amount = TextEditingController();
   final _note = TextEditingController();
+  final _reason = ReasonController();
 
   String _head = 'rent';
   bool _paidNow = true;
@@ -49,9 +59,32 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
   String? _failure;
 
   @override
+  void initState() {
+    super.initState();
+    final editing = widget.editing;
+    if (editing == null) return;
+    // The expense being corrected, as it was saved.
+    final head = editing.head;
+    _head = head != null && expenseHeads.contains(head) ? head : 'misc';
+    _amount.text = editing.total.amountOnly.replaceAll(',', '');
+    _note.text = editing.note;
+    _paidNow = editing.partyId == null;
+    _accountId = editing.paidFromAccountId;
+    if (editing.partyId case final partyId?) {
+      _payee = PartySummary(
+        id: partyId,
+        name: editing.partyName ?? '',
+        partyType: 'supplier',
+        balance: Money.zero,
+      );
+    }
+  }
+
+  @override
   void dispose() {
     _amount.dispose();
     _note.dispose();
+    _reason.dispose();
     super.dispose();
   }
 
@@ -109,22 +142,36 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     final services = ref.read(appServicesProvider);
     final container = ProviderScope.containerOf(context, listen: false);
     try {
-      final recorded = await services.recordExpense(
-        services.actorNow(),
-        ExpenseDraft(
-          accountSystemKey: _head,
-          amount: _entered,
-          note: _note.text.trim(),
-          paymentAccountId: _paidNow ? accountId : null,
-          partyId: _paidNow ? null : _payee!.id,
-        ),
+      final draft = ExpenseDraft(
+        accountSystemKey: _head,
+        amount: _entered,
+        note: _note.text.trim(),
+        paymentAccountId: _paidNow ? accountId : null,
+        partyId: _paidNow ? null : _payee!.id,
       );
+      final editing = widget.editing;
+      final String said;
+      if (editing == null) {
+        final recorded = await services.recordExpense(
+          services.actorNow(),
+          draft,
+        );
+        said = s.expenseSaved(recorded.docNo);
+      } else {
+        // One act: the old expense cancelled and the corrected one written,
+        // or neither.
+        final corrected = await services.corrections.editExpense(
+          services.actorNow(),
+          documentId: editing.id,
+          draft: draft,
+          reason: editReason(s, _reason),
+        );
+        said = s.entryEditSaved(corrected.cancelledNo, corrected.no);
+      }
       container.bumpRefresh();
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(s.expenseSaved(recorded.docNo))));
-      Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(said)));
+      Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (!mounted) return;
       setState(() {
@@ -139,6 +186,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
     final s = AppStrings.of(context);
     final t = context.bl;
     final accounts = ref.watch(paymentAccountsProvider);
+    final editing = widget.editing;
 
     // Resolved for this build rather than stored, for the same reason as the
     // receipt sheet: the accounts arrive asynchronously, and a null here is a
@@ -162,7 +210,11 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.expenseNew)),
+      appBar: AppBar(
+        title: Text(
+          editing == null ? s.expenseNew : s.entryEditTitle(editing.docNo),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -175,6 +227,10 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                   MediaQuery.viewInsetsOf(context).bottom + BlTokens.space5,
                 ),
                 children: [
+                  if (editing != null) ...[
+                    EntryNote(s.entryEditExplain),
+                    const SizedBox(height: BlTokens.space3),
+                  ],
                   BlSectionHeader(s.expenseHead),
                   const SizedBox(height: BlTokens.space2),
                   Wrap(
@@ -279,6 +335,10 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                         ],
                       ),
                     ),
+                  if (editing != null) ...[
+                    const SizedBox(height: BlTokens.space4),
+                    ReasonPicker(reason: _reason),
+                  ],
                 ],
               ),
             ),
@@ -309,7 +369,7 @@ class _ExpenseScreenState extends ConsumerState<ExpenseScreen> {
                     const SizedBox(height: BlTokens.space2),
                   ],
                   BlButton(
-                    label: s.expenseSave,
+                    label: editing == null ? s.expenseSave : s.entryEditSave,
                     icon: Icons.check,
                     big: true,
                     busy: _busy,

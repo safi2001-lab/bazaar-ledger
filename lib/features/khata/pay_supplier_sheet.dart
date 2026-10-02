@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
 import '../subscription/plans_screen.dart';
+import 'entry_actions.dart';
 import 'khata_providers.dart';
 
 /// Paying a supplier against what the shop owes them.
@@ -19,23 +20,29 @@ import 'khata_providers.dart';
 /// and the shopkeeper needs to see which deliveries a payment clears before
 /// the money leaves the drawer. It is computed with `allocateFifo` over the
 /// rows the writer will read, so it cannot disagree with the write.
+///
+/// Handed [editing] (M31), it corrects a payment already made: filled in
+/// with it, the deliveries it paid counted as owed again, and saved as one
+/// act that cancels it and makes the corrected one.
 Future<bool> showPaySupplierSheet(
   BuildContext context, {
   required PartySummary party,
+  PaymentDetail? editing,
 }) async {
   final saved = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (_) => _PaySupplierSheet(party: party),
+    builder: (_) => _PaySupplierSheet(party: party, editing: editing),
   );
   return saved ?? false;
 }
 
 class _PaySupplierSheet extends ConsumerStatefulWidget {
-  const _PaySupplierSheet({required this.party});
+  const _PaySupplierSheet({required this.party, this.editing});
 
   final PartySummary party;
+  final PaymentDetail? editing;
 
   @override
   ConsumerState<_PaySupplierSheet> createState() => _SheetState();
@@ -45,6 +52,7 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
   final _amount = TextEditingController();
   final _reference = TextEditingController();
   final _chequeNo = TextEditingController();
+  final _reason = ReasonController();
 
   String? _accountId;
 
@@ -59,6 +67,17 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
   @override
   void initState() {
     super.initState();
+    final editing = widget.editing;
+    if (editing != null) {
+      // The payment being corrected, as it was made.
+      _amount.text = editing.amount.amountOnly.replaceAll(',', '');
+      _byCheque = editing.isCheque;
+      _accountId = editing.paymentAccountId;
+      _reference.text = editing.reference ?? '';
+      _chequeNo.text = editing.chequeNo ?? '';
+      _due = editing.chequeDue;
+      return;
+    }
     // Prefilled with everything owed, because clearing the account is the
     // commonest payment. The shopkeeper overtypes it when it is not.
     if (widget.party.payable.isPositive) {
@@ -71,6 +90,7 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
     _amount.dispose();
     _reference.dispose();
     _chequeNo.dispose();
+    _reason.dispose();
     super.dispose();
   }
 
@@ -116,25 +136,36 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
     final services = ref.read(appServicesProvider);
     final container = ProviderScope.containerOf(context, listen: false);
     try {
-      final paid = await services.paySupplier(
-        services.actorNow(),
-        SupplierPaymentDraft(
-          partyId: widget.party.id,
-          amount: _entered,
-          mode: _byCheque ? 'cheque' : account.modeLabel,
-          paymentAccountId: account.id,
-          reference: _reference.text.trim().isEmpty
-              ? null
-              : _reference.text.trim(),
-          chequeNo: _byCheque ? _chequeNo.text.trim() : null,
-          chequeDateUtcMillis: _byCheque ? chequeDueUtcMillis(due) : null,
-        ),
+      final draft = SupplierPaymentDraft(
+        partyId: widget.party.id,
+        amount: _entered,
+        mode: _byCheque ? 'cheque' : account.modeLabel,
+        paymentAccountId: account.id,
+        reference: _reference.text.trim().isEmpty
+            ? null
+            : _reference.text.trim(),
+        chequeNo: _byCheque ? _chequeNo.text.trim() : null,
+        chequeDateUtcMillis: _byCheque ? chequeDueUtcMillis(due) : null,
       );
+      final editing = widget.editing;
+      final String said;
+      if (editing == null) {
+        final paid = await services.paySupplier(services.actorNow(), draft);
+        said = s.paySaved(paid.amount.amountOnly);
+      } else {
+        // One act: the old payment cancelled and the corrected one made,
+        // or neither.
+        final corrected = await services.corrections.editSupplierPayment(
+          services.actorNow(),
+          paymentId: editing.id,
+          draft: draft,
+          reason: editReason(s, _reason),
+        );
+        said = s.entryEditSaved(corrected.cancelledNo, corrected.no);
+      }
       container.bumpRefresh();
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(s.paySaved(paid.amount.amountOnly))),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(said)));
       Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (!mounted) return;
@@ -149,7 +180,12 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final bills = ref.watch(openPayablesProvider(widget.party.id));
+    final editing = widget.editing;
+    // While correcting, the deliveries this payment paid count as owed
+    // again: by the time the corrected one is made, they will be.
+    final bills = ref
+        .watch(openPayablesProvider(widget.party.id))
+        .whenData((open) => reopenedFor(open, editing));
     final accounts = ref.watch(paymentAccountsProvider);
 
     // Every account except the cheque one: paying from Cheques in Hand is
@@ -189,7 +225,9 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              s.payTitle,
+              editing == null
+                  ? s.payTitle
+                  : s.entryEditTitle(editing.paymentNo),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
@@ -200,6 +238,10 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
               widget.party.name,
               style: TextStyle(fontSize: 14, color: t.inkMuted),
             ),
+            if (editing != null) ...[
+              const SizedBox(height: BlTokens.space2),
+              EntryNote(s.entryEditExplain),
+            ],
             const SizedBox(height: BlTokens.space4),
             BlField(
               controller: _amount,
@@ -275,13 +317,17 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
                   BlError(title: s.commonSomethingWentWrong, message: '$error'),
               data: (rows) => _Preview(amount: _entered, bills: rows),
             ),
+            if (editing != null) ...[
+              const SizedBox(height: BlTokens.space3),
+              ReasonPicker(reason: _reason),
+            ],
             if (_error != null) ...[
               const SizedBox(height: BlTokens.space3),
               Text(_error!, style: TextStyle(color: t.danger, fontSize: 14)),
             ],
             const SizedBox(height: BlTokens.space4),
             BlButton(
-              label: s.paySave,
+              label: editing == null ? s.paySave : s.entryEditSave,
               icon: Icons.check,
               big: true,
               busy: _busy,
@@ -315,7 +361,12 @@ class _Preview extends StatelessWidget {
     // The same function the builder runs. Not a reimplementation of it.
     final allocation = allocateFifo(amount, bills);
     final outstanding = {for (final b in bills) b.documentId: b.outstanding};
-    final dates = {for (final b in bills) b.documentId: b.dateLocal};
+    final dates = {
+      for (final b in bills)
+        b.documentId: b.docNo.isEmpty
+            ? b.dateLocal
+            : '${b.docNo} · ${b.dateLocal}',
+    };
 
     return BlCard(
       child: Column(

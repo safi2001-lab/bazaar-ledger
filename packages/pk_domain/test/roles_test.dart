@@ -30,6 +30,16 @@ void main() {
       expect(Role.accountant.can(Permission.voidDocuments), isFalse);
     });
 
+    test('the books can be put right by those who keep them, not the counter', () {
+      // M31: an accountant corrects a receipt keyed in wrong without being
+      // able to cancel bills; a cashier can do neither, or money taken at
+      // the counter could be made never to have come in.
+      expect(Role.owner.can(Permission.correctEntries), isTrue);
+      expect(Role.manager.can(Permission.correctEntries), isTrue);
+      expect(Role.accountant.can(Permission.correctEntries), isTrue);
+      expect(Role.cashier.can(Permission.correctEntries), isFalse);
+    });
+
     test('a role nobody knows is not read as any role', () {
       expect(Role.parse('cashier'), Role.cashier);
       expect(Role.parse('admin'), isNull);

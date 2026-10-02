@@ -612,6 +612,53 @@ milestones:
     state: sealed
     owns: []
 
+  - id: M31
+    title: Every entry in a khata can be opened and put right; a bill stays as it was printed
+    # Opened and sealed 2 Oct 2026 at 1/1. Shopkeepers testing the app said
+    # a customer's khata entries could not be changed once added. Now every
+    # line opens: a bill as it was printed (share, print, return, cancel —
+    # never edit); a payment taken or made with its bills, what was left on
+    # account, who keyed it in and when, and the entry it corrected or was
+    # corrected by, a tap away; a charge with its reason; the opening
+    # balance. A payment can be sent as a receipt PDF, edited or cancelled,
+    # and so can a charge and an expense; the opening balance is corrected
+    # from the khata or the party's details. Cancelling mirrors the entry
+    # dated today, reopens the bills the payment settled and strikes out its
+    # allocations; editing is that and the corrected entry in one
+    # transaction, tied together in the activity log. A reason is picked
+    # from five presets or typed. The owner, a manager and the accountant
+    # may do it (a new permission); a cashier may not.
+    #
+    # Found on the way: open bills were shown by their database id, and so
+    # was the receipt preview; a payment's journal entry never named its
+    # payment, so cancelling finds older ones by narration; a reprinted bill
+    # lists every payment allocated to it whatever its status, which is why
+    # a cancelled receipt's allocations are struck out rather than left
+    # standing; the refusal to cancel a paid bill said "Undo those first"
+    # when nothing could, and now says where.
+    #
+    # Not built, and why: a payment is never moved to another khata (cancel
+    # it and enter it on the right one, two acts the shop can see); a cheque
+    # at the bank, cleared or bounced is refused, since cancelling would
+    # contradict the bank, and moves on through the Cheques screen; money
+    # taken at the counter goes with its bill; a correction is dated today,
+    # never backdated into a day already closed; a cancelled entry leaves
+    # the khata list rather than showing struck through; a return to a
+    # supplier has no page of its own.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/corrections/payment_void.dart
+      - packages/pk_domain/lib/src/corrections/opening_correction.dart
+      - packages/pk_domain/lib/src/ports/correction_writer.dart
+      - packages/pk_domain/lib/src/ports/entry_details.dart
+      - packages/pk_application/lib/src/correct_entries_use_case.dart
+      - packages/pk_data/lib/src/write/drift_correction_writer.dart
+      - packages/pk_platform/lib/src/receipt/payment_receipt_pdf.dart
+      - lib/features/khata/entry_actions.dart
+      - lib/features/khata/payment_sheet.dart
+      - lib/features/khata/opening_balance_sheet.dart
+      - lib/features/expenses/expense_entry_sheet.dart
+
   - id: M32
     title: A new customer or a new item is added from the bill, without leaving it
     # Opened and sealed 2 Oct 2026 at 1/1. Shopkeepers trying the app said
@@ -4556,6 +4603,32 @@ features:
     status: done
     proof:
       - lan sync two items given the same barcode apart are both kept
+  - id: M31-CORRECT-01
+    milestone: M31
+    title: Khata entries open and can be cancelled or corrected append-only; a sale bill never edits
+    status: done
+    proof:
+      - cancelling a payment a cancelled receipt restores what the customer owes
+      - cancelling a payment a payment to a supplier cancelled is owed again
+      - cancelling a payment money taken at the counter goes with its bill
+      - cancelling a payment a cheque in hand can be cancelled, one at the bank cannot
+      - cancelling a payment a bill paid by a receipt says which receipt to cancel first
+      - editing a payment an edited receipt leaves one live payment at the new amount
+      - editing a payment a failed edit leaves the original standing
+      - charges and expenses an expense is edited to the right amount
+      - charges and expenses a charge is edited and the khata carries the new figure
+      - charges and expenses a sale bill is never reached as a charge or an expense
+      - an opening balance is corrected by reversing it and posting the new one
+      - cancelling a payment a cheque at the bank, cleared or bounced cannot be
+      - roles the books can be put right by those who keep them, not the counter
+      - a payment receipt names the bills it paid and who took it
+      - a receipt is cancelled from the khata and is owed again
+      - an edited receipt leaves one payment, at the new amount
+      - a cashier is not offered a cancel, and cannot make one
+      - a sale bill opens as it was printed, with nothing to edit
+      - an expense is opened from the list and cancelled
+      - an opening balance is corrected from the khata
+      - a payment to a supplier is cancelled from their khata
   - id: M32-QUICKADD-01
     milestone: M32
     title: A new customer, supplier or item is made from the bill or the delivery and used at once

@@ -7,8 +7,11 @@ import 'package:pk_bootstrap/pk_bootstrap.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../expenses/expense_entry_sheet.dart';
+import '../purchases/send_back_sheet.dart';
 import 'khata_providers.dart';
 import 'pay_supplier_sheet.dart';
+import 'payment_sheet.dart';
 
 /// What the shop owes one party, and a way to pay it.
 ///
@@ -95,11 +98,23 @@ class PayablesSection extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(bottom: BlTokens.space2),
                         child: BlCard(
+                          // The delivery (to send goods back against) or the
+                          // expense (to correct), by its number (M31).
+                          onTap: () => _openDocument(
+                            context,
+                            kind: bill.docType == 'expense'
+                                ? 'expense'
+                                : 'purchase',
+                            documentId: bill.documentId,
+                            docNo: bill.docNo,
+                          ),
                           child: Row(
                             children: [
                               Expanded(
                                 child: Text(
-                                  bill.dateLocal,
+                                  bill.docNo.isEmpty
+                                      ? bill.dateLocal
+                                      : '${bill.docNo} · ${bill.dateLocal}',
                                   style: TextStyle(fontSize: 14, color: t.ink),
                                 ),
                               ),
@@ -115,23 +130,26 @@ class PayablesSection extends ConsumerWidget {
           const SizedBox(height: BlTokens.space5),
           Text(s.khataHistory, style: label),
           const SizedBox(height: BlTokens.space2),
-          _PayablesHistory(partyId: party.id),
+          _PayablesHistory(party: party),
         ],
       ],
     );
   }
 }
 
+/// What moved the payable, newest first. Every line but a return opens what
+/// it is about (M31): a payment to correct or cancel, an expense, or the
+/// delivery to send goods back against.
 class _PayablesHistory extends ConsumerWidget {
-  const _PayablesHistory({required this.partyId});
+  const _PayablesHistory({required this.party});
 
-  final String partyId;
+  final PartySummary party;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final entries = ref.watch(payablesLedgerProvider(partyId));
+    final entries = ref.watch(payablesLedgerProvider(party.id));
 
     return entries.when(
       loading: () => const BlSkeletonList(rows: 3),
@@ -148,6 +166,19 @@ class _PayablesHistory extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: BlTokens.space2),
                     child: BlCard(
+                      onTap: switch (entry.kind) {
+                        'payment' => () => unawaited(
+                          showPaymentSheet(context, id: entry.id, party: party),
+                        ),
+                        'purchase' || 'expense' => () => _openDocument(
+                          context,
+                          kind: entry.kind,
+                          documentId: entry.id,
+                          docNo: entry.reference,
+                        ),
+                        // A return to a supplier has no page of its own yet.
+                        _ => null,
+                      },
                       child: Row(
                         children: [
                           // Money going out points out: the reverse of the
@@ -201,3 +232,16 @@ class _PayablesHistory extends ConsumerWidget {
     );
   }
 }
+
+/// A delivery opens where goods are sent back against it, as the purchase
+/// list does; an expense opens its own page.
+void _openDocument(
+  BuildContext context, {
+  required String kind,
+  required String documentId,
+  required String docNo,
+}) => unawaited(
+  kind == 'expense'
+      ? showExpenseEntrySheet(context, documentId: documentId)
+      : showSendBackSheet(context, documentId: documentId, docNo: docNo),
+);

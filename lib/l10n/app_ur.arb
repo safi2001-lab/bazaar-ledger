@@ -1682,5 +1682,108 @@
   "quickItemTwins": "Yeh maal pehle se hai",
   "quickItemTwinsHint": "Agar yehi hai to is par tap karein. Kuch aur hai to naya banayein.",
   "quickItemBuyingAt": "Khareed ki qeemat (fi unit)",
-  "quickItemNoCost": "Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge."
+  "quickItemNoCost": "Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge.",
+  "entryReceiptTitle": "Wasooli {no}",
+  "@entryReceiptTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryPaymentTitle": "Adaygi {no}",
+  "@entryPaymentTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryDate": "Tareekh",
+  "entryHow": "Kis tarah",
+  "entryAccount": "Kis account mein",
+  "entryFrom": "Kis se mile",
+  "entryTo": "Kis ko diye",
+  "entryReference": "Reference ya note",
+  "entryEnteredBy": "Kis ne likha",
+  "entrySettled": "Yeh bill is se chuke",
+  "entryShare": "Raseed bhejein (PDF)",
+  "entryCancel": "Mansookh karein",
+  "entryCancelTitle": "Yeh entry mansookh karein",
+  "entryCancelExplain": "Kuch mit-ta nahi. Ulta ijraa aaj ki tareekh se likha jayega, asal entry 'mansookh' ke nishan ke sath hisaab mein rahegi, aur jo bill is se chuke thay woh dobara baqi ho jayenge.",
+  "entryCancelled": "Mansookh",
+  "entryCancelledWhy": "Mansookh: {reason}",
+  "@entryCancelledWhy": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "entryReplaces": "{no} ki jagah likhi gayi",
+  "@entryReplaces": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryReplacedBy": "Is ki jagah ab {no} hai",
+  "@entryReplacedBy": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryTakenWithBill": "Yeh paisay bill {no} ke sath counter par liye gaye thay, is liye bill ke sath hi jayenge. Bill khol kar wapsi ya mansookhi karein.",
+  "@entryTakenWithBill": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryChequeAtBank": "Cheque bank mein hai. Clear ya bounce hone ka intezar karein aur Cheque screen par darj karein.",
+  "entryChequeCleared": "Cheque clear ho chuka, paisay bank mein hain, is liye ab mansookh nahi ho sakta.",
+  "entryChequeBounced": "Cheque bounce ho chuka. Jo is ne chukaya tha woh pehle hi wapas khate mein hai.",
+  "entryNotAllowed": "Isay sirf malik, manager ya accountant badal ya mansookh kar sakte hain.",
+  "entryOpenBill": "Bill kholein",
+  "entryEditTitle": "{no} theek karein",
+  "@entryEditTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryEditExplain": "Purani entry mansookh hogi aur theek wali aaj ki tareekh se likhi jayegi. Dono hisaab mein rahengi.",
+  "entryEditReason": "Kya galat tha (marzi se)",
+  "entryEditReasonDefault": "Galat likha gaya tha",
+  "entryEditSave": "Tabdeeli save karein",
+  "entryEditSaved": "{no} theek ho gaya, ab {newNo}",
+  "@entryEditSaved": {
+    "placeholders": {
+      "no": {"type": "String"},
+      "newNo": {"type": "String"}
+    }
+  },
+  "entryPaidBy": "Is par {nos} ki adaygi ho chuki hai. Pehle woh khol kar mansookh karein.",
+  "@entryPaidBy": {
+    "placeholders": {
+      "nos": {"type": "String"}
+    }
+  },
+  "chargeEntryHint": "{amount} ka charge. Raqam ya wajah galat hai to theek karein; ghalti se dala tha to wapas lein.",
+  "@chargeEntryHint": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "openingTitle": "Purana baqaya theek karein",
+  "openingNow": "Abhi likha hai",
+  "openingNew": "Sahi purana baqaya",
+  "openingExplain": "Purana ijraa ulta ho kar sahi raqam ka naya likha jayega. Khate ki shuruat ka baqaya isi se badlega.",
+  "openingCorrect": "Theek karein",
+  "openingSaved": "Purana baqaya theek ho gaya",
+  "reasonPick": "Wajah chunein",
+  "reasonWrongEntry": "Galat entry",
+  "reasonDuplicate": "Do baar likh di",
+  "reasonWrongAmount": "Galat raqam",
+  "reasonDispute": "Gahak ka ikhtilaf",
+  "reasonOther": "Kuch aur",
+  "reasonDetail": "Tafseel (marzi se)",
+  "entryCancelledBy": "{name} ne {when} ko mansookh kiya",
+  "@entryCancelledBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  }
 }

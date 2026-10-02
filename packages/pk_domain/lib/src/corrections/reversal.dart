@@ -178,7 +178,11 @@ final class VoidBuilder {
   /// it surfaces months later as a balance nobody can explain.
   ///
   /// Refusing names the receipts, because "deal with the payments first" is
-  /// only actionable if the shopkeeper is told which.
+  /// only actionable if the shopkeeper is told which — and says where they
+  /// are dealt with. The first version said "Undo those first" when nothing
+  /// in the app could undo a payment; since M31 a receipt or a payment is
+  /// opened from the khata's history and cancelled there, and the refusal
+  /// says so.
   VoidPosting build({
     required ActorContext actor,
     required String documentId,
@@ -197,10 +201,12 @@ final class VoidBuilder {
       throw const VoidRefused('A void has to say why.');
     }
     if (allocatedPayments.isNotEmpty) {
+      final one = allocatedPayments.length == 1;
       throw VoidRefused(
-        'This bill has been paid against by receipt '
-        '${allocatedPayments.join(', ')}. Undo those first, or the '
-        "customer's khata keeps money nobody returned.",
+        'Money has been recorded against $docNo: '
+        '${allocatedPayments.join(', ')}. Cancel ${one ? 'that payment' : 'those payments'} '
+        "first — open ${one ? 'it' : 'each'} in the khata's history and "
+        'tap Cancel — or the khata keeps money nobody returned.',
         allocations: allocatedPayments,
       );
     }

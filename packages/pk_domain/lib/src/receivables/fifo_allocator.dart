@@ -37,9 +37,21 @@ final class OpenBill {
     required this.dateLocal,
     required this.sequence,
     required this.outstanding,
+    this.docNo = '',
+    this.docType = '',
   });
 
   final String documentId;
+
+  /// The number printed on the paper, and what kind of paper it is
+  /// (`sale_invoice`, `other_income`, `purchase_bill`, `expense`).
+  ///
+  /// Not used to allocate — the allocation is by date and sequence and
+  /// nothing else. Carried for the khata, which showed a customer's open
+  /// bills by their database id until M31: twenty-six characters of ULID
+  /// where the shopkeeper needed "INV-2627-0042".
+  final String docNo;
+  final String docType;
 
   /// `YYYY-MM-DD`, the business date. Sorted on before [sequence] because a
   /// backdated bill entered on Sunday belongs where its date puts it, not

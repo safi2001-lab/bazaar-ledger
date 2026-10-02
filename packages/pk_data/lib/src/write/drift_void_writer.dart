@@ -25,6 +25,15 @@ final class DriftVoidWriter implements VoidWriter {
   ) => runner.run(actor, (tx) => body(_DriftVoidWriteContext(tx, sequences)));
 }
 
+/// The void handle on a transaction somebody else opened: a correction
+/// (M31) that cancels a charge or an expense and writes its replacement in
+/// the same commit. Only ever handed a [Tx], so it cannot be a way round the
+/// one write path.
+VoidWriteContext voidContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _DriftVoidWriteContext(tx, sequences);
+
 final class _DriftVoidWriteContext implements VoidWriteContext {
   _DriftVoidWriteContext(this._tx, this._sequences);
 
@@ -56,7 +65,7 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
   @override
   Future<PostedDocumentSnapshot?> snapshotOf(String documentId) async {
     final doc = await _tx.selectOne(
-      'SELECT id, doc_no, doc_type FROM documents '
+      'SELECT id, doc_no, doc_type, total_paisa FROM documents '
       "WHERE id = ? AND firm_id = ? AND status = 'posted' "
       '  AND deleted_at_utc IS NULL',
       [documentId, actor.firmId],
@@ -90,10 +99,19 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
           '${billed.read<String>('doc_no')}. Cancel that bill first.',
         );
       }
-    } else if (docType != 'sale_invoice' && docType != 'other_income') {
+    } else if (docType != 'sale_invoice' &&
+        docType != 'other_income' &&
+        docType != 'expense') {
       // A debit note (`other_income`, M25) is a charge on the khata with no
       // goods behind it: undoing it is its entry mirrored, exactly as a bill
       // with nothing on the shelf to put back.
+      //
+      // An expense (M31) is the same shape the other way round: rent or
+      // bijli, two lines and no stock. One left on account to a supplier is
+      // settled by supplier payments, and those stand in the way exactly as
+      // receipts stand in the way of a bill — the allocation check below
+      // already finds them, because it reads every payment, not only money
+      // in.
       throw VoidRefused(
         '${doc.read<String>('doc_no')} is not a sale bill, and only a sale '
         'bill can be cancelled this way.',
@@ -184,6 +202,8 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
     return PostedDocumentSnapshot(
       documentId: documentId,
       docNo: doc.read<String>('doc_no'),
+      docType: docType,
+      total: Money.paisa(doc.read<int>('total_paisa')),
       entryId: entryId,
       entry: JournalEntryPosting(
         entryNo: entryRow.read<String>('entry_no'),

@@ -18,6 +18,7 @@ export 'src/printing/tcp_printer.dart';
 export 'src/receipt/escpos.dart';
 export 'src/receipt/fbr_qr.dart';
 export 'src/receipt/label_renderer.dart';
+export 'src/receipt/payment_receipt_pdf.dart';
 export 'src/receipt/printable.dart';
 export 'src/receipt/receipt_layout.dart';
 export 'src/receipt/thermal_receipt_renderer.dart';

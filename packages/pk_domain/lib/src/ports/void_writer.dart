@@ -1,3 +1,5 @@
+import 'package:pk_money/pk_money.dart';
+
 import '../corrections/reversal.dart';
 import '../identity/actor_context.dart';
 import '../sales/sale_posting.dart';
@@ -32,10 +34,19 @@ final class PostedDocumentSnapshot {
     required this.entry,
     required this.movements,
     required this.allocatedPayments,
+    this.docType = '',
+    this.total = Money.zero,
   });
 
   final String documentId;
   final String docNo;
+
+  /// What kind of paper it is, and what it was for. Read so a correction
+  /// (M31) that may cancel a charge or an expense can refuse to cancel a
+  /// bill: that stays with the bill's own Cancel, and the permission that
+  /// guards it.
+  final String docType;
+  final Money total;
   final String entryId;
   final JournalEntryPosting entry;
   final List<StockMovementPosting> movements;
