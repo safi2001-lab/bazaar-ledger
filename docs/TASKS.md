@@ -139,7 +139,7 @@ time, on the latest master (schema is v8 today).
 - [ ] Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
 
 ### Stock and buying
-- [ ] M40 · (in progress) Party groups (area, route, mohalla, type) — set on parties, used by every report
+- [x] M40 · Party groups — DONE: groups on customers/suppliers (form + quick-add), filter/sort/bulk-assign on the Customers list with group totals, rename/merge groups, group chips at the counter, a "Counter ke liye note" shown on the payment sheet
 - [ ] M41 · Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
 - [ ] M49 · Pharmacy pack: near-expiry by supplier, expiry return to the supplier with a return note, salt/generic search with substitutes, Schedule B/D register
 - [ ] M50 · Mobile-shop pack: IMEI search and history, warranty end date, PTA status field + SMS to 8484, used-phone purchase with seller's CNIC and photo, qist (instalment) plans with overdue list and guarantor
