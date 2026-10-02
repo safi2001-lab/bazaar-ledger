@@ -116,7 +116,9 @@ class ReportFiltersBar extends StatelessWidget {
           ReportFilter.itemCategory ||
           ReportFilter.partyGroup ||
           ReportFilter.user ||
-          ReportFilter.location:
+          ReportFilter.location ||
+          ReportFilter.moneyAccount ||
+          ReportFilter.expenseHead:
         final choice = await showModalBottomSheet<ReportChoice>(
           context: context,
           isScrollControlled: true,
@@ -133,6 +135,14 @@ class ReportFiltersBar extends StatelessWidget {
           ReportFilter.location => filters.copyWith(
             location: choice.id,
             locationName: choice.label,
+          ),
+          ReportFilter.moneyAccount => filters.copyWith(
+            accountId: choice.id,
+            accountName: choice.label,
+          ),
+          ReportFilter.expenseHead => filters.copyWith(
+            expenseHeadId: choice.id,
+            expenseHeadName: choice.label,
           ),
           _ => filters.copyWith(userId: choice.id, userName: choice.label),
         });
@@ -178,8 +188,9 @@ class ReportFiltersBar extends StatelessWidget {
   );
 }
 
-/// Picks an item, a category, a party group or a member of staff from what
-/// the shop has, searched as it is typed.
+/// Picks an item, a category, a party group, a member of staff, a money
+/// account or an expense head (M35) from what the shop has, searched as it
+/// is typed.
 class _ChoiceSheet extends ConsumerStatefulWidget {
   const _ChoiceSheet({required this.filter});
 
@@ -308,6 +319,8 @@ String reportFilterName(AppStrings s, ReportFilter f) => switch (f) {
   ReportFilter.fastAt ||
   ReportFilter.slowBelow ||
   ReportFilter.serial => stockFilterName(s, f),
+  ReportFilter.moneyAccount => s.reportFilterAccount,
+  ReportFilter.expenseHead => s.reportFilterHead,
 };
 
 /// What [f] is set to in [filters], in words, or null when it is not set.
@@ -345,6 +358,14 @@ String? filterValueLabel(AppStrings s, ReportFilter f, ReportFilters filters) =>
       ReportFilter.fastAt ||
       ReportFilter.slowBelow ||
       ReportFilter.serial => stockFilterValue(s, f, filters),
+      ReportFilter.moneyAccount =>
+        filters.accountId == null
+            ? null
+            : filters.accountName ?? filters.accountId,
+      ReportFilter.expenseHead =>
+        filters.expenseHeadId == null
+            ? null
+            : filters.expenseHeadName ?? filters.expenseHeadId,
     };
 
 String transactionTypeLabel(AppStrings s, String type) => switch (type) {

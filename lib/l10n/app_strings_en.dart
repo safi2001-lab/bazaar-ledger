@@ -4723,4 +4723,164 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get homeGoodsQtyInvalid => 'Write how much, like 2 or 1.5';
+
+  @override
+  String get reportDailySummary => 'Day summary (Z report)';
+
+  @override
+  String get reportDailySummaryHint =>
+      'Tonight\'s sales, money by mode, udhaar, expenses and the drawer';
+
+  @override
+  String get reportBankStatement => 'Bank statement';
+
+  @override
+  String get reportBankStatementHint =>
+      'Every deposit and withdrawal, with the balance after each';
+
+  @override
+  String get reportDiscount => 'Discount report';
+
+  @override
+  String get reportDiscountHint =>
+      'Discount given to each party, and taken from suppliers';
+
+  @override
+  String get reportDiscountByCashier => 'Discount by cashier';
+
+  @override
+  String get reportDiscountByCashierHint =>
+      'How much discount each cashier gives away';
+
+  @override
+  String get reportSalesByCashier => 'Sales by cashier';
+
+  @override
+  String get reportSalesByCashierHint =>
+      'Bills, sales, discounts, returns and voids per person';
+
+  @override
+  String get reportSalesByCounter => 'Sales by counter';
+
+  @override
+  String get reportSalesByCounterHint => 'The same, per phone or till';
+
+  @override
+  String get reportPaymentModes => 'Payment-mode summary';
+
+  @override
+  String get reportPaymentModesHint =>
+      'Cash, bank, JazzCash, Easypaisa, cheque and udhaar, each on its own line';
+
+  @override
+  String get reportHourlySales => 'Hourly sales';
+
+  @override
+  String get reportHourlySalesHint => 'Which hours of the day are busiest';
+
+  @override
+  String get reportPaymentPerformance => 'Customer payment performance';
+
+  @override
+  String get reportPaymentPerformanceHint =>
+      'How long each customer takes to pay, and who pays late';
+
+  @override
+  String get reportDefaulters => 'Defaulter list';
+
+  @override
+  String get reportDefaultersHint =>
+      'Customers whose udhaar is past its due date';
+
+  @override
+  String get reportChangedBills => 'Changed and cancelled bills';
+
+  @override
+  String get reportChangedBillsHint =>
+      'Every void, return and edit, with who, when and why';
+
+  @override
+  String get reportTaxReport => 'Tax report';
+
+  @override
+  String get reportTaxReportHint =>
+      'Output tax on sales against input tax, by party, with NTN';
+
+  @override
+  String get reportTaxRate => 'Tax rate report';
+
+  @override
+  String get reportTaxRateHint =>
+      'Tax by rate: 18%, reduced, exempt, zero, Third Schedule, further tax';
+
+  @override
+  String get reportSalesByHsCode => 'Sales by HS code';
+
+  @override
+  String get reportSalesByHsCodeHint => 'What was sold under each HS code';
+
+  @override
+  String get reportAnnexC => 'Annex-C (sales)';
+
+  @override
+  String get reportAnnexCHint =>
+      'Every sale line in FBR\'s Annex-C columns, for the accountant';
+
+  @override
+  String get reportAnnexA => 'Annex-A (purchases)';
+
+  @override
+  String get reportAnnexAHint =>
+      'Every purchase line in FBR\'s Annex-A columns';
+
+  @override
+  String get reportExpenseTransactions => 'Expense transactions';
+
+  @override
+  String get reportExpenseTransactionsHint =>
+      'Every expense: its head, where it was paid from, what for';
+
+  @override
+  String get reportExpenseCategories => 'Expense categories';
+
+  @override
+  String get reportExpenseCategoriesHint =>
+      'Totals for each head, direct and indirect';
+
+  @override
+  String get reportExpenseItems => 'Expense items';
+
+  @override
+  String get reportExpenseItemsHint =>
+      'What the money went on within each head';
+
+  @override
+  String get reportOpenQuotations => 'Open quotations';
+
+  @override
+  String get reportOpenQuotationsHint =>
+      'Quotations not yet billed, and how long they have waited';
+
+  @override
+  String get reportOpenChallans => 'Challans not yet billed';
+
+  @override
+  String get reportOpenChallansHint =>
+      'Goods sent on a challan whose bill is not made yet';
+
+  @override
+  String get reportOpenOrderItems => 'Quotation and challan items';
+
+  @override
+  String get reportOpenOrderItemsHint =>
+      'The items and quantities on open quotations and challans';
+
+  @override
+  String get reportFilterAccount => 'Account';
+
+  @override
+  String get reportFilterHead => 'Expense head';
+
+  @override
+  String get dayCloseSummary => 'See the day\'s summary (Z report)';
 }

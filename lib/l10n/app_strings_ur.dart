@@ -4724,4 +4724,162 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get homeGoodsQtyInvalid => 'Kitna likhein, jaise 2 ya 1.5';
+
+  @override
+  String get reportDailySummary => 'Din ka khulasa (Z report)';
+
+  @override
+  String get reportDailySummaryHint =>
+      'Aaj ki bikri, har tareeqe se aaya paisa, udhaar, kharchay aur galla';
+
+  @override
+  String get reportBankStatement => 'Bank statement';
+
+  @override
+  String get reportBankStatementHint =>
+      'Har jama aur nikasi, har ek ke baad baqi';
+
+  @override
+  String get reportDiscount => 'Discount report';
+
+  @override
+  String get reportDiscountHint =>
+      'Har party ko kitna discount diya, supplier se kitna mila';
+
+  @override
+  String get reportDiscountByCashier => 'Cashier-war discount';
+
+  @override
+  String get reportDiscountByCashierHint =>
+      'Kaunsa cashier kitna discount deta hai';
+
+  @override
+  String get reportSalesByCashier => 'Cashier-war bikri';
+
+  @override
+  String get reportSalesByCashierHint =>
+      'Har banday ke bill, bikri, discount, wapsi aur cancel';
+
+  @override
+  String get reportSalesByCounter => 'Counter-war bikri';
+
+  @override
+  String get reportSalesByCounterHint => 'Yehi, har phone ya counter ka';
+
+  @override
+  String get reportPaymentModes => 'Adaigi ke tareeqay';
+
+  @override
+  String get reportPaymentModesHint =>
+      'Naqad, bank, JazzCash, Easypaisa, cheque aur udhaar, har ek alag';
+
+  @override
+  String get reportHourlySales => 'Ghanta-war bikri';
+
+  @override
+  String get reportHourlySalesHint =>
+      'Din ke kis waqt sab se zyada rush hota hai';
+
+  @override
+  String get reportPaymentPerformance => 'Gahakon ki adaigi';
+
+  @override
+  String get reportPaymentPerformanceHint =>
+      'Kaun kitne din mein deta hai, kaun der se deta hai';
+
+  @override
+  String get reportDefaulters => 'Defaulter list';
+
+  @override
+  String get reportDefaultersHint => 'Jin ka udhaar apni muddat se guzar gaya';
+
+  @override
+  String get reportChangedBills => 'Badle aur cancel bill';
+
+  @override
+  String get reportChangedBillsHint =>
+      'Har cancel, wapsi aur tabdeeli: kis ne, kab aur kyun';
+
+  @override
+  String get reportTaxReport => 'Tax report';
+
+  @override
+  String get reportTaxReportHint =>
+      'Bikri aur khareed par tax, party-war, NTN ke saath';
+
+  @override
+  String get reportTaxRate => 'Tax rate report';
+
+  @override
+  String get reportTaxRateHint =>
+      'Rate-war tax: 18%, kam rate, exempt, zero, Third Schedule, further tax';
+
+  @override
+  String get reportSalesByHsCode => 'HS code-war bikri';
+
+  @override
+  String get reportSalesByHsCodeHint => 'Har HS code ke tehat kitna becha';
+
+  @override
+  String get reportAnnexC => 'Annex-C (bikri)';
+
+  @override
+  String get reportAnnexCHint =>
+      'Har bikri FBR ke Annex-C ke khanon mein, accountant ke liye';
+
+  @override
+  String get reportAnnexA => 'Annex-A (khareed)';
+
+  @override
+  String get reportAnnexAHint => 'Har khareed FBR ke Annex-A ke khanon mein';
+
+  @override
+  String get reportExpenseTransactions => 'Kharchon ki fehrist';
+
+  @override
+  String get reportExpenseTransactionsHint =>
+      'Har kharcha: kis mad mein, kahan se diya, kis liye';
+
+  @override
+  String get reportExpenseCategories => 'Kharchon ki mad';
+
+  @override
+  String get reportExpenseCategoriesHint =>
+      'Har mad ka kul, direct aur indirect';
+
+  @override
+  String get reportExpenseItems => 'Kharchay kis cheez par';
+
+  @override
+  String get reportExpenseItemsHint => 'Har mad mein paisa kis cheez par gaya';
+
+  @override
+  String get reportOpenQuotations => 'Khuli quotations';
+
+  @override
+  String get reportOpenQuotationsHint =>
+      'Jo quotations abhi bill nahi baneen, kitne din se';
+
+  @override
+  String get reportOpenChallans => 'Bina bill ke challan';
+
+  @override
+  String get reportOpenChallansHint =>
+      'Challan par gaya maal jis ka bill abhi nahi bana';
+
+  @override
+  String get reportOpenOrderItems => 'Quotation aur challan ki cheezen';
+
+  @override
+  String get reportOpenOrderItemsHint =>
+      'Khuli quotations aur challan par cheezen aur miqdar';
+
+  @override
+  String get reportFilterAccount => 'Bank ya wallet';
+
+  @override
+  String get reportFilterHead => 'Kharche ki mad';
+
+  @override
+  String get dayCloseSummary => 'Din ka khulasa dekhein (Z report)';
 }

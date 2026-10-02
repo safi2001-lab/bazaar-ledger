@@ -1367,6 +1367,87 @@ milestones:
       - packages/pk_data/lib/src/write/drift_shop_money_writer.dart
       - packages/pk_bootstrap/lib/src/shop_money_services.dart
 
+  - id: M35
+    title: Bank, discount, tax, expense, staff and order reports, and the night's Z report
+    # Opened and sealed 3 Oct 2026 at 5/5. Twenty-two reports on the M33
+    # registry, each a builder in pk_reports over its own source interface
+    # (business, staff, tax, expense, order) and a mixin of SQL in pk_data,
+    # every filter a bound WHERE, every total the builder's.
+    #
+    # Business status: the bank statement, per cash-equivalent account in
+    # the chart (Bank Accounts and Mobile Wallets as the first run sets them
+    # up; JazzCash and EasyPaisa share one unless the shop splits them),
+    # opening, every deposit and withdrawal with its party and the balance
+    # after it, closing on the account in the books; narrowed to one
+    # account, the drawer included, by a new filter. Discount given and
+    # taken per party, and discount by cashier, the highest share first.
+    # How customers pay: of the period's bills that went on udhaar, the
+    # settled ones and their average days from bill to the payment or
+    # return that cleared it, the ones paid late against the khata's credit
+    # days (30 where it sets none), and the ones overdue today; and the
+    # defaulter list, as of today.
+    #
+    # Staff and time, which the market's apps do not have: sales by cashier
+    # and by counter (the M13 letter), with discounts, returns and voids;
+    # the payment-mode summary, each tender of a split bill its own line, so
+    # the sales paid by each mode and the udhaar add up to the sales, and
+    # the money collected is the cash flow's money in; hourly sales on
+    # Pakistan time from each bill's own instant, a bill at half past one at
+    # night in the 01:00 hour of the next business day; and changed and
+    # cancelled bills from the audit log, with who, when, why and the bill's
+    # own total. The night's Z report: sales and returns, discount, items
+    # sold, money in by mode, udhaar given and recovered, expenses, gross
+    # profit only to a role that sees costs, and the drawer as counted at
+    # the day close; two columns wide, so it prints a line at a time on a
+    # 58mm roll through the M33 receipt path, and one tap from the day close.
+    #
+    # Taxes, behind the accounting plan: output against input tax per party
+    # with NTN and STRN, landing on the Sales tax report's total; tax by
+    # rate and regime (18%, reduced, Third Schedule, zero, exempt, none,
+    # 4% further), a return on the footing of the sale it returns; sales by
+    # HS code; and the Annex-C and Annex-A registers in the columns of FBR's
+    # own IRIS templates (DSI v1.0.44, DPI v1.0.29, downloaded 3 Oct 2026
+    # and checked against their validation code), hidden columns kept blank
+    # so the rows paste into the template at B7, written as Excel or CSV for
+    # the accountant to validate there and import on IRIS. Nothing is sent.
+    # Expenses: every voucher, by head direct and indirect, and by what it
+    # was for (the books keep no expense items, so the item is the voucher's
+    # line within its head, capitals, spacing and a full stop ignored).
+    # Orders: open quotations with their age and expiry, challans not yet
+    # billed (M25 links), and the items on both.
+    #
+    # Found on the way: a return values the goods at the bill line's list
+    # rate and ignores its discount, so a tin sold at 10% off comes back at
+    # full price (and its tax is pro-rated from the discounted line); the
+    # corrections code is not this milestone's to change. Purchase lines
+    # keep their value in line_total_paisa only, and purchases carry no
+    # input tax yet, so Annex-A and the tax report show the value paid and
+    # no input tax, and say so.
+    #
+    # Not built, and why: the loan statement (M48), item and stock reports
+    # (M34), ageing by due date and bad debts (another milestone's queries),
+    # expected collections this week (it needs due dates per bill), and an
+    # Annex file IRIS imports directly (IRIS imports its own macro template;
+    # the register is pasted into it).
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/business_builders.dart
+      - packages/pk_reports/lib/src/business_reports.dart
+      - packages/pk_reports/lib/src/business_source.dart
+      - packages/pk_reports/lib/src/expense_builders.dart
+      - packages/pk_reports/lib/src/expense_source.dart
+      - packages/pk_reports/lib/src/order_builders.dart
+      - packages/pk_reports/lib/src/order_source.dart
+      - packages/pk_reports/lib/src/staff_builders.dart
+      - packages/pk_reports/lib/src/staff_source.dart
+      - packages/pk_reports/lib/src/tax_builders.dart
+      - packages/pk_reports/lib/src/tax_source.dart
+      - packages/pk_data/lib/src/read/reports/business_queries.dart
+      - packages/pk_data/lib/src/read/reports/expense_queries.dart
+      - packages/pk_data/lib/src/read/reports/order_queries.dart
+      - packages/pk_data/lib/src/read/reports/staff_queries.dart
+      - packages/pk_data/lib/src/read/reports/tax_queries.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5802,3 +5883,93 @@ features:
       - goods taken home come off the shelf from the home's side of the expense screen
       - a manager is not offered ghar ka kharcha, and cannot change one the owner entered
       - at 200% on a small phone the expense, income, heads and monthly bill screens fit
+  - id: M35-BIZ-01
+    milestone: M35
+    title: A bank statement that closes on the books, discounts by party and by cashier, how each customer pays, and the defaulters
+    status: done
+    # Builders proved without a database; then a real shop's August and
+    # September: the wallet and the bank each close on their balance, Bilal's
+    # 10% is his discount, Akbar's August bill took 56 days, Rashid is
+    # overdue and on the defaulter list.
+    proof:
+      - bank statement opening, every deposit and withdrawal with the balance after it, and the closing
+      - bank statement several accounts are each a section, and all of them a total
+      - bank statement with no account used, it says so rather than showing nothing
+      - discounts by party: the most given first, as a share of the bills before it, and what suppliers took off
+      - discounts by cashier: the highest share first, each bill for whoever rang it
+      - how customers pay the average days to pay, the late ones and the overdue, the slowest first
+      - how customers pay the defaulters, the most overdue first, with the days past due
+      - report engine a narrowed report says by which account and which head
+      - business status the bank statement closes on the account's balance in the books, and every bank and wallet is a section of its own
+      - business status discount by party and by cashier: Bilal gave Rashid 10%
+      - business status how customers pay: Akbar paid his August bill 56 days late; Rashid's is overdue and he is a defaulter
+      - a money account and an expense head are offered from the chart
+      - a split bill is a line for each tender in the payment-mode summary, and the bank statement narrows to an account
+  - id: M35-STAFF-01
+    milestone: M35
+    title: Sales by cashier and counter, each tender its own line, hourly sales on Pakistan time, changed bills, and the night's Z report
+    status: done
+    # The payment-mode summary adds up to the day's sales and collects the
+    # cash flow's money in; the Z report's sales are the sale report's, its
+    # money the summary's, its drawer the day close, its profit only for a
+    # role that sees costs; it prints inside a 58mm roll.
+    proof:
+      - staff and time sales by cashier: bills, average, discount, returns, voids and net, the biggest first
+      - staff and time each tender of a split bill is its own line, and the sales paid add up to the sales with the udhaar
+      - staff and time hourly sales fill the quiet hours between the first and the last, and name the busiest
+      - staff and time the Z report: sales less returns, money by mode, udhaar, expenses, profit and the drawer
+      - staff and time a day not closed says so
+      - staff and time changed and cancelled bills say what, who, when and why
+      - report engine the Z report reaches a role that may not see costs without its gross profit
+      - report engine every M35 report is built through its own case, and none of them shows cost through and through
+      - staff and time sales by cashier and by counter: every bill, void and return for whoever made it
+      - staff and time the payment-mode summary counts each tender of a split bill on its own line, adds up to the sales, and collects what the cash flow says came in
+      - staff and time hourly sales are on Pakistan time: the afternoon's bills at two, and half past one that night on the next day
+      - staff and time the Z report's sales are the day's sale report, its money the payment-mode summary, and its drawer the day close
+      - staff and time changed and cancelled bills say who voided what, and why
+      - a year of staff, tender, hour and customer summaries stays inside its budget
+      - the hub lists business status, taxes and orders, and the search finds the annexures
+      - the night's Z report opens from the hub and prints on a 58mm roll, every line inside it
+      - the day close opens the Z report in one tap
+  - id: M35-TAX-01
+    milestone: M35
+    title: Output against input tax by party, tax by rate and regime, sales by HS code, and the Annex-C and Annex-A registers in FBR's columns
+    status: done
+    # The tax report's output tax and the rate report's total are the Sales
+    # tax report's; a return sits on the footing of the sale it returns; the
+    # Annex rows carry the IRIS templates' columns, lists and formats.
+    proof:
+      - taxes the tax report: output tax less returns against input tax, by party with NTN and STRN
+      - taxes the tax rate report splits by regime, returns on their own footing, and lands on the sales tax report's total
+      - taxes sales by HS code, net of returns, the lines with no code last
+      - annex registers Annex-C carries FBR's Domestic Sales Invoice columns, B to AD, in its order
+      - annex registers a registered buyer, a walk-in, and a return as a credit note
+      - annex registers Annex-A carries FBR's Domestic Purchase Invoice columns, B to AB, and goods sent back are a debit note
+      - annex registers the template's own names for a province, a unit and an HS code
+      - taxes the tax report's output tax is the sales tax report's total, party by party with the NTN
+      - taxes sales by HS code, net of the tin that came back
+      - taxes Annex-C is a row per line in FBR's columns, and Annex-A the deliveries under the supplier's own number
+      - a month of the Annex-C and a day's Z report read inside their budget
+  - id: M35-EXP-01
+    milestone: M35
+    title: Every expense voucher, the heads direct and indirect, and what the money went on within each head
+    status: done
+    # All three read the same vouchers through each one's own journal
+    # entry, so their totals are one figure; narrowed by head, mode and who.
+    proof:
+      - expenses every voucher, and its total
+      - expenses by head, direct apart from indirect, adding up to the vouchers
+      - expenses an item is what the voucher was for, capitals, spacing and a full stop ignored, within its head
+      - expenses every voucher with its head and where it was paid from, narrowed by head, by mode and by who
+      - expenses by head and by what it was for, both adding up to the vouchers
+  - id: M35-ORD-01
+    milestone: M35
+    title: Open quotations, challans not yet billed, and the items on both
+    status: done
+    # Open as the counter means it (M25): standing, and not converted into
+    # anything that still stands; as of today.
+    proof:
+      - orders open quotations, the oldest first, with their age and whether they have expired
+      - orders challans not yet billed, and the items on both
+      - report engine the open orders and the defaulters are as of today
+      - orders the quotation and the challan not yet billed are open; the billed challan is not

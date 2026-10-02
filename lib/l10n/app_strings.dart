@@ -8323,6 +8323,288 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Kitna likhein, jaise 2 ya 1.5'**
   String get homeGoodsQtyInvalid;
+
+  /// No description provided for @reportDailySummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din ka khulasa (Z report)'**
+  String get reportDailySummary;
+
+  /// No description provided for @reportDailySummaryHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ki bikri, har tareeqe se aaya paisa, udhaar, kharchay aur galla'**
+  String get reportDailySummaryHint;
+
+  /// No description provided for @reportBankStatement.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank statement'**
+  String get reportBankStatement;
+
+  /// No description provided for @reportBankStatementHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har jama aur nikasi, har ek ke baad baqi'**
+  String get reportBankStatementHint;
+
+  /// No description provided for @reportDiscount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Discount report'**
+  String get reportDiscount;
+
+  /// No description provided for @reportDiscountHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har party ko kitna discount diya, supplier se kitna mila'**
+  String get reportDiscountHint;
+
+  /// No description provided for @reportDiscountByCashier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier-war discount'**
+  String get reportDiscountByCashier;
+
+  /// No description provided for @reportDiscountByCashierHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaunsa cashier kitna discount deta hai'**
+  String get reportDiscountByCashierHint;
+
+  /// No description provided for @reportSalesByCashier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier-war bikri'**
+  String get reportSalesByCashier;
+
+  /// No description provided for @reportSalesByCashierHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har banday ke bill, bikri, discount, wapsi aur cancel'**
+  String get reportSalesByCashierHint;
+
+  /// No description provided for @reportSalesByCounter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter-war bikri'**
+  String get reportSalesByCounter;
+
+  /// No description provided for @reportSalesByCounterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yehi, har phone ya counter ka'**
+  String get reportSalesByCounterHint;
+
+  /// No description provided for @reportPaymentModes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Adaigi ke tareeqay'**
+  String get reportPaymentModes;
+
+  /// No description provided for @reportPaymentModesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naqad, bank, JazzCash, Easypaisa, cheque aur udhaar, har ek alag'**
+  String get reportPaymentModesHint;
+
+  /// No description provided for @reportHourlySales.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghanta-war bikri'**
+  String get reportHourlySales;
+
+  /// No description provided for @reportHourlySalesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din ke kis waqt sab se zyada rush hota hai'**
+  String get reportHourlySalesHint;
+
+  /// No description provided for @reportPaymentPerformance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahakon ki adaigi'**
+  String get reportPaymentPerformance;
+
+  /// No description provided for @reportPaymentPerformanceHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaun kitne din mein deta hai, kaun der se deta hai'**
+  String get reportPaymentPerformanceHint;
+
+  /// No description provided for @reportDefaulters.
+  ///
+  /// In ur, this message translates to:
+  /// **'Defaulter list'**
+  String get reportDefaulters;
+
+  /// No description provided for @reportDefaultersHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jin ka udhaar apni muddat se guzar gaya'**
+  String get reportDefaultersHint;
+
+  /// No description provided for @reportChangedBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'Badle aur cancel bill'**
+  String get reportChangedBills;
+
+  /// No description provided for @reportChangedBillsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cancel, wapsi aur tabdeeli: kis ne, kab aur kyun'**
+  String get reportChangedBillsHint;
+
+  /// No description provided for @reportTaxReport.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tax report'**
+  String get reportTaxReport;
+
+  /// No description provided for @reportTaxReportHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri aur khareed par tax, party-war, NTN ke saath'**
+  String get reportTaxReportHint;
+
+  /// No description provided for @reportTaxRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tax rate report'**
+  String get reportTaxRate;
+
+  /// No description provided for @reportTaxRateHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate-war tax: 18%, kam rate, exempt, zero, Third Schedule, further tax'**
+  String get reportTaxRateHint;
+
+  /// No description provided for @reportSalesByHsCode.
+  ///
+  /// In ur, this message translates to:
+  /// **'HS code-war bikri'**
+  String get reportSalesByHsCode;
+
+  /// No description provided for @reportSalesByHsCodeHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har HS code ke tehat kitna becha'**
+  String get reportSalesByHsCodeHint;
+
+  /// No description provided for @reportAnnexC.
+  ///
+  /// In ur, this message translates to:
+  /// **'Annex-C (bikri)'**
+  String get reportAnnexC;
+
+  /// No description provided for @reportAnnexCHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har bikri FBR ke Annex-C ke khanon mein, accountant ke liye'**
+  String get reportAnnexCHint;
+
+  /// No description provided for @reportAnnexA.
+  ///
+  /// In ur, this message translates to:
+  /// **'Annex-A (khareed)'**
+  String get reportAnnexA;
+
+  /// No description provided for @reportAnnexAHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har khareed FBR ke Annex-A ke khanon mein'**
+  String get reportAnnexAHint;
+
+  /// No description provided for @reportExpenseTransactions.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchon ki fehrist'**
+  String get reportExpenseTransactions;
+
+  /// No description provided for @reportExpenseTransactionsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har kharcha: kis mad mein, kahan se diya, kis liye'**
+  String get reportExpenseTransactionsHint;
+
+  /// No description provided for @reportExpenseCategories.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchon ki mad'**
+  String get reportExpenseCategories;
+
+  /// No description provided for @reportExpenseCategoriesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mad ka kul, direct aur indirect'**
+  String get reportExpenseCategoriesHint;
+
+  /// No description provided for @reportExpenseItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchay kis cheez par'**
+  String get reportExpenseItems;
+
+  /// No description provided for @reportExpenseItemsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mad mein paisa kis cheez par gaya'**
+  String get reportExpenseItemsHint;
+
+  /// No description provided for @reportOpenQuotations.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khuli quotations'**
+  String get reportOpenQuotations;
+
+  /// No description provided for @reportOpenQuotationsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo quotations abhi bill nahi baneen, kitne din se'**
+  String get reportOpenQuotationsHint;
+
+  /// No description provided for @reportOpenChallans.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bina bill ke challan'**
+  String get reportOpenChallans;
+
+  /// No description provided for @reportOpenChallansHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan par gaya maal jis ka bill abhi nahi bana'**
+  String get reportOpenChallansHint;
+
+  /// No description provided for @reportOpenOrderItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation aur challan ki cheezen'**
+  String get reportOpenOrderItems;
+
+  /// No description provided for @reportOpenOrderItemsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khuli quotations aur challan par cheezen aur miqdar'**
+  String get reportOpenOrderItemsHint;
+
+  /// No description provided for @reportFilterAccount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank ya wallet'**
+  String get reportFilterAccount;
+
+  /// No description provided for @reportFilterHead.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharche ki mad'**
+  String get reportFilterHead;
+
+  /// No description provided for @dayCloseSummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din ka khulasa dekhein (Z report)'**
+  String get dayCloseSummary;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

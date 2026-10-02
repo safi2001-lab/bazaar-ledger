@@ -1,9 +1,14 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'business_source.dart';
+import 'expense_source.dart';
 import 'filters.dart';
 import 'item_stock_source.dart';
+import 'order_source.dart';
 import 'party_source.dart';
 import 'period.dart';
+import 'staff_source.dart';
+import 'tax_source.dart';
 import 'transaction_source.dart';
 
 /// What moved through one account in a period.
@@ -267,7 +272,13 @@ abstract interface class ReportSource
     implements
         TransactionReportSource,
         PartyReportSource,
-        ItemStockReportSource {
+        ItemStockReportSource,
+        // M35
+        BusinessReportSource,
+        StaffReportSource,
+        TaxReportSource,
+        ExpenseReportSource,
+        OrderReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

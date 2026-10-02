@@ -65,6 +65,15 @@ enum ReportFilter {
 
   /// A serial or IMEI number, or part of one.
   serial,
+
+  // M35: a money account for the bank statement, an expense head for the
+  // expense reports.
+
+  /// One bank account, wallet or drawer: an `accounts.id` holding money.
+  moneyAccount,
+
+  /// One expense head: an `accounts.id` of type expense.
+  expenseHead,
 }
 
 /// How much of a bill has been paid.
@@ -190,6 +199,10 @@ final class ReportFilters {
     this.fastAt,
     this.slowBelow,
     this.serial,
+    this.accountId,
+    this.accountName,
+    this.expenseHeadId,
+    this.expenseHeadName,
   });
 
   /// Nothing narrowed.
@@ -242,6 +255,14 @@ final class ReportFilters {
   /// A serial or IMEI number, whole or in part, as it was typed.
   final String? serial;
 
+  /// A money account (M35), with its name.
+  final String? accountId;
+  final String? accountName;
+
+  /// An expense head (M35), with its name.
+  final String? expenseHeadId;
+  final String? expenseHeadName;
+
   /// The party group a party without one is counted under.
   static const ungrouped = 'Ungrouped';
 
@@ -266,7 +287,9 @@ final class ReportFilters {
       coverDays == null &&
       fastAt == null &&
       slowBelow == null &&
-      serial == null;
+      serial == null &&
+      accountId == null &&
+      expenseHeadId == null;
 
   /// Whether [filter] is set.
   bool has(ReportFilter filter) => switch (filter) {
@@ -287,6 +310,8 @@ final class ReportFilters {
     ReportFilter.fastAt => fastAt != null,
     ReportFilter.slowBelow => slowBelow != null,
     ReportFilter.serial => serial != null,
+    ReportFilter.moneyAccount => accountId != null,
+    ReportFilter.expenseHead => expenseHeadId != null,
   };
 
   /// Only the filters in [accepted]: a report never narrows by something it
@@ -322,6 +347,16 @@ final class ReportFilters {
     fastAt: accepted.contains(ReportFilter.fastAt) ? fastAt : null,
     slowBelow: accepted.contains(ReportFilter.slowBelow) ? slowBelow : null,
     serial: accepted.contains(ReportFilter.serial) ? serial : null,
+    accountId: accepted.contains(ReportFilter.moneyAccount) ? accountId : null,
+    accountName: accepted.contains(ReportFilter.moneyAccount)
+        ? accountName
+        : null,
+    expenseHeadId: accepted.contains(ReportFilter.expenseHead)
+        ? expenseHeadId
+        : null,
+    expenseHeadName: accepted.contains(ReportFilter.expenseHead)
+        ? expenseHeadName
+        : null,
   );
 
   /// A copy with [filter] cleared.
@@ -352,6 +387,10 @@ final class ReportFilters {
     int? fastAt,
     int? slowBelow,
     String? serial,
+    String? accountId,
+    String? accountName,
+    String? expenseHeadId,
+    String? expenseHeadName,
   }) => ReportFilters(
     partyId: partyId ?? this.partyId,
     partyName: partyName ?? this.partyName,
@@ -374,6 +413,10 @@ final class ReportFilters {
     fastAt: fastAt ?? this.fastAt,
     slowBelow: slowBelow ?? this.slowBelow,
     serial: serial ?? this.serial,
+    accountId: accountId ?? this.accountId,
+    accountName: accountName ?? this.accountName,
+    expenseHeadId: expenseHeadId ?? this.expenseHeadId,
+    expenseHeadName: expenseHeadName ?? this.expenseHeadName,
   );
 
   /// The filters in words, one line each, for the head of an export.
@@ -397,6 +440,8 @@ final class ReportFilters {
     if (fastAt != null) 'Fast-moving from $fastAt bills',
     if (slowBelow != null) 'Slow-moving under $slowBelow bills',
     if (serial != null) 'Serial: $serial',
+    if (accountId != null) 'Account: ${accountName ?? accountId}',
+    if (expenseHeadId != null) 'Head: ${expenseHeadName ?? expenseHeadId}',
   ];
 
   @override
@@ -418,7 +463,9 @@ final class ReportFilters {
       other.coverDays == coverDays &&
       other.fastAt == fastAt &&
       other.slowBelow == slowBelow &&
-      other.serial == serial;
+      other.serial == serial &&
+      other.accountId == accountId &&
+      other.expenseHeadId == expenseHeadId;
 
   @override
   int get hashCode => Object.hashAll([
@@ -439,6 +486,8 @@ final class ReportFilters {
     fastAt,
     slowBelow,
     serial,
+    accountId,
+    expenseHeadId,
   ]);
 }
 

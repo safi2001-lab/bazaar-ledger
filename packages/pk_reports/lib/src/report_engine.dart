@@ -1,6 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'builders.dart';
+import 'business_reports.dart';
 import 'filters.dart';
 import 'item_stock_reports.dart';
 import 'party_builders.dart';
@@ -132,6 +133,75 @@ enum ReportKind {
 
   /// What is on the shelf by how long it has been there; as of a day (M34).
   stockAgeing,
+
+  // M35: business status, staff and time, the Z report, taxes, expenses
+  // and orders. Built in business_reports.dart.
+
+  /// One day's sales, money, udhaar, expenses and drawer: the Z report.
+  dailySummary,
+
+  /// A bank or wallet account's deposits and withdrawals.
+  bankStatement,
+
+  /// Discount given and received, by party.
+  discountByParty,
+
+  /// Discount given, by whoever rang the bills.
+  discountByCashier,
+
+  /// Bills, sales, discounts, returns and voids by cashier.
+  salesByCashier,
+
+  /// The same by counter.
+  salesByCounter,
+
+  /// Sales and collections by payment mode, each tender its own line.
+  paymentModes,
+
+  /// Sales by the hour of the day.
+  hourlySales,
+
+  /// How long each customer takes to pay.
+  paymentPerformance,
+
+  /// Customers past due; as of today.
+  defaulters,
+
+  /// Voids, returns and edits, with who and why.
+  changedBills,
+
+  /// Output against input tax, by party.
+  taxReport,
+
+  /// Tax by rate and regime.
+  taxRateReport,
+
+  /// Sales by HS code.
+  salesByHsCode,
+
+  /// The sales register in FBR's Annex-C columns.
+  annexC,
+
+  /// The purchase register in FBR's Annex-A columns.
+  annexA,
+
+  /// Every expense voucher.
+  expenseTransactions,
+
+  /// Expenses by head, direct and indirect.
+  expenseCategories,
+
+  /// Expenses by what they were for.
+  expenseItems,
+
+  /// Quotations not yet billed; as of today.
+  openQuotations,
+
+  /// Challans not yet billed; as of today.
+  openChallans,
+
+  /// The items on both; as of today.
+  openOrderItems,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -154,7 +224,9 @@ final class ReportEngine {
       kind == ReportKind.itemBatches ||
       kind == ReportKind.itemSerials ||
       kind == ReportKind.fastSlowStock ||
-      kind == ReportKind.stockAgeing;
+      kind == ReportKind.stockAgeing ||
+      // M35
+      businessReportsAsOfToday.contains(kind);
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -390,6 +462,36 @@ final class ReportEngine {
       period,
       filters.asOf ?? today,
       filters,
+    ),
+    ReportKind.dailySummary ||
+    ReportKind.bankStatement ||
+    ReportKind.discountByParty ||
+    ReportKind.discountByCashier ||
+    ReportKind.salesByCashier ||
+    ReportKind.salesByCounter ||
+    ReportKind.paymentModes ||
+    ReportKind.hourlySales ||
+    ReportKind.paymentPerformance ||
+    ReportKind.defaulters ||
+    ReportKind.changedBills ||
+    ReportKind.taxReport ||
+    ReportKind.taxRateReport ||
+    ReportKind.salesByHsCode ||
+    ReportKind.annexC ||
+    ReportKind.annexA ||
+    ReportKind.expenseTransactions ||
+    ReportKind.expenseCategories ||
+    ReportKind.expenseItems ||
+    ReportKind.openQuotations ||
+    ReportKind.openChallans ||
+    ReportKind.openOrderItems => buildBusinessReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      period: period,
+      today: today,
+      filters: filters,
+      canSeeCosts: canSeeCosts,
     ),
   };
 }

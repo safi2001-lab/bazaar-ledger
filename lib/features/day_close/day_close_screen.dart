@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../audit/when.dart';
+import '../reports/report_screen.dart';
 
 final _drawerProvider =
     FutureProvider.autoDispose<({Money expected, ActivityEntry? last})>((
@@ -167,6 +168,20 @@ class _DayCloseScreenState extends ConsumerState<DayCloseScreen> {
                   onPressed: _busy || counted == null
                       ? null
                       : () => unawaited(_close()),
+                ),
+                // The night's Z report (M35), one tap from the count.
+                const SizedBox(height: BlTokens.space2),
+                TextButton.icon(
+                  icon: const Icon(Icons.summarize_outlined),
+                  label: Text(s.dayCloseSummary),
+                  onPressed: () => unawaited(
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            const ReportScreen(kind: ReportKind.dailySummary),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );

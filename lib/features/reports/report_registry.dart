@@ -479,8 +479,99 @@ final _itemStockReports = [
   ),
 ];
 
-/// Business status: bank statement and discounts (M35).
-final _businessStatusReports = <ReportEntry>[];
+/// Business status (M35): the night's Z report first, then the bank, the
+/// discounts, the staff and the hours, and how customers pay. Everything
+/// after the bank and the discounts is beyond what the market's apps have.
+final _businessStatusReports = [
+  ReportEntry(
+    kind: ReportKind.dailySummary,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportDailySummary,
+    hint: (s) => s.reportDailySummaryHint,
+    icon: Icons.summarize_outlined,
+    defaultPreset: DatePreset.today,
+  ),
+  ReportEntry(
+    kind: ReportKind.bankStatement,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportBankStatement,
+    hint: (s) => s.reportBankStatementHint,
+    icon: Icons.account_balance_wallet_outlined,
+    filters: const {ReportFilter.moneyAccount},
+  ),
+  ReportEntry(
+    kind: ReportKind.discountByParty,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportDiscount,
+    hint: (s) => s.reportDiscountHint,
+    icon: Icons.sell_outlined,
+    filters: const {ReportFilter.partyGroup},
+  ),
+  ReportEntry(
+    kind: ReportKind.discountByCashier,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportDiscountByCashier,
+    hint: (s) => s.reportDiscountByCashierHint,
+    icon: Icons.badge_outlined,
+  ),
+  ReportEntry(
+    kind: ReportKind.salesByCashier,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportSalesByCashier,
+    hint: (s) => s.reportSalesByCashierHint,
+    icon: Icons.person_outline,
+  ),
+  ReportEntry(
+    kind: ReportKind.salesByCounter,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportSalesByCounter,
+    hint: (s) => s.reportSalesByCounterHint,
+    icon: Icons.devices_outlined,
+    filters: const {ReportFilter.user},
+  ),
+  ReportEntry(
+    kind: ReportKind.paymentModes,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportPaymentModes,
+    hint: (s) => s.reportPaymentModesHint,
+    icon: Icons.payments_outlined,
+    filters: const {ReportFilter.user},
+    defaultPreset: DatePreset.today,
+  ),
+  ReportEntry(
+    kind: ReportKind.hourlySales,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportHourlySales,
+    hint: (s) => s.reportHourlySalesHint,
+    icon: Icons.schedule_outlined,
+    filters: const {ReportFilter.user},
+  ),
+  ReportEntry(
+    kind: ReportKind.paymentPerformance,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportPaymentPerformance,
+    hint: (s) => s.reportPaymentPerformanceHint,
+    icon: Icons.timer_outlined,
+    filters: const {ReportFilter.partyGroup},
+    defaultPreset: DatePreset.thisFiscalYear,
+  ),
+  ReportEntry(
+    kind: ReportKind.defaulters,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportDefaulters,
+    hint: (s) => s.reportDefaultersHint,
+    icon: Icons.warning_amber_outlined,
+    filters: const {ReportFilter.partyGroup},
+  ),
+  ReportEntry(
+    kind: ReportKind.changedBills,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportChangedBills,
+    hint: (s) => s.reportChangedBillsHint,
+    icon: Icons.edit_note_outlined,
+    filters: const {ReportFilter.user},
+  ),
+];
 
 /// Taxes (M35 adds the tax and tax-rate reports).
 final _taxReports = [
@@ -508,9 +599,55 @@ final _taxReports = [
     icon: Icons.inventory_outlined,
     plan: PlanFeature.accountingReports,
   ),
+  // M35: the GST reports of the market's apps, mapped onto Pakistan's.
+  ReportEntry(
+    kind: ReportKind.taxReport,
+    group: ReportGroup.taxes,
+    name: (s) => s.reportTaxReport,
+    hint: (s) => s.reportTaxReportHint,
+    icon: Icons.request_page_outlined,
+    plan: PlanFeature.accountingReports,
+    filters: const {ReportFilter.party, ReportFilter.partyGroup},
+  ),
+  ReportEntry(
+    kind: ReportKind.taxRateReport,
+    group: ReportGroup.taxes,
+    name: (s) => s.reportTaxRate,
+    hint: (s) => s.reportTaxRateHint,
+    icon: Icons.pie_chart_outline,
+    plan: PlanFeature.accountingReports,
+  ),
+  ReportEntry(
+    kind: ReportKind.salesByHsCode,
+    group: ReportGroup.taxes,
+    name: (s) => s.reportSalesByHsCode,
+    hint: (s) => s.reportSalesByHsCodeHint,
+    icon: Icons.tag,
+    plan: PlanFeature.accountingReports,
+  ),
+  // The return is filed for the month gone, so the annexures open on it.
+  ReportEntry(
+    kind: ReportKind.annexC,
+    group: ReportGroup.taxes,
+    name: (s) => s.reportAnnexC,
+    hint: (s) => s.reportAnnexCHint,
+    icon: Icons.upload_file_outlined,
+    plan: PlanFeature.accountingReports,
+    defaultPreset: DatePreset.lastMonth,
+  ),
+  ReportEntry(
+    kind: ReportKind.annexA,
+    group: ReportGroup.taxes,
+    name: (s) => s.reportAnnexA,
+    hint: (s) => s.reportAnnexAHint,
+    icon: Icons.file_present_outlined,
+    plan: PlanFeature.accountingReports,
+    defaultPreset: DatePreset.lastMonth,
+  ),
 ];
 
-/// Expense (M35 adds the expense transaction, category and item reports).
+/// Expense: the heads from the books, then every voucher, the heads
+/// direct and indirect, and what the money went on (M35).
 final _expenseReports = [
   ReportEntry(
     kind: ReportKind.expenses,
@@ -519,10 +656,64 @@ final _expenseReports = [
     hint: (s) => s.reportExpensesHint,
     icon: Icons.money_off_outlined,
   ),
+  ReportEntry(
+    kind: ReportKind.expenseTransactions,
+    group: ReportGroup.expense,
+    name: (s) => s.reportExpenseTransactions,
+    hint: (s) => s.reportExpenseTransactionsHint,
+    icon: Icons.list_outlined,
+    filters: const {
+      ReportFilter.expenseHead,
+      ReportFilter.user,
+      ReportFilter.paymentMode,
+    },
+  ),
+  ReportEntry(
+    kind: ReportKind.expenseCategories,
+    group: ReportGroup.expense,
+    name: (s) => s.reportExpenseCategories,
+    hint: (s) => s.reportExpenseCategoriesHint,
+    icon: Icons.donut_small_outlined,
+    filters: const {ReportFilter.user},
+  ),
+  ReportEntry(
+    kind: ReportKind.expenseItems,
+    group: ReportGroup.expense,
+    name: (s) => s.reportExpenseItems,
+    hint: (s) => s.reportExpenseItemsHint,
+    icon: Icons.shopping_bag_outlined,
+    filters: const {ReportFilter.expenseHead},
+  ),
 ];
 
-/// Sale and purchase orders (M35).
-final _orderReports = <ReportEntry>[];
+/// Orders (M35): this shop's are its quotations and challans. Sale and
+/// purchase orders as documents (M41) join here, as more doc types on the
+/// same reads.
+final _orderReports = [
+  ReportEntry(
+    kind: ReportKind.openQuotations,
+    group: ReportGroup.orders,
+    name: (s) => s.reportOpenQuotations,
+    hint: (s) => s.reportOpenQuotationsHint,
+    icon: Icons.format_quote_outlined,
+    filters: const {ReportFilter.party},
+  ),
+  ReportEntry(
+    kind: ReportKind.openChallans,
+    group: ReportGroup.orders,
+    name: (s) => s.reportOpenChallans,
+    hint: (s) => s.reportOpenChallansHint,
+    icon: Icons.move_to_inbox_outlined,
+    filters: const {ReportFilter.party},
+  ),
+  ReportEntry(
+    kind: ReportKind.openOrderItems,
+    group: ReportGroup.orders,
+    name: (s) => s.reportOpenOrderItems,
+    hint: (s) => s.reportOpenOrderItemsHint,
+    icon: Icons.checklist_outlined,
+  ),
+];
 
 /// Loan accounts (M35).
 final _loanReports = <ReportEntry>[];

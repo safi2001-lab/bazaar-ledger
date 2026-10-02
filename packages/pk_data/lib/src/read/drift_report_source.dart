@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_reports/pk_reports.dart';
@@ -5,9 +7,14 @@ import 'package:pk_reports/pk_reports.dart';
 import '../db/app_database.dart';
 import 'drift_app_queries.dart';
 
+part 'reports/business_queries.dart';
+part 'reports/expense_queries.dart';
 part 'reports/item_stock_queries.dart';
+part 'reports/order_queries.dart';
 part 'reports/party_queries.dart';
 part 'reports/sql_filters.dart';
+part 'reports/staff_queries.dart';
+part 'reports/tax_queries.dart';
 part 'reports/transaction_queries.dart';
 
 /// The drift implementation of [ReportSource].
@@ -23,7 +30,17 @@ part 'reports/transaction_queries.dart';
 /// more name to the `with` clause, and the filters every group narrows by
 /// are written once, in `reports/sql_filters.dart`.
 final class DriftReportSource
-    with _TransactionQueries, _PartyQueries, _ItemStockQueries
+    with
+        _TransactionQueries,
+        _PartyQueries,
+        // M34
+        _ItemStockQueries,
+        // M35
+        _BusinessQueries,
+        _StaffQueries,
+        _TaxQueries,
+        _ExpenseQueries,
+        _OrderQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 
@@ -812,6 +829,8 @@ final class DriftReportSource
           ReportFilter.slowBelow ||
           ReportFilter.serial:
         return const [];
+      case ReportFilter.moneyAccount || ReportFilter.expenseHead:
+        return _accountChoices(firmId, filter, term: term, limit: limit);
     }
   }
 }
