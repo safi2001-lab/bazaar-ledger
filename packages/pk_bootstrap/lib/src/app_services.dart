@@ -20,6 +20,7 @@ import 'backup_service.dart';
 import 'encrypted_database.dart';
 import 'printing_services.dart';
 
+part 'bill_design_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';

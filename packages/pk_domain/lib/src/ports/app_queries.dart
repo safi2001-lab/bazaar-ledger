@@ -819,6 +819,12 @@ abstract interface class AppQueries {
     required BusinessDate from,
     required BusinessDate to,
   });
+
+  /// What one document's paper needs beyond [receiptFor] (M51): its kind,
+  /// the party's address and tax numbers, how the goods travel, each line's
+  /// tax, and — for a sale to a named customer — the khata as it stood when
+  /// the bill was made. Null if the document is not this firm's.
+  Future<BillExtras?> billExtras(String firmId, String documentId);
 }
 
 /// The shop's stock, in five numbers.

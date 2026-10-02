@@ -7519,6 +7519,336 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{bills} bill'**
   String reportFilterBillsValue(int bills);
+
+  /// No description provided for @copyTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaunsi copy?'**
+  String get copyTitle;
+
+  /// No description provided for @copyOriginal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Asal'**
+  String get copyOriginal;
+
+  /// No description provided for @copyDuplicate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Duplicate'**
+  String get copyDuplicate;
+
+  /// No description provided for @copyTriplicate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Triplicate'**
+  String get copyTriplicate;
+
+  /// No description provided for @copyTransporter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Transporter'**
+  String get copyTransporter;
+
+  /// No description provided for @copyAutoHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Na chunein to: pehli dafa asal, us ke baad duplicate'**
+  String get copyAutoHint;
+
+  /// No description provided for @copyChosenHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaghaz par yahi copy likhi chhapegi'**
+  String get copyChosenHint;
+
+  /// No description provided for @copyTransporterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal, miqdar aur kis ke liye — koi qeemat nahi'**
+  String get copyTransporterHint;
+
+  /// No description provided for @copyOriginalGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Asal copy pehle chhap chuki hai'**
+  String get copyOriginalGone;
+
+  /// No description provided for @transportTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Transport ki tafseel'**
+  String get transportTitle;
+
+  /// No description provided for @transportHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bilty aur gaari ka number bill par chhapega. Paison mein kuch nahi badlega.'**
+  String get transportHint;
+
+  /// No description provided for @transportAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Transport ki tafseel likhein (bilty, gaari)'**
+  String get transportAdd;
+
+  /// No description provided for @transportTransporter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Transporter / adda'**
+  String get transportTransporter;
+
+  /// No description provided for @transportVehicle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaari no'**
+  String get transportVehicle;
+
+  /// No description provided for @transportBilty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bilty no'**
+  String get transportBilty;
+
+  /// No description provided for @transportShipTo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan bhejna hai'**
+  String get transportShipTo;
+
+  /// No description provided for @settingsBillDesign.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ka design'**
+  String get settingsBillDesign;
+
+  /// No description provided for @billDesignIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip waisi hi rehti hai; us par sirf baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.'**
+  String get billDesignIntro;
+
+  /// No description provided for @billDesignLayout.
+  ///
+  /// In ur, this message translates to:
+  /// **'Design'**
+  String get billDesignLayout;
+
+  /// No description provided for @billThemeClassic.
+  ///
+  /// In ur, this message translates to:
+  /// **'Saada'**
+  String get billThemeClassic;
+
+  /// No description provided for @billThemeClassicHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Beech mein dukan ka naam, saada kaghaz jaisa'**
+  String get billThemeClassicHint;
+
+  /// No description provided for @billThemeModern.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rangeen patti'**
+  String get billThemeModern;
+
+  /// No description provided for @billThemeModernHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Upar dukan ke rang ki patti par naam aur logo'**
+  String get billThemeModernHint;
+
+  /// No description provided for @billThemeCompact.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhota'**
+  String get billThemeCompact;
+
+  /// No description provided for @billThemeCompactHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhoti likhai, lamba wholesale bill ek safhe par'**
+  String get billThemeCompactHint;
+
+  /// No description provided for @billThemeTax.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sales tax invoice'**
+  String get billThemeTax;
+
+  /// No description provided for @billThemeTaxHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR ke mutabiq: dono taraf ka NTN/STRN, har line par tax se pehle, tax ki sharah, tax aur tax samet qeemat'**
+  String get billThemeTaxHint;
+
+  /// No description provided for @billDesignTaxNeedsNtn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tax invoice ke liye Dukan ki tafseel mein apna NTN aur STRN likhein'**
+  String get billDesignTaxNeedsNtn;
+
+  /// No description provided for @billDesignColour.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rang'**
+  String get billDesignColour;
+
+  /// No description provided for @billAccentInk.
+  ///
+  /// In ur, this message translates to:
+  /// **'Siyah'**
+  String get billAccentInk;
+
+  /// No description provided for @billAccentBlue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Neela'**
+  String get billAccentBlue;
+
+  /// No description provided for @billAccentGreen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hara'**
+  String get billAccentGreen;
+
+  /// No description provided for @billAccentMaroon.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maroon'**
+  String get billAccentMaroon;
+
+  /// No description provided for @billAccentOrange.
+  ///
+  /// In ur, this message translates to:
+  /// **'Narangi'**
+  String get billAccentOrange;
+
+  /// No description provided for @billAccentPurple.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jamni'**
+  String get billAccentPurple;
+
+  /// No description provided for @billDesignPage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaghaz ka size'**
+  String get billDesignPage;
+
+  /// No description provided for @billDesignPictures.
+  ///
+  /// In ur, this message translates to:
+  /// **'Logo aur QR'**
+  String get billDesignPictures;
+
+  /// No description provided for @billDesignLogo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukan ka logo'**
+  String get billDesignLogo;
+
+  /// No description provided for @billDesignLogoHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'PDF bill ke upar chhapta hai'**
+  String get billDesignLogoHint;
+
+  /// No description provided for @billDesignPaymentQr.
+  ///
+  /// In ur, this message translates to:
+  /// **'Payment QR'**
+  String get billDesignPaymentQr;
+
+  /// No description provided for @billDesignPaymentQrHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aap ke bank, JazzCash ya Easypaisa ka apna QR — screenshot ya tasveer. PDF bill ke neeche chhapta hai.'**
+  String get billDesignPaymentQrHint;
+
+  /// No description provided for @billDesignQrOnThermal.
+  ///
+  /// In ur, this message translates to:
+  /// **'QR thermal slip par bhi'**
+  String get billDesignQrOnThermal;
+
+  /// No description provided for @billDesignQrOnThermalHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle ek slip chhap kar phone se scan kar ke dekh lein'**
+  String get billDesignQrOnThermalHint;
+
+  /// No description provided for @billDesignKhata.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichhla baqaya bill par'**
+  String get billDesignKhata;
+
+  /// No description provided for @billDesignKhataHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar wale gahak ke bill par: pichhla baqaya, is bill, kul baqaya. Purane bill ki copy par wahi hisaab chhapta hai jo bill ke din tha.'**
+  String get billDesignKhataHint;
+
+  /// No description provided for @billDesignFooter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ke neeche ki likhai'**
+  String get billDesignFooter;
+
+  /// No description provided for @billDesignFooterLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har line alag (zyada se zyada 4)'**
+  String get billDesignFooterLabel;
+
+  /// No description provided for @billDesignFooterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shukriya, wapsi ki shart, kuch bhi — Urdu, Roman ya English'**
+  String get billDesignFooterHint;
+
+  /// No description provided for @billDesignFooterPresets.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek tap mein daalein'**
+  String get billDesignFooterPresets;
+
+  /// No description provided for @billDesignPreview.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaisa dikhega'**
+  String get billDesignPreview;
+
+  /// No description provided for @billDesignPreviewPdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'PDF'**
+  String get billDesignPreviewPdf;
+
+  /// No description provided for @billDesignPreviewSlip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Thermal slip'**
+  String get billDesignPreviewSlip;
+
+  /// No description provided for @billDesignPreviewNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh andaaz ka khaka hai. Asal PDF dekhne ke liye neeche wala button dabayein.'**
+  String get billDesignPreviewNote;
+
+  /// No description provided for @billDesignSamplePdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Namoona PDF dekhein'**
+  String get billDesignSamplePdf;
+
+  /// No description provided for @billDesignSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ka design mehfooz ho gaya'**
+  String get billDesignSaved;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

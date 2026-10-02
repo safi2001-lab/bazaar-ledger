@@ -15,6 +15,8 @@ export 'src/fbr/fbr_client.dart';
 export 'src/media/image_shrinker.dart';
 export 'src/printing/print_queue.dart';
 export 'src/printing/tcp_printer.dart';
+export 'src/receipt/bill_pdf.dart';
+export 'src/receipt/bill_pictures.dart';
 export 'src/receipt/escpos.dart';
 export 'src/receipt/fbr_qr.dart';
 export 'src/receipt/label_renderer.dart';

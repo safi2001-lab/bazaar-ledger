@@ -18,6 +18,7 @@ import '../subscription/play_billing.dart';
 import '../sync/sync_screen.dart';
 import '../tax/tax_screen.dart';
 import '../users/users_screen.dart';
+import 'bill_design_screen.dart';
 import 'payment_details_screen.dart';
 import 'shop_details_screen.dart';
 
@@ -132,6 +133,18 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const PaymentDetailsScreen(),
+                  ),
+                ),
+              ),
+            // Beside how customers pay, because the payment QR is set in
+            // both and an owner looking for one finds the other (M51).
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.palette_outlined,
+                label: s.settingsBillDesign,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const BillDesignScreen(),
                   ),
                 ),
               ),

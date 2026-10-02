@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
 import 'print_bill.dart';
 import 'return_sheet.dart';
@@ -26,7 +27,14 @@ import 'void_bill_sheet.dart';
 /// opens after a sale and from the bill's row in the sales list, so a bill
 /// can be sent again whenever it is wanted, not only while the customer is
 /// still at the counter.
-class ReceiptScreen extends ConsumerWidget {
+///
+/// ## The sheet (M51)
+///
+/// Above the buttons, which sheet goes out: the original, a duplicate, a
+/// triplicate, or the transporter's copy with no prices. The preview is that
+/// sheet, dressed as the shop's design dresses it — the khata block, the
+/// shop's own footer — because the preview is the paper.
+class ReceiptScreen extends ConsumerStatefulWidget {
   const ReceiptScreen({
     super.key,
     required this.documentId,
@@ -37,10 +45,21 @@ class ReceiptScreen extends ConsumerWidget {
   final String docNo;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ReceiptScreen> createState() => _ReceiptScreenState();
+}
+
+class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
+  /// The sheet chosen; null prints the bill as it always printed.
+  ReceiptCopy? _copy;
+
+  @override
+  Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final receipt = ref.watch(receiptProvider(documentId));
+    final documentId = widget.documentId;
+    final docNo = widget.docNo;
+    final sheet = (documentId: documentId, copy: _copy);
+    final bill = ref.watch(billSheetProvider(sheet));
     final status = ref.watch(documentStatusProvider(documentId));
 
     return Scaffold(
@@ -81,7 +100,10 @@ class ReceiptScreen extends ConsumerWidget {
         ],
       ),
       body: SafeArea(
-        child: receipt.when(
+        child: bill.when(
+          // The last sheet stays on screen while the next one is read, so
+          // tapping a different copy does not blank the page.
+          skipLoadingOnReload: true,
           loading: () => const Padding(
             padding: EdgeInsets.all(BlTokens.space4),
             child: BlSkeletonList(rows: 6),
@@ -91,13 +113,14 @@ class ReceiptScreen extends ConsumerWidget {
               title: s.commonSomethingWentWrong,
               message: '$error',
               retryLabel: s.actionRetry,
-              onRetry: () => ref.invalidate(receiptProvider(documentId)),
+              onRetry: () => ref.invalidate(billSheetProvider(sheet)),
             ),
           ),
-          data: (data) {
-            if (data == null) {
+          data: (prepared) {
+            if (prepared == null) {
               return Center(child: BlEmpty(title: s.commonNothingSaved));
             }
+            final data = prepared.receipt;
             return Column(
               children: [
                 // A cancelled bill is shown marked, as it is sent marked
@@ -109,7 +132,12 @@ class ReceiptScreen extends ConsumerWidget {
                         : data,
                   ),
                 ),
-                _Actions(documentId: documentId, data: data),
+                _Actions(
+                  documentId: documentId,
+                  bill: prepared,
+                  copy: _copy,
+                  onCopy: (copy) => setState(() => _copy = copy),
+                ),
               ],
             );
           },
@@ -174,10 +202,17 @@ class PaperPreview extends ConsumerWidget {
 }
 
 class _Actions extends ConsumerStatefulWidget {
-  const _Actions({required this.data, required this.documentId});
+  const _Actions({
+    required this.bill,
+    required this.documentId,
+    required this.copy,
+    required this.onCopy,
+  });
 
-  final ReceiptData data;
+  final PreparedBill bill;
   final String documentId;
+  final ReceiptCopy? copy;
+  final ValueChanged<ReceiptCopy?> onCopy;
 
   @override
   ConsumerState<_Actions> createState() => _ActionsState();
@@ -196,7 +231,11 @@ class _ActionsState extends ConsumerState<_Actions> {
     if (_busy) return;
     setState(() => _busy = true);
     try {
-      await printBill(context, documentId: widget.documentId);
+      await printBill(
+        context,
+        documentId: widget.documentId,
+        copy: widget.copy,
+      );
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -222,7 +261,24 @@ class _ActionsState extends ConsumerState<_Actions> {
         top: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (widget.bill.sendsGoods) ...[
+              CopyChooser(
+                value: widget.copy,
+                originalPrinted: alreadyPrinted,
+                offerTransporter: true,
+                onChanged: widget.onCopy,
+              ),
+              if (widget.copy == ReceiptCopy.transporter) ...[
+                const SizedBox(height: BlTokens.space2),
+                TransportLine(
+                  documentId: widget.documentId,
+                  transport: widget.bill.transport,
+                ),
+              ],
+              const SizedBox(height: BlTokens.space3),
+            ],
             if (printer.valueOrNull == null)
               Padding(
                 padding: const EdgeInsets.only(bottom: BlTokens.space3),
@@ -255,7 +311,7 @@ class _ActionsState extends ConsumerState<_Actions> {
                   onPressed: _busy ? null : _print,
                 ),
               ),
-            SendButtons(documentId: widget.documentId),
+            SendButtons(documentId: widget.documentId, copy: widget.copy),
           ],
         ),
       ),

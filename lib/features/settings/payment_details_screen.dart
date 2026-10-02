@@ -5,6 +5,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'shop_pictures.dart';
 
 /// Where a customer can send money, printed on the bill as plain text.
 ///
@@ -163,6 +164,10 @@ class _PaymentDetailsScreenState extends ConsumerState<PaymentDetailsScreen> {
                       ),
                       const SizedBox(height: BlTokens.space5),
                       _Note(icon: Icons.qr_code_2, text: s.settingsQrNote),
+                      // Where the note says to add it (M51). Saved at once,
+                      // as an item's picture is, not with the fields above.
+                      const SizedBox(height: BlTokens.space3),
+                      const ShopPictureField(kind: ShopPicture.paymentQr),
                       if (_failure != null) ...[
                         const SizedBox(height: BlTokens.space4),
                         Text(

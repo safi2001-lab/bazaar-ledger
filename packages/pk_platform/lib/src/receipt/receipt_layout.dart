@@ -29,6 +29,21 @@ final class ReceiptLayout {
       }
     }
 
+    // A label and a free-text value (M51): one row when both fit, otherwise
+    // the label on a line of its own and the value wrapped under it. Never
+    // clipped — an address cut short is goods delivered to the wrong shop.
+    void labelled(String label, String value) {
+      final v = value.trim().replaceAll(RegExp(r'\s+'), ' ');
+      if (label.length + 1 + v.length <= width) {
+        out.add(_row(label, v));
+        return;
+      }
+      out.add(label);
+      for (final part in _wrap(v, width - 2)) {
+        out.add('  $part');
+      }
+    }
+
     // --- Head ------------------------------------------------------------
     centred(d.shop.name.toUpperCase());
     final where = [
@@ -50,8 +65,15 @@ final class ReceiptLayout {
       centred('** CANCELLED / MANSOOKH **');
       rule('-');
     }
-    if (d.isReprint) {
-      centred('** DUPLICATE / DOBARA COPY **');
+    // Which sheet this is (M51): the duplicate M30 marks on its own, or the
+    // sheet somebody chose. The transporter's copy says, under its mark,
+    // that the prices are missing on purpose — a driver handed a bill with
+    // no amounts on it otherwise assumes the printer ran out of ink.
+    final copy = d.copyMark;
+    final money = d.showsMoney;
+    if (copy != null) {
+      centred('** ${copy.mark} **');
+      if (!copy.showsMoney) centred('(qeemat ke baghair)');
       rule('-');
     }
 
@@ -67,10 +89,58 @@ final class ReceiptLayout {
     if (_has(d.customerPhone)) {
       out.add(_row('Phone', d.customerPhone!));
     }
+    // Where the goods go, on the sheet that travels with them (M51). The
+    // customer's own copy does not need their own address, and the till
+    // roll stays the length it was.
+    if (!money && _has(d.customerAddress)) {
+      labelled('Address', d.customerAddress!);
+    }
+
+    // How the goods travel, whenever any of it is known (M51). A bilty
+    // number on the buyer's own bill is how they collect at the other end.
+    final t = d.transport;
+    if (!t.isEmpty) {
+      rule('-');
+      if (_has(t.transporter)) labelled('Transporter', t.transporter!);
+      if (_has(t.vehicleNo)) labelled('Gaari no', t.vehicleNo!);
+      if (_has(t.biltyNo)) labelled('Bilty no', t.biltyNo!);
+      if (_has(t.shipTo)) labelled('Ship to', t.shipTo!);
+    }
 
     rule('-');
-    out.add(_row('Item', 'Amount'));
+    out.add(_row('Item', money ? 'Amount' : 'Qty'));
     rule('-');
+
+    if (!money) {
+      // --- The transporter's copy -----------------------------------------
+      //
+      // What is in the sacks and how much of it, and nothing that is money:
+      // no rate, no amount, no total, no tender, no khata, no payment
+      // details, no FBR number. A sheet with a price on it is a sheet
+      // photographed at the adda and passed to the shop next door.
+      for (final line in d.lines) {
+        for (final part in _wrap(line.name, width)) {
+          out.add(part);
+        }
+        final qty = '${line.qtyDisplay} ${line.unitCode}'.trim();
+        if (qty.length + 2 <= width) {
+          out.add(_row('', qty));
+        } else {
+          for (final part in _wrap(qty, width - 2)) {
+            out.add('  $part');
+          }
+        }
+        if (line.isFreeItem) out.add('    (free)');
+      }
+      rule('=');
+      out.add(_centre('${d.itemCount} item(s)'));
+      for (final footer in d.footerLines) {
+        for (final part in _wrap(footer, width)) {
+          out.add(_centre(part));
+        }
+      }
+      return out;
+    }
 
     // --- Lines -----------------------------------------------------------
     //
@@ -157,13 +227,23 @@ final class ReceiptLayout {
     if (d.change.isPositive) {
       out.add(_row('Change', d.change.amountOnly));
     }
-    if (d.balance.isPositive) {
+    // The khata block (M51), in place of the bill's own udhaar line: "is
+    // bill" IS that line, and printing both says the same thing twice. Not
+    // on a cancelled bill, which asks for nothing.
+    final khata = d.khata;
+    if (khata != null && !d.isCancelled) {
+      rule('-');
+      out.add(_row('Pichhla baqaya', khata.before.amountOnly));
+      out.add(_row('Is bill', khata.thisBill.amountOnly));
+      out.add(_row('KUL BAQAYA', khata.after.amountOnly));
+      // A second sheet, printed later, carries the figures of the day the
+      // bill was made — said, so nobody reads them as today's khata.
+      if (copy != null && copy != ReceiptCopy.original) {
+        centred('(bill ke din ka hisaab)');
+      }
+    } else if (d.balance.isPositive) {
       rule('-');
       out.add(_row('BAQAYA (udhaar)', d.balance.amountOnly));
-      if (d.previousBalance != null && d.previousBalance!.isPositive) {
-        out.add(_row('Purana baqaya', d.previousBalance!.amountOnly));
-        out.add(_row('Total baqaya', d.runningBalance.amountOnly));
-      }
     }
 
     // --- How to pay ------------------------------------------------------

@@ -32,40 +32,78 @@ import 'receipt_file_name.dart';
 
 /// One document, ready to leave the phone: the paper, and who it is for.
 final class OutgoingDocument {
-  const OutgoingDocument({required this.receipt, this.recipient});
+  const OutgoingDocument({
+    required this.receipt,
+    this.recipient,
+    this.design = const BillDesign(),
+    this.sendsGoods = false,
+    this.originalPrinted = false,
+  });
 
   final ReceiptData receipt;
 
   /// Null for a walk-in, who has nobody to send it to.
   final DocumentRecipient? recipient;
 
-  /// The few lines that travel beside the file, or alone into the chat.
-  String get message => billMessage(receipt);
+  /// How this shop's PDFs look (M51).
+  final BillDesign design;
+
+  /// Whether goods leave on this paper, so a transporter's copy of it means
+  /// something: a sale bill or a challan, never a quotation or a delivery
+  /// the shop received.
+  final bool sendsGoods;
+
+  /// Whether this bill's first sheet has already gone to paper, so an
+  /// original is not offered again.
+  final bool originalPrinted;
+
+  /// The few lines that travel beside the file, or alone into the chat. On
+  /// the transporter's copy, the goods and the bilty and never an amount
+  /// (M51): the copy with no prices must not arrive with them typed beside
+  /// it.
+  String get message =>
+      receipt.showsMoney ? billMessage(receipt) : transportMessage(receipt);
 
   /// The number WhatsApp can reach them on, or null when there is none or
   /// the khata's number is not a Pakistani mobile.
   String? get whatsapp => whatsappNumber(recipient?.phone);
 
-  /// [documentId] read for sending, or null when it is not this shop's.
+  /// [documentId] read for sending, as [copy] when one was chosen (M51), or
+  /// null when it is not this shop's.
+  ///
+  /// [thermal] dresses it for a picture of the till roll rather than a PDF:
+  /// the payment QR, if the owner put it on the roll, as the roll's dots.
   static Future<OutgoingDocument?> load(
     AppServices services,
-    String documentId,
-  ) async {
+    String documentId, {
+    ReceiptCopy? copy,
+    ReceiptPaper? thermal,
+  }) async {
     final firm = await services.queries.currentFirm();
     if (firm == null) return null;
-    final receipt = await services.queries.receiptFor(firm.id, documentId);
-    if (receipt == null) return null;
+    final bill = await services.billPaper(
+      documentId,
+      copy: copy,
+      thermal: thermal,
+    );
+    if (bill == null) return null;
     final status = await services.queries.documentStatus(firm.id, documentId);
-    final printed = await services.printing.historyFor(firm.id, documentId);
+    final printed = (await services.printing.historyFor(
+      firm.id,
+      documentId,
+    )).any((job) => job.status == PrintJobStatus.printed);
     return OutgoingDocument(
       // Marked as what it is now, on what leaves: a bill cancelled since is
       // sent saying so, and one whose original already went to paper is
-      // sent as the duplicate it is.
-      receipt: receipt.copyWith(
+      // sent as the duplicate it is — unless somebody chose the sheet.
+      receipt: bill.receipt.copyWith(
         isCancelled: status == 'void',
-        isReprint: printed.any((job) => job.status == PrintJobStatus.printed),
+        isReprint: copy == null && printed,
       ),
       recipient: await services.queries.recipientOf(firm.id, documentId),
+      design: bill.design,
+      sendsGoods: bill.sendsGoods,
+      originalPrinted: printed,
     );
   }
 }
@@ -84,7 +122,7 @@ enum WhatsAppOutcome {
   noNumber,
 }
 
-/// The PDF of [doc], with its message beside it.
+/// The PDF of [doc], in the shop's own design, with its message beside it.
 Future<void> sharePdf(AppServices services, OutgoingDocument doc) async {
   final file = await _write(
     receiptFileName(doc.receipt.docNo),
@@ -93,6 +131,7 @@ Future<void> sharePdf(AppServices services, OutgoingDocument doc) async {
       // A PDF carries its own fonts: it is read on the customer's phone, not
       // this one, so there is no system fallback to fall back to.
       unicodeFont: await PdfUnicodeFont.bytes(),
+      design: doc.design,
     ),
   );
   await SharePlus.instance.share(
@@ -105,6 +144,9 @@ Future<void> sharePdf(AppServices services, OutgoingDocument doc) async {
 }
 
 /// A picture of [doc], with its message beside it.
+///
+/// A picture of the till roll, so [doc] is best loaded with `thermal` set:
+/// the payment QR then appears in it exactly where the printer puts it.
 Future<void> sharePicture(AppServices services, OutgoingDocument doc) async {
   final file = await _write(
     receiptFileName(doc.receipt.docNo, extension: 'png'),

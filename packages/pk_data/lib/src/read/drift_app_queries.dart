@@ -3050,6 +3050,198 @@ final class DriftAppQueries implements AppQueries {
   }
 
   static String _two(int n) => n.toString().padLeft(2, '0');
+
+  @override
+  Future<BillExtras?> billExtras(String firmId, String documentId) async {
+    // The party's own row is read beside the bill's snapshot, and used only
+    // where the bill recorded nothing: the counter has never snapshotted an
+    // address or a tax number, so without the fallback no tax invoice could
+    // name its buyer's NTN. A snapshot, where there is one, always wins.
+    final doc = await _db
+        .customSelect(
+          '''
+          SELECT d.doc_type, d.party_id, d.created_at_utc,
+                 d.party_address_snapshot, d.party_ntn_snapshot,
+                 d.party_strn_snapshot,
+                 d.vehicle_no, d.bilty_no, d.transporter, d.ship_to,
+                 p.phone AS party_phone, p.address_line1, p.address_line2,
+                 p.city AS party_city, p.ntn AS party_ntn,
+                 p.strn AS party_strn
+          FROM documents d
+          LEFT JOIN parties p ON p.id = d.party_id
+          WHERE d.id = ? AND d.firm_id = ? AND d.deleted_at_utc IS NULL
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.documents, _db.parties},
+        )
+        .getSingleOrNull();
+    if (doc == null) return null;
+
+    final docType = doc.read<String>('doc_type');
+    final partyId = doc.readNullable<String>('party_id');
+    final ownAddress = [
+      _blankToNull(doc.readNullable<String>('address_line1')),
+      _blankToNull(doc.readNullable<String>('address_line2')),
+      _blankToNull(doc.readNullable<String>('party_city')),
+    ].whereType<String>().join(', ');
+
+    // Every tax on a line, split the way an invoice prints it. Sales tax is
+    // the standard tax and whatever is charged in its place — the provincial
+    // services tax, the extra tax, FED in sales-tax mode — and its rate is
+    // the line's own; further tax is the unregistered buyer's surcharge and
+    // is printed on its own.
+    final lines = await _db
+        .customSelect(
+          '''
+          SELECT l.line_no, l.taxable_paisa, l.hs_code_snapshot,
+                 (SELECT MAX(t.rate_bp) FROM document_line_taxes t
+                   WHERE t.document_line_id = l.id
+                     AND t.deleted_at_utc IS NULL
+                     AND t.tax_kind IN ('sales_tax', 'provincial_st'))
+                   AS rate_bp,
+                 COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                   WHERE t.document_line_id = l.id
+                     AND t.deleted_at_utc IS NULL
+                     AND t.tax_kind IN ('sales_tax', 'provincial_st',
+                                        'extra_tax', 'fed', 'cess')), 0)
+                   AS sales_tax_paisa,
+                 COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                   WHERE t.document_line_id = l.id
+                     AND t.deleted_at_utc IS NULL
+                     AND t.tax_kind = 'further_tax'), 0)
+                   AS further_tax_paisa
+          FROM document_lines l
+          WHERE l.document_id = ? AND l.deleted_at_utc IS NULL
+          ORDER BY l.line_no
+          ''',
+          variables: [Variable<String>(documentId)],
+          readsFrom: {_db.documentLines, _db.documentLineTaxes},
+        )
+        .get();
+
+    return BillExtras(
+      docType: docType,
+      partyId: partyId,
+      partyPhone: _blankToNull(doc.readNullable<String>('party_phone')),
+      partyAddress:
+          _blankToNull(doc.readNullable<String>('party_address_snapshot')) ??
+          _blankToNull(ownAddress),
+      partyNtn:
+          _blankToNull(doc.readNullable<String>('party_ntn_snapshot')) ??
+          _blankToNull(doc.readNullable<String>('party_ntn')),
+      partyStrn:
+          _blankToNull(doc.readNullable<String>('party_strn_snapshot')) ??
+          _blankToNull(doc.readNullable<String>('party_strn')),
+      transport: ReceiptTransport(
+        transporter: _blankToNull(doc.readNullable<String>('transporter')),
+        vehicleNo: _blankToNull(doc.readNullable<String>('vehicle_no')),
+        biltyNo: _blankToNull(doc.readNullable<String>('bilty_no')),
+        shipTo: _blankToNull(doc.readNullable<String>('ship_to')),
+      ),
+      lineTaxes: [
+        for (final l in lines)
+          ReceiptLineTax(
+            valueExclTax: Money.paisa(l.read<int>('taxable_paisa')),
+            salesTax: Money.paisa(l.read<int>('sales_tax_paisa')),
+            rateBp: l.readNullable<int>('rate_bp'),
+            furtherTax: Money.paisa(l.read<int>('further_tax_paisa')),
+            hsCode: _blankToNull(l.readNullable<String>('hs_code_snapshot')),
+          ),
+      ],
+      khata: docType == 'sale_invoice' && partyId != null
+          ? await _khataAtBill(firmId, documentId, partyId)
+          : null,
+    );
+  }
+
+  /// The customer's khata at the moment [documentId] was made (M51).
+  ///
+  /// Read from the journal, because the journal is the one record of the
+  /// khata that keeps its own history: a bill's `balance_paisa` is rewritten
+  /// as payments come in, and the party's balance is a figure for today. The
+  /// receivable and the advances the shop holds for them are both on lines
+  /// carrying the party, so a sum over those lines up to a point in time is
+  /// what the khata said at that point — opening balance, bills, payments,
+  /// returns, bounced cheques and every correction included.
+  ///
+  /// "Up to" is in the order things were recorded, not the order of their
+  /// dates. That is what the shop's screen showed when the bill was made,
+  /// and so what the first sheet printed; a payment back-dated into last
+  /// week on a later day was not on that sheet and is not on its duplicate.
+  /// A payment recorded before the bill and cancelled after it is counted,
+  /// as it was then; its cancellation is a later entry of its own.
+  ///
+  /// Null when the bill has no sale entry to stand on, which no posted sale
+  /// should lack: better no block than a block that guesses.
+  Future<KhataAtBill?> _khataAtBill(
+    String firmId,
+    String documentId,
+    String partyId,
+  ) async {
+    final sale = await _db
+        .customSelect(
+          '''
+          SELECT je.id, je.created_at_utc FROM journal_entries je
+          WHERE je.document_id = ? AND je.firm_id = ?
+            AND je.source_type = 'sale' AND je.deleted_at_utc IS NULL
+          ORDER BY je.created_at_utc, je.id
+          LIMIT 1
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.journalEntries},
+        )
+        .getSingleOrNull();
+    if (sale == null) return null;
+    final entryId = sale.read<String>('id');
+    final at = sale.read<int>('created_at_utc');
+
+    // Both sums ride idx_jl_party.
+    const khataAccounts =
+        "a.system_key IN ('accounts_receivable', 'customer_advances')";
+    final thisBill = await _db
+        .customSelect(
+          '''
+          SELECT COALESCE(SUM(jl.debit_paisa - jl.credit_paisa), 0) AS owed
+          FROM journal_lines jl
+          JOIN accounts a ON a.id = jl.account_id
+          WHERE jl.journal_entry_id = ? AND jl.party_id = ?
+            AND jl.deleted_at_utc IS NULL AND $khataAccounts
+          ''',
+          variables: [Variable<String>(entryId), Variable<String>(partyId)],
+          readsFrom: {_db.journalLines, _db.accounts},
+        )
+        .getSingle();
+    // Strictly before the bill's own entry: earlier in time, or recorded in
+    // the same millisecond with an id that sorts first, which for one
+    // phone's ULIDs is the order they were made in.
+    final before = await _db
+        .customSelect(
+          '''
+          SELECT COALESCE(SUM(jl.debit_paisa - jl.credit_paisa), 0) AS owed
+          FROM journal_lines jl
+          JOIN journal_entries je ON je.id = jl.journal_entry_id
+          JOIN accounts a ON a.id = jl.account_id
+          WHERE jl.party_id = ? AND jl.firm_id = ?
+            AND jl.deleted_at_utc IS NULL AND je.deleted_at_utc IS NULL
+            AND $khataAccounts
+            AND (je.created_at_utc < ?
+                 OR (je.created_at_utc = ? AND je.id < ?))
+          ''',
+          variables: [
+            Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<int>(at),
+            Variable<int>(at),
+            Variable<String>(entryId),
+          ],
+          readsFrom: {_db.journalLines, _db.journalEntries, _db.accounts},
+        )
+        .getSingle();
+    return KhataAtBill(
+      before: Money.paisa(before.read<int>('owed')),
+      thisBill: Money.paisa(thisBill.read<int>('owed')),
+    );
+  }
 }
 
 /// The read behind the last rates beside a counter line (M37), exposed so a

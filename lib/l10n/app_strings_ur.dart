@@ -4285,4 +4285,183 @@ class AppStringsUr extends AppStrings {
   String reportFilterBillsValue(int bills) {
     return '$bills bill';
   }
+
+  @override
+  String get copyTitle => 'Kaunsi copy?';
+
+  @override
+  String get copyOriginal => 'Asal';
+
+  @override
+  String get copyDuplicate => 'Duplicate';
+
+  @override
+  String get copyTriplicate => 'Triplicate';
+
+  @override
+  String get copyTransporter => 'Transporter';
+
+  @override
+  String get copyAutoHint =>
+      'Na chunein to: pehli dafa asal, us ke baad duplicate';
+
+  @override
+  String get copyChosenHint => 'Kaghaz par yahi copy likhi chhapegi';
+
+  @override
+  String get copyTransporterHint =>
+      'Maal, miqdar aur kis ke liye — koi qeemat nahi';
+
+  @override
+  String get copyOriginalGone => 'Asal copy pehle chhap chuki hai';
+
+  @override
+  String get transportTitle => 'Transport ki tafseel';
+
+  @override
+  String get transportHint =>
+      'Bilty aur gaari ka number bill par chhapega. Paison mein kuch nahi badlega.';
+
+  @override
+  String get transportAdd => 'Transport ki tafseel likhein (bilty, gaari)';
+
+  @override
+  String get transportTransporter => 'Transporter / adda';
+
+  @override
+  String get transportVehicle => 'Gaari no';
+
+  @override
+  String get transportBilty => 'Bilty no';
+
+  @override
+  String get transportShipTo => 'Kahan bhejna hai';
+
+  @override
+  String get settingsBillDesign => 'Bill ka design';
+
+  @override
+  String get billDesignIntro =>
+      'PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip waisi hi rehti hai; us par sirf baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.';
+
+  @override
+  String get billDesignLayout => 'Design';
+
+  @override
+  String get billThemeClassic => 'Saada';
+
+  @override
+  String get billThemeClassicHint =>
+      'Beech mein dukan ka naam, saada kaghaz jaisa';
+
+  @override
+  String get billThemeModern => 'Rangeen patti';
+
+  @override
+  String get billThemeModernHint =>
+      'Upar dukan ke rang ki patti par naam aur logo';
+
+  @override
+  String get billThemeCompact => 'Chhota';
+
+  @override
+  String get billThemeCompactHint =>
+      'Chhoti likhai, lamba wholesale bill ek safhe par';
+
+  @override
+  String get billThemeTax => 'Sales tax invoice';
+
+  @override
+  String get billThemeTaxHint =>
+      'FBR ke mutabiq: dono taraf ka NTN/STRN, har line par tax se pehle, tax ki sharah, tax aur tax samet qeemat';
+
+  @override
+  String get billDesignTaxNeedsNtn =>
+      'Tax invoice ke liye Dukan ki tafseel mein apna NTN aur STRN likhein';
+
+  @override
+  String get billDesignColour => 'Rang';
+
+  @override
+  String get billAccentInk => 'Siyah';
+
+  @override
+  String get billAccentBlue => 'Neela';
+
+  @override
+  String get billAccentGreen => 'Hara';
+
+  @override
+  String get billAccentMaroon => 'Maroon';
+
+  @override
+  String get billAccentOrange => 'Narangi';
+
+  @override
+  String get billAccentPurple => 'Jamni';
+
+  @override
+  String get billDesignPage => 'Kaghaz ka size';
+
+  @override
+  String get billDesignPictures => 'Logo aur QR';
+
+  @override
+  String get billDesignLogo => 'Dukan ka logo';
+
+  @override
+  String get billDesignLogoHint => 'PDF bill ke upar chhapta hai';
+
+  @override
+  String get billDesignPaymentQr => 'Payment QR';
+
+  @override
+  String get billDesignPaymentQrHint =>
+      'Aap ke bank, JazzCash ya Easypaisa ka apna QR — screenshot ya tasveer. PDF bill ke neeche chhapta hai.';
+
+  @override
+  String get billDesignQrOnThermal => 'QR thermal slip par bhi';
+
+  @override
+  String get billDesignQrOnThermalHint =>
+      'Pehle ek slip chhap kar phone se scan kar ke dekh lein';
+
+  @override
+  String get billDesignKhata => 'Pichhla baqaya bill par';
+
+  @override
+  String get billDesignKhataHint =>
+      'Udhaar wale gahak ke bill par: pichhla baqaya, is bill, kul baqaya. Purane bill ki copy par wahi hisaab chhapta hai jo bill ke din tha.';
+
+  @override
+  String get billDesignFooter => 'Bill ke neeche ki likhai';
+
+  @override
+  String get billDesignFooterLabel => 'Har line alag (zyada se zyada 4)';
+
+  @override
+  String get billDesignFooterHint =>
+      'Shukriya, wapsi ki shart, kuch bhi — Urdu, Roman ya English';
+
+  @override
+  String get billDesignFooterPresets => 'Ek tap mein daalein';
+
+  @override
+  String get billDesignPreview => 'Kaisa dikhega';
+
+  @override
+  String get billDesignPreviewPdf => 'PDF';
+
+  @override
+  String get billDesignPreviewSlip => 'Thermal slip';
+
+  @override
+  String get billDesignPreviewNote =>
+      'Yeh andaaz ka khaka hai. Asal PDF dekhne ke liye neeche wala button dabayein.';
+
+  @override
+  String get billDesignSamplePdf => 'Namoona PDF dekhein';
+
+  @override
+  String get billDesignSaved => 'Bill ka design mehfooz ho gaya';
 }

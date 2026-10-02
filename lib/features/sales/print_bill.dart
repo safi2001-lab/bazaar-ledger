@@ -21,10 +21,21 @@ import '../printing/printing_providers.dart';
 /// The caller guards against a second tap before the first is through; the
 /// queue also refuses a job already on its way, but a screen that lets the
 /// tap through shows a spinner for a print that will never come.
+///
+/// ## Choosing the sheet (M51)
+///
+/// [copy] is the sheet somebody picked: the original, a duplicate, a
+/// triplicate, or the transporter's copy with no prices. Null prints the
+/// bill as it always printed, as copy one, so asking twice still hands the
+/// customer one receipt. The original is copy one too, and the same job: an
+/// original asked for after one was printed is not printed again. Every
+/// other sheet is a new piece of paper by somebody's deliberate choice, so
+/// it takes the next copy number this bill has not used.
 Future<void> printBill(
   BuildContext context, {
   required String documentId,
   int copyIndex = 1,
+  ReceiptCopy? copy,
 }) async {
   final s = AppStrings.of(context);
   final messenger = ScaffoldMessenger.of(context);
@@ -37,13 +48,21 @@ Future<void> printBill(
       messenger.showSnackBar(SnackBar(content: Text(s.receiptNoPrinter)));
       return;
     }
-    final bytes = await container.read(receiptBytesProvider(documentId).future);
+    final services = container.read(appServicesProvider);
+    final bytes = await receiptBytes(
+      services,
+      settings,
+      documentId,
+      copy: copy,
+    );
     if (bytes == null) {
       messenger.showSnackBar(SnackBar(content: Text(s.receiptNoPrinter)));
       return;
     }
+    if (copy != null && !(copy == ReceiptCopy.original && copyIndex == 1)) {
+      copyIndex = await nextCopyIndex(services, documentId, atLeast: copyIndex);
+    }
 
-    final services = container.read(appServicesProvider);
     final result = await services.printing.print(
       actor: services.actorNow(),
       settings: settings,
@@ -79,6 +98,7 @@ Future<void> printBill(
           context,
           documentId: documentId,
           copyIndex: copyIndex,
+          copy: copy,
         );
     }
   } on Object catch (error) {
@@ -86,6 +106,24 @@ Future<void> printBill(
       SnackBar(content: Text('${s.commonSomethingWentWrong}: $error')),
     );
   }
+}
+
+/// The first copy number [documentId] has not printed under, and never less
+/// than [atLeast] or two: copy one is the original's.
+Future<int> nextCopyIndex(
+  AppServices services,
+  String documentId, {
+  int atLeast = 2,
+}) async {
+  final identity = services.identity;
+  final history = identity == null
+      ? const <PrintJobRecord>[]
+      : await services.printing.historyFor(identity.firmId, documentId);
+  var next = atLeast < 2 ? 2 : atLeast;
+  for (final job in history) {
+    if (job.copyIndex >= next) next = job.copyIndex + 1;
+  }
+  return next;
 }
 
 /// The question a killed print leaves behind.
@@ -98,6 +136,7 @@ Future<void> _askWhetherItPrinted(
   BuildContext context, {
   required String documentId,
   required int copyIndex,
+  ReceiptCopy? copy,
 }) async {
   final s = AppStrings.of(context);
   final again = await showDialog<bool>(
@@ -118,6 +157,12 @@ Future<void> _askWhetherItPrinted(
   );
   if (again != true || !context.mounted) return;
   // A new copy index, so it is recorded as the deliberate second print it
-  // is rather than overwriting the record of the first.
-  await printBill(context, documentId: documentId, copyIndex: copyIndex + 1);
+  // is rather than overwriting the record of the first. The same sheet as
+  // was asked for: the person holding the paper decided it did not come out.
+  await printBill(
+    context,
+    documentId: documentId,
+    copyIndex: copyIndex + 1,
+    copy: copy,
+  );
 }

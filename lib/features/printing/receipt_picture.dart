@@ -71,10 +71,15 @@ final class ReceiptPicture {
     // own bank issued, then FBR's number as a QR (M19). Each is scaled from
     // paper dots to the width the text came out at, so a QR keeps its place
     // on the bill whatever size the font is.
+    //
+    // Neither on the transporter's copy (M51), as the printer leaves both
+    // off it: that sheet carries no money and no tax.
     final bitmaps = [
-      ?receipt.bankQr,
-      if (receipt.fbrInvoiceNo case final fbrNo?)
-        fbrQrBitmap(fbrNo, widthDots: paper.dots),
+      if (receipt.showsMoney) ...[
+        ?receipt.bankQr,
+        if (receipt.fbrInvoiceNo case final fbrNo?)
+          fbrQrBitmap(fbrNo, widthDots: paper.dots),
+      ],
     ];
     final scale = textWidth / paper.dots;
 

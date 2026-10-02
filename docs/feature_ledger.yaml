@@ -1117,6 +1117,73 @@ milestones:
       - packages/pk_data/lib/src/read/reports/item_stock_queries.dart
       - lib/features/reports/stock_filters.dart
 
+  - id: M51
+    title: A bill that looks like the shop's own, in the sheet it is, with the khata as it stood and the shop's own QR
+    # Opened and sealed 3 Oct 2026 at 1/1. A wholesaler sends goods up-country
+    # through a transport adda with a carbon book of three sheets and a
+    # fourth for the driver; Vyapar and myBillBook print Original, Duplicate
+    # and Triplicate, a transporter's copy with no prices, the customer's
+    # previous balance, and the shop's own logo, colour and payment QR. Now,
+    # from the bill or from its row, the sheet is chosen: the original (only
+    # until it has been printed — a second original is the sheet a buyer
+    # claims input tax on twice), a duplicate or a triplicate, each printed
+    # as a copy of its own, or the transporter's copy, which carries the
+    # goods, quantities, the buyer, the address, the truck and the bilty and
+    # not one figure that is money, on 58 and 80 mm and in every PDF layout,
+    # and goes on WhatsApp with the bilty and no amount beside it. The bilty,
+    # truck, transporter and destination are written onto the bill's own
+    # non-fiscal fields, audited, from a line under the chooser. Left alone,
+    # a bill prints and is sent exactly as before, and asking twice still
+    # prints once.
+    #
+    # Settings -> Bill design: four PDF layouts (classic, a coloured band,
+    # compact for long wholesale bills, and a sales tax invoice carrying
+    # every s.23 particular — both parties' names, addresses, NTN and STRN,
+    # and per line the value before tax, the rate, the tax and the value
+    # with it), six colours that read white-on and print as grey, A5 or A4,
+    # the shop's logo, and a footer of up to four lines in Urdu, Roman Urdu
+    # or English with one-tap presets, shown on a sketch of the page, on the
+    # till slip exactly as the printer will get it, and as a real sample PDF.
+    # A credit customer's bill carries "pichhla baqaya / is bill / kul
+    # baqaya" (on by default, off in one switch). The shop's own Raast,
+    # JazzCash or Easypaisa QR picture, added where Payment details always
+    # said to add it, goes on the foot of the PDF and, if the owner asks, on
+    # the till roll as dots; with none, nothing is drawn. No QR is made
+    # anywhere, and a test reads the renderers to prove it.
+    #
+    # Decided: the khata block on any copy, printed any day, is the khata as
+    # it stood when the bill was made, read from the journal in the order
+    # things were recorded — the figures the first sheet carried — and a
+    # later sheet says so on the paper. What is owed today is the khata's
+    # answer. Kept in the firm's settings row and two attachments of kinds
+    # the schema already had, so it travels with backups and sync; no schema
+    # change.
+    #
+    # Found on the way: the Payment details screen told shops to add their
+    # bank's QR and had nowhere to add it; a logo with a clear background
+    # would have stored black through the item shrinker's JPEG; the
+    # printer's receipt bytes were cached per bill and would have printed a
+    # changed footer only after a restart; the counter never snapshots a
+    # buyer's address or tax numbers, so a tax invoice falls back to the
+    # party's own record where the bill holds none.
+    #
+    # Not built, and why: a logo on the till roll (a photographed logo
+    # thresholded to one bit is a smudge); a live picture of the PDF itself
+    # (it needs a native PDF renderer this build does not carry, so the
+    # sketch is drawn in Flutter and the real page is one tap away); copy
+    # marks on a challan opened from its own list, which has no chooser
+    # there yet; a share record per copy, so only printing moves the
+    # original to duplicate.
+    state: sealed
+    owns:
+      - packages/pk_platform/lib/src/receipt/bill_pdf.dart
+      - packages/pk_platform/lib/src/receipt/bill_pictures.dart
+      - packages/pk_bootstrap/lib/src/bill_design_services.dart
+      - lib/features/printing/bill_copy.dart
+      - lib/features/printing/bill_design_preview.dart
+      - lib/features/settings/bill_design_screen.dart
+      - lib/features/settings/shop_pictures.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5395,3 +5462,45 @@ features:
       - the fixture really is twenty thousand items and a year of movements
       - the stock detail of a large catalogue reads inside its budget
       - the shelf, its age and how it sells stay inside their budget
+  - id: M51-BILLDESIGN-01
+    milestone: M51
+    title: A bill goes out as the sheet chosen, the transporter's with no price, in the shop's own design, with the khata as it stood and the shop's own QR
+    status: done
+    proof:
+      - the transporter copy carries no amount anywhere on 80mm, 42 and 58mm paper
+      - the transporter copy names the goods, the buyer, where they go and the bilty
+      - the transporter copy sends no QR picture and no FBR code to the printer
+      - the transporter copy carries no amount anywhere in the PDF, whatever the layout
+      - copy marks each sheet says which it is, on the roll and in the PDF title
+      - copy marks a sheet nobody chose prints as it always did
+      - the khata block prints pichhla baqaya, is bill and kul baqaya in place of the udhaar line
+      - the khata block a later copy says its figures are the bill's own day
+      - the khata block a cancelled bill asks for nothing
+      - the khata block the khata block and the shop's footer reach the PDF
+      - PDF layouts every layout renders on A5 and A4, one page for a short bill and paginating a long one
+      - PDF layouts the tax invoice carries every particular s.23 asks for
+      - PDF layouts a quotation in the tax layout is not called a tax invoice
+      - PDF layouts an Urdu footer is joined in the PDF, like an Urdu shop name
+      - the payment QR the shop's own QR picture appears on the PDF when it has one
+      - the payment QR without a picture there is no QR, only the alias and IBAN as text
+      - the payment QR nothing in the bill renderers can draw a QR of their own
+      - bill pictures a logo with a clear background is laid on white, not black
+      - bill pictures a QR screenshot is kept as a small grey PNG
+      - bill pictures a picture becomes paper-width dots the printer accepts
+      - the bill design is kept and read back exactly
+      - the bill design anything it cannot read falls back, and never fails a bill
+      - dressing a bill the shop's footer replaces the thank-you line and nothing else
+      - dressing a bill the khata block goes only on a sale to a named customer, when there is something to say and the shop wants it
+      - dressing a bill the message beside a transporter's copy names no amount
+      - the khata on a bill a reprint carries the balance as it stood when the bill was made, never today's
+      - the khata on a bill a walk-in, and a shop that turned it off, get no khata block
+      - the shop's design is kept with the books and the next bill is drawn in it
+      - the shop's design the logo and the payment QR are kept apart, and the QR on the bill is the one the shop gave
+      - how the goods travel is written onto the bill, audited, and printed on the transporter's copy with no price
+      - how the goods travel a tax invoice names the buyer's address and NTN from the khata when the bill recorded none
+      - the owner designs the bill in Settings and the next PDF is drawn in it, the khata block and footer included
+      - a transporter's copy goes out with the bilty on it and no price anywhere
+      - a triplicate prints as a sheet of its own, and the original is not offered twice
+      - the bill on screen is the sheet chosen, as it will print
+      - the shop's own payment QR is shown where it was promised and goes on the PDF; none is made when there is none
+      - the bill design screen fits a small phone at 200%

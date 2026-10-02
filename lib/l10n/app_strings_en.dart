@@ -4284,4 +4284,183 @@ class AppStringsEn extends AppStrings {
   String reportFilterBillsValue(int bills) {
     return '$bills bills';
   }
+
+  @override
+  String get copyTitle => 'Which copy?';
+
+  @override
+  String get copyOriginal => 'Original';
+
+  @override
+  String get copyDuplicate => 'Duplicate';
+
+  @override
+  String get copyTriplicate => 'Triplicate';
+
+  @override
+  String get copyTransporter => 'Transporter';
+
+  @override
+  String get copyAutoHint =>
+      'Leave it, and the first is the original, every one after it a duplicate';
+
+  @override
+  String get copyChosenHint => 'The paper says which copy it is';
+
+  @override
+  String get copyTransporterHint =>
+      'Goods, quantities and who they are for — no prices at all';
+
+  @override
+  String get copyOriginalGone => 'The original has already been printed';
+
+  @override
+  String get transportTitle => 'Transport details';
+
+  @override
+  String get transportHint =>
+      'The bilty and vehicle number print on the bill. Nothing about the money changes.';
+
+  @override
+  String get transportAdd => 'Add transport details (bilty, vehicle)';
+
+  @override
+  String get transportTransporter => 'Transporter / adda';
+
+  @override
+  String get transportVehicle => 'Vehicle no';
+
+  @override
+  String get transportBilty => 'Bilty no';
+
+  @override
+  String get transportShipTo => 'Ship to';
+
+  @override
+  String get settingsBillDesign => 'Bill design';
+
+  @override
+  String get billDesignIntro =>
+      'How your PDF bills look: layout, colour, logo and payment QR. The till slip stays as it is; only the balance block, the footer and the QR are decided for it here.';
+
+  @override
+  String get billDesignLayout => 'Layout';
+
+  @override
+  String get billThemeClassic => 'Classic';
+
+  @override
+  String get billThemeClassicHint =>
+      'The shop name centred, like a bill book from the stationer';
+
+  @override
+  String get billThemeModern => 'Modern';
+
+  @override
+  String get billThemeModernHint =>
+      'A band of your colour across the top with the name and logo';
+
+  @override
+  String get billThemeCompact => 'Compact';
+
+  @override
+  String get billThemeCompactHint =>
+      'Small type, so a long wholesale bill fits one page';
+
+  @override
+  String get billThemeTax => 'Sales tax invoice';
+
+  @override
+  String get billThemeTaxHint =>
+      'As FBR asks: both sides\' NTN/STRN, and for every line the value before tax, the rate, the tax and the value with tax';
+
+  @override
+  String get billDesignTaxNeedsNtn =>
+      'A tax invoice needs your NTN and STRN in Shop details';
+
+  @override
+  String get billDesignColour => 'Colour';
+
+  @override
+  String get billAccentInk => 'Black';
+
+  @override
+  String get billAccentBlue => 'Blue';
+
+  @override
+  String get billAccentGreen => 'Green';
+
+  @override
+  String get billAccentMaroon => 'Maroon';
+
+  @override
+  String get billAccentOrange => 'Orange';
+
+  @override
+  String get billAccentPurple => 'Purple';
+
+  @override
+  String get billDesignPage => 'Page size';
+
+  @override
+  String get billDesignPictures => 'Logo and QR';
+
+  @override
+  String get billDesignLogo => 'Shop logo';
+
+  @override
+  String get billDesignLogoHint => 'Printed at the top of PDF bills';
+
+  @override
+  String get billDesignPaymentQr => 'Payment QR';
+
+  @override
+  String get billDesignPaymentQrHint =>
+      'Your own QR from your bank, JazzCash or Easypaisa — a screenshot or photo. Printed at the foot of PDF bills.';
+
+  @override
+  String get billDesignQrOnThermal => 'QR on the till slip too';
+
+  @override
+  String get billDesignQrOnThermalHint =>
+      'Print one slip and scan it with a phone before relying on it';
+
+  @override
+  String get billDesignKhata => 'Previous balance on the bill';
+
+  @override
+  String get billDesignKhataHint =>
+      'On a credit customer\'s bill: what they owed before, this bill, and the total. A copy of an old bill carries the figures of the bill\'s own day.';
+
+  @override
+  String get billDesignFooter => 'Footer';
+
+  @override
+  String get billDesignFooterLabel => 'One per line (up to 4)';
+
+  @override
+  String get billDesignFooterHint =>
+      'Thanks, return policy, anything — Urdu, Roman Urdu or English';
+
+  @override
+  String get billDesignFooterPresets => 'Add with one tap';
+
+  @override
+  String get billDesignPreview => 'Preview';
+
+  @override
+  String get billDesignPreviewPdf => 'PDF';
+
+  @override
+  String get billDesignPreviewSlip => 'Till slip';
+
+  @override
+  String get billDesignPreviewNote =>
+      'A sketch of the look. To see the real PDF, use the button below.';
+
+  @override
+  String get billDesignSamplePdf => 'See a sample PDF';
+
+  @override
+  String get billDesignSaved => 'Bill design saved';
 }

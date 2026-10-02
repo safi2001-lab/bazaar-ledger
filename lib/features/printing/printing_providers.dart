@@ -29,32 +29,80 @@ final availableTransportsProvider = FutureProvider<Set<String>>((ref) async {
   return usable;
 });
 
-/// The receipt bytes for one bill at the configured width, or null if there is
-/// no printer yet.
-final receiptBytesProvider = FutureProvider.family<List<int>?, String>((
-  ref,
-  documentId,
-) async {
-  final settings = await ref.watch(printerSettingsProvider.future);
-  if (settings == null) return null;
-  final services = ref.watch(appServicesProvider);
-  final identity = services.identity;
-  if (identity == null) return null;
-  final receipt = await services.queries.receiptFor(
-    identity.firmId,
+/// The receipt bytes for one bill at [settings]' width, or null when the
+/// bill is not this shop's.
+///
+/// Read fresh on every print rather than cached in a provider (M51): the
+/// paper now carries the shop's footer, the khata block and, if the owner
+/// asked, the payment QR, and a cached copy printed yesterday's footer after
+/// the owner changed it today. [copy] is the sheet somebody chose; null
+/// prints the bill as it has always printed.
+Future<List<int>?> receiptBytes(
+  AppServices services,
+  PrinterSettings settings,
+  String documentId, {
+  ReceiptCopy? copy,
+}) async {
+  final bill = await services.billPaper(
     documentId,
+    copy: copy,
+    thermal: settings.paper,
   );
-  if (receipt == null) return null;
+  if (bill == null) return null;
+  final receipt = bill.receipt;
   return services.receipts.toThermalBytes(
     receipt,
     paper: settings.paper,
     drawn: await _drawUnprintable(services.receipts, receipt, settings.paper),
-    // Only on a sale that actually took cash. A drawer that clicks on a
-    // card payment is a drawer somebody unplugs.
+    // Only on a sale that actually took cash, and only on the first sheet:
+    // a drawer that clicks on a card payment, or on the duplicate printed
+    // for the file, is a drawer somebody unplugs.
     openDrawer:
-        settings.openDrawerOnCash && receipt.tenders.any((t) => t.isCash),
+        settings.openDrawerOnCash &&
+        copy == null &&
+        receipt.tenders.any((t) => t.isCash),
   );
+}
+
+/// How this shop's bills look (M51).
+final billDesignProvider = FutureProvider<BillDesign>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  await ref.watch(firmProvider.future);
+  return services.billDesign();
 });
+
+/// The shop's logo, or null.
+final shopLogoProvider = FutureProvider<ImageAttachment?>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  await ref.watch(firmProvider.future);
+  return services.shopLogo();
+});
+
+/// The shop's own payment QR picture, or null. Never one this app made.
+final paymentQrProvider = FutureProvider<ImageAttachment?>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  await ref.watch(firmProvider.future);
+  return services.paymentQr();
+});
+
+/// One bill as the shop hands it over, as [BillSheet.copy] (M51), for the
+/// screen that shows it before it goes.
+///
+/// Without the till roll's QR dots: the preview is the printer's text, and
+/// decoding the QR picture for a raster nobody draws is work for nothing.
+final billSheetProvider = FutureProvider.autoDispose
+    .family<PreparedBill?, BillSheet>((ref, sheet) async {
+      ref.watch(refreshTickProvider);
+      final services = ref.watch(appServicesProvider);
+      await ref.watch(firmProvider.future);
+      return services.billPaper(sheet.documentId, copy: sheet.copy);
+    });
+
+/// Which bill, and which sheet of it.
+typedef BillSheet = ({String documentId, ReceiptCopy? copy});
 
 /// Pictures of the lines the printer's own font cannot say.
 ///

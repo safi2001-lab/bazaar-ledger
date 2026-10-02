@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
 import 'print_bill.dart';
 import 'send_bill.dart';
@@ -66,13 +68,28 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
   _Way? _working;
   String? _failure;
 
-  Future<void> _send(_Way way, OutgoingDocument doc) async {
+  /// The sheet chosen (M51); null sends the bill as it always went.
+  ReceiptCopy? _copy;
+
+  /// Where an answer is said after the sheet has closed: the row that opened
+  /// it, or — once the list behind has been rebuilt under it — the app's own
+  /// navigator, which outlives every row.
+  ///
+  /// Writing a bilty number from this sheet refreshes the list (M51), and
+  /// the refreshed list builds its rows anew; the row's context then belongs
+  /// to nothing. A print asked for after that went nowhere at all, and a
+  /// share failed looking up the messenger through a dead context.
+  BuildContext get _host => widget.host.mounted
+      ? widget.host
+      : Navigator.of(context, rootNavigator: true).context;
+
+  Future<void> _send(_Way way, OutgoingDocument shown) async {
     // First statement. Rendering a PDF takes long enough on an entry handset
     // that a shopkeeper who sees nothing happen taps again, and each tap is
     // its own share sheet.
     if (_working != null) return;
     final s = AppStrings.of(context);
-    final messenger = ScaffoldMessenger.of(widget.host);
+    final messenger = ScaffoldMessenger.of(_host);
     final navigator = Navigator.of(context);
     setState(() {
       _working = way;
@@ -80,6 +97,17 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
     });
     try {
       final services = ref.read(appServicesProvider);
+      // Read again as the sheet chosen, and for a picture as the till roll
+      // it is a picture of (M51). The list's copy is only what the sheet
+      // shows about the bill.
+      final doc =
+          await OutgoingDocument.load(
+            services,
+            widget.documentId,
+            copy: _copy,
+            thermal: way == _Way.picture ? ReceiptPaper.mm80 : null,
+          ) ??
+          shown;
       switch (way) {
         case _Way.pdf:
           await sharePdf(services, doc);
@@ -115,10 +143,12 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
 
   void _print() {
     if (_working != null) return;
+    final copy = _copy;
+    // Found before the pop, while this sheet's own context still is one.
+    final host = _host;
     Navigator.of(context).pop();
-    final host = widget.host;
     if (!host.mounted) return;
-    unawaited(printBill(host, documentId: widget.documentId));
+    unawaited(printBill(host, documentId: widget.documentId, copy: copy));
   }
 
   @override
@@ -136,6 +166,9 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
         bottom: MediaQuery.viewPaddingOf(context).bottom + BlTokens.space4,
       ),
       child: outgoing.when(
+        // A bilty written from this sheet re-reads the bill (M51); the sheet
+        // keeps showing it meanwhile rather than blinking to a skeleton.
+        skipLoadingOnReload: true,
         loading: () => const BlSkeletonList(rows: 3),
         error: (error, _) =>
             BlError(title: s.commonSomethingWentWrong, message: '$error'),
@@ -161,6 +194,25 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
                       : [recipient.name, ?recipient.phone].join(' · '),
                   style: TextStyle(fontSize: 14, color: t.inkMuted),
                 ),
+                // Which sheet (M51), on the papers the shop issues: a sale
+                // bill, a challan. A quotation or a delivery the shop
+                // received has one sheet and no carbon book.
+                if (widget.offerPrint || doc.sendsGoods) ...[
+                  const SizedBox(height: BlTokens.space3),
+                  CopyChooser(
+                    value: _copy,
+                    originalPrinted: doc.originalPrinted,
+                    offerTransporter: doc.sendsGoods,
+                    onChanged: (copy) => setState(() => _copy = copy),
+                  ),
+                  if (_copy == ReceiptCopy.transporter) ...[
+                    const SizedBox(height: BlTokens.space2),
+                    TransportLine(
+                      documentId: widget.documentId,
+                      transport: doc.receipt.transport,
+                    ),
+                  ],
+                ],
                 const SizedBox(height: BlTokens.space3),
                 _WayTile(
                   icon: Icons.chat_outlined,
@@ -279,9 +331,17 @@ class _WayTile extends StatelessWidget {
 /// Loads the document as it is tapped rather than holding it, so what goes
 /// out is what the books say now.
 class SendButtons extends ConsumerStatefulWidget {
-  const SendButtons({super.key, required this.documentId, this.onFailure});
+  const SendButtons({
+    super.key,
+    required this.documentId,
+    this.onFailure,
+    this.copy,
+  });
 
   final String documentId;
+
+  /// The sheet chosen on the screen above, if any (M51).
+  final ReceiptCopy? copy;
 
   /// Where a failure is said. A SnackBar when null; a sheet passes its own,
   /// because a SnackBar behind a bottom sheet is never read.
@@ -305,7 +365,12 @@ class _SendButtonsState extends ConsumerState<SendButtons> {
     setState(() {});
     try {
       final services = ref.read(appServicesProvider);
-      final doc = await OutgoingDocument.load(services, widget.documentId);
+      final doc = await OutgoingDocument.load(
+        services,
+        widget.documentId,
+        copy: widget.copy,
+        thermal: way == _Way.picture ? ReceiptPaper.mm80 : null,
+      );
       if (doc == null) throw StateError(s.commonNothingSaved);
       if (!mounted) return;
       switch (way) {
