@@ -3385,4 +3385,170 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get reportPrintTitle => 'Print on the receipt printer';
+
+  @override
+  String get loansTitle => 'Loans';
+
+  @override
+  String get loansNew => 'New loan';
+
+  @override
+  String get loansEmpty => 'No loans';
+
+  @override
+  String get loansEmptyHint =>
+      'Write down a loan from a bank, a committee, a relative or a supplier here. Every instalment is split into what comes off the loan and the interest.';
+
+  @override
+  String get loansTotalOwed => 'Owed on all loans';
+
+  @override
+  String get loanOwed => 'Outstanding';
+
+  @override
+  String loanOf(String amount) {
+    return 'of $amount';
+  }
+
+  @override
+  String loanTakenOn(String date) {
+    return 'Taken $date';
+  }
+
+  @override
+  String get loanCancelled => 'Cancelled';
+
+  @override
+  String get loanLender => 'Lent by (bank, committee, relative)';
+
+  @override
+  String get loanAmount => 'Amount of the loan';
+
+  @override
+  String get loanInto => 'Received into';
+
+  @override
+  String loanDate(String date) {
+    return 'Date: $date';
+  }
+
+  @override
+  String get loanPickDate => 'Change the date';
+
+  @override
+  String get loanRate => 'Interest (markup), % a year (optional)';
+
+  @override
+  String get loanTerm => 'Months to repay (optional)';
+
+  @override
+  String get loanInstalment => 'Monthly instalment (optional)';
+
+  @override
+  String get loanFee => 'Processing fee (optional)';
+
+  @override
+  String loanReceivedAfterFee(String amount) {
+    return 'Received after the fee: $amount';
+  }
+
+  @override
+  String get loanNotes => 'Notes (optional)';
+
+  @override
+  String get loanSave => 'Save the loan';
+
+  @override
+  String get loanSaved => 'Loan saved';
+
+  @override
+  String get loanRepay => 'Pay back';
+
+  @override
+  String get loanPaid => 'Amount paid';
+
+  @override
+  String get loanInterest => 'Of which interest (markup)';
+
+  @override
+  String get loanCharges => 'Charges or penalty (optional)';
+
+  @override
+  String get loanFrom => 'Paid from';
+
+  @override
+  String get loanPrincipalLine => 'Off the loan';
+
+  @override
+  String get loanAfterLine => 'Still owed after it';
+
+  @override
+  String get loanRepaySave => 'Save the payment';
+
+  @override
+  String loanRepaid(String entryNo) {
+    return 'Payment $entryNo saved';
+  }
+
+  @override
+  String loanInterestSuggested(String rate) {
+    return 'Interest worked out at $rate a year. Correct it from the bank\'s slip.';
+  }
+
+  @override
+  String get loanSharePdf => 'Statement (PDF)';
+
+  @override
+  String get loanShareCsv => 'Statement (Excel, CSV)';
+
+  @override
+  String get loanOpening => 'Owed at the start';
+
+  @override
+  String get loanClosing => 'Owed at the end';
+
+  @override
+  String get loanKindReceived => 'Loan received';
+
+  @override
+  String get loanKindRepaid => 'Paid back';
+
+  @override
+  String get loanKindCancelled => 'Cancelled';
+
+  @override
+  String get loanColBorrowed => 'Received';
+
+  @override
+  String get loanColPrincipal => 'Principal';
+
+  @override
+  String get loanColInterest => 'Interest';
+
+  @override
+  String get loanColCharges => 'Fee, charges';
+
+  @override
+  String get loanCancelEntry => 'Wrong, cancel it';
+
+  @override
+  String get loanCancelReason => 'Why it is being cancelled (required)';
+
+  @override
+  String loanCancelDone(String entryNo) {
+    return 'Cancelled ($entryNo)';
+  }
+
+  @override
+  String loanRateShown(String rate) {
+    return '$rate a year';
+  }
+
+  @override
+  String loanInstalmentShown(String amount) {
+    return 'Instalment $amount';
+  }
+
+  @override
+  String get loanAmountInvalid => 'Enter an amount, like 25000 or 2500.50';
 }

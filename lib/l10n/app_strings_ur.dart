@@ -3385,4 +3385,170 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get reportPrintTitle => 'Printer par chhapein';
+
+  @override
+  String get loansTitle => 'Qarzay';
+
+  @override
+  String get loansNew => 'Naya qarza';
+
+  @override
+  String get loansEmpty => 'Koi qarza nahi';
+
+  @override
+  String get loansEmptyHint =>
+      'Bank, committee, rishtedar ya supplier se liya qarza yahan likhein. Har qist mein asal aur sood alag likha jaye ga.';
+
+  @override
+  String get loansTotalOwed => 'Kul baqi qarza';
+
+  @override
+  String get loanOwed => 'Baqi';
+
+  @override
+  String loanOf(String amount) {
+    return '$amount mein se';
+  }
+
+  @override
+  String loanTakenOn(String date) {
+    return 'Liya: $date';
+  }
+
+  @override
+  String get loanCancelled => 'Cancel ho gaya';
+
+  @override
+  String get loanLender => 'Kis se liya (bank, committee, rishtedar)';
+
+  @override
+  String get loanAmount => 'Qarze ki raqam';
+
+  @override
+  String get loanInto => 'Paisay kahan aaye';
+
+  @override
+  String loanDate(String date) {
+    return 'Tareekh: $date';
+  }
+
+  @override
+  String get loanPickDate => 'Tareekh badlein';
+
+  @override
+  String get loanRate => 'Sood (markup), % saalana (marzi se)';
+
+  @override
+  String get loanTerm => 'Kitne mahine mein wapis (marzi se)';
+
+  @override
+  String get loanInstalment => 'Mahana qist (marzi se)';
+
+  @override
+  String get loanFee => 'Processing fee (marzi se)';
+
+  @override
+  String loanReceivedAfterFee(String amount) {
+    return 'Fee ke baad haath mein: $amount';
+  }
+
+  @override
+  String get loanNotes => 'Note (marzi se)';
+
+  @override
+  String get loanSave => 'Qarza save karein';
+
+  @override
+  String get loanSaved => 'Qarza save ho gaya';
+
+  @override
+  String get loanRepay => 'Qist dein';
+
+  @override
+  String get loanPaid => 'Kitne diye';
+
+  @override
+  String get loanInterest => 'Is mein sood (markup)';
+
+  @override
+  String get loanCharges => 'Charges ya jurmana (marzi se)';
+
+  @override
+  String get loanFrom => 'Kahan se diye';
+
+  @override
+  String get loanPrincipalLine => 'Qarze mein se kam';
+
+  @override
+  String get loanAfterLine => 'Is ke baad baqi';
+
+  @override
+  String get loanRepaySave => 'Qist save karein';
+
+  @override
+  String loanRepaid(String entryNo) {
+    return 'Qist $entryNo save ho gayi';
+  }
+
+  @override
+  String loanInterestSuggested(String rate) {
+    return 'Sood $rate saalana ke hisaab se lagaya hai. Bank ki parchi se theek kar lein.';
+  }
+
+  @override
+  String get loanSharePdf => 'Statement (PDF)';
+
+  @override
+  String get loanShareCsv => 'Statement (Excel, CSV)';
+
+  @override
+  String get loanOpening => 'Shuru mein baqi';
+
+  @override
+  String get loanClosing => 'Aakhir mein baqi';
+
+  @override
+  String get loanKindReceived => 'Qarza mila';
+
+  @override
+  String get loanKindRepaid => 'Qist di';
+
+  @override
+  String get loanKindCancelled => 'Cancel kiya';
+
+  @override
+  String get loanColBorrowed => 'Mila';
+
+  @override
+  String get loanColPrincipal => 'Asal';
+
+  @override
+  String get loanColInterest => 'Sood';
+
+  @override
+  String get loanColCharges => 'Fee, charges';
+
+  @override
+  String get loanCancelEntry => 'Ghalat hai, cancel karein';
+
+  @override
+  String get loanCancelReason => 'Kyun cancel kar rahe hain (zaroori)';
+
+  @override
+  String loanCancelDone(String entryNo) {
+    return 'Cancel ho gaya ($entryNo)';
+  }
+
+  @override
+  String loanRateShown(String rate) {
+    return '$rate saalana';
+  }
+
+  @override
+  String loanInstalmentShown(String amount) {
+    return 'Qist $amount';
+  }
+
+  @override
+  String get loanAmountInvalid => 'Raqam theek likhein, jaise 25000 ya 2500.50';
 }

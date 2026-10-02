@@ -23,6 +23,7 @@ import 'printing_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
+part 'loan_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
 part 'sync_services.dart';
@@ -384,6 +385,9 @@ final class AppServices {
 
   /// Items and parties from a spreadsheet.
   late final ImportServices import = ImportServices._(this);
+
+  /// Loans the shop has taken, and their repayments (M48).
+  late final LoanServices loans = LoanServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

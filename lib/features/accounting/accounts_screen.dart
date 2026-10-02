@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../loans/loans_screen.dart';
 import 'journal_voucher_screen.dart';
 
 /// The chart of accounts, with every balance.
@@ -39,6 +40,14 @@ class AccountsScreen extends ConsumerWidget {
         title: Text(s.accountsTitle),
         actions: [
           if (services.can(Permission.journal)) ...[
+            // What the shop has borrowed, and what it has paid back (M48).
+            BlIconButton(
+              icon: Icons.account_balance_outlined,
+              label: s.loansTitle,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const LoansScreen()),
+              ),
+            ),
             // The shop's own heads beside the shipped chart (M26).
             BlIconButton(
               icon: Icons.add_card_outlined,

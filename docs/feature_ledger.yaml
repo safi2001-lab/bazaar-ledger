@@ -814,6 +814,60 @@ milestones:
       - lib/features/reports/report_table_view.dart
       - lib/features/reports/report_export.dart
 
+  - id: M48
+    title: Loans the shop has taken, their repayments, and a statement for each
+    # Opened 2 Oct and sealed 3 Oct 2026 at 1/1. Accounts has Loans, for the
+    # owner and the accountant. A loan from a bank, a committee, a relative or a
+    # supplier is written down with who lent it, how much, the cash or bank
+    # it came into and the day; the rate, the months, the instalment and a
+    # processing fee only if there are any. It becomes an account of the
+    # chart, a liability under a Loans group numbered after the last
+    # liability as the shop's own accounts are (M26), so the balance sheet
+    # shows what is owed on it with nothing taught to read it. The fee is
+    # taken out of what came in, in the same entry: the loan is owed in
+    # full, the cash or bank is up by the amount less the fee, and the fee
+    # is an expense; cancelling the loan cancels its fee. A repayment is
+    # what was paid, from where, and how much of it was interest and
+    # charges; the rest comes off the loan, and more off the loan than is
+    # owed is refused in words. The instalment and the interest are filled
+    # in from the terms, the interest as simple interest on what is owed
+    # for the days since the loan was last paid, for the shopkeeper to
+    # correct from the bank's slip. Loan Interest, Loan Processing Fee and
+    # Loan Charges are indirect expenses made when first needed, so the
+    # profit and loss carries them below gross profit as Vyapar does. Each
+    # loan has a statement: what was owed when the period began, every
+    # receipt and repayment with principal and interest apart and what was
+    # owed after each, and what is owed at the end (the account's balance,
+    # by construction), on screen and as a PDF or a CSV through the share
+    # sheet. A loan or a repayment entered wrong is cancelled from its line
+    # with a reason, by the opposite entry dated that day; a loan with
+    # repayments standing against it is not.
+    #
+    # Nothing new in the schema. The terms the chart cannot hold sit in one
+    # settings row per loan (loan.<account id>, JSON), written once and
+    # read only to suggest interest. Every line of a loan's entries carries
+    # loan:<account id> in journal_lines.cost_centre, which nothing used
+    # before, so a month of interest only (it never touches the loan's own
+    # account) still lands on the statement. Taking a new loan is part of
+    # the paid accounting set (PlanFeature.accountingReports); paying one
+    # back and reading its statement are not, because a shop whose plan
+    # lapsed still owes the bank. For the reports pack's Loan Statement:
+    # buildLoanStatement (pk_domain) over loanPostingsSql (pk_data), and
+    # loanStatementTable (pk_bootstrap), which pk_reports can take over.
+    #
+    # Not built: editing a loan's terms after it is taken (the rate only
+    # suggests, and the interest is typed on every repayment), a fee paid
+    # from an account other than the one the loan came into (an expense of
+    # its own), loans the shop has given (a receivable, not this), and a
+    # reminder when an instalment falls due.
+    state: sealed
+    owns:
+      - lib/features/loans/**
+      - packages/pk_domain/lib/src/accounting/loans.dart
+      - packages/pk_data/lib/src/read/drift_loan_reads.dart
+      - packages/pk_data/lib/src/write/drift_loan_writer.dart
+      - packages/pk_bootstrap/lib/src/loan_services.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4895,3 +4949,32 @@ features:
       - sale and purchase by party and by group, each net of returns
       - a filter offers what the shop has
       - a party's statement closes on what their khata says
+  - id: M48-LOANS-01
+    milestone: M48
+    title: A loan is taken, paid back in principal and interest, and read as a statement
+    status: done
+    proof:
+      - loans a loan with a fee brings in the amount less the fee, and is owed in full
+      - loans a repayment takes principal off the loan and books interest and charges as costs
+      - loans more off the loan than is owed is refused in words
+      - loans interest and charges more than was paid are refused
+      - loans a loan with no lender, a fee as large as it, or a day not yet come is refused
+      - loans interest is suggested at the rate for the days since the loan was last paid
+      - loans terms are kept and read back as they were
+      - loans a loan cannot be cancelled while repayments stand
+      - loan statement opens on what was owed before, and closes on what is owed at the end
+      - loan statement a cancelled repayment is a minus in the column it was in
+      - loan statement a period with nothing in it still says what is owed
+      - loans taking a loan raises the bank and the liability, the fee is a cost, and the books balance
+      - loans a repayment splits principal from interest, and the interest reaches the profit and loss
+      - loans the statement closes on the loan account's balance
+      - loans a principal over what is owed is refused, and nothing is written
+      - loans a cancelled repayment puts back what was owed
+      - loans a loan cannot be cancelled while a repayment stands; once it is cancelled, the loan can be
+      - loans a loan in cash is cash in the drawer
+      - loans only the owner and the accountant take loans, and a free shop pays one back but cannot start one
+      - loans a second loan from the same bank is an account of its own
+      - a loan is taken, paid back in part, and its statement goes out as a PDF and a CSV
+      - a repayment entered wrong is cancelled from the statement, with a reason
+      - more off the loan than is owed is refused on the screen
+      - at 200% on a small phone the loan screens fit

@@ -11,6 +11,7 @@ export 'src/accounting/chart_of_accounts.dart';
 export 'src/accounting/chart_view.dart';
 export 'src/accounting/day_close.dart';
 export 'src/accounting/journal_voucher.dart';
+export 'src/accounting/loans.dart';
 export 'src/accounting/year_close.dart';
 export 'src/barcode/gs1.dart';
 export 'src/barcode/scale.dart';

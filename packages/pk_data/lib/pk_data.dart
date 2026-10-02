@@ -10,6 +10,7 @@ export 'package:drift/drift.dart' show QueryExecutor, QueryRow, Value, Variable;
 
 export 'src/db/app_database.dart';
 export 'src/read/drift_app_queries.dart';
+export 'src/read/drift_loan_reads.dart';
 export 'src/read/drift_report_source.dart';
 export 'src/sync/admit.dart';
 export 'src/sync/drift_sync_store.dart';
@@ -23,6 +24,7 @@ export 'src/write/drift_day_close_writer.dart';
 export 'src/write/drift_debit_note_writer.dart' show DriftDebitNoteWriter;
 export 'src/write/drift_expense_writer.dart' show DriftExpenseWriter;
 export 'src/write/drift_journal_writer.dart';
+export 'src/write/drift_loan_writer.dart';
 export 'src/write/drift_manufacturing_writer.dart'
     show DriftManufacturingWriter;
 export 'src/write/drift_payment_writer.dart' show DriftPaymentWriter;

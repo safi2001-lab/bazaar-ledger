@@ -1844,5 +1844,99 @@
   "reportExcel": "Excel",
   "reportCsv": "CSV",
   "reportPrint": "Print",
-  "reportPrintTitle": "Print on the receipt printer"
+  "reportPrintTitle": "Print on the receipt printer",
+  "loansTitle": "Loans",
+  "loansNew": "New loan",
+  "loansEmpty": "No loans",
+  "loansEmptyHint": "Write down a loan from a bank, a committee, a relative or a supplier here. Every instalment is split into what comes off the loan and the interest.",
+  "loansTotalOwed": "Owed on all loans",
+  "loanOwed": "Outstanding",
+  "loanOf": "of {amount}",
+  "@loanOf": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "loanTakenOn": "Taken {date}",
+  "@loanTakenOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "loanCancelled": "Cancelled",
+  "loanLender": "Lent by (bank, committee, relative)",
+  "loanAmount": "Amount of the loan",
+  "loanInto": "Received into",
+  "loanDate": "Date: {date}",
+  "@loanDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "loanPickDate": "Change the date",
+  "loanRate": "Interest (markup), % a year (optional)",
+  "loanTerm": "Months to repay (optional)",
+  "loanInstalment": "Monthly instalment (optional)",
+  "loanFee": "Processing fee (optional)",
+  "loanReceivedAfterFee": "Received after the fee: {amount}",
+  "@loanReceivedAfterFee": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "loanNotes": "Notes (optional)",
+  "loanSave": "Save the loan",
+  "loanSaved": "Loan saved",
+  "loanRepay": "Pay back",
+  "loanPaid": "Amount paid",
+  "loanInterest": "Of which interest (markup)",
+  "loanCharges": "Charges or penalty (optional)",
+  "loanFrom": "Paid from",
+  "loanPrincipalLine": "Off the loan",
+  "loanAfterLine": "Still owed after it",
+  "loanRepaySave": "Save the payment",
+  "loanRepaid": "Payment {entryNo} saved",
+  "@loanRepaid": {
+    "placeholders": {
+      "entryNo": {"type": "String"}
+    }
+  },
+  "loanInterestSuggested": "Interest worked out at {rate} a year. Correct it from the bank's slip.",
+  "@loanInterestSuggested": {
+    "placeholders": {
+      "rate": {"type": "String"}
+    }
+  },
+  "loanSharePdf": "Statement (PDF)",
+  "loanShareCsv": "Statement (Excel, CSV)",
+  "loanOpening": "Owed at the start",
+  "loanClosing": "Owed at the end",
+  "loanKindReceived": "Loan received",
+  "loanKindRepaid": "Paid back",
+  "loanKindCancelled": "Cancelled",
+  "loanColBorrowed": "Received",
+  "loanColPrincipal": "Principal",
+  "loanColInterest": "Interest",
+  "loanColCharges": "Fee, charges",
+  "loanCancelEntry": "Wrong, cancel it",
+  "loanCancelReason": "Why it is being cancelled (required)",
+  "loanCancelDone": "Cancelled ({entryNo})",
+  "@loanCancelDone": {
+    "placeholders": {
+      "entryNo": {"type": "String"}
+    }
+  },
+  "loanRateShown": "{rate} a year",
+  "@loanRateShown": {
+    "placeholders": {
+      "rate": {"type": "String"}
+    }
+  },
+  "loanInstalmentShown": "Instalment {amount}",
+  "@loanInstalmentShown": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "loanAmountInvalid": "Enter an amount, like 25000 or 2500.50"
 }

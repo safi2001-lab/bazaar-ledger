@@ -1928,5 +1928,102 @@
   "reportExcel": "Excel",
   "reportCsv": "CSV",
   "reportPrint": "Print",
-  "reportPrintTitle": "Printer par chhapein"
+  "reportPrintTitle": "Printer par chhapein",
+  "loansTitle": "Qarzay",
+  "@loansTitle": {
+    "description": "Loans the shop has taken (M48): the screen, and the button to it in Accounts."
+  },
+  "loansNew": "Naya qarza",
+  "loansEmpty": "Koi qarza nahi",
+  "loansEmptyHint": "Bank, committee, rishtedar ya supplier se liya qarza yahan likhein. Har qist mein asal aur sood alag likha jaye ga.",
+  "loansTotalOwed": "Kul baqi qarza",
+  "loanOwed": "Baqi",
+  "loanOf": "{amount} mein se",
+  "@loanOf": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "loanTakenOn": "Liya: {date}",
+  "@loanTakenOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "loanCancelled": "Cancel ho gaya",
+  "loanLender": "Kis se liya (bank, committee, rishtedar)",
+  "loanAmount": "Qarze ki raqam",
+  "loanInto": "Paisay kahan aaye",
+  "loanDate": "Tareekh: {date}",
+  "@loanDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "loanPickDate": "Tareekh badlein",
+  "loanRate": "Sood (markup), % saalana (marzi se)",
+  "loanTerm": "Kitne mahine mein wapis (marzi se)",
+  "loanInstalment": "Mahana qist (marzi se)",
+  "loanFee": "Processing fee (marzi se)",
+  "loanReceivedAfterFee": "Fee ke baad haath mein: {amount}",
+  "@loanReceivedAfterFee": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "loanNotes": "Note (marzi se)",
+  "loanSave": "Qarza save karein",
+  "loanSaved": "Qarza save ho gaya",
+  "loanRepay": "Qist dein",
+  "loanPaid": "Kitne diye",
+  "loanInterest": "Is mein sood (markup)",
+  "loanCharges": "Charges ya jurmana (marzi se)",
+  "loanFrom": "Kahan se diye",
+  "loanPrincipalLine": "Qarze mein se kam",
+  "loanAfterLine": "Is ke baad baqi",
+  "loanRepaySave": "Qist save karein",
+  "loanRepaid": "Qist {entryNo} save ho gayi",
+  "@loanRepaid": {
+    "placeholders": {
+      "entryNo": {"type": "String"}
+    }
+  },
+  "loanInterestSuggested": "Sood {rate} saalana ke hisaab se lagaya hai. Bank ki parchi se theek kar lein.",
+  "@loanInterestSuggested": {
+    "placeholders": {
+      "rate": {"type": "String"}
+    }
+  },
+  "loanSharePdf": "Statement (PDF)",
+  "loanShareCsv": "Statement (Excel, CSV)",
+  "loanOpening": "Shuru mein baqi",
+  "loanClosing": "Aakhir mein baqi",
+  "loanKindReceived": "Qarza mila",
+  "loanKindRepaid": "Qist di",
+  "loanKindCancelled": "Cancel kiya",
+  "loanColBorrowed": "Mila",
+  "loanColPrincipal": "Asal",
+  "loanColInterest": "Sood",
+  "loanColCharges": "Fee, charges",
+  "loanCancelEntry": "Ghalat hai, cancel karein",
+  "loanCancelReason": "Kyun cancel kar rahe hain (zaroori)",
+  "loanCancelDone": "Cancel ho gaya ({entryNo})",
+  "@loanCancelDone": {
+    "placeholders": {
+      "entryNo": {"type": "String"}
+    }
+  },
+  "loanRateShown": "{rate} saalana",
+  "@loanRateShown": {
+    "placeholders": {
+      "rate": {"type": "String"}
+    }
+  },
+  "loanInstalmentShown": "Qist {amount}",
+  "@loanInstalmentShown": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "loanAmountInvalid": "Raqam theek likhein, jaise 25000 ya 2500.50"
 }

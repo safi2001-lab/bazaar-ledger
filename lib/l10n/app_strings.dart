@@ -6073,6 +6073,300 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Printer par chhapein'**
   String get reportPrintTitle;
+
+  /// Loans the shop has taken (M48): the screen, and the button to it in Accounts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarzay'**
+  String get loansTitle;
+
+  /// No description provided for @loansNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya qarza'**
+  String get loansNew;
+
+  /// No description provided for @loansEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi qarza nahi'**
+  String get loansEmpty;
+
+  /// No description provided for @loansEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bank, committee, rishtedar ya supplier se liya qarza yahan likhein. Har qist mein asal aur sood alag likha jaye ga.'**
+  String get loansEmptyHint;
+
+  /// No description provided for @loansTotalOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul baqi qarza'**
+  String get loansTotalOwed;
+
+  /// No description provided for @loanOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi'**
+  String get loanOwed;
+
+  /// No description provided for @loanOf.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} mein se'**
+  String loanOf(String amount);
+
+  /// No description provided for @loanTakenOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Liya: {date}'**
+  String loanTakenOn(String date);
+
+  /// No description provided for @loanCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel ho gaya'**
+  String get loanCancelled;
+
+  /// No description provided for @loanLender.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis se liya (bank, committee, rishtedar)'**
+  String get loanLender;
+
+  /// No description provided for @loanAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarze ki raqam'**
+  String get loanAmount;
+
+  /// No description provided for @loanInto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay kahan aaye'**
+  String get loanInto;
+
+  /// No description provided for @loanDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh: {date}'**
+  String loanDate(String date);
+
+  /// No description provided for @loanPickDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh badlein'**
+  String get loanPickDate;
+
+  /// No description provided for @loanRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sood (markup), % saalana (marzi se)'**
+  String get loanRate;
+
+  /// No description provided for @loanTerm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne mahine mein wapis (marzi se)'**
+  String get loanTerm;
+
+  /// No description provided for @loanInstalment.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana qist (marzi se)'**
+  String get loanInstalment;
+
+  /// No description provided for @loanFee.
+  ///
+  /// In ur, this message translates to:
+  /// **'Processing fee (marzi se)'**
+  String get loanFee;
+
+  /// No description provided for @loanReceivedAfterFee.
+  ///
+  /// In ur, this message translates to:
+  /// **'Fee ke baad haath mein: {amount}'**
+  String loanReceivedAfterFee(String amount);
+
+  /// No description provided for @loanNotes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Note (marzi se)'**
+  String get loanNotes;
+
+  /// No description provided for @loanSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarza save karein'**
+  String get loanSave;
+
+  /// No description provided for @loanSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarza save ho gaya'**
+  String get loanSaved;
+
+  /// No description provided for @loanRepay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist dein'**
+  String get loanRepay;
+
+  /// No description provided for @loanPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne diye'**
+  String get loanPaid;
+
+  /// No description provided for @loanInterest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mein sood (markup)'**
+  String get loanInterest;
+
+  /// No description provided for @loanCharges.
+  ///
+  /// In ur, this message translates to:
+  /// **'Charges ya jurmana (marzi se)'**
+  String get loanCharges;
+
+  /// No description provided for @loanFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan se diye'**
+  String get loanFrom;
+
+  /// No description provided for @loanPrincipalLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarze mein se kam'**
+  String get loanPrincipalLine;
+
+  /// No description provided for @loanAfterLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ke baad baqi'**
+  String get loanAfterLine;
+
+  /// No description provided for @loanRepaySave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist save karein'**
+  String get loanRepaySave;
+
+  /// No description provided for @loanRepaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist {entryNo} save ho gayi'**
+  String loanRepaid(String entryNo);
+
+  /// No description provided for @loanInterestSuggested.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sood {rate} saalana ke hisaab se lagaya hai. Bank ki parchi se theek kar lein.'**
+  String loanInterestSuggested(String rate);
+
+  /// No description provided for @loanSharePdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Statement (PDF)'**
+  String get loanSharePdf;
+
+  /// No description provided for @loanShareCsv.
+  ///
+  /// In ur, this message translates to:
+  /// **'Statement (Excel, CSV)'**
+  String get loanShareCsv;
+
+  /// No description provided for @loanOpening.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shuru mein baqi'**
+  String get loanOpening;
+
+  /// No description provided for @loanClosing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhir mein baqi'**
+  String get loanClosing;
+
+  /// No description provided for @loanKindReceived.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarza mila'**
+  String get loanKindReceived;
+
+  /// No description provided for @loanKindRepaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist di'**
+  String get loanKindRepaid;
+
+  /// No description provided for @loanKindCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel kiya'**
+  String get loanKindCancelled;
+
+  /// No description provided for @loanColBorrowed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mila'**
+  String get loanColBorrowed;
+
+  /// No description provided for @loanColPrincipal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Asal'**
+  String get loanColPrincipal;
+
+  /// No description provided for @loanColInterest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sood'**
+  String get loanColInterest;
+
+  /// No description provided for @loanColCharges.
+  ///
+  /// In ur, this message translates to:
+  /// **'Fee, charges'**
+  String get loanColCharges;
+
+  /// No description provided for @loanCancelEntry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghalat hai, cancel karein'**
+  String get loanCancelEntry;
+
+  /// No description provided for @loanCancelReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kyun cancel kar rahe hain (zaroori)'**
+  String get loanCancelReason;
+
+  /// No description provided for @loanCancelDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel ho gaya ({entryNo})'**
+  String loanCancelDone(String entryNo);
+
+  /// No description provided for @loanRateShown.
+  ///
+  /// In ur, this message translates to:
+  /// **'{rate} saalana'**
+  String loanRateShown(String rate);
+
+  /// No description provided for @loanInstalmentShown.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist {amount}'**
+  String loanInstalmentShown(String amount);
+
+  /// No description provided for @loanAmountInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam theek likhein, jaise 25000 ya 2500.50'**
+  String get loanAmountInvalid;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
