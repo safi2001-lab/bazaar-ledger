@@ -27,6 +27,7 @@ final class ReceiptDraft {
     this.chequeBank,
     this.chequeDateUtcMillis,
     this.allocationMode = 'fifo',
+    this.holdAsAdvance = false,
   });
 
   /// Always a party. A walk-in customer has nothing to settle: they paid at
@@ -53,6 +54,12 @@ final class ReceiptDraft {
   final String? chequeBank;
   final int? chequeDateUtcMillis;
   final String allocationMode;
+
+  /// Held for the customer whole, against nothing they already owe (M41):
+  /// an advance paid down on a sale order, kept for the bill the order
+  /// becomes rather than swallowed by last month's udhaar. The khata's
+  /// balance is the same either way; which bill reads paid is not.
+  final bool holdAsAdvance;
 }
 
 /// Builds the rows one receipt writes.

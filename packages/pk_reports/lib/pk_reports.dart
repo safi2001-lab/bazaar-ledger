@@ -16,6 +16,7 @@ export 'src/filters.dart';
 export 'src/item_stock_builders.dart';
 export 'src/item_stock_source.dart';
 export 'src/order_builders.dart';
+export 'src/order_reports.dart';
 export 'src/order_source.dart';
 export 'src/party_builders.dart';
 export 'src/party_source.dart';

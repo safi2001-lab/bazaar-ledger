@@ -140,6 +140,77 @@ mixin _OrderQueries implements OrderReportSource {
     ];
   }
 
+  // -------------------------------------------------------------------------
+  // Purchase and sale orders (M41)
+  // -------------------------------------------------------------------------
+  //
+  // Read through the order screens' own read, so a report and the order's
+  // own page cannot disagree about what has come in against it: the same
+  // links, the same spreading over its lines, the same statuses.
+
+  @override
+  Future<List<StandingOrder>> standingOrders(
+    String firmId, {
+    required String docType,
+    ReportFilters filters = ReportFilters.none,
+  }) async {
+    final kind = OrderKind.ofDocType(docType);
+    if (kind == null) return const [];
+    return [
+      for (final v in await DriftOrderReads(_db).standing(firmId, kind))
+        if (filters.partyId == null || v.row.partyId == filters.partyId)
+          StandingOrder(
+            documentId: v.row.id,
+            docType: docType,
+            docNo: v.row.docNo,
+            date: v.row.date,
+            partyId: v.row.partyId,
+            party: v.row.partyName,
+            total: v.row.total,
+            lines: v.lines.length,
+            linesDone: v.lines.where((l) => l.isDone).length,
+            pendingValue: v.pendingValue,
+            started: v.row.status == OrderStatus.part,
+            dueDate: v.row.dueDate,
+            advance: v.row.advance,
+          ),
+    ];
+  }
+
+  @override
+  Future<List<StandingOrderItem>> standingOrderItems(
+    String firmId, {
+    ReportFilters filters = ReportFilters.none,
+  }) async {
+    final reads = DriftOrderReads(_db);
+    final out = <(String, String), StandingOrderItem>{};
+    for (final kind in OrderKind.values) {
+      for (final v in await reads.standing(firmId, kind)) {
+        if (filters.partyId != null && v.row.partyId != filters.partyId) {
+          continue;
+        }
+        // An order with the same item on two lines is one order carrying
+        // it, counted once.
+        final seen = <String>{};
+        for (final l in v.lines) {
+          final key = (l.itemId, kind.docType);
+          final was = out[key];
+          out[key] = StandingOrderItem(
+            itemName: l.itemName,
+            unitCode: l.baseUnitCode,
+            docType: kind.docType,
+            ordered: (was?.ordered ?? Qty.zero) + l.baseQty,
+            done: (was?.done ?? Qty.zero) + l.done,
+            pending: (was?.pending ?? Qty.zero) + l.pendingBase,
+            pendingValue: (was?.pendingValue ?? Money.zero) + l.pendingValue,
+            orders: (was?.orders ?? 0) + (seen.add(l.itemId) ? 1 : 0),
+          );
+        }
+      }
+    }
+    return out.values.toList();
+  }
+
   /// The date the quotation builder writes into a quotation's terms, as
   /// the quotation list reads it.
   static BusinessDate? _goodUntil(String? terms) {

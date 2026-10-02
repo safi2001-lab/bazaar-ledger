@@ -1792,6 +1792,102 @@ milestones:
       - lib/features/audit/approval_prompt.dart
       - lib/features/settings/books_lock_screen.dart
 
+  - id: M41
+    title: What to order, ordered from the right supplier, and orders the customer placed
+    # Opened and sealed 3 Oct 2026 at 1/1. Purchase orders are documents of
+    # their own (`purchase_order`, numbered PO-): a supplier, items in the
+    # unit the supplier counts in, the rate they quoted, the day expected
+    # and a note. Nothing else: no journal entry, no stock row, no payment,
+    # a balance of zero — a test counts the journal and the stock ledger
+    # either side of one. Sent to the supplier as a WhatsApp list of what is
+    # still to come at the rates quoted (the same whatsapp:// intent as M30,
+    # never wa.me), or as a PDF titled Purchase Order. "Maal aa gaya" opens
+    # the delivery with the order's supplier and what is still to come of
+    # each line, in the order's unit when it comes out whole and at the
+    # order's rate; a line changed to a rate the order did not quote says
+    # "Rate PO se mukhtalif: 520.00 vs 500.00" on the line, in red, before
+    # the delivery is saved. The delivery is linked to the order
+    # `converted_from` as M25 links a bill to its challan, in the delivery's
+    # own commit, and refused for another supplier's order or a cancelled
+    # one. What has come in is never stored on the order: it is read off
+    # the linked deliveries that still stand and spread over the order's
+    # lines in order, so the order reads open, part received, received,
+    # cancelled, or closed (cancelled after part of it came).
+    #
+    # Sale orders (`sale_order`, SO-) are lighter than a quotation: a
+    # customer, items, quantities at the price promised, the day promised.
+    # "Counter par bill banayein" puts what is still to go on the counter
+    # through the cart's own loadQuotation (no change to the cart), where
+    # the payment sheet bills it; the bill is linked back, and an order goes
+    # out a delivery at a time (the "already billed" check is a quotation's,
+    # not an order's). The write path also takes an order onto a challan,
+    # and the bill made from that challan takes the order's advance; the
+    # payment sheet (M36's) offers no challan while a document is on the
+    # counter, so from the screen an order is billed. An advance is a receipt
+    # through the existing receipt path, naming the order by its number and
+    # held whole for it rather than swallowed by old udhaar
+    # (`ReceiptDraft.holdAsAdvance`). The bill made from the order — or from
+    # a challan made from it — takes the advance inside its own entry: of
+    # what it would have put on the khata as udhaar, the part the advance
+    # covers comes out of Customer Advances instead, and the bill reads that
+    # much paid. Inside the bill's entry rather than beside it, so every
+    # correction the app has stays true without knowing about orders: a
+    # cancelled bill holds the advance again, a cancelled advance receipt
+    # leaves the bill owed in full on the khata, a bounced advance cheque
+    # takes back what it never paid; tests prove each against the khata and
+    # the books. Never more than the bill leaves owed, nor than the shop
+    # holds for the customer.
+    #
+    # The shortage list: a "*" in the counter's bar and the items list's
+    # writes what a customer asked for — an item found by name, or their own
+    # words — with an optional quantity and note. Each line is a row in the
+    # firm's `settings` (`shortage.<id>`, JSON), one per line so two counters
+    # each keep theirs through the LAN sync, written through TxRunner and
+    # audited. A line naming an item leaves the list by itself once a
+    # delivery of that item is entered after it was written; any line can be
+    # ticked off ("Mil gaya", struck out, not destroyed). The list is sent
+    # on WhatsApp or the share sheet as text.
+    #
+    # "Order banayein" (from the Orders hub and the Low stock list): M34's
+    # Low Stock read and its reorder quantity, called rather than copied —
+    # the average day's selling times fifteen days less the shelf, never
+    # less than back to the floor — less what is on a standing purchase
+    # order, and at least what the shortage list asked for that is not on
+    # its way. Grouped by the supplier each item last came from, at what it
+    # last cost them per unit; quantities editable, lines struck off, a
+    # supplier picked for items nobody has supplied; one tap makes one
+    # purchase order per supplier, all in one commit.
+    #
+    # Reports: Open purchase orders, Open sale orders (with the advance
+    # held) and Items on open orders (ordered, received or delivered, still
+    # to come) join M35's quotations and challans in the Orders group, as of
+    # today, read through the order screens' own read so a report and an
+    # order's page cannot disagree.
+    #
+    # Roles: purchase orders and what to order need `purchases`; sale orders
+    # `sell`; an advance `takePayments`; the shortage list either.
+    #
+    # Not built, and why: short-closing a single line (an order is closed
+    # whole, by cancelling what is left); a purchase return taking quantity
+    # back off "received" (a delivery sent back stays received against its
+    # order — the return is its own document); an advance by cheque from the
+    # order screen (taken from the khata's receipt sheet like any cheque);
+    # a purchase unit remembered on the item (no schema change was open:
+    # the order line's unit is picked from the shop's conversions each
+    # time); the credit-limit check at the counter does not yet count an
+    # order's advance against the bill it pays.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/documents/orders.dart
+      - packages/pk_domain/lib/src/documents/order_advance.dart
+      - packages/pk_domain/lib/src/documents/reorder.dart
+      - packages/pk_data/lib/src/read/drift_order_reads.dart
+      - packages/pk_data/lib/src/write/drift_order_writer.dart
+      - packages/pk_reports/lib/src/order_reports.dart
+      - packages/pk_bootstrap/lib/src/order_services.dart
+      - lib/features/orders/**
+      - lib/features/purchases/delivery_line_sheet.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6489,3 +6585,43 @@ features:
       - closed books on the counters a bill the counter made before it knew is taken in and shown to the owner, and the closing then binds the counter too
       - the owner closes the books from settings, and a bill dated inside them asks for the PIN and a reason on screen
       - with Data Lock on, cancelling a bill asks for a PIN, and the bill's history shows the cancel and why
+  - id: M41-ORDERS-01
+    milestone: M41
+    title: Purchase orders received with their rates checked, sale orders billed with their advance, the shortage list, and what to order by supplier
+    status: done
+    # Orders post nothing; deliveries and bills link back and what came of
+    # an order is read off them; an advance rides inside the bill's own
+    # entry and every cancel path is proved against the khata and the
+    # books; the reorder list is M34's computation less what is on order.
+    proof:
+      - an order is a document and its lines, with nothing paid and nothing owed
+      - an order a sale order is promised for its day
+      - an order needs somebody, something, a quantity, and a day not gone
+      - what came of an order is spread over its lines in order, the last line of an item taking any extra
+      - what came of an order reads open, part, done, cancelled or closed
+      - what came of an order what is still to come is in cartons when it comes out whole, and in pieces when it does not
+      - what came of an order a delivery at a rate the order did not quote is flagged
+      - what to order is what the shelf needs less what is on its way, and at least what a customer asked for
+      - what to order is grouped by the supplier each item last came from, nobody last
+      - what to order a purchase order and the shortage list travel in words
+      - an order advance on its bill moves what it covers off the udhaar onto the advance, and the bill reads that much paid
+      - an order advance on its bill never takes more than the bill leaves owed, and takes nothing from a bill paid at the counter
+      - purchase orders a purchase order posts nothing to the books
+      - purchase orders a delivery against a purchase order is linked to it, and what has come in follows
+      - purchase orders a delivery from another supplier, or against a cancelled order, is refused and nothing is written
+      - purchase orders an order cancelled after part of it came is closed, and what came stands
+      - sale orders a sale order is billed from, and the advance paid on it settles the bill
+      - sale orders a bill paid in full at the counter leaves the advance held
+      - sale orders an advance is held for the order, not swallowed by old udhaar
+      - sale orders cancelling the bill made from a sale order holds the advance again, and the order is open again
+      - sale orders cancelling the advance receipt after the bill leaves the bill owed in full on the khata
+      - sale orders a sale order goes out on a challan, and the bill made from the challan takes its advance
+      - the shortage list a line noted at the counter is listed, sent, and leaves once a delivery of it arrives
+      - what to order suggestions come from the low stock list less what is on order, with the counter's asks, grouped by the supplier each last came from, and become one purchase order each
+      - what to order an item never bought from anybody waits for a supplier to be picked
+      - order reports open purchase orders, open sale orders and the items on both, with what has come and what is still to
+      - a purchase order is written, received at another rate, and the rate is flagged before the delivery is saved
+      - a customer's order with an advance goes to the counter, is billed on udhaar, and the advance settles part of the bill
+      - the counter writes what a customer asked for, the list is sent, and a line leaves once the goods arrive or are ticked off
+      - what to order puts each supplier's items on a purchase order of their own, in one tap
+      - at 200% on a small phone an order, what to order and the shortage sheet fit

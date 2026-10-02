@@ -10,6 +10,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
+import '../orders/shortage_screen.dart';
 import '../parties/party_picker.dart';
 import '../sales/bill_again.dart';
 import '../scan/scan_screen.dart';
@@ -459,6 +460,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             label: s.looseTitle,
             onPressed: () => unawaited(_loose()),
           ),
+          // "*": a customer asked for something the shelf does not have
+          // (M41).
+          const ShortageButton(),
           BlIconButton(
             icon: cart.partyId == null
                 ? Icons.person_add_alt_outlined

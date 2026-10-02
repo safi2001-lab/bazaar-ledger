@@ -26,6 +26,7 @@ part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
 part 'loan_services.dart';
+part 'order_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
 part 'shop_money_services.dart';
@@ -419,6 +420,10 @@ final class AppServices {
   /// A record's history, the books closed up to a date, and Data Lock
   /// (M42).
   late final AuditServices audit = AuditServices._(this);
+
+  /// Purchase orders, sale orders, the shortage list and what to order
+  /// (M41).
+  late final OrderServices orders = OrderServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

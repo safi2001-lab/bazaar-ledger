@@ -2,6 +2,7 @@ import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
 import 'document_rows.dart';
+import 'drift_order_writer.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -142,7 +143,9 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
   }
 
   @override
-  Future<PostedSale> apply(SalePosting posting) async {
+  Future<PostedSale> apply(SalePosting given) async {
+    // A bill made from a sale order takes the advance paid on it (M41).
+    final posting = await withHeldAdvances(_tx, given);
     final doc = posting.document;
 
     final (documentId, lineIdByNo) = await insertDocumentRows(
@@ -163,7 +166,9 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
         '  AND link.deleted_at_utc IS NULL AND d.status <> \'void\'',
         [sourceId],
       );
-      if (billed != null) {
+      // A sale order (M41) is billed a delivery at a time; it is never
+      // "already billed", and what is left of it is read off its bills.
+      if (billed != null && !await isSaleOrder(_tx, sourceId)) {
         final source = await _tx.selectOne(
           'SELECT doc_type FROM documents WHERE id = ?',
           [sourceId],

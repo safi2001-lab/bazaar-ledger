@@ -3393,5 +3393,185 @@
   "dataLockExplain": "Bill ya payment cancel karna, payment durust karna, udhaar chhorna, cheez ya customer chhupana, ya backup wapas lana: har ek se pehle PIN. Jo kar raha hai us ka apna PIN, ya Malik ka.",
   "dataLockNeedsPin": "Pehle apna PIN rakhein (Staff aur PIN)",
   "lateArrivalsTitle": "Band hone ke baad counter se aayi entries",
-  "lateArrivalsExplain": "Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein."
+  "lateArrivalsExplain": "Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein.",
+  "homeOrders": "Order",
+  "ordersTitle": "Order",
+  "ordersPurchase": "Purchase order (PO)",
+  "ordersPurchaseHint": "Supplier se kya mangwaya, aur kitna aaya",
+  "ordersSale": "Gahak ke order",
+  "ordersSaleHint": "Gahak ne kya mangwaya, kitna diya, advance",
+  "ordersShortage": "Mangwana hai",
+  "ordersShortageHint": "Gahak ne maanga aur shelf par nahi tha",
+  "ordersReorder": "Order banayein",
+  "ordersReorderHint": "Kam maal aur mangwana hai, supplier ke hisaab se",
+  "ordersOpenCount": "{count} khule",
+  "@ordersOpenCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "orderListEmptyPurchase": "Abhi koi PO nahi",
+  "orderListEmptyPurchaseHint": "Supplier ko jo mangwana ho, uski PO banayein aur WhatsApp par bhejein",
+  "orderListEmptySale": "Abhi koi gahak ka order nahi",
+  "orderListEmptySaleHint": "Gahak ka order likhein, advance ke saath ya baghair",
+  "orderNewPurchase": "Nayi PO",
+  "orderNewSale": "Naya gahak order",
+  "orderStatusOpen": "Khula",
+  "orderStatusPartIn": "Kuch aa gaya",
+  "orderStatusPartOut": "Kuch de diya",
+  "orderStatusDoneIn": "Sab aa gaya",
+  "orderStatusDoneOut": "Sab de diya",
+  "orderStatusCancelled": "Mansookh",
+  "orderStatusClosed": "Band, baqi nahi aayega",
+  "orderLate": "Der ho gayi",
+  "orderDue": "{date} tak",
+  "@orderDue": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "orderAdvance": "Advance Rs {amount}",
+  "@orderAdvance": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "orderCustomer": "Gahak chunein",
+  "orderPartyRequired": "Pehle supplier ya gahak chunein",
+  "orderNoLinesHint": "Jo mangwana hai woh shamil karein",
+  "orderDueExpected": "Kab tak aaye",
+  "orderDuePromised": "Kab tak dena hai",
+  "orderDueTomorrow": "Kal",
+  "orderDueInDays": "{count} din mein",
+  "@orderDueInDays": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "orderDueInvalid": "Tareekh YYYY-MM-DD mein likhein, aaj ya aage ki",
+  "orderNote": "Note (marzi se)",
+  "orderAdvanceAmount": "Advance (marzi se)",
+  "orderSave": "Order save karein",
+  "orderSaved": "Order {docNo} ban gaya",
+  "@orderSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "orderRate": "Rate",
+  "orderSupplierRate": "Supplier ka rate",
+  "orderItemNeeds": "Tadaad aur rate sahi likhein",
+  "orderItemUnitInexact": "Is unit mein yeh tadaad poori nahi banti. Doosra unit chunein.",
+  "orderReceive": "Maal aa gaya",
+  "orderToCounter": "Counter par bill banayein",
+  "orderTakeAdvance": "Advance lein",
+  "orderAdvanceTaken": "Rs {amount} advance le liya",
+  "@orderAdvanceTaken": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "orderCancel": "Order mansookh karein",
+  "orderCancelReason": "Wajah",
+  "orderCancelNeedsReason": "Mansookh karne ki wajah likhein",
+  "orderCancelConfirm": "{docNo} mansookh ho jaye ga. Jo aa chuka ya ja chuka woh rahe ga. Wajah likh kar dobara dabayein.",
+  "@orderCancelConfirm": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "orderCancelled": "Order mansookh ho gaya",
+  "orderLineIn": "Aaya {done}, baqi {left} {unit}",
+  "@orderLineIn": {
+    "placeholders": {
+      "done": {"type": "String"},
+      "left": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "orderLineOut": "Diya {done}, baqi {left} {unit}",
+  "@orderLineOut": {
+    "placeholders": {
+      "done": {"type": "String"},
+      "left": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "orderFollowUps": "Is order se",
+  "orderNothingLeft": "Is order mein ab kuch baqi nahi",
+  "orderStillToCome": "Baqi: Rs {amount}",
+  "@orderStillToCome": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "purchaseFromOrder": "PO {docNo} ke khilaf",
+  "@purchaseFromOrder": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "purchaseOrderedRate": "PO ka rate: {rate} / {unit}",
+  "@purchaseOrderedRate": {
+    "placeholders": {
+      "rate": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "purchaseRateDiffers": "Rate PO se mukhtalif: {now} vs {ordered}",
+  "@purchaseRateDiffers": {
+    "placeholders": {
+      "now": {"type": "String"},
+      "ordered": {"type": "String"}
+    }
+  },
+  "shortageAdd": "Mangwana hai mein likhein",
+  "shortageEmpty": "Kuch mangwana baqi nahi",
+  "shortageEmptyHint": "Gahak koi cheez maange jo shelf par nahi, to counter ke * se yahan likhein",
+  "shortageWhat": "Kya maanga?",
+  "shortageWhatNeeded": "Likhein gahak ne kya maanga",
+  "shortageQty": "Kitna (marzi se)",
+  "shortageSave": "List mein likhein",
+  "shortageSaved": "{name} list mein likh diya",
+  "@shortageSaved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "shortageClear": "Mil gaya",
+  "shortageShare": "List bhejein",
+  "reorderEmpty": "Abhi kuch mangwane ki zaroorat nahi",
+  "reorderEmptyHint": "Cheez par kam se kam stock likhein, ya counter se mangwana hai mein daalein",
+  "reorderNoSupplier": "Supplier maloom nahi",
+  "reorderFacts": "Stock {stock} · {sold} bika · {onOrder} raaste mein",
+  "@reorderFacts": {
+    "placeholders": {
+      "stock": {"type": "String"},
+      "sold": {"type": "String"},
+      "onOrder": {"type": "String"}
+    }
+  },
+  "reorderAsked": "Gahak ne maanga",
+  "reorderMakeOne": "Is ki PO",
+  "reorderMakeAll": "PO banayein ({count} supplier)",
+  "@reorderMakeAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reorderMade": "{count} PO ban gayi",
+  "@reorderMade": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reorderNothingPicked": "Kuch chuna nahi. Tadaad likhein ya supplier chunein.",
+  "reportOpenPurchaseOrders": "Khuli purchase orders",
+  "reportOpenPurchaseOrdersHint": "Supplier se jo maal aana baqi hai, kitne din se",
+  "reportOpenSaleOrders": "Khule gahak order",
+  "reportOpenSaleOrdersHint": "Gahak ko jo dena baqi hai, advance ke saath",
+  "reportOrderItemsDue": "Orders ki cheezein",
+  "reportOrderItemsDueHint": "Har cheez: kitna mangwaya, aaya ya gaya, baqi",
+  "orderItemAdd": "Order mein daalein",
+  "shortageWrite": "Likhein"
 }

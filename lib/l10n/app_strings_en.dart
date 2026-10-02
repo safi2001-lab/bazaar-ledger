@@ -5722,4 +5722,311 @@ class AppStringsEn extends AppStrings {
   @override
   String get lateArrivalsExplain =>
       'These were made on another counter before it knew the books were closed, so they were taken in. Look over the closed days again with them.';
+
+  @override
+  String get homeOrders => 'Orders';
+
+  @override
+  String get ordersTitle => 'Orders';
+
+  @override
+  String get ordersPurchase => 'Purchase orders';
+
+  @override
+  String get ordersPurchaseHint =>
+      'What you asked suppliers for, and what came';
+
+  @override
+  String get ordersSale => 'Sale orders';
+
+  @override
+  String get ordersSaleHint => 'What customers ordered, what went, advances';
+
+  @override
+  String get ordersShortage => 'Shortage list';
+
+  @override
+  String get ordersShortageHint =>
+      'Asked for at the counter and not on the shelf';
+
+  @override
+  String get ordersReorder => 'What to order';
+
+  @override
+  String get ordersReorderHint =>
+      'Low stock and the shortage list, by supplier';
+
+  @override
+  String ordersOpenCount(int count) {
+    return '$count open';
+  }
+
+  @override
+  String get orderListEmptyPurchase => 'No purchase orders yet';
+
+  @override
+  String get orderListEmptyPurchaseHint =>
+      'Write what you want from a supplier and send it on WhatsApp';
+
+  @override
+  String get orderListEmptySale => 'No sale orders yet';
+
+  @override
+  String get orderListEmptySaleHint =>
+      'Write down a customer\'s order, with an advance or without';
+
+  @override
+  String get orderNewPurchase => 'New purchase order';
+
+  @override
+  String get orderNewSale => 'New sale order';
+
+  @override
+  String get orderStatusOpen => 'Open';
+
+  @override
+  String get orderStatusPartIn => 'Part received';
+
+  @override
+  String get orderStatusPartOut => 'Part delivered';
+
+  @override
+  String get orderStatusDoneIn => 'Received';
+
+  @override
+  String get orderStatusDoneOut => 'Delivered';
+
+  @override
+  String get orderStatusCancelled => 'Cancelled';
+
+  @override
+  String get orderStatusClosed => 'Closed, the rest will not come';
+
+  @override
+  String get orderLate => 'Late';
+
+  @override
+  String orderDue(String date) {
+    return 'By $date';
+  }
+
+  @override
+  String orderAdvance(String amount) {
+    return 'Advance Rs $amount';
+  }
+
+  @override
+  String get orderCustomer => 'Choose customer';
+
+  @override
+  String get orderPartyRequired => 'Choose the supplier or customer first';
+
+  @override
+  String get orderNoLinesHint => 'Add what is to be ordered';
+
+  @override
+  String get orderDueExpected => 'Expected by';
+
+  @override
+  String get orderDuePromised => 'Promised for';
+
+  @override
+  String get orderDueTomorrow => 'Tomorrow';
+
+  @override
+  String orderDueInDays(int count) {
+    return 'In $count days';
+  }
+
+  @override
+  String get orderDueInvalid => 'Write the date as YYYY-MM-DD, today or later';
+
+  @override
+  String get orderNote => 'Note (optional)';
+
+  @override
+  String get orderAdvanceAmount => 'Advance (optional)';
+
+  @override
+  String get orderSave => 'Save order';
+
+  @override
+  String orderSaved(String docNo) {
+    return 'Order $docNo saved';
+  }
+
+  @override
+  String get orderRate => 'Rate';
+
+  @override
+  String get orderSupplierRate => 'Supplier\'s rate';
+
+  @override
+  String get orderItemNeeds => 'Write a proper quantity and rate';
+
+  @override
+  String get orderItemUnitInexact =>
+      'That quantity does not come out whole in this unit. Pick another unit.';
+
+  @override
+  String get orderReceive => 'Goods arrived';
+
+  @override
+  String get orderToCounter => 'Bill it at the counter';
+
+  @override
+  String get orderTakeAdvance => 'Take an advance';
+
+  @override
+  String orderAdvanceTaken(String amount) {
+    return 'Rs $amount advance taken';
+  }
+
+  @override
+  String get orderCancel => 'Cancel the order';
+
+  @override
+  String get orderCancelReason => 'Reason';
+
+  @override
+  String get orderCancelNeedsReason => 'Write why it is cancelled';
+
+  @override
+  String orderCancelConfirm(String docNo) {
+    return '$docNo will be cancelled. What already came or went stands. Write the reason and tap again.';
+  }
+
+  @override
+  String get orderCancelled => 'Order cancelled';
+
+  @override
+  String orderLineIn(String done, String left, String unit) {
+    return '$done in, $left $unit to come';
+  }
+
+  @override
+  String orderLineOut(String done, String left, String unit) {
+    return '$done out, $left $unit to go';
+  }
+
+  @override
+  String get orderFollowUps => 'From this order';
+
+  @override
+  String get orderNothingLeft => 'Nothing is left on this order';
+
+  @override
+  String orderStillToCome(String amount) {
+    return 'Still to come: Rs $amount';
+  }
+
+  @override
+  String purchaseFromOrder(String docNo) {
+    return 'Against PO $docNo';
+  }
+
+  @override
+  String purchaseOrderedRate(String rate, String unit) {
+    return 'PO rate: $rate / $unit';
+  }
+
+  @override
+  String purchaseRateDiffers(String now, String ordered) {
+    return 'Rate differs from the PO: $now vs $ordered';
+  }
+
+  @override
+  String get shortageAdd => 'Add to the shortage list';
+
+  @override
+  String get shortageEmpty => 'Nothing on the list';
+
+  @override
+  String get shortageEmptyHint =>
+      'When a customer asks for something the shelf does not have, tap * at the counter and write it here';
+
+  @override
+  String get shortageWhat => 'What was asked for?';
+
+  @override
+  String get shortageWhatNeeded => 'Write what the customer asked for';
+
+  @override
+  String get shortageQty => 'How many (optional)';
+
+  @override
+  String get shortageSave => 'Write it on the list';
+
+  @override
+  String shortageSaved(String name) {
+    return '$name written on the list';
+  }
+
+  @override
+  String get shortageClear => 'Got it';
+
+  @override
+  String get shortageShare => 'Send the list';
+
+  @override
+  String get reorderEmpty => 'Nothing needs ordering now';
+
+  @override
+  String get reorderEmptyHint =>
+      'Give items a minimum stock, or add to the shortage list from the counter';
+
+  @override
+  String get reorderNoSupplier => 'No supplier yet';
+
+  @override
+  String reorderFacts(String stock, String sold, String onOrder) {
+    return 'Stock $stock · $sold sold · $onOrder on order';
+  }
+
+  @override
+  String get reorderAsked => 'Asked for';
+
+  @override
+  String get reorderMakeOne => 'Its PO';
+
+  @override
+  String reorderMakeAll(int count) {
+    return 'Make purchase orders ($count suppliers)';
+  }
+
+  @override
+  String reorderMade(int count) {
+    return '$count purchase orders made';
+  }
+
+  @override
+  String get reorderNothingPicked =>
+      'Nothing picked. Write a quantity or pick a supplier.';
+
+  @override
+  String get reportOpenPurchaseOrders => 'Open purchase orders';
+
+  @override
+  String get reportOpenPurchaseOrdersHint =>
+      'What is still to arrive from suppliers, and for how long';
+
+  @override
+  String get reportOpenSaleOrders => 'Open sale orders';
+
+  @override
+  String get reportOpenSaleOrdersHint =>
+      'Customers\' orders still to go out, with advances';
+
+  @override
+  String get reportOrderItemsDue => 'Items on open orders';
+
+  @override
+  String get reportOrderItemsDueHint =>
+      'Each item: ordered, received or delivered, still to come';
+
+  @override
+  String get orderItemAdd => 'Put on the order';
+
+  @override
+  String get shortageWrite => 'Write';
 }

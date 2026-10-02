@@ -14,6 +14,7 @@ import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../khata/udhaar_due_card.dart';
+import '../orders/orders_screen.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
 import '../purchases/purchases_screen.dart';
@@ -131,6 +132,15 @@ class HomeScreen extends ConsumerWidget {
                       label: s.homeQuotations,
                       icon: Icons.request_quote_outlined,
                       onTap: () => _open(context, const QuotationsScreen()),
+                    ),
+                  // Purchase orders, customers' orders, the shortage list and
+                  // what to order (M41).
+                  if (services.can(Permission.purchases) ||
+                      services.can(Permission.sell))
+                    _NavTile(
+                      label: s.homeOrders,
+                      icon: Icons.assignment_outlined,
+                      onTap: () => _open(context, const OrdersScreen()),
                     ),
                   // Goods sent ahead of the bill, and the bill made from them
                   // when it is settled.

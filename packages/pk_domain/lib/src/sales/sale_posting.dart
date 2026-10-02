@@ -84,6 +84,45 @@ final class DocumentPosting {
 
   /// Printed terms: how long a quotation's prices hold, and the like.
   final String? terms;
+
+  /// This document with [amount] more paid on it and that much less owed,
+  /// everything else as it was: a sale order's advance applied to the bill
+  /// made from it (M41).
+  DocumentPosting settledBy(Money amount) => DocumentPosting(
+    docType: docType,
+    docNo: docNo,
+    docSeries: docSeries,
+    docSeq: docSeq,
+    fiscalYear: fiscalYear,
+    docDateUtcMillis: docDateUtcMillis,
+    docDateLocal: docDateLocal,
+    subtotal: subtotal,
+    lineDiscount: lineDiscount,
+    billDiscount: billDiscount,
+    taxable: taxable,
+    tax: tax,
+    furtherTax: furtherTax,
+    withholding: withholding,
+    extraCharges: extraCharges,
+    roundOff: roundOff,
+    total: total,
+    paid: paid + amount,
+    balance: balance - amount,
+    cost: cost,
+    roundingMode: roundingMode,
+    taxRuleVersion: taxRuleVersion,
+    cashThresholdBreached: cashThresholdBreached,
+    partyId: partyId,
+    partyNameSnapshot: partyNameSnapshot,
+    partyNtnSnapshot: partyNtnSnapshot,
+    partyStrnSnapshot: partyStrnSnapshot,
+    partyAddressSnapshot: partyAddressSnapshot,
+    salespersonId: salespersonId,
+    locationCode: locationCode,
+    notes: notes,
+    supplierBillNo: supplierBillNo,
+    terms: terms,
+  );
 }
 
 /// A row to be written to `document_lines`, with its taxes.
@@ -310,6 +349,23 @@ final class SalePosting {
   final List<StockMovementPosting> stockMovements;
   final JournalEntryPosting journal;
   final String auditSummary;
+
+  /// The same sale with its document, entry or summary replaced: a sale
+  /// order's advance taken into the bill made from it (M41).
+  SalePosting copyWith({
+    DocumentPosting? document,
+    JournalEntryPosting? journal,
+    String? auditSummary,
+  }) => SalePosting(
+    document: document ?? this.document,
+    lines: lines,
+    payments: payments,
+    stockMovements: stockMovements,
+    journal: journal ?? this.journal,
+    auditSummary: auditSummary ?? this.auditSummary,
+    convertedFromId: convertedFromId,
+    alsoFromIds: alsoFromIds,
+  );
 
   /// Asserts the entry balances, before anyone tries to write it.
   ///

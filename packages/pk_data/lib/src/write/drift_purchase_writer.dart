@@ -1,6 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'document_rows.dart';
+import 'drift_order_writer.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -212,6 +213,18 @@ final class _DriftPurchaseWriteContext implements PurchaseWriteContext {
         'item_id': line.itemId,
         'narration': line.narration,
       });
+    }
+
+    // Arrived against a purchase order (M41): linked, so the order knows
+    // what of it has come in.
+    if (posting.fromOrderId case final orderId?) {
+      await linkDeliveryToOrder(
+        _tx,
+        orderId: orderId,
+        deliveryId: documentId,
+        supplierId: doc.partyId,
+        total: doc.total,
+      );
     }
 
     _tx.audit(

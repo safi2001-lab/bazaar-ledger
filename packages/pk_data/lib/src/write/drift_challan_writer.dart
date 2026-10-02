@@ -1,6 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'document_rows.dart';
+import 'drift_order_writer.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -91,7 +92,11 @@ final class _Context implements ChallanWriteContext {
         "AND status = 'posted' AND deleted_at_utc IS NULL",
         [quotationId, actor.firmId],
       );
-      if (source == null || source.read<String>('doc_type') != 'quotation') {
+      // A sale order (M41) goes out on a challan as a quotation does, and
+      // may go out a delivery at a time, so it is never "already sent".
+      final isOrder = source != null && await isSaleOrder(_tx, quotationId);
+      if (source == null ||
+          (source.read<String>('doc_type') != 'quotation' && !isOrder)) {
         throw const ChallanRefused(
           'Only a quotation can be sent on a challan. A challan already '
           'sent is billed, not sent again.',
@@ -104,7 +109,7 @@ final class _Context implements ChallanWriteContext {
         "  AND link.deleted_at_utc IS NULL AND d.status <> 'void'",
         [quotationId],
       );
-      if (taken != null) {
+      if (taken != null && !isOrder) {
         throw ChallanRefused(
           '${source.read<String>('doc_no')} is already '
           '${taken.read<String>('doc_no')}.',

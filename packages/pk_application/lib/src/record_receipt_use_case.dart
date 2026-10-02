@@ -57,7 +57,11 @@ final class RecordReceiptUseCase {
       );
     }
 
-    final openBills = await write.openBillsFor(draft.partyId);
+    // An advance on a sale order (M41) is held whole, for the bill the
+    // order becomes, and settles nothing already owed.
+    final openBills = draft.holdAsAdvance
+        ? const <OpenBill>[]
+        : await write.openBillsFor(draft.partyId);
 
     final posting = builder.build(
       actor: actor,

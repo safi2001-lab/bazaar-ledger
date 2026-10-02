@@ -62,6 +62,7 @@ final class PurchasePosting {
     required this.auditSummary,
     required this.rounding,
     required this.shortfall,
+    this.fromOrderId,
   });
 
   final DocumentPosting document;
@@ -76,6 +77,9 @@ final class PurchasePosting {
   /// What this delivery revealed a past shortfall really cost, posted to
   /// wastage. Zero on any bill that did not land on a negative balance.
   final Money shortfall;
+
+  /// The purchase order the delivery arrived against (M41), if any.
+  final String? fromOrderId;
 
   /// Asserts the entry balances, before anyone tries to write it.
   void assertBalanced() {

@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_picker.dart';
+import 'delivery_line_sheet.dart';
 import 'purchase_item_picker.dart';
 
 /// Entering a delivery.
@@ -44,7 +45,12 @@ final _costPositionsProvider = FutureProvider.autoDispose
     });
 
 class PurchaseScreen extends ConsumerStatefulWidget {
-  const PurchaseScreen({super.key});
+  const PurchaseScreen({super.key, this.fromOrder});
+
+  /// The purchase order this delivery arrived against (M41): its supplier
+  /// and what is still to come of it fill the screen, each line at the rate
+  /// the order quoted, and the delivery is linked to it when saved.
+  final OrderView? fromOrder;
 
   @override
   ConsumerState<PurchaseScreen> createState() => _PurchaseScreenState();
@@ -56,9 +62,62 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
   final _billNo = TextEditingController();
 
   final _lines = <PurchaseLineDraft>[];
+
+  /// The rate the purchase order quoted for each line, beside it in
+  /// [_lines]; null for a line added by hand (M41).
+  final _ordered = <Rate?>[];
   PartySummary? _supplier;
   bool _busy = false;
   String? _failure;
+
+  @override
+  void initState() {
+    super.initState();
+    final order = widget.fromOrder;
+    if (order == null) return;
+    // What is still to come of each line, in the unit it was ordered in
+    // when that comes out whole, at the rate the order quoted.
+    for (final l in order.lines) {
+      if (l.isDone) continue;
+      final inOrderUnit = l.pendingInOrderUnit;
+      _lines.add(
+        PurchaseLineDraft(
+          itemId: l.itemId,
+          itemName: l.itemName,
+          qty: inOrderUnit ?? l.pendingBase,
+          baseQty: l.pendingBase,
+          unitId: inOrderUnit == null ? l.baseUnitId : l.unitId,
+          unitCode: inOrderUnit == null ? l.baseUnitCode : l.unitCode,
+          rate: inOrderUnit == null ? l.baseRate : l.rate,
+        ),
+      );
+      _ordered.add(inOrderUnit == null ? l.baseRate : l.rate);
+    }
+    final services = ref.read(appServicesProvider);
+    final firmId = services.identity?.firmId;
+    if (firmId != null) {
+      unawaited(
+        services.queries.partyById(firmId, order.row.partyId).then((party) {
+          if (mounted && party != null) setState(() => _supplier = party);
+        }),
+      );
+    }
+  }
+
+  /// A line filled in from the order, changed to what actually arrived.
+  Future<void> _editLine(int i) async {
+    final changed = await showDeliveryLineSheet(
+      context,
+      line: _lines[i],
+      ordered: _ordered[i],
+    );
+    if (changed != null && mounted) {
+      setState(() {
+        _lines[i] = changed;
+        _failure = null;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -98,6 +157,7 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
     if (line != null && mounted) {
       setState(() {
         _lines.add(line);
+        _ordered.add(null);
         _failure = null;
       });
     }
@@ -148,6 +208,7 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
           paymentAccountId: _paidAmount.isPositive
               ? accounts.firstWhere((a) => a.isDefault).id
               : null,
+          fromOrderId: widget.fromOrder?.row.id,
         ),
       );
       container.bumpRefresh();
@@ -223,8 +284,23 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
       MediaQuery.viewInsetsOf(context).bottom + BlTokens.space10 * 2,
     ),
     children: [
+      if (widget.fromOrder case final order?)
+        Padding(
+          padding: const EdgeInsets.only(bottom: BlTokens.space2),
+          child: Align(
+            alignment: AlignmentDirectional.centerStart,
+            child: BlChip(
+              s.purchaseFromOrder(order.row.docNo),
+              icon: Icons.assignment_outlined,
+            ),
+          ),
+        ),
       BlCard(
-        onTap: () => unawaited(_pickSupplier()),
+        // The supplier is the order's: a delivery from somebody else is not
+        // one against this order.
+        onTap: widget.fromOrder == null
+            ? () => unawaited(_pickSupplier())
+            : null,
         child: Row(
           children: [
             Icon(Icons.local_shipping_outlined, size: 20, color: t.inkMuted),
@@ -258,8 +334,15 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
             padding: const EdgeInsets.only(bottom: BlTokens.space2),
             child: _LineTile(
               line: _lines[i],
+              ordered: _ordered[i],
               newAverage: _newAverages()?[i],
-              onRemove: () => setState(() => _lines.removeAt(i)),
+              onEdit: _ordered[i] == null
+                  ? null
+                  : () => unawaited(_editLine(i)),
+              onRemove: () => setState(() {
+                _lines.removeAt(i);
+                _ordered.removeAt(i);
+              }),
             ),
           ),
 
@@ -364,9 +447,20 @@ class _LineTile extends StatelessWidget {
     required this.line,
     required this.newAverage,
     required this.onRemove,
+    this.ordered,
+    this.onEdit,
   });
 
   final PurchaseLineDraft line;
+
+  /// The rate the purchase order quoted for this line (M41). A delivery at
+  /// any other rate says so on the line, in words, before it is saved:
+  /// "the bill and the order say different things" is caught at the door
+  /// rather than in the month's margins.
+  final Rate? ordered;
+
+  /// Changes a line filled in from the order to what actually arrived.
+  final VoidCallback? onEdit;
 
   /// What this line leaves the item's cost at, freight included. The fastest
   /// way to catch a mistyped quantity: two hundred sacks at Rs 120 makes the
@@ -378,6 +472,7 @@ class _LineTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = context.bl;
     return BlCard(
+      onTap: onEdit,
       child: Row(
         children: [
           Expanded(
@@ -399,6 +494,18 @@ class _LineTile extends StatelessWidget {
                   'x ${line.rate.amountOnly}',
                   style: TextStyle(fontSize: 13, color: t.inkMuted),
                 ),
+                if (rateDiffers(line.rate, ordered))
+                  Text(
+                    AppStrings.of(context).purchaseRateDiffers(
+                      line.rate.amountOnly,
+                      ordered!.amountOnly,
+                    ),
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: t.danger,
+                    ),
+                  ),
                 if (newAverage != null)
                   Text(
                     AppStrings.of(

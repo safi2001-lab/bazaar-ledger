@@ -126,6 +126,7 @@ final class PurchaseDraft {
     this.paid = Money.zero,
     this.paymentAccountId,
     this.notes,
+    this.fromOrderId,
   });
 
   /// Always a supplier. A purchase with no party is stock that appeared from
@@ -148,6 +149,11 @@ final class PurchaseDraft {
   final String? paymentAccountId;
 
   final String? notes;
+
+  /// The purchase order this delivery arrived against (M41), linked
+  /// `converted_from` so the order knows what of it has come in. A delivery
+  /// against no order leaves it null, as every delivery before M41 did.
+  final String? fromOrderId;
 
   Money get goodsTotal => Money.sum([for (final l in lines) l.lineTotal]);
   Money get total => goodsTotal + freight;
@@ -409,6 +415,7 @@ final class PurchaseBuilder {
       ),
       rounding: rounding,
       shortfall: shortfall,
+      fromOrderId: draft.fromOrderId,
       auditSummary:
           'Purchase ${billNumber.formatted} for ${draft.total.amountOnly} '
           'across ${lines.length} line(s)'

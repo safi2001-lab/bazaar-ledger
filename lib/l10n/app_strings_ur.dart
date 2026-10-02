@@ -5721,4 +5721,310 @@ class AppStringsUr extends AppStrings {
   @override
   String get lateArrivalsExplain =>
       'Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein.';
+
+  @override
+  String get homeOrders => 'Order';
+
+  @override
+  String get ordersTitle => 'Order';
+
+  @override
+  String get ordersPurchase => 'Purchase order (PO)';
+
+  @override
+  String get ordersPurchaseHint => 'Supplier se kya mangwaya, aur kitna aaya';
+
+  @override
+  String get ordersSale => 'Gahak ke order';
+
+  @override
+  String get ordersSaleHint => 'Gahak ne kya mangwaya, kitna diya, advance';
+
+  @override
+  String get ordersShortage => 'Mangwana hai';
+
+  @override
+  String get ordersShortageHint => 'Gahak ne maanga aur shelf par nahi tha';
+
+  @override
+  String get ordersReorder => 'Order banayein';
+
+  @override
+  String get ordersReorderHint =>
+      'Kam maal aur mangwana hai, supplier ke hisaab se';
+
+  @override
+  String ordersOpenCount(int count) {
+    return '$count khule';
+  }
+
+  @override
+  String get orderListEmptyPurchase => 'Abhi koi PO nahi';
+
+  @override
+  String get orderListEmptyPurchaseHint =>
+      'Supplier ko jo mangwana ho, uski PO banayein aur WhatsApp par bhejein';
+
+  @override
+  String get orderListEmptySale => 'Abhi koi gahak ka order nahi';
+
+  @override
+  String get orderListEmptySaleHint =>
+      'Gahak ka order likhein, advance ke saath ya baghair';
+
+  @override
+  String get orderNewPurchase => 'Nayi PO';
+
+  @override
+  String get orderNewSale => 'Naya gahak order';
+
+  @override
+  String get orderStatusOpen => 'Khula';
+
+  @override
+  String get orderStatusPartIn => 'Kuch aa gaya';
+
+  @override
+  String get orderStatusPartOut => 'Kuch de diya';
+
+  @override
+  String get orderStatusDoneIn => 'Sab aa gaya';
+
+  @override
+  String get orderStatusDoneOut => 'Sab de diya';
+
+  @override
+  String get orderStatusCancelled => 'Mansookh';
+
+  @override
+  String get orderStatusClosed => 'Band, baqi nahi aayega';
+
+  @override
+  String get orderLate => 'Der ho gayi';
+
+  @override
+  String orderDue(String date) {
+    return '$date tak';
+  }
+
+  @override
+  String orderAdvance(String amount) {
+    return 'Advance Rs $amount';
+  }
+
+  @override
+  String get orderCustomer => 'Gahak chunein';
+
+  @override
+  String get orderPartyRequired => 'Pehle supplier ya gahak chunein';
+
+  @override
+  String get orderNoLinesHint => 'Jo mangwana hai woh shamil karein';
+
+  @override
+  String get orderDueExpected => 'Kab tak aaye';
+
+  @override
+  String get orderDuePromised => 'Kab tak dena hai';
+
+  @override
+  String get orderDueTomorrow => 'Kal';
+
+  @override
+  String orderDueInDays(int count) {
+    return '$count din mein';
+  }
+
+  @override
+  String get orderDueInvalid =>
+      'Tareekh YYYY-MM-DD mein likhein, aaj ya aage ki';
+
+  @override
+  String get orderNote => 'Note (marzi se)';
+
+  @override
+  String get orderAdvanceAmount => 'Advance (marzi se)';
+
+  @override
+  String get orderSave => 'Order save karein';
+
+  @override
+  String orderSaved(String docNo) {
+    return 'Order $docNo ban gaya';
+  }
+
+  @override
+  String get orderRate => 'Rate';
+
+  @override
+  String get orderSupplierRate => 'Supplier ka rate';
+
+  @override
+  String get orderItemNeeds => 'Tadaad aur rate sahi likhein';
+
+  @override
+  String get orderItemUnitInexact =>
+      'Is unit mein yeh tadaad poori nahi banti. Doosra unit chunein.';
+
+  @override
+  String get orderReceive => 'Maal aa gaya';
+
+  @override
+  String get orderToCounter => 'Counter par bill banayein';
+
+  @override
+  String get orderTakeAdvance => 'Advance lein';
+
+  @override
+  String orderAdvanceTaken(String amount) {
+    return 'Rs $amount advance le liya';
+  }
+
+  @override
+  String get orderCancel => 'Order mansookh karein';
+
+  @override
+  String get orderCancelReason => 'Wajah';
+
+  @override
+  String get orderCancelNeedsReason => 'Mansookh karne ki wajah likhein';
+
+  @override
+  String orderCancelConfirm(String docNo) {
+    return '$docNo mansookh ho jaye ga. Jo aa chuka ya ja chuka woh rahe ga. Wajah likh kar dobara dabayein.';
+  }
+
+  @override
+  String get orderCancelled => 'Order mansookh ho gaya';
+
+  @override
+  String orderLineIn(String done, String left, String unit) {
+    return 'Aaya $done, baqi $left $unit';
+  }
+
+  @override
+  String orderLineOut(String done, String left, String unit) {
+    return 'Diya $done, baqi $left $unit';
+  }
+
+  @override
+  String get orderFollowUps => 'Is order se';
+
+  @override
+  String get orderNothingLeft => 'Is order mein ab kuch baqi nahi';
+
+  @override
+  String orderStillToCome(String amount) {
+    return 'Baqi: Rs $amount';
+  }
+
+  @override
+  String purchaseFromOrder(String docNo) {
+    return 'PO $docNo ke khilaf';
+  }
+
+  @override
+  String purchaseOrderedRate(String rate, String unit) {
+    return 'PO ka rate: $rate / $unit';
+  }
+
+  @override
+  String purchaseRateDiffers(String now, String ordered) {
+    return 'Rate PO se mukhtalif: $now vs $ordered';
+  }
+
+  @override
+  String get shortageAdd => 'Mangwana hai mein likhein';
+
+  @override
+  String get shortageEmpty => 'Kuch mangwana baqi nahi';
+
+  @override
+  String get shortageEmptyHint =>
+      'Gahak koi cheez maange jo shelf par nahi, to counter ke * se yahan likhein';
+
+  @override
+  String get shortageWhat => 'Kya maanga?';
+
+  @override
+  String get shortageWhatNeeded => 'Likhein gahak ne kya maanga';
+
+  @override
+  String get shortageQty => 'Kitna (marzi se)';
+
+  @override
+  String get shortageSave => 'List mein likhein';
+
+  @override
+  String shortageSaved(String name) {
+    return '$name list mein likh diya';
+  }
+
+  @override
+  String get shortageClear => 'Mil gaya';
+
+  @override
+  String get shortageShare => 'List bhejein';
+
+  @override
+  String get reorderEmpty => 'Abhi kuch mangwane ki zaroorat nahi';
+
+  @override
+  String get reorderEmptyHint =>
+      'Cheez par kam se kam stock likhein, ya counter se mangwana hai mein daalein';
+
+  @override
+  String get reorderNoSupplier => 'Supplier maloom nahi';
+
+  @override
+  String reorderFacts(String stock, String sold, String onOrder) {
+    return 'Stock $stock · $sold bika · $onOrder raaste mein';
+  }
+
+  @override
+  String get reorderAsked => 'Gahak ne maanga';
+
+  @override
+  String get reorderMakeOne => 'Is ki PO';
+
+  @override
+  String reorderMakeAll(int count) {
+    return 'PO banayein ($count supplier)';
+  }
+
+  @override
+  String reorderMade(int count) {
+    return '$count PO ban gayi';
+  }
+
+  @override
+  String get reorderNothingPicked =>
+      'Kuch chuna nahi. Tadaad likhein ya supplier chunein.';
+
+  @override
+  String get reportOpenPurchaseOrders => 'Khuli purchase orders';
+
+  @override
+  String get reportOpenPurchaseOrdersHint =>
+      'Supplier se jo maal aana baqi hai, kitne din se';
+
+  @override
+  String get reportOpenSaleOrders => 'Khule gahak order';
+
+  @override
+  String get reportOpenSaleOrdersHint =>
+      'Gahak ko jo dena baqi hai, advance ke saath';
+
+  @override
+  String get reportOrderItemsDue => 'Orders ki cheezein';
+
+  @override
+  String get reportOrderItemsDueHint =>
+      'Har cheez: kitna mangwaya, aaya ya gaya, baqi';
+
+  @override
+  String get orderItemAdd => 'Order mein daalein';
+
+  @override
+  String get shortageWrite => 'Likhein';
 }

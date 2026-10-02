@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../manufacturing/recipes_screen.dart';
+import '../orders/shortage_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'item_editor.dart';
 
@@ -67,6 +68,8 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
       appBar: AppBar(
         title: Text(s.itemsTitle),
         actions: [
+          // "*": asked for and not on the shelf (M41).
+          const ShortageButton(),
           // What the shop makes from what it has (M17).
           BlIconButton(
             icon: Icons.blender_outlined,

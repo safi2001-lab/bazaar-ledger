@@ -4,6 +4,7 @@ import 'builders.dart';
 import 'business_reports.dart';
 import 'filters.dart';
 import 'item_stock_reports.dart';
+import 'order_reports.dart';
 import 'party_builders.dart';
 import 'period.dart';
 import 'report_source.dart';
@@ -202,6 +203,17 @@ enum ReportKind {
 
   /// The items on both; as of today.
   openOrderItems,
+
+  // M41: purchase and sale orders, in `order_reports.dart`.
+
+  /// Purchase orders still to arrive; as of today.
+  openPurchaseOrders,
+
+  /// Sale orders still to go out, with their advances; as of today.
+  openSaleOrders,
+
+  /// The items on both, ordered, done and still to come; as of today.
+  orderItemsDue,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -492,6 +504,16 @@ final class ReportEngine {
       today: today,
       filters: filters,
       canSeeCosts: canSeeCosts,
+    ),
+    // M41
+    ReportKind.openPurchaseOrders ||
+    ReportKind.openSaleOrders ||
+    ReportKind.orderItemsDue => buildOrderDocumentReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      today: today,
+      filters: filters,
     ),
   };
 }

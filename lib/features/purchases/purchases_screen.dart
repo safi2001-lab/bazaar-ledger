@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../documents/document_screen.dart';
+import '../orders/order_list_screen.dart';
 import '../sales/send_sheet.dart';
 import 'purchase_screen.dart';
 import 'send_back_sheet.dart';
@@ -41,7 +42,22 @@ class PurchasesScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.purchasesTitle)),
+      appBar: AppBar(
+        title: Text(s.purchasesTitle),
+        actions: [
+          // What has been asked for and not yet come (M41), one tap from
+          // what has.
+          BlIconButton(
+            icon: Icons.assignment_outlined,
+            label: s.ordersPurchase,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const OrderListScreen(kind: OrderKind.purchase),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: purchases.when(
           loading: () => const Padding(

@@ -4,6 +4,7 @@ import 'business_builders.dart';
 import 'expense_builders.dart';
 import 'filters.dart';
 import 'order_builders.dart';
+import 'order_reports.dart';
 import 'period.dart';
 import 'report_engine.dart';
 import 'report_source.dart';
@@ -53,6 +54,8 @@ const businessReportsAsOfToday = {
   ReportKind.openQuotations,
   ReportKind.openChallans,
   ReportKind.openOrderItems,
+  // M41: purchase and sale orders, beside them in the Orders group.
+  ...orderDocumentReportKinds,
 };
 
 /// The documents the order reports count as open orders. A sale order and

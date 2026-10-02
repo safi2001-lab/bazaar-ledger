@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/paged.dart';
+import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../orders/reorder_screen.dart';
 import 'item_editor.dart';
 
 /// What is about to run out, worst first.
@@ -30,7 +32,21 @@ class LowStockScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.stockLowTitle)),
+      appBar: AppBar(
+        title: Text(s.stockLowTitle),
+        actions: [
+          // From what is running low to a purchase order per supplier, in
+          // one tap (M41).
+          if (ref.watch(appServicesProvider).can(Permission.purchases))
+            BlIconButton(
+              icon: Icons.playlist_add_check,
+              label: s.ordersReorder,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const ReorderScreen()),
+              ),
+            ),
+        ],
+      ),
       body: SafeArea(
         child: items.when(
           loading: () => const Padding(

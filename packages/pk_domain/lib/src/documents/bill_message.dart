@@ -23,7 +23,12 @@ import '../ports/receipt.dart';
 String billMessage(ReceiptData receipt) {
   final name = receipt.customerName?.trim();
   final isBill = switch (receipt.docTitle) {
-    'Quotation' || 'Delivery Challan' => false,
+    // An order (M41) is goods asked for, not goods sold: nothing is owed
+    // on it, and its advance is a receipt of its own.
+    'Quotation' ||
+    'Delivery Challan' ||
+    'Purchase Order' ||
+    'Sale Order' => false,
     _ => true,
   };
 
@@ -65,5 +70,7 @@ String _what(String docTitle) => switch (docTitle) {
   'Delivery Challan' => 'challan',
   'Purchase Bill' => 'kharidari ka bill',
   'Debit Note' => 'charge',
+  'Purchase Order' => 'order',
+  'Sale Order' => 'order',
   _ => 'bill',
 };

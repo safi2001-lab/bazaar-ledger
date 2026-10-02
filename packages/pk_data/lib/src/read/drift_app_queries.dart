@@ -2180,9 +2180,14 @@ final class DriftAppQueries implements AppQueries {
       // Goods a customer brought back (M57). It fell to the default and
       // called itself an Invoice, which is the one thing a credit is not.
       'sale_return' => ('Sale Return', 'Return No'),
+      // Orders (M41): goods asked for, sent to the supplier or handed to
+      // the customer as what was agreed. Neither is an invoice.
+      'purchase_order' => ('Purchase Order', 'PO No'),
+      'sale_order' => ('Sale Order', 'Order No'),
       _ => ('Invoice', 'Bill No'),
     };
-    final isPurchase = docType == 'purchase_bill';
+    final isPurchase =
+        docType == 'purchase_bill' || docType == 'purchase_order';
     final terms = _blankToNull(doc.readNullable<String>('terms'));
     final supplierBillNo = _blankToNull(
       doc.readNullable<String>('supplier_bill_no'),

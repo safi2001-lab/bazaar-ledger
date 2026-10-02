@@ -9931,6 +9931,528 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Yeh dusre counter par band hone se pehle bani thin, is liye le li gayin. Band dinon ka hisaab in ke saath dobara dekh lein.'**
   String get lateArrivalsExplain;
+
+  /// No description provided for @homeOrders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order'**
+  String get homeOrders;
+
+  /// No description provided for @ordersTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order'**
+  String get ordersTitle;
+
+  /// No description provided for @ordersPurchase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purchase order (PO)'**
+  String get ordersPurchase;
+
+  /// No description provided for @ordersPurchaseHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier se kya mangwaya, aur kitna aaya'**
+  String get ordersPurchaseHint;
+
+  /// No description provided for @ordersSale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ke order'**
+  String get ordersSale;
+
+  /// No description provided for @ordersSaleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ne kya mangwaya, kitna diya, advance'**
+  String get ordersSaleHint;
+
+  /// No description provided for @ordersShortage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mangwana hai'**
+  String get ordersShortage;
+
+  /// No description provided for @ordersShortageHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ne maanga aur shelf par nahi tha'**
+  String get ordersShortageHint;
+
+  /// No description provided for @ordersReorder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order banayein'**
+  String get ordersReorder;
+
+  /// No description provided for @ordersReorderHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam maal aur mangwana hai, supplier ke hisaab se'**
+  String get ordersReorderHint;
+
+  /// No description provided for @ordersOpenCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} khule'**
+  String ordersOpenCount(int count);
+
+  /// No description provided for @orderListEmptyPurchase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi PO nahi'**
+  String get orderListEmptyPurchase;
+
+  /// No description provided for @orderListEmptyPurchaseHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier ko jo mangwana ho, uski PO banayein aur WhatsApp par bhejein'**
+  String get orderListEmptyPurchaseHint;
+
+  /// No description provided for @orderListEmptySale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi gahak ka order nahi'**
+  String get orderListEmptySale;
+
+  /// No description provided for @orderListEmptySaleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ka order likhein, advance ke saath ya baghair'**
+  String get orderListEmptySaleHint;
+
+  /// No description provided for @orderNewPurchase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi PO'**
+  String get orderNewPurchase;
+
+  /// No description provided for @orderNewSale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya gahak order'**
+  String get orderNewSale;
+
+  /// No description provided for @orderStatusOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khula'**
+  String get orderStatusOpen;
+
+  /// No description provided for @orderStatusPartIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch aa gaya'**
+  String get orderStatusPartIn;
+
+  /// No description provided for @orderStatusPartOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch de diya'**
+  String get orderStatusPartOut;
+
+  /// No description provided for @orderStatusDoneIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab aa gaya'**
+  String get orderStatusDoneIn;
+
+  /// No description provided for @orderStatusDoneOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab de diya'**
+  String get orderStatusDoneOut;
+
+  /// No description provided for @orderStatusCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh'**
+  String get orderStatusCancelled;
+
+  /// No description provided for @orderStatusClosed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Band, baqi nahi aayega'**
+  String get orderStatusClosed;
+
+  /// No description provided for @orderLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der ho gayi'**
+  String get orderLate;
+
+  /// No description provided for @orderDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak'**
+  String orderDue(String date);
+
+  /// No description provided for @orderAdvance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Advance Rs {amount}'**
+  String orderAdvance(String amount);
+
+  /// No description provided for @orderCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak chunein'**
+  String get orderCustomer;
+
+  /// No description provided for @orderPartyRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle supplier ya gahak chunein'**
+  String get orderPartyRequired;
+
+  /// No description provided for @orderNoLinesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo mangwana hai woh shamil karein'**
+  String get orderNoLinesHint;
+
+  /// No description provided for @orderDueExpected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab tak aaye'**
+  String get orderDueExpected;
+
+  /// No description provided for @orderDuePromised.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab tak dena hai'**
+  String get orderDuePromised;
+
+  /// No description provided for @orderDueTomorrow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kal'**
+  String get orderDueTomorrow;
+
+  /// No description provided for @orderDueInDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} din mein'**
+  String orderDueInDays(int count);
+
+  /// No description provided for @orderDueInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh YYYY-MM-DD mein likhein, aaj ya aage ki'**
+  String get orderDueInvalid;
+
+  /// No description provided for @orderNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Note (marzi se)'**
+  String get orderNote;
+
+  /// No description provided for @orderAdvanceAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Advance (marzi se)'**
+  String get orderAdvanceAmount;
+
+  /// No description provided for @orderSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order save karein'**
+  String get orderSave;
+
+  /// No description provided for @orderSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order {docNo} ban gaya'**
+  String orderSaved(String docNo);
+
+  /// No description provided for @orderRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate'**
+  String get orderRate;
+
+  /// No description provided for @orderSupplierRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier ka rate'**
+  String get orderSupplierRate;
+
+  /// No description provided for @orderItemNeeds.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tadaad aur rate sahi likhein'**
+  String get orderItemNeeds;
+
+  /// No description provided for @orderItemUnitInexact.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is unit mein yeh tadaad poori nahi banti. Doosra unit chunein.'**
+  String get orderItemUnitInexact;
+
+  /// No description provided for @orderReceive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal aa gaya'**
+  String get orderReceive;
+
+  /// No description provided for @orderToCounter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter par bill banayein'**
+  String get orderToCounter;
+
+  /// No description provided for @orderTakeAdvance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Advance lein'**
+  String get orderTakeAdvance;
+
+  /// No description provided for @orderAdvanceTaken.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} advance le liya'**
+  String orderAdvanceTaken(String amount);
+
+  /// No description provided for @orderCancel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order mansookh karein'**
+  String get orderCancel;
+
+  /// No description provided for @orderCancelReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah'**
+  String get orderCancelReason;
+
+  /// No description provided for @orderCancelNeedsReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh karne ki wajah likhein'**
+  String get orderCancelNeedsReason;
+
+  /// No description provided for @orderCancelConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} mansookh ho jaye ga. Jo aa chuka ya ja chuka woh rahe ga. Wajah likh kar dobara dabayein.'**
+  String orderCancelConfirm(String docNo);
+
+  /// No description provided for @orderCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order mansookh ho gaya'**
+  String get orderCancelled;
+
+  /// No description provided for @orderLineIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaya {done}, baqi {left} {unit}'**
+  String orderLineIn(String done, String left, String unit);
+
+  /// No description provided for @orderLineOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Diya {done}, baqi {left} {unit}'**
+  String orderLineOut(String done, String left, String unit);
+
+  /// No description provided for @orderFollowUps.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is order se'**
+  String get orderFollowUps;
+
+  /// No description provided for @orderNothingLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is order mein ab kuch baqi nahi'**
+  String get orderNothingLeft;
+
+  /// No description provided for @orderStillToCome.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi: Rs {amount}'**
+  String orderStillToCome(String amount);
+
+  /// No description provided for @purchaseFromOrder.
+  ///
+  /// In ur, this message translates to:
+  /// **'PO {docNo} ke khilaf'**
+  String purchaseFromOrder(String docNo);
+
+  /// No description provided for @purchaseOrderedRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'PO ka rate: {rate} / {unit}'**
+  String purchaseOrderedRate(String rate, String unit);
+
+  /// No description provided for @purchaseRateDiffers.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate PO se mukhtalif: {now} vs {ordered}'**
+  String purchaseRateDiffers(String now, String ordered);
+
+  /// No description provided for @shortageAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mangwana hai mein likhein'**
+  String get shortageAdd;
+
+  /// No description provided for @shortageEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch mangwana baqi nahi'**
+  String get shortageEmpty;
+
+  /// No description provided for @shortageEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak koi cheez maange jo shelf par nahi, to counter ke * se yahan likhein'**
+  String get shortageEmptyHint;
+
+  /// No description provided for @shortageWhat.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya maanga?'**
+  String get shortageWhat;
+
+  /// No description provided for @shortageWhatNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Likhein gahak ne kya maanga'**
+  String get shortageWhatNeeded;
+
+  /// No description provided for @shortageQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna (marzi se)'**
+  String get shortageQty;
+
+  /// No description provided for @shortageSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'List mein likhein'**
+  String get shortageSave;
+
+  /// No description provided for @shortageSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} list mein likh diya'**
+  String shortageSaved(String name);
+
+  /// No description provided for @shortageClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mil gaya'**
+  String get shortageClear;
+
+  /// No description provided for @shortageShare.
+  ///
+  /// In ur, this message translates to:
+  /// **'List bhejein'**
+  String get shortageShare;
+
+  /// No description provided for @reorderEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi kuch mangwane ki zaroorat nahi'**
+  String get reorderEmpty;
+
+  /// No description provided for @reorderEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez par kam se kam stock likhein, ya counter se mangwana hai mein daalein'**
+  String get reorderEmptyHint;
+
+  /// No description provided for @reorderNoSupplier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier maloom nahi'**
+  String get reorderNoSupplier;
+
+  /// No description provided for @reorderFacts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock {stock} · {sold} bika · {onOrder} raaste mein'**
+  String reorderFacts(String stock, String sold, String onOrder);
+
+  /// No description provided for @reorderAsked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ne maanga'**
+  String get reorderAsked;
+
+  /// No description provided for @reorderMakeOne.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ki PO'**
+  String get reorderMakeOne;
+
+  /// No description provided for @reorderMakeAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'PO banayein ({count} supplier)'**
+  String reorderMakeAll(int count);
+
+  /// No description provided for @reorderMade.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} PO ban gayi'**
+  String reorderMade(int count);
+
+  /// No description provided for @reorderNothingPicked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch chuna nahi. Tadaad likhein ya supplier chunein.'**
+  String get reorderNothingPicked;
+
+  /// No description provided for @reportOpenPurchaseOrders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khuli purchase orders'**
+  String get reportOpenPurchaseOrders;
+
+  /// No description provided for @reportOpenPurchaseOrdersHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Supplier se jo maal aana baqi hai, kitne din se'**
+  String get reportOpenPurchaseOrdersHint;
+
+  /// No description provided for @reportOpenSaleOrders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khule gahak order'**
+  String get reportOpenSaleOrders;
+
+  /// No description provided for @reportOpenSaleOrdersHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ko jo dena baqi hai, advance ke saath'**
+  String get reportOpenSaleOrdersHint;
+
+  /// No description provided for @reportOrderItemsDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Orders ki cheezein'**
+  String get reportOrderItemsDue;
+
+  /// No description provided for @reportOrderItemsDueHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez: kitna mangwaya, aaya ya gaya, baqi'**
+  String get reportOrderItemsDueHint;
+
+  /// No description provided for @orderItemAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Order mein daalein'**
+  String get orderItemAdd;
+
+  /// No description provided for @shortageWrite.
+  ///
+  /// In ur, this message translates to:
+  /// **'Likhein'**
+  String get shortageWrite;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -713,6 +713,30 @@ final _orderReports = [
     hint: (s) => s.reportOpenOrderItemsHint,
     icon: Icons.checklist_outlined,
   ),
+  // M41: purchase and sale orders as documents.
+  ReportEntry(
+    kind: ReportKind.openPurchaseOrders,
+    group: ReportGroup.orders,
+    name: (s) => s.reportOpenPurchaseOrders,
+    hint: (s) => s.reportOpenPurchaseOrdersHint,
+    icon: Icons.assignment_outlined,
+    filters: const {ReportFilter.party},
+  ),
+  ReportEntry(
+    kind: ReportKind.openSaleOrders,
+    group: ReportGroup.orders,
+    name: (s) => s.reportOpenSaleOrders,
+    hint: (s) => s.reportOpenSaleOrdersHint,
+    icon: Icons.shopping_bag_outlined,
+    filters: const {ReportFilter.party},
+  ),
+  ReportEntry(
+    kind: ReportKind.orderItemsDue,
+    group: ReportGroup.orders,
+    name: (s) => s.reportOrderItemsDue,
+    hint: (s) => s.reportOrderItemsDueHint,
+    icon: Icons.inventory_outlined,
+  ),
 ];
 
 /// Loan accounts (M35).
