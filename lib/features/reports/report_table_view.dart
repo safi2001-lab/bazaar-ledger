@@ -87,6 +87,8 @@ class _ReportTableViewState extends State<ReportTableView> {
       final strong = style != RowStyle.line;
       final negative = switch (value) {
         final Money m => m.isNegative,
+        // Less than nothing on the shelf (M34), in red like a loss.
+        final Qty q => q.isNegative,
         _ => false,
       };
       final text = Padding(

@@ -8,6 +8,8 @@ import 'src/report_source.dart';
 
 export 'src/builders.dart';
 export 'src/filters.dart';
+export 'src/item_stock_builders.dart';
+export 'src/item_stock_source.dart';
 export 'src/party_builders.dart';
 export 'src/party_source.dart';
 export 'src/period.dart';

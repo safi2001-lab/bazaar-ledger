@@ -4142,4 +4142,146 @@ class AppStringsEn extends AppStrings {
   @override
   String get importNeedPartyColumns =>
       'The Name column was not found. Choose it under Columns below.';
+
+  @override
+  String get reportStockSummary => 'Stock summary';
+
+  @override
+  String get reportStockSummaryHint =>
+      'Every item\'s stock, price and value, on any day';
+
+  @override
+  String get reportItemByParty => 'Item report by party';
+
+  @override
+  String get reportItemByPartyHint => 'Who bought an item, and who supplied it';
+
+  @override
+  String get reportItemProfit => 'Item-wise profit and loss';
+
+  @override
+  String get reportItemProfitHint => 'What each item made over its cost';
+
+  @override
+  String get reportCategoryProfit => 'Category-wise profit and loss';
+
+  @override
+  String get reportCategoryProfitHint => 'Profit by item category';
+
+  @override
+  String get reportLowStock => 'Low stock summary';
+
+  @override
+  String get reportLowStockHint => 'What is running out, and how much to order';
+
+  @override
+  String get reportItemDetail => 'Item detail';
+
+  @override
+  String get reportItemDetailHint => 'One item\'s stock, day by day';
+
+  @override
+  String get reportStockDetail => 'Stock detail';
+
+  @override
+  String get reportStockDetailHint =>
+      'Opening, in, out and closing for every item';
+
+  @override
+  String get reportSalePurchaseByCategory => 'Sale and purchase by category';
+
+  @override
+  String get reportSalePurchaseByCategoryHint =>
+      'How much of each category was sold and bought';
+
+  @override
+  String get reportStockByCategory => 'Stock summary by category';
+
+  @override
+  String get reportStockByCategoryHint =>
+      'Stock and its value, a category at a time';
+
+  @override
+  String get reportBatches => 'Item batch report';
+
+  @override
+  String get reportBatchesHint => 'Every batch on the shelf, with its expiry';
+
+  @override
+  String get reportSerials => 'Serial and IMEI report';
+
+  @override
+  String get reportSerialsHint =>
+      'Every numbered piece: here, sold or sent back';
+
+  @override
+  String get reportItemDiscount => 'Item-wise discount';
+
+  @override
+  String get reportItemDiscountHint => 'What came off each item\'s price';
+
+  @override
+  String get reportStockTransfers => 'Stock transfer report';
+
+  @override
+  String get reportStockTransfersHint =>
+      'Goods moved between the shop, godowns and vans';
+
+  @override
+  String get reportProduction => 'Production register';
+
+  @override
+  String get reportProductionHint =>
+      'Every production run, what it used and what it cost';
+
+  @override
+  String get reportFastSlow => 'Fast, slow and dead stock';
+
+  @override
+  String get reportFastSlowHint =>
+      'What sells, what does not, and the money stuck in it';
+
+  @override
+  String get reportStockAgeing => 'Stock ageing';
+
+  @override
+  String get reportStockAgeingHint =>
+      'How long the stock has been on the shelf';
+
+  @override
+  String get reportFilterPlace => 'Place';
+
+  @override
+  String get reportFilterInStock => 'In stock only';
+
+  @override
+  String get reportFilterAsOf => 'As of';
+
+  @override
+  String get reportFilterSalesDays => 'Selling over';
+
+  @override
+  String get reportFilterCoverDays => 'Order for';
+
+  @override
+  String get reportFilterFastAt => 'Fast from';
+
+  @override
+  String get reportFilterSlowBelow => 'Slow under';
+
+  @override
+  String get reportFilterSerial => 'Serial or IMEI';
+
+  @override
+  String get reportFilterSerialHint => 'The number, or its last few digits';
+
+  @override
+  String reportFilterDaysValue(int days) {
+    return '$days days';
+  }
+
+  @override
+  String reportFilterBillsValue(int bills) {
+    return '$bills bills';
+  }
 }

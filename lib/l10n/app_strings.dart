@@ -7261,6 +7261,264 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Naam ka column nahin mila. Neeche Columns mein chunein.'**
   String get importNeedPartyColumns;
+
+  /// No description provided for @reportStockSummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock ka khulasa'**
+  String get reportStockSummary;
+
+  /// No description provided for @reportStockSummaryHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez ka stock, qeemat aur maaliyat, kisi bhi din ki'**
+  String get reportStockSummaryHint;
+
+  /// No description provided for @reportItemByParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez ki party-war report'**
+  String get reportItemByParty;
+
+  /// No description provided for @reportItemByPartyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh cheez kis ne khareedi aur kis ne di'**
+  String get reportItemByPartyHint;
+
+  /// No description provided for @reportItemProfit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez-war nafa nuqsan'**
+  String get reportItemProfit;
+
+  /// No description provided for @reportItemProfitHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez ne laagat se kitna kamaya'**
+  String get reportItemProfitHint;
+
+  /// No description provided for @reportCategoryProfit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Category-war nafa nuqsan'**
+  String get reportCategoryProfit;
+
+  /// No description provided for @reportCategoryProfitHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har category ka nafa'**
+  String get reportCategoryProfitHint;
+
+  /// No description provided for @reportLowStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam stock'**
+  String get reportLowStock;
+
+  /// No description provided for @reportLowStockHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya khatam ho raha hai aur kitna mangwana hai'**
+  String get reportLowStockHint;
+
+  /// No description provided for @reportItemDetail.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez ki tafseel'**
+  String get reportItemDetail;
+
+  /// No description provided for @reportItemDetailHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek cheez ka stock, din ba din'**
+  String get reportItemDetailHint;
+
+  /// No description provided for @reportStockDetail.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock ki tafseel'**
+  String get reportStockDetail;
+
+  /// No description provided for @reportStockDetailHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez ka shuru ka stock, aamad, kharch aur akhir'**
+  String get reportStockDetailHint;
+
+  /// No description provided for @reportSalePurchaseByCategory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Category-war bikri aur khareed'**
+  String get reportSalePurchaseByCategory;
+
+  /// No description provided for @reportSalePurchaseByCategoryHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har category kitni biki aur kitni aayi'**
+  String get reportSalePurchaseByCategoryHint;
+
+  /// No description provided for @reportStockByCategory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Category-war stock'**
+  String get reportStockByCategory;
+
+  /// No description provided for @reportStockByCategoryHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har category ka stock aur maaliyat'**
+  String get reportStockByCategoryHint;
+
+  /// No description provided for @reportBatches.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch report'**
+  String get reportBatches;
+
+  /// No description provided for @reportBatchesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shelf par har batch, expiry ke saath'**
+  String get reportBatchesHint;
+
+  /// No description provided for @reportSerials.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serial aur IMEI report'**
+  String get reportSerials;
+
+  /// No description provided for @reportSerialsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har numbered cheez: mojood, biki ya wapas gayi'**
+  String get reportSerialsHint;
+
+  /// No description provided for @reportItemDiscount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez-war discount'**
+  String get reportItemDiscount;
+
+  /// No description provided for @reportItemDiscountHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez ki qeemat se kitna kam kiya'**
+  String get reportItemDiscountHint;
+
+  /// No description provided for @reportStockTransfers.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal ki muntaqili'**
+  String get reportStockTransfers;
+
+  /// No description provided for @reportStockTransfersHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan, godown aur van ke darmiyan maal'**
+  String get reportStockTransfersHint;
+
+  /// No description provided for @reportProduction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Production register'**
+  String get reportProduction;
+
+  /// No description provided for @reportProductionHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har production: kya laga aur kitne ka'**
+  String get reportProductionHint;
+
+  /// No description provided for @reportFastSlow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tez, sust aur band maal'**
+  String get reportFastSlow;
+
+  /// No description provided for @reportFastSlowHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya bikta hai, kya nahi, aur kitna paisa phansa hai'**
+  String get reportFastSlowHint;
+
+  /// No description provided for @reportStockAgeing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal kitna purana'**
+  String get reportStockAgeing;
+
+  /// No description provided for @reportStockAgeingHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal kab se shelf par para hai'**
+  String get reportStockAgeingHint;
+
+  /// No description provided for @reportFilterPlace.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jagah'**
+  String get reportFilterPlace;
+
+  /// No description provided for @reportFilterInStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf mojood maal'**
+  String get reportFilterInStock;
+
+  /// No description provided for @reportFilterAsOf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is din tak'**
+  String get reportFilterAsOf;
+
+  /// No description provided for @reportFilterSalesDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri kitne din ki'**
+  String get reportFilterSalesDays;
+
+  /// No description provided for @reportFilterCoverDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne din ka maal'**
+  String get reportFilterCoverDays;
+
+  /// No description provided for @reportFilterFastAt.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tez kitne bills se'**
+  String get reportFilterFastAt;
+
+  /// No description provided for @reportFilterSlowBelow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sust kitne bills se kam'**
+  String get reportFilterSlowBelow;
+
+  /// No description provided for @reportFilterSerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serial ya IMEI'**
+  String get reportFilterSerial;
+
+  /// No description provided for @reportFilterSerialHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Number, ya uske aakhri chand hindse'**
+  String get reportFilterSerialHint;
+
+  /// No description provided for @reportFilterDaysValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din'**
+  String reportFilterDaysValue(int days);
+
+  /// No description provided for @reportFilterBillsValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{bills} bill'**
+  String reportFilterBillsValue(int bills);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

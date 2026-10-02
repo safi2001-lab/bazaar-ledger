@@ -2471,5 +2471,58 @@
   "importRefusedOld": "This .xls is from Excel 95 or older. Save it again as .xlsx and choose that.",
   "importRefusedPassword": "This workbook has a password. Take the password off in Excel, save it, and choose it again.",
   "importNeedItemColumns": "The Name and Sale price columns were not found. Choose them under Columns below.",
-  "importNeedPartyColumns": "The Name column was not found. Choose it under Columns below."
+  "importNeedPartyColumns": "The Name column was not found. Choose it under Columns below.",
+  "reportStockSummary": "Stock summary",
+  "reportStockSummaryHint": "Every item's stock, price and value, on any day",
+  "reportItemByParty": "Item report by party",
+  "reportItemByPartyHint": "Who bought an item, and who supplied it",
+  "reportItemProfit": "Item-wise profit and loss",
+  "reportItemProfitHint": "What each item made over its cost",
+  "reportCategoryProfit": "Category-wise profit and loss",
+  "reportCategoryProfitHint": "Profit by item category",
+  "reportLowStock": "Low stock summary",
+  "reportLowStockHint": "What is running out, and how much to order",
+  "reportItemDetail": "Item detail",
+  "reportItemDetailHint": "One item's stock, day by day",
+  "reportStockDetail": "Stock detail",
+  "reportStockDetailHint": "Opening, in, out and closing for every item",
+  "reportSalePurchaseByCategory": "Sale and purchase by category",
+  "reportSalePurchaseByCategoryHint": "How much of each category was sold and bought",
+  "reportStockByCategory": "Stock summary by category",
+  "reportStockByCategoryHint": "Stock and its value, a category at a time",
+  "reportBatches": "Item batch report",
+  "reportBatchesHint": "Every batch on the shelf, with its expiry",
+  "reportSerials": "Serial and IMEI report",
+  "reportSerialsHint": "Every numbered piece: here, sold or sent back",
+  "reportItemDiscount": "Item-wise discount",
+  "reportItemDiscountHint": "What came off each item's price",
+  "reportStockTransfers": "Stock transfer report",
+  "reportStockTransfersHint": "Goods moved between the shop, godowns and vans",
+  "reportProduction": "Production register",
+  "reportProductionHint": "Every production run, what it used and what it cost",
+  "reportFastSlow": "Fast, slow and dead stock",
+  "reportFastSlowHint": "What sells, what does not, and the money stuck in it",
+  "reportStockAgeing": "Stock ageing",
+  "reportStockAgeingHint": "How long the stock has been on the shelf",
+  "reportFilterPlace": "Place",
+  "reportFilterInStock": "In stock only",
+  "reportFilterAsOf": "As of",
+  "reportFilterSalesDays": "Selling over",
+  "reportFilterCoverDays": "Order for",
+  "reportFilterFastAt": "Fast from",
+  "reportFilterSlowBelow": "Slow under",
+  "reportFilterSerial": "Serial or IMEI",
+  "reportFilterSerialHint": "The number, or its last few digits",
+  "reportFilterDaysValue": "{days} days",
+  "@reportFilterDaysValue": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "reportFilterBillsValue": "{bills} bills",
+  "@reportFilterBillsValue": {
+    "placeholders": {
+      "bills": {"type": "int"}
+    }
+  }
 }

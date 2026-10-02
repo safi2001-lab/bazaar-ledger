@@ -1,6 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'filters.dart';
+import 'item_stock_source.dart';
 import 'party_source.dart';
 import 'period.dart';
 import 'transaction_source.dart';
@@ -263,7 +264,10 @@ final class PurchaseRegisterLine {
 /// interface, beside its own row types, and this one takes them all: a new
 /// group is a new file and one more name on the `implements` line.
 abstract interface class ReportSource
-    implements TransactionReportSource, PartyReportSource {
+    implements
+        TransactionReportSource,
+        PartyReportSource,
+        ItemStockReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

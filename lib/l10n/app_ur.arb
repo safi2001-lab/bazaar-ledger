@@ -2585,5 +2585,58 @@
   "importRefusedOld": "Yeh .xls Excel 95 ya us se purani hai. Ise .xlsx mein dobara save kar ke chunein.",
   "importRefusedPassword": "Is workbook par password hai. Excel mein password hata kar save karein aur dobara chunein.",
   "importNeedItemColumns": "Naam aur bechne ki qeemat ke columns nahin mile. Neeche Columns mein chunein.",
-  "importNeedPartyColumns": "Naam ka column nahin mila. Neeche Columns mein chunein."
+  "importNeedPartyColumns": "Naam ka column nahin mila. Neeche Columns mein chunein.",
+  "reportStockSummary": "Stock ka khulasa",
+  "reportStockSummaryHint": "Har cheez ka stock, qeemat aur maaliyat, kisi bhi din ki",
+  "reportItemByParty": "Cheez ki party-war report",
+  "reportItemByPartyHint": "Yeh cheez kis ne khareedi aur kis ne di",
+  "reportItemProfit": "Cheez-war nafa nuqsan",
+  "reportItemProfitHint": "Har cheez ne laagat se kitna kamaya",
+  "reportCategoryProfit": "Category-war nafa nuqsan",
+  "reportCategoryProfitHint": "Har category ka nafa",
+  "reportLowStock": "Kam stock",
+  "reportLowStockHint": "Kya khatam ho raha hai aur kitna mangwana hai",
+  "reportItemDetail": "Cheez ki tafseel",
+  "reportItemDetailHint": "Ek cheez ka stock, din ba din",
+  "reportStockDetail": "Stock ki tafseel",
+  "reportStockDetailHint": "Har cheez ka shuru ka stock, aamad, kharch aur akhir",
+  "reportSalePurchaseByCategory": "Category-war bikri aur khareed",
+  "reportSalePurchaseByCategoryHint": "Har category kitni biki aur kitni aayi",
+  "reportStockByCategory": "Category-war stock",
+  "reportStockByCategoryHint": "Har category ka stock aur maaliyat",
+  "reportBatches": "Batch report",
+  "reportBatchesHint": "Shelf par har batch, expiry ke saath",
+  "reportSerials": "Serial aur IMEI report",
+  "reportSerialsHint": "Har numbered cheez: mojood, biki ya wapas gayi",
+  "reportItemDiscount": "Cheez-war discount",
+  "reportItemDiscountHint": "Har cheez ki qeemat se kitna kam kiya",
+  "reportStockTransfers": "Maal ki muntaqili",
+  "reportStockTransfersHint": "Dukaan, godown aur van ke darmiyan maal",
+  "reportProduction": "Production register",
+  "reportProductionHint": "Har production: kya laga aur kitne ka",
+  "reportFastSlow": "Tez, sust aur band maal",
+  "reportFastSlowHint": "Kya bikta hai, kya nahi, aur kitna paisa phansa hai",
+  "reportStockAgeing": "Maal kitna purana",
+  "reportStockAgeingHint": "Maal kab se shelf par para hai",
+  "reportFilterPlace": "Jagah",
+  "reportFilterInStock": "Sirf mojood maal",
+  "reportFilterAsOf": "Is din tak",
+  "reportFilterSalesDays": "Bikri kitne din ki",
+  "reportFilterCoverDays": "Kitne din ka maal",
+  "reportFilterFastAt": "Tez kitne bills se",
+  "reportFilterSlowBelow": "Sust kitne bills se kam",
+  "reportFilterSerial": "Serial ya IMEI",
+  "reportFilterSerialHint": "Number, ya uske aakhri chand hindse",
+  "reportFilterDaysValue": "{days} din",
+  "@reportFilterDaysValue": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "reportFilterBillsValue": "{bills} bill",
+  "@reportFilterBillsValue": {
+    "placeholders": {
+      "bills": {"type": "int"}
+    }
+  }
 }

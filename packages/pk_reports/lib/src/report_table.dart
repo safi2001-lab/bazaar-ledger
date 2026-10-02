@@ -64,16 +64,26 @@ enum ReportLinkKind {
 
   /// A customer or supplier.
   party,
+
+  /// An item, whose stock history it opens (M34).
+  item,
 }
 
 /// The thing behind a row, so the screen can open it. The report says what
 /// the row is; the screen decides what opening it means.
 final class ReportLink {
   const ReportLink.document(this.id, {required this.label, this.docType})
-    : kind = ReportLinkKind.document;
+    : kind = ReportLinkKind.document,
+      unitCode = null;
 
   const ReportLink.party(this.id, {required this.label})
     : kind = ReportLinkKind.party,
+      docType = null,
+      unitCode = null;
+
+  /// An item (M34): its stock history says where every piece went.
+  const ReportLink.item(this.id, {required this.label, this.unitCode})
+    : kind = ReportLinkKind.item,
       docType = null;
 
   final ReportLinkKind kind;
@@ -84,19 +94,29 @@ final class ReportLink {
 
   /// A document's `doc_type`: `sale_invoice`, `purchase_bill`...
   final String? docType;
+
+  /// An item's base unit, which its history counts in (M34).
+  final String? unitCode;
 }
 
 /// One figure from the top of a report, shown as a tile above the table
 /// (M33): Total sale, Received, Balance. Computed by the builder with the
 /// rest, never summed by the screen.
 final class ReportFigure {
-  const ReportFigure(this.label, Money this.amount) : count = null;
+  const ReportFigure(this.label, Money this.amount, {this.isCost = false})
+    : count = null;
 
-  const ReportFigure.count(this.label, int this.count) : amount = null;
+  const ReportFigure.count(this.label, int this.count)
+    : amount = null,
+      isCost = false;
 
   final String label;
   final Money? amount;
   final int? count;
+
+  /// What the goods cost, as a column marked `isCost` is (M34): a stock
+  /// report a cashier may read still never shows them its value at cost.
+  final bool isCost;
 
   /// How this figure compares with the same figure for an earlier period,
   /// in basis points of what it was then; null when there is nothing to
@@ -192,13 +212,19 @@ final class ReportTable {
         );
 
   /// The same table without its cost columns (M33), for a role that may not
-  /// see what goods cost.
+  /// see what goods cost, and without its headline figures at cost (M34).
   ReportTable withoutCostColumns() {
     final keep = [
       for (var i = 0; i < columns.length; i++)
         if (!columns[i].isCost) i,
     ];
-    if (keep.length == columns.length) return this;
+    final figures = [
+      for (final f in summary)
+        if (!f.isCost) f,
+    ];
+    if (keep.length == columns.length && figures.length == summary.length) {
+      return this;
+    }
     return ReportTable(
       id: id,
       title: title,
@@ -213,7 +239,7 @@ final class ReportTable {
           ),
       ],
       notes: notes,
-      summary: summary,
+      summary: figures,
       filters: filters,
     );
   }

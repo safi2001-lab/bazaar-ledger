@@ -2,6 +2,7 @@ import 'package:pk_domain/pk_domain.dart';
 
 import 'builders.dart';
 import 'filters.dart';
+import 'item_stock_reports.dart';
 import 'party_builders.dart';
 import 'period.dart';
 import 'report_source.dart';
@@ -79,6 +80,58 @@ enum ReportKind {
 
   /// Sales and purchases by party group (M33).
   salePurchaseByPartyGroup,
+
+  // M34: item and stock. Those read as of a day take the `asOf` filter
+  // where they declare it, and today otherwise.
+
+  /// Every item's stock, prices and book value; as of a day (M34).
+  stockSummary,
+
+  /// Who bought and supplied one item (M34).
+  itemByParty,
+
+  /// Profit by item (M34).
+  itemProfitAndLoss,
+
+  /// Profit by item category (M34).
+  categoryProfitAndLoss,
+
+  /// What is at or below its floor, and how much to order; as of today
+  /// (M34).
+  lowStock,
+
+  /// One item's stock, day by day (M34).
+  itemDetail,
+
+  /// Every item's opening, movements and closing, valued (M34).
+  stockDetail,
+
+  /// Sales and purchases by item category (M34).
+  salePurchaseByCategory,
+
+  /// Stock and its value by item category; as of a day (M34).
+  stockSummaryByCategory,
+
+  /// Every batch on the shelf; as of today (M34).
+  itemBatches,
+
+  /// Every serial or IMEI number, here or gone; as of today (M34).
+  itemSerials,
+
+  /// What came off each item's price (M34).
+  itemDiscount,
+
+  /// Goods moved between the shop floor, godowns and vans (M34).
+  stockTransfers,
+
+  /// Every production run (M34).
+  productionRegister,
+
+  /// Items banded by how they sell; as of today (M34).
+  fastSlowStock,
+
+  /// What is on the shelf by how long it has been there; as of a day (M34).
+  stockAgeing,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -93,7 +146,15 @@ final class ReportEngine {
       kind == ReportKind.trialBalance ||
       kind == ReportKind.balanceSheet ||
       kind == ReportKind.expiry ||
-      kind == ReportKind.allParties;
+      kind == ReportKind.allParties ||
+      // M34: item and stock.
+      kind == ReportKind.stockSummary ||
+      kind == ReportKind.lowStock ||
+      kind == ReportKind.stockSummaryByCategory ||
+      kind == ReportKind.itemBatches ||
+      kind == ReportKind.itemSerials ||
+      kind == ReportKind.fastSlowStock ||
+      kind == ReportKind.stockAgeing;
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -108,7 +169,11 @@ final class ReportEngine {
     ReportKind.balanceSheet ||
     ReportKind.expiry ||
     ReportKind.billWiseProfit ||
-    ReportKind.partyProfitAndLoss => true,
+    ReportKind.partyProfitAndLoss ||
+    // M34: item and stock.
+    ReportKind.itemProfitAndLoss ||
+    ReportKind.categoryProfitAndLoss ||
+    ReportKind.stockAgeing => true,
     _ => false,
   };
 
@@ -301,6 +366,30 @@ final class ReportEngine {
     ReportKind.salePurchaseByPartyGroup => salePurchaseByPartyGroup(
       period,
       await source.partyTrade(firmId, period, filters: filters),
+    ),
+    // M34: item and stock.
+    ReportKind.stockSummary ||
+    ReportKind.itemByParty ||
+    ReportKind.itemProfitAndLoss ||
+    ReportKind.categoryProfitAndLoss ||
+    ReportKind.lowStock ||
+    ReportKind.itemDetail ||
+    ReportKind.stockDetail ||
+    ReportKind.salePurchaseByCategory ||
+    ReportKind.stockSummaryByCategory ||
+    ReportKind.itemBatches ||
+    ReportKind.itemSerials ||
+    ReportKind.itemDiscount ||
+    ReportKind.stockTransfers ||
+    ReportKind.productionRegister ||
+    ReportKind.fastSlowStock ||
+    ReportKind.stockAgeing => buildItemStockReport(
+      source,
+      kind,
+      firmId,
+      period,
+      filters.asOf ?? today,
+      filters,
     ),
   };
 }

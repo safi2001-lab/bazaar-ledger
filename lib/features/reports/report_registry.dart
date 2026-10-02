@@ -284,8 +284,178 @@ final _partyReports = [
   ),
 ];
 
-/// Item and stock (M34 fills this group out).
+/// Item and stock (M34): Vyapar's item and stock reports in its order, the
+/// two it does not have (fast, slow and dead stock, and stock ageing), then
+/// the three the books have had since M8 and M11.
+///
+/// Stock value stays beside the new Stock summary rather than being folded
+/// into it: it is the owner's check of the shelf at today's average cost
+/// against the books, closed to a role that may not see costs, where the
+/// stock summary is the shop's list, open to the counter without its cost
+/// columns. The premium ones ride the features the plans already sell:
+/// batches and serials on tracking, transfers on godowns, production on
+/// manufacturing, and profit on the books.
+const _stockFilters = {
+  ReportFilter.itemCategory,
+  ReportFilter.location,
+  ReportFilter.inStockOnly,
+  ReportFilter.asOf,
+};
+
+const _tradeFilters = {ReportFilter.item, ReportFilter.itemCategory};
+
 final _itemStockReports = [
+  ReportEntry(
+    kind: ReportKind.stockSummary,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportStockSummary,
+    hint: (s) => s.reportStockSummaryHint,
+    icon: Icons.inventory_outlined,
+    filters: _stockFilters,
+  ),
+  ReportEntry(
+    kind: ReportKind.itemByParty,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportItemByParty,
+    hint: (s) => s.reportItemByPartyHint,
+    icon: Icons.person_pin_outlined,
+    filters: const {ReportFilter.item},
+  ),
+  ReportEntry(
+    kind: ReportKind.itemProfitAndLoss,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportItemProfit,
+    hint: (s) => s.reportItemProfitHint,
+    icon: Icons.stacked_line_chart,
+    plan: PlanFeature.accountingReports,
+    filters: _tradeFilters,
+  ),
+  ReportEntry(
+    kind: ReportKind.categoryProfitAndLoss,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportCategoryProfit,
+    hint: (s) => s.reportCategoryProfitHint,
+    icon: Icons.donut_small_outlined,
+    plan: PlanFeature.accountingReports,
+    filters: const {ReportFilter.itemCategory},
+  ),
+  ReportEntry(
+    kind: ReportKind.lowStock,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportLowStock,
+    hint: (s) => s.reportLowStockHint,
+    icon: Icons.production_quantity_limits,
+    filters: const {
+      ReportFilter.itemCategory,
+      ReportFilter.salesDays,
+      ReportFilter.coverDays,
+    },
+  ),
+  ReportEntry(
+    kind: ReportKind.itemDetail,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportItemDetail,
+    hint: (s) => s.reportItemDetailHint,
+    icon: Icons.timeline,
+    filters: const {ReportFilter.item, ReportFilter.location},
+  ),
+  ReportEntry(
+    kind: ReportKind.stockDetail,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportStockDetail,
+    hint: (s) => s.reportStockDetailHint,
+    icon: Icons.table_rows_outlined,
+    filters: const {
+      ReportFilter.item,
+      ReportFilter.itemCategory,
+      ReportFilter.location,
+    },
+  ),
+  ReportEntry(
+    kind: ReportKind.salePurchaseByCategory,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportSalePurchaseByCategory,
+    hint: (s) => s.reportSalePurchaseByCategoryHint,
+    icon: Icons.category_outlined,
+    filters: const {ReportFilter.itemCategory},
+  ),
+  ReportEntry(
+    kind: ReportKind.stockSummaryByCategory,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportStockByCategory,
+    hint: (s) => s.reportStockByCategoryHint,
+    icon: Icons.view_module_outlined,
+    filters: const {ReportFilter.location, ReportFilter.asOf},
+  ),
+  ReportEntry(
+    kind: ReportKind.itemBatches,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportBatches,
+    hint: (s) => s.reportBatchesHint,
+    icon: Icons.medication_outlined,
+    plan: PlanFeature.tracking,
+    filters: const {
+      ReportFilter.item,
+      ReportFilter.itemCategory,
+      ReportFilter.location,
+    },
+  ),
+  ReportEntry(
+    kind: ReportKind.itemSerials,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportSerials,
+    hint: (s) => s.reportSerialsHint,
+    icon: Icons.qr_code_2,
+    plan: PlanFeature.tracking,
+    filters: const {ReportFilter.serial, ReportFilter.item},
+  ),
+  ReportEntry(
+    kind: ReportKind.itemDiscount,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportItemDiscount,
+    hint: (s) => s.reportItemDiscountHint,
+    icon: Icons.local_offer_outlined,
+    filters: _tradeFilters,
+  ),
+  ReportEntry(
+    kind: ReportKind.stockTransfers,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportStockTransfers,
+    hint: (s) => s.reportStockTransfersHint,
+    icon: Icons.move_down,
+    plan: PlanFeature.godowns,
+    filters: const {ReportFilter.item, ReportFilter.location},
+  ),
+  ReportEntry(
+    kind: ReportKind.productionRegister,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportProduction,
+    hint: (s) => s.reportProductionHint,
+    icon: Icons.precision_manufacturing_outlined,
+    plan: PlanFeature.manufacturing,
+    filters: const {ReportFilter.item},
+  ),
+  ReportEntry(
+    kind: ReportKind.fastSlowStock,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportFastSlow,
+    hint: (s) => s.reportFastSlowHint,
+    icon: Icons.speed,
+    filters: const {
+      ReportFilter.itemCategory,
+      ReportFilter.salesDays,
+      ReportFilter.fastAt,
+      ReportFilter.slowBelow,
+    },
+  ),
+  ReportEntry(
+    kind: ReportKind.stockAgeing,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportStockAgeing,
+    hint: (s) => s.reportStockAgeingHint,
+    icon: Icons.hourglass_empty,
+    filters: const {ReportFilter.itemCategory, ReportFilter.asOf},
+  ),
   ReportEntry(
     kind: ReportKind.salesByItem,
     group: ReportGroup.itemStock,

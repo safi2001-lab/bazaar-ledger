@@ -5,6 +5,7 @@ import 'package:pk_reports/pk_reports.dart';
 import '../db/app_database.dart';
 import 'drift_app_queries.dart';
 
+part 'reports/item_stock_queries.dart';
 part 'reports/party_queries.dart';
 part 'reports/sql_filters.dart';
 part 'reports/transaction_queries.dart';
@@ -22,7 +23,7 @@ part 'reports/transaction_queries.dart';
 /// more name to the `with` clause, and the filters every group narrows by
 /// are written once, in `reports/sql_filters.dart`.
 final class DriftReportSource
-    with _TransactionQueries, _PartyQueries
+    with _TransactionQueries, _PartyQueries, _ItemStockQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 
@@ -795,10 +796,21 @@ final class DriftReportSource
               detail: r.readNullable<String>('phone'),
             ),
         ];
+      // M34: the places goods are kept; the other stock filters are the
+      // screen's own, a date, a number of days or a typed serial.
+      case ReportFilter.location:
+        return _placeChoices(firmId, term);
       case ReportFilter.transactionType ||
           ReportFilter.paymentMode ||
           ReportFilter.paymentStatus ||
-          ReportFilter.withBalance:
+          ReportFilter.withBalance ||
+          ReportFilter.inStockOnly ||
+          ReportFilter.asOf ||
+          ReportFilter.salesDays ||
+          ReportFilter.coverDays ||
+          ReportFilter.fastAt ||
+          ReportFilter.slowBelow ||
+          ReportFilter.serial:
         return const [];
     }
   }

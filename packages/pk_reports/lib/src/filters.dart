@@ -7,6 +7,8 @@
 /// of bills, and the one customer's thirty of them are an index away.
 library;
 
+import 'package:pk_domain/pk_domain.dart';
+
 /// One way of narrowing a report. Each report declares which it accepts,
 /// and the screen offers exactly those.
 enum ReportFilter {
@@ -36,6 +38,33 @@ enum ReportFilter {
 
   /// Only parties with something owed one way or the other.
   withBalance,
+
+  // M34: the item and stock reports.
+
+  /// One place goods are kept: the shop floor, a godown, a van.
+  location,
+
+  /// Only items with something on the shelf.
+  inStockOnly,
+
+  /// The day a report that stands as of today is read for instead: the
+  /// stock as it was at the close of that day.
+  asOf,
+
+  /// How many days of selling a report looks back over.
+  salesDays,
+
+  /// How many days of selling a reorder is meant to last.
+  coverDays,
+
+  /// How many bills in the period make an item fast-moving.
+  fastAt,
+
+  /// Fewer bills than this in the period make an item slow-moving.
+  slowBelow,
+
+  /// A serial or IMEI number, or part of one.
+  serial,
 }
 
 /// How much of a bill has been paid.
@@ -151,6 +180,16 @@ final class ReportFilters {
     this.userName,
     this.paymentStatus,
     this.withBalanceOnly = false,
+    // M34: the item and stock reports.
+    this.location,
+    this.locationName,
+    this.inStockOnly = false,
+    this.asOf,
+    this.salesDays,
+    this.coverDays,
+    this.fastAt,
+    this.slowBelow,
+    this.serial,
   });
 
   /// Nothing narrowed.
@@ -177,8 +216,38 @@ final class ReportFilters {
   final PaymentStatus? paymentStatus;
   final bool withBalanceOnly;
 
+  // M34: the item and stock reports.
+
+  /// A `stock_ledger.location_code`: [shopFloor], a godown's name, or a
+  /// van's code; [locationName] is what the shop calls it.
+  final String? location;
+  final String? locationName;
+  final bool inStockOnly;
+
+  /// The day a stock report is read as at, when it is not today.
+  final BusinessDate? asOf;
+
+  /// Days of selling looked back over; null is the report's own default.
+  final int? salesDays;
+
+  /// Days a reorder should last; null is the report's own default.
+  final int? coverDays;
+
+  /// Bills in the period from which an item is fast-moving.
+  final int? fastAt;
+
+  /// Bills in the period below which an item is slow-moving.
+  final int? slowBelow;
+
+  /// A serial or IMEI number, whole or in part, as it was typed.
+  final String? serial;
+
   /// The party group a party without one is counted under.
   static const ungrouped = 'Ungrouped';
+
+  /// The location code of the shop floor, where every movement that names
+  /// no other place happened.
+  static const shopFloor = 'MAIN';
 
   bool get isEmpty =>
       partyId == null &&
@@ -189,7 +258,15 @@ final class ReportFilters {
       paymentMode == null &&
       userId == null &&
       paymentStatus == null &&
-      !withBalanceOnly;
+      !withBalanceOnly &&
+      location == null &&
+      !inStockOnly &&
+      asOf == null &&
+      salesDays == null &&
+      coverDays == null &&
+      fastAt == null &&
+      slowBelow == null &&
+      serial == null;
 
   /// Whether [filter] is set.
   bool has(ReportFilter filter) => switch (filter) {
@@ -202,6 +279,14 @@ final class ReportFilters {
     ReportFilter.user => userId != null,
     ReportFilter.paymentStatus => paymentStatus != null,
     ReportFilter.withBalance => withBalanceOnly,
+    ReportFilter.location => location != null,
+    ReportFilter.inStockOnly => inStockOnly,
+    ReportFilter.asOf => asOf != null,
+    ReportFilter.salesDays => salesDays != null,
+    ReportFilter.coverDays => coverDays != null,
+    ReportFilter.fastAt => fastAt != null,
+    ReportFilter.slowBelow => slowBelow != null,
+    ReportFilter.serial => serial != null,
   };
 
   /// Only the filters in [accepted]: a report never narrows by something it
@@ -226,6 +311,17 @@ final class ReportFilters {
         : null,
     withBalanceOnly:
         accepted.contains(ReportFilter.withBalance) && withBalanceOnly,
+    location: accepted.contains(ReportFilter.location) ? location : null,
+    locationName: accepted.contains(ReportFilter.location)
+        ? locationName
+        : null,
+    inStockOnly: accepted.contains(ReportFilter.inStockOnly) && inStockOnly,
+    asOf: accepted.contains(ReportFilter.asOf) ? asOf : null,
+    salesDays: accepted.contains(ReportFilter.salesDays) ? salesDays : null,
+    coverDays: accepted.contains(ReportFilter.coverDays) ? coverDays : null,
+    fastAt: accepted.contains(ReportFilter.fastAt) ? fastAt : null,
+    slowBelow: accepted.contains(ReportFilter.slowBelow) ? slowBelow : null,
+    serial: accepted.contains(ReportFilter.serial) ? serial : null,
   );
 
   /// A copy with [filter] cleared.
@@ -247,6 +343,15 @@ final class ReportFilters {
     String? userName,
     PaymentStatus? paymentStatus,
     bool? withBalanceOnly,
+    String? location,
+    String? locationName,
+    bool? inStockOnly,
+    BusinessDate? asOf,
+    int? salesDays,
+    int? coverDays,
+    int? fastAt,
+    int? slowBelow,
+    String? serial,
   }) => ReportFilters(
     partyId: partyId ?? this.partyId,
     partyName: partyName ?? this.partyName,
@@ -260,6 +365,15 @@ final class ReportFilters {
     userName: userName ?? this.userName,
     paymentStatus: paymentStatus ?? this.paymentStatus,
     withBalanceOnly: withBalanceOnly ?? this.withBalanceOnly,
+    location: location ?? this.location,
+    locationName: locationName ?? this.locationName,
+    inStockOnly: inStockOnly ?? this.inStockOnly,
+    asOf: asOf ?? this.asOf,
+    salesDays: salesDays ?? this.salesDays,
+    coverDays: coverDays ?? this.coverDays,
+    fastAt: fastAt ?? this.fastAt,
+    slowBelow: slowBelow ?? this.slowBelow,
+    serial: serial ?? this.serial,
   );
 
   /// The filters in words, one line each, for the head of an export.
@@ -274,6 +388,15 @@ final class ReportFilters {
     if (paymentStatus != null) 'Payment: ${_statusLabel(paymentStatus!)}',
     if (userId != null) 'Entered by: ${userName ?? userId}',
     if (withBalanceOnly) 'Only parties with a balance',
+    // M34: the item and stock reports.
+    if (location != null) 'Place: ${locationName ?? placeLabel(location!)}',
+    if (inStockOnly) 'Only items in stock',
+    if (asOf != null) 'As at the close of ${asOf!.value}',
+    if (salesDays != null) 'Selling over the last $salesDays days',
+    if (coverDays != null) 'Reorder to last $coverDays days',
+    if (fastAt != null) 'Fast-moving from $fastAt bills',
+    if (slowBelow != null) 'Slow-moving under $slowBelow bills',
+    if (serial != null) 'Serial: $serial',
   ];
 
   @override
@@ -287,10 +410,18 @@ final class ReportFilters {
       other.paymentMode == paymentMode &&
       other.userId == userId &&
       other.paymentStatus == paymentStatus &&
-      other.withBalanceOnly == withBalanceOnly;
+      other.withBalanceOnly == withBalanceOnly &&
+      other.location == location &&
+      other.inStockOnly == inStockOnly &&
+      other.asOf == asOf &&
+      other.salesDays == salesDays &&
+      other.coverDays == coverDays &&
+      other.fastAt == fastAt &&
+      other.slowBelow == slowBelow &&
+      other.serial == serial;
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     partyId,
     itemId,
     category,
@@ -300,8 +431,21 @@ final class ReportFilters {
     userId,
     paymentStatus,
     withBalanceOnly,
-  );
+    location,
+    inStockOnly,
+    asOf,
+    salesDays,
+    coverDays,
+    fastAt,
+    slowBelow,
+    serial,
+  ]);
 }
+
+/// A place goods are kept, as a report writes it (M34): the shop floor by
+/// name, anything else by the name it was given.
+String placeLabel(String locationCode) =>
+    locationCode == ReportFilters.shopFloor ? 'Shop floor' : locationCode;
 
 /// A payment status as the report writes it.
 String paymentStatusLabel(PaymentStatus status) => _statusLabel(status);

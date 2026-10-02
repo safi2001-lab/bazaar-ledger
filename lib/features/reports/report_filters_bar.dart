@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_picker.dart';
+import 'stock_filters.dart';
 
 /// The filters a report accepts, as chips under its period (M33).
 ///
@@ -50,6 +51,18 @@ class ReportFiltersBar extends StatelessWidget {
           on
               ? filters.copyWith(withBalanceOnly: true)
               : filters.without(ReportFilter.withBalance),
+        ),
+      );
+    }
+    if (f == ReportFilter.inStockOnly) {
+      // M34: a toggle, like "with a balance".
+      return FilterChip(
+        selected: filters.inStockOnly,
+        label: Text(s.reportFilterInStock),
+        onSelected: (on) => onChanged(
+          on
+              ? filters.copyWith(inStockOnly: true)
+              : filters.without(ReportFilter.inStockOnly),
         ),
       );
     }
@@ -102,7 +115,8 @@ class ReportFiltersBar extends StatelessWidget {
       case ReportFilter.item ||
           ReportFilter.itemCategory ||
           ReportFilter.partyGroup ||
-          ReportFilter.user:
+          ReportFilter.user ||
+          ReportFilter.location:
         final choice = await showModalBottomSheet<ReportChoice>(
           context: context,
           isScrollControlled: true,
@@ -116,10 +130,23 @@ class ReportFiltersBar extends StatelessWidget {
           ),
           ReportFilter.itemCategory => filters.copyWith(category: choice.id),
           ReportFilter.partyGroup => filters.copyWith(partyGroup: choice.id),
+          ReportFilter.location => filters.copyWith(
+            location: choice.id,
+            locationName: choice.label,
+          ),
           _ => filters.copyWith(userId: choice.id, userName: choice.label),
         });
-      case ReportFilter.withBalance:
+      case ReportFilter.withBalance || ReportFilter.inStockOnly:
         break;
+      // M34: the stock reports' own.
+      case ReportFilter.asOf ||
+          ReportFilter.salesDays ||
+          ReportFilter.coverDays ||
+          ReportFilter.fastAt ||
+          ReportFilter.slowBelow ||
+          ReportFilter.serial:
+        final picked = await pickStockFilter(context, f, filters);
+        if (picked != null) onChanged(picked);
     }
   }
 
@@ -243,6 +270,8 @@ class _ChoiceSheetState extends ConsumerState<_ChoiceSheet> {
                       title: Text(
                         c.id == ReportFilters.ungrouped
                             ? s.reportFilterUngrouped
+                            : widget.filter == ReportFilter.location
+                            ? placeChoiceLabel(s, c)
                             : c.label,
                       ),
                       subtitle: c.detail == null ? null : Text(c.detail!),
@@ -271,6 +300,14 @@ String reportFilterName(AppStrings s, ReportFilter f) => switch (f) {
   ReportFilter.user => s.reportFilterUser,
   ReportFilter.paymentStatus => s.reportFilterStatus,
   ReportFilter.withBalance => s.reportFilterWithBalance,
+  ReportFilter.location ||
+  ReportFilter.inStockOnly ||
+  ReportFilter.asOf ||
+  ReportFilter.salesDays ||
+  ReportFilter.coverDays ||
+  ReportFilter.fastAt ||
+  ReportFilter.slowBelow ||
+  ReportFilter.serial => stockFilterName(s, f),
 };
 
 /// What [f] is set to in [filters], in words, or null when it is not set.
@@ -300,6 +337,14 @@ String? filterValueLabel(AppStrings s, ReportFilter f, ReportFilters filters) =>
             ? null
             : paymentStatusName(s, filters.paymentStatus!),
       ReportFilter.withBalance => null,
+      ReportFilter.location ||
+      ReportFilter.inStockOnly ||
+      ReportFilter.asOf ||
+      ReportFilter.salesDays ||
+      ReportFilter.coverDays ||
+      ReportFilter.fastAt ||
+      ReportFilter.slowBelow ||
+      ReportFilter.serial => stockFilterValue(s, f, filters),
     };
 
 String transactionTypeLabel(AppStrings s, String type) => switch (type) {

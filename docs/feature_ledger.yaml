@@ -1042,6 +1042,81 @@ milestones:
       - packages/pk_import/lib/src/sources.dart
       - packages/pk_import/lib/src/xls.dart
 
+  - id: M34
+    title: Every item and stock report Vyapar has, and the two it does not
+    # Opened and sealed 3 Oct 2026 at 5/5. The Items and stock group of the
+    # hub now holds Vyapar's list in Vyapar's order: the stock summary (sale
+    # price, cost, stock with less than nothing in red, value), narrowed by
+    # category, by place (the shop floor, a godown, a van) and to what is in
+    # stock, and read for any day gone by; the item report by party; item-
+    # and category-wise profit and loss; the low stock summary with who last
+    # supplied each item and how much to order; the item detail, one item
+    # day by day; the stock detail, every item's opening, purchases,
+    # returns, moves, production, sales, use, wastage and adjustments to its
+    # closing; sale and purchase, and stock, by item category; the batch
+    # report; the serial and IMEI report, searched by number; the item-wise
+    # discount; the stock transfer report; and the production register.
+    # Then the two Marg and Tally have and Vyapar does not: fast, slow and
+    # dead stock, banded by how many bills an item was on over the last
+    # ninety days (the shop sets the bands), with when it last sold and the
+    # money tied up in each band; and stock ageing, the shelf's value by
+    # how long ago it came in, 0-45, 46-90, 91-180 and over 180 days, first
+    # in, first out: what is on the shelf is matched to the latest
+    # receipts, newest first, and what the records do not reach is the
+    # oldest. A row that is an item opens its stock history.
+    #
+    # Every quantity is a sum of the stock ledger and every value at cost a
+    # sum of the value each movement put through Inventory, so the stock
+    # detail's closing value is Inventory in the books to the paisa on any
+    # day, and the stock summary's on any day it is read for; a test says
+    # so. Item-wise profit is the bill-wise profit; the item-wise discount
+    # is the Discount Given account, a line's own discount and its share of
+    # the bill's as the bill split it; every category total is its items'.
+    # Cost columns and cost tiles never reach a role that may not see costs
+    # (a headline figure can now be marked as cost, as a column could), and
+    # item and category profit and stock ageing are refused it outright.
+    # Batches, serials, transfers and production ride the tracking, godowns
+    # and manufacturing features the plans already sell; profit rides the
+    # books. On a development machine the stock detail of twenty thousand
+    # items and a year of 120,000 movements reads in about two seconds, and
+    # one item's year in a few milliseconds; the handset's number is still
+    # to be measured.
+    #
+    # Decided: Stock value stays beside the stock summary rather than being
+    # folded into it. It is the owner's check of the shelf at today's
+    # average cost against the books, closed to the counter; the summary is
+    # the shop's list, open to the counter without its costs. Khula maal
+    # (M37), lines with no item, are one row in the reports that sum sales,
+    # with no cost of their own and under No category, so their totals stay
+    # the sale report's. A cancelled bill's goods going out and coming back
+    # are adjustments, so Sold is what bills that stand sold. Low stock is
+    # the counter's own alert query (M1), so the two cannot disagree; what
+    # to order is the average day's selling over thirty days times fifteen,
+    # less the shelf, never less than what brings it back to its floor, in
+    # whole units rounded up, and both numbers are the shop's to change.
+    #
+    # Found on the way: a batch's recorded cost is the item's average when
+    # it arrived, not that delivery's rate, so batches valued at it did not
+    # add up to the item; they are valued off their own ledger rows. The
+    # Sales by item report of M8 joins items, so khula maal is missing from
+    # it; it is M8's to change.
+    #
+    # Not built, and why: Vyapar's per-item trading account (opening and
+    # closing stock and tax per item) where the brief asked for sales
+    # against the cost the bills recorded; turning the reorder list into a
+    # purchase order (a milestone of its own); ageing by expiry date and an
+    # ABC class; a place filter on ageing and on fast and slow stock, which
+    # count the whole shop; discount by cashier and by party, which is the
+    # business status group's; a "show quiet days" switch on the item
+    # detail, which shows only the days an item moved; charts.
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/item_stock_source.dart
+      - packages/pk_reports/lib/src/item_stock_builders.dart
+      - packages/pk_reports/lib/src/item_stock_reports.dart
+      - packages/pk_data/lib/src/read/reports/item_stock_queries.dart
+      - lib/features/reports/stock_filters.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5239,3 +5314,84 @@ features:
       - moving from Vyapar or Khatabook six thousand rows are read away from the screen, which says so and stays live
       - moving from Vyapar or Khatabook a column the app does not know is chosen by hand
       - at 200% on a small phone the import preview for a Vyapar party report fits
+  - id: M34-STOCK-01
+    milestone: M34
+    title: The stock summary, stock detail and item detail, on any day, land on Inventory in the books
+    status: done
+    # Quantities off the stock ledger and values off what each movement put
+    # through Inventory; the stock summary for today and for a day gone by,
+    # the stock detail's opening and closing values, and the summary by
+    # category, each tied to the books or to its items.
+    proof:
+      - stock summary every item at the value the books carry, beside Inventory
+      - stock summary by category, each the sum of its items
+      - stock detail opening, plus in, less out, plus adjusted, is the closing
+      - stock detail one item day by day, each day opening where the last closed
+      - stock summary every item's shelf and book value, which is Inventory to the paisa, today and on a day gone by
+      - stock summary narrowed by category, place and what is in stock, in the query
+      - stock summary by category, each category the sum of its items
+      - stock detail opening, in and out, and closing for every item, closing on Inventory in the books on both days
+      - stock detail one item day by day, from its opening to its closing
+      - item and stock reports in the engine a day gone by is what a stock report is read as at, and an item report with no item reads nothing
+  - id: M34-PROFIT-01
+    milestone: M34
+    title: Profit and discount by item and category, and an item's trade by party, tie to the bills and the books
+    status: done
+    # Item-wise profit is the bill-wise profit; each category is its items;
+    # the item-wise discount is the Discount Given account; khula maal is
+    # one row with no cost of its own, under No category.
+    proof:
+      - profit and discount by item item-wise, most profitable first, khula maal at no cost of its own, the total the bills' profit
+      - profit and discount by item category-wise, each the sum of its items, khula maal under no category
+      - profit and discount by item sale and purchase by category, khula maal counted in money only
+      - profit and discount by item item-wise discount, the biggest first, each a share of the price
+      - profit and discount item-wise profit is the bill-wise profit, and each category the sum of its items
+      - profit and discount a role that may not see costs is refused item and category profit
+      - profit and discount the item-wise discount is the Discount Given account
+      - profit and discount sale and purchase by category, each net of returns
+      - profit and discount who bought and supplied one item
+  - id: M34-ORDER-01
+    milestone: M34
+    title: What to order, what has stopped selling, and how old the shelf is
+    status: done
+    # The low stock list is the counter's own alert with what to order;
+    # fast, slow and dead stock are banded by bills over the days the shop
+    # chooses; stock ageing matches the shelf to the latest receipts and
+    # ties to the shelf's value.
+    proof:
+      - what to order a fortnight of selling less the shelf, never less than the floor, in whole units rounded up
+      - what to order the low stock list, worst first, with its arithmetic below it
+      - fast, slow and dead stock banded by bills, with the money tied up in each band
+      - stock ageing first in, first out, each band its share of the value, the rest the oldest
+      - what to order and what has stopped selling low stock lists what the counter's alert lists, with what to order
+      - what to order and what has stopped selling fast, slow and dead stock, by bills in the days looked back over
+      - what to order and what has stopped selling stock ageing, first in first out, ties to the shelf
+  - id: M34-TRACK-01
+    milestone: M34
+    title: Batches, serial and IMEI numbers, stock transfers and production runs, each reported
+    status: done
+    # Every batch with its days left, valued off its own ledger rows; every
+    # numbered piece, here or gone, found by its number; every move between
+    # places; every production run with what it used and what it cost.
+    proof:
+      - serial numbers here, back from a customer, sold, sent back or written off
+      - batches, serials, moves and production every batch on the shelf with its days left
+      - batches, serials, moves and production a phone found by its IMEI, sold to Akbar on his bill; the other still here
+      - batches, serials, moves and production a move to the godown, from where to where
+      - batches, serials, moves and production a production run with what it used and what it cost
+      - a place filter offers the shop floor and every godown
+  - id: M34-SCREEN-01
+    milestone: M34
+    title: The stock reports open from the hub, narrow on screen, open an item's history, and read a big catalogue in time
+    status: done
+    # The stock filters are chips like the rest; an item's row opens its
+    # stock history; a stock detail of twenty thousand items and a year of
+    # movements stays inside a host budget.
+    proof:
+      - item and stock reports in the engine the stock filters are kept only by a report that takes them
+      - the stock summary lists the shelf, narrows to what is in stock, and an item opens its history
+      - the low stock summary says what to order
+      - the stock detail opens on the month with every item's opening and closing
+      - the fixture really is twenty thousand items and a year of movements
+      - the stock detail of a large catalogue reads inside its budget
+      - the shelf, its age and how it sells stay inside their budget

@@ -4145,4 +4145,144 @@ class AppStringsUr extends AppStrings {
   @override
   String get importNeedPartyColumns =>
       'Naam ka column nahin mila. Neeche Columns mein chunein.';
+
+  @override
+  String get reportStockSummary => 'Stock ka khulasa';
+
+  @override
+  String get reportStockSummaryHint =>
+      'Har cheez ka stock, qeemat aur maaliyat, kisi bhi din ki';
+
+  @override
+  String get reportItemByParty => 'Cheez ki party-war report';
+
+  @override
+  String get reportItemByPartyHint => 'Yeh cheez kis ne khareedi aur kis ne di';
+
+  @override
+  String get reportItemProfit => 'Cheez-war nafa nuqsan';
+
+  @override
+  String get reportItemProfitHint => 'Har cheez ne laagat se kitna kamaya';
+
+  @override
+  String get reportCategoryProfit => 'Category-war nafa nuqsan';
+
+  @override
+  String get reportCategoryProfitHint => 'Har category ka nafa';
+
+  @override
+  String get reportLowStock => 'Kam stock';
+
+  @override
+  String get reportLowStockHint =>
+      'Kya khatam ho raha hai aur kitna mangwana hai';
+
+  @override
+  String get reportItemDetail => 'Cheez ki tafseel';
+
+  @override
+  String get reportItemDetailHint => 'Ek cheez ka stock, din ba din';
+
+  @override
+  String get reportStockDetail => 'Stock ki tafseel';
+
+  @override
+  String get reportStockDetailHint =>
+      'Har cheez ka shuru ka stock, aamad, kharch aur akhir';
+
+  @override
+  String get reportSalePurchaseByCategory => 'Category-war bikri aur khareed';
+
+  @override
+  String get reportSalePurchaseByCategoryHint =>
+      'Har category kitni biki aur kitni aayi';
+
+  @override
+  String get reportStockByCategory => 'Category-war stock';
+
+  @override
+  String get reportStockByCategoryHint => 'Har category ka stock aur maaliyat';
+
+  @override
+  String get reportBatches => 'Batch report';
+
+  @override
+  String get reportBatchesHint => 'Shelf par har batch, expiry ke saath';
+
+  @override
+  String get reportSerials => 'Serial aur IMEI report';
+
+  @override
+  String get reportSerialsHint =>
+      'Har numbered cheez: mojood, biki ya wapas gayi';
+
+  @override
+  String get reportItemDiscount => 'Cheez-war discount';
+
+  @override
+  String get reportItemDiscountHint => 'Har cheez ki qeemat se kitna kam kiya';
+
+  @override
+  String get reportStockTransfers => 'Maal ki muntaqili';
+
+  @override
+  String get reportStockTransfersHint =>
+      'Dukaan, godown aur van ke darmiyan maal';
+
+  @override
+  String get reportProduction => 'Production register';
+
+  @override
+  String get reportProductionHint => 'Har production: kya laga aur kitne ka';
+
+  @override
+  String get reportFastSlow => 'Tez, sust aur band maal';
+
+  @override
+  String get reportFastSlowHint =>
+      'Kya bikta hai, kya nahi, aur kitna paisa phansa hai';
+
+  @override
+  String get reportStockAgeing => 'Maal kitna purana';
+
+  @override
+  String get reportStockAgeingHint => 'Maal kab se shelf par para hai';
+
+  @override
+  String get reportFilterPlace => 'Jagah';
+
+  @override
+  String get reportFilterInStock => 'Sirf mojood maal';
+
+  @override
+  String get reportFilterAsOf => 'Is din tak';
+
+  @override
+  String get reportFilterSalesDays => 'Bikri kitne din ki';
+
+  @override
+  String get reportFilterCoverDays => 'Kitne din ka maal';
+
+  @override
+  String get reportFilterFastAt => 'Tez kitne bills se';
+
+  @override
+  String get reportFilterSlowBelow => 'Sust kitne bills se kam';
+
+  @override
+  String get reportFilterSerial => 'Serial ya IMEI';
+
+  @override
+  String get reportFilterSerialHint => 'Number, ya uske aakhri chand hindse';
+
+  @override
+  String reportFilterDaysValue(int days) {
+    return '$days din';
+  }
+
+  @override
+  String reportFilterBillsValue(int bills) {
+    return '$bills bill';
+  }
 }

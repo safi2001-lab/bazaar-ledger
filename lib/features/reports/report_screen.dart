@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../items/item_history_screen.dart';
 import '../parties/party_picker.dart';
 import '../printing/printing_providers.dart';
 import '../sales/receipt_screen.dart';
@@ -222,13 +223,14 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     );
   }
 
-  /// What a tap on a row can open from here: a sale bill's receipt, or a
-  /// party's statement. Purchases and the rest have no screen of their own
-  /// to open yet.
+  /// What a tap on a row can open from here: a sale bill's receipt, a
+  /// party's statement, or an item's stock history (M34). Purchases and the
+  /// rest have no screen of their own to open yet.
   bool _canOpen(ReportLink link) => switch (link.kind) {
     ReportLinkKind.document => link.docType == TransactionType.sale,
     ReportLinkKind.party =>
       widget.kind != ReportKind.partyStatement || link.id != _filters.partyId,
+    ReportLinkKind.item => true,
   };
 
   void _open(ReportLink link) {
@@ -240,6 +242,11 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       ReportLinkKind.party => ReportScreen(
         kind: ReportKind.partyStatement,
         filters: ReportFilters(partyId: link.id, partyName: link.label),
+      ),
+      ReportLinkKind.item => ItemHistoryScreen(
+        itemId: link.id,
+        itemName: link.label,
+        unitCode: link.unitCode ?? '',
       ),
     };
     unawaited(
@@ -329,7 +336,8 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
           children: [
             if (_entry.isAsOfToday)
               Text(
-                s.reportAsOfNow,
+                // A stock report read for a day gone by (M34) says which.
+                _filters.asOf == null ? s.reportAsOfNow : s.reportFilterAsOf,
                 style: TextStyle(fontSize: 13, color: t.inkMuted),
               )
             else
@@ -353,7 +361,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
               ),
             const SizedBox(height: BlTokens.space2),
             Text(
-              _entry.isAsOfToday ? today.value : period.label,
+              _entry.isAsOfToday
+                  ? (_filters.asOf ?? today).value
+                  : period.label,
               style: TextStyle(fontSize: 13, color: t.inkMuted),
             ),
             if (_entry.filters.isNotEmpty) ...[
