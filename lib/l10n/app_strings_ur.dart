@@ -3551,4 +3551,94 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get loanAmountInvalid => 'Raqam theek likhein, jaise 25000 ya 2500.50';
+
+  @override
+  String get posBillTo => 'Bill kis ke naam';
+
+  @override
+  String posCartEmptyFor(String name) {
+    return '$name ka bill abhi khali hai';
+  }
+
+  @override
+  String get looseTitle => 'Khula maal';
+
+  @override
+  String get looseHint =>
+      'Cheez banaye baghair bechein. Maal ki list mein kuch save nahi hoga aur stock nahi hile ga.';
+
+  @override
+  String get looseName => 'Kya hai (marzi se)';
+
+  @override
+  String get looseNameHint => 'Maslan: pyaz';
+
+  @override
+  String get looseRate => 'Qeemat (fi unit, ya poori raqam)';
+
+  @override
+  String looseAmount(String amount) {
+    return 'Raqam: $amount';
+  }
+
+  @override
+  String get looseAdd => 'Bill mein daalein';
+
+  @override
+  String get looseNoCost =>
+      'Is ki laagat maloom nahi, is liye munafe mein yeh poori raqam munafa gini jaye gi.';
+
+  @override
+  String get looseNeedsPrice => 'Tadaad aur qeemat likhein';
+
+  @override
+  String get looseFbrRefused =>
+      'Yeh dukaan FBR ko bill bhejti hai, aur FBR ko har line ka HS code chahiye. Khula maal ki jagah is ki cheez bana kar bechein.';
+
+  @override
+  String get looseNotKept =>
+      'Khula maal quotation ya challan par nahi ja sakta. Is ki cheez banayein, ya abhi bill banayein.';
+
+  @override
+  String looseOffer(String name) {
+    return '\'$name\' khula bechein (cheez nahi banegi)';
+  }
+
+  @override
+  String get looseBadge => 'Khula maal · stock nahi';
+
+  @override
+  String get dealsSoldTitle => 'Is gahak ko pichhli dafa';
+
+  @override
+  String get dealsBoughtTitle => 'Is supplier se pichhli khareed';
+
+  @override
+  String get dealsTapHint =>
+      'Kisi par tap karein to wohi qeemat is line par lag jaye gi.';
+
+  @override
+  String dealLastTime(String price, String date) {
+    return 'Pichhli dafa $price · $date';
+  }
+
+  @override
+  String dealOtherUnit(String unit) {
+    return 'Yeh qeemat $unit ki hai. Pehle line ko $unit mein karein.';
+  }
+
+  @override
+  String dealUse(String price) {
+    return 'Yeh qeemat lagayein: $price';
+  }
+
+  @override
+  String dealLastBought(String price, String supplier, String date) {
+    return 'Aakhri khareed $price · $supplier · $date';
+  }
+
+  @override
+  String posBillFor(String name) {
+    return '$name ka bill';
+  }
 }

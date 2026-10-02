@@ -30,14 +30,16 @@ final class IssueChallanUseCase {
     }
     // The goods leave at the average as it stands now, as a sale's do; the
     // bill made later carries this cost across rather than re-reading it.
+    // A loose line (M37) has none, and the builder refuses it in words.
     final costs = await write.averageCostFor({
-      for (final l in draft.lines) l.itemId,
+      for (final l in draft.lines) ?l.itemId,
     });
     final costed = draft.withLines([
       for (final l in draft.lines)
-        l.unitCost.isZero && costs[l.itemId] != null
-            ? l.withUnitCost(costs[l.itemId]!)
-            : l,
+        switch (costs[l.itemId]) {
+          final cost? when l.unitCost.isZero => l.withUnitCost(cost),
+          _ => l,
+        },
     ]);
     final calculated = calculator.calculate(
       costed,

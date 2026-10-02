@@ -49,12 +49,16 @@ final class SoldLine {
   });
 
   final String documentLineId;
-  final String itemId;
+
+  /// Null for a loose line (M37): something sold by description and amount
+  /// with no item behind it. It comes back as money only — there is no
+  /// shelf for it to go back onto and no cost to reverse.
+  final String? itemId;
   final String itemName;
   final String unitId;
   final String unitCode;
 
-  /// In the item's base unit.
+  /// In the item's base unit; for a loose line, as it was typed.
   final Qty soldQty;
 
   /// What earlier returns against this line already took back. A customer
@@ -313,9 +317,17 @@ final class ReturnBuilder {
         ),
       );
 
+      // A loose line (M37) comes back as money and nothing else: it took
+      // nothing off a shelf, so nothing goes back onto one, and its cost was
+      // never known, so none is reversed (the share of a zero is zero).
+      final itemId = sold.itemId;
+      if (itemId == null) {
+        lineNo++;
+        continue;
+      }
       movements.add(
         StockMovementPosting(
-          itemId: sold.itemId,
+          itemId: itemId,
           locationCode: draft.locationCode,
           txnType: 'sale_return',
           qtyDelta: wanted.qty,

@@ -10,6 +10,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
+import '../pos/past_deals.dart';
 
 /// Adding one line to a delivery: which item, how much, what it cost.
 ///
@@ -17,16 +18,24 @@ import '../items/quick_item_sheet.dart';
 /// delivery arriving is not an instruction to reprice the shelf, and a screen
 /// that changed both at once would make it impossible to tell which decision
 /// the shopkeeper actually made.
-Future<PurchaseLineDraft?> showPurchaseItemPicker(BuildContext context) =>
-    showModalBottomSheet<PurchaseLineDraft>(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      builder: (_) => const _PurchaseItemPicker(),
-    );
+///
+/// [supplierId] is who the delivery is from, once chosen: the item's last
+/// prices from them are shown under it, each a tap from being this line's
+/// cost (M37).
+Future<PurchaseLineDraft?> showPurchaseItemPicker(
+  BuildContext context, {
+  String? supplierId,
+}) => showModalBottomSheet<PurchaseLineDraft>(
+  context: context,
+  isScrollControlled: true,
+  useSafeArea: true,
+  builder: (_) => _PurchaseItemPicker(supplierId: supplierId),
+);
 
 class _PurchaseItemPicker extends ConsumerStatefulWidget {
-  const _PurchaseItemPicker();
+  const _PurchaseItemPicker({this.supplierId});
+
+  final String? supplierId;
 
   @override
   ConsumerState<_PurchaseItemPicker> createState() => _PickerState();
@@ -48,6 +57,11 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   /// Whether the shopkeeper has typed the cost themselves. Until they do,
   /// the cost prefilled from the item's purchase rate follows the quantity.
   bool _costTyped = false;
+
+  /// The price per unit the cost follows until it is typed: the item's
+  /// purchase rate, or an earlier delivery's price picked from the list
+  /// (M37).
+  Rate? _followRate;
 
   @override
   void dispose() {
@@ -80,6 +94,21 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
       // looks like a real number is worse than no number at all.
       _cost.text = item.purchaseRate?.amountOnly ?? '';
       _costTyped = false;
+      _followRate = item.purchaseRate;
+    });
+  }
+
+  /// An earlier delivery's price, tapped (M37): the cost becomes it times
+  /// the quantity, and follows the quantity from there, as the purchase
+  /// rate's prefill does.
+  void _usePrice(Rate rate) {
+    final qty = Qty.tryParse(_qty.text);
+    setState(() {
+      _followRate = rate;
+      _costTyped = false;
+      _cost.text = rate
+          .amountFor(qty != null && qty.isPositive ? qty : Qty.one)
+          .amountOnly;
     });
   }
 
@@ -91,7 +120,7 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   /// sheet (M32) comes here with its buying price as that rate, which is
   /// when this mattered most.
   void _onQty(String value) {
-    final rate = _chosen?.purchaseRate;
+    final rate = _followRate;
     final qty = Qty.tryParse(value);
     setState(() {
       if (!_costTyped && rate != null && qty != null && qty.isPositive) {
@@ -179,7 +208,10 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     final results = ref.watch(itemSearchProvider(_query));
     final chosen = _chosen;
 
-    return Padding(
+    // Scrollable since M37: the supplier's last prices can stand between the
+    // item and the quantity, and on a small phone at 200% the sheet would
+    // otherwise run past the bottom with the Add button under it.
+    return SingleChildScrollView(
       padding: EdgeInsets.only(
         left: BlTokens.space4,
         right: BlTokens.space4,
@@ -254,6 +286,30 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                 color: t.ink,
               ),
             ),
+            // What this supplier charged for it before (M37), so a rate
+            // that has crept up is seen before it is typed in.
+            if (widget.supplierId case final supplier?)
+              Padding(
+                padding: const EdgeInsets.only(top: BlTokens.space3),
+                child: PastDealsList(
+                  title: s.dealsBoughtTitle,
+                  deals:
+                      ref
+                          .watch(
+                            lastBoughtProvider((
+                              supplierId: supplier,
+                              itemId: chosen.id,
+                              limit: 5,
+                            )),
+                          )
+                          .valueOrNull ??
+                      const [],
+                  toUnitId: chosen.unitId,
+                  itemId: chosen.id,
+                  units: ref.watch(unitConverterProvider).valueOrNull,
+                  onPick: _usePrice,
+                ),
+              ),
             const SizedBox(height: BlTokens.space3),
             Row(
               children: [

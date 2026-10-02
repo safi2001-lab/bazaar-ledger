@@ -10,8 +10,11 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
+import '../parties/party_picker.dart';
 import '../scan/scan_screen.dart';
 import 'cart.dart';
+import 'loose_line_sheet.dart';
+import 'past_deals.dart';
 import 'tender_sheet.dart';
 
 /// What the counter typed, after debouncing. Reset when the screen goes.
@@ -291,6 +294,54 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     _clearSearch();
   }
 
+  /// A loose line (M37): [name] and a price, with no item made for it.
+  ///
+  /// A shop reporting to FBR is shown why not, in the sheet itself, rather
+  /// than handed a form whose bill FBR would refuse after the customer has
+  /// gone.
+  Future<void> _loose({String name = ''}) async {
+    final services = ref.read(appServicesProvider);
+    final refused = await services.fbr.reportsSales();
+    if (!mounted) return;
+    final line = await showLooseLineSheet(
+      context,
+      name: name,
+      refusedForFbr: refused,
+    );
+    if (line == null || !mounted) return;
+    ref
+        .read(cartProvider.notifier)
+        .addLoose(
+          name: line.name,
+          qty: line.qty,
+          rate: line.rate,
+          unitId: line.unitId,
+          unitCode: line.unitCode,
+        );
+    _clearSearch();
+  }
+
+  /// Who the bill is for, chosen before the goods rather than at the end
+  /// (M37).
+  ///
+  /// A wholesaler's customer is known before the first sack is rung, and it
+  /// is then that the counter can show what he paid for each thing last
+  /// time. Whoever is picked goes through the same `setParty` as the
+  /// payment sheet's picker, so the lines move to their prices exactly as
+  /// they would there.
+  Future<void> _pickCustomer() async {
+    final party = await showModalBottomSheet<PartySummary?>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) => const PartyPicker(newPartyType: 'customer'),
+    );
+    if (party == null || !mounted) return;
+    ref
+        .read(cartProvider.notifier)
+        .setParty(party, units: ref.read(unitConverterProvider).valueOrNull);
+  }
+
   /// The offer under a search that found nothing: what was typed as a name,
   /// or what was scanned as a barcode.
   void _quickAddFromSearch(String query) {
@@ -392,7 +443,24 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       appBar: AppBar(
         title: Text(s.posTitle),
         actions: [
-          if (!cart.isEmpty)
+          // In the bar rather than in the body: sideways with the keyboard
+          // up the body has about a hundred points of height, and the money
+          // path needs all of them.
+          BlIconButton(
+            icon: Icons.edit_note,
+            label: s.looseTitle,
+            onPressed: () => unawaited(_loose()),
+          ),
+          BlIconButton(
+            icon: cart.partyId == null
+                ? Icons.person_add_alt_outlined
+                : Icons.person,
+            label: s.posBillTo,
+            onPressed: () => unawaited(_pickCustomer()),
+          ),
+          // A customer chosen for a bill not yet rung is a bill too, and it
+          // has to be possible to start again from it.
+          if (!cart.isEmpty || cart.partyId != null)
             BlIconButton(
               icon: Icons.delete_sweep_outlined,
               label: s.posClearCart,
@@ -447,11 +515,15 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                     onBack: _clearSearch,
                   )
                 : query.isEmpty
-                ? _CartList(onEmptyTapped: () => _searchFocus.requestFocus())
+                ? _CartList(
+                    onEmptyTapped: () => _searchFocus.requestFocus(),
+                    onCustomerTapped: () => unawaited(_pickCustomer()),
+                  )
                 : _SearchResults(
                     query: query,
                     onPick: _addToCart,
                     onQuickAdd: _quickAddFromSearch,
+                    onLoose: (name) => unawaited(_loose(name: name)),
                   );
 
             // Wide means sideways, and sideways the counter is two columns.
@@ -523,6 +595,7 @@ class _SearchResults extends ConsumerWidget {
     required this.query,
     required this.onPick,
     required this.onQuickAdd,
+    required this.onLoose,
   });
 
   final String query;
@@ -531,6 +604,9 @@ class _SearchResults extends ConsumerWidget {
   /// Makes what was typed or scanned into a new item and puts it on the
   /// bill (M32).
   final ValueChanged<String> onQuickAdd;
+
+  /// Sells what was typed as a loose line, making no item at all (M37).
+  final ValueChanged<String> onLoose;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -559,18 +635,37 @@ class _SearchResults extends ConsumerWidget {
           // showing "nothing found" and the item not on the bill — so they
           // searched again, found it, and tapped it. A scanned barcode
           // fared worse: the editor took the digits as the item's NAME.
+          //
+          // Or, for a name, not an item at all (M37): a kilo of onions out
+          // of the sack is sold, not catalogued. A barcode is a packet that
+          // somebody will scan again, so it is only ever offered as an item.
           final barcode = scannedBarcode(query);
+          final asItem = BlAddOffer(
+            label: barcode == null
+                ? s.quickAddItem(query)
+                : s.quickAddBarcode(barcode),
+            onTap: () => onQuickAdd(query),
+          );
           return Center(
             child: BlEmpty(
               title: s.emptyNoResults,
               message: s.emptyNoResultsHint,
               icon: Icons.search_off,
-              action: BlAddOffer(
-                label: barcode == null
-                    ? s.quickAddItem(query)
-                    : s.quickAddBarcode(barcode),
-                onTap: () => onQuickAdd(query),
-              ),
+              action: barcode != null
+                  ? asItem
+                  : Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        asItem,
+                        const SizedBox(height: BlTokens.space2),
+                        BlAddOffer(
+                          label: s.looseOffer(query),
+                          icon: Icons.edit_note,
+                          onTap: () => onLoose(query),
+                        ),
+                      ],
+                    ),
             ),
           );
         }
@@ -725,9 +820,15 @@ class _ScaleMiss extends StatelessWidget {
 // ---------------------------------------------------------------------------
 
 class _CartList extends ConsumerWidget {
-  const _CartList({required this.onEmptyTapped});
+  const _CartList({
+    required this.onEmptyTapped,
+    required this.onCustomerTapped,
+  });
 
   final VoidCallback onEmptyTapped;
+
+  /// Changes who the bill is for (M37).
+  final VoidCallback onCustomerTapped;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -737,7 +838,9 @@ class _CartList extends ConsumerWidget {
     if (cart.isEmpty) {
       return Center(
         child: BlEmpty(
-          title: s.posCartEmpty,
+          title: cart.partyName == null
+              ? s.posCartEmpty
+              : s.posCartEmptyFor(cart.partyName!),
           message: s.posCartEmptyHint,
           icon: Icons.shopping_basket_outlined,
           action: BlButton(
@@ -750,28 +853,109 @@ class _CartList extends ConsumerWidget {
       );
     }
 
+    // Whose bill it is heads the list once somebody is named, and scrolls
+    // with it: sideways with the keyboard up there is no height to pin a
+    // row in, and a pinned row there would take the Charge button's.
+    final named = cart.partyName != null;
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: BlTokens.space4),
-      itemCount: cart.lines.length,
+      itemCount: cart.lines.length + (named ? 1 : 0),
       itemBuilder: (context, i) {
-        final line = cart.lines[i];
-        return _CartLineTile(key: ValueKey(line.item.id), line: line);
+        if (named && i == 0) {
+          return _BillTo(name: cart.partyName!, onTap: onCustomerTapped);
+        }
+        final line = cart.lines[named ? i - 1 : i];
+        return _CartLineTile(
+          key: ValueKey(line.item.id),
+          line: line,
+          partyId: cart.partyId,
+        );
       },
     );
   }
 }
 
+/// Whose bill this is, at the head of the lines (M37). Tapped, the customer
+/// can be changed; the lines follow to their prices.
+class _BillTo extends StatelessWidget {
+  const _BillTo({required this.name, required this.onTap});
+
+  final String name;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: BlTokens.space1,
+        bottom: BlTokens.space2,
+      ),
+      child: Semantics(
+        button: true,
+        label: '${s.posBillTo}: $name',
+        excludeSemantics: true,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: BlTokens.touchMin),
+            padding: const EdgeInsets.symmetric(
+              horizontal: BlTokens.space3,
+              vertical: BlTokens.space2,
+            ),
+            decoration: BoxDecoration(
+              border: Border.all(color: t.line),
+              borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.person, size: 20, color: t.accent),
+                const SizedBox(width: BlTokens.space3),
+                Expanded(
+                  // "Rashid Traders ka bill", not the bare name: the
+                  // payment sheet opens over this list and names the
+                  // customer too, and two widgets saying exactly the same
+                  // thing on one screen is one too many to find.
+                  child: Text(
+                    s.posBillFor(name),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: t.ink,
+                    ),
+                  ),
+                ),
+                Icon(Icons.swap_horiz, size: 20, color: t.inkFaint),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _CartLineTile extends ConsumerWidget {
-  const _CartLineTile({super.key, required this.line});
+  const _CartLineTile({super.key, required this.line, this.partyId});
 
   final CartLine line;
+
+  /// The customer the bill is for, whose last price for this item is shown
+  /// under it (M37). Null for a walk-in, who has no history to show.
+  final String? partyId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
     final notifier = ref.read(cartProvider.notifier);
-    final step = line.item.unitDecimals == 0
+    // A loose line steps in ones whatever it was typed in: it is a figure on
+    // a bill, not a weight on a scale.
+    final step = line.isLoose || line.item.unitDecimals == 0
         ? Qty.one
         : const Qty.parts(0, 100);
 
@@ -839,7 +1023,11 @@ class _CartLineTile extends ConsumerWidget {
                             fit: BoxFit.scaleDown,
                             child: BlQty(
                               line.qty,
-                              unit: line.item.unitCode,
+                              // A loose line typed as a bare amount has no
+                              // unit to print beside its quantity.
+                              unit: line.item.unitCode.isEmpty
+                                  ? null
+                                  : line.item.unitCode,
                               size: 16,
                             ),
                           ),
@@ -883,6 +1071,23 @@ class _CartLineTile extends ConsumerWidget {
                   ),
                 ),
               ],
+              // Said on the line, so nobody reading the bill back takes it
+              // for an item the shelf will be short of (M37).
+              if (line.isLoose) ...[
+                const SizedBox(height: BlTokens.space1),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    s.looseBadge,
+                    style: TextStyle(fontSize: 12, color: t.inkMuted),
+                  ),
+                ),
+              ] else if (partyId case final party?)
+                _LastTime(
+                  line: line,
+                  partyId: party,
+                  onTap: () => _editLine(context, ref),
+                ),
             ],
           ),
         ),
@@ -895,6 +1100,168 @@ class _CartLineTile extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       builder: (_) => _LineEditor(line: line),
+    );
+  }
+}
+
+/// What this customer paid for this item last time, under its line (M37).
+///
+/// The moment the item goes on a named customer's bill, without a dialog:
+/// a pop-up on the billing path would take the next scan from a wedge
+/// scanner, which types into whatever has the focus. Tapped, the line
+/// opens with all of the last few deals, each a tap from being its price.
+///
+/// Shown, never applied. A wholesale customer is charged the wholesale
+/// price until the cashier picks an old one; in the accent colour when last
+/// time was different from now, so the cashier sees there is a question to
+/// answer, and quiet when it was the same.
+class _LastTime extends ConsumerWidget {
+  const _LastTime({
+    required this.line,
+    required this.partyId,
+    required this.onTap,
+  });
+
+  final CartLine line;
+  final String partyId;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final deals = ref
+        .watch(lastSoldProvider((partyId: partyId, itemId: line.item.id)))
+        .valueOrNull;
+    if (deals == null || deals.isEmpty) return const SizedBox.shrink();
+    final units = ref.watch(unitConverterProvider).valueOrNull;
+    final last = deals.first;
+    final carried = last.rateIn(
+      line.sellingUnitId,
+      itemId: line.item.id,
+      units: units,
+    );
+    final colour = carried == line.rate ? t.inkMuted : t.accent;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: BlTokens.space1),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(BlTokens.radiusSm),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: BlTokens.space1),
+          child: Row(
+            children: [
+              Icon(Icons.history, size: 15, color: colour),
+              const SizedBox(width: BlTokens.space1),
+              Flexible(
+                child: Text(
+                  s.dealLastTime(
+                    dealPrice(
+                      last,
+                      toUnitId: line.sellingUnitId,
+                      itemId: line.item.id,
+                      units: units,
+                    ),
+                    last.dateLocal,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontSize: 12, color: colour),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The customer's last few deals for this item, in the line's editor (M37).
+class _DealsForLine extends ConsumerWidget {
+  const _DealsForLine({
+    required this.line,
+    required this.partyId,
+    required this.onPick,
+  });
+
+  final CartLine line;
+  final String partyId;
+  final ValueChanged<Rate> onPick;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final deals =
+        ref
+            .watch(lastSoldProvider((partyId: partyId, itemId: line.item.id)))
+            .valueOrNull ??
+        const <PastDeal>[];
+    if (deals.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(top: BlTokens.space3),
+      child: PastDealsList(
+        title: s.dealsSoldTitle,
+        deals: deals,
+        toUnitId: line.sellingUnitId,
+        itemId: line.item.id,
+        units: ref.watch(unitConverterProvider).valueOrNull,
+        onPick: onPick,
+      ),
+    );
+  }
+}
+
+/// What the item last came in at, for whoever may see costs (M37).
+///
+/// The floor under a bargain: an owner haggling over a sack wants to know
+/// what the last sack cost before he agrees to anything. A cashier is not
+/// shown it — the provider will not even read it for him.
+class _LastBought extends ConsumerWidget {
+  const _LastBought({required this.line});
+
+  final CartLine line;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final bought = ref
+        .watch(
+          lastBoughtProvider((
+            supplierId: null,
+            itemId: line.item.id,
+            limit: 1,
+          )),
+        )
+        .valueOrNull;
+    if (bought == null || bought.isEmpty) return const SizedBox.shrink();
+    final last = bought.first;
+    return Padding(
+      padding: const EdgeInsets.only(top: BlTokens.space3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.local_shipping_outlined, size: 16, color: t.inkMuted),
+          const SizedBox(width: BlTokens.space2),
+          Expanded(
+            child: Text(
+              s.dealLastBought(
+                dealPrice(
+                  last,
+                  toUnitId: line.sellingUnitId,
+                  itemId: line.item.id,
+                  units: ref.watch(unitConverterProvider).valueOrNull,
+                ),
+                last.partyName ?? '-',
+                last.dateLocal,
+              ),
+              style: TextStyle(fontSize: 12, color: t.inkMuted),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -1036,24 +1403,43 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
     super.dispose();
   }
 
-  void _apply() {
+  /// Applies what was typed, and closes.
+  ///
+  /// [picked] is an earlier deal's price, tapped (M37). It goes on in
+  /// place of the price field, and with whatever quantity and discount had
+  /// been typed: one tap, nothing typed is lost.
+  void _apply({Rate? picked}) {
     final notifier = ref.read(cartProvider.notifier);
     final id = widget.line.item.id;
     final qty = Qty.tryParse(_qty.text);
-    final rate = Rate.tryParse(_rate.text);
+    final rate = picked ?? Rate.tryParse(_rate.text);
     final discount = _discount.text.trim().isEmpty
         ? null
         : Money.tryParse(_discount.text);
 
     if (rate != null) notifier.setRate(id, rate);
-    notifier.setLineDiscount(id, discount);
+    // Only a discount the cashier touched is written back. The field shows a
+    // percentage — the customer's standing 5% — as the rupees it comes to
+    // at the old price, and writing that back froze it as rupees: an old,
+    // lower price picked from the list (M37) then kept the old discount,
+    // which is more than 5% of the new price, and the cashier's own ceiling
+    // refused the bill at the till for a discount nobody had given.
+    if (_discount.text != _discountShown) {
+      notifier.setLineDiscount(id, discount);
+    }
     if (qty != null) notifier.setQty(id, qty);
     Navigator.of(context).pop();
   }
 
+  /// What the discount field said when the editor opened.
+  String get _discountShown =>
+      widget.line.discount.isZero ? '' : widget.line.discount.amountOnly;
+
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
+    final line = widget.line;
+    final partyId = ref.watch(cartProvider.select((c) => c.partyId));
     // Scrollable, like the tender sheet and unlike its previous self.
     //
     // The quantity field is autofocused, so the keyboard is always up when
@@ -1073,16 +1459,31 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          BlSectionHeader(widget.line.item.name),
+          BlSectionHeader(line.item.name),
+          // What this customer paid before, and (for whoever may see costs)
+          // what it last came in at (M37). Above the fields, where they are
+          // seen before the price is typed rather than after.
+          if (!line.isLoose) ...[
+            if (partyId != null)
+              _DealsForLine(
+                line: line,
+                partyId: partyId,
+                onPick: (rate) => _apply(picked: rate),
+              ),
+            _LastBought(line: line),
+          ],
           const SizedBox(height: BlTokens.space4),
           BlField(
             controller: _qty,
-            label: '${s.posQty} (${widget.line.sellingUnitCode})',
+            label: line.sellingUnitCode.isEmpty
+                ? s.posQty
+                : '${s.posQty} (${line.sellingUnitCode})',
             numeric: true,
-            decimals: widget.line.item.unitDecimals,
+            decimals: line.item.unitDecimals,
             autofocus: true,
           ),
-          _UnitChoice(line: widget.line),
+          // A loose line has no item, so nothing else to be measured in.
+          if (!line.isLoose) _UnitChoice(line: line),
           const SizedBox(height: BlTokens.space3),
           BlField(controller: _rate, label: s.posRate, numeric: true),
           const SizedBox(height: BlTokens.space3),

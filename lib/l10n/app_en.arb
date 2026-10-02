@@ -1938,5 +1938,71 @@
       "amount": {"type": "String"}
     }
   },
-  "loanAmountInvalid": "Enter an amount, like 25000 or 2500.50"
+  "loanAmountInvalid": "Enter an amount, like 25000 or 2500.50",
+  "posBillTo": "Who the bill is for",
+  "posCartEmptyFor": "{name}'s bill is empty so far",
+  "@posCartEmptyFor": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "looseTitle": "Loose item",
+  "looseHint": "Sell it without making an item. Nothing is saved to your items and no stock moves.",
+  "looseName": "What it is (optional)",
+  "looseNameHint": "e.g. onions",
+  "looseRate": "Price (each, or the whole amount)",
+  "looseAmount": "Amount: {amount}",
+  "@looseAmount": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "looseAdd": "Put on the bill",
+  "looseNoCost": "Its cost is not known, so profit counts all of it as profit.",
+  "looseNeedsPrice": "Type a quantity and a price",
+  "looseFbrRefused": "This shop reports its bills to FBR, and FBR needs every line's HS code. Make it an item instead of selling it loose.",
+  "looseNotKept": "A loose item cannot go on a quotation or a challan. Make it an item, or bill it now.",
+  "looseOffer": "Sell '{name}' loose (no item is made)",
+  "@looseOffer": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "looseBadge": "Loose item · no stock",
+  "dealsSoldTitle": "Sold to this customer before",
+  "dealsBoughtTitle": "Bought from this supplier before",
+  "dealsTapHint": "Tap one to put that price on this line.",
+  "dealLastTime": "Last time {price} · {date}",
+  "@dealLastTime": {
+    "placeholders": {
+      "price": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "dealOtherUnit": "That price is per {unit}. Switch the line to {unit} first.",
+  "@dealOtherUnit": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "dealUse": "Use this price: {price}",
+  "@dealUse": {
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "dealLastBought": "Last bought at {price} · {supplier} · {date}",
+  "@dealLastBought": {
+    "placeholders": {
+      "price": {"type": "String"},
+      "supplier": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "posBillFor": "Bill for {name}",
+  "@posBillFor": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  }
 }

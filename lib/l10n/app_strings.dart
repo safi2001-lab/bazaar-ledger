@@ -6367,6 +6367,144 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Raqam theek likhein, jaise 25000 ya 2500.50'**
   String get loanAmountInvalid;
+
+  /// Tooltip of the counter's customer button: who the bill is for (M37).
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill kis ke naam'**
+  String get posBillTo;
+
+  /// The empty counter, once a customer has been chosen for the bill.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka bill abhi khali hai'**
+  String posCartEmptyFor(String name);
+
+  /// A line sold by description and amount with no item behind it (M37).
+  ///
+  /// In ur, this message translates to:
+  /// **'Khula maal'**
+  String get looseTitle;
+
+  /// No description provided for @looseHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez banaye baghair bechein. Maal ki list mein kuch save nahi hoga aur stock nahi hile ga.'**
+  String get looseHint;
+
+  /// No description provided for @looseName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya hai (marzi se)'**
+  String get looseName;
+
+  /// No description provided for @looseNameHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maslan: pyaz'**
+  String get looseNameHint;
+
+  /// No description provided for @looseRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat (fi unit, ya poori raqam)'**
+  String get looseRate;
+
+  /// No description provided for @looseAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam: {amount}'**
+  String looseAmount(String amount);
+
+  /// No description provided for @looseAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill mein daalein'**
+  String get looseAdd;
+
+  /// Shown to roles that may see costs: a loose line has no cost, so profit counts all of it.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ki laagat maloom nahi, is liye munafe mein yeh poori raqam munafa gini jaye gi.'**
+  String get looseNoCost;
+
+  /// No description provided for @looseNeedsPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tadaad aur qeemat likhein'**
+  String get looseNeedsPrice;
+
+  /// No description provided for @looseFbrRefused.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh dukaan FBR ko bill bhejti hai, aur FBR ko har line ka HS code chahiye. Khula maal ki jagah is ki cheez bana kar bechein.'**
+  String get looseFbrRefused;
+
+  /// No description provided for @looseNotKept.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khula maal quotation ya challan par nahi ja sakta. Is ki cheez banayein, ya abhi bill banayein.'**
+  String get looseNotKept;
+
+  /// Offered at the counter when an item search finds nothing: sell what was typed as a loose line.
+  ///
+  /// In ur, this message translates to:
+  /// **'\'{name}\' khula bechein (cheez nahi banegi)'**
+  String looseOffer(String name);
+
+  /// No description provided for @looseBadge.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khula maal · stock nahi'**
+  String get looseBadge;
+
+  /// Heading over the customer's last prices for an item (M37).
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ko pichhli dafa'**
+  String get dealsSoldTitle;
+
+  /// Heading over the supplier's last prices for an item on a delivery (M37).
+  ///
+  /// In ur, this message translates to:
+  /// **'Is supplier se pichhli khareed'**
+  String get dealsBoughtTitle;
+
+  /// No description provided for @dealsTapHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kisi par tap karein to wohi qeemat is line par lag jaye gi.'**
+  String get dealsTapHint;
+
+  /// On a counter line: what this customer paid for it last time, and when.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichhli dafa {price} · {date}'**
+  String dealLastTime(String price, String date);
+
+  /// No description provided for @dealOtherUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh qeemat {unit} ki hai. Pehle line ko {unit} mein karein.'**
+  String dealOtherUnit(String unit);
+
+  /// Screen-reader label for one earlier price.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh qeemat lagayein: {price}'**
+  String dealUse(String price);
+
+  /// Shown only to roles that may see costs: the last delivery of this item.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhri khareed {price} · {supplier} · {date}'**
+  String dealLastBought(String price, String supplier, String date);
+
+  /// Heads the counter's lines once a customer is named (M37).
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka bill'**
+  String posBillFor(String name);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

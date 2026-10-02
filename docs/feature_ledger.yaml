@@ -868,6 +868,72 @@ milestones:
       - packages/pk_data/lib/src/write/drift_loan_writer.dart
       - packages/pk_bootstrap/lib/src/loan_services.dart
 
+  - id: M37
+    title: The last price this customer paid is on the counter, and a loose sale needs no item
+    # Opened and sealed 2 Oct 2026 at 1/1. A wholesaler's customer says
+    # "same as last time", and the counter could not say what last time
+    # was. Now, once a customer is named (from the counter's own button,
+    # before any goods, or at the payment sheet as before), every line on
+    # their bill shows what they paid for it last time and when; tapped,
+    # the line lists their last five deals for that item, newest first,
+    # with the bill number, how many, the price and what came off it, and
+    # one tap makes that price the line's, carried exactly into the unit
+    # the line is in (five thousand a bori is a hundred a kilo) or refused
+    # in words when it does not convert. It is shown, never applied: a
+    # wholesale customer is charged wholesale until the cashier picks an
+    # old price. Bills cancelled, free lines and other customers' prices
+    # are left out. On a delivery, the supplier's last five prices for the
+    # item sit under it, a tap from the cost. What the goods last came in
+    # at is shown at the counter to whoever may see costs and to nobody
+    # else: the read is refused for a cashier before it is made. The read
+    # goes through the party's own index, named with INDEXED BY so the
+    # planner cannot wander onto the item index and read every line of a
+    # best seller; no index was added and the schema stays at v8.
+    #
+    # "Khula maal": a line sold by what the cashier calls it and what it
+    # comes to, with no item made, from the counter's bar or from a search
+    # that found nothing. The schema always allowed a line with no item;
+    # this is the first thing to write one. Its money is Sales; it moves
+    # no stock and carries no cost, so profit counts all of it, which the
+    # sheet says to whoever reads the margins, and item_id IS NULL is how a
+    # report tells it from a line that really cost nothing. It prints, it
+    # survives the app being killed (the cart draft is v4 for it; v2 and v3
+    # are still read), it is named in the activity log, and it comes back
+    # on a return as money only, known by its name, price and unit, and
+    # never more of it than was sold. The same thing at the same price
+    # rung twice is one line of two.
+    #
+    # Decided: a shop reporting to FBR cannot sell one. FBR wants every
+    # line's HS code, and a default code stamped on loose goods would tell
+    # FBR that onions and a bicycle repair are the same goods at the same
+    # rate, with the shop's NTN on it. The counter says why instead of
+    # offering the form, the payment sheet says it for a bill half-rung
+    # before reporting began, and the sale path refuses it again. Not on a
+    # quotation or a challan either: a quotation is billed item by item and
+    # a challan sends goods somebody counts; a bill from a challan with a
+    # loose line on it is refused as having something the challan did not
+    # send. A loose line takes no standing discount (its price was just
+    # typed); a typed discount on it meets the role's ceiling like any.
+    #
+    # Found on the way and fixed: the line editor wrote a customer's
+    # standing discount back as the rupees it came to at the old price, so
+    # a lower old price picked from the list kept the old rupees — more
+    # than the standing percentage of the new price — and a cashier's own
+    # ceiling refused the bill. Only a discount the cashier touched is now
+    # written back. Found on the way, not changed (each is another
+    # milestone's ground):
+    # a return gives back the full price of what comes back, line discount
+    # and all, and reads a line sold in another unit as priced per base
+    # unit; the item sales report joins items, so loose lines are in the
+    # profit and loss but not in it. Not built: a permission of its own for
+    # loose lines (a cashier can ring one, as he can type any price today;
+    # the owner's call), and loose lines on quotations and challans.
+    state: sealed
+    owns:
+      - lib/features/pos/loose_line_sheet.dart
+      - lib/features/pos/past_deals.dart
+      - packages/pk_domain/lib/src/sales/past_deal.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4978,3 +5044,33 @@ features:
       - a repayment entered wrong is cancelled from the statement, with a reason
       - more off the loan than is owed is refused on the screen
       - at 200% on a small phone the loan screens fit
+  - id: M37-DEALS-01
+    milestone: M37
+    title: A customer's last prices beside the line and a supplier's on the delivery, each a tap from the price, and a loose line sold with no item
+    status: done
+    proof:
+      - loose lines its money is a sale, it moves no stock, and the entry balances
+      - loose lines it carries no cost, no batch, and never a blank name
+      - loose lines it is refused on a quotation, a challan and a bill from a challan
+      - loose lines it comes back as money only
+      - past deals a price per bori is carried into kilos, exactly or not at all
+      - past deals a deal in the line's own unit is its price; one with none is not
+      - last rates a customer's are theirs alone, newest first, five at most
+      - last rates lines of one bill at one price are one deal
+      - last rates what a supplier charged comes from deliveries, and from anybody when no supplier is named
+      - last rates it is read through the party's own index, never a scan
+      - a loose line sells with no item, no stock and no cost, and the books balance
+      - a loose line comes back as money only, and no more of it than was sold
+      - a loose line a bill with one is cancelled cleanly
+      - loose lines and fbr a shop that does not report sells one
+      - loose lines and fbr a shop reporting to FBR refuses one in words, and nothing is written
+      - the cart round trip a draft from the build before loose lines is read as it was
+      - the cart round trip a loose line comes back loose, never as an item
+      - a customer's last prices are theirs, newest first, and a tap puts one on the line
+      - an old price tapped by a cashier keeps the customer's standing discount a percentage
+      - the owner sees what the goods last came in at; a cashier never sees a cost
+      - a loose line sells, prints, totals and survives a kill, and leaves the stock as it was
+      - a loose line is not kept on a quotation
+      - a shop reporting to FBR is told why there is no loose line
+      - a supplier's last prices are on the delivery, a tap from the cost
+      - at 200% on a small phone the last prices and the loose sheet fit

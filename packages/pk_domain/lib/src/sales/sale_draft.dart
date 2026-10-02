@@ -1,6 +1,22 @@
 import 'package:pk_money/pk_money.dart';
 
 /// One line as the counter entered it, before any calculation.
+///
+/// ## A line with no item (M37)
+///
+/// [itemId] is null for "khula maal": a kilo of onions out of a sack nobody
+/// ever entered, a length of rope, a repair. The cashier types what it is and
+/// what it comes to, and nothing is made in the catalogue — so a typo at the
+/// counter never becomes a twelfth "Pyaz" in the item list, which is what
+/// Easy Khata's users complain of and what Vyapar's type-to-create does.
+///
+/// The books treat such a line exactly as they treat any sale, minus the
+/// shelf: its money is Sales, its tax (none, unless the shop's own rules
+/// charge it) is the government's, and it moves no stock and carries no
+/// cost, because there is no stock to move and no cost anybody knows. A
+/// profit figure therefore counts the whole of it as margin, and
+/// `document_lines.item_id IS NULL` is how a report tells such a line from
+/// one whose cost really was nothing.
 final class SaleLineDraft {
   const SaleLineDraft({
     required this.itemId,
@@ -24,11 +40,18 @@ final class SaleLineDraft {
     this.tracksStock = true,
   });
 
-  final String itemId;
+  /// The item sold, or null for a loose line (see the class comment).
+  final String? itemId;
+
+  /// What the line says on the bill. For a loose line, what the cashier
+  /// typed it as.
   final String itemName;
   final String? itemCode;
   final String? hsCode;
   final String? description;
+
+  /// A line sold by description and amount, with no item behind it (M37).
+  bool get isLoose => itemId == null;
 
   /// What the cashier typed, in the unit they typed it in.
   final Qty qty;

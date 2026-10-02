@@ -68,6 +68,16 @@ final class QuotationBuilder {
         'A quotation takes no money. Record an advance as a receipt.',
       );
     }
+    // A quotation comes back onto the counter item by item when the
+    // customer says yes, and a loose line (M37) has no item to come back
+    // as. Kept anyway, it would silently fall off the bill made from it.
+    if (draft.lines.any((l) => l.isLoose)) {
+      throw const QuotationRefused(
+        'A loose line cannot be kept on a quotation: the bill made from it '
+        'is rung item by item, and a loose line is not an item. Make it an '
+        'item first.',
+      );
+    }
     final validUntil = actor.businessDate.addDays(validDays);
 
     return QuotationPosting(

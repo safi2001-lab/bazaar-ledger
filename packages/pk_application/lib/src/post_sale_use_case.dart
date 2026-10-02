@@ -38,16 +38,20 @@ final class PostSaleUseCase {
       // now. Bill-wise profit reads what the goods cost on the day they were
       // sold, never a recomputation against today's cost — otherwise last
       // month's margin changes every time a new consignment arrives.
+      //
+      // A loose line (M37) has no item and so no average to read: it is
+      // left at no cost, which is what the books know of it.
       final costs = await write.averageCostFor({
-        for (final l in draft.lines) l.itemId,
+        for (final l in draft.lines) ?l.itemId,
       });
       // Through withLines, so nothing else on the draft — where the goods
       // leave from included — is lost on the way.
       final priced = draft.withLines([
         for (final l in draft.lines)
-          l.unitCost.isZero && costs[l.itemId] != null
-              ? _withCost(l, costs[l.itemId]!)
-              : l,
+          switch (costs[l.itemId]) {
+            final cost? when l.unitCost.isZero => _withCost(l, cost),
+            _ => l,
+          },
       ]);
 
       final calculated = calculator.calculate(priced, taxContext);

@@ -3551,4 +3551,93 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get loanAmountInvalid => 'Enter an amount, like 25000 or 2500.50';
+
+  @override
+  String get posBillTo => 'Who the bill is for';
+
+  @override
+  String posCartEmptyFor(String name) {
+    return '$name\'s bill is empty so far';
+  }
+
+  @override
+  String get looseTitle => 'Loose item';
+
+  @override
+  String get looseHint =>
+      'Sell it without making an item. Nothing is saved to your items and no stock moves.';
+
+  @override
+  String get looseName => 'What it is (optional)';
+
+  @override
+  String get looseNameHint => 'e.g. onions';
+
+  @override
+  String get looseRate => 'Price (each, or the whole amount)';
+
+  @override
+  String looseAmount(String amount) {
+    return 'Amount: $amount';
+  }
+
+  @override
+  String get looseAdd => 'Put on the bill';
+
+  @override
+  String get looseNoCost =>
+      'Its cost is not known, so profit counts all of it as profit.';
+
+  @override
+  String get looseNeedsPrice => 'Type a quantity and a price';
+
+  @override
+  String get looseFbrRefused =>
+      'This shop reports its bills to FBR, and FBR needs every line\'s HS code. Make it an item instead of selling it loose.';
+
+  @override
+  String get looseNotKept =>
+      'A loose item cannot go on a quotation or a challan. Make it an item, or bill it now.';
+
+  @override
+  String looseOffer(String name) {
+    return 'Sell \'$name\' loose (no item is made)';
+  }
+
+  @override
+  String get looseBadge => 'Loose item · no stock';
+
+  @override
+  String get dealsSoldTitle => 'Sold to this customer before';
+
+  @override
+  String get dealsBoughtTitle => 'Bought from this supplier before';
+
+  @override
+  String get dealsTapHint => 'Tap one to put that price on this line.';
+
+  @override
+  String dealLastTime(String price, String date) {
+    return 'Last time $price · $date';
+  }
+
+  @override
+  String dealOtherUnit(String unit) {
+    return 'That price is per $unit. Switch the line to $unit first.';
+  }
+
+  @override
+  String dealUse(String price) {
+    return 'Use this price: $price';
+  }
+
+  @override
+  String dealLastBought(String price, String supplier, String date) {
+    return 'Last bought at $price · $supplier · $date';
+  }
+
+  @override
+  String posBillFor(String name) {
+    return 'Bill for $name';
+  }
 }

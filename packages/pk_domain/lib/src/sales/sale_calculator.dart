@@ -199,6 +199,7 @@ final class SaleCalculator {
     final gross = <Money>[];
     final lineDiscounts = <Money>[];
     for (final line in draft.lines) {
+      if (line.isLoose) _checkLoose(line);
       final lineGross = line.isFreeItem
           ? Money.zero
           : line.rate.amountFor(line.qty, mode: mode);
@@ -448,6 +449,33 @@ final class SaleCalculator {
             if (t.isInclusive) t.amount,
       ]),
     );
+  }
+
+  /// What a loose line (M37) may not carry.
+  ///
+  /// It is a description and an amount and nothing else. A cost on it would
+  /// post Cost of Goods Sold against Inventory with no stock leaving the
+  /// shelf, and the inventory account would part company with the stock
+  /// ledger by exactly that much, with nothing on any screen to say why. A
+  /// batch would point at goods it never took, and a free one is nothing at
+  /// all. A blank name prints an amount beside an empty line, which is the
+  /// one receipt line a customer will query.
+  static void _checkLoose(SaleLineDraft line) {
+    if (line.itemName.trim().isEmpty) {
+      throw ArgumentError.value(
+        line.itemName,
+        'itemName',
+        'a loose line has to say what it is',
+      );
+    }
+    if (!line.unitCost.isZero || line.lotId != null || line.isFreeItem) {
+      throw ArgumentError.value(
+        line.itemName,
+        'itemId',
+        'a loose line has no item behind it, so it has no cost, no batch '
+            'and nothing to give away free',
+      );
+    }
   }
 
   /// Splits [amount] across [weights] so the parts sum back to exactly

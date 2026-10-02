@@ -22,7 +22,46 @@ final class CartLine {
     this.unitCode,
     this.lotIds = const [],
     this.lotLabels = const [],
+    this.isLoose = false,
   });
+
+  /// A loose line (M37): something sold by what the cashier calls it and
+  /// what it comes to, with no item in the catalogue behind it.
+  ///
+  /// Built by [CartLine.loose], whose [item] is a stand-in that exists only
+  /// on this bill: its id keys the line on the counter (so two loose lines
+  /// can be told apart, stepped and removed like any other) and is never
+  /// written anywhere. [toDraft] hands the write path no item at all.
+  final bool isLoose;
+
+  /// A loose line: [name] at [rate] a unit, [qty] of them, optionally in one
+  /// of the shop's units. [key] tells it apart from the bill's other lines.
+  ///
+  /// Three decimals, whatever the unit: what was typed is a figure on a
+  /// bill, not a count of anything on a shelf, and 0.750 kg of onions is a
+  /// thing a kiryana sells all day.
+  factory CartLine.loose({
+    required String key,
+    required String name,
+    required Qty qty,
+    required Rate rate,
+    String? unitId,
+    String? unitCode,
+  }) => CartLine(
+    item: ItemSummary(
+      id: key,
+      name: name,
+      unitId: unitId ?? '',
+      unitCode: unitCode ?? '',
+      unitDecimals: 3,
+      saleRate: rate,
+      stockOnHand: Qty.zero,
+      tracksStock: false,
+    ),
+    qty: qty,
+    rate: rate,
+    isLoose: true,
+  );
 
   final ItemSummary item;
 
@@ -91,6 +130,7 @@ final class CartLine {
     unitCode: unitCode ?? this.unitCode,
     lotIds: lotIds ?? this.lotIds,
     lotLabels: lotLabels ?? this.lotLabels,
+    isLoose: isLoose,
   );
 
   /// The line as the write path wants it: one line per serial number when
@@ -126,7 +166,10 @@ final class CartLine {
   /// needs no converter at all, which is why one is optional — the counter
   /// must not stop selling pieces because the conversion table failed to
   /// load.
-  SaleLineDraft toDraft([UnitConverter? units]) => SaleLineDraft(
+  SaleLineDraft toDraft([UnitConverter? units]) =>
+      isLoose ? _looseDraft() : _itemDraft(units);
+
+  SaleLineDraft _itemDraft(UnitConverter? units) => SaleLineDraft(
     itemId: item.id,
     itemName: item.name,
     itemCode: item.code,
@@ -150,6 +193,22 @@ final class CartLine {
     discountBp: discountBp,
     explicitDiscount: explicitDiscount,
     tracksStock: item.tracksStock,
+  );
+
+  /// A loose line goes to the books with no item, no stock to move and no
+  /// cost (M37): what it is called, what was typed, and the shop's unit if
+  /// one was picked.
+  SaleLineDraft _looseDraft() => SaleLineDraft(
+    itemId: null,
+    itemName: item.name,
+    qty: qty,
+    baseQty: qty,
+    unitId: item.unitId.isEmpty ? null : item.unitId,
+    unitCode: item.unitCode,
+    rate: rate,
+    discountBp: discountBp,
+    explicitDiscount: explicitDiscount,
+    tracksStock: false,
   );
 
   @override
@@ -300,6 +359,59 @@ class CartNotifier extends Notifier<Cart> {
     }
     state = state.copyWith(lines: lines);
   }
+
+  /// Puts a loose line on the bill (M37): [name] at [rate], [qty] of it.
+  ///
+  /// The same thing at the same price in the same unit again is more of it,
+  /// as a second scan of a barcode is — two kilos of onions rung as one and
+  /// one are one line of two. It also keeps a return honest: a loose line is
+  /// known on its way back by its name, price and unit, and two lines alike
+  /// in all three could not be told apart.
+  ///
+  /// It takes no standing discount: the customer's discount is off the
+  /// shop's own prices, and this price is the one the cashier just typed.
+  void addLoose({
+    required String name,
+    required Qty qty,
+    required Rate rate,
+    String? unitId,
+    String? unitCode,
+  }) {
+    final lines = [...state.lines];
+    final index = lines.indexWhere(
+      (l) =>
+          l.isLoose &&
+          l.item.name == name &&
+          l.item.unitId == (unitId ?? '') &&
+          l.rate == rate,
+    );
+    if (index >= 0) {
+      lines[index] = lines[index].copyWith(qty: lines[index].qty + qty);
+    } else {
+      // A key no other line on this bill has. Counted up from the highest
+      // in use rather than from how many there are, so removing the first
+      // loose line and adding another never gives two lines one key.
+      var next = 1;
+      for (final l in lines) {
+        if (!l.isLoose || !l.item.id.startsWith(_looseKey)) continue;
+        final n = int.tryParse(l.item.id.substring(_looseKey.length)) ?? 0;
+        if (n >= next) next = n + 1;
+      }
+      lines.add(
+        CartLine.loose(
+          key: '$_looseKey$next',
+          name: name,
+          qty: qty,
+          rate: rate,
+          unitId: unitId,
+          unitCode: unitCode,
+        ),
+      );
+    }
+    state = state.copyWith(lines: lines);
+  }
+
+  static const _looseKey = 'loose-';
 
   void setQty(String itemId, Qty qty) {
     if (!qty.isPositive) {
@@ -478,6 +590,9 @@ class CartNotifier extends Notifier<Cart> {
     int discountBp,
     UnitConverter? units,
   ) {
+    // A loose line (M37) is at the price the cashier typed, which is not on
+    // any price list to move along.
+    if (line.isLoose) return line;
     Rate? priced(PriceTier t) {
       final base = priceFor(line.item, t);
       if (!line.isConverted) return base;

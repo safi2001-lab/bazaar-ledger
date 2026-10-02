@@ -109,6 +109,13 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       setState(() => _failure = s.challanNeedsCustomer);
       return;
     }
+    // A quotation is billed again item by item, and a challan sends goods
+    // somebody counts; a loose line (M37) is neither. Said here, in the
+    // shopkeeper's words, before the builder refuses it in English.
+    if (cart.lines.any((l) => l.isLoose)) {
+      setState(() => _failure = s.looseNotKept);
+      return;
+    }
     setState(() {
       _busy = true;
       _failure = null;
@@ -172,6 +179,21 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     final firm = ref.read(firmProvider).valueOrNull;
     if (preview == null || firm == null) {
       setState(() => _busy = false);
+      return;
+    }
+
+    // A loose line (M37) has no HS code, and a shop reporting to FBR must
+    // send one for every line. The counter does not offer one there, but a
+    // bill half-rung before reporting was turned on comes back with the
+    // cart. Said before anything is written; the sale path refuses it too.
+    if (cart.lines.any((l) => l.isLoose) &&
+        await ref.read(appServicesProvider).fbr.reportsSales()) {
+      if (mounted) {
+        setState(() {
+          _failure = s.looseFbrRefused;
+          _busy = false;
+        });
+      }
       return;
     }
 

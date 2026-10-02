@@ -103,10 +103,16 @@ final class SalePostingBuilder {
     for (final l in calculated.lines) {
       lines.add(documentLineFor(l, cost: challanCost?[l.lineNo]));
 
-      if (delivered == null && l.draft.tracksStock && !l.draft.baseQty.isZero) {
+      // A loose line (M37) has no item, so nothing leaves any shelf: there
+      // is no stock row for it to write, and none is invented.
+      final itemId = l.draft.itemId;
+      if (itemId != null &&
+          delivered == null &&
+          l.draft.tracksStock &&
+          !l.draft.baseQty.isZero) {
         stock.add(
           StockMovementPosting(
-            itemId: l.draft.itemId,
+            itemId: itemId,
             txnType: 'sale',
             qtyDelta: -l.draft.baseQty,
             rate: l.draft.unitCost,
@@ -332,10 +338,17 @@ final class SalePostingBuilder {
     final items = sale.lines.length == 1
         ? '1 item'
         : '${sale.lines.length} items';
+    // Loose lines (M37) are named in the activity log. They sell at a price
+    // somebody typed and take nothing off the shelf, so an owner reading the
+    // day's activity is told which bills had them, rather than finding out
+    // from a stock count that does not match.
+    final loose = sale.lines.where((l) => l.draft.isLoose).length;
+    final looseNote = loose == 0 ? '' : ' ($loose loose)';
     final settled = sale.isFullyPaid
         ? 'paid in full'
         : '${sale.balance.amountOnly} on udhaar';
-    return '$docNo to $who — $items, ${sale.total.amountOnly}, $settled';
+    return '$docNo to $who — $items$looseNote, ${sale.total.amountOnly}, '
+        '$settled';
   }
 
   /// Tender accounts are already resolved to an account id, so they are passed

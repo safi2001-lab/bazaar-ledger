@@ -23,11 +23,17 @@ abstract final class CartDraft {
   /// dropped rather than guessed at: the cost of dropping one is that the
   /// cashier re-rings a bill, and the cost of misreading one is a wrong bill
   /// they cannot see is wrong.
-  static const version = 3;
+  ///
+  /// v4 (M37) marks a loose line, which has no item behind it. A build
+  /// before v4 would read one as an item whose id names nothing in the
+  /// shop, and the bill would fail at the till; so a v4 draft is not one it
+  /// may read. Everything a v3 draft says, a v4 one says the same way.
+  static const version = 4;
 
   /// A v2 draft is a v3 one with no price tier: every v2 cart was priced
-  /// retail, so it is read as exactly that rather than thrown away.
-  static const _readable = {2, 3};
+  /// retail, so it is read as exactly that rather than thrown away. A v3
+  /// draft is a v4 one with no loose lines.
+  static const _readable = {2, 3, 4};
 
   static String encode(Cart cart) => jsonEncode({
     'v': version,
@@ -62,6 +68,9 @@ abstract final class CartDraft {
           'discountBp': line.discountBp,
           'explicitDiscountPaisa': line.explicitDiscount?.inPaisa,
           if (line.lotIds.isNotEmpty) 'lotIds': line.lotIds,
+          // A loose line (M37). Its "item" is the stand-in the cart made
+          // for it, and it is restored as one, never looked up.
+          if (line.isLoose) 'loose': true,
           if (line.lotLabels.isNotEmpty) 'lotLabels': line.lotLabels,
           // The unit the line is being SOLD in, which is not always the
           // unit the item is stocked in. A restored bill that quietly
@@ -139,6 +148,7 @@ abstract final class CartDraft {
     final explicit = raw['explicitDiscountPaisa'];
     final sellingUnitId = raw['sellingUnitId'];
     final sellingUnitCode = raw['sellingUnitCode'];
+    final loose = raw['loose'] ?? false;
 
     if (itemId is! String ||
         name is! String ||
@@ -156,7 +166,8 @@ abstract final class CartDraft {
         discountBp is! int ||
         (explicit != null && explicit is! int) ||
         (sellingUnitId != null && sellingUnitId is! String) ||
-        (sellingUnitCode != null && sellingUnitCode is! String)) {
+        (sellingUnitCode != null && sellingUnitCode is! String) ||
+        loose is! bool) {
       return null;
     }
 
@@ -194,6 +205,7 @@ abstract final class CartDraft {
         for (final l in (raw['lotLabels'] as List<Object?>?) ?? const [])
           if (l is String) l,
       ],
+      isLoose: loose,
     );
   }
 }

@@ -897,7 +897,14 @@ final class DriftAppQueries implements AppQueries {
                      AND link.deleted_at_utc IS NULL
                      AND r.status = 'posted'
                      AND r.deleted_at_utc IS NULL
-                     AND rl.item_id = dl.item_id
+                     AND (rl.item_id = dl.item_id
+                          -- A loose line (M37) has no item to match on. It is
+                          -- known by what it was called, its price and its
+                          -- unit, which the return line copies from it.
+                          OR (dl.item_id IS NULL AND rl.item_id IS NULL
+                              AND rl.item_name_snapshot = dl.item_name_snapshot
+                              AND rl.rate_milli_paisa = dl.rate_milli_paisa
+                              AND rl.unit_code_snapshot = dl.unit_code_snapshot))
                      AND rl.deleted_at_utc IS NULL
                  ), 0) AS returned,
              COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
@@ -925,7 +932,7 @@ final class DriftAppQueries implements AppQueries {
       for (final r in rows)
         SoldLine(
           documentLineId: r.read<String>('id'),
-          itemId: r.read<String>('item_id'),
+          itemId: r.readNullable<String>('item_id'),
           itemName: r.read<String>('item_name_snapshot'),
           unitId: r.readNullable<String>('unit_id') ?? '',
           unitCode: r.read<String>('unit_code_snapshot'),
@@ -2384,6 +2391,72 @@ final class DriftAppQueries implements AppQueries {
   }
 
   @override
+  Future<List<PastDeal>> lastSoldTo(
+    String firmId, {
+    required String partyId,
+    required String itemId,
+    int limit = 5,
+  }) => _pastDeals(
+    firmId,
+    docType: 'sale_invoice',
+    partyId: partyId,
+    itemId: itemId,
+    limit: limit,
+  );
+
+  @override
+  Future<List<PastDeal>> lastBought(
+    String firmId, {
+    required String itemId,
+    String? supplierId,
+    int limit = 5,
+  }) => _pastDeals(
+    firmId,
+    docType: 'purchase_bill',
+    partyId: supplierId,
+    itemId: itemId,
+    limit: limit,
+  );
+
+  Future<List<PastDeal>> _pastDeals(
+    String firmId, {
+    required String docType,
+    required String? partyId,
+    required String itemId,
+    required int limit,
+  }) async {
+    if (limit <= 0) return const [];
+    final rows = await _db
+        .customSelect(
+          pastDealsSql(forParty: partyId != null),
+          variables: [
+            if (partyId != null) Variable<String>(partyId),
+            Variable<String>(firmId),
+            Variable<String>(docType),
+            Variable<String>(itemId),
+            Variable<int>(limit),
+          ],
+          readsFrom: {_db.documents, _db.documentLines, _db.parties},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PastDeal(
+          documentId: r.read<String>('document_id'),
+          docNo: r.read<String>('doc_no'),
+          dateLocal: r.read<String>('doc_date_local'),
+          qty: Qty.raw(r.read<int>('qty')),
+          unitId: r.readNullable<String>('unit_id'),
+          unitCode: r.read<String>('unit_code_snapshot'),
+          rate: Rate.raw(r.read<int>('rate_milli_paisa')),
+          discountBp: r.read<int>('discount_bp'),
+          discount: Money.paisa(r.read<int>('discount')),
+          partyName: _blankToNull(r.readNullable<String>('party_name')),
+        ),
+    ];
+  }
+
+  @override
   Future<List<UnitEdge>> unitConversions(String firmId) async {
     final rows = await _db
         .customSelect(
@@ -2754,6 +2827,55 @@ final class DriftAppQueries implements AppQueries {
 
   static String _two(int n) => n.toString().padLeft(2, '0');
 }
+
+/// The read behind the last rates beside a counter line (M37), exposed so a
+/// test can ask SQLite how it means to run it.
+///
+/// The counter asks this for every line it shows a named customer, so it has
+/// to cost what the customer's own history costs and not what the shop's
+/// does. Two plans are written down rather than left to the planner:
+///
+///  * with a party, its bills newest first through `idx_documents_party`,
+///    each bill's lines through `idx_doclines_seq` -- a regular buyer's last
+///    five are found in his last few bills, and one who never bought the
+///    item costs his own bills and no more;
+///  * without one (the last delivery from anybody), the shop's bills of that
+///    kind newest first through `idx_documents_list`.
+///
+/// `INDEXED BY` rather than a hope. Without statistics SQLite can just as
+/// well choose `idx_doclines_item` for the inner loop and read every line of
+/// a best-selling item once for every bill of the customer's -- right, and
+/// slow in exactly the shop that most needs this. Named, the plan cannot
+/// drift; and if the index is ever dropped the query fails loudly instead of
+/// quietly scanning. No new index was added: the schema stays at v8.
+///
+/// Lines of one bill at one price are one deal, their quantities added.
+String pastDealsSql({required bool forParty}) =>
+    """
+    SELECT d.id AS document_id, d.doc_no, d.doc_date_local,
+           COALESCE(d.party_name_snapshot,
+                    (SELECT p.name FROM parties p WHERE p.id = d.party_id))
+             AS party_name,
+           l.unit_id, l.unit_code_snapshot, l.rate_milli_paisa, l.discount_bp,
+           SUM(l.qty_thousandths) AS qty,
+           SUM(l.discount_paisa) AS discount
+    FROM documents AS d
+         INDEXED BY ${forParty ? 'idx_documents_party' : 'idx_documents_list'}
+    CROSS JOIN document_lines AS l INDEXED BY idx_doclines_seq
+    WHERE ${forParty ? 'd.party_id = ? AND ' : ''}d.firm_id = ?
+      AND d.doc_type = ?
+      AND d.status = 'posted'
+      AND d.deleted_at_utc IS NULL
+      AND l.document_id = d.id
+      AND l.item_id = ?
+      AND l.deleted_at_utc IS NULL
+      AND l.is_free_item = 0
+    GROUP BY d.id, l.unit_id, l.unit_code_snapshot, l.rate_milli_paisa,
+             l.discount_bp
+    ORDER BY d.doc_date_local DESC, d.doc_date_utc DESC, d.doc_seq DESC,
+             MIN(l.line_no)
+    LIMIT ?
+    """;
 
 /// The line a free plan's bills end with.
 const madeWithLine = 'Bazaar Ledger app se banaya gaya';

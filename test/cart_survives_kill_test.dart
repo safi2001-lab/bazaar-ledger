@@ -67,7 +67,12 @@ void main() {
 
     test('a draft from another build is dropped, not guessed at', () {
       final encoded = CartDraft.encode(const Cart());
-      expect(CartDraft.decode(encoded.replaceFirst('"v":3', '"v":99')), isNull);
+      expect(
+        CartDraft.decode(
+          encoded.replaceFirst('"v":${CartDraft.version}', '"v":99'),
+        ),
+        isNull,
+      );
     });
 
     test('the customer prices survive it', () {
@@ -86,10 +91,55 @@ void main() {
       // Every v2 cart was priced retail, so that is what it is read as.
       final v2 = CartDraft.encode(
         const Cart(partyId: 'party-1', partyName: 'Bilal General Store'),
-      ).replaceFirst('"v":3', '"v":2');
+      ).replaceFirst('"v":${CartDraft.version}', '"v":2');
       final restored = CartDraft.decode(v2)!;
       expect(restored.priceTier, PriceTier.retail);
       expect(restored.partyId, 'party-1');
+    });
+
+    test('a draft from the build before loose lines is read as it was', () {
+      // M37 bumped the draft to v4 for loose lines. A v3 draft is a v4 one
+      // without any, so the bill half-rung before the update survives it.
+      final v3 = CartDraft.encode(
+        Cart(
+          lines: [
+            CartLine(
+              item: oil(),
+              qty: Qty.units(2),
+              rate: const Rate.rupees(2500),
+            ),
+          ],
+        ),
+      ).replaceFirst('"v":${CartDraft.version}', '"v":3');
+      final restored = CartDraft.decode(v3)!;
+      expect(restored.lines.single.isLoose, isFalse);
+      expect(restored.subtotal, const Money.rupees(5000));
+    });
+
+    test('a loose line comes back loose, never as an item', () {
+      // Its "item" is the cart's own stand-in. Read back as an ordinary
+      // line, it would post an item id that names nothing in the shop.
+      final cart = Cart(
+        lines: [
+          CartLine.loose(
+            key: 'loose-1',
+            name: 'Pyaz',
+            qty: Qty.parse('2.5'),
+            rate: const Rate.rupees(120),
+            unitId: 'unit-kg',
+            unitCode: 'kg',
+          ),
+        ],
+      );
+      final line = CartDraft.decode(CartDraft.encode(cart))!.lines.single;
+      expect(line.isLoose, isTrue);
+      expect(line.item.name, 'Pyaz');
+      expect(line.sellingUnitCode, 'kg');
+      final draft = line.toDraft();
+      expect(draft.itemId, isNull);
+      expect(draft.unitId, 'unit-kg');
+      expect(draft.tracksStock, isFalse);
+      expect(draft.rate.amountFor(draft.qty), const Money.rupees(300));
     });
 
     test('the unit the line is sold in survives too', () {

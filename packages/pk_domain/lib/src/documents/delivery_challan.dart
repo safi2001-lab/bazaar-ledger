@@ -81,6 +81,15 @@ final class DeliveryChallanBuilder {
         'A challan takes no money. Record an advance as a receipt.',
       );
     }
+    // A challan is goods counted out of the godown and signed for, and the
+    // bill made from it has to be for exactly those goods. A loose line
+    // (M37) names no goods anybody can count, so it cannot be sent on one.
+    if (draft.lines.any((l) => l.isLoose)) {
+      throw const ChallanRefused(
+        'A loose line cannot go on a challan: a challan sends goods, and a '
+        'loose line names none. Make it an item, or put it on the bill.',
+      );
+    }
 
     final millis = actor.epochMillis;
     final localDate = actor.businessDate.value;
@@ -90,7 +99,7 @@ final class DeliveryChallanBuilder {
       for (final l in calculated.lines)
         if (l.draft.tracksStock && !l.draft.baseQty.isZero)
           StockMovementPosting(
-            itemId: l.draft.itemId,
+            itemId: l.draft.itemId!,
             txnType: 'sale',
             qtyDelta: -l.draft.baseQty,
             rate: l.draft.unitCost,
@@ -240,10 +249,18 @@ final class ChallanGoods {
   /// are the challan cancelled and sent again, and more goods are another
   /// bill, so the cost the goods left at can be carried across to the paisa.
   Map<int, Money> costOfLines(List<CalculatedLine> lines) {
+    // A loose line (M37) is something that did not go on the challan, said
+    // in the same words as an item that did not.
+    if (lines.any((l) => l.draft.isLoose)) {
+      throw ChallanRefused(
+        'The bill has something that did not go on $docNo. Bill it '
+        'separately.',
+      );
+    }
     final billed = <String, Qty>{};
     for (final l in lines) {
-      billed[l.draft.itemId] =
-          (billed[l.draft.itemId] ?? Qty.zero) + l.draft.baseQty;
+      final itemId = l.draft.itemId!;
+      billed[itemId] = (billed[itemId] ?? Qty.zero) + l.draft.baseQty;
     }
     for (final MapEntry(key: itemId, value: sent) in byItem.entries) {
       if (billed[itemId] != sent.qty) {

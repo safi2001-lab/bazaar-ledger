@@ -172,6 +172,14 @@ final class FbrServices {
     });
   }
 
+  /// Whether a bill made now would go to FBR: the shop reports, on a plan
+  /// that reports.
+  ///
+  /// The counter asks this before it offers a loose line (M37): FBR wants
+  /// every line's HS code, and a line with no item has none.
+  Future<bool> reportsSales() async =>
+      (await settings()).enabled && _app.plans.has(PlanFeature.fbr);
+
   /// Marks a bill just saved as waiting for FBR, when the shop reports.
   /// The receipt then says so until FBR has answered.
   Future<void> afterSale(String documentId) async {
@@ -411,5 +419,87 @@ final class FbrServices {
           ),
       ],
     );
+  }
+}
+
+/// Why a bill cannot be made while the shop reports to FBR, in words.
+final class FbrRefusedLine implements Exception {
+  const FbrRefusedLine(this.reason);
+
+  final String reason;
+
+  @override
+  String toString() => reason;
+}
+
+/// Sales on a shop that reports to FBR: a loose line is refused (M37).
+///
+/// FBR's Digital Invoicing wants an HS code on every line, and a line with
+/// no item behind it has none. Sent anyway, the bill is refused by the
+/// gateway hours later, after the customer has left with the paper, and the
+/// shop is left holding a reported sale it cannot report. A default HS code
+/// stamped on every loose line was the other way out, and it was not taken:
+/// it would tell FBR that a kilo of onions and a bicycle repair were the
+/// same goods at the same rate, and that is a misdeclaration with the
+/// shop's NTN on it. So the counter says so before the bill is made, and
+/// this says it again for anything that gets past the counter — a bill
+/// half-rung before reporting was turned on, and restored after.
+///
+/// A shop that does not report, or whose plan has lapsed (its bills are not
+/// sent either), sells loose lines as any shop does.
+final class _FbrSales implements SaleWriter {
+  _FbrSales(this._inner, this._app);
+
+  final SaleWriter _inner;
+  final AppServices _app;
+
+  @override
+  Future<T> inTransaction<T>(
+    ActorContext actor,
+    Future<T> Function(SaleWriteContext write) body,
+  ) => _inner.inTransaction(actor, (w) => body(_FbrSaleContext(w, _app)));
+}
+
+final class _FbrSaleContext implements SaleWriteContext {
+  _FbrSaleContext(this._inner, this._app);
+
+  final SaleWriteContext _inner;
+  final AppServices _app;
+
+  @override
+  ActorContext get actor => _inner.actor;
+
+  @override
+  Future<TaxContext> taxContextFor(String? partyId) =>
+      _inner.taxContextFor(partyId);
+
+  @override
+  Future<AllocatedNumber> nextNumber(String docType) =>
+      _inner.nextNumber(docType);
+
+  @override
+  Future<Map<String, Rate>> averageCostFor(Iterable<String> itemIds) =>
+      _inner.averageCostFor(itemIds);
+
+  @override
+  Future<Map<String, String>> ledgerAccountsFor(
+    Iterable<String> paymentAccountIds,
+  ) => _inner.ledgerAccountsFor(paymentAccountIds);
+
+  @override
+  Future<ChallanGoods?> deliveredOn(String documentId) =>
+      _inner.deliveredOn(documentId);
+
+  @override
+  Future<PostedSale> apply(SalePosting posting) async {
+    if (posting.lines.any((l) => l.itemId == null) &&
+        await _app.fbr.reportsSales()) {
+      throw const FbrRefusedLine(
+        'This shop reports its bills to FBR, and FBR needs the HS code of '
+        'every line. A loose line has none: make it an item with its HS '
+        'code, or take it off the bill.',
+      );
+    }
+    return _inner.apply(posting);
   }
 }

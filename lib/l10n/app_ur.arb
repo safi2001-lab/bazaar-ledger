@@ -2025,5 +2025,92 @@
       "amount": {"type": "String"}
     }
   },
-  "loanAmountInvalid": "Raqam theek likhein, jaise 25000 ya 2500.50"
+  "loanAmountInvalid": "Raqam theek likhein, jaise 25000 ya 2500.50",
+  "posBillTo": "Bill kis ke naam",
+  "@posBillTo": {
+    "description": "Tooltip of the counter's customer button: who the bill is for (M37)."
+  },
+  "posCartEmptyFor": "{name} ka bill abhi khali hai",
+  "@posCartEmptyFor": {
+    "description": "The empty counter, once a customer has been chosen for the bill.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "looseTitle": "Khula maal",
+  "@looseTitle": {
+    "description": "A line sold by description and amount with no item behind it (M37)."
+  },
+  "looseHint": "Cheez banaye baghair bechein. Maal ki list mein kuch save nahi hoga aur stock nahi hile ga.",
+  "looseName": "Kya hai (marzi se)",
+  "looseNameHint": "Maslan: pyaz",
+  "looseRate": "Qeemat (fi unit, ya poori raqam)",
+  "looseAmount": "Raqam: {amount}",
+  "@looseAmount": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "looseAdd": "Bill mein daalein",
+  "looseNoCost": "Is ki laagat maloom nahi, is liye munafe mein yeh poori raqam munafa gini jaye gi.",
+  "@looseNoCost": {
+    "description": "Shown to roles that may see costs: a loose line has no cost, so profit counts all of it."
+  },
+  "looseNeedsPrice": "Tadaad aur qeemat likhein",
+  "looseFbrRefused": "Yeh dukaan FBR ko bill bhejti hai, aur FBR ko har line ka HS code chahiye. Khula maal ki jagah is ki cheez bana kar bechein.",
+  "looseNotKept": "Khula maal quotation ya challan par nahi ja sakta. Is ki cheez banayein, ya abhi bill banayein.",
+  "looseOffer": "'{name}' khula bechein (cheez nahi banegi)",
+  "@looseOffer": {
+    "description": "Offered at the counter when an item search finds nothing: sell what was typed as a loose line.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "looseBadge": "Khula maal · stock nahi",
+  "dealsSoldTitle": "Is gahak ko pichhli dafa",
+  "@dealsSoldTitle": {
+    "description": "Heading over the customer's last prices for an item (M37)."
+  },
+  "dealsBoughtTitle": "Is supplier se pichhli khareed",
+  "@dealsBoughtTitle": {
+    "description": "Heading over the supplier's last prices for an item on a delivery (M37)."
+  },
+  "dealsTapHint": "Kisi par tap karein to wohi qeemat is line par lag jaye gi.",
+  "dealLastTime": "Pichhli dafa {price} · {date}",
+  "@dealLastTime": {
+    "description": "On a counter line: what this customer paid for it last time, and when.",
+    "placeholders": {
+      "price": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "dealOtherUnit": "Yeh qeemat {unit} ki hai. Pehle line ko {unit} mein karein.",
+  "@dealOtherUnit": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "dealUse": "Yeh qeemat lagayein: {price}",
+  "@dealUse": {
+    "description": "Screen-reader label for one earlier price.",
+    "placeholders": {
+      "price": {"type": "String"}
+    }
+  },
+  "dealLastBought": "Aakhri khareed {price} · {supplier} · {date}",
+  "@dealLastBought": {
+    "description": "Shown only to roles that may see costs: the last delivery of this item.",
+    "placeholders": {
+      "price": {"type": "String"},
+      "supplier": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "posBillFor": "{name} ka bill",
+  "@posBillFor": {
+    "description": "Heads the counter's lines once a customer is named (M37).",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  }
 }

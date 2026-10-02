@@ -91,7 +91,10 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
   }
 
   Future<void> _addLine() async {
-    final line = await showPurchaseItemPicker(context);
+    final line = await showPurchaseItemPicker(
+      context,
+      supplierId: _supplier?.id,
+    );
     if (line != null && mounted) {
       setState(() {
         _lines.add(line);

@@ -78,7 +78,14 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
                  AND link.deleted_at_utc IS NULL
                  AND r.status = 'posted'
                  AND r.deleted_at_utc IS NULL
-                 AND rl.item_id = dl.item_id
+                 AND (rl.item_id = dl.item_id
+                      -- A loose line (M37) has no item to match on. It is
+                      -- known by what it was called, its price and its
+                      -- unit, which the return line copies from it.
+                      OR (dl.item_id IS NULL AND rl.item_id IS NULL
+                          AND rl.item_name_snapshot = dl.item_name_snapshot
+                          AND rl.rate_milli_paisa = dl.rate_milli_paisa
+                          AND rl.unit_code_snapshot = dl.unit_code_snapshot))
                  AND rl.deleted_at_utc IS NULL
              ), 0) AS returned,
              COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
@@ -106,7 +113,7 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
         for (final r in lineRows)
           SoldLine(
             documentLineId: r.read<String>('id'),
-            itemId: r.read<String>('item_id'),
+            itemId: r.readNullable<String>('item_id'),
             itemName: r.read<String>('item_name_snapshot'),
             unitId: r.readNullable<String>('unit_id') ?? '',
             unitCode: r.read<String>('unit_code_snapshot'),

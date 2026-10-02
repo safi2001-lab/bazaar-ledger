@@ -11,6 +11,7 @@ import '../entitlement/activity.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
+import '../sales/past_deal.dart';
 import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
 import '../time/clock.dart';
@@ -747,6 +748,33 @@ abstract interface class AppQueries {
 
   /// A charge on a khata, or an expense, whole (M31).
   Future<EntryDocument?> entryDocument(String firmId, String documentId);
+
+  /// The last bills [itemId] was sold to [partyId] on, newest first, at
+  /// most [limit] of them (M37).
+  ///
+  /// Posted bills only: a cancelled bill was never a price anybody paid,
+  /// and a quotation is a price asked, not agreed. Free lines are left out,
+  /// because "free" is not a rate to quote again. Read through the party's
+  /// own index, so the cost is this customer's history and not the whole
+  /// shop's — the counter asks this for every line it shows.
+  Future<List<PastDeal>> lastSoldTo(
+    String firmId, {
+    required String partyId,
+    required String itemId,
+    int limit = 5,
+  });
+
+  /// The last deliveries [itemId] came in on, newest first: from
+  /// [supplierId] when named, or from anybody (M37).
+  ///
+  /// What the shop paid, so a screen shows it only to a role that may see
+  /// costs.
+  Future<List<PastDeal>> lastBought(
+    String firmId, {
+    required String itemId,
+    String? supplierId,
+    int limit = 5,
+  });
 }
 
 /// The shop's stock, in five numbers.
