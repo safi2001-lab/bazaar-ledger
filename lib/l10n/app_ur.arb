@@ -2855,5 +2855,127 @@
   "reportOpenOrderItemsHint": "Khuli quotations aur challan par cheezen aur miqdar",
   "reportFilterAccount": "Bank ya wallet",
   "reportFilterHead": "Kharche ki mad",
-  "dayCloseSummary": "Din ka khulasa dekhein (Z report)"
+  "dayCloseSummary": "Din ka khulasa dekhein (Z report)",
+  "dueOn": "{date} tak",
+  "@dueOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "dueToday": "Aaj dena hai",
+  "dueOverdue": "{days, plural, =1{1 din der} other{{days} din der}}",
+  "@dueOverdue": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "dueNotYet": "Abhi waqt hai",
+  "khataCreditDays": "{days} din ka udhaar",
+  "@khataCreditDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "khataCreditUsual": "Aam muddat, {days} din",
+  "@khataCreditUsual": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "khataReturn": "Wapsi {no}",
+  "@khataReturn": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "partyCreditDays": "Udhaar kitne din ka (marzi se)",
+  "partyCreditDaysHint": "Khaali chhorein to {days} din. Badalne se khule billon ki aakhri tareekh bhi badlegi.",
+  "@partyCreditDaysHint": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "partyCreditDaysInvalid": "0 se 365 din ke darmiyan likhein",
+  "promiseTitle": "Adaygi ka wada",
+  "promiseRecord": "Wada likhein",
+  "promiseNew": "Naya wada",
+  "promiseNone": "Kab dene ka kaha? \"Jumma ko de dunga\" yahan likhein, us din yaad aayega.",
+  "promiseWhen": "Kab dene ka kaha?",
+  "promiseTomorrow": "Kal",
+  "promiseFriday": "Jumma",
+  "promiseNextWeek": "Agle hafte",
+  "promiseSalaryDay": "Tankhwah (1 tareekh)",
+  "promisePickDay": "Din chunein",
+  "promiseAmount": "Kitne ka kaha (marzi se)",
+  "promiseNote": "Unhon ne kya kaha (marzi se)",
+  "promiseSave": "Wada save karein",
+  "promiseSaved": "Wada likh liya: {date}",
+  "@promiseSaved": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "promiseFor": "{date} ka wada",
+  "@promiseFor": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "promiseForAmount": "{date} ko Rs {amount} ka wada",
+  "@promiseForAmount": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "promisePending": "Intezar",
+  "promiseDueToday": "Aaj ka wada",
+  "promiseKept": "Pura hua",
+  "promiseBroken": "Toot gaya",
+  "promiseReplaced": "Naye wade se badla",
+  "promiseWithdrawnLabel": "Hata diya",
+  "promiseWithdraw": "Wada hatayein",
+  "promiseWithdrawn": "Wada hata diya. Purane wadon mein rahega.",
+  "promiseHistory": "Purane wade",
+  "promiseBy": "{name} ne {date} ko likha",
+  "@promiseBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "promisePaidSince": "Tab se Rs {amount} aaye",
+  "@promisePaidSince": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "homeUdhaarDueToday": "{count, plural, =1{1 gahak ka udhaar aaj dena hai · Rs {amount}} other{{count} gahakon ka udhaar aaj dena hai · Rs {amount}}}",
+  "@homeUdhaarDueToday": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "homeUdhaarOverdue": "{count, plural, =1{1 gahak der se · Rs {amount}} other{{count} gahak der se · Rs {amount}}}",
+  "@homeUdhaarOverdue": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "homeUdhaarPromised": "{count, plural, =1{1 gahak ne aaj dene ka wada kiya · Rs {amount}} other{{count} gahakon ne aaj dene ka wada kiya · Rs {amount}}}",
+  "@homeUdhaarPromised": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "chaseSortLate": "Sab se der wale pehle",
+  "chaseSortPromise": "Wade ki tareekh se",
+  "chaseFilterPromised": "Wade wale",
+  "chaseFilterDueToday": "Aaj dena hai",
+  "chaseFilterPromisedToday": "Aaj ka wada",
+  "promiseToday": "Aaj",
+  "chaseFilterOverdue": "Der wale"
 }

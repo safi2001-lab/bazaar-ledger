@@ -4883,4 +4883,199 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get dayCloseSummary => 'See the day\'s summary (Z report)';
+
+  @override
+  String dueOn(String date) {
+    return 'Due $date';
+  }
+
+  @override
+  String get dueToday => 'Due today';
+
+  @override
+  String dueOverdue(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: 'Overdue $days days',
+      one: 'Overdue 1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dueNotYet => 'Not yet due';
+
+  @override
+  String khataCreditDays(int days) {
+    return '$days days\' credit';
+  }
+
+  @override
+  String khataCreditUsual(int days) {
+    return 'The shop\'s usual $days days';
+  }
+
+  @override
+  String khataReturn(String no) {
+    return 'Return $no';
+  }
+
+  @override
+  String get partyCreditDays => 'Days of credit (optional)';
+
+  @override
+  String partyCreditDaysHint(int days) {
+    return 'Left blank, $days days. Changing it moves the due date of bills still open too.';
+  }
+
+  @override
+  String get partyCreditDaysInvalid => 'Between 0 and 365 days';
+
+  @override
+  String get promiseTitle => 'Promise to pay';
+
+  @override
+  String get promiseRecord => 'Note a promise';
+
+  @override
+  String get promiseNew => 'New promise';
+
+  @override
+  String get promiseNone =>
+      'When did they say they\'d pay? Note it here and it comes up on the day.';
+
+  @override
+  String get promiseWhen => 'When did they say?';
+
+  @override
+  String get promiseTomorrow => 'Tomorrow';
+
+  @override
+  String get promiseFriday => 'Friday';
+
+  @override
+  String get promiseNextWeek => 'In a week';
+
+  @override
+  String get promiseSalaryDay => 'Salary day (the 1st)';
+
+  @override
+  String get promisePickDay => 'Pick a day';
+
+  @override
+  String get promiseAmount => 'How much they said (optional)';
+
+  @override
+  String get promiseNote => 'What they said (optional)';
+
+  @override
+  String get promiseSave => 'Save the promise';
+
+  @override
+  String promiseSaved(String date) {
+    return 'Promise noted: $date';
+  }
+
+  @override
+  String promiseFor(String date) {
+    return 'Promised for $date';
+  }
+
+  @override
+  String promiseForAmount(String date, String amount) {
+    return 'Rs $amount promised for $date';
+  }
+
+  @override
+  String get promisePending => 'Waiting';
+
+  @override
+  String get promiseDueToday => 'Due today';
+
+  @override
+  String get promiseKept => 'Kept';
+
+  @override
+  String get promiseBroken => 'Broken';
+
+  @override
+  String get promiseReplaced => 'Replaced';
+
+  @override
+  String get promiseWithdrawnLabel => 'Taken off';
+
+  @override
+  String get promiseWithdraw => 'Take the promise off';
+
+  @override
+  String get promiseWithdrawn =>
+      'Promise taken off. It stays with the earlier ones.';
+
+  @override
+  String get promiseHistory => 'Earlier promises';
+
+  @override
+  String promiseBy(String name, String date) {
+    return 'Noted by $name on $date';
+  }
+
+  @override
+  String promisePaidSince(String amount) {
+    return 'Rs $amount has come in since';
+  }
+
+  @override
+  String homeUdhaarDueToday(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count customers due today · Rs $amount',
+      one: '1 customer due today · Rs $amount',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeUdhaarOverdue(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count customers overdue · Rs $amount',
+      one: '1 customer overdue · Rs $amount',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeUdhaarPromised(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count customers promised to pay today · Rs $amount',
+      one: '1 customer promised to pay today · Rs $amount',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chaseSortLate => 'Most late first';
+
+  @override
+  String get chaseSortPromise => 'By promised day';
+
+  @override
+  String get chaseFilterPromised => 'With a promise';
+
+  @override
+  String get chaseFilterDueToday => 'Due today';
+
+  @override
+  String get chaseFilterPromisedToday => 'Promised today';
+
+  @override
+  String get promiseToday => 'Today';
+
+  @override
+  String get chaseFilterOverdue => 'Late ones';
 }

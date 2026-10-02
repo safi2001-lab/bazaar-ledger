@@ -11,6 +11,7 @@ import '../../l10n/app_strings.dart';
 import '../khata/opening_balance_sheet.dart';
 import '../subscription/plans_screen.dart';
 import 'party_groups.dart';
+import 'quick_party_sheet.dart' show creditDaysFrom;
 
 /// Add a customer, or change one.
 class PartyEditorScreen extends ConsumerStatefulWidget {
@@ -35,6 +36,7 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   late final TextEditingController _creditLimit = TextEditingController(
     text: widget.party?.creditLimit?.amountOnly ?? '',
   );
+  final _creditDays = TextEditingController();
   final _address = TextEditingController();
   final _city = TextEditingController();
   final _cnic = TextEditingController();
@@ -90,6 +92,7 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
       _cnic.text = saved?.cnic ?? '';
       _group.text = saved?.group ?? '';
       _remarks.text = saved?.remarks ?? '';
+      _creditDays.text = saved?.creditDays?.toString() ?? '';
       _buyerRegistered = saved?.buyerRegistrationType == 'registered';
       _buyerOnAtl = saved?.isOnAtl ?? false;
     });
@@ -117,6 +120,7 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
     _phone.dispose();
     _opening.dispose();
     _creditLimit.dispose();
+    _creditDays.dispose();
     _address.dispose();
     _city.dispose();
     _cnic.dispose();
@@ -165,7 +169,9 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
             ? Money.zero
             : Money.tryParse(_opening.text) ?? Money.zero,
         creditLimit: Money.tryParse(_creditLimit.text),
-        creditDays: saved?.creditDays,
+        // Typed here since M38; every open bill's due date moves with it,
+        // which the hint under the field says before Save.
+        creditDays: creditDaysFrom(_creditDays.text).days,
         priceTier: _tier,
         defaultDiscountBp: _bp(_discount.text) ?? 0,
         group: text(_group),
@@ -382,6 +388,25 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             label: s.partyCreditLimit,
                             numeric: true,
                             textInputAction: TextInputAction.next,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          // How long they have to pay, from each bill's
+                          // date (M38). Derived on read, so changing it
+                          // moves the bills still open, and the hint says so.
+                          BlField(
+                            controller: _creditDays,
+                            label: s.partyCreditDays,
+                            numeric: true,
+                            decimals: 0,
+                            textInputAction: TextInputAction.next,
+                            validator: (v) => creditDaysFrom(v ?? '').valid
+                                ? null
+                                : s.partyCreditDaysInvalid,
+                          ),
+                          const SizedBox(height: BlTokens.space1),
+                          Text(
+                            s.partyCreditDaysHint(shopUsualCreditDays),
+                            style: TextStyle(fontSize: 12, color: t.inkMuted),
                           ),
                           const SizedBox(height: BlTokens.space4),
                           // Which of an item's two prices they are sold at. A

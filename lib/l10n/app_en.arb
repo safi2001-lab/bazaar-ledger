@@ -2741,5 +2741,127 @@
   "reportOpenOrderItemsHint": "The items and quantities on open quotations and challans",
   "reportFilterAccount": "Account",
   "reportFilterHead": "Expense head",
-  "dayCloseSummary": "See the day's summary (Z report)"
+  "dayCloseSummary": "See the day's summary (Z report)",
+  "dueOn": "Due {date}",
+  "@dueOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "dueToday": "Due today",
+  "dueOverdue": "{days, plural, =1{Overdue 1 day} other{Overdue {days} days}}",
+  "@dueOverdue": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "dueNotYet": "Not yet due",
+  "khataCreditDays": "{days} days' credit",
+  "@khataCreditDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "khataCreditUsual": "The shop's usual {days} days",
+  "@khataCreditUsual": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "khataReturn": "Return {no}",
+  "@khataReturn": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "partyCreditDays": "Days of credit (optional)",
+  "partyCreditDaysHint": "Left blank, {days} days. Changing it moves the due date of bills still open too.",
+  "@partyCreditDaysHint": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "partyCreditDaysInvalid": "Between 0 and 365 days",
+  "promiseTitle": "Promise to pay",
+  "promiseRecord": "Note a promise",
+  "promiseNew": "New promise",
+  "promiseNone": "When did they say they'd pay? Note it here and it comes up on the day.",
+  "promiseWhen": "When did they say?",
+  "promiseTomorrow": "Tomorrow",
+  "promiseFriday": "Friday",
+  "promiseNextWeek": "In a week",
+  "promiseSalaryDay": "Salary day (the 1st)",
+  "promisePickDay": "Pick a day",
+  "promiseAmount": "How much they said (optional)",
+  "promiseNote": "What they said (optional)",
+  "promiseSave": "Save the promise",
+  "promiseSaved": "Promise noted: {date}",
+  "@promiseSaved": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "promiseFor": "Promised for {date}",
+  "@promiseFor": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "promiseForAmount": "Rs {amount} promised for {date}",
+  "@promiseForAmount": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "promisePending": "Waiting",
+  "promiseDueToday": "Due today",
+  "promiseKept": "Kept",
+  "promiseBroken": "Broken",
+  "promiseReplaced": "Replaced",
+  "promiseWithdrawnLabel": "Taken off",
+  "promiseWithdraw": "Take the promise off",
+  "promiseWithdrawn": "Promise taken off. It stays with the earlier ones.",
+  "promiseHistory": "Earlier promises",
+  "promiseBy": "Noted by {name} on {date}",
+  "@promiseBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "promisePaidSince": "Rs {amount} has come in since",
+  "@promisePaidSince": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "homeUdhaarDueToday": "{count, plural, =1{1 customer due today · Rs {amount}} other{{count} customers due today · Rs {amount}}}",
+  "@homeUdhaarDueToday": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "homeUdhaarOverdue": "{count, plural, =1{1 customer overdue · Rs {amount}} other{{count} customers overdue · Rs {amount}}}",
+  "@homeUdhaarOverdue": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "homeUdhaarPromised": "{count, plural, =1{1 customer promised to pay today · Rs {amount}} other{{count} customers promised to pay today · Rs {amount}}}",
+  "@homeUdhaarPromised": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "chaseSortLate": "Most late first",
+  "chaseSortPromise": "By promised day",
+  "chaseFilterPromised": "With a promise",
+  "chaseFilterDueToday": "Due today",
+  "chaseFilterPromisedToday": "Promised today",
+  "promiseToday": "Today",
+  "chaseFilterOverdue": "Late ones"
 }

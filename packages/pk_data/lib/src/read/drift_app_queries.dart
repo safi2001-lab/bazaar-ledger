@@ -670,6 +670,29 @@ final class DriftAppQueries implements AppQueries {
 
             UNION ALL
 
+            -- Goods the customer brought back (found by M33's statement,
+            -- put right here in M38). A return takes what it was worth off
+            -- what they owe — off its bill, or kept for them as an advance
+            -- — and a history without it ran ahead of the balance above it
+            -- by exactly the return. What was handed back over the counter
+            -- there and then moved nothing on the khata, so only the rest
+            -- is a line: the total less the refund, the same figure the
+            -- party statement lists.
+            SELECT d.id AS id,
+                   'return' AS kind,
+                   d.doc_no AS reference,
+                   d.doc_date_local AS date_local,
+                   -(d.total_paisa - d.paid_paisa) AS amount_paisa,
+                   d.created_at_utc AS recorded
+            FROM documents d
+            WHERE d.firm_id = ? AND d.party_id = ?
+              AND d.doc_type = 'sale_return'
+              AND d.status NOT IN ('void', 'draft')
+              AND d.deleted_at_utc IS NULL
+              AND d.total_paisa <> d.paid_paisa
+
+            UNION ALL
+
             SELECT p.id AS id,
                    'payment' AS kind,
                    p.payment_no AS reference,
@@ -733,6 +756,8 @@ final class DriftAppQueries implements AppQueries {
           LIMIT ?
           ''',
           variables: [
+            Variable<String>(firmId),
+            Variable<String>(partyId),
             Variable<String>(firmId),
             Variable<String>(partyId),
             Variable<String>(firmId),
@@ -3274,6 +3299,14 @@ final class DriftAppQueries implements AppQueries {
       thisBill: Money.paisa(thisBill.read<int>('owed')),
     );
   }
+
+  /// The one SELECT for who a customer is and what they owe, for a reader
+  /// outside this class that must not grow a second idea of either (M38's
+  /// chase list). Ends at `FROM parties p`; the caller adds its WHERE.
+  static String get partySelectSql => _partySelect;
+
+  /// A row of [partySelectSql], read the way every screen reads it.
+  static PartySummary partyFromRow(QueryRow row) => _party(row);
 }
 
 /// The read behind the last rates beside a counter line (M37), exposed so a

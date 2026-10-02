@@ -13,6 +13,7 @@ import '../documents/quotations_screen.dart';
 import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
+import '../khata/udhaar_due_card.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
 import '../purchases/purchases_screen.dart';
@@ -76,6 +77,8 @@ class HomeScreen extends ConsumerWidget {
             children: [
               const _DayCard(),
               const _ChequesDue(),
+              // Udhaar due today, late, and promised for today (M38).
+              const UdhaarDueCard(),
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.homeTitle),
               const SizedBox(height: BlTokens.space3),

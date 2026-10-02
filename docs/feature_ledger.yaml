@@ -1448,6 +1448,77 @@ milestones:
       - packages/pk_data/lib/src/read/reports/staff_queries.dart
       - packages/pk_data/lib/src/read/reports/tax_queries.dart
 
+  - id: M38
+    title: Every bill has a day it is due, and a customer's promise is kept on the khata
+    # Opened and sealed 3 Oct 2026 at 1/1. Until now the khata knew how old
+    # each bill was and nothing about when it was meant to be paid, so a
+    # wholesale customer on fifteen days and a household that settles on
+    # salary day were chased by the same clock. Now a customer carries
+    # credit days — on the full form and on the short one at the counter —
+    # and each open bill on the khata says "Due 12 Oct", "Due today" or
+    # "Overdue 9 days". A customer with no term of their own is held to the
+    # shop's usual thirty days, the same edge the bill-age report has always
+    # called current, so a shop that never sets one sees the overdue figure
+    # it saw before.
+    #
+    # Due dates are derived, never stored: the bill's date plus the
+    # customer's credit days, worked out on every read, in SQL and in
+    # `dueDateOf`, and a test pins the two together across month ends. No
+    # schema change was open to this milestone (v8 is held elsewhere), and
+    # the shopkeeper's own words for it are a term on the customer, not a
+    # date on the paper. The consequence is deliberate and the form says it
+    # before Save: changing a customer's credit days moves the due date of
+    # every bill they still owe on.
+    #
+    # A promise to pay ("Jumma ko de dunga") is written on the khata: a day
+    # (today, tomorrow, Friday, a week, salary day on the 1st, or any day),
+    # an amount if one was said, and their words. It is never ticked:
+    # kept when receipts from the day it was made to the day it was for
+    # reach what was promised, broken when the day passes without, replaced
+    # when a new one was made before its day — read off the books, so it
+    # cannot be left "pending" about a promise everyone knows was broken.
+    # Taking one off marks it and keeps it; earlier promises, broken ones
+    # included, stay listed under the latest. Promises are rows in the
+    # firm's `settings` (`promise.<party>.<id>`, JSON), one per promise so
+    # two counters taking promises the same evening each keep theirs when
+    # the LAN sync merges, written through TxRunner with an audit row each.
+    #
+    # The home screen carries the morning: customers due today, customers
+    # late, customers who promised today, each line opening the chase list
+    # narrowed to them. That card is the reminder — no OS notification, no
+    # new plugin, no notification permission. The chase list ages by due
+    # date (not yet due / 1-30 / 31-60 / 61-90 / 90+), reads most late
+    # first or by the day promised, filters to due today, late, promised
+    # today or promised, and never lists a customer in credit overall
+    # (it joins the one SELECT the whole app reads a balance from). The
+    # due-date ageing and the chase rows are exposed as
+    # `services.udhaar.queries.dueAging` / `dueParties` for a reports
+    # milestone to register; the reports files are not this one's.
+    #
+    # Found on the way, at M33's report: the khata's own history left out
+    # goods brought back, so its running balance ran ahead of the balance
+    # above it by the return. It now lists each return (the part not
+    # refunded over the counter), and a test lands it on the balance. A
+    # return line says what came back and opens nothing; returns have no
+    # page of their own.
+    #
+    # Not built, and why: a notification from the phone the day before (no
+    # plugin, by the brief); a shop-wide default other than thirty days (a
+    # setting nobody has asked for yet); due dates on an opening balance,
+    # which has no bill date to count from — it is chased by promise.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/receivables/due_dates.dart
+      - packages/pk_domain/lib/src/receivables/promise.dart
+      - packages/pk_domain/lib/src/ports/udhaar.dart
+      - packages/pk_data/lib/src/read/drift_udhaar_queries.dart
+      - packages/pk_data/lib/src/write/drift_udhaar_store.dart
+      - packages/pk_bootstrap/lib/src/udhaar_services.dart
+      - lib/features/khata/udhaar_providers.dart
+      - lib/features/khata/due_chip.dart
+      - lib/features/khata/promise_sheet.dart
+      - lib/features/khata/udhaar_due_card.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5973,3 +6044,45 @@ features:
       - orders challans not yet billed, and the items on both
       - report engine the open orders and the defaulters are as of today
       - orders the quotation and the challan not yet billed are open; the billed challan is not
+  - id: M38-DUE-01
+    milestone: M38
+    title: Bills fall due on the customer's credit days, promises are kept on the khata, and the morning says who is due
+    status: done
+    # Due dates are derived on read and the SQL agrees with the domain;
+    # promises are settings rows judged against receipts; the khata's
+    # history includes returns and lands on its balance.
+    proof:
+      - a due date is the bill date plus the customer credit days
+      - a due date is the shop usual month for a customer with no terms
+      - a due date is the bill date itself for a customer on no credit
+      - a due date crosses a year end and a leap day on the calendar
+      - how late a bill is due today is not yet late
+      - how late a bill is the buckets are inclusive at the top
+      - how late a bill is every bucket is present, and they sum back to the total
+      - how late a bill is a date is said short this year and with its year otherwise
+      - a promise is pending before its day and due on it
+      - a promise is kept by the money, early or on the day
+      - a promise is broken when its day passes short of what was said
+      - a promise is replaced by a new one made before its day, not after
+      - a promise taken off stays listed as taken off
+      - a promise is for today or a day to come, and for more than nothing
+      - a promise the days a customer says are one tap each
+      - due dates a bill falls due its customer credit days after its date
+      - due dates the SQL and the domain agree on every due date
+      - due dates a customer given longer terms has their open bills move with them
+      - due dates ageing by due date keeps what is not yet due apart
+      - due dates the chase list is most late first, and never lists a customer the shop owes
+      - promises a promise is kept by a receipt inside its window
+      - promises a promise is broken when its day passes, and a new one replaces an old one
+      - promises a promise taken off stays in the history, marked
+      - promises a promise for a day gone by is refused in words
+      - promises the morning card counts due today, overdue and promised today
+      - the khata history a customer with a return has a history that ends at the khata balance
+      - a bill on the khata says when it is due, and how late
+      - a credit term typed on the customer form moves the days their open bills are due
+      - a new customer made from the bill is given their days
+      - a promise written on the khata is on the first screen on its day, and leaves it once kept
+      - the morning card counts what is due today and what is late, and opens the list narrowed to it
+      - the chase list splits what is not yet due from what is late, and reads by the day promised
+      - at 200% on a small phone the khata with its due days and promise, and the promise sheet, fit
+      - at 200% on a small phone the chase list fits

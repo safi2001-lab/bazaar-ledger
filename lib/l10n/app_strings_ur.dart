@@ -4882,4 +4882,198 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get dayCloseSummary => 'Din ka khulasa dekhein (Z report)';
+
+  @override
+  String dueOn(String date) {
+    return '$date tak';
+  }
+
+  @override
+  String get dueToday => 'Aaj dena hai';
+
+  @override
+  String dueOverdue(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days din der',
+      one: '1 din der',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get dueNotYet => 'Abhi waqt hai';
+
+  @override
+  String khataCreditDays(int days) {
+    return '$days din ka udhaar';
+  }
+
+  @override
+  String khataCreditUsual(int days) {
+    return 'Aam muddat, $days din';
+  }
+
+  @override
+  String khataReturn(String no) {
+    return 'Wapsi $no';
+  }
+
+  @override
+  String get partyCreditDays => 'Udhaar kitne din ka (marzi se)';
+
+  @override
+  String partyCreditDaysHint(int days) {
+    return 'Khaali chhorein to $days din. Badalne se khule billon ki aakhri tareekh bhi badlegi.';
+  }
+
+  @override
+  String get partyCreditDaysInvalid => '0 se 365 din ke darmiyan likhein';
+
+  @override
+  String get promiseTitle => 'Adaygi ka wada';
+
+  @override
+  String get promiseRecord => 'Wada likhein';
+
+  @override
+  String get promiseNew => 'Naya wada';
+
+  @override
+  String get promiseNone =>
+      'Kab dene ka kaha? \"Jumma ko de dunga\" yahan likhein, us din yaad aayega.';
+
+  @override
+  String get promiseWhen => 'Kab dene ka kaha?';
+
+  @override
+  String get promiseTomorrow => 'Kal';
+
+  @override
+  String get promiseFriday => 'Jumma';
+
+  @override
+  String get promiseNextWeek => 'Agle hafte';
+
+  @override
+  String get promiseSalaryDay => 'Tankhwah (1 tareekh)';
+
+  @override
+  String get promisePickDay => 'Din chunein';
+
+  @override
+  String get promiseAmount => 'Kitne ka kaha (marzi se)';
+
+  @override
+  String get promiseNote => 'Unhon ne kya kaha (marzi se)';
+
+  @override
+  String get promiseSave => 'Wada save karein';
+
+  @override
+  String promiseSaved(String date) {
+    return 'Wada likh liya: $date';
+  }
+
+  @override
+  String promiseFor(String date) {
+    return '$date ka wada';
+  }
+
+  @override
+  String promiseForAmount(String date, String amount) {
+    return '$date ko Rs $amount ka wada';
+  }
+
+  @override
+  String get promisePending => 'Intezar';
+
+  @override
+  String get promiseDueToday => 'Aaj ka wada';
+
+  @override
+  String get promiseKept => 'Pura hua';
+
+  @override
+  String get promiseBroken => 'Toot gaya';
+
+  @override
+  String get promiseReplaced => 'Naye wade se badla';
+
+  @override
+  String get promiseWithdrawnLabel => 'Hata diya';
+
+  @override
+  String get promiseWithdraw => 'Wada hatayein';
+
+  @override
+  String get promiseWithdrawn => 'Wada hata diya. Purane wadon mein rahega.';
+
+  @override
+  String get promiseHistory => 'Purane wade';
+
+  @override
+  String promiseBy(String name, String date) {
+    return '$name ne $date ko likha';
+  }
+
+  @override
+  String promisePaidSince(String amount) {
+    return 'Tab se Rs $amount aaye';
+  }
+
+  @override
+  String homeUdhaarDueToday(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gahakon ka udhaar aaj dena hai · Rs $amount',
+      one: '1 gahak ka udhaar aaj dena hai · Rs $amount',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeUdhaarOverdue(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gahak der se · Rs $amount',
+      one: '1 gahak der se · Rs $amount',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String homeUdhaarPromised(int count, String amount) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gahakon ne aaj dene ka wada kiya · Rs $amount',
+      one: '1 gahak ne aaj dene ka wada kiya · Rs $amount',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get chaseSortLate => 'Sab se der wale pehle';
+
+  @override
+  String get chaseSortPromise => 'Wade ki tareekh se';
+
+  @override
+  String get chaseFilterPromised => 'Wade wale';
+
+  @override
+  String get chaseFilterDueToday => 'Aaj dena hai';
+
+  @override
+  String get chaseFilterPromisedToday => 'Aaj ka wada';
+
+  @override
+  String get promiseToday => 'Aaj';
+
+  @override
+  String get chaseFilterOverdue => 'Der wale';
 }

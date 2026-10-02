@@ -29,6 +29,7 @@ part 'plan_gates.dart';
 part 'plan_services.dart';
 part 'shop_money_services.dart';
 part 'sync_services.dart';
+part 'udhaar_services.dart';
 
 /// Everything the app can do, wired once.
 ///
@@ -405,6 +406,9 @@ final class AppServices {
   /// The shop's money and the home's, other income, heads and the monthly
   /// bills (M47).
   late final ShopMoneyServices shopMoney = ShopMoneyServices._(this);
+
+  /// Chasing udhaar: due dates, promises (M38).
+  late final UdhaarServices udhaar = UdhaarServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

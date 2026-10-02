@@ -388,9 +388,9 @@ final class LedgerEntry {
 
   final String id;
 
-  /// `sale`, `charge` (a debit note), `payment` or `bounce` on a customer's
-  /// khata; `purchase`, `expense` or `payment` on what the shop owes a
-  /// supplier.
+  /// `sale`, `charge` (a debit note), `return` (goods brought back),
+  /// `payment` or `bounce` on a customer's khata; `purchase`, `expense` or
+  /// `payment` on what the shop owes a supplier.
   final String kind;
 
   /// The invoice or receipt number, which is what a customer holding a piece

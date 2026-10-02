@@ -108,6 +108,17 @@ Future<List<PartySummary>> partyTwins(
   return found.values.toList();
 }
 
+/// Credit days as typed on a party form (M38): null when left blank, which
+/// holds the customer to the shop's usual month; `valid` false when it is
+/// not a whole number of days from 0 to a year.
+({int? days, bool valid}) creditDaysFrom(String text) {
+  final raw = text.trim();
+  if (raw.isEmpty) return (days: null, valid: true);
+  final days = int.tryParse(raw);
+  if (days == null || days < 0 || days > 365) return (days: null, valid: false);
+  return (days: days, valid: true);
+}
+
 /// The words for a refusal, rather than an exception's class name.
 String refusalWords(Object error) => switch (error) {
   PlanRequired(:final reason) => reason,
@@ -147,6 +158,7 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
   late final TextEditingController _group = TextEditingController(
     text: widget.initialGroup ?? '',
   );
+  final _creditDays = TextEditingController();
   PriceTier _tier = PriceTier.retail;
 
   bool _busy = false;
@@ -164,6 +176,7 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
     _phone.dispose();
     _limit.dispose();
     _group.dispose();
+    _creditDays.dispose();
     super.dispose();
   }
 
@@ -206,6 +219,8 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
             : null,
         priceTier: _forCustomer ? _tier : PriceTier.retail,
         group: _group.text,
+        // How long they have to pay (M38). Blank is the shop's usual month.
+        creditDays: _forCustomer ? creditDaysFrom(_creditDays.text).days : null,
       );
 
       if (!anyway) {
@@ -328,6 +343,19 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
                 numeric: true,
                 textInputAction: TextInputAction.next,
               ),
+              const SizedBox(height: BlTokens.space3),
+              // Every bill they take on udhaar falls due this many days
+              // after its date (M38).
+              BlField(
+                controller: _creditDays,
+                label: s.partyCreditDays,
+                numeric: true,
+                decimals: 0,
+                textInputAction: TextInputAction.done,
+                validator: (v) => creditDaysFrom(v ?? '').valid
+                    ? null
+                    : s.partyCreditDaysInvalid,
+              ),
             ],
             // Optional, like the limit (M40): left blank, they are in no
             // group, and the full form can file them later.
@@ -386,10 +414,7 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
             ],
             if (_failure != null) ...[
               const SizedBox(height: BlTokens.space3),
-              Text(
-                _failure!,
-                style: TextStyle(fontSize: 13, color: t.danger),
-              ),
+              Text(_failure!, style: TextStyle(fontSize: 13, color: t.danger)),
             ],
             const SizedBox(height: BlTokens.space5),
             BlButton(

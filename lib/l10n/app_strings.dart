@@ -8605,6 +8605,288 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Din ka khulasa dekhein (Z report)'**
   String get dayCloseSummary;
+
+  /// No description provided for @dueOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak'**
+  String dueOn(String date);
+
+  /// No description provided for @dueToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj dena hai'**
+  String get dueToday;
+
+  /// No description provided for @dueOverdue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days, plural, =1{1 din der} other{{days} din der}}'**
+  String dueOverdue(int days);
+
+  /// No description provided for @dueNotYet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi waqt hai'**
+  String get dueNotYet;
+
+  /// No description provided for @khataCreditDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din ka udhaar'**
+  String khataCreditDays(int days);
+
+  /// No description provided for @khataCreditUsual.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aam muddat, {days} din'**
+  String khataCreditUsual(int days);
+
+  /// No description provided for @khataReturn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi {no}'**
+  String khataReturn(String no);
+
+  /// No description provided for @partyCreditDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar kitne din ka (marzi se)'**
+  String get partyCreditDays;
+
+  /// No description provided for @partyCreditDaysHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khaali chhorein to {days} din. Badalne se khule billon ki aakhri tareekh bhi badlegi.'**
+  String partyCreditDaysHint(int days);
+
+  /// No description provided for @partyCreditDaysInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'0 se 365 din ke darmiyan likhein'**
+  String get partyCreditDaysInvalid;
+
+  /// No description provided for @promiseTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Adaygi ka wada'**
+  String get promiseTitle;
+
+  /// No description provided for @promiseRecord.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada likhein'**
+  String get promiseRecord;
+
+  /// No description provided for @promiseNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya wada'**
+  String get promiseNew;
+
+  /// No description provided for @promiseNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab dene ka kaha? \"Jumma ko de dunga\" yahan likhein, us din yaad aayega.'**
+  String get promiseNone;
+
+  /// No description provided for @promiseWhen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab dene ka kaha?'**
+  String get promiseWhen;
+
+  /// No description provided for @promiseTomorrow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kal'**
+  String get promiseTomorrow;
+
+  /// No description provided for @promiseFriday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jumma'**
+  String get promiseFriday;
+
+  /// No description provided for @promiseNextWeek.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agle hafte'**
+  String get promiseNextWeek;
+
+  /// No description provided for @promiseSalaryDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah (1 tareekh)'**
+  String get promiseSalaryDay;
+
+  /// No description provided for @promisePickDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din chunein'**
+  String get promisePickDay;
+
+  /// No description provided for @promiseAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne ka kaha (marzi se)'**
+  String get promiseAmount;
+
+  /// No description provided for @promiseNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Unhon ne kya kaha (marzi se)'**
+  String get promiseNote;
+
+  /// No description provided for @promiseSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada save karein'**
+  String get promiseSave;
+
+  /// No description provided for @promiseSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada likh liya: {date}'**
+  String promiseSaved(String date);
+
+  /// No description provided for @promiseFor.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ka wada'**
+  String promiseFor(String date);
+
+  /// No description provided for @promiseForAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ko Rs {amount} ka wada'**
+  String promiseForAmount(String date, String amount);
+
+  /// No description provided for @promisePending.
+  ///
+  /// In ur, this message translates to:
+  /// **'Intezar'**
+  String get promisePending;
+
+  /// No description provided for @promiseDueToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ka wada'**
+  String get promiseDueToday;
+
+  /// No description provided for @promiseKept.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pura hua'**
+  String get promiseKept;
+
+  /// No description provided for @promiseBroken.
+  ///
+  /// In ur, this message translates to:
+  /// **'Toot gaya'**
+  String get promiseBroken;
+
+  /// No description provided for @promiseReplaced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naye wade se badla'**
+  String get promiseReplaced;
+
+  /// No description provided for @promiseWithdrawnLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hata diya'**
+  String get promiseWithdrawnLabel;
+
+  /// No description provided for @promiseWithdraw.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada hatayein'**
+  String get promiseWithdraw;
+
+  /// No description provided for @promiseWithdrawn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada hata diya. Purane wadon mein rahega.'**
+  String get promiseWithdrawn;
+
+  /// No description provided for @promiseHistory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purane wade'**
+  String get promiseHistory;
+
+  /// No description provided for @promiseBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ne {date} ko likha'**
+  String promiseBy(String name, String date);
+
+  /// No description provided for @promisePaidSince.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tab se Rs {amount} aaye'**
+  String promisePaidSince(String amount);
+
+  /// No description provided for @homeUdhaarDueToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 gahak ka udhaar aaj dena hai · Rs {amount}} other{{count} gahakon ka udhaar aaj dena hai · Rs {amount}}}'**
+  String homeUdhaarDueToday(int count, String amount);
+
+  /// No description provided for @homeUdhaarOverdue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 gahak der se · Rs {amount}} other{{count} gahak der se · Rs {amount}}}'**
+  String homeUdhaarOverdue(int count, String amount);
+
+  /// No description provided for @homeUdhaarPromised.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 gahak ne aaj dene ka wada kiya · Rs {amount}} other{{count} gahakon ne aaj dene ka wada kiya · Rs {amount}}}'**
+  String homeUdhaarPromised(int count, String amount);
+
+  /// No description provided for @chaseSortLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab se der wale pehle'**
+  String get chaseSortLate;
+
+  /// No description provided for @chaseSortPromise.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wade ki tareekh se'**
+  String get chaseSortPromise;
+
+  /// No description provided for @chaseFilterPromised.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wade wale'**
+  String get chaseFilterPromised;
+
+  /// No description provided for @chaseFilterDueToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj dena hai'**
+  String get chaseFilterDueToday;
+
+  /// No description provided for @chaseFilterPromisedToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ka wada'**
+  String get chaseFilterPromisedToday;
+
+  /// No description provided for @promiseToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj'**
+  String get promiseToday;
+
+  /// No description provided for @chaseFilterOverdue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der wale'**
+  String get chaseFilterOverdue;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

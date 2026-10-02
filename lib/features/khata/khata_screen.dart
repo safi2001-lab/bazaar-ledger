@@ -11,15 +11,18 @@ import '../../l10n/app_strings.dart';
 import '../parties/party_editor.dart';
 import '../sales/receipt_screen.dart';
 import 'charge_sheet.dart';
+import 'due_chip.dart';
 import 'entry_actions.dart';
 import 'khata_providers.dart';
 import 'opening_balance_sheet.dart';
 import 'pay_supplier_sheet.dart';
 import 'payables_section.dart';
 import 'payment_sheet.dart';
+import 'promise_sheet.dart';
 import 'receive_payment_sheet.dart';
 import 'send_reminder.dart';
 import 'statement.dart';
+import 'udhaar_providers.dart';
 
 /// One customer's khata: what they owe, on which bills, and a way to take it.
 ///
@@ -146,16 +149,43 @@ class KhataScreen extends ConsumerWidget {
   ) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    // When each open bill falls due (M38), matched to the bills by id. Read
+    // beside the bills rather than instead of them, so the list the
+    // payment preview is drawn from stays the writer's own.
+    final due = {
+      for (final b
+          in ref.watch(billsDueProvider(current.id)).valueOrNull ??
+              const <BillDue>[])
+        b.documentId: b,
+    };
+    final creditDays = ref.watch(creditDaysProvider(current.id)).valueOrNull;
     return [
       _BalanceCard(party: current),
+      const SizedBox(height: BlTokens.space3),
+      // What they said they would pay, and when (M38).
+      PromiseCard(party: current),
       const SizedBox(height: BlTokens.space4),
-      Text(
-        s.khataOpenBills,
-        style: TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: t.inkMuted,
-        ),
+      Row(
+        children: [
+          Expanded(
+            child: Text(
+              s.khataOpenBills,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: t.inkMuted,
+              ),
+            ),
+          ),
+          // The term every due date below is worked from, so a shopkeeper
+          // surprised by one can see why.
+          Text(
+            creditDays == null
+                ? s.khataCreditUsual(shopUsualCreditDays)
+                : s.khataCreditDays(creditDays),
+            style: TextStyle(fontSize: 12, color: t.inkMuted),
+          ),
+        ],
       ),
       const SizedBox(height: BlTokens.space2),
       bills.when(
@@ -213,6 +243,14 @@ class KhataScreen extends ConsumerWidget {
                                       color: t.inkMuted,
                                     ),
                                   ),
+                                  // "Due 12 Oct", "Overdue 9 days" (M38).
+                                  if (due[bill.documentId] case final d?)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        top: BlTokens.space1,
+                                      ),
+                                      child: DueChip.of(d),
+                                    ),
                                 ],
                               ),
                             ),
@@ -368,15 +406,23 @@ class _History extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(bottom: BlTokens.space2),
                     child: BlCard(
-                      onTap: () => _openEntry(context, ref, party, entry),
+                      // A return has no page of its own to open (M38): it
+                      // says what came back and stays where it is.
+                      onTap: entry.kind == 'return'
+                          ? null
+                          : () => _openEntry(context, ref, party, entry),
                       child: Row(
                         children: [
                           Icon(
-                            entry.isPayment
+                            entry.kind == 'return'
+                                ? Icons.undo
+                                : entry.isPayment
                                 ? Icons.south_west
                                 : Icons.north_east,
                             size: 18,
-                            color: entry.isPayment ? t.money : t.inkMuted,
+                            color: entry.isPayment || entry.kind == 'return'
+                                ? t.money
+                                : t.inkMuted,
                           ),
                           const SizedBox(width: BlTokens.space2),
                           Expanded(
@@ -386,9 +432,11 @@ class _History extends ConsumerWidget {
                                 Text(
                                   // Written by the query in English; said
                                   // here in the shopkeeper's language.
-                                  entry.kind == 'opening'
-                                      ? s.partyOpeningBalance
-                                      : entry.reference,
+                                  switch (entry.kind) {
+                                    'opening' => s.partyOpeningBalance,
+                                    'return' => s.khataReturn(entry.reference),
+                                    _ => entry.reference,
+                                  },
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(fontSize: 14, color: t.ink),
