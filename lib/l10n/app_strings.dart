@@ -5017,6 +5017,120 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Ho gaya'**
   String get chequeDone;
+
+  /// Offered in the customer picker when the typed name matches nobody.
+  ///
+  /// In ur, this message translates to:
+  /// **'\'{name}\' ko naya gahak banayein'**
+  String quickAddCustomer(String name);
+
+  /// Offered in the supplier picker on a purchase when the typed name matches nobody.
+  ///
+  /// In ur, this message translates to:
+  /// **'\'{name}\' ko naya supplier banayein'**
+  String quickAddSupplier(String name);
+
+  /// Offered at the counter and on a purchase when an item search finds nothing.
+  ///
+  /// In ur, this message translates to:
+  /// **'\'{name}\' ko naya maal banayein'**
+  String quickAddItem(String name);
+
+  /// Offered when a scanned barcode matches no item.
+  ///
+  /// In ur, this message translates to:
+  /// **'Barcode {code} se naya maal banayein'**
+  String quickAddBarcode(String code);
+
+  /// Offered when a weighing-scale label's PLU matches no item's code.
+  ///
+  /// In ur, this message translates to:
+  /// **'Code {code} se naya maal banayein'**
+  String quickAddCode(String code);
+
+  /// No description provided for @quickAddScaleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Code lag jaye to tarazu ka har label khud bill par aa jaye ga.'**
+  String get quickAddScaleHint;
+
+  /// No description provided for @quickBackToBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill par wapas'**
+  String get quickBackToBill;
+
+  /// No description provided for @quickSupplierTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya supplier'**
+  String get quickSupplierTitle;
+
+  /// No description provided for @quickPartyMobile.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mobile (marzi se)'**
+  String get quickPartyMobile;
+
+  /// No description provided for @quickPartyMobileHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'0300 1234567'**
+  String get quickPartyMobileHint;
+
+  /// No description provided for @quickPartyMobileInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mobile number is tarah likhein: 0300 1234567'**
+  String get quickPartyMobileInvalid;
+
+  /// No description provided for @quickPartyCreditLimit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ki hadd (marzi se)'**
+  String get quickPartyCreditLimit;
+
+  /// No description provided for @quickPartyTwins.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh pehle se khata mein hain'**
+  String get quickPartyTwins;
+
+  /// No description provided for @quickPartyTwinsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agar yehi hain to naam par tap karein. Koi aur hain to naya banayein.'**
+  String get quickPartyTwinsHint;
+
+  /// No description provided for @quickAddAnyway.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nahi, naya banayein'**
+  String get quickAddAnyway;
+
+  /// No description provided for @quickItemTwins.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh maal pehle se hai'**
+  String get quickItemTwins;
+
+  /// No description provided for @quickItemTwinsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agar yehi hai to is par tap karein. Kuch aur hai to naya banayein.'**
+  String get quickItemTwinsHint;
+
+  /// No description provided for @quickItemBuyingAt.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed ki qeemat (fi unit)'**
+  String get quickItemBuyingAt;
+
+  /// No description provided for @quickItemNoCost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge.'**
+  String get quickItemNoCost;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -74,11 +74,13 @@ class _PurchaseScreenState extends ConsumerState<PurchaseScreen> {
   Money get _total => _goods + _freightAmount;
 
   Future<void> _pickSupplier() async {
+    // A mill nobody has entered yet is offered as a new supplier, made and
+    // chosen without leaving the delivery (M32).
     final party = await showModalBottomSheet<PartySummary?>(
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      builder: (_) => const PartyPicker(),
+      builder: (_) => const PartyPicker(newPartyType: 'supplier'),
     );
     if (party != null && mounted) {
       setState(() {

@@ -5,10 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
+import '../../design/add_offer.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
-import '../items/item_editor.dart';
+import '../items/quick_item_sheet.dart';
 import '../scan/scan_screen.dart';
 import 'cart.dart';
 import 'tender_sheet.dart';
@@ -91,6 +92,10 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   final _searchFocus = FocusNode();
   Timer? _debounce;
 
+  /// A scale label whose PLU no item carries, while the counter is offering
+  /// to make that item (M32). Null the rest of the time.
+  ({String plu, ScaleData label})? _scaleMiss;
+
   @override
   void initState() {
     super.initState();
@@ -113,6 +118,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
   }
 
   void _onQueryChanged(String value) {
+    // Typing again means the label is not what the cashier is dealing with.
+    if (_scaleMiss != null) setState(() => _scaleMiss = null);
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 250), () {
       if (mounted) ref.read(posQueryProvider.notifier).state = value.trim();
@@ -145,10 +152,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         final item = await services.queries.itemByCode(firm.id, label.plu);
         if (!mounted) return;
         if (item == null) {
-          messenger.showSnackBar(
-            SnackBar(content: Text(s.posScaleUnknown(label.plu))),
-          );
+          // Said where the bill is, with the way on beside it: a label for a
+          // cut the shop never coded becomes that item, with its PLU, and
+          // this weight goes on the bill (M32). It used to be a snackbar
+          // that said so and vanished, leaving the cashier to go and find
+          // the item editor with the meat still on the scale.
           _clearSearch();
+          setState(() => _scaleMiss = (plu: label.plu, label: label));
           return;
         }
         final qty = _scaleQty(item, label);
@@ -219,7 +229,26 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         )).let((rows) => rows.length == 1 ? rows.single : null);
 
     if (!mounted) return;
-    if (item == null) return;
+    if (item == null) {
+      // Nothing on the shelf answers to it, or more than one thing does.
+      // What was scanned or typed stays in the field, at once rather than
+      // after the debounce, so the results underneath say which — and for
+      // nothing at all, offer to make it (M32). The camera's code is put in
+      // the field too: it used to vanish without a word, which read as the
+      // camera not working.
+      //
+      // Selected, so the next scan replaces it. A wedge types into whatever
+      // is in the field, and appending the next packet's barcode to this one
+      // would make that scan miss as well.
+      _debounce?.cancel();
+      _search.value = TextEditingValue(
+        text: text,
+        selection: TextSelection(baseOffset: 0, extentOffset: text.length),
+      );
+      ref.read(posQueryProvider.notifier).state = text;
+      _searchFocus.requestFocus();
+      return;
+    }
     if (item.tracksSerial) {
       // A phone cannot go on the bill without saying which phone.
       messenger.showSnackBar(SnackBar(content: Text(s.posScanTheSerial)));
@@ -228,6 +257,47 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     ref.read(cartProvider.notifier).add(item);
     _clearSearch();
+  }
+
+  /// Makes the item a search, a scan or a scale label could not find, and
+  /// puts it on the bill: one of it, or what the label weighed (M32).
+  ///
+  /// Whatever the sheet hands back goes the way a tapped result goes, so an
+  /// item the shopkeeper said already existed is treated exactly like one
+  /// picked from the list — a phone by serial still has to be scanned.
+  Future<void> _quickAdd({
+    String name = '',
+    String? barcode,
+    ({String plu, ScaleData label})? scale,
+  }) async {
+    final item = await showQuickItemSheet(
+      context,
+      name: name,
+      barcode: barcode,
+      code: scale?.plu,
+      weighed: scale != null,
+    );
+    if (item == null || !mounted) return;
+    if (item.tracksSerial) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppStrings.of(context).posScanTheSerial)),
+      );
+      return;
+    }
+    final weighed = scale == null ? null : _scaleQty(item, scale.label);
+    ref
+        .read(cartProvider.notifier)
+        .add(item, qty: weighed != null && weighed.isPositive ? weighed : null);
+    _clearSearch();
+  }
+
+  /// The offer under a search that found nothing: what was typed as a name,
+  /// or what was scanned as a barcode.
+  void _quickAddFromSearch(String query) {
+    final barcode = scannedBarcode(query);
+    unawaited(
+      barcode == null ? _quickAdd(name: query) : _quickAdd(barcode: barcode),
+    );
   }
 
   /// How much a scale label rang up, in the item's own base unit. Grams for
@@ -266,6 +336,7 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     _debounce?.cancel();
     _search.clear();
     ref.read(posQueryProvider.notifier).state = '';
+    if (_scaleMiss != null) setState(() => _scaleMiss = null);
     _searchFocus.requestFocus();
   }
 
@@ -368,9 +439,20 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               ),
             );
 
-            final list = query.isEmpty
+            final miss = _scaleMiss;
+            final list = miss != null
+                ? _ScaleMiss(
+                    plu: miss.plu,
+                    onAdd: () => unawaited(_quickAdd(scale: miss)),
+                    onBack: _clearSearch,
+                  )
+                : query.isEmpty
                 ? _CartList(onEmptyTapped: () => _searchFocus.requestFocus())
-                : _SearchResults(query: query, onPick: _addToCart);
+                : _SearchResults(
+                    query: query,
+                    onPick: _addToCart,
+                    onQuickAdd: _quickAddFromSearch,
+                  );
 
             // Wide means sideways, and sideways the counter is two columns.
             //
@@ -437,10 +519,18 @@ extension _Let<T> on T {
 // ---------------------------------------------------------------------------
 
 class _SearchResults extends ConsumerWidget {
-  const _SearchResults({required this.query, required this.onPick});
+  const _SearchResults({
+    required this.query,
+    required this.onPick,
+    required this.onQuickAdd,
+  });
 
   final String query;
   final ValueChanged<ItemSummary> onPick;
+
+  /// Makes what was typed or scanned into a new item and puts it on the
+  /// bill (M32).
+  final ValueChanged<String> onQuickAdd;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -462,20 +552,24 @@ class _SearchResults extends ConsumerWidget {
       ),
       data: (items) {
         if (items.isEmpty) {
+          // The way on is the item itself, made here and put on this bill.
+          //
+          // This used to open the full item editor, which saved the item and
+          // dropped the cashier back on a counter with the search still
+          // showing "nothing found" and the item not on the bill — so they
+          // searched again, found it, and tapped it. A scanned barcode
+          // fared worse: the editor took the digits as the item's NAME.
+          final barcode = scannedBarcode(query);
           return Center(
             child: BlEmpty(
               title: s.emptyNoResults,
               message: s.emptyNoResultsHint,
               icon: Icons.search_off,
-              action: BlButton(
-                label: s.itemsAdd,
-                icon: Icons.add,
-                kind: BlButtonKind.secondary,
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => ItemEditorScreen(initialName: query),
-                  ),
-                ),
+              action: BlAddOffer(
+                label: barcode == null
+                    ? s.quickAddItem(query)
+                    : s.quickAddBarcode(barcode),
+                onTap: () => onQuickAdd(query),
               ),
             ),
           );
@@ -577,6 +671,49 @@ class _ResultRow extends StatelessWidget {
               Icon(Icons.add_circle_outline, color: t.accent),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A weighing-scale label for a PLU the shop never coded, and what to do
+/// about it (M32).
+///
+/// In the place the search results take, for the same reason: it is what
+/// the counter is dealing with right now. The way back to the bill is a
+/// button, and typing or scanning anything else also leaves it.
+class _ScaleMiss extends StatelessWidget {
+  const _ScaleMiss({
+    required this.plu,
+    required this.onAdd,
+    required this.onBack,
+  });
+
+  final String plu;
+  final VoidCallback onAdd;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    return Center(
+      child: BlEmpty(
+        title: s.posScaleUnknown(plu),
+        message: s.quickAddScaleHint,
+        icon: Icons.scale_outlined,
+        action: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            BlAddOffer(label: s.quickAddCode(plu), onTap: onAdd),
+            const SizedBox(height: BlTokens.space2),
+            BlButton(
+              label: s.quickBackToBill,
+              kind: BlButtonKind.ghost,
+              onPressed: onBack,
+            ),
+          ],
         ),
       ),
     );

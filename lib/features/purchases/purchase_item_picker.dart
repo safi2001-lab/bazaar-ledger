@@ -5,9 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import '../../app/providers.dart';
+import '../../design/add_offer.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../items/quick_item_sheet.dart';
 
 /// Adding one line to a delivery: which item, how much, what it cost.
 ///
@@ -43,6 +45,10 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   String _query = '';
   ItemSummary? _chosen;
 
+  /// Whether the shopkeeper has typed the cost themselves. Until they do,
+  /// the cost prefilled from the item's purchase rate follows the quantity.
+  bool _costTyped = false;
+
   @override
   void dispose() {
     _debounce?.cancel();
@@ -73,7 +79,39 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
       // taken from a price is a margin of zero, and a margin of zero that
       // looks like a real number is worse than no number at all.
       _cost.text = item.purchaseRate?.amountOnly ?? '';
+      _costTyped = false;
     });
+  }
+
+  /// The cost field is what the whole line cost, and the prefill is the
+  /// price of one. So until the shopkeeper types a cost of their own, it is
+  /// kept at the purchase rate times the quantity: ten sacks at Rs 950 is Rs
+  /// 9,500, not Rs 950 — which the line would otherwise have read as Rs 95 a
+  /// sack, and moved the item's average cost to it. An item made on this
+  /// sheet (M32) comes here with its buying price as that rate, which is
+  /// when this mattered most.
+  void _onQty(String value) {
+    final rate = _chosen?.purchaseRate;
+    final qty = Qty.tryParse(value);
+    setState(() {
+      if (!_costTyped && rate != null && qty != null && qty.isPositive) {
+        _cost.text = rate.amountFor(qty).amountOnly;
+      }
+    });
+  }
+
+  /// A new item, made from the delivery it first arrived on (M32): what was
+  /// searched for as its name, or as its barcode when it was scanned. The
+  /// buying price asked there is the rate this line starts at.
+  Future<void> _addNew() async {
+    final barcode = scannedBarcode(_query);
+    final item = await showQuickItemSheet(
+      context,
+      name: barcode == null ? _query : '',
+      barcode: barcode,
+      forPurchase: true,
+    );
+    if (item != null && mounted) _choose(item);
   }
 
   List<String> get _serialList => [
@@ -187,6 +225,15 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                         icon: Icons.search_off,
                         title: s.emptyNoResults,
                         message: s.emptyNoResultsHint,
+                        action: _query.isEmpty
+                            ? null
+                            : BlAddOffer(
+                                label: switch (scannedBarcode(_query)) {
+                                  final code? => s.quickAddBarcode(code),
+                                  null => s.quickAddItem(_query),
+                                },
+                                onTap: () => unawaited(_addNew()),
+                              ),
                       )
                     : ListView.builder(
                         itemCount: rows.length,
@@ -216,7 +263,7 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                     label: '${s.posQty} (${chosen.unitCode})',
                     numeric: true,
                     autofocus: true,
-                    onChanged: (_) => setState(() {}),
+                    onChanged: _onQty,
                   ),
                 ),
                 const SizedBox(width: BlTokens.space2),
@@ -225,7 +272,7 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                     controller: _cost,
                     label: s.purchaseCost,
                     numeric: true,
-                    onChanged: (_) => setState(() {}),
+                    onChanged: (_) => setState(() => _costTyped = true),
                   ),
                 ),
               ],

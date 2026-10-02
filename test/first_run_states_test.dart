@@ -1,3 +1,4 @@
+import 'package:bazaar_ledger/design/add_offer.dart';
 import 'package:bazaar_ledger/design/components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -72,8 +73,10 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.text('Kuch nahi mila'), findsOneWidget);
+    // Since M32 the fix is made right here: what was typed becomes the item,
+    // and it goes on the bill.
     expect(
-      find.widgetWithText(BlButton, 'Naya maal'),
+      find.widgetWithText(BlAddOffer, "'anything' ko naya maal banayein"),
       findsOneWidget,
       reason: 'an empty state offers the action that fixes it',
     );

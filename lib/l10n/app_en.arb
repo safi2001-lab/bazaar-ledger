@@ -1554,5 +1554,49 @@
   "vansSettleYesterday": "Settle yesterday, not today",
   "syncClashHint": "Two counters made two things with the same code or barcode. Both are kept; the second carries a ~ mark. Put it right, then tap Done.",
   "syncClashDone": "Done",
-  "chequeDone": "Done"
+  "chequeDone": "Done",
+  "quickAddCustomer": "Add '{name}' as a new customer",
+  "@quickAddCustomer": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickAddSupplier": "Add '{name}' as a new supplier",
+  "@quickAddSupplier": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickAddItem": "Add '{name}' as a new item",
+  "@quickAddItem": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickAddBarcode": "Make a new item with barcode {code}",
+  "@quickAddBarcode": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "quickAddCode": "Make a new item with code {code}",
+  "@quickAddCode": {
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "quickAddScaleHint": "Once it has a code, every label the scale prints for it rings up by itself.",
+  "quickBackToBill": "Back to the bill",
+  "quickSupplierTitle": "New supplier",
+  "quickPartyMobile": "Mobile (optional)",
+  "quickPartyMobileHint": "0300 1234567",
+  "quickPartyMobileInvalid": "Enter a mobile number, like 0300 1234567",
+  "quickPartyCreditLimit": "Credit limit (optional)",
+  "quickPartyTwins": "Already in the khata",
+  "quickPartyTwinsHint": "If it is them, tap their name. If it is somebody else, add a new one.",
+  "quickAddAnyway": "No, add a new one",
+  "quickItemTwins": "Already an item",
+  "quickItemTwinsHint": "If it is this, tap it. If it is something else, add a new one.",
+  "quickItemBuyingAt": "Buying price, per unit",
+  "quickItemNoCost": "What it cost and how many are on the shelf are for the owner to add later, from Items."
 }

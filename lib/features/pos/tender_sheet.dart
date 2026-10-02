@@ -852,11 +852,15 @@ class _CustomerRow extends ConsumerWidget {
 
     return InkWell(
       onTap: () async {
+        // A name that matches nobody is offered as a new customer, made and
+        // chosen without leaving the bill (M32). Whoever comes back — found
+        // or just made — goes through the same `setParty`, so the lines move
+        // to their price list exactly as they would for an old customer.
         final party = await showModalBottomSheet<PartySummary?>(
           context: context,
           isScrollControlled: true,
           useSafeArea: true,
-          builder: (_) => const PartyPicker(),
+          builder: (_) => const PartyPicker(newPartyType: 'customer'),
         );
         if (party != null) {
           ref

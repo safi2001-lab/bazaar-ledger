@@ -2788,4 +2788,76 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get chequeDone => 'Done';
+
+  @override
+  String quickAddCustomer(String name) {
+    return 'Add \'$name\' as a new customer';
+  }
+
+  @override
+  String quickAddSupplier(String name) {
+    return 'Add \'$name\' as a new supplier';
+  }
+
+  @override
+  String quickAddItem(String name) {
+    return 'Add \'$name\' as a new item';
+  }
+
+  @override
+  String quickAddBarcode(String code) {
+    return 'Make a new item with barcode $code';
+  }
+
+  @override
+  String quickAddCode(String code) {
+    return 'Make a new item with code $code';
+  }
+
+  @override
+  String get quickAddScaleHint =>
+      'Once it has a code, every label the scale prints for it rings up by itself.';
+
+  @override
+  String get quickBackToBill => 'Back to the bill';
+
+  @override
+  String get quickSupplierTitle => 'New supplier';
+
+  @override
+  String get quickPartyMobile => 'Mobile (optional)';
+
+  @override
+  String get quickPartyMobileHint => '0300 1234567';
+
+  @override
+  String get quickPartyMobileInvalid =>
+      'Enter a mobile number, like 0300 1234567';
+
+  @override
+  String get quickPartyCreditLimit => 'Credit limit (optional)';
+
+  @override
+  String get quickPartyTwins => 'Already in the khata';
+
+  @override
+  String get quickPartyTwinsHint =>
+      'If it is them, tap their name. If it is somebody else, add a new one.';
+
+  @override
+  String get quickAddAnyway => 'No, add a new one';
+
+  @override
+  String get quickItemTwins => 'Already an item';
+
+  @override
+  String get quickItemTwinsHint =>
+      'If it is this, tap it. If it is something else, add a new one.';
+
+  @override
+  String get quickItemBuyingAt => 'Buying price, per unit';
+
+  @override
+  String get quickItemNoCost =>
+      'What it cost and how many are on the shelf are for the owner to add later, from Items.';
 }

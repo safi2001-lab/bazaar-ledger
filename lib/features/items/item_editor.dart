@@ -25,8 +25,10 @@ class ItemEditorScreen extends ConsumerStatefulWidget {
 
   final ItemSummary? item;
 
-  /// Prefilled when the counter searched for something that did not exist and
-  /// tapped "add" — the shopkeeper should never type the name twice.
+  /// Prefilled with a name typed elsewhere — the shopkeeper should never type
+  /// the name twice. The counter no longer comes here for an item it could
+  /// not find: it makes it with the short form and puts it on the bill (M32,
+  /// `quick_item_sheet.dart`).
   final String? initialName;
 
   @override

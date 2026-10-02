@@ -2788,4 +2788,76 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get chequeDone => 'Ho gaya';
+
+  @override
+  String quickAddCustomer(String name) {
+    return '\'$name\' ko naya gahak banayein';
+  }
+
+  @override
+  String quickAddSupplier(String name) {
+    return '\'$name\' ko naya supplier banayein';
+  }
+
+  @override
+  String quickAddItem(String name) {
+    return '\'$name\' ko naya maal banayein';
+  }
+
+  @override
+  String quickAddBarcode(String code) {
+    return 'Barcode $code se naya maal banayein';
+  }
+
+  @override
+  String quickAddCode(String code) {
+    return 'Code $code se naya maal banayein';
+  }
+
+  @override
+  String get quickAddScaleHint =>
+      'Code lag jaye to tarazu ka har label khud bill par aa jaye ga.';
+
+  @override
+  String get quickBackToBill => 'Bill par wapas';
+
+  @override
+  String get quickSupplierTitle => 'Naya supplier';
+
+  @override
+  String get quickPartyMobile => 'Mobile (marzi se)';
+
+  @override
+  String get quickPartyMobileHint => '0300 1234567';
+
+  @override
+  String get quickPartyMobileInvalid =>
+      'Mobile number is tarah likhein: 0300 1234567';
+
+  @override
+  String get quickPartyCreditLimit => 'Udhaar ki hadd (marzi se)';
+
+  @override
+  String get quickPartyTwins => 'Yeh pehle se khata mein hain';
+
+  @override
+  String get quickPartyTwinsHint =>
+      'Agar yehi hain to naam par tap karein. Koi aur hain to naya banayein.';
+
+  @override
+  String get quickAddAnyway => 'Nahi, naya banayein';
+
+  @override
+  String get quickItemTwins => 'Yeh maal pehle se hai';
+
+  @override
+  String get quickItemTwinsHint =>
+      'Agar yehi hai to is par tap karein. Kuch aur hai to naya banayein.';
+
+  @override
+  String get quickItemBuyingAt => 'Khareed ki qeemat (fi unit)';
+
+  @override
+  String get quickItemNoCost =>
+      'Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge.';
 }

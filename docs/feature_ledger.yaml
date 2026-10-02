@@ -612,6 +612,44 @@ milestones:
     state: sealed
     owns: []
 
+  - id: M32
+    title: A new customer or a new item is added from the bill, without leaving it
+    # Opened and sealed 2 Oct 2026 at 1/1. Shopkeepers trying the app said
+    # it plainly: in Vyapar a new product or person on a bill is simply
+    # added. Here the cashier had to leave the bill. Now a name the customer
+    # picker cannot find is offered as a new customer (a supplier, on a
+    # delivery): a short sheet with the name filled in, a mobile kept as
+    # 0300 4471203, which price they pay and a credit limit, and they are on
+    # the bill at once, its lines moved to their prices. A search, a
+    # scanned barcode (wedge or camera) or a scale label that finds nothing
+    # is offered as a new item: name, or barcode, or the label's PLU as its
+    # code, filled in; a price, the shop's usual unit (kilos off a scale),
+    # and the cost and stock on hand; saved through the full editor's own
+    # path, so opening stock reaches the stock ledger and the books at its
+    # cost, and it goes on the bill (one, or what the label weighed). On a
+    # delivery the cost asked is the buying price, there is no opening
+    # stock, and the line's cost now follows its quantity until typed. A
+    # name or mobile already in the khata, or an item already in the shop,
+    # is shown to be used instead; a second one is made only on purpose.
+    # Quotations and challans are made from the same counter, so they have
+    # it too.
+    #
+    # Roles, decided: no role is barred from adding a customer or an item,
+    # because none is today (Items and Customers are open to every role and
+    # the catalogue writer checks no permission). What a role cannot see it
+    # is not asked: a cashier (no seeCosts) gets no cost, so no opening
+    # stock, and cannot put a new customer on wholesale or VIP prices. No
+    # plan limits apply to parties or items. Not built: a permission of its
+    # own for the catalogue (it would change who may use the full forms
+    # too, which is the owner's call), giving a scanned barcode to an item
+    # chosen as already existing, and landline numbers on the short form
+    # (the full form takes them).
+    state: sealed
+    owns:
+      - lib/features/parties/quick_party_sheet.dart
+      - lib/features/items/quick_item_sheet.dart
+      - lib/design/add_offer.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4518,3 +4556,25 @@ features:
     status: done
     proof:
       - lan sync two items given the same barcode apart are both kept
+  - id: M32-QUICKADD-01
+    milestone: M32
+    title: A new customer, supplier or item is made from the bill or the delivery and used at once
+    status: done
+    proof:
+      - a new customer typed on the bill is made, chosen, and the bill is on their khata
+      - a new customer put on wholesale is charged wholesale at once
+      - someone already in the khata by their mobile is offered, not added twice
+      - the same name twice is warned about, and added on purpose
+      - a new item typed on the bill is made, sold, and its stock moves
+      - a new item on the bill survives the app being killed
+      - an unknown barcode becomes an item with that barcode, and the next scan finds it
+      - a scale label nobody coded becomes an item and rings up its weight
+      - an item already in the shop is offered instead of a twin
+      - a cashier is not asked what a new item cost, nor for its stock
+      - a cashier cannot put a new customer on trade prices
+      - a new supplier and a new item are made on the delivery, and it moves the cost
+      - a challan goes to a customer made from the bill
+      - at 200% on a small phone the new-item offer and sheet fit
+      - at 200% on a small phone the scale label offer fits
+      - at 200% on a small phone the new-customer offer and sheet fit
+      - at 200% on a small phone and in English

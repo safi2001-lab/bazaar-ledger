@@ -1633,5 +1633,54 @@
   "vansSettleYesterday": "Kal ka hisaab (aaj nahi)",
   "syncClashHint": "Do counters par ek hi code ya barcode se do cheezen ban gayin. Dono rakhi gayin, doosri ke naam par ~ nishaan hai. Theek kar ke 'Ho gaya' dabayein.",
   "syncClashDone": "Ho gaya",
-  "chequeDone": "Ho gaya"
+  "chequeDone": "Ho gaya",
+  "quickAddCustomer": "'{name}' ko naya gahak banayein",
+  "@quickAddCustomer": {
+    "description": "Offered in the customer picker when the typed name matches nobody.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickAddSupplier": "'{name}' ko naya supplier banayein",
+  "@quickAddSupplier": {
+    "description": "Offered in the supplier picker on a purchase when the typed name matches nobody.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickAddItem": "'{name}' ko naya maal banayein",
+  "@quickAddItem": {
+    "description": "Offered at the counter and on a purchase when an item search finds nothing.",
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "quickAddBarcode": "Barcode {code} se naya maal banayein",
+  "@quickAddBarcode": {
+    "description": "Offered when a scanned barcode matches no item.",
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "quickAddCode": "Code {code} se naya maal banayein",
+  "@quickAddCode": {
+    "description": "Offered when a weighing-scale label's PLU matches no item's code.",
+    "placeholders": {
+      "code": {"type": "String"}
+    }
+  },
+  "quickAddScaleHint": "Code lag jaye to tarazu ka har label khud bill par aa jaye ga.",
+  "quickBackToBill": "Bill par wapas",
+  "quickSupplierTitle": "Naya supplier",
+  "quickPartyMobile": "Mobile (marzi se)",
+  "quickPartyMobileHint": "0300 1234567",
+  "quickPartyMobileInvalid": "Mobile number is tarah likhein: 0300 1234567",
+  "quickPartyCreditLimit": "Udhaar ki hadd (marzi se)",
+  "quickPartyTwins": "Yeh pehle se khata mein hain",
+  "quickPartyTwinsHint": "Agar yehi hain to naam par tap karein. Koi aur hain to naya banayein.",
+  "quickAddAnyway": "Nahi, naya banayein",
+  "quickItemTwins": "Yeh maal pehle se hai",
+  "quickItemTwinsHint": "Agar yehi hai to is par tap karein. Kuch aur hai to naya banayein.",
+  "quickItemBuyingAt": "Khareed ki qeemat (fi unit)",
+  "quickItemNoCost": "Khareed ki qeemat aur stock maalik baad mein Maal se daalein ge."
 }
