@@ -132,7 +132,8 @@ time, on the latest master (schema is v8 today).
 - [ ] M38 · (in progress) Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
 - [ ] M39 · (in progress) Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
 - [ ] M44 · (in progress) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
-- [ ] M48 · (in progress) Loan accounts: loan taken, repayments split into principal and interest, loan statement
+- [x] M48 · Loan accounts — DONE (895802e): Accounts → Loans; take a loan (fee kept back in one entry), repay with principal/interest/charges split and interest suggested, statement per loan as PDF/CSV, cancel by reversal; interest and fees in P&L, each loan a liability
+  - [ ] Loan Statement in the Reports hub (Loans group) — hook `buildLoanStatement` / `DriftLoanReads` into the registry (small follow-up after M35)
 - [ ] M55 · Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
 - [ ] Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
 
@@ -147,7 +148,7 @@ time, on the latest master (schema is v8 today).
 - [ ] Recycle bin for masters with 30-day restore (check what M5 already does)
 
 ### Expenses
-- [ ] M47 · "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
+- [ ] M47 · (in progress) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
 
 ### Reports polish
 - [ ] M46 · Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
