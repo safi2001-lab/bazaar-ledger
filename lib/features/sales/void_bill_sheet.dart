@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'bill_reasons.dart';
 
 /// Cancelling a bill.
 ///
@@ -27,6 +28,10 @@ import '../../l10n/app_strings.dart';
 /// six months later, and it is the first thing an auditor asks about. The
 /// domain refuses one; this asks for it in words first, so the refusal is
 /// never what the shopkeeper meets.
+///
+/// Picked from presets since M36 — order cancelled, rung twice, a wrong
+/// entry, or something else in words — as M31 did for payments, so a
+/// month's cancellations can be counted by why. Typed words alone still do.
 Future<bool> showVoidBillSheet(
   BuildContext context, {
   required String documentId,
@@ -52,7 +57,7 @@ class _VoidBillSheet extends ConsumerStatefulWidget {
 }
 
 class _SheetState extends ConsumerState<_VoidBillSheet> {
-  final _reason = TextEditingController();
+  final _reason = BillReasonController();
   bool _busy = false;
   String? _failure;
 
@@ -65,7 +70,8 @@ class _SheetState extends ConsumerState<_VoidBillSheet> {
   Future<void> _void() async {
     if (_busy) return;
     final s = AppStrings.of(context);
-    if (_reason.text.trim().isEmpty) {
+    final why = _reason.textIn(s);
+    if (why.isEmpty) {
       setState(() => _failure = s.voidReasonRequired);
       return;
     }
@@ -81,7 +87,7 @@ class _SheetState extends ConsumerState<_VoidBillSheet> {
       await services.voidDocument(
         services.actorNow(),
         documentId: widget.documentId,
-        reason: _reason.text.trim(),
+        reason: why,
       );
       container.bumpRefresh();
       if (!mounted) return;
@@ -122,68 +128,75 @@ class _SheetState extends ConsumerState<_VoidBillSheet> {
             MediaQuery.viewPaddingOf(context).bottom +
             BlTokens.space4,
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            s.voidTitle,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: t.ink,
+      // Scrolls: the reasons' chips and the keyboard together are taller
+      // than a small phone at 200% text.
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              s.voidTitle,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: t.ink,
+              ),
             ),
-          ),
-          Text(widget.docNo, style: TextStyle(fontSize: 14, color: t.inkMuted)),
-          const SizedBox(height: BlTokens.space3),
+            Text(
+              widget.docNo,
+              style: TextStyle(fontSize: 14, color: t.inkMuted),
+            ),
+            const SizedBox(height: BlTokens.space3),
 
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.info_outline, size: 16, color: t.inkFaint),
-              const SizedBox(width: BlTokens.space2),
-              Expanded(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline, size: 16, color: t.inkFaint),
+                const SizedBox(width: BlTokens.space2),
+                Expanded(
+                  child: Text(
+                    s.voidExplain,
+                    style: TextStyle(fontSize: 13, color: t.inkFaint),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: BlTokens.space4),
+
+            BillReasonPicker(
+              reason: _reason,
+              presets: cancelReasons,
+              autofocus: true,
+              onChanged: () => setState(() => _failure = null),
+            ),
+
+            if (_failure != null) ...[
+              const SizedBox(height: BlTokens.space3),
+              Container(
+                padding: const EdgeInsets.all(BlTokens.space3),
+                decoration: BoxDecoration(
+                  color: t.dangerSurface,
+                  borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+                ),
                 child: Text(
-                  s.voidExplain,
-                  style: TextStyle(fontSize: 13, color: t.inkFaint),
+                  _failure!,
+                  style: TextStyle(fontSize: 13, color: t.danger),
                 ),
               ),
             ],
-          ),
-          const SizedBox(height: BlTokens.space4),
 
-          BlField(
-            controller: _reason,
-            label: s.voidReason,
-            autofocus: true,
-            onChanged: (_) => setState(() => _failure = null),
-          ),
-
-          if (_failure != null) ...[
-            const SizedBox(height: BlTokens.space3),
-            Container(
-              padding: const EdgeInsets.all(BlTokens.space3),
-              decoration: BoxDecoration(
-                color: t.dangerSurface,
-                borderRadius: BorderRadius.circular(BlTokens.radiusMd),
-              ),
-              child: Text(
-                _failure!,
-                style: TextStyle(fontSize: 13, color: t.danger),
-              ),
+            const SizedBox(height: BlTokens.space4),
+            BlButton(
+              label: s.voidConfirm,
+              icon: Icons.block,
+              kind: BlButtonKind.danger,
+              big: true,
+              busy: _busy,
+              onPressed: _busy ? null : () => unawaited(_void()),
             ),
           ],
-
-          const SizedBox(height: BlTokens.space4),
-          BlButton(
-            label: s.voidConfirm,
-            icon: Icons.block,
-            kind: BlButtonKind.danger,
-            big: true,
-            busy: _busy,
-            onPressed: _busy ? null : () => unawaited(_void()),
-          ),
-        ],
+        ),
       ),
     );
   }

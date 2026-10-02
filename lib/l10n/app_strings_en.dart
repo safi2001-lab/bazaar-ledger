@@ -5347,4 +5347,173 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get chaseBadDebts => 'Money let go';
+
+  @override
+  String get billMoreActions => 'More';
+
+  @override
+  String get copyAction => 'New bill like this';
+
+  @override
+  String get correctAction => 'Correct and reissue';
+
+  @override
+  String copyRatesTitle(String docNo) {
+    return '$docNo again: which prices?';
+  }
+
+  @override
+  String get copyRatesToday => 'Today\'s prices';
+
+  @override
+  String get copyRatesTodayHint => 'This customer\'s prices and discount today';
+
+  @override
+  String get copyRatesOld => 'Prices as billed';
+
+  @override
+  String copyRatesOldHint(String docNo) {
+    return 'What $docNo charged, discounts and all';
+  }
+
+  @override
+  String copyLoaded(String docNo) {
+    return 'A copy of $docNo is on the counter';
+  }
+
+  @override
+  String copyLeftOut(String names) {
+    return 'Not carried over: $names';
+  }
+
+  @override
+  String copyNothing(String docNo) {
+    return 'Nothing on $docNo can go back on the counter';
+  }
+
+  @override
+  String copyWhyGone(String name) {
+    return '$name (item archived)';
+  }
+
+  @override
+  String copyWhyFree(String name) {
+    return '$name (free)';
+  }
+
+  @override
+  String copyWhySerial(String name) {
+    return '$name (scan the serial again)';
+  }
+
+  @override
+  String copyWhyTwice(String name) {
+    return '$name (twice on the bill)';
+  }
+
+  @override
+  String copyNoCustomer(String name) {
+    return '$name is no longer in the khata; the bill has no customer';
+  }
+
+  @override
+  String repeatLastOrder(String docNo) {
+    return 'Repeat last order ($docNo)';
+  }
+
+  @override
+  String get correctTitle => 'Correct and reissue';
+
+  @override
+  String get correctExplain =>
+      'This bill is cancelled (its number and paper stay as they are) and a copy opens on the counter. Put the mistake right and save the new bill; the two stay linked.';
+
+  @override
+  String correctPaid(String amount, String mode) {
+    return 'Rs $amount ($mode) was taken on this bill. The new bill starts with the same amount filled in.';
+  }
+
+  @override
+  String get correctUdhaar =>
+      'This bill was on udhaar; the new one opens on udhaar too.';
+
+  @override
+  String get correctAbandon =>
+      'If the new bill is not saved, this one stays cancelled all the same.';
+
+  @override
+  String correctAbandonPaid(String amount) {
+    return 'If the new bill is not saved, this one stays cancelled all the same, and Rs $amount goes back to the customer.';
+  }
+
+  @override
+  String get correctConfirm => 'Cancel and open the new bill';
+
+  @override
+  String get reasonWrongItem => 'Wrong item';
+
+  @override
+  String get reasonWrongQty => 'Wrong quantity';
+
+  @override
+  String get reasonWrongPrice => 'Wrong price';
+
+  @override
+  String get reasonWrongCustomer => 'Wrong customer';
+
+  @override
+  String get reasonOrderCancelled => 'Order cancelled';
+
+  @override
+  String correctOnCounter(String docNo) {
+    return 'New bill in place of $docNo';
+  }
+
+  @override
+  String correctOnCounterHint(String docNo) {
+    return '$docNo has been cancelled. Put it right, then take payment.';
+  }
+
+  @override
+  String correctClearConfirm(String docNo) {
+    return 'Drop the new bill? $docNo stays cancelled all the same.';
+  }
+
+  @override
+  String tenderPaidBefore(String docNo, String amount, String mode) {
+    return 'Rs $amount ($mode) was taken on $docNo; it is filled in here.';
+  }
+
+  @override
+  String tenderPaidBeforeUdhaar(String docNo) {
+    return '$docNo was all on udhaar.';
+  }
+
+  @override
+  String tenderGiveBack(String amount) {
+    return 'Give Rs $amount back to the customer';
+  }
+
+  @override
+  String tenderTakeMore(String amount) {
+    return 'Take Rs $amount more';
+  }
+
+  @override
+  String billReplaces(String docNo) {
+    return 'Replaces $docNo';
+  }
+
+  @override
+  String billReplacedBy(String docNo) {
+    return 'Replaced by $docNo';
+  }
+
+  @override
+  String billReplacedByVoid(String docNo) {
+    return 'Replaced by $docNo (cancelled too)';
+  }
+
+  @override
+  String get copyHint => 'The same goods and customer, on a new bill';
 }

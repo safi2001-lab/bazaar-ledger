@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../khata/entry_actions.dart' show modeLabel;
 import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
 import '../sales/receipt_screen.dart';
@@ -62,6 +63,45 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   /// The bounced cheques and what is still owed, while the shopkeeper is
   /// being asked. Null the rest of the time.
   ({int count, Money owed})? _bounced;
+
+  /// A bill putting another right starts from the money the customer had
+  /// already handed over for it (M36), in the way it came.
+  ///
+  /// Cancelling the old bill took its tenders off the books, as if the cash
+  /// had been handed back; it was not, and it is this money that pays the
+  /// corrected bill. Cash is written in as what the shop kept of it (the
+  /// change went back the first time), so the card above shows the change
+  /// to give back when the bill came down and what is still to take when
+  /// it went up. Anything else is the same mode
+  /// again, its reference and cheque carried; a bill that was all on udhaar
+  /// starts on udhaar. The cashier can change any of it — the point is that
+  /// the money is never silently forgotten, and never taken twice.
+  @override
+  void initState() {
+    super.initState();
+    final cart = ref.read(cartProvider);
+    final paid = cart.paidBefore;
+    if (cart.replacesId == null || paid == null) return;
+    if (paid.onUdhaar) {
+      _onUdhaar = cart.partyId != null;
+      return;
+    }
+    final mode = paid.mode ?? 'cash';
+    _mode = mode;
+    if (mode == 'cash') {
+      _tendered.text = paid.amount.amountOnly;
+    } else if (mode == 'cheque') {
+      _chequeNo.text = paid.chequeNo ?? '';
+      _chequeBank.text = paid.chequeBank ?? '';
+      if (paid.chequeDateUtcMillis case final millis?) {
+        _chequeDue = BusinessDate.fromUtc(
+          DateTime.fromMillisecondsSinceEpoch(millis, isUtc: true),
+        );
+      }
+    } else {
+      _reference.text = paid.reference ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -407,6 +447,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           roundToRupee: firm.roundInvoiceToRupee,
           convertedFromId: cart.sourceId,
           alsoFromIds: cart.alsoSourceIds,
+          // The cancelled bill this one puts right (M36), linked as the
+          // sale posts.
+          replacesId: cart.replacesId,
         ),
       );
 
@@ -523,6 +566,16 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             ),
             const SizedBox(height: BlTokens.space3),
             _DueCard(due: due, change: change, short: short),
+            if (cart.paidBefore case final paid? when cart.replacesNo != null)
+              _PaidBefore(
+                docNo: cart.replacesNo!,
+                paid: paid,
+                due: due,
+                // Cash says its own change and shortfall on the card above;
+                // another mode settles the whole bill, so the difference
+                // from what came before is said here.
+                showDifference: !_onUdhaar && _mode != 'cash',
+              ),
             const SizedBox(height: BlTokens.space4),
 
             // Who is this bill for. A walk-in needs nobody, which is the
@@ -773,8 +826,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             ),
             // A price asked for, or goods sent ahead of the bill. Not
             // offered while billing a quotation or a challan: that bill is
-            // the one being kept.
-            if (cart.sourceId == null) ...[
+            // the one being kept. Nor while putting a bill right (M36): what
+            // replaces a cancelled bill is a bill.
+            if (cart.sourceId == null && cart.replacesId == null) ...[
               const SizedBox(height: BlTokens.space2),
               BlButton(
                 label: s.quotationMake,
@@ -794,6 +848,68 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             ],
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// What was taken on the bill being put right, and — when the new bill is
+/// settled another way than cash — the difference to give back or take
+/// (M36).
+class _PaidBefore extends StatelessWidget {
+  const _PaidBefore({
+    required this.docNo,
+    required this.paid,
+    required this.due,
+    required this.showDifference,
+  });
+
+  final String docNo;
+  final PaidBefore paid;
+  final Money due;
+  final bool showDifference;
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final difference = due - paid.amount;
+    return Padding(
+      padding: const EdgeInsets.only(top: BlTokens.space3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.history, size: 16, color: t.inkMuted),
+          const SizedBox(width: BlTokens.space2),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  paid.onUdhaar
+                      ? s.tenderPaidBeforeUdhaar(docNo)
+                      : s.tenderPaidBefore(
+                          docNo,
+                          paid.amount.amountOnly,
+                          modeLabel(s, paid.mode ?? 'cash'),
+                        ),
+                  style: TextStyle(fontSize: 13, color: t.inkMuted),
+                ),
+                if (showDifference && !paid.onUdhaar && !difference.isZero)
+                  Text(
+                    difference.isNegative
+                        ? s.tenderGiveBack((-difference).amountOnly)
+                        : s.tenderTakeMore(difference.amountOnly),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: t.warning,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

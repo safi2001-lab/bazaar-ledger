@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show QueryRow;
 import 'package:pk_domain/pk_domain.dart';
 
 import 'sequence_allocator.dart';
@@ -117,6 +118,8 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
         'bill can be cancelled this way.',
       );
     }
+
+    if (docType == 'sale_invoice') await _refuseWhatCannotBeUndone(doc);
 
     final entryRow = await _tx.selectOne(
       'SELECT id, entry_no, entry_date_utc, entry_date_local, fiscal_year, '
@@ -251,6 +254,65 @@ final class _DriftVoidWriteContext implements VoidWriteContext {
       ],
       allocatedPayments: [for (final r in allocationRows) r.read<String>('no')],
     );
+  }
+
+  /// Two bills a cancel would count twice, refused before anything is read
+  /// for the reversal (M36).
+  ///
+  /// Both were found putting "correct and reissue" on top of this path,
+  /// which makes cancelling an everyday act rather than a rare one, and
+  /// both would have doubled money.
+  ///
+  /// Goods already brought back. The return wrote its own entry — Sales
+  /// Returns, the stock back on the shelf, the refund or the khata credit —
+  /// and the reversal mirrors the WHOLE sale, so the returned goods would
+  /// come back a second time and the customer be credited twice for them.
+  /// A return cannot itself be cancelled, so the way on is taking the rest
+  /// back as a return too.
+  ///
+  /// A cheque taken at the counter that has gone to the bank. Cancelling the
+  /// bill cancels its own tenders, and a cancelled payment for a cheque the
+  /// bank has cleared, is clearing or sent back contradicts the bank — the
+  /// same rule M31 holds for a cheque taken against the khata. A cheque the
+  /// shop still holds goes with the bill, as cash does.
+  Future<void> _refuseWhatCannotBeUndone(QueryRow doc) async {
+    final docNo = doc.read<String>('doc_no');
+    final returned = await _tx.select(
+      'SELECT r.doc_no FROM doc_links link '
+      'JOIN documents r ON r.id = link.to_document_id '
+      "WHERE link.from_document_id = ? AND link.link_type = 'returns' "
+      "  AND link.deleted_at_utc IS NULL AND r.status = 'posted' "
+      '  AND r.deleted_at_utc IS NULL '
+      'ORDER BY r.doc_no',
+      [doc.read<String>('id')],
+    );
+    if (returned.isNotEmpty) {
+      final nos = [for (final r in returned) r.read<String>('doc_no')];
+      throw VoidRefused(
+        'Goods have already come back on $docNo (${nos.join(', ')}), so it '
+        'can no longer be cancelled — the return would be counted twice. '
+        'Take the rest back as a return instead.',
+      );
+    }
+    final cheque = await _tx.selectOne(
+      'SELECT p.cheque_no FROM payment_allocations pa '
+      'JOIN payments p ON p.id = pa.payment_id '
+      'WHERE pa.document_id = ? AND pa.deleted_at_utc IS NULL '
+      "  AND pa.allocation_mode = 'exact' AND p.deleted_at_utc IS NULL "
+      "  AND p.mode = 'cheque' AND p.status <> 'void' "
+      "  AND (p.status IN ('cleared', 'bounced') "
+      "       OR COALESCE(p.cheque_status, 'issued') <> 'issued') "
+      'LIMIT 1',
+      [doc.read<String>('id')],
+    );
+    if (cheque != null) {
+      throw VoidRefused(
+        '$docNo was paid by cheque ${cheque.readNullable<String>('cheque_no') ?? ''}, '
+        'which has gone to the bank. Cancelling the bill would cancel a '
+        'cheque the bank has already dealt with. Take the goods back as a '
+        'return instead.',
+      );
+    }
   }
 
   @override

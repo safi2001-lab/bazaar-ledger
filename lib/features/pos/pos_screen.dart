@@ -11,6 +11,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
 import '../parties/party_picker.dart';
+import '../sales/bill_again.dart';
 import '../scan/scan_screen.dart';
 import 'cart.dart';
 import 'loose_line_sheet.dart';
@@ -404,11 +405,18 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
   Future<void> _confirmClear() async {
     final s = AppStrings.of(context);
+    // A bill being put right (M36) says what dropping it means: the old bill
+    // stays cancelled whatever happens here.
+    final replacing = ref.read(cartProvider).replacesNo;
     final yes = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(s.posClearCart),
-        content: Text(s.posClearCartConfirm),
+        content: Text(
+          replacing == null
+              ? s.posClearCartConfirm
+              : s.correctClearConfirm(replacing),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -836,6 +844,12 @@ class _CartList extends ConsumerWidget {
     final cart = ref.watch(cartProvider);
 
     if (cart.isEmpty) {
+      final search = BlButton(
+        label: s.actionSearch,
+        icon: Icons.search,
+        kind: BlButtonKind.secondary,
+        onPressed: onEmptyTapped,
+      );
       return Center(
         child: BlEmpty(
           title: cart.partyName == null
@@ -843,12 +857,19 @@ class _CartList extends ConsumerWidget {
               : s.posCartEmptyFor(cart.partyName!),
           message: s.posCartEmptyHint,
           icon: Icons.shopping_basket_outlined,
-          action: BlButton(
-            label: s.actionSearch,
-            icon: Icons.search,
-            kind: BlButtonKind.secondary,
-            onPressed: onEmptyTapped,
-          ),
+          // A customer named before the goods (M37) can have last time's
+          // goods back in one tap (M36): "the same as last week" is how a
+          // wholesaler's regular customer orders.
+          action: cart.partyId == null
+              ? search
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _RepeatLastOrder(partyId: cart.partyId!),
+                    search,
+                  ],
+                ),
         ),
       );
     }
@@ -856,21 +877,144 @@ class _CartList extends ConsumerWidget {
     // Whose bill it is heads the list once somebody is named, and scrolls
     // with it: sideways with the keyboard up there is no height to pin a
     // row in, and a pinned row there would take the Charge button's.
+    // Above it, where the bill came from when it was copied or is putting
+    // another right (M36).
     final named = cart.partyName != null;
+    final copied = cart.replacesNo != null || cart.copiedFromNo != null;
+    final head = (copied ? 1 : 0) + (named ? 1 : 0);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: BlTokens.space4),
-      itemCount: cart.lines.length + (named ? 1 : 0),
+      itemCount: cart.lines.length + head,
       itemBuilder: (context, i) {
-        if (named && i == 0) {
+        if (copied && i == 0) return _CopiedFrom(cart: cart);
+        if (named && i == head - 1) {
           return _BillTo(name: cart.partyName!, onTap: onCustomerTapped);
         }
-        final line = cart.lines[named ? i - 1 : i];
+        final line = cart.lines[i - head];
         return _CartLineTile(
           key: ValueKey(line.item.id),
           line: line,
           partyId: cart.partyId,
         );
       },
+    );
+  }
+}
+
+/// "Pichhla order dobara": this customer's last bill, put on the counter as
+/// a new one (M36). Nothing at all for a customer who has never bought, or
+/// for a role that may not sell.
+class _RepeatLastOrder extends ConsumerWidget {
+  const _RepeatLastOrder({required this.partyId});
+
+  final String partyId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final last = ref.watch(lastBillProvider(partyId)).valueOrNull;
+    if (last == null || !ref.watch(appServicesProvider).can(Permission.sell)) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: BlTokens.space2),
+      child: BlButton(
+        label: s.repeatLastOrder(last.docNo),
+        icon: Icons.replay,
+        onPressed: () => unawaited(
+          billAgain(
+            context,
+            ref,
+            documentId: last.id,
+            docNo: last.docNo,
+            openCounter: false,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Where the bill on the counter came from (M36): the cancelled bill it is
+/// putting right, which stays said for as long as the bill is on the
+/// counter, or the bill it was copied from, which can be waved away; and
+/// under either, what did not come over.
+class _CopiedFrom extends ConsumerWidget {
+  const _CopiedFrom({required this.cart});
+
+  final Cart cart;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final replacing = cart.replacesNo;
+    final note = cart.copyNote;
+    if (replacing == null && cart.copiedFromNo == null) {
+      return const SizedBox.shrink();
+    }
+    return Padding(
+      padding: const EdgeInsets.only(
+        top: BlTokens.space1,
+        bottom: BlTokens.space2,
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(BlTokens.space3),
+        decoration: BoxDecoration(
+          color: replacing == null ? t.surfaceRaised : t.warningSurface,
+          border: Border.all(color: t.line),
+          borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              replacing == null
+                  ? Icons.copy_all_outlined
+                  : Icons.published_with_changes_outlined,
+              size: 20,
+              color: replacing == null ? t.accent : t.warning,
+            ),
+            const SizedBox(width: BlTokens.space3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    replacing == null
+                        ? s.copyLoaded(cart.copiedFromNo!)
+                        : s.correctOnCounter(replacing),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: t.ink,
+                    ),
+                  ),
+                  if (replacing != null)
+                    Text(
+                      s.correctOnCounterHint(replacing),
+                      style: TextStyle(fontSize: 12, color: t.inkMuted),
+                    ),
+                  if (note != null) ...[
+                    const SizedBox(height: BlTokens.space1),
+                    Text(
+                      note,
+                      style: TextStyle(fontSize: 12, color: t.warning),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            if (replacing == null)
+              BlIconButton(
+                icon: Icons.close,
+                label: s.actionClose,
+                onPressed: () =>
+                    ref.read(cartProvider.notifier).dismissCopyNote(),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -184,6 +184,14 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       });
     }
 
+    // A bill put right (M36): the cancelled bill it replaces, linked in the
+    // same commit, so a bill killed half way can never be one that replaces
+    // nothing. Read both ways — "Replaces INV-…" on this one, "Replaced by"
+    // on that — from the one row.
+    if (posting.replacesId case final replacedId?) {
+      await _linkReplaced(replacedId, documentId, doc);
+    }
+
     // --- Payments and their allocations ----------------------------------
     final paymentIds = <String>[];
     for (final payment in posting.payments) {
@@ -249,6 +257,72 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       change: Money.sum([for (final p in posting.payments) p.change]),
       journalEntryId: journalEntryId,
       paymentIds: paymentIds,
+    );
+  }
+
+  /// Links [documentId] as the bill that puts [replacedId] right (M36).
+  ///
+  /// `revises`, a link type the schema has carried since v1 for exactly
+  /// this and nothing has written until now; no schema change. Not
+  /// `supersedes_id`: that column is a revision of the SAME numbered
+  /// document (`CHECK (revision = 1 OR supersedes_id IS NOT NULL)`), and a
+  /// corrected bill is a new bill with a number of its own. Nor
+  /// `voided_by_id`, which would have to be written onto a bill that is
+  /// already cancelled and would name the wrong thing — the cancellation
+  /// is the reversing entry, not this bill.
+  ///
+  /// Refused, in words, when the bill named is not a cancelled sale bill of
+  /// this shop, or has already been put right by a bill still standing:
+  /// two bills each saying they replace the same one is one customer billed
+  /// twice for one mistake.
+  Future<void> _linkReplaced(
+    String replacedId,
+    String documentId,
+    DocumentPosting doc,
+  ) async {
+    final old = await _tx.selectOne(
+      'SELECT doc_no, doc_type, status FROM documents '
+      'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+      [replacedId, actor.firmId],
+    );
+    if (old == null || old.read<String>('doc_type') != 'sale_invoice') {
+      throw StateError(
+        'The bill this one is meant to replace is not a sale bill of this '
+        'shop.',
+      );
+    }
+    final oldNo = old.read<String>('doc_no');
+    if (old.read<String>('status') != 'void') {
+      throw StateError(
+        '$oldNo is still standing. A bill is replaced only once it has been '
+        'cancelled.',
+      );
+    }
+    final already = await _tx.selectOne(
+      'SELECT d.doc_no FROM doc_links link '
+      'JOIN documents d ON d.id = link.to_document_id '
+      "WHERE link.from_document_id = ? AND link.link_type = 'revises' "
+      "  AND link.deleted_at_utc IS NULL AND d.status <> 'void'",
+      [replacedId],
+    );
+    if (already != null) {
+      throw StateError(
+        '$oldNo has already been put right as '
+        '${already.read<String>('doc_no')}.',
+      );
+    }
+    await _tx.insert('doc_links', {
+      'from_document_id': replacedId,
+      'to_document_id': documentId,
+      'link_type': 'revises',
+      'amount_paisa': doc.total.inPaisa,
+    });
+    _tx.audit(
+      action: 'BILL_REISSUED',
+      entityTable: 'documents',
+      entityId: documentId,
+      summary: '${doc.docNo} replaces cancelled $oldNo',
+      amountPaisa: doc.total.inPaisa,
     );
   }
 

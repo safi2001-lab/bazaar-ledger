@@ -180,6 +180,7 @@ final class SaleDraft {
     this.convertedFromId,
     this.alsoFromIds = const [],
     this.locationCode = 'MAIN',
+    this.replacesId,
   });
 
   /// Where the goods leave from (M18): the shop floor, or a van a rider is
@@ -197,6 +198,11 @@ final class SaleDraft {
 
   /// Every document this bill is made from.
   List<String> get sourceIds => [?convertedFromId, ...alsoFromIds];
+
+  /// The cancelled bill this one puts right (M36), linked `revises` in the
+  /// same commit so each bill can say which replaced which. Null for every
+  /// ordinary bill.
+  final String? replacesId;
 
   /// A walk-in has no party row at all. That is the common case at a kiryana
   /// counter and must never be an obstacle to billing.
@@ -237,5 +243,6 @@ final class SaleDraft {
     convertedFromId: convertedFromId,
     alsoFromIds: alsoFromIds,
     locationCode: locationCode,
+    replacesId: replacesId,
   );
 }

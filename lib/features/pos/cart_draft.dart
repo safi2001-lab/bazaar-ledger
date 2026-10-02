@@ -28,12 +28,19 @@ abstract final class CartDraft {
   /// before v4 would read one as an item whose id names nothing in the
   /// shop, and the bill would fail at the till; so a v4 draft is not one it
   /// may read. Everything a v3 draft says, a v4 one says the same way.
-  static const version = 4;
+  ///
+  /// v5 (M36) carries a bill being put right: the cancelled bill it
+  /// replaces, and what the customer had paid on it. A v4 build would read
+  /// such a draft as an ordinary bill and post it unlinked, with the payment
+  /// sheet starting at nothing — the customer's money forgotten — so it is
+  /// not one it may read either.
+  static const version = 5;
 
   /// A v2 draft is a v3 one with no price tier: every v2 cart was priced
   /// retail, so it is read as exactly that rather than thrown away. A v3
-  /// draft is a v4 one with no loose lines.
-  static const _readable = {2, 3, 4};
+  /// draft is a v4 one with no loose lines, and a v4 one a v5 one putting
+  /// nothing right.
+  static const _readable = {2, 3, 4, 5};
 
   static String encode(Cart cart) => jsonEncode({
     'v': version,
@@ -45,6 +52,18 @@ abstract final class CartDraft {
     'sourceId': cart.sourceId,
     'sourceNo': cart.sourceNo,
     'alsoSourceIds': cart.alsoSourceIds,
+    // A bill being put right (M36), and the money already taken for it.
+    if (cart.replacesId != null) 'replacesId': cart.replacesId,
+    if (cart.replacesNo != null) 'replacesNo': cart.replacesNo,
+    if (cart.paidBefore case final paid?)
+      'paidBefore': {
+        'amountPaisa': paid.amount.inPaisa,
+        'mode': paid.mode,
+        'reference': paid.reference,
+        'chequeNo': paid.chequeNo,
+        'chequeBank': paid.chequeBank,
+        'chequeDateUtcMillis': paid.chequeDateUtcMillis,
+      },
     'lines': [
       for (final line in cart.lines)
         {
@@ -110,6 +129,22 @@ abstract final class CartDraft {
       final partyDiscountBp = root['partyDiscountBp'] ?? 0;
       if (partyDiscountBp is! int) return null;
 
+      final rawPaid = root['paidBefore'];
+      PaidBefore? paidBefore;
+      if (rawPaid != null) {
+        if (rawPaid is! Map<String, Object?>) return null;
+        final amount = rawPaid['amountPaisa'];
+        if (amount is! int) return null;
+        paidBefore = PaidBefore(
+          amount: Money.paisa(amount),
+          mode: rawPaid['mode'] as String?,
+          reference: rawPaid['reference'] as String?,
+          chequeNo: rawPaid['chequeNo'] as String?,
+          chequeBank: rawPaid['chequeBank'] as String?,
+          chequeDateUtcMillis: rawPaid['chequeDateUtcMillis'] as int?,
+        );
+      }
+
       return Cart(
         lines: lines,
         partyId: root['partyId'] as String?,
@@ -124,6 +159,9 @@ abstract final class CartDraft {
               in (root['alsoSourceIds'] as List<Object?>?) ?? const [])
             if (id is String) id,
         ],
+        replacesId: root['replacesId'] as String?,
+        replacesNo: root['replacesNo'] as String?,
+        paidBefore: paidBefore,
       );
     } on Object {
       return null;

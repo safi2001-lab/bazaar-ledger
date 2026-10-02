@@ -9325,6 +9325,246 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Chhori hui raqam'**
   String get chaseBadDebts;
+
+  /// No description provided for @billMoreActions.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur'**
+  String get billMoreActions;
+
+  /// No description provided for @copyAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Isi tarah ka naya bill'**
+  String get copyAction;
+
+  /// No description provided for @correctAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghalti theek karein'**
+  String get correctAction;
+
+  /// No description provided for @copyRatesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} dobara: kaun se rate?'**
+  String copyRatesTitle(String docNo);
+
+  /// No description provided for @copyRatesToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ke rate'**
+  String get copyRatesToday;
+
+  /// No description provided for @copyRatesTodayHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ki aaj ki qeemat aur riayat'**
+  String get copyRatesTodayHint;
+
+  /// No description provided for @copyRatesOld.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purane rate'**
+  String get copyRatesOld;
+
+  /// No description provided for @copyRatesOldHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jo {docNo} par lage the, riayat samait'**
+  String copyRatesOldHint(String docNo);
+
+  /// No description provided for @copyLoaded.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} ki naqal counter par hai'**
+  String copyLoaded(String docNo);
+
+  /// No description provided for @copyLeftOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh nahi aayin: {names}'**
+  String copyLeftOut(String names);
+
+  /// No description provided for @copyNothing.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} ki koi cheez counter par nahi aa sakti'**
+  String copyNothing(String docNo);
+
+  /// No description provided for @copyWhyGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} (cheez hata di gayi)'**
+  String copyWhyGone(String name);
+
+  /// No description provided for @copyWhyFree.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} (muft)'**
+  String copyWhyFree(String name);
+
+  /// No description provided for @copyWhySerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} (serial dobara scan karein)'**
+  String copyWhySerial(String name);
+
+  /// No description provided for @copyWhyTwice.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} (bill par do dafa)'**
+  String copyWhyTwice(String name);
+
+  /// No description provided for @copyNoCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ab khate mein nahi; bill bina gahak ke'**
+  String copyNoCustomer(String name);
+
+  /// No description provided for @repeatLastOrder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichhla order dobara ({docNo})'**
+  String repeatLastOrder(String docNo);
+
+  /// No description provided for @correctTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghalti theek karein'**
+  String get correctTitle;
+
+  /// No description provided for @correctExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill mansookh hoga (iska number aur kaghaz waisay hi rahenge) aur iski naqal counter par khulegi. Ghalti theek kar ke naya bill save karein; dono bill aapas mein jure rahenge.'**
+  String get correctExplain;
+
+  /// No description provided for @correctPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill par Rs {amount} ({mode}) liye gaye the. Naye bill mein yehi raqam pehle se likhi hogi.'**
+  String correctPaid(String amount, String mode);
+
+  /// No description provided for @correctUdhaar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill udhaar par tha; naya bill bhi udhaar par khulega.'**
+  String get correctUdhaar;
+
+  /// No description provided for @correctAbandon.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya bill save na kiya to bhi yeh bill mansookh hi rahega.'**
+  String get correctAbandon;
+
+  /// No description provided for @correctAbandonPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya bill save na kiya to bhi yeh bill mansookh hi rahega, aur Rs {amount} gahak ko wapas dene honge.'**
+  String correctAbandonPaid(String amount);
+
+  /// No description provided for @correctConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh kar ke naya bill kholein'**
+  String get correctConfirm;
+
+  /// No description provided for @reasonWrongItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat cheez'**
+  String get reasonWrongItem;
+
+  /// No description provided for @reasonWrongQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat tadaad'**
+  String get reasonWrongQty;
+
+  /// No description provided for @reasonWrongPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat qeemat'**
+  String get reasonWrongPrice;
+
+  /// No description provided for @reasonWrongCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galat gahak'**
+  String get reasonWrongCustomer;
+
+  /// No description provided for @reasonOrderCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ne order chhor diya'**
+  String get reasonOrderCancelled;
+
+  /// No description provided for @correctOnCounter.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} ki jagah naya bill'**
+  String correctOnCounter(String docNo);
+
+  /// No description provided for @correctOnCounterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} mansookh ho chuka hai. Theek kar ke paisay lein.'**
+  String correctOnCounterHint(String docNo);
+
+  /// No description provided for @correctClearConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya bill chhor dein? {docNo} phir bhi mansookh rahega.'**
+  String correctClearConfirm(String docNo);
+
+  /// No description provided for @tenderPaidBefore.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} par Rs {amount} ({mode}) liye gaye the; wohi yahan likhe hain.'**
+  String tenderPaidBefore(String docNo, String amount, String mode);
+
+  /// No description provided for @tenderPaidBeforeUdhaar.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} poora udhaar par tha.'**
+  String tenderPaidBeforeUdhaar(String docNo);
+
+  /// No description provided for @tenderGiveBack.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} gahak ko wapas dein'**
+  String tenderGiveBack(String amount);
+
+  /// No description provided for @tenderTakeMore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} aur lein'**
+  String tenderTakeMore(String amount);
+
+  /// No description provided for @billReplaces.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} ki jagah bana'**
+  String billReplaces(String docNo);
+
+  /// No description provided for @billReplacedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Iski jagah {docNo} bana'**
+  String billReplacedBy(String docNo);
+
+  /// No description provided for @billReplacedByVoid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Iski jagah {docNo} bana (woh bhi mansookh)'**
+  String billReplacedByVoid(String docNo);
+
+  /// No description provided for @copyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wohi cheezein aur gahak, naye bill mein'**
+  String get copyHint;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

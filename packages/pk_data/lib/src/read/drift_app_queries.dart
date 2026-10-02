@@ -559,7 +559,8 @@ final class DriftAppQueries implements AppQueries {
   /// Two expressions for this would be two answers to the shop's only
   /// question, and the one on screen would eventually disagree with the one
   /// the credit limit is checked against.
-  static const _partySelect = '''
+  static const _partySelect =
+      '''
     SELECT p.id, p.name, p.phone, p.party_type, p.credit_limit_paisa,
            p.price_tier, p.default_discount_bp, p.party_group,
            -- What the counter is told about them (M40), kept in settings
@@ -3307,6 +3308,182 @@ final class DriftAppQueries implements AppQueries {
 
   /// A row of [partySelectSql], read the way every screen reads it.
   static PartySummary partyFromRow(QueryRow row) => _party(row);
+
+  // -------------------------------------------------------------------------
+  // M36 — a bill rung again, or put right and issued again
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<BillCopy?> billCopy(String firmId, String documentId) async {
+    final doc = await _db
+        .customSelect(
+          '''
+          SELECT d.id, d.doc_no, d.status, d.party_id, d.party_name_snapshot,
+                 d.bill_discount_paisa, d.rounding_mode
+          FROM documents d
+          WHERE d.id = ? AND d.firm_id = ? AND d.doc_type = 'sale_invoice'
+            AND d.status IN ('posted', 'void') AND d.deleted_at_utc IS NULL
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.documents},
+        )
+        .getSingleOrNull();
+    if (doc == null) return null;
+
+    // The item as it stands now beside the line as it was billed: a line
+    // whose item has since been archived or deleted is said so, never
+    // quietly put back on a bill the counter would not have let it onto.
+    final lines = await _db
+        .customSelect(
+          '''
+          SELECT dl.item_id, dl.item_name_snapshot, dl.qty_thousandths,
+                 dl.unit_id, dl.unit_code_snapshot, dl.rate_milli_paisa,
+                 dl.discount_bp, dl.discount_paisa, dl.lot_id,
+                 dl.is_free_item, lot.lot_no,
+                 CASE WHEN dl.item_id IS NULL THEN 0
+                      WHEN i.id IS NULL OR i.deleted_at_utc IS NOT NULL
+                        OR i.is_active = 0 THEN 1
+                      ELSE 0 END AS item_gone
+          FROM document_lines dl
+          LEFT JOIN items i ON i.id = dl.item_id
+          LEFT JOIN stock_lots lot ON lot.id = dl.lot_id
+          WHERE dl.document_id = ? AND dl.deleted_at_utc IS NULL
+          ORDER BY dl.line_no
+          ''',
+          variables: [Variable<String>(documentId)],
+          readsFrom: {_db.documentLines, _db.items, _db.stockLots},
+        )
+        .get();
+
+    // The bill's own tenders (`exact`, written by the sale for itself),
+    // still standing. A receipt taken later against the khata is not money
+    // "paid on this bill" in the sense the counter means, and a bill with
+    // one cannot be cancelled anyway.
+    final tenders = await _db
+        .customSelect(
+          '''
+          SELECT p.mode, pa.amount_paisa, p.reference, p.cheque_no,
+                 p.cheque_bank, p.cheque_date_utc
+          FROM payment_allocations pa
+          JOIN payments p ON p.id = pa.payment_id
+          WHERE pa.document_id = ? AND pa.deleted_at_utc IS NULL
+            AND pa.allocation_mode = 'exact'
+            AND p.deleted_at_utc IS NULL AND p.status <> 'void'
+            AND p.direction = 'in'
+          ORDER BY p.payment_no
+          ''',
+          variables: [Variable<String>(documentId)],
+          readsFrom: {_db.paymentAllocations, _db.payments},
+        )
+        .get();
+
+    return BillCopy(
+      documentId: doc.read<String>('id'),
+      docNo: doc.read<String>('doc_no'),
+      isVoid: doc.read<String>('status') == 'void',
+      partyId: doc.readNullable<String>('party_id'),
+      partyName: doc.readNullable<String>('party_name_snapshot'),
+      billDiscount: Money.paisa(doc.read<int>('bill_discount_paisa')),
+      roundingMode: switch (doc.read<String>('rounding_mode')) {
+        'half_even' => RoundingMode.halfEven,
+        'truncate' => RoundingMode.truncate,
+        'ceil_abs' => RoundingMode.ceilAbs,
+        _ => RoundingMode.halfUp,
+      },
+      lines: [
+        for (final r in lines)
+          BillCopyLine(
+            itemId: r.readNullable<String>('item_id'),
+            name: r.read<String>('item_name_snapshot'),
+            qty: Qty.raw(r.read<int>('qty_thousandths')),
+            unitId: r.readNullable<String>('unit_id'),
+            unitCode: r.read<String>('unit_code_snapshot'),
+            rate: Rate.raw(r.read<int>('rate_milli_paisa')),
+            discountBp: r.read<int>('discount_bp'),
+            discount: Money.paisa(r.read<int>('discount_paisa')),
+            lotId: r.readNullable<String>('lot_id'),
+            lotNo: r.readNullable<String>('lot_no'),
+            isFree: r.read<int>('is_free_item') == 1,
+            itemGone: r.read<int>('item_gone') == 1,
+          ),
+      ],
+      tenders: [
+        for (final r in tenders)
+          BillCopyTender(
+            mode: r.read<String>('mode'),
+            amount: Money.paisa(r.read<int>('amount_paisa')),
+            reference: r.readNullable<String>('reference'),
+            chequeNo: r.readNullable<String>('cheque_no'),
+            chequeBank: r.readNullable<String>('cheque_bank'),
+            chequeDateUtcMillis: r.readNullable<int>('cheque_date_utc'),
+          ),
+      ],
+    );
+  }
+
+  @override
+  Future<LinkedBill?> lastBillFor(String firmId, String partyId) async {
+    // Through the party's own index, newest first: the cost is this
+    // customer's history, not the shop's.
+    final row = await _db
+        .customSelect(
+          '''
+          SELECT id, doc_no FROM documents
+          WHERE party_id = ? AND firm_id = ? AND doc_type = 'sale_invoice'
+            AND status = 'posted' AND deleted_at_utc IS NULL
+          ORDER BY doc_date_local DESC, doc_date_utc DESC, doc_seq DESC
+          LIMIT 1
+          ''',
+          variables: [Variable<String>(partyId), Variable<String>(firmId)],
+          readsFrom: {_db.documents},
+        )
+        .getSingleOrNull();
+    if (row == null) return null;
+    return LinkedBill(
+      id: row.read<String>('id'),
+      docNo: row.read<String>('doc_no'),
+    );
+  }
+
+  @override
+  Future<BillLinks> billLinks(String firmId, String documentId) async {
+    LinkedBill? read(QueryRow? r) => r == null
+        ? null
+        : LinkedBill(
+            id: r.read<String>('id'),
+            docNo: r.read<String>('doc_no'),
+            isVoid: r.read<String>('status') == 'void',
+          );
+
+    final replaces = await _db
+        .customSelect(
+          '''
+          SELECT o.id, o.doc_no, o.status FROM doc_links link
+          JOIN documents o ON o.id = link.from_document_id
+          WHERE link.to_document_id = ? AND link.link_type = 'revises'
+            AND link.deleted_at_utc IS NULL AND o.firm_id = ?
+          LIMIT 1
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.docLinks, _db.documents},
+        )
+        .getSingleOrNull();
+    final replacedBy = await _db
+        .customSelect(
+          '''
+          SELECT n.id, n.doc_no, n.status FROM doc_links link
+          JOIN documents n ON n.id = link.to_document_id
+          WHERE link.from_document_id = ? AND link.link_type = 'revises'
+            AND link.deleted_at_utc IS NULL AND n.firm_id = ?
+          ORDER BY n.created_at_utc DESC, n.id DESC
+          LIMIT 1
+          ''',
+          variables: [Variable<String>(documentId), Variable<String>(firmId)],
+          readsFrom: {_db.docLinks, _db.documents},
+        )
+        .getSingleOrNull();
+    return BillLinks(replaces: read(replaces), replacedBy: read(replacedBy));
+  }
 }
 
 /// The read behind the last rates beside a counter line (M37), exposed so a

@@ -11,6 +11,7 @@ import '../entitlement/activity.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
+import '../sales/bill_copy.dart';
 import '../sales/past_deal.dart';
 import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
@@ -825,6 +826,23 @@ abstract interface class AppQueries {
   /// tax, and — for a sale to a named customer — the khata as it stood when
   /// the bill was made. Null if the document is not this firm's.
   Future<BillExtras?> billExtras(String firmId, String documentId);
+
+  // -------------------------------------------------------------------------
+  // M36 — a bill rung again, or put right and issued again
+  // -------------------------------------------------------------------------
+
+  /// A sale bill as the counter needs it to ring it again: its lines in the
+  /// unit and at the rate billed, its customer, its discounts, and the money
+  /// its own tenders took and still hold. Cancelled bills too. Null if it is
+  /// not a sale bill of this firm.
+  Future<BillCopy?> billCopy(String firmId, String documentId);
+
+  /// [partyId]'s most recent bill still standing, for "the same as last
+  /// time" at the counter; null if they have none.
+  Future<LinkedBill?> lastBillFor(String firmId, String partyId);
+
+  /// The bill [documentId] replaced, and the bill that replaced it.
+  Future<BillLinks> billLinks(String firmId, String documentId);
 }
 
 /// The shop's stock, in five numbers.

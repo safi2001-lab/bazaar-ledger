@@ -238,6 +238,11 @@ final class Cart {
     this.sourceId,
     this.sourceNo,
     this.alsoSourceIds = const [],
+    this.replacesId,
+    this.replacesNo,
+    this.paidBefore,
+    this.copiedFromNo,
+    this.copyNote,
   });
 
   final List<CartLine> lines;
@@ -258,6 +263,22 @@ final class Cart {
   /// More challans billed on this one bill with [sourceId] (M25).
   final List<String> alsoSourceIds;
 
+  /// The cancelled bill this one puts right (M36), and its number. The
+  /// sale links the two when it posts.
+  final String? replacesId;
+  final String? replacesNo;
+
+  /// What the customer had paid on [replacesId] at the counter, which the
+  /// payment sheet starts from (M36). Null for every other bill.
+  final PaidBefore? paidBefore;
+
+  /// The bill this one was copied from (M36), and what of it did not come
+  /// onto the counter, in words — shown at the head of the lines until the
+  /// cashier waves it away. On screen only: not kept in the draft, because
+  /// it is news about the moment of copying, not part of the bill.
+  final String? copiedFromNo;
+  final String? copyNote;
+
   bool get isEmpty => lines.isEmpty;
 
   Money get gross => Money.sum(lines.map((l) => l.gross));
@@ -277,10 +298,16 @@ final class Cart {
     PriceTier? priceTier,
     int? partyDiscountBp,
     bool clearParty = false,
+    bool clearCopyNote = false,
   }) => Cart(
     sourceId: sourceId,
     sourceNo: sourceNo,
     alsoSourceIds: alsoSourceIds,
+    replacesId: replacesId,
+    replacesNo: replacesNo,
+    paidBefore: paidBefore,
+    copiedFromNo: clearCopyNote ? null : copiedFromNo,
+    copyNote: clearCopyNote ? null : copyNote,
     lines: lines ?? this.lines,
     partyId: clearParty ? null : partyId ?? this.partyId,
     partyName: clearParty ? null : partyName ?? this.partyName,
@@ -660,4 +687,40 @@ class CartNotifier extends Notifier<Cart> {
       alsoSourceIds: [for (final q in alsoFrom) q.id],
     );
   }
+
+  /// Puts a bill read back on the counter as a new bill (M36): its lines,
+  /// already priced the way the cashier chose, and its customer at their
+  /// prices today.
+  ///
+  /// [replacesId] and [paidBefore] are for a bill being put right: the
+  /// cancelled bill it replaces, and the money the customer had already
+  /// handed over for it, which the payment sheet starts from. Both survive
+  /// the app being killed (the draft is v5 for them).
+  void loadCopy(
+    List<CartLine> lines, {
+    PartySummary? party,
+    Money billDiscount = Money.zero,
+    String? replacesId,
+    String? replacesNo,
+    PaidBefore? paidBefore,
+    String? copiedFromNo,
+    String? copyNote,
+  }) {
+    state = Cart(
+      lines: lines,
+      partyId: party?.id,
+      partyName: party?.name,
+      billDiscount: billDiscount,
+      priceTier: party?.priceTier ?? PriceTier.retail,
+      partyDiscountBp: party?.defaultDiscountBp ?? 0,
+      replacesId: replacesId,
+      replacesNo: replacesNo,
+      paidBefore: replacesId == null ? null : paidBefore,
+      copiedFromNo: copiedFromNo,
+      copyNote: copyNote,
+    );
+  }
+
+  /// Waves away the note about where the bill was copied from (M36).
+  void dismissCopyNote() => state = state.copyWith(clearCopyNote: true);
 }

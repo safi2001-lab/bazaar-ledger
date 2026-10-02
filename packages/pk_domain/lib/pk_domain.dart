@@ -84,6 +84,7 @@ export 'src/receivables/receipt_posting.dart';
 export 'src/receivables/reminder.dart';
 export 'src/receivables/reminder_templates.dart';
 export 'src/receivables/supplier_payment_builder.dart';
+export 'src/sales/bill_copy.dart';
 export 'src/sales/past_deal.dart';
 export 'src/sales/sale_calculator.dart';
 export 'src/sales/sale_draft.dart';

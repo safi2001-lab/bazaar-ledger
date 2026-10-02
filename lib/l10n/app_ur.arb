@@ -3125,5 +3125,163 @@
     }
   },
   "settleDiscountOverCeiling": "Itni riayat aap ki hadd se ziyada hai. Malik, manager ya accountant se karwayein.",
-  "chaseBadDebts": "Chhori hui raqam"
+  "chaseBadDebts": "Chhori hui raqam",
+  "billMoreActions": "Aur",
+  "copyAction": "Isi tarah ka naya bill",
+  "correctAction": "Ghalti theek karein",
+  "copyRatesTitle": "{docNo} dobara: kaun se rate?",
+  "@copyRatesTitle": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "copyRatesToday": "Aaj ke rate",
+  "copyRatesTodayHint": "Is gahak ki aaj ki qeemat aur riayat",
+  "copyRatesOld": "Purane rate",
+  "copyRatesOldHint": "Jo {docNo} par lage the, riayat samait",
+  "@copyRatesOldHint": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "copyLoaded": "{docNo} ki naqal counter par hai",
+  "@copyLoaded": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "copyLeftOut": "Yeh nahi aayin: {names}",
+  "@copyLeftOut": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "copyNothing": "{docNo} ki koi cheez counter par nahi aa sakti",
+  "@copyNothing": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "copyWhyGone": "{name} (cheez hata di gayi)",
+  "@copyWhyGone": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "copyWhyFree": "{name} (muft)",
+  "@copyWhyFree": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "copyWhySerial": "{name} (serial dobara scan karein)",
+  "@copyWhySerial": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "copyWhyTwice": "{name} (bill par do dafa)",
+  "@copyWhyTwice": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "copyNoCustomer": "{name} ab khate mein nahi; bill bina gahak ke",
+  "@copyNoCustomer": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "repeatLastOrder": "Pichhla order dobara ({docNo})",
+  "@repeatLastOrder": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "correctTitle": "Ghalti theek karein",
+  "correctExplain": "Yeh bill mansookh hoga (iska number aur kaghaz waisay hi rahenge) aur iski naqal counter par khulegi. Ghalti theek kar ke naya bill save karein; dono bill aapas mein jure rahenge.",
+  "correctPaid": "Is bill par Rs {amount} ({mode}) liye gaye the. Naye bill mein yehi raqam pehle se likhi hogi.",
+  "@correctPaid": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "mode": {"type": "String"}
+    }
+  },
+  "correctUdhaar": "Yeh bill udhaar par tha; naya bill bhi udhaar par khulega.",
+  "correctAbandon": "Naya bill save na kiya to bhi yeh bill mansookh hi rahega.",
+  "correctAbandonPaid": "Naya bill save na kiya to bhi yeh bill mansookh hi rahega, aur Rs {amount} gahak ko wapas dene honge.",
+  "@correctAbandonPaid": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "correctConfirm": "Mansookh kar ke naya bill kholein",
+  "reasonWrongItem": "Galat cheez",
+  "reasonWrongQty": "Galat tadaad",
+  "reasonWrongPrice": "Galat qeemat",
+  "reasonWrongCustomer": "Galat gahak",
+  "reasonOrderCancelled": "Gahak ne order chhor diya",
+  "correctOnCounter": "{docNo} ki jagah naya bill",
+  "@correctOnCounter": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "correctOnCounterHint": "{docNo} mansookh ho chuka hai. Theek kar ke paisay lein.",
+  "@correctOnCounterHint": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "correctClearConfirm": "Naya bill chhor dein? {docNo} phir bhi mansookh rahega.",
+  "@correctClearConfirm": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "tenderPaidBefore": "{docNo} par Rs {amount} ({mode}) liye gaye the; wohi yahan likhe hain.",
+  "@tenderPaidBefore": {
+    "placeholders": {
+      "docNo": {"type": "String"},
+      "amount": {"type": "String"},
+      "mode": {"type": "String"}
+    }
+  },
+  "tenderPaidBeforeUdhaar": "{docNo} poora udhaar par tha.",
+  "@tenderPaidBeforeUdhaar": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "tenderGiveBack": "Rs {amount} gahak ko wapas dein",
+  "@tenderGiveBack": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "tenderTakeMore": "Rs {amount} aur lein",
+  "@tenderTakeMore": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "billReplaces": "{docNo} ki jagah bana",
+  "@billReplaces": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "billReplacedBy": "Iski jagah {docNo} bana",
+  "@billReplacedBy": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "billReplacedByVoid": "Iski jagah {docNo} bana (woh bhi mansookh)",
+  "@billReplacedByVoid": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "copyHint": "Wohi cheezein aur gahak, naye bill mein"
 }

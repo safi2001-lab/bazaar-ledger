@@ -1637,6 +1637,78 @@ milestones:
       - lib/features/khata/write_off_sheet.dart
       - lib/features/khata/bad_debts_screen.dart
 
+  - id: M36
+    title: A bill rung again, or put right and issued again, without typing it twice
+    # Opened and sealed 3 Oct 2026 at 1/1. A wholesaler's customer orders
+    # "the same as last week", and a bill with one wrong price on it is
+    # thirty lines that were right; both meant ringing every line again
+    # while the customer waited. Now any bill — a cancelled one too — goes
+    # onto the counter as a NEW bill from its own screen (under the bar's
+    # dots), from its row in the sales list (the long press), or from the
+    # counter once the customer is named ("Pichhla order dobara"): the same
+    # goods, in the units billed, the same customer, khula maal as khula
+    # maal. Asked first which prices: today's for this customer (their tier
+    # and standing discount, the default) or the prices billed, discounts
+    # and all. A line whose item was archived since, a free line, a phone
+    # sold by serial and an item billed twice at two prices are left off
+    # and named at the head of the lines; never over a bill being rung.
+    #
+    # "Ghalti theek karein" (owner and manager: it cancels, so it needs what
+    # a cancel needs, and the counter): why — Wrong item, Wrong quantity,
+    # Wrong price, Wrong customer, or words — then the bill is cancelled by
+    # the ordinary cancel, every refusal standing, and its exact copy opens
+    # on the counter, saying which bill it replaces until it is saved. The
+    # two are linked `revises` in doc_links, a type the schema has carried
+    # since v1 and nothing wrote; written in the sale's own commit and
+    # refused for a bill still standing or one already put right by a bill
+    # still standing. Each bill's screen says "Replaces INV-…" or "Replaced
+    # by INV-…", a tap from the other. Not supersedes_id (a revision of the
+    # same number) nor voided_by_id (the cancellation is the reversing
+    # entry, not the new bill). No schema change.
+    #
+    # The money. The cancel takes the bill's own tenders off the books, as
+    # it always did — in the books' eyes the money is handed back. It was
+    # not, so the corrected bill's payment sheet starts at exactly what the
+    # bill had taken, in the way it came: cash written in as handed over
+    # (the card shows the change when the bill came down and what is still
+    # to take when it went up), any other mode again with its reference or
+    # cheque, a bill all on udhaar on udhaar. Proved against the journal:
+    # Rs 300 cash put right to Rs 150 leaves the drawer Rs 150, once; Rs 300
+    # with Rs 100 paid put right to Rs 450 leaves the khata Rs 350, not Rs
+    # 550. If the copy is dropped, the bill stays cancelled and its money
+    # handed back, and the sheet says so, with the amount, before anything
+    # is done. A receipt taken later against the khata is never carried —
+    # a bill with one cannot be cancelled at all.
+    #
+    # The cancel sheet takes its reason from presets too (order cancelled,
+    # rung twice, wrong entry, or words), as M31's payments do; typed words
+    # alone still do. The receipt preview keeps the paper's own size
+    # whatever the app's text size (M56 left it growing). The cart draft is
+    # v5 for the bill it replaces and the money taken; v2 to v4 still read.
+    #
+    # Found on the way and fixed, both in the cancel itself and both
+    # doubling money: a bill with goods already returned against it could
+    # be cancelled, so the reversal of the whole sale counted the returned
+    # goods and their refund a second time; and a bill paid at the counter
+    # by a cheque already at the bank, cleared or bounced was cancelled with
+    # its cheque, contradicting the bank (M31's rule for khata cheques).
+    # Both are now refused in words, the return pointing at taking the rest
+    # back as a return.
+    #
+    # Not built, and why: "Replaces INV-…" on the paper itself (the printed
+    # layouts are M2's and M51's, and the bill a customer holds is printed
+    # as it always was); a line split across serial pieces or units merged
+    # in any cleverer way than the counter can hold; telling FBR a reported
+    # bill was cancelled (the cancel never has; the corrected bill reports
+    # as any new one); the "previous balance on the bill" and copy labels
+    # TASKS lists beside M36 were M51's and are done there.
+    state: sealed
+    owns:
+      - lib/features/sales/bill_again.dart
+      - lib/features/sales/bill_reasons.dart
+      - lib/features/sales/correct_bill_sheet.dart
+      - packages/pk_domain/lib/src/sales/bill_copy.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6276,3 +6348,36 @@ features:
       - what was let go is listed with who, why and how much
       - at 200% on a small phone the write-off sheet and the list of what was let go fit
       - at 200% on a small phone the receipt sheet with the rest let go fits
+  - id: M36-AGAIN-01
+    milestone: M36
+    title: A bill is rung again or put right and issued again, linked both ways, its money carried once, with reasons picked for every cancel
+    status: done
+    # Driven through the screens against a real database, the books read
+    # back: the journal's cash, the khata, the stock, the link.
+    proof:
+      - a cash bill put right is cancelled, its copy opens on the counter, and the new bill replaces it
+      - a bill corrected up counts the money already taken once, and the rest is owed
+      - a bill that was all on udhaar opens on udhaar, and the khata holds the corrected bill alone
+      - a bill with a receipt against it is refused in its own words, and nothing is cancelled or put on the counter
+      - dropping the corrected copy leaves the bill cancelled and its money handed back, as the sheet said
+      - a cashier may ring a bill again but not put one right; the owner may do both
+      - the books a bill still standing cannot be replaced
+      - the books a cancelled bill is replaced once, not twice
+      - the books the copy carries the money the bill took, and nothing a receipt took
+      - the books goods already brought back stop a cancel, so a return is never counted twice
+      - the books a cheque taken at the counter that has gone to the bank stops a cancel
+      - the books a cheque still in the shop goes with its bill, as cash does
+      - a bill rung again at today's prices puts its goods and customer on the counter as a new bill, and leaves the old one as it was
+      - at the prices billed, a bill rung again keeps its old price
+      - a cancelled bill can be rung again
+      - a bill is rung again from its row in the sales list
+      - the counter offers a named customer's last order, and one tap puts it back
+      - khula maal comes back as khula maal, and an item archived since is left out and said
+      - a bill is never rung again over a bill being rung
+      - a cancel is given its reason from presets
+      - the receipt preview keeps the paper's own size whatever the text size
+      - discounts as billed a percentage on a line and a discount on the bill come back as they were typed
+      - discounts as billed rupees typed on a line beside a discount on the bill come back as exact rupees on each line
+      - discounts as billed with no discount on the bill, rupees typed on a line come back as typed
+      - the cart draft a bill being put right survives the app being killed, the bill it replaces and the money already taken with it
+      - the cart draft a draft from the build before it is read as a bill putting nothing right

@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
+import 'bill_again.dart';
 import 'print_bill.dart';
 import 'send_bill.dart';
 
@@ -151,6 +152,19 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
     unawaited(printBill(host, documentId: widget.documentId, copy: copy));
   }
 
+  /// The bill on the counter again as a new bill (M36), from its row, as
+  /// the long press already sends it: the sheet closes first, so the
+  /// counter opens over the list and not over this sheet.
+  void _again() {
+    if (_working != null) return;
+    final host = _host;
+    Navigator.of(context).pop();
+    if (!host.mounted) return;
+    unawaited(
+      billAgain(host, ref, documentId: widget.documentId, docNo: widget.docNo),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
@@ -244,6 +258,18 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
                     subtitle: s.sendPrintHint,
                     busy: false,
                     onTap: _print,
+                  ),
+                // Ringing it again is not sending it, but it is the other
+                // thing a shopkeeper does with a bill found in the list
+                // (M36), and the long press is how the row offers it.
+                if (widget.offerPrint &&
+                    ref.watch(appServicesProvider).can(Permission.sell))
+                  _WayTile(
+                    icon: Icons.copy_all_outlined,
+                    title: s.copyAction,
+                    subtitle: s.copyHint,
+                    busy: false,
+                    onTap: _again,
                   ),
                 if (_failure != null) ...[
                   const SizedBox(height: BlTokens.space3),

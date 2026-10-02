@@ -5346,4 +5346,173 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get chaseBadDebts => 'Chhori hui raqam';
+
+  @override
+  String get billMoreActions => 'Aur';
+
+  @override
+  String get copyAction => 'Isi tarah ka naya bill';
+
+  @override
+  String get correctAction => 'Ghalti theek karein';
+
+  @override
+  String copyRatesTitle(String docNo) {
+    return '$docNo dobara: kaun se rate?';
+  }
+
+  @override
+  String get copyRatesToday => 'Aaj ke rate';
+
+  @override
+  String get copyRatesTodayHint => 'Is gahak ki aaj ki qeemat aur riayat';
+
+  @override
+  String get copyRatesOld => 'Purane rate';
+
+  @override
+  String copyRatesOldHint(String docNo) {
+    return 'Jo $docNo par lage the, riayat samait';
+  }
+
+  @override
+  String copyLoaded(String docNo) {
+    return '$docNo ki naqal counter par hai';
+  }
+
+  @override
+  String copyLeftOut(String names) {
+    return 'Yeh nahi aayin: $names';
+  }
+
+  @override
+  String copyNothing(String docNo) {
+    return '$docNo ki koi cheez counter par nahi aa sakti';
+  }
+
+  @override
+  String copyWhyGone(String name) {
+    return '$name (cheez hata di gayi)';
+  }
+
+  @override
+  String copyWhyFree(String name) {
+    return '$name (muft)';
+  }
+
+  @override
+  String copyWhySerial(String name) {
+    return '$name (serial dobara scan karein)';
+  }
+
+  @override
+  String copyWhyTwice(String name) {
+    return '$name (bill par do dafa)';
+  }
+
+  @override
+  String copyNoCustomer(String name) {
+    return '$name ab khate mein nahi; bill bina gahak ke';
+  }
+
+  @override
+  String repeatLastOrder(String docNo) {
+    return 'Pichhla order dobara ($docNo)';
+  }
+
+  @override
+  String get correctTitle => 'Ghalti theek karein';
+
+  @override
+  String get correctExplain =>
+      'Yeh bill mansookh hoga (iska number aur kaghaz waisay hi rahenge) aur iski naqal counter par khulegi. Ghalti theek kar ke naya bill save karein; dono bill aapas mein jure rahenge.';
+
+  @override
+  String correctPaid(String amount, String mode) {
+    return 'Is bill par Rs $amount ($mode) liye gaye the. Naye bill mein yehi raqam pehle se likhi hogi.';
+  }
+
+  @override
+  String get correctUdhaar =>
+      'Yeh bill udhaar par tha; naya bill bhi udhaar par khulega.';
+
+  @override
+  String get correctAbandon =>
+      'Naya bill save na kiya to bhi yeh bill mansookh hi rahega.';
+
+  @override
+  String correctAbandonPaid(String amount) {
+    return 'Naya bill save na kiya to bhi yeh bill mansookh hi rahega, aur Rs $amount gahak ko wapas dene honge.';
+  }
+
+  @override
+  String get correctConfirm => 'Mansookh kar ke naya bill kholein';
+
+  @override
+  String get reasonWrongItem => 'Galat cheez';
+
+  @override
+  String get reasonWrongQty => 'Galat tadaad';
+
+  @override
+  String get reasonWrongPrice => 'Galat qeemat';
+
+  @override
+  String get reasonWrongCustomer => 'Galat gahak';
+
+  @override
+  String get reasonOrderCancelled => 'Gahak ne order chhor diya';
+
+  @override
+  String correctOnCounter(String docNo) {
+    return '$docNo ki jagah naya bill';
+  }
+
+  @override
+  String correctOnCounterHint(String docNo) {
+    return '$docNo mansookh ho chuka hai. Theek kar ke paisay lein.';
+  }
+
+  @override
+  String correctClearConfirm(String docNo) {
+    return 'Naya bill chhor dein? $docNo phir bhi mansookh rahega.';
+  }
+
+  @override
+  String tenderPaidBefore(String docNo, String amount, String mode) {
+    return '$docNo par Rs $amount ($mode) liye gaye the; wohi yahan likhe hain.';
+  }
+
+  @override
+  String tenderPaidBeforeUdhaar(String docNo) {
+    return '$docNo poora udhaar par tha.';
+  }
+
+  @override
+  String tenderGiveBack(String amount) {
+    return 'Rs $amount gahak ko wapas dein';
+  }
+
+  @override
+  String tenderTakeMore(String amount) {
+    return 'Rs $amount aur lein';
+  }
+
+  @override
+  String billReplaces(String docNo) {
+    return '$docNo ki jagah bana';
+  }
+
+  @override
+  String billReplacedBy(String docNo) {
+    return 'Iski jagah $docNo bana';
+  }
+
+  @override
+  String billReplacedByVoid(String docNo) {
+    return 'Iski jagah $docNo bana (woh bhi mansookh)';
+  }
+
+  @override
+  String get copyHint => 'Wohi cheezein aur gahak, naye bill mein';
 }

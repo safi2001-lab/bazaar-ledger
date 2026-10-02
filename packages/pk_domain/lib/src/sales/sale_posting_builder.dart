@@ -313,6 +313,7 @@ final class SalePostingBuilder {
       lines: lines,
       convertedFromId: draft.convertedFromId,
       alsoFromIds: draft.alsoFromIds,
+      replacesId: draft.replacesId,
       payments: payments,
       stockMovements: stock,
       journal: JournalEntryPosting(

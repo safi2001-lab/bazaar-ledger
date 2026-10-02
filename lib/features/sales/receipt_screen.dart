@@ -10,6 +10,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
+import 'bill_again.dart';
+import 'correct_bill_sheet.dart';
 import 'print_bill.dart';
 import 'return_sheet.dart';
 import 'send_sheet.dart';
@@ -34,6 +36,14 @@ import 'void_bill_sheet.dart';
 /// triplicate, or the transporter's copy with no prices. The preview is that
 /// sheet, dressed as the shop's design dresses it — the khata block, the
 /// shop's own footer — because the preview is the paper.
+///
+/// ## Again, and put right (M36)
+///
+/// Under the bar's ⋮: "Isi tarah ka naya bill" puts this bill's lines and
+/// customer on the counter as a new bill (a cancelled bill too), and
+/// "Ghalti theek karein" cancels a standing bill and opens its copy there to
+/// be corrected. A bill that replaced another, or was replaced, says which
+/// above the paper, a tap from the other.
 class ReceiptScreen extends ConsumerStatefulWidget {
   const ReceiptScreen({
     super.key,
@@ -61,6 +71,16 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
     final sheet = (documentId: documentId, copy: _copy);
     final bill = ref.watch(billSheetProvider(sheet));
     final status = ref.watch(documentStatusProvider(documentId));
+    final services = ref.watch(appServicesProvider);
+    final standing = status.valueOrNull == 'posted';
+    // Ringing it again needs only the counter; putting it right cancels it,
+    // so it needs what a cancel needs as well (M36). A role that may do
+    // neither is not shown a menu that only ever says no.
+    final mayCopy = services.can(Permission.sell) && status.valueOrNull != null;
+    final mayCorrect =
+        standing &&
+        services.can(Permission.sell) &&
+        services.can(Permission.voidDocuments);
 
     return Scaffold(
       backgroundColor: t.paper,
@@ -97,6 +117,49 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
                 ),
               ),
             ),
+          // Behind the dots rather than two more icons: at 200% text a
+          // phone's bar has room for the bill's number and two buttons, and
+          // the number is what the shopkeeper is checking.
+          if (mayCopy || mayCorrect)
+            PopupMenuButton<_More>(
+              tooltip: s.billMoreActions,
+              icon: const Icon(Icons.more_vert),
+              onSelected: (choice) => unawaited(switch (choice) {
+                _More.copy => billAgain(
+                  context,
+                  ref,
+                  documentId: documentId,
+                  docNo: docNo,
+                ),
+                _More.correct => showCorrectBillSheet(
+                  context,
+                  documentId: documentId,
+                  docNo: docNo,
+                ),
+              }),
+              itemBuilder: (_) => [
+                if (mayCopy)
+                  PopupMenuItem(
+                    value: _More.copy,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.copy_all_outlined),
+                      title: Text(s.copyAction),
+                    ),
+                  ),
+                if (mayCorrect)
+                  PopupMenuItem(
+                    value: _More.correct,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(
+                        Icons.published_with_changes_outlined,
+                      ),
+                      title: Text(s.correctAction),
+                    ),
+                  ),
+              ],
+            ),
         ],
       ),
       body: SafeArea(
@@ -123,6 +186,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
             final data = prepared.receipt;
             return Column(
               children: [
+                _BillLinksLine(documentId: documentId),
                 // A cancelled bill is shown marked, as it is sent marked
                 // (M30); the thermal paper of it still prints as it did.
                 Expanded(
@@ -169,34 +233,114 @@ class PaperPreview extends ConsumerWidget {
         .toPreview(data, paper: ReceiptPaper.mm80)
         .join('\n');
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(BlTokens.space4),
-      child: Center(
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: BlTokens.space4,
-            vertical: BlTokens.space5,
-          ),
-          decoration: BoxDecoration(
-            color: t.surfaceRaised,
-            borderRadius: BorderRadius.circular(BlTokens.radiusSm),
-            border: Border.all(color: t.line),
-          ),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: SelectableText(
-              text,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontFamilyFallback: const ['Courier New', 'Roboto Mono'],
-                fontSize: 12,
-                height: 1.35,
-                color: t.ink,
+    // The paper's own size, whatever the app's (M36). Forty-eight columns
+    // are forty-eight columns: the app's text size (M56) and the phone's
+    // own made the preview grow until it scrolled sideways, which is not
+    // what the paper looks like, and the paper is what this is showing.
+    return MediaQuery.withNoTextScaling(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(BlTokens.space4),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: BlTokens.space4,
+              vertical: BlTokens.space5,
+            ),
+            decoration: BoxDecoration(
+              color: t.surfaceRaised,
+              borderRadius: BorderRadius.circular(BlTokens.radiusSm),
+              border: Border.all(color: t.line),
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: SelectableText(
+                text,
+                style: TextStyle(
+                  fontFamily: 'monospace',
+                  fontFamilyFallback: const ['Courier New', 'Roboto Mono'],
+                  fontSize: 12,
+                  height: 1.35,
+                  color: t.ink,
+                ),
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+/// What the bar's dots offer (M36).
+enum _More { copy, correct }
+
+/// "Replaces INV-…" on a corrected bill, "Replaced by INV-…" on the one it
+/// put right (M36), each a tap from the other. Nothing at all on a bill
+/// that is neither, which is almost every bill.
+class _BillLinksLine extends ConsumerWidget {
+  const _BillLinksLine({required this.documentId});
+
+  final String documentId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final links = ref.watch(billLinksProvider(documentId)).valueOrNull;
+    if (links == null || links.isEmpty) return const SizedBox.shrink();
+
+    Widget line(LinkedBill bill, String words, IconData icon) => Padding(
+      padding: const EdgeInsets.fromLTRB(
+        BlTokens.space4,
+        BlTokens.space2,
+        BlTokens.space4,
+        0,
+      ),
+      child: BlCard(
+        padding: const EdgeInsets.symmetric(
+          horizontal: BlTokens.space3,
+          vertical: BlTokens.space2,
+        ),
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute<void>(
+            builder: (_) =>
+                ReceiptScreen(documentId: bill.id, docNo: bill.docNo),
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 18, color: t.accent),
+            const SizedBox(width: BlTokens.space2),
+            Expanded(
+              child: Text(
+                words,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: t.ink,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, size: 18, color: t.inkFaint),
+          ],
+        ),
+      ),
+    );
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (links.replaces case final old?)
+          line(old, s.billReplaces(old.docNo), Icons.history),
+        if (links.replacedBy case final next?)
+          line(
+            next,
+            next.isVoid
+                ? s.billReplacedByVoid(next.docNo)
+                : s.billReplacedBy(next.docNo),
+            Icons.published_with_changes_outlined,
+          ),
+      ],
     );
   }
 }

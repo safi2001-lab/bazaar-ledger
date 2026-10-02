@@ -292,6 +292,7 @@ final class SalePosting {
     required this.auditSummary,
     this.convertedFromId,
     this.alsoFromIds = const [],
+    this.replacesId,
   });
 
   final DocumentPosting document;
@@ -302,6 +303,9 @@ final class SalePosting {
 
   /// More challans on the same bill, each linked the same way (M25).
   final List<String> alsoFromIds;
+
+  /// The cancelled bill this one puts right, linked `revises` (M36).
+  final String? replacesId;
   final List<PaymentPosting> payments;
   final List<StockMovementPosting> stockMovements;
   final JournalEntryPosting journal;
