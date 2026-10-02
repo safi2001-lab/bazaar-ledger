@@ -26,7 +26,7 @@ Last updated: 2 Oct 2026.
 - Agents building this work alone: a subagent may not launch its own
   subagents. Every subagent brief says so.
 
-## Wave 1 — tester complaints and the reports hub (M30, M31, M32 done; M33 in progress)
+## Wave 1 — tester complaints and the reports hub (all done)
 
 ### M30 · A bill is found again and sent again — DONE (7475907, merged)
 Tester: "we can share an invoice when we make it, but not later."
@@ -69,24 +69,24 @@ Tester: "in Vyapar a new product or person is added while billing."
 - Owner to decide: a separate "may add items/customers" permission (today no role is barred, as in the full forms).
 - Not built: give a scanned barcode to an existing item; landline on the short form.
 
-### M33 · The reports hub, and every transaction and party report
+### M33 · The reports hub, and every transaction and party report — DONE (e35302a, merged)
 From the owner's Vyapar screenshots.
-- [ ] Hub grouped like Vyapar: Transaction, Party, Item/Stock, Business status, Taxes, Expense, Orders, Loan
-- [ ] Search reports by name
-- [ ] Star a report → Favourites at the top (kept on the phone)
-- [ ] Plan lock shown on paid reports
-- [ ] Date presets incl. custom range and Pakistani fiscal year
-- [ ] Per-report filters: party, item, category, party group, type, payment mode, user
-- [ ] Summary tiles; tap a row through to its bill
-- [ ] Export: PDF, CSV, Excel (.xlsx), print, share
-- [ ] Transaction: Sale Report, Purchase Report, Day Book, All Transactions, Bill Wise Profit, Profit & Loss, Cashflow, Balance Sheet
-- [ ] Party: Party Statement, Party Wise P&L, All Parties, Party Report by Items, Sale/Purchase by Party, Sale/Purchase by Party Group
-- [ ] A registry so later report groups plug in cleanly
-- [ ] Tests that tie each report's totals to the books; all gates green
+- [x] Hub grouped like Vyapar: Transaction, Party, Item/Stock, Business status, Taxes, Expense, Orders, Loans (empty groups hidden until filled)
+- [x] Search reports by name; star → Favourites card; last 4 opened as Recent; each report remembers its period
+- [x] Plan lock on paid reports; cost reports hidden for roles that may not see costs
+- [x] Periods: today, yesterday, this week, this month, last month, this quarter, this FY (Jul–Jun), last FY, custom range
+- [x] Filters as chips: party, party group, item, category, payment status, payment mode, user, type — all in SQL
+- [x] Summary tiles with "% vs the period before"; sort any column both ways; 200 rows at a time; tap a bill → the bill, a party → its statement
+- [x] Export: PDF, Excel (.xlsx, own small writer), CSV, print on the receipt printer
+- [x] Transaction: Sale Report, Purchase Report, Day Book (extended), All Transactions, Bill Wise Profit, Profit & Loss (cost of sales laid out), Cash Flow, Balance Sheet, Trial Balance, Cash Book
+- [x] Party: Party Statement, Party Wise P&L, All Parties, Party Report by Items, Sale/Purchase by Party, Sale/Purchase by Party Group
+- [x] Tests tie totals to the books (sale report = sales by day; bill-wise profit = party-wise profit; cash flow closing = cash book; party statement = khata); 20,000-bill year in ~0.5 s
+- Not built: direct A4 printing (no print plugin; PDF → any viewer prints it); charts and a column chooser (→ M46).
+- Found: the khata history left out sale returns (sent to the udhaar-pack agent to fix); `party_group` was never written (→ M40).
 
-## Wave 2 — the rest of Vyapar's reports (queued, starts on M33's framework)
+## Wave 2 — the rest of Vyapar's reports (in progress on M33's framework)
 
-### M34 · Item and stock reports
+### M34 · Item and stock reports (in progress)
 - [ ] Stock Summary (as-of date, category, godown, "in stock only", sale/purchase price, value)
 - [ ] Item Report by Party / Party Report by Item (both directions)
 - [ ] Item Wise Profit & Loss, Item Category Wise Profit & Loss
@@ -100,7 +100,7 @@ From the owner's Vyapar screenshots.
 - [ ] Production run register (manufacturing / consumption)
 - [ ] Beyond Vyapar: dead / slow / fast stock (sales in last N days), stock ageing 0-45/45-90/90-180/180+
 
-### M35 · Business status, tax, expense, staff and order reports
+### M35 · Business status, tax, expense, staff and order reports (in progress)
 - [ ] Bank Statement (per bank account: date, description, withdrawal, deposit, balance)
 - [ ] Discount Report (per party given/received) and discount by cashier
 - [ ] Tax Report (output vs input sales tax, per party); Tax Rate Report (18%, reduced, exempt, zero, further tax, Third Schedule)
