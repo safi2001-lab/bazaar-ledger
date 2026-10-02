@@ -154,7 +154,8 @@ mixin _TransactionQueries implements TransactionReportSource {
                    COALESCE(d.party_name_snapshot, p.name, '') AS party,
                    d.total_paisa AS total, d.paid_paisa AS paid,
                    d.balance_paisa AS balance, d.status AS status,
-                   d.created_at_utc AS recorded
+                   d.created_at_utc AS recorded,
+                   (d.doc_type = 'expense' AND $_forHomeSql) AS for_home
             FROM documents d
             LEFT JOIN parties p ON p.id = d.party_id
             WHERE ${documents ? '1' : '0'}
@@ -175,7 +176,8 @@ mixin _TransactionQueries implements TransactionReportSource {
                    COALESCE(pp.name, '') AS party,
                    pm.amount_paisa AS total, pm.amount_paisa AS paid,
                    0 AS balance, pm.status AS status,
-                   pm.created_at_utc AS recorded
+                   pm.created_at_utc AS recorded,
+                   0 AS for_home
             FROM payments pm
             LEFT JOIN parties pp ON pp.id = pm.party_id
             WHERE ${paymentsApply ? '1' : '0'}
@@ -200,6 +202,9 @@ mixin _TransactionQueries implements TransactionReportSource {
             _db.paymentAllocations,
             _db.documentLines,
             _db.items,
+            _db.journalEntries,
+            _db.journalLines,
+            _db.accounts,
           },
         )
         .get();
@@ -216,6 +221,7 @@ mixin _TransactionQueries implements TransactionReportSource {
           paid: Money.paisa(r.read<int>('paid')),
           balance: Money.paisa(r.read<int>('balance')),
           status: r.read<String>('status'),
+          forHome: r.read<int>('for_home') == 1,
         ),
     ];
   }
@@ -224,12 +230,14 @@ mixin _TransactionQueries implements TransactionReportSource {
   Future<List<MoneyFlow>> moneyFlows(String firmId, ReportPeriod period) async {
     // Every line against a money account in the period, summed by what
     // moved it and by drawer or bank. Rides idx_je_date for the period's
-    // entries and idx_jl_seq for their lines.
+    // entries and idx_jl_seq for their lines. What moved it is said as the
+    // books mean it (M58): the home's spending and a loan apart from the
+    // shop's expenses and from journal vouchers.
     final rows = await _db
         .customSelect(
           '''
           WITH money AS ($_moneyAccounts), drawer AS ($_drawerAccounts)
-          SELECT je.source_type AS kind,
+          SELECT $_entryKindSql AS kind,
                  jl.account_id IN (SELECT id FROM drawer) AS in_cash,
                  SUM(jl.debit_paisa) AS money_in,
                  SUM(jl.credit_paisa) AS money_out
@@ -248,6 +256,7 @@ mixin _TransactionQueries implements TransactionReportSource {
             _db.journalLines,
             _db.accounts,
             _db.paymentAccounts,
+            _db.documents,
           },
         )
         .get();

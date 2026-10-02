@@ -8,12 +8,53 @@ import 'report_table.dart';
 /// direct costs kept apart from the overheads, and what the money went on
 /// within each head. All three read the same vouchers, so their totals are
 /// one figure.
+///
+/// Since M58 none of them counts the home's spending (M47). Ghar ka kharcha,
+/// in money or in goods taken home, is the owner's drawings: the profit and
+/// loss never sees it, and an expense report that added it in would tell the
+/// owner the shop spent what his family did. It is shown apart instead, as a
+/// tile and a line under the table, so the drawer's money can still be
+/// followed.
+
+/// The shop's vouchers out of [vouchers], and the tile and note that show
+/// the home's apart.
+({List<ExpenseVoucher> shop, List<ReportFigure> tiles, List<String> notes})
+_homeApart(List<ExpenseVoucher> vouchers) {
+  final home = [
+    for (final v in vouchers)
+      if (v.forHome) v,
+  ];
+  if (home.isEmpty) return (shop: vouchers, tiles: const [], notes: const []);
+  final taken = Money.sum(home.map((v) => v.amount));
+  final goods = Money.sum([
+    for (final v in home)
+      if (v.goods) v.amount,
+  ]);
+  final entries = home.length == 1 ? '1 entry' : '${home.length} entries';
+  final ofIt = goods.isZero
+      ? ''
+      : ', Rs ${goods.amountOnly} of it goods taken home at cost';
+  final note =
+      'Ghar ka kharcha, $entries for Rs ${taken.amountOnly}$ofIt, is the '
+      "owner's drawings, not the shop's expense: it is left out of every "
+      'figure here, as it is out of the profit and loss.';
+  return (
+    shop: [
+      for (final v in vouchers)
+        if (!v.forHome) v,
+    ],
+    tiles: [ReportFigure(homeTile, taken)],
+    notes: [note],
+  );
+}
+
+/// The tile the home's spending is shown apart under (M58).
+const homeTile = "Owner's drawings (ghar)";
 
 /// Every expense voucher in [period], in date order.
-ReportTable expenseTransactions(
-  ReportPeriod period,
-  List<ExpenseVoucher> vouchers,
-) {
+ReportTable expenseTransactions(ReportPeriod period, List<ExpenseVoucher> all) {
+  final apart = _homeApart(all);
+  final vouchers = apart.shop;
   final total = Money.sum(vouchers.map((v) => v.amount));
   final owed = Money.sum(vouchers.map((v) => v.balance));
   return ReportTable(
@@ -67,8 +108,9 @@ ReportTable expenseTransactions(
       ReportFigure('Expenses', total),
       ReportFigure.count('Vouchers', vouchers.length),
       ReportFigure('Still owed', owed),
+      ...apart.tiles,
     ],
-    notes: const [_vouchersNote],
+    notes: [_vouchersNote, ...apart.notes],
   );
 }
 
@@ -78,10 +120,9 @@ const _vouchersNote =
 
 /// What was spent under each head over [period], the direct costs apart
 /// from the overheads, largest first within each.
-ReportTable expenseCategories(
-  ReportPeriod period,
-  List<ExpenseVoucher> vouchers,
-) {
+ReportTable expenseCategories(ReportPeriod period, List<ExpenseVoucher> all) {
+  final apart = _homeApart(all);
+  final vouchers = apart.shop;
   final heads = <String, _Head>{};
   for (final v in vouchers) {
     heads.putIfAbsent(v.headId, () => _Head(v.head, isDirect: v.isDirect))
@@ -136,8 +177,9 @@ ReportTable expenseCategories(
       ReportFigure('Direct', directTotal),
       ReportFigure('Indirect', indirectTotal),
       ReportFigure('Total', total),
+      ...apart.tiles,
     ],
-    notes: const [_categoriesNote],
+    notes: [_categoriesNote, ...apart.notes],
   );
 }
 
@@ -164,7 +206,9 @@ final class _Head {
 /// the end, within its head: "Bijli bill", "bijli  bill." and "BIJLI BILL"
 /// are one item under Utilities, and the wording of the latest is the one
 /// shown.
-ReportTable expenseItems(ReportPeriod period, List<ExpenseVoucher> vouchers) {
+ReportTable expenseItems(ReportPeriod period, List<ExpenseVoucher> all) {
+  final apart = _homeApart(all);
+  final vouchers = apart.shop;
   final items = <(String, String), _Item>{};
   for (final v in vouchers) {
     final key = (v.headId, expenseItemKey(v.note));
@@ -226,8 +270,9 @@ ReportTable expenseItems(ReportPeriod period, List<ExpenseVoucher> vouchers) {
     summary: [
       ReportFigure('Expenses', total),
       ReportFigure.count('Items', rows.length),
+      ...apart.tiles,
     ],
-    notes: const [_itemsNote],
+    notes: [_itemsNote, ...apart.notes],
   );
 }
 

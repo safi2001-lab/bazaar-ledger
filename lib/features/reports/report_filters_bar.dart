@@ -112,13 +112,24 @@ class ReportFiltersBar extends StatelessWidget {
           for (final p in PaymentStatus.values) (p, paymentStatusName(s, p)),
         ]);
         if (status != null) onChanged(filters.copyWith(paymentStatus: status));
+      // M58: the amounts a shop thinks in.
+      case ReportFilter.minAmount:
+        final amount = await _pickFixed(context, reportFilterName(s, f), [
+          for (final rupees in const [500, 1000, 5000, 10000, 50000, 100000])
+            (
+              Money.rupees(rupees),
+              s.reportFilterMinAmountValue(Money.rupees(rupees).toString()),
+            ),
+        ]);
+        if (amount != null) onChanged(filters.copyWith(minAmount: amount));
       case ReportFilter.item ||
           ReportFilter.itemCategory ||
           ReportFilter.partyGroup ||
           ReportFilter.user ||
           ReportFilter.location ||
           ReportFilter.moneyAccount ||
-          ReportFilter.expenseHead:
+          ReportFilter.expenseHead ||
+          ReportFilter.loan:
         final choice = await showModalBottomSheet<ReportChoice>(
           context: context,
           isScrollControlled: true,
@@ -143,6 +154,10 @@ class ReportFiltersBar extends StatelessWidget {
           ReportFilter.expenseHead => filters.copyWith(
             expenseHeadId: choice.id,
             expenseHeadName: choice.label,
+          ),
+          ReportFilter.loan => filters.copyWith(
+            loanId: choice.id,
+            loanName: choice.label,
           ),
           _ => filters.copyWith(userId: choice.id, userName: choice.label),
         });
@@ -189,8 +204,8 @@ class ReportFiltersBar extends StatelessWidget {
 }
 
 /// Picks an item, a category, a party group, a member of staff, a money
-/// account or an expense head (M35) from what the shop has, searched as it
-/// is typed.
+/// account or an expense head (M35), or a loan (M58), from what the shop
+/// has, searched as it is typed.
 class _ChoiceSheet extends ConsumerStatefulWidget {
   const _ChoiceSheet({required this.filter});
 
@@ -321,6 +336,8 @@ String reportFilterName(AppStrings s, ReportFilter f) => switch (f) {
   ReportFilter.serial => stockFilterName(s, f),
   ReportFilter.moneyAccount => s.reportFilterAccount,
   ReportFilter.expenseHead => s.reportFilterHead,
+  ReportFilter.loan => s.reportFilterLoan,
+  ReportFilter.minAmount => s.reportFilterMinAmount,
 };
 
 /// What [f] is set to in [filters], in words, or null when it is not set.
@@ -366,6 +383,12 @@ String? filterValueLabel(AppStrings s, ReportFilter f, ReportFilters filters) =>
         filters.expenseHeadId == null
             ? null
             : filters.expenseHeadName ?? filters.expenseHeadId,
+      ReportFilter.loan =>
+        filters.loanId == null ? null : filters.loanName ?? filters.loanId,
+      ReportFilter.minAmount => switch (filters.minAmount) {
+        final Money m => s.reportFilterMinAmountValue(m.toString()),
+        null => null,
+      },
     };
 
 String transactionTypeLabel(AppStrings s, String type) => switch (type) {

@@ -12,6 +12,7 @@ import '../subscription/plans_screen.dart';
 import 'report_registry.dart';
 import 'report_screen.dart';
 import 'report_shelf.dart';
+import 'today_strip.dart';
 
 export 'report_registry.dart' show isAccountingReport, reportName;
 export 'report_screen.dart' show ReportScreen;
@@ -25,6 +26,9 @@ export 'report_screen.dart' show ReportScreen;
 /// group with nothing in it yet is not shown. Above them sit the reports
 /// this phone starred and the last few it opened, and a search in the bar
 /// finds any of them by name.
+///
+/// Above everything since M46, a strip with today's figures off the night's
+/// Z report, which opens it.
 ///
 /// The list is the registry (`report_registry.dart`), so a report added
 /// there appears here in its group with nothing else to change. A report
@@ -166,6 +170,7 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
             BlTokens.space6,
           ),
           children: [
+            if (query.isEmpty) const TodayStrip(),
             if (query.isEmpty && favourites.isNotEmpty)
               section(s.reportFavourites, favourites),
             if (query.isEmpty && recent.isNotEmpty) ...[

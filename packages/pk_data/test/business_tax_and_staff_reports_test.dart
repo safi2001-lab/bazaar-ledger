@@ -625,8 +625,10 @@ void main() {
       final voided = lines(t).firstWhere((r) => r.cells[2] == 'Voided');
       expect(voided.cells.sublist(0, 1), ['2026-09-25']);
       expect(voided.cells.sublist(5), [
+        null,
         const Money.rupees(2950),
         'Bilal',
+        '',
         'Rung by mistake',
       ]);
       expect(voided.link?.id, voidedBill);

@@ -1980,6 +1980,129 @@ milestones:
       - lib/features/items/item_packs_field.dart
       - lib/features/items/pack_choice.dart
 
+  - id: M58
+    title: The reports say what the books mean, and draw it
+    # Opened and sealed 3 Oct 2026 at 3/3, with M46 (the drawing) at 1/1.
+    # The follow-ups merging turned up, each closed on the books.
+    #
+    # Words. An other_income document with no party is the shop's own
+    # income (M47), and the Day Book, All Transactions and the cash flow now
+    # call it Other income; one with a party is still a Charge on that
+    # khata. The kind is worked out once in SQL (sql_filters.dart,
+    # _entryKindSql) from the entry's own document and lines: the shop's
+    # income, the home's spending (an expense entry debiting the owner's
+    # drawings) and a loan (a manual entry tagged loan:<id>, M48) are their
+    # own kinds, each summed apart. A write-off or a settlement discount
+    # (M44) is a payment in by how it is written; All Transactions, the Day
+    # Book and every statement now read it by its number's series
+    # (AllowanceKind.ofPaymentNo) as Written off or Settlement discount, and
+    # the Payment in total is money that came.
+    #
+    # The home's spending. Ghar ka kharcha, in money or goods taken home, is
+    # in no expense report: the voucher read marks it (its debit is the
+    # owner's drawings) and the expense transactions, categories and items
+    # leave it out of every row and total and show it apart, as a tile and a
+    # line saying how much and how much of it was goods. The night's Z report
+    # counts the shop's expenses and puts the home's on a line of its own.
+    # The profit and loss and Expenses by head never had it (equity, not
+    # expense), and a test says so; the trading account's "Stock in or out
+    # otherwise" now names goods taken home.
+    #
+    # Khula maal. M8's Sales by item joined items, so a line with no item
+    # (M37) was missing; it is now one row, Khula maal (no item), with no
+    # quantity and no cost, as M34's item reports have it, and its total is
+    # the bill-wise profit's sale amount and, for a shop charging no tax,
+    # the sale report's.
+    #
+    # Money owed both ways. The Loans group has its Loan Statement: narrowed
+    # by a new loan filter it is that loan's statement, and not narrowed it
+    # is every loan on one page (lender, taken on, owed at the start,
+    # received, principal repaid, interest, fee and charges, outstanding),
+    # each row opening its loan. Both are M48's buildLoanStatement over M48's
+    # postings, so the hub and the loan screen cannot disagree, and the
+    # outstanding is the loan's account on the balance sheet. The statement's
+    # table builder moved from pk_bootstrap to pk_reports (loan_reports.dart)
+    # under the same name, so the loan screen's PDF and CSV are unchanged.
+    # The Party group has Udhaar by due date (not yet due, 1-30, 31-60,
+    # 61-90, over 90 days late, per customer, on the udhaar pack's due-date
+    # SQL; its buckets are the pack's dueAging and its owed Udhaar by age's)
+    # and Bad debts and settlement discounts (the pack's allowances: who,
+    # why, how much and who let it go, a cancelled one marked and counted
+    # nowhere; its totals are the Bad Debts and Settlement Discount accounts
+    # in the profit and loss of the period).
+    #
+    # Changed and cancelled bills (M35), as M42 asked once it had merged: it
+    # now lists udhaar written off or let go to settle (their reason read off
+    # the payment, where M44 keeps it), a loan entry cancelled (M48), and the
+    # closed books let into or opened again (M42's own codes, from
+    # pk_domain); a Was column beside the Amount gives an edited entry's old
+    # figure from the audit row's before (an opening balance's too), so the
+    # change reads Rs 5,000 to Rs 500 as Marg's bill value changes do; an
+    # Allowed by column names whose PIN let a change through, from the
+    # DATA_LOCK_PIN_GIVEN or CLOSED_BOOKS_OVERRIDDEN row M42 writes in the
+    # same transaction on the same record; and a new filter keeps it to Rs X
+    # or more, a bound WHERE on the amount shown.
+    #
+    # Also: recentExpenses read the expense head as required and would have
+    # thrown on a head the shop added (M47), which has no system key; it now
+    # names it #<account id> as an expense draft does, and still refuses an
+    # expense with no debit line. No schema change.
+    #
+    # Not built, and why: a party filter on Bad debts (the udhaar pack's
+    # read takes none, and a filter here is a WHERE or nothing); bill-age
+    # ageing redrawn as a ring (the due-date one is the shop's question now);
+    # a changed line's item by item difference on an edited bill (a sale bill
+    # is never edited, M31; it is cancelled and issued again, M36).
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/loan_reports.dart
+      - packages/pk_reports/lib/src/udhaar_reports.dart
+      - packages/pk_reports/lib/src/money_owed_reports.dart
+      - packages/pk_data/lib/src/read/reports/loan_queries.dart
+      - packages/pk_data/lib/src/read/reports/udhaar_report_queries.dart
+
+  - id: M46
+    title: Reports drawn on the phone, and today's figures on the hub
+    # Opened and sealed 3 Oct 2026 at 1/1, with M58. A report that reads
+    # well as a picture declares how in the registry (ReportEntry.chart, a
+    # ChartSpec naming the table's own columns by title) and its screen
+    # offers Table or Chart: a trend of columns, or a line past thirty-one
+    # points, for Sales by day, the Sale report by day (its bills summed per
+    # day, every day of the period drawn, a quiet one as a gap) and Hourly
+    # sales; the top ten as bars, the rest summed, for Sales by item, Sale by
+    # party, Expenses by head and Expense categories; a ring for Udhaar by
+    # due date (its five buckets, in one hue light to dark) and the
+    # payment-mode summary (how the sales were paid, udhaar included).
+    #
+    # The chart is read off the finished table by chartOf in pk_reports, so
+    # it cannot disagree with it, and a test holds each chart's total to its
+    # table's; a cost column struck for a cashier leaves no chart rather
+    # than a wrong one. Shares are basis points; pk_reports holds no float,
+    # and pixels are worked out in the app from paisa. Drawn with Flutter's
+    # own CustomPaint, no chart package. The marks are painted and every
+    # name and figure around them is an ordinary Text, so it grows at 200%
+    # on a 360dp phone, reads in Roman Urdu or English, and is spoken; the
+    # colours are tokens (a categorical set and an ordered ramp, checked for
+    # colour-blind separation, each stepped for the dark theme), and every
+    # slice and bar has its name and amount in Rs beside it, figures
+    # tabular. A tap on a column says its day and amount; a bar that is one
+    # party or item opens it.
+    #
+    # The Reports hub opens on a Today strip: today's sale, received, udhaar
+    # given, expenses and, for a role that may see costs, gross profit, the
+    # night's Z report's own headline figures (labels in DayFigureLabel), a
+    # tap away from the Z report itself.
+    #
+    # Not built, and why: "vs last period" as a second series (one axis, and
+    # the tiles above already say how each figure compares); a chart in the
+    # PDF and Excel exports (the table is what goes to the accountant); a
+    # chooser of which column to draw.
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/report_chart.dart
+      - lib/features/reports/report_chart_view.dart
+      - lib/features/reports/today_strip.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6763,3 +6886,70 @@ features:
       - the owner sets the shop's own rule in Settings
       - at 200% on a small phone the question at the counter and the refusal fit
       - at 200% on a small phone an item's rule and packs, and the shop's rule, fit
+  - id: M58-MEAN-01
+    milestone: M58
+    title: The reports call each entry what it was, keep the home's spending out of the shop's expenses, and count khula maal
+    status: done
+    # Builders proved without a database; then a shop's June to October
+    # against a real one, each figure tied to the books.
+    proof:
+      - what the books mean the shop's own income is other income, and a charge on a khata a charge, each summed apart
+      - what the books mean the home's spending and udhaar let go are their own kinds in all transactions, and a write-off is not money paid in
+      - what the books mean the day book names the shop's income, the home's spending, a loan and udhaar let go
+      - what the books mean the expense reports leave the home's spending out and show it apart, goods taken home said so
+      - what the books mean sales by item has khula maal as one row, all of it profit, and in the total
+      - what the books mean a statement calls a write-off and a settlement discount what they were
+      - what the books mean the cash flow names other income, loans and the home's spending
+      - what the books mean the day book and all transactions call the shop's own income other income, and a charge on a khata a charge
+      - what the books mean the home's spending is never in an expense report, and is shown apart beside the shop's
+      - what the books mean sales by item has khula maal as one row, and comes to every bill's sales
+      - what the books mean a write-off and a settlement discount read as what they were, and are not money paid in
+      - the expense list reads a head of the shop's own
+  - id: M58-OWED-01
+    milestone: M58
+    title: A loan statement and every loan in the hub, udhaar by due date, and the bad debts and settlement discounts let go
+    status: done
+    # The loan statement closes on the loan's account, the due-date buckets
+    # on the udhaar pack's ageing and Udhaar by age, and what was let go on
+    # the profit and loss.
+    proof:
+      - money owed udhaar by due date buckets each customer, the latest first, owing the khata's balance
+      - money owed bad debts and settlement discounts: a cancelled one is listed and counted nowhere
+      - money owed every loan on one page, each outstanding its statement's closing, and a tap opens the loan
+      - money owed a loan statement narrowed to one loan is that loan's, from the builder the loan's own screen uses
+      - money owed report engine every M58 report has its own case, and only the due-date ageing is as of today
+      - money owed both ways the loan statement closes on the loan account's balance, and all loans on the balance sheet's
+      - money owed both ways udhaar by due date buckets each bill by days past due, adds up to the udhaar pack's ageing, and owes what Udhaar by age owes
+      - money owed both ways bad debts and settlement discounts list who, why, how much and who let it go, the cancelled one counted nowhere, and land on the profit and loss
+      - the loan statement lists every loan, and a loan opens its own statement
+  - id: M58-CHANGED-01
+    milestone: M58
+    title: Changed and cancelled bills say what each change was before, whose PIN let it through, and what was let go, from Rs X up
+    status: done
+    # The builder proved without a database; then an expense edited, udhaar
+    # let go and a bill cancelled under Data Lock against a real one, and
+    # the filter driven from the screen.
+    proof:
+      - what the books mean changed and cancelled bills say what an edit was, whose PIN let it through, and count udhaar let go and the closed books
+      - changed and cancelled bills say what was let go and why, what an edit was, and whose PIN let a cancel through
+      - changed and cancelled bills narrow to an amount or more, and say what each change was before
+  - id: M46-CHART-01
+    milestone: M46
+    title: Reports turn into a trend, a top ten or a ring drawn from their own tables, and the hub opens on today's figures
+    status: done
+    # chartOf is proved on the builders' own tables; the screens are driven
+    # in Roman Urdu and English, light and dark, at 200% on a 360dp phone.
+    proof:
+      - charts a trend draws every day of the period, a quiet day as nothing, and comes to the table's total
+      - charts a day's bills are one column on the sale report's chart
+      - charts ranked: the top ten largest first, the rest summed, nothing or less left out and said so
+      - charts a ring keeps the table's order and folds the smallest into the rest
+      - charts a ring of the total keeps every bucket in order, an empty one too
+      - charts a chart whose column was struck for a cashier is no chart
+      - what the books mean the Z report keeps the home's spending apart, and names its figures for the hub's Today strip
+      - the hub shows today's figures, and they open the Z report
+      - a report that declares a chart turns from its table into a chart and back
+      - every report that declares a chart draws one off its own table
+      - udhaar by due date draws a ring with every bucket named
+      - at 200% on a small phone the hub with today's figures, and every kind of chart, fit
+      - at 200% on a small phone and in English, in the dark

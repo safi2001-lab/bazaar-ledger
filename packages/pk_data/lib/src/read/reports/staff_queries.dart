@@ -253,6 +253,10 @@ mixin _StaffQueries implements StaffReportSource {
     final q = _Params(firmId, period);
     const sale = "d.doc_type = 'sale_invoice'";
     const back = "d.doc_type = 'sale_return'";
+    // The shop's expenses, and the home's apart (M58): ghar ka kharcha is
+    // the owner's drawings, not what the shop spent.
+    const home = "d.doc_type = 'expense' AND $_forHomeSql";
+    const spent = "d.doc_type = 'expense' AND NOT $_forHomeSql";
     final sums = await _db
         .customSelect(
           '''
@@ -273,10 +277,12 @@ mixin _StaffQueries implements StaffReportSource {
               AS returns_taxable,
             COALESCE(SUM(CASE WHEN $back THEN d.cost_paisa END), 0)
               AS returns_cost,
-            SUM(CASE WHEN d.doc_type = 'expense' THEN 1 ELSE 0 END)
-              AS expenses,
-            COALESCE(SUM(CASE WHEN d.doc_type = 'expense'
-                              THEN d.total_paisa END), 0) AS expensed,
+            SUM(CASE WHEN $spent THEN 1 ELSE 0 END) AS expenses,
+            COALESCE(SUM(CASE WHEN $spent THEN d.total_paisa END), 0)
+              AS expensed,
+            SUM(CASE WHEN $home THEN 1 ELSE 0 END) AS home,
+            COALESCE(SUM(CASE WHEN $home THEN d.total_paisa END), 0)
+              AS taken_home,
             (SELECT COUNT(*) FROM document_lines l
               JOIN documents s ON s.id = l.document_id
               WHERE s.firm_id = ?1 AND s.doc_type = 'sale_invoice'
@@ -291,7 +297,13 @@ mixin _StaffQueries implements StaffReportSource {
             AND d.doc_date_local BETWEEN ?2 AND ?3
           ''',
           variables: q.variables,
-          readsFrom: {_db.documents, _db.documentLines},
+          readsFrom: {
+            _db.documents,
+            _db.documentLines,
+            _db.journalEntries,
+            _db.journalLines,
+            _db.accounts,
+          },
         )
         .getSingle();
     return DayFigures(
@@ -307,6 +319,8 @@ mixin _StaffQueries implements StaffReportSource {
       returnsCost: Money.paisa(sums.read<int>('returns_cost')),
       expenses: sums.readNullable<int>('expenses') ?? 0,
       expensesValue: Money.paisa(sums.read<int>('expensed')),
+      takenHome: sums.readNullable<int>('home') ?? 0,
+      takenHomeValue: Money.paisa(sums.read<int>('taken_home')),
       tenders: await tenders(firmId, period),
       udhaar: await udhaarGiven(firmId, period),
       counts: await _drawerCounts(firmId, period),
@@ -377,15 +391,34 @@ mixin _StaffQueries implements StaffReportSource {
       variables.add(Variable<String>(filters.userId!));
       byUser = 'AND a.created_by = ?${variables.length}';
     }
+    // M58: only what came to this much or more, on the same figure the
+    // Amount column shows.
+    var atLeast = '';
+    if (filters.minAmount != null) {
+      variables.add(Variable<int>(filters.minAmount!.inPaisa));
+      atLeast =
+          'AND COALESCE(d.total_paisa, a.amount_paisa) >= ?${variables.length}';
+    }
     final codes = changeActions.map((c) => "'$c'").join(', ');
     final rows = await _db
         .customSelect(
           '''
           SELECT a.at_utc, a.action_code, a.entity_table, a.entity_id,
-                 a.summary, a.after_json, u.name AS who,
+                 a.summary, a.after_json, a.before_json, u.name AS who,
                  COALESCE(d.total_paisa, a.amount_paisa) AS amount_paisa,
                  d.doc_no, d.doc_type, d.void_reason, d.notes,
-                 pm.payment_no,
+                 pm.payment_no, pm.notes AS payment_notes,
+                 -- M58: whose PIN let it through, from the row M42 writes
+                 -- in the same transaction, on the same record.
+                 (SELECT k.after_json FROM audit_log k
+                   WHERE k.firm_id = a.firm_id
+                     AND k.entity_table = a.entity_table
+                     AND k.entity_id = a.entity_id
+                     AND k.at_utc = a.at_utc
+                     AND k.action_code IN ('$dataLockPinAction',
+                                           '$closedBooksOverrideAction')
+                     AND k.deleted_at_utc IS NULL
+                   ORDER BY k.id LIMIT 1) AS allowed_json,
                  COALESCE(d.party_name_snapshot, dp.name, pp.name, ep.name)
                    AS party
           FROM audit_log a
@@ -403,6 +436,7 @@ mixin _StaffQueries implements StaffReportSource {
             AND a.at_utc >= ?2 AND a.at_utc < ?3
             AND a.deleted_at_utc IS NULL
             $byUser
+            $atLeast
           ORDER BY a.at_utc, a.id
           ''',
           variables: variables,
@@ -421,8 +455,29 @@ mixin _StaffQueries implements StaffReportSource {
   static ChangeRecord _change(QueryRow r) {
     final action = r.read<String>('action_code');
     final after = _json(r.readNullable<String>('after_json'));
+    final before = _json(r.readNullable<String>('before_json'));
     final isReturn = action == 'SALE_RETURNED' || action == 'PURCHASE_RETURNED';
     final atUtc = r.read<int>('at_utc');
+    final summary = r.readNullable<String>('summary') ?? action;
+    // Why (M58): a write-off's or a settlement discount's reason is on its
+    // payment, where M44 keeps it; a cancelled loan entry's is the end of
+    // the line the loan writer audits; reopened books say what moved.
+    final letGo =
+        action == 'BAD_DEBT_WRITTEN_OFF' ||
+        action == 'SETTLEMENT_DISCOUNT_GIVEN';
+    final why = letGo
+        ? r.readNullable<String>('payment_notes')
+        : action == 'LOAN_ENTRY_CANCELLED'
+        ? _afterColon(summary)
+        : action == booksReopenedAction
+        ? summary
+        : r.readNullable<String>('void_reason') ??
+              _string(after['reason']) ??
+              (isReturn ? r.readNullable<String>('notes') : null);
+    // What it came to before (M58): the old amount of an edited entry, or
+    // the old opening balance.
+    final was = before['amount_paisa'] ?? before['opening_balance_paisa'];
+    final allowed = _json(r.readNullable<String>('allowed_json'));
     return ChangeRecord(
       date: BusinessDate.fromUtc(
         DateTime.fromMillisecondsSinceEpoch(atUtc, isUtc: true),
@@ -430,7 +485,7 @@ mixin _StaffQueries implements StaffReportSource {
       time: _clock(atUtc),
       action: action,
       who: r.read<String>('who'),
-      summary: r.readNullable<String>('summary') ?? action,
+      summary: summary,
       reference:
           r.readNullable<String>('doc_no') ??
           r.readNullable<String>('payment_no') ??
@@ -440,16 +495,23 @@ mixin _StaffQueries implements StaffReportSource {
         final int p => Money.paisa(p),
         null => null,
       },
-      reason: _blank(
-        r.readNullable<String>('void_reason') ??
-            _string(after['reason']) ??
-            (isReturn ? r.readNullable<String>('notes') : null),
+      was: was is int ? Money.paisa(was) : null,
+      allowedBy: _blank(
+        _string(after['approved_by_name']) ??
+            _string(allowed['approved_by_name']),
       ),
+      reason: _blank(why),
       documentId: r.read<String>('entity_table') == 'documents'
           ? r.read<String>('entity_id')
           : null,
       docType: r.readNullable<String>('doc_type'),
     );
+  }
+
+  /// What a line says after its first `: `, or the whole line.
+  static String _afterColon(String line) {
+    final at = line.indexOf(': ');
+    return at < 0 ? line : line.substring(at + 2);
   }
 
   /// [period]'s first and last day as the instants that bound them on

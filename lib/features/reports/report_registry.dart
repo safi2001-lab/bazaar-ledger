@@ -22,6 +22,12 @@ import '../../l10n/app_strings.dart';
 ///   5. one entry in the group's list below, with its name and hint in both
 ///      ARB files.
 ///
+/// A report that reads well drawn (M46) declares how in [ReportEntry.chart]:
+/// a trend over days or hours, the top ten as bars, or parts of a whole as
+/// a ring, naming the table's own columns. Its screen then offers Table or
+/// Chart, and the chart is read off the finished table, so it cannot
+/// disagree with it.
+///
 /// A report about what goods cost through and through also goes into
 /// `ReportEngine.showsCost`, which closes it to a role that may not see
 /// costs; a cost column in an ordinary report is a `ReportColumn` marked
@@ -67,6 +73,7 @@ final class ReportEntry {
     this.plan,
     this.filters = const {},
     this.defaultPreset = DatePreset.thisMonth,
+    this.chart,
   });
 
   final ReportKind kind;
@@ -89,6 +96,10 @@ final class ReportEntry {
   /// The period it opens on the first time; after that, the last one the
   /// shopkeeper chose for it.
   final DatePreset defaultPreset;
+
+  /// How it is drawn when the shopkeeper turns it into a chart (M46), or
+  /// null for a report that reads only as a table.
+  final ChartSpec? chart;
 
   /// Whether it is about what goods cost, and so closed to a role that may
   /// not see costs.
@@ -118,6 +129,8 @@ final _transactionReports = [
     hint: (s) => s.reportSaleHint,
     icon: Icons.receipt_long_outlined,
     filters: _billFilters,
+    // M46: the bills summed by day, every day of the period drawn.
+    chart: const ChartSpec.trend(label: 'Date', value: 'Total', everyDay: true),
   ),
   ReportEntry(
     kind: ReportKind.purchaseReport,
@@ -202,6 +215,7 @@ final _transactionReports = [
     name: (s) => s.reportSalesByDay,
     hint: (s) => s.reportSalesByDayHint,
     icon: Icons.calendar_month_outlined,
+    chart: const ChartSpec.trend(label: 'Date', value: 'Sales', everyDay: true),
   ),
   ReportEntry(
     kind: ReportKind.trialBalance,
@@ -259,6 +273,7 @@ final _partyReports = [
     hint: (s) => s.reportSalePurchaseByPartyHint,
     icon: Icons.compare_arrows,
     filters: const {ReportFilter.partyGroup, ReportFilter.user},
+    chart: const ChartSpec.ranked(label: 'Party', value: 'Sales'),
   ),
   ReportEntry(
     kind: ReportKind.salePurchaseByPartyGroup,
@@ -281,6 +296,24 @@ final _partyReports = [
     name: (s) => s.reportPayables,
     hint: (s) => s.reportPayablesHint,
     icon: Icons.local_shipping_outlined,
+  ),
+  // M58: the udhaar pack's (M38, M44), beside the bill-age one.
+  ReportEntry(
+    kind: ReportKind.receivablesByDueDate,
+    group: ReportGroup.party,
+    name: (s) => s.reportReceivablesByDue,
+    hint: (s) => s.reportReceivablesByDueHint,
+    icon: Icons.event_note_outlined,
+    filters: const {ReportFilter.partyGroup},
+    chart: const ChartSpec.ringOfTotal(dueBucketColumns),
+  ),
+  ReportEntry(
+    kind: ReportKind.badDebts,
+    group: ReportGroup.party,
+    name: (s) => s.reportBadDebts,
+    hint: (s) => s.reportBadDebtsHint,
+    icon: Icons.money_off_csred_outlined,
+    defaultPreset: DatePreset.thisFiscalYear,
   ),
 ];
 
@@ -462,6 +495,7 @@ final _itemStockReports = [
     name: (s) => s.reportSalesByItem,
     hint: (s) => s.reportSalesByItemHint,
     icon: Icons.shopping_basket_outlined,
+    chart: const ChartSpec.ranked(label: 'Item', value: 'Sales'),
   ),
   ReportEntry(
     kind: ReportKind.stockValue,
@@ -537,6 +571,8 @@ final _businessStatusReports = [
     icon: Icons.payments_outlined,
     filters: const {ReportFilter.user},
     defaultPreset: DatePreset.today,
+    // How the sales were paid, udhaar included: the slices are the sales.
+    chart: const ChartSpec.ring(label: 'Paid by', value: 'Sales paid by it'),
   ),
   ReportEntry(
     kind: ReportKind.hourlySales,
@@ -545,6 +581,7 @@ final _businessStatusReports = [
     hint: (s) => s.reportHourlySalesHint,
     icon: Icons.schedule_outlined,
     filters: const {ReportFilter.user},
+    chart: const ChartSpec.trend(label: 'Hour', value: 'Sales'),
   ),
   ReportEntry(
     kind: ReportKind.paymentPerformance,
@@ -569,7 +606,8 @@ final _businessStatusReports = [
     name: (s) => s.reportChangedBills,
     hint: (s) => s.reportChangedBillsHint,
     icon: Icons.edit_note_outlined,
-    filters: const {ReportFilter.user},
+    // M58: "above Rs X", the changes worth an owner's evening.
+    filters: const {ReportFilter.user, ReportFilter.minAmount},
   ),
 ];
 
@@ -655,6 +693,7 @@ final _expenseReports = [
     name: (s) => s.reportExpenses,
     hint: (s) => s.reportExpensesHint,
     icon: Icons.money_off_outlined,
+    chart: const ChartSpec.ranked(label: 'Head', value: 'Amount'),
   ),
   ReportEntry(
     kind: ReportKind.expenseTransactions,
@@ -675,6 +714,7 @@ final _expenseReports = [
     hint: (s) => s.reportExpenseCategoriesHint,
     icon: Icons.donut_small_outlined,
     filters: const {ReportFilter.user},
+    chart: const ChartSpec.ranked(label: 'Head', value: 'Amount'),
   ),
   ReportEntry(
     kind: ReportKind.expenseItems,
@@ -739,8 +779,20 @@ final _orderReports = [
   ),
 ];
 
-/// Loan accounts (M35).
-final _loanReports = <ReportEntry>[];
+/// Loan accounts (M58, over M48's loans): every loan on one page, or one
+/// loan's statement when narrowed to it. Not behind a plan, as the loan's
+/// own statement is not: a shop whose plan lapsed still owes the bank.
+final _loanReports = [
+  ReportEntry(
+    kind: ReportKind.loanStatement,
+    group: ReportGroup.loans,
+    name: (s) => s.reportLoanStatement,
+    hint: (s) => s.reportLoanStatementHint,
+    icon: Icons.account_balance_outlined,
+    filters: const {ReportFilter.loan},
+    defaultPreset: DatePreset.thisFiscalYear,
+  ),
+];
 
 /// Every report, group by group, in the order the hub lists them.
 final List<ReportEntry> reportRegistry = List.unmodifiable([

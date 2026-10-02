@@ -472,7 +472,9 @@ String _entryKind(String sourceType) => switch (sourceType) {
   'purchase_return' => 'Purchase return',
   'payment' => 'Payment',
   'expense' => 'Expense',
-  'other_income' => 'Charge',
+  // A charge on a khata moves no money, so money into an account under
+  // other income is the shop's own (M47, M58).
+  'other_income' => 'Other income',
   'opening' => 'Opening balance',
   'adjustment' => 'Adjustment',
   'reversal' => 'Cancelled entry',

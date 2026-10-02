@@ -4,6 +4,7 @@ import 'builders.dart';
 import 'business_reports.dart';
 import 'filters.dart';
 import 'item_stock_reports.dart';
+import 'money_owed_reports.dart';
 import 'order_reports.dart';
 import 'party_builders.dart';
 import 'period.dart';
@@ -214,6 +215,17 @@ enum ReportKind {
 
   /// The items on both, ordered, done and still to come; as of today.
   orderItemsDue,
+
+  // M58: money owed both ways, built in money_owed_reports.dart.
+
+  /// One loan's statement, or every loan the shop has taken on one page.
+  loanStatement,
+
+  /// Customers' udhaar by days past its due date; as of today.
+  receivablesByDueDate,
+
+  /// Udhaar written off or let go to settle, with who and why.
+  badDebts,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -238,7 +250,9 @@ final class ReportEngine {
       kind == ReportKind.fastSlowStock ||
       kind == ReportKind.stockAgeing ||
       // M35
-      businessReportsAsOfToday.contains(kind);
+      businessReportsAsOfToday.contains(kind) ||
+      // M58
+      moneyOwedReportsAsOfToday.contains(kind);
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -512,6 +526,17 @@ final class ReportEngine {
       kind,
       source: source,
       firmId: firmId,
+      today: today,
+      filters: filters,
+    ),
+    // M58: money owed both ways.
+    ReportKind.loanStatement ||
+    ReportKind.receivablesByDueDate ||
+    ReportKind.badDebts => buildMoneyOwedReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      period: period,
       today: today,
       filters: filters,
     ),

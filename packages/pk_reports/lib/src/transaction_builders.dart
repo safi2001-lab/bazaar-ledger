@@ -201,24 +201,30 @@ ReportTable billWiseProfit(ReportPeriod period, List<BillRow> bills) {
 /// Every document and payment in [period], of every kind, in the order
 /// they were recorded, then summed by kind (M33). A void is listed, so the
 /// owner sees what was cancelled, and left out of every sum.
+///
+/// Since M58 each row reads as what it was, which its document type alone
+/// does not always say: the shop's own income is not a charge, the home's
+/// spending is not the shop's expense, and a write-off or a settlement
+/// discount is not money paid in. Each is summed apart from the kind it is
+/// written as, so the Payment in total is money that came.
 ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
   final standing = rows.where((r) => !r.isVoid).toList();
   final voids = rows.length - standing.length;
 
-  final byType = <String, List<TransactionRow>>{};
+  final byKind = <String, List<TransactionRow>>{};
   for (final r in standing) {
-    byType.putIfAbsent(r.type, () => []).add(r);
+    byKind.putIfAbsent(transactionKind(r), () => []).add(r);
   }
   Money sum(Iterable<TransactionRow> rs, Money Function(TransactionRow) f) =>
       Money.sum(rs.map(f));
   Money totalOf(String type) =>
-      sum(byType[type] ?? const <TransactionRow>[], (r) => r.total);
+      sum(byKind[type] ?? const <TransactionRow>[], (r) => r.total);
 
-  final types = [
-    for (final t in TransactionType.all)
-      if (byType.containsKey(t)) t,
-    for (final t in byType.keys)
-      if (!TransactionType.all.contains(t)) t,
+  final kinds = [
+    for (final t in _kindOrder)
+      if (byKind.containsKey(t)) t,
+    for (final t in byKind.keys)
+      if (!_kindOrder.contains(t)) t,
   ];
 
   return ReportTable(
@@ -241,7 +247,7 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
           [
             r.date.value,
             r.number,
-            TransactionType.label(r.type),
+            TransactionType.label(transactionKind(r)),
             r.party,
             r.total,
             _settles(r.type) ? r.paid : null,
@@ -252,16 +258,20 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
               ? null
               : ReportLink.document(r.id, label: r.number, docType: r.type),
         ),
-      if (types.isNotEmpty) ReportRow.heading('By type', 8),
-      for (final t in types)
+      if (kinds.isNotEmpty) ReportRow.heading('By type', 8),
+      for (final k in kinds)
         ReportRow([
           '',
-          '${byType[t]!.length}',
-          TransactionType.label(t),
+          '${byKind[k]!.length}',
+          TransactionType.label(k),
           '',
-          totalOf(t),
-          _settles(t) ? sum(byType[t]!, (r) => r.paid) : null,
-          _settles(t) ? sum(byType[t]!, (r) => r.balance) : null,
+          totalOf(k),
+          _settles(byKind[k]!.first.type)
+              ? sum(byKind[k]!, (r) => r.paid)
+              : null,
+          _settles(byKind[k]!.first.type)
+              ? sum(byKind[k]!, (r) => r.balance)
+              : null,
           '',
         ], style: RowStyle.subtotal),
       ReportRow([
@@ -285,6 +295,8 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
     ],
     notes: [
       _byTypeNote,
+      if (byKind.containsKey(TransactionType.otherIncome)) _otherIncomeNote,
+      if (byKind.containsKey(TransactionType.ownerDrawings)) _drawingsNote,
       if (voids > 0)
         voids == 1
             ? '1 void is listed and counted nowhere.'
@@ -293,9 +305,48 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
   );
 }
 
+/// What [r] was, as All Transactions names and sums it (M58): its type, but
+/// the shop's own income apart from a charge on a khata, the home's
+/// spending apart from the shop's, and udhaar let go (M44) apart from money
+/// paid in. One of [TransactionType.all], or [TransactionType.otherIncome],
+/// [TransactionType.ownerDrawings], or an [AllowanceKind]'s `docType`.
+String transactionKind(TransactionRow r) {
+  if (r.type == TransactionType.charge && r.partyId == null) {
+    return TransactionType.otherIncome;
+  }
+  if (r.type == TransactionType.expense && r.forHome) {
+    return TransactionType.ownerDrawings;
+  }
+  if (r.type == TransactionType.paymentIn) {
+    final let = AllowanceKind.ofPaymentNo(r.number);
+    if (let != null) return let.docType;
+  }
+  return r.type;
+}
+
+/// The order the kinds are summed in: [TransactionType.all]'s, each new
+/// kind beside the one it is written as.
+final _kindOrder = [
+  for (final t in TransactionType.all) ...[
+    t,
+    if (t == TransactionType.expense) TransactionType.ownerDrawings,
+    if (t == TransactionType.charge) TransactionType.otherIncome,
+    if (t == TransactionType.paymentIn)
+      for (final k in AllowanceKind.values) k.docType,
+  ],
+];
+
 const _byTypeNote =
     'Totals by type leave out anything voided. A payment taken with a bill '
     'at the counter is part of that bill, not a line of its own.';
+
+const _otherIncomeNote =
+    "Other income is the shop's own, with nobody's khata behind it: rent "
+    'from a sub-let, commission, bank profit. A charge is put on a khata.';
+
+const _drawingsNote =
+    "Owner's drawings (ghar) is the home's spending, in money or in goods "
+    "taken home: the owner's, not an expense of the shop.";
 
 /// Whether a transaction of [type] is something paid against.
 bool _settles(String type) => const {
@@ -310,6 +361,8 @@ bool _settles(String type) => const {
 String _status(TransactionRow r) {
   if (r.isVoid) return 'Void';
   if (r.isPayment) {
+    // Udhaar let go (M44) moved no money and is never a cheque.
+    if (AllowanceKind.ofPaymentNo(r.number) != null) return '';
     return switch (r.status) {
       'pending' => 'Cheque pending',
       'bounced' => 'Bounced',
@@ -440,10 +493,13 @@ const _flowOrder = [
   'sale',
   'payment',
   'other_income',
+  TransactionType.otherIncome,
+  'loan',
   'sale_return',
   'purchase',
   'purchase_return',
   'expense',
+  TransactionType.ownerDrawings,
   'manual',
   'adjustment',
   'reversal',
@@ -452,11 +508,15 @@ const _flowOrder = [
 String _flowLabel(String kind, {required bool moneyIn}) => switch (kind) {
   'sale' => 'Sales at the counter',
   'payment' => moneyIn ? 'Received on khatas' : 'Paid to parties',
-  'other_income' => 'Charges and other income',
+  // A charge on a khata moves no money; what comes in as other income is
+  // the shop's own (M47), said as such since M58.
+  'other_income' || TransactionType.otherIncome => 'Other income',
+  'loan' => moneyIn ? 'Loans taken' : 'Loans paid back',
   'sale_return' => moneyIn ? 'Sale returns' : 'Refunds to customers',
   'purchase' => 'Paid for deliveries',
   'purchase_return' => moneyIn ? 'Refunds from suppliers' : 'Purchase returns',
   'expense' => 'Expenses',
+  TransactionType.ownerDrawings => "Taken for the home (owner's drawings)",
   'opening' => 'Opening balances',
   'manual' => 'Journal vouchers',
   'adjustment' => 'Adjustments',

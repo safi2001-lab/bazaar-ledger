@@ -87,6 +87,7 @@ final class TransactionRow {
     required this.balance,
     required this.status,
     this.partyId,
+    this.forHome = false,
   });
 
   final String id;
@@ -94,6 +95,11 @@ final class TransactionRow {
 
   /// The document or payment number the shop wrote on the paper.
   final String number;
+
+  /// An expense of the home's (M47): its debit is the owner's drawings, in
+  /// money or in goods off the shelf. Read by the report as what it is
+  /// rather than as the shop's expense (M58).
+  final bool forHome;
 
   /// One of [TransactionType.all].
   final String type;

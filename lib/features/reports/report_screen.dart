@@ -12,6 +12,7 @@ import '../items/item_history_screen.dart';
 import '../parties/party_picker.dart';
 import '../printing/printing_providers.dart';
 import '../sales/receipt_screen.dart';
+import 'report_chart_view.dart';
 import 'report_export.dart';
 import 'report_filters_bar.dart';
 import 'report_registry.dart';
@@ -87,6 +88,9 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   late ReportFilters _filters = widget.filters.only(_entry.filters);
   ReportFormat? _sharing;
   bool _printing = false;
+
+  /// Drawn rather than listed (M46), for a report that declares a chart.
+  bool _asChart = false;
 
   @override
   void initState() {
@@ -224,13 +228,15 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 
   /// What a tap on a row can open from here: a sale bill's receipt, a
-  /// party's statement, or an item's stock history (M34). Purchases and the
-  /// rest have no screen of their own to open yet.
+  /// party's statement, an item's stock history (M34), or a loan's
+  /// statement (M58). Purchases and the rest have no screen of their own to
+  /// open yet.
   bool _canOpen(ReportLink link) => switch (link.kind) {
     ReportLinkKind.document => link.docType == TransactionType.sale,
     ReportLinkKind.party =>
       widget.kind != ReportKind.partyStatement || link.id != _filters.partyId,
     ReportLinkKind.item => true,
+    ReportLinkKind.loan => _filters.loanId != link.id,
   };
 
   void _open(ReportLink link) {
@@ -247,6 +253,10 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         itemId: link.id,
         itemName: link.label,
         unitCode: link.unitCode ?? '',
+      ),
+      ReportLinkKind.loan => ReportScreen(
+        kind: ReportKind.loanStatement,
+        filters: ReportFilters(loanId: link.id, loanName: link.label),
       ),
     };
     unawaited(
@@ -394,20 +404,55 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   retryLabel: s.actionRetry,
                   onRetry: () => ref.invalidate(_reportProvider),
                 ),
-                data: (table) => Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    if (table.summary.isNotEmpty) ...[
-                      _SummaryTiles(table: table, request: request),
-                      const SizedBox(height: BlTokens.space3),
+                data: (table) {
+                  // M46: a report that declares a chart, and whose table
+                  // still has the columns it names, can be drawn.
+                  final spec = _entry.chart;
+                  final chart = spec == null ? null : chartOf(table, spec);
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (table.summary.isNotEmpty) ...[
+                        _SummaryTiles(table: table, request: request),
+                        const SizedBox(height: BlTokens.space3),
+                      ],
+                      if (chart != null) ...[
+                        SegmentedButton<bool>(
+                          showSelectedIcon: false,
+                          segments: [
+                            ButtonSegment(
+                              value: false,
+                              icon: const Icon(Icons.table_rows_outlined),
+                              label: Text(s.reportViewTable),
+                            ),
+                            ButtonSegment(
+                              value: true,
+                              icon: const Icon(Icons.bar_chart_outlined),
+                              label: Text(s.reportViewChart),
+                            ),
+                          ],
+                          selected: {_asChart},
+                          onSelectionChanged: (v) =>
+                              setState(() => _asChart = v.first),
+                        ),
+                        const SizedBox(height: BlTokens.space3),
+                      ],
+                      if (chart != null && _asChart)
+                        ReportChartView(
+                          chart: chart,
+                          title: _entry.name(s),
+                          canOpen: _canOpen,
+                          onOpen: _open,
+                        )
+                      else
+                        ReportTableView(
+                          table: table,
+                          canOpen: _canOpen,
+                          onOpen: _open,
+                        ),
                     ],
-                    ReportTableView(
-                      table: table,
-                      canOpen: _canOpen,
-                      onOpen: _open,
-                    ),
-                  ],
-                ),
+                  );
+                },
               ),
           ],
         ),

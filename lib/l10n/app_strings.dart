@@ -5975,7 +5975,7 @@ abstract class AppStrings {
   /// No description provided for @reportTypeCharge.
   ///
   /// In ur, this message translates to:
-  /// **'Charge'**
+  /// **'Charge ya doosri aamdani'**
   String get reportTypeCharge;
 
   /// No description provided for @reportTypeQuotation.
@@ -10603,6 +10603,156 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Kis mein aaya'**
   String get purchaseInPack;
+
+  /// No description provided for @reportLoanStatement.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarz ka hisaab'**
+  String get reportLoanStatement;
+
+  /// No description provided for @reportLoanStatementHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab qarz ek safhe par, ya ek qarz ki wasooli, adaigi aur sood'**
+  String get reportLoanStatementHint;
+
+  /// No description provided for @reportReceivablesByDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar, adaigi ki tareekh se'**
+  String get reportReceivablesByDue;
+
+  /// No description provided for @reportReceivablesByDueHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaun der se hai, aur har bill adaigi ki tareekh se kitne din upar'**
+  String get reportReceivablesByDueHint;
+
+  /// No description provided for @reportBadDebts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi raqam aur riayat'**
+  String get reportBadDebts;
+
+  /// No description provided for @reportBadDebtsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhora gaya udhaar: kis ka, kyun, kitna, aur kis ne chhora'**
+  String get reportBadDebtsHint;
+
+  /// No description provided for @reportFilterLoan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarz'**
+  String get reportFilterLoan;
+
+  /// No description provided for @reportViewTable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Table'**
+  String get reportViewTable;
+
+  /// No description provided for @reportViewChart.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chart'**
+  String get reportViewChart;
+
+  /// No description provided for @reportChartRest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baaqi sab ({count})'**
+  String reportChartRest(int count);
+
+  /// No description provided for @reportChartNothing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is muddat mein dikhane ko kuch nahi'**
+  String get reportChartNothing;
+
+  /// No description provided for @reportChartHighest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab se ziyada: {label}, {amount}'**
+  String reportChartHighest(String label, String amount);
+
+  /// No description provided for @reportChartPicked.
+  ///
+  /// In ur, this message translates to:
+  /// **'{label}: {amount}'**
+  String reportChartPicked(String label, String amount);
+
+  /// No description provided for @reportChartTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul'**
+  String get reportChartTotal;
+
+  /// No description provided for @reportChartLeftOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 line sifar ya kam hai, dikhayi nahi gayi} other{{count} lines sifar ya kam hain, dikhayi nahi gayin}}'**
+  String reportChartLeftOut(int count);
+
+  /// No description provided for @reportChartSummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'{what} ka chart: {count} hisse, kul {amount}'**
+  String reportChartSummary(String what, int count, String amount);
+
+  /// No description provided for @reportTodayTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj'**
+  String get reportTodayTitle;
+
+  /// No description provided for @reportTodaySale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri'**
+  String get reportTodaySale;
+
+  /// No description provided for @reportTodayReceived.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasool'**
+  String get reportTodayReceived;
+
+  /// No description provided for @reportTodayUdhaar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar diya'**
+  String get reportTodayUdhaar;
+
+  /// No description provided for @reportTodayExpenses.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharche'**
+  String get reportTodayExpenses;
+
+  /// No description provided for @reportTodayProfit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal ka nafa'**
+  String get reportTodayProfit;
+
+  /// No description provided for @reportTodayOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ka Z report kholein'**
+  String get reportTodayOpen;
+
+  /// No description provided for @reportFilterMinAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam'**
+  String get reportFilterMinAmount;
+
+  /// No description provided for @reportFilterMinAmountValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'{amount} ya ziyada'**
+  String reportFilterMinAmountValue(String amount);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

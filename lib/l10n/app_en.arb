@@ -1812,7 +1812,7 @@
   "reportTypePurchase": "Purchase",
   "reportTypePurchaseReturn": "Purchase return",
   "reportTypeExpense": "Expense",
-  "reportTypeCharge": "Charge",
+  "reportTypeCharge": "Charge or other income",
   "reportTypeQuotation": "Quotation",
   "reportTypeChallan": "Challan",
   "reportTypeSaleOrder": "Sale order",
@@ -3305,5 +3305,64 @@
   },
   "itemPackRemove": "Remove pack",
   "itemPackNoneLeft": "Every pack is already on.",
-  "purchaseInPack": "Came in"
+  "purchaseInPack": "Came in",
+  "reportLoanStatement": "Loan statement",
+  "reportLoanStatementHint": "Every loan on one page, or one loan's receipts, repayments and interest",
+  "reportReceivablesByDue": "Udhaar by due date",
+  "reportReceivablesByDueHint": "Who is late, and how long past the day each bill was due",
+  "reportBadDebts": "Bad debts and settlement discounts",
+  "reportBadDebtsHint": "Udhaar written off or let go to settle: whose, why, how much, and by whom",
+  "reportFilterLoan": "Loan",
+  "reportViewTable": "Table",
+  "reportViewChart": "Chart",
+  "reportChartRest": "The rest ({count})",
+  "@reportChartRest": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reportChartNothing": "Nothing to draw for this period",
+  "reportChartHighest": "Highest: {label}, {amount}",
+  "@reportChartHighest": {
+    "placeholders": {
+      "label": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "reportChartPicked": "{label}: {amount}",
+  "@reportChartPicked": {
+    "placeholders": {
+      "label": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "reportChartTotal": "Total",
+  "reportChartLeftOut": "{count, plural, =1{1 line at nothing or less is not drawn} other{{count} lines at nothing or less are not drawn}}",
+  "@reportChartLeftOut": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reportChartSummary": "Chart of {what}: {count} parts, together {amount}",
+  "@reportChartSummary": {
+    "placeholders": {
+      "what": {"type": "String"},
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "reportTodayTitle": "Today",
+  "reportTodaySale": "Sale",
+  "reportTodayReceived": "Received",
+  "reportTodayUdhaar": "Udhaar given",
+  "reportTodayExpenses": "Expenses",
+  "reportTodayProfit": "Gross profit",
+  "reportTodayOpen": "Open today's Z report",
+  "reportFilterMinAmount": "Amount",
+  "reportFilterMinAmountValue": "{amount} or more",
+  "@reportFilterMinAmountValue": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  }
 }

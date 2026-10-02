@@ -6,17 +6,21 @@ import 'package:pk_reports/pk_reports.dart';
 
 import '../db/app_database.dart';
 import 'drift_app_queries.dart';
+import 'drift_loan_reads.dart';
 import 'drift_order_reads.dart';
+import 'drift_udhaar_queries.dart';
 
 part 'reports/business_queries.dart';
 part 'reports/expense_queries.dart';
 part 'reports/item_stock_queries.dart';
+part 'reports/loan_queries.dart';
 part 'reports/order_queries.dart';
 part 'reports/party_queries.dart';
 part 'reports/sql_filters.dart';
 part 'reports/staff_queries.dart';
 part 'reports/tax_queries.dart';
 part 'reports/transaction_queries.dart';
+part 'reports/udhaar_report_queries.dart';
 
 /// The drift implementation of [ReportSource].
 ///
@@ -41,7 +45,10 @@ final class DriftReportSource
         _StaffQueries,
         _TaxQueries,
         _ExpenseQueries,
-        _OrderQueries
+        _OrderQueries,
+        // M58
+        _LoanQueries,
+        _UdhaarReportQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 
@@ -223,7 +230,9 @@ final class DriftReportSource
     // against the drawer, the banks and the wallets, so a sale on udhaar
     // moves nothing and a cheque moves money only when it clears. The party
     // is the bill's, or for a receipt, whose entry names no document, the
-    // party on its receivable or payable line.
+    // party on its receivable or payable line. Since M58 the kind is said
+    // as the books mean it: the shop's own income, the home's spending and
+    // a loan are not a charge, an expense and a journal voucher.
     final q = _Params(firmId, period);
     final byUser = filters.userId == null
         ? ''
@@ -232,7 +241,8 @@ final class DriftReportSource
         .customSelect(
           '''
           WITH money AS ($_moneyAccounts)
-          SELECT je.id, je.entry_date_local, je.entry_no, je.source_type,
+          SELECT je.id, je.entry_date_local, je.entry_no,
+                 $_entryKindSql AS source_type,
                  je.narration, je.total_debit_paisa, je.document_id,
                  d.doc_type, d.doc_no, d.total_paisa AS doc_total,
                  COALESCE(d.party_name_snapshot, dp.name, (
@@ -299,10 +309,15 @@ final class DriftReportSource
   Future<List<ItemSales>> itemSales(String firmId, ReportPeriod period) async {
     // Posted bills and posted returns only: a void bill sold nothing, and a
     // quotation or a challan is not a sale until its bill is made.
+    //
+    // Since M58 a line with no item behind it, khula maal sold by the rupee
+    // (M37), is read too: the items are joined LEFT, and every such line is
+    // the one row whose item is NULL, as M34's item reports read it. An
+    // inner join left them out, and the report came to less than the bills.
     final rows = await _db
         .customSelect(
           '''
-          SELECT i.name, u.code AS unit_code,
+          SELECT dl.item_id, i.name, u.code AS unit_code,
                  SUM(CASE WHEN d.doc_type = 'sale_invoice'
                           THEN dl.base_qty_thousandths ELSE 0 END) AS sold,
                  SUM(CASE WHEN d.doc_type = 'sale_return'
@@ -317,15 +332,15 @@ final class DriftReportSource
                           THEN dl.cost_paisa ELSE 0 END) AS returned_cost
           FROM document_lines dl
           JOIN documents d ON d.id = dl.document_id
-          JOIN items i ON i.id = dl.item_id
-          JOIN units u ON u.id = i.base_unit_id
+          LEFT JOIN items i ON i.id = dl.item_id
+          LEFT JOIN units u ON u.id = i.base_unit_id
           WHERE d.firm_id = ?1
             AND d.doc_type IN ('sale_invoice', 'sale_return')
             AND d.status = 'posted'
             AND d.doc_date_local BETWEEN ?2 AND ?3
             AND d.deleted_at_utc IS NULL
             AND dl.deleted_at_utc IS NULL
-          GROUP BY i.id
+          GROUP BY dl.item_id
           ''',
           variables: [
             Variable<String>(firmId),
@@ -338,8 +353,12 @@ final class DriftReportSource
     return [
       for (final r in rows)
         ItemSales(
-          itemName: r.read<String>('name'),
-          unitCode: r.read<String>('unit_code'),
+          itemId: r.readNullable<String>('item_id'),
+          isLoose: r.readNullable<String>('item_id') == null,
+          itemName: r.readNullable<String>('item_id') == null
+              ? ItemTrade.looseLines
+              : r.readNullable<String>('name') ?? '',
+          unitCode: r.readNullable<String>('unit_code') ?? '',
           qtySold: Qty.raw(r.read<int>('sold')),
           qtyReturned: Qty.raw(r.read<int>('returned')),
           salesValue: Money.paisa(r.read<int>('sales')),
@@ -832,6 +851,11 @@ final class DriftReportSource
         return const [];
       case ReportFilter.moneyAccount || ReportFilter.expenseHead:
         return _accountChoices(firmId, filter, term: term, limit: limit);
+      // M58: the loans the shop has taken; an amount is the screen's own.
+      case ReportFilter.loan:
+        return _loanChoices(firmId, term);
+      case ReportFilter.minAmount:
+        return const [];
     }
   }
 }

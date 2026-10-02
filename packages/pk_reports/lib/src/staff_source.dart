@@ -151,7 +151,14 @@ final class DayFigures {
     required this.tenders,
     required this.udhaar,
     required this.counts,
+    this.takenHome = 0,
+    this.takenHomeValue = Money.zero,
   });
+
+  /// Ghar ka kharcha (M47): the home's spending and goods taken home, which
+  /// are the owner's drawings and not among [expenses] since M58.
+  final int takenHome;
+  final Money takenHomeValue;
 
   /// Sale bills that stand, and what they came to.
   final int bills;
@@ -174,7 +181,8 @@ final class DayFigures {
   final Money returnsTaxable;
   final Money returnsCost;
 
-  /// Expense vouchers, and what they came to.
+  /// The shop's expense vouchers, and what they came to; the home's are
+  /// [takenHome].
   final int expenses;
   final Money expensesValue;
 
@@ -203,7 +211,20 @@ final class ChangeRecord {
     this.reason,
     this.documentId,
     this.docType,
+    this.was,
+    this.allowedBy,
   });
+
+  /// What it came to before the change (M58): an edited payment, charge or
+  /// expense's old amount, an opening balance's old figure. With [amount]
+  /// beside it the change reads as a change, Rs 5,000 to Rs 500, as Marg's
+  /// bill value changes do.
+  final Money? was;
+
+  /// Whose PIN let it through (M42, read here in M58): the owner who let it
+  /// into closed books, or gave their PIN under Data Lock. Null when
+  /// nobody's was asked for.
+  final String? allowedBy;
 
   /// When it was done, Pakistan time.
   final BusinessDate date;

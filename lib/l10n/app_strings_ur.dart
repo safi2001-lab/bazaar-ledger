@@ -3330,7 +3330,7 @@ class AppStringsUr extends AppStrings {
   String get reportTypeExpense => 'Kharcha';
 
   @override
-  String get reportTypeCharge => 'Charge';
+  String get reportTypeCharge => 'Charge ya doosri aamdani';
 
   @override
   String get reportTypeQuotation => 'Quotation';
@@ -6118,4 +6118,100 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get purchaseInPack => 'Kis mein aaya';
+
+  @override
+  String get reportLoanStatement => 'Qarz ka hisaab';
+
+  @override
+  String get reportLoanStatementHint =>
+      'Sab qarz ek safhe par, ya ek qarz ki wasooli, adaigi aur sood';
+
+  @override
+  String get reportReceivablesByDue => 'Udhaar, adaigi ki tareekh se';
+
+  @override
+  String get reportReceivablesByDueHint =>
+      'Kaun der se hai, aur har bill adaigi ki tareekh se kitne din upar';
+
+  @override
+  String get reportBadDebts => 'Doobi raqam aur riayat';
+
+  @override
+  String get reportBadDebtsHint =>
+      'Chhora gaya udhaar: kis ka, kyun, kitna, aur kis ne chhora';
+
+  @override
+  String get reportFilterLoan => 'Qarz';
+
+  @override
+  String get reportViewTable => 'Table';
+
+  @override
+  String get reportViewChart => 'Chart';
+
+  @override
+  String reportChartRest(int count) {
+    return 'Baaqi sab ($count)';
+  }
+
+  @override
+  String get reportChartNothing => 'Is muddat mein dikhane ko kuch nahi';
+
+  @override
+  String reportChartHighest(String label, String amount) {
+    return 'Sab se ziyada: $label, $amount';
+  }
+
+  @override
+  String reportChartPicked(String label, String amount) {
+    return '$label: $amount';
+  }
+
+  @override
+  String get reportChartTotal => 'Kul';
+
+  @override
+  String reportChartLeftOut(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines sifar ya kam hain, dikhayi nahi gayin',
+      one: '1 line sifar ya kam hai, dikhayi nahi gayi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reportChartSummary(String what, int count, String amount) {
+    return '$what ka chart: $count hisse, kul $amount';
+  }
+
+  @override
+  String get reportTodayTitle => 'Aaj';
+
+  @override
+  String get reportTodaySale => 'Bikri';
+
+  @override
+  String get reportTodayReceived => 'Wasool';
+
+  @override
+  String get reportTodayUdhaar => 'Udhaar diya';
+
+  @override
+  String get reportTodayExpenses => 'Kharche';
+
+  @override
+  String get reportTodayProfit => 'Maal ka nafa';
+
+  @override
+  String get reportTodayOpen => 'Aaj ka Z report kholein';
+
+  @override
+  String get reportFilterMinAmount => 'Raqam';
+
+  @override
+  String reportFilterMinAmountValue(String amount) {
+    return '$amount ya ziyada';
+  }
 }

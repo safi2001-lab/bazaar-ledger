@@ -2083,7 +2083,7 @@ final class DriftAppQueries implements AppQueries {
           '''
           SELECT d.id, d.doc_no, d.doc_date_local, d.total_paisa,
                  d.balance_paisa, d.notes, p.name AS party_name,
-                 (SELECT a.system_key
+                 (SELECT COALESCE(a.system_key, '#' || a.id)
                   FROM journal_entries je
                   JOIN journal_lines jl ON jl.journal_entry_id = je.id
                   JOIN accounts a ON a.id = jl.account_id
@@ -2118,7 +2118,9 @@ final class DriftAppQueries implements AppQueries {
           docNo: r.read<String>('doc_no'),
           dateLocal: r.read<String>('doc_date_local'),
           // Read as required. An expense with no debit line is a hole in
-          // the books, and filing it under misc here would hide it.
+          // the books, and filing it under misc here would hide it. A head
+          // the shop added (M47) has no system key, and is named as an
+          // expense draft names it, `#<account id>` (M58): it is not a hole.
           head: r.read<String>('head'),
           amount: Money.paisa(r.read<int>('total_paisa')),
           owed: Money.paisa(r.read<int>('balance_paisa')),

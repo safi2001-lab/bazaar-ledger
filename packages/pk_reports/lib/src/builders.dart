@@ -1,5 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'filters.dart';
+import 'item_stock_source.dart';
 import 'party_builders.dart';
 import 'period.dart';
 import 'report_source.dart';
@@ -142,10 +144,14 @@ ReportTable profitAndLoss(
 
 const _stockOtherwise = 'Stock in or out otherwise';
 
+// Goods taken home (M47) leave the shelf at cost against the owner's
+// drawings, not through the cost of goods sold, so they are among what moved
+// the shelf otherwise (M58).
 const _stockAtCost =
     'Opening and closing stock are the Inventory account at cost. Stock in '
-    'or out otherwise is stock counted in or written off, sent on a challan, '
-    'used or made in production, or brought in as an opening.';
+    'or out otherwise is stock counted in or written off, taken home by the '
+    'owner (ghar le gaye, at cost), sent on a challan, used or made in '
+    'production, or brought in as an opening.';
 
 /// What the shop spent in [period], by head, largest first.
 ReportTable expensesByHead(
@@ -272,7 +278,7 @@ ReportTable dayBook(ReportPeriod period, List<DayBookEntry> entries) {
           [
             e.date.value,
             e.reference ?? e.entryNo,
-            _sourceLabel(e.sourceType),
+            _dayBookType(e),
             e.party ?? '',
             e.narration,
             e.amount,
@@ -312,6 +318,20 @@ const _moneyInAndOut =
     'cheque is counted when it clears, and a bill left on udhaar moves no '
     'money until it is paid.';
 
+/// What a day book line was (M58): a write-off or a settlement discount
+/// (M44) is posted as a payment and known by the words its entry begins
+/// with, the same words M31's cancel finds it by; anything else by its kind.
+String _dayBookType(DayBookEntry e) {
+  if (e.sourceType == 'payment') {
+    for (final k in AllowanceKind.values) {
+      if (e.narration.startsWith('${k.narration} ${k.prefix}-')) {
+        return k.narration;
+      }
+    }
+  }
+  return _sourceLabel(e.sourceType);
+}
+
 String _sourceLabel(String sourceType) => switch (sourceType) {
   'sale' => 'Sale',
   'sale_return' => 'Sale return',
@@ -319,7 +339,13 @@ String _sourceLabel(String sourceType) => switch (sourceType) {
   'purchase_return' => 'Purchase return',
   'payment' => 'Payment',
   'expense' => 'Expense',
+  // An `other_income` entry the day book still reads as one has a party
+  // behind it: a charge on their khata (M25). The shop's own income has its
+  // own kind since M58.
   'other_income' => 'Charge',
+  TransactionType.otherIncome => 'Other income',
+  TransactionType.ownerDrawings => "Owner's drawings (ghar)",
+  'loan' => 'Loan',
   'opening' => 'Opening',
   'adjustment' => 'Adjustment',
   'reversal' => 'Reversal',
@@ -329,6 +355,11 @@ String _sourceLabel(String sourceType) => switch (sourceType) {
 };
 
 /// What each item sold for in [period], net of returns, best sellers first.
+///
+/// Since M58 khula maal (M37), the lines with no item behind them, is one
+/// row of its own, as M34's item reports have it: sold by the rupee, with
+/// no quantity to count and no cost on record, so its sale is all profit in
+/// the books and here. Without it the total came to less than the bills.
 ReportTable salesByItem(ReportPeriod period, List<ItemSales> sales) {
   final items =
       sales.where((s) => !s.netQty.isZero || !s.netSales.isZero).toList()
@@ -339,6 +370,7 @@ ReportTable salesByItem(ReportPeriod period, List<ItemSales> sales) {
   final totalSales = Money.sum(items.map((s) => s.netSales));
   final totalCost = Money.sum(items.map((s) => s.netCost));
   final totalProfit = totalSales - totalCost;
+  final loose = items.any((s) => s.isLoose);
   return ReportTable(
     id: 'sales_by_item',
     title: 'Sales by item',
@@ -354,15 +386,24 @@ ReportTable salesByItem(ReportPeriod period, List<ItemSales> sales) {
     ],
     rows: [
       for (final s in items)
-        ReportRow([
-          s.itemName,
-          s.netQty,
-          s.unitCode,
-          s.netSales,
-          s.netCost,
-          s.profit,
-          shareBp(s.profit, s.netSales),
-        ]),
+        ReportRow(
+          [
+            s.itemName,
+            s.isLoose ? null : s.netQty,
+            s.isLoose ? '' : s.unitCode,
+            s.netSales,
+            s.isLoose ? null : s.netCost,
+            s.profit,
+            s.isLoose ? null : shareBp(s.profit, s.netSales),
+          ],
+          link: s.itemId == null
+              ? null
+              : ReportLink.item(
+                  s.itemId!,
+                  label: s.itemName,
+                  unitCode: s.unitCode,
+                ),
+        ),
       ReportRow([
         'Total',
         null,
@@ -373,9 +414,14 @@ ReportTable salesByItem(ReportPeriod period, List<ItemSales> sales) {
         shareBp(totalProfit, totalSales),
       ], style: RowStyle.total),
     ],
-    notes: const [_salesAreNet],
+    notes: [_salesAreNet, if (loose) _looseIsAllProfit],
   );
 }
+
+const _looseIsAllProfit =
+    '${ItemTrade.looseLines} is goods sold by the rupee with no item behind '
+    'them: no cost was recorded, so the books count all of it as profit, '
+    'and so does this report.';
 
 /// What is on the shelf now and what it cost, beside what the books say.
 ReportTable stockValue(

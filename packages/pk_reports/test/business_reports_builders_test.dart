@@ -508,8 +508,10 @@ void main() {
         'Voided',
         'INV-0004',
         '',
+        null,
         const Money.rupees(2500),
         'Bilal',
+        '',
         'Rung by mistake',
       ]);
       expect(_lines(t).first.link?.id, 'inv4');

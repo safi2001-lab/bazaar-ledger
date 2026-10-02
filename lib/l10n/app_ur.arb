@@ -1896,7 +1896,7 @@
   "reportTypePurchase": "Khareed",
   "reportTypePurchaseReturn": "Khareed ki wapsi",
   "reportTypeExpense": "Kharcha",
-  "reportTypeCharge": "Charge",
+  "reportTypeCharge": "Charge ya doosri aamdani",
   "reportTypeQuotation": "Quotation",
   "reportTypeChallan": "Challan",
   "reportTypeSaleOrder": "Bikri ka order",
@@ -3630,5 +3630,64 @@
   },
   "itemPackRemove": "Pack hatayein",
   "itemPackNoneLeft": "Har pack lag chuka hai.",
-  "purchaseInPack": "Kis mein aaya"
+  "purchaseInPack": "Kis mein aaya",
+  "reportLoanStatement": "Qarz ka hisaab",
+  "reportLoanStatementHint": "Sab qarz ek safhe par, ya ek qarz ki wasooli, adaigi aur sood",
+  "reportReceivablesByDue": "Udhaar, adaigi ki tareekh se",
+  "reportReceivablesByDueHint": "Kaun der se hai, aur har bill adaigi ki tareekh se kitne din upar",
+  "reportBadDebts": "Doobi raqam aur riayat",
+  "reportBadDebtsHint": "Chhora gaya udhaar: kis ka, kyun, kitna, aur kis ne chhora",
+  "reportFilterLoan": "Qarz",
+  "reportViewTable": "Table",
+  "reportViewChart": "Chart",
+  "reportChartRest": "Baaqi sab ({count})",
+  "@reportChartRest": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reportChartNothing": "Is muddat mein dikhane ko kuch nahi",
+  "reportChartHighest": "Sab se ziyada: {label}, {amount}",
+  "@reportChartHighest": {
+    "placeholders": {
+      "label": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "reportChartPicked": "{label}: {amount}",
+  "@reportChartPicked": {
+    "placeholders": {
+      "label": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "reportChartTotal": "Kul",
+  "reportChartLeftOut": "{count, plural, =1{1 line sifar ya kam hai, dikhayi nahi gayi} other{{count} lines sifar ya kam hain, dikhayi nahi gayin}}",
+  "@reportChartLeftOut": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "reportChartSummary": "{what} ka chart: {count} hisse, kul {amount}",
+  "@reportChartSummary": {
+    "placeholders": {
+      "what": {"type": "String"},
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "reportTodayTitle": "Aaj",
+  "reportTodaySale": "Bikri",
+  "reportTodayReceived": "Wasool",
+  "reportTodayUdhaar": "Udhaar diya",
+  "reportTodayExpenses": "Kharche",
+  "reportTodayProfit": "Maal ka nafa",
+  "reportTodayOpen": "Aaj ka Z report kholein",
+  "reportFilterMinAmount": "Raqam",
+  "reportFilterMinAmountValue": "{amount} ya ziyada",
+  "@reportFilterMinAmountValue": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  }
 }

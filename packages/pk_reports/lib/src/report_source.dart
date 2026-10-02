@@ -4,12 +4,14 @@ import 'business_source.dart';
 import 'expense_source.dart';
 import 'filters.dart';
 import 'item_stock_source.dart';
+import 'loan_reports.dart';
 import 'order_source.dart';
 import 'party_source.dart';
 import 'period.dart';
 import 'staff_source.dart';
 import 'tax_source.dart';
 import 'transaction_source.dart';
+import 'udhaar_reports.dart';
 
 /// What moved through one account in a period.
 final class AccountMovement {
@@ -77,7 +79,14 @@ final class DayBookEntry {
   final BusinessDate date;
   final String entryNo;
 
-  /// `sale`, `purchase`, `payment`, `expense`, `reversal` and so on.
+  /// `sale`, `purchase`, `payment`, `expense`, `reversal` and so on: the
+  /// journal's `source_type`. Since M58 three are said more exactly, because
+  /// the source type alone gives the wrong word: an `other_income` entry
+  /// with no party behind it is the shop's own income,
+  /// [TransactionType.otherIncome], not a charge on a khata; an `expense`
+  /// debiting the owner's drawings is ghar ka kharcha,
+  /// [TransactionType.ownerDrawings]; and a `manual` entry tagged to a loan
+  /// (M48) is `loan`.
   final String sourceType;
   final String narration;
 
@@ -103,6 +112,11 @@ final class DayBookEntry {
 }
 
 /// What one item sold for in a period, net of what came back.
+///
+/// Since M58 the lines with no item behind them, khula maal sold by the
+/// rupee (M37), are one of these too, [isLoose], named
+/// `ItemTrade.looseLines` as M34's reports name them: their money is in the
+/// sales, and a Sales by item that left them out came to less than the bills.
 final class ItemSales {
   const ItemSales({
     required this.itemName,
@@ -113,9 +127,18 @@ final class ItemSales {
     required this.returnsValue,
     required this.cost,
     required this.returnedCost,
+    this.itemId,
+    this.isLoose = false,
   });
 
   final String itemName;
+
+  /// The item, for opening its stock history; null for khula maal.
+  final String? itemId;
+
+  /// Every line with no item, together: no unit to count it in and no cost
+  /// on record.
+  final bool isLoose;
 
   /// The base unit the quantities are counted in.
   final String unitCode;
@@ -278,7 +301,10 @@ abstract interface class ReportSource
         StaffReportSource,
         TaxReportSource,
         ExpenseReportSource,
-        OrderReportSource {
+        OrderReportSource,
+        // M58
+        LoanReportSource,
+        UdhaarReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

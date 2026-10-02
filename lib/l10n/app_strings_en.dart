@@ -3330,7 +3330,7 @@ class AppStringsEn extends AppStrings {
   String get reportTypeExpense => 'Expense';
 
   @override
-  String get reportTypeCharge => 'Charge';
+  String get reportTypeCharge => 'Charge or other income';
 
   @override
   String get reportTypeQuotation => 'Quotation';
@@ -6120,4 +6120,100 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get purchaseInPack => 'Came in';
+
+  @override
+  String get reportLoanStatement => 'Loan statement';
+
+  @override
+  String get reportLoanStatementHint =>
+      'Every loan on one page, or one loan\'s receipts, repayments and interest';
+
+  @override
+  String get reportReceivablesByDue => 'Udhaar by due date';
+
+  @override
+  String get reportReceivablesByDueHint =>
+      'Who is late, and how long past the day each bill was due';
+
+  @override
+  String get reportBadDebts => 'Bad debts and settlement discounts';
+
+  @override
+  String get reportBadDebtsHint =>
+      'Udhaar written off or let go to settle: whose, why, how much, and by whom';
+
+  @override
+  String get reportFilterLoan => 'Loan';
+
+  @override
+  String get reportViewTable => 'Table';
+
+  @override
+  String get reportViewChart => 'Chart';
+
+  @override
+  String reportChartRest(int count) {
+    return 'The rest ($count)';
+  }
+
+  @override
+  String get reportChartNothing => 'Nothing to draw for this period';
+
+  @override
+  String reportChartHighest(String label, String amount) {
+    return 'Highest: $label, $amount';
+  }
+
+  @override
+  String reportChartPicked(String label, String amount) {
+    return '$label: $amount';
+  }
+
+  @override
+  String get reportChartTotal => 'Total';
+
+  @override
+  String reportChartLeftOut(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count lines at nothing or less are not drawn',
+      one: '1 line at nothing or less is not drawn',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String reportChartSummary(String what, int count, String amount) {
+    return 'Chart of $what: $count parts, together $amount';
+  }
+
+  @override
+  String get reportTodayTitle => 'Today';
+
+  @override
+  String get reportTodaySale => 'Sale';
+
+  @override
+  String get reportTodayReceived => 'Received';
+
+  @override
+  String get reportTodayUdhaar => 'Udhaar given';
+
+  @override
+  String get reportTodayExpenses => 'Expenses';
+
+  @override
+  String get reportTodayProfit => 'Gross profit';
+
+  @override
+  String get reportTodayOpen => 'Open today\'s Z report';
+
+  @override
+  String get reportFilterMinAmount => 'Amount';
+
+  @override
+  String reportFilterMinAmountValue(String amount) {
+    return '$amount or more';
+  }
 }

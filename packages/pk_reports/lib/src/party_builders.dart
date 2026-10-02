@@ -62,7 +62,7 @@ import 'report_table.dart';
       for (final e in within)
         ReportRow([
           e.dateLocal,
-          _entryLabel(e.kind, owedToUs: owedToUs),
+          _entryLabel(e, owedToUs: owedToUs),
           e.reference,
           ...money(
             e.amount.isNegative ? null : e.amount,
@@ -81,16 +81,18 @@ import 'report_table.dart';
   );
 }
 
-String _entryLabel(String kind, {required bool owedToUs}) => switch (kind) {
+String _entryLabel(LedgerEntry e, {required bool owedToUs}) => switch (e.kind) {
   'sale' => 'Bill',
   'charge' => 'Charge',
-  'payment' => 'Payment',
+  // Udhaar let go (M44) is written as a payment in, and reads as what it
+  // was, by its number's series: no money came (M58).
+  'payment' => AllowanceKind.ofPaymentNo(e.reference)?.narration ?? 'Payment',
   'bounce' => 'Cheque bounced',
   'purchase' => 'Delivery',
   'expense' => 'Expense',
   'opening' => 'Opening balance',
   'return' => owedToUs ? 'Goods returned' : 'Goods sent back',
-  _ => kind,
+  _ => e.kind,
 };
 
 ReportLink? _entryLink(LedgerEntry e, {required bool owedToUs}) {

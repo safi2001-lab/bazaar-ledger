@@ -122,3 +122,47 @@ String _documentWhere(
   }
   return w.toString();
 }
+
+/// What a journal entry `je` was, in the words the reports use (M58).
+///
+/// Its `source_type`, except where that alone gives the wrong word. An
+/// `other_income` entry whose document has no party is the shop's own
+/// income (M47), not a charge on a khata; an `expense` entry debiting the
+/// owner's drawings is the home's spending, in money or in goods taken home
+/// (M47), not the shop's; and a `manual` entry carrying a loan's tag in
+/// `cost_centre` is a loan taken or paid back (M48), not a journal voucher.
+/// The subqueries are reached only for those three source types, each by
+/// the entry's own lines or its own document.
+const _entryKindSql = '''
+  CASE
+    WHEN je.source_type = 'other_income' AND EXISTS (
+           SELECT 1 FROM documents kd
+           WHERE kd.id = je.document_id AND kd.party_id IS NULL)
+      THEN 'shop_income'
+    WHEN je.source_type = 'expense' AND EXISTS (
+           SELECT 1 FROM journal_lines kl
+           JOIN accounts ka ON ka.id = kl.account_id
+           WHERE kl.journal_entry_id = je.id AND kl.debit_paisa > 0
+             AND kl.deleted_at_utc IS NULL
+             AND ka.system_key = 'owner_drawings')
+      THEN 'owner_drawings'
+    WHEN je.source_type = 'manual' AND EXISTS (
+           SELECT 1 FROM journal_lines kl
+           WHERE kl.journal_entry_id = je.id AND kl.deleted_at_utc IS NULL
+             AND substr(kl.cost_centre, 1, 5) = 'loan:')
+      THEN 'loan'
+    ELSE je.source_type
+  END''';
+
+/// Whether the document `d` is an expense of the home's (M47): its own
+/// expense entry debits the owner's drawings, as the expense book reads its
+/// Ghar mark.
+const _forHomeSql = '''
+  EXISTS (
+    SELECT 1 FROM journal_entries he
+    JOIN journal_lines hl ON hl.journal_entry_id = he.id
+    JOIN accounts ha ON ha.id = hl.account_id
+    WHERE he.document_id = d.id AND he.source_type = 'expense'
+      AND he.reverses_entry_id IS NULL AND he.deleted_at_utc IS NULL
+      AND hl.debit_paisa > 0 AND hl.deleted_at_utc IS NULL
+      AND ha.system_key = 'owner_drawings')''';

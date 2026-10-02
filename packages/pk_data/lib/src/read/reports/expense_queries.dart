@@ -6,7 +6,9 @@ part of '../drift_report_source.dart';
 /// where the money came from the account it credited (see
 /// `expense_builder.dart`: the head lives on the journal line and nowhere
 /// else). So the voucher is read back through its own entry, and the head
-/// here is the head in the Trial Balance.
+/// here is the head in the Trial Balance. The home's spending (M47) is a
+/// voucher too, its head the owner's drawings, and comes back marked so the
+/// reports can keep it apart from the shop's (M58).
 mixin _ExpenseQueries implements ExpenseReportSource {
   AppDatabase get _db;
 
@@ -47,6 +49,7 @@ mixin _ExpenseQueries implements ExpenseReportSource {
                  COALESCE(d.party_name_snapshot, p.name) AS party,
                  u.name AS entered_by,
                  h.id AS head_id, h.name AS head, h.is_direct,
+                 h.system_key AS head_key,
                  src.system_key AS source_key,
                  COALESCE((
                    SELECT pa.name FROM payment_accounts pa
@@ -110,6 +113,13 @@ mixin _ExpenseQueries implements ExpenseReportSource {
           balance: Money.paisa(r.read<int>('balance_paisa')),
           note: r.readNullable<String>('notes') ?? '',
           enteredBy: r.readNullable<String>('entered_by'),
+          // The home's (M47), for the builders to keep apart (M58): money
+          // spent on the home debits the owner's drawings, and goods taken
+          // home do too, off Inventory rather than out of the drawer.
+          forHome: r.readNullable<String>('head_key') == ownerDrawingsKey,
+          goods:
+              r.readNullable<String>('head_key') == ownerDrawingsKey &&
+              r.readNullable<String>('source_key') == 'inventory',
         ),
     ];
   }

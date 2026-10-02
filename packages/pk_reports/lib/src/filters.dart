@@ -74,6 +74,15 @@ enum ReportFilter {
 
   /// One expense head: an `accounts.id` of type expense.
   expenseHead,
+
+  // M58: the loan statement's.
+
+  /// One loan the shop has taken: the `accounts.id` of its liability (M48).
+  loan,
+
+  /// Only what came to this much or more: the changes worth an owner's
+  /// evening, not every five-rupee slip.
+  minAmount,
 }
 
 /// How much of a bill has been paid.
@@ -104,6 +113,20 @@ abstract final class TransactionType {
   static const proforma = 'proforma';
   static const paymentIn = 'payment_in';
   static const paymentOut = 'payment_out';
+
+  // M58: what a row is, where its document type alone says too little. Not
+  // codes the books write, and not offered as a filter: the words a report
+  // puts on a row once it knows who the document was with and where its
+  // money went.
+
+  /// An `other_income` document with no party: the shop's own income (M47),
+  /// rent from a sub-let or a bank's profit. With a party it is a charge put
+  /// on that party's khata, and stays [charge].
+  static const otherIncome = 'shop_income';
+
+  /// An `expense` document whose debit is the owner's drawings: ghar ka
+  /// kharcha, in money or in goods off the shelf (M47). Not the shop's.
+  static const ownerDrawings = 'owner_drawings';
 
   /// In the order a filter offers them.
   static const all = [
@@ -140,7 +163,17 @@ abstract final class TransactionType {
     proforma => 'Proforma',
     paymentIn => 'Payment in',
     paymentOut => 'Payment out',
-    _ => type,
+    // M58
+    otherIncome => 'Other income',
+    ownerDrawings => "Owner's drawings (ghar)",
+    // A write-off or a settlement discount (M44) is written as a payment in,
+    // and reads as what it was: its kind's own words.
+    _ =>
+      AllowanceKind.values
+              .where((k) => k.docType == type)
+              .firstOrNull
+              ?.narration ??
+          type,
   };
 }
 
@@ -203,6 +236,9 @@ final class ReportFilters {
     this.accountName,
     this.expenseHeadId,
     this.expenseHeadName,
+    this.loanId,
+    this.loanName,
+    this.minAmount,
   });
 
   /// Nothing narrowed.
@@ -263,6 +299,13 @@ final class ReportFilters {
   final String? expenseHeadId;
   final String? expenseHeadName;
 
+  /// A loan the shop has taken (M58), with its name.
+  final String? loanId;
+  final String? loanName;
+
+  /// Only rows of this much or more (M58).
+  final Money? minAmount;
+
   /// The party group a party without one is counted under.
   static const ungrouped = 'Ungrouped';
 
@@ -289,7 +332,9 @@ final class ReportFilters {
       slowBelow == null &&
       serial == null &&
       accountId == null &&
-      expenseHeadId == null;
+      expenseHeadId == null &&
+      loanId == null &&
+      minAmount == null;
 
   /// Whether [filter] is set.
   bool has(ReportFilter filter) => switch (filter) {
@@ -312,6 +357,8 @@ final class ReportFilters {
     ReportFilter.serial => serial != null,
     ReportFilter.moneyAccount => accountId != null,
     ReportFilter.expenseHead => expenseHeadId != null,
+    ReportFilter.loan => loanId != null,
+    ReportFilter.minAmount => minAmount != null,
   };
 
   /// Only the filters in [accepted]: a report never narrows by something it
@@ -357,6 +404,9 @@ final class ReportFilters {
     expenseHeadName: accepted.contains(ReportFilter.expenseHead)
         ? expenseHeadName
         : null,
+    loanId: accepted.contains(ReportFilter.loan) ? loanId : null,
+    loanName: accepted.contains(ReportFilter.loan) ? loanName : null,
+    minAmount: accepted.contains(ReportFilter.minAmount) ? minAmount : null,
   );
 
   /// A copy with [filter] cleared.
@@ -391,6 +441,9 @@ final class ReportFilters {
     String? accountName,
     String? expenseHeadId,
     String? expenseHeadName,
+    String? loanId,
+    String? loanName,
+    Money? minAmount,
   }) => ReportFilters(
     partyId: partyId ?? this.partyId,
     partyName: partyName ?? this.partyName,
@@ -417,6 +470,9 @@ final class ReportFilters {
     accountName: accountName ?? this.accountName,
     expenseHeadId: expenseHeadId ?? this.expenseHeadId,
     expenseHeadName: expenseHeadName ?? this.expenseHeadName,
+    loanId: loanId ?? this.loanId,
+    loanName: loanName ?? this.loanName,
+    minAmount: minAmount ?? this.minAmount,
   );
 
   /// The filters in words, one line each, for the head of an export.
@@ -425,8 +481,12 @@ final class ReportFilters {
     if (partyGroup != null) 'Party group: $partyGroup',
     if (itemId != null) 'Item: ${itemName ?? itemId}',
     if (category != null) 'Item category: $category',
+    // A charge and the shop's own income are both `other_income` documents
+    // (M47), and narrowing to the type finds both (M58).
     if (transactionType != null)
-      'Type: ${TransactionType.label(transactionType!)}',
+      transactionType == TransactionType.charge
+          ? 'Type: Charge or other income'
+          : 'Type: ${TransactionType.label(transactionType!)}',
     if (paymentMode != null) 'Paid by: ${PaymentMode.label(paymentMode!)}',
     if (paymentStatus != null) 'Payment: ${_statusLabel(paymentStatus!)}',
     if (userId != null) 'Entered by: ${userName ?? userId}',
@@ -442,6 +502,8 @@ final class ReportFilters {
     if (serial != null) 'Serial: $serial',
     if (accountId != null) 'Account: ${accountName ?? accountId}',
     if (expenseHeadId != null) 'Head: ${expenseHeadName ?? expenseHeadId}',
+    if (loanId != null) 'Loan: ${loanName ?? loanId}',
+    if (minAmount != null) 'Rs ${minAmount!.amountOnly} or more',
   ];
 
   @override
@@ -465,7 +527,9 @@ final class ReportFilters {
       other.slowBelow == slowBelow &&
       other.serial == serial &&
       other.accountId == accountId &&
-      other.expenseHeadId == expenseHeadId;
+      other.expenseHeadId == expenseHeadId &&
+      other.loanId == loanId &&
+      other.minAmount == minAmount;
 
   @override
   int get hashCode => Object.hashAll([
@@ -488,6 +552,8 @@ final class ReportFilters {
     serial,
     accountId,
     expenseHeadId,
+    loanId,
+    minAmount,
   ]);
 }
 

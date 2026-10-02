@@ -67,6 +67,9 @@ enum ReportLinkKind {
 
   /// An item, whose stock history it opens (M34).
   item,
+
+  /// A loan the shop has taken, whose statement it opens (M58).
+  loan,
 }
 
 /// The thing behind a row, so the screen can open it. The report says what
@@ -74,6 +77,12 @@ enum ReportLinkKind {
 final class ReportLink {
   const ReportLink.document(this.id, {required this.label, this.docType})
     : kind = ReportLinkKind.document,
+      unitCode = null;
+
+  /// A loan (M58): its own statement says what was borrowed and paid back.
+  const ReportLink.loan(this.id, {required this.label})
+    : kind = ReportLinkKind.loan,
+      docType = null,
       unitCode = null;
 
   const ReportLink.party(this.id, {required this.label})

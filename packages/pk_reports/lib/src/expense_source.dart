@@ -23,7 +23,17 @@ final class ExpenseVoucher {
     required this.note,
     this.party,
     this.enteredBy,
+    this.forHome = false,
+    this.goods = false,
   });
+
+  /// Ghar ka kharcha (M47): the voucher debits the owner's drawings, not an
+  /// expense head. It is the owner taking his share of the shop, and the
+  /// expense reports keep it apart from what the shop spent (M58).
+  final bool forHome;
+
+  /// Goods taken home off the shelf at cost, rather than money (M47).
+  final bool goods;
 
   final String documentId;
   final BusinessDate date;
@@ -54,7 +64,9 @@ final class ExpenseVoucher {
 /// Where the expense reports read from (M35).
 abstract interface class ExpenseReportSource {
   /// Every expense voucher that stands in [period], in date order, narrowed
-  /// by head, who entered it, and the mode it was paid by.
+  /// by head, who entered it, and the mode it was paid by. The home's are
+  /// among them, marked [ExpenseVoucher.forHome], for the builders to keep
+  /// apart (M58).
   Future<List<ExpenseVoucher>> expenseVouchers(
     String firmId,
     ReportPeriod period, {

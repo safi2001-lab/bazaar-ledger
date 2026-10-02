@@ -119,6 +119,63 @@ final class BlTokens extends ThemeExtension<BlTokens> {
   /// Figures line up in a column. Non-negotiable for money.
   static const List<FontFeature> tabular = [FontFeature.tabularFigures()];
 
+  // --- Charts (M46) -------------------------------------------------------
+  //
+  // A report drawn as a chart needs more than one colour, and the brand's
+  // single accent is kept for the primary action. These are a categorical
+  // set in a fixed order, checked so that neighbours stay apart for the
+  // commonest colour blindness and on both surfaces, each hue stepped for
+  // its own theme rather than flipped; and one hue, light to dark, for
+  // buckets that grow worse in order, such as days past due. A chart never
+  // carries meaning by colour alone: every slice and bar has its name and
+  // figure written beside it.
+
+  /// Parts of a whole, in this order and never cycled: a part past the
+  /// eighth is summed into the rest.
+  List<Color> get chartSeries => isDark ? _chartSeriesDark : _chartSeriesLight;
+
+  /// Ordered buckets, the first lightest on paper (darkest in the dark),
+  /// the last strongest.
+  List<Color> get chartRamp => isDark ? _chartRampDark : _chartRampLight;
+
+  static const _chartSeriesLight = [
+    Color(0xFF2A78D6),
+    Color(0xFFEB6834),
+    Color(0xFF1BAF7A),
+    Color(0xFFEDA100),
+    Color(0xFFE87BA4),
+    Color(0xFF008300),
+    Color(0xFF4A3AA7),
+    Color(0xFFE34948),
+  ];
+
+  static const _chartSeriesDark = [
+    Color(0xFF3987E5),
+    Color(0xFFD95926),
+    Color(0xFF199E70),
+    Color(0xFFC98500),
+    Color(0xFFD55181),
+    Color(0xFF008300),
+    Color(0xFF9085E9),
+    Color(0xFFE66767),
+  ];
+
+  static const _chartRampLight = [
+    Color(0xFF86B6EF),
+    Color(0xFF5598E7),
+    Color(0xFF2A78D6),
+    Color(0xFF1C5CAB),
+    Color(0xFF104281),
+  ];
+
+  static const _chartRampDark = [
+    Color(0xFF184F95),
+    Color(0xFF256ABF),
+    Color(0xFF3987E5),
+    Color(0xFF6DA7EC),
+    Color(0xFF9EC5F4),
+  ];
+
   static const BlTokens light = BlTokens(
     ink: Color(0xFF16130F),
     inkMuted: Color(0xFF5C544A),

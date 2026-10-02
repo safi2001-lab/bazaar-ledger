@@ -278,6 +278,12 @@ ReportTable dailySummary(
     line('Recovered', recovered),
     ReportRow.heading('Expenses', 2),
     line('Expenses, ${n(d.expenses, 'voucher', 'vouchers')}', d.expensesValue),
+    // The home's, apart (M58): it left the drawer, and it is not the shop's.
+    if (d.takenHome > 0)
+      line(
+        'Ghar ka kharcha, ${n(d.takenHome, 'entry', 'entries')}',
+        d.takenHomeValue,
+      ),
     if (showProfit) ...[
       ReportRow.heading('Profit', 2),
       line('Gross profit', profit, style: RowStyle.subtotal),
@@ -311,13 +317,26 @@ ReportTable dailySummary(
     ],
     rows: rows,
     summary: [
-      ReportFigure('Net sales', netSales),
-      ReportFigure('Collected', collected),
-      ReportFigure('Expenses', d.expensesValue),
-      if (showProfit) ReportFigure('Gross profit', profit),
+      ReportFigure(DayFigureLabel.netSales, netSales),
+      ReportFigure(DayFigureLabel.collected, collected),
+      ReportFigure(DayFigureLabel.udhaarGiven, d.udhaar.amount),
+      ReportFigure(DayFigureLabel.expenses, d.expensesValue),
+      if (showProfit) ReportFigure(DayFigureLabel.grossProfit, profit),
     ],
     notes: [_zNote, if (showProfit) _grossProfitNote],
   );
+}
+
+/// The Z report's headline figures, by the label each carries (M58): the
+/// Reports hub's "Today" strip reads these five off today's Z report and
+/// names each in the shop's own language, so the strip and the report are
+/// one set of figures.
+abstract final class DayFigureLabel {
+  static const netSales = 'Net sales';
+  static const collected = 'Collected';
+  static const udhaarGiven = 'Udhaar given';
+  static const expenses = 'Expenses';
+  static const grossProfit = 'Gross profit';
 }
 
 const _zNote =
@@ -329,10 +348,20 @@ const _zNote =
 /// order they were made (M35): who did what to which bill, when, why, and
 /// for how much. The page an owner reads when the drawer and the bills do
 /// not agree.
+///
+/// Since M58 it is Marg's "bill value changes" too: an edit says what the
+/// entry was and what it is now, Rs 5,000 to Rs 500, side by side; udhaar
+/// written off or let go to settle (M44), a loan entry cancelled (M48), and
+/// the closed books let into or opened again (M42) are among the changes;
+/// and when somebody's PIN let a change through, the report says whose.
+/// The [ReportFilter.minAmount] filter keeps it to what is worth an
+/// owner's evening.
 ReportTable changedBills(ReportPeriod period, List<ChangeRecord> changes) {
-  final voids = changes.where((c) => _isVoid(c.action)).length;
-  final returns = changes.where((c) => _isReturn(c.action)).length;
-  final edits = changes.length - voids - returns;
+  int count(ChangeKind kind) =>
+      changes.where((c) => changeKindOf(c.action) == kind).length;
+  final letGo = count(ChangeKind.letGo);
+  final books = count(ChangeKind.books);
+  final allowed = changes.where((c) => c.allowedBy != null).length;
   return ReportTable(
     id: 'changed_bills',
     title: 'Changed and cancelled bills',
@@ -343,8 +372,10 @@ ReportTable changedBills(ReportPeriod period, List<ChangeRecord> changes) {
       ReportColumn('What', CellKind.text),
       ReportColumn('Number', CellKind.text),
       ReportColumn('Party', CellKind.text),
+      ReportColumn('Was', CellKind.money),
       ReportColumn('Amount', CellKind.money),
       ReportColumn('Who', CellKind.text),
+      ReportColumn('Allowed by', CellKind.text),
       ReportColumn('Reason', CellKind.text),
     ],
     rows: [
@@ -356,8 +387,10 @@ ReportTable changedBills(ReportPeriod period, List<ChangeRecord> changes) {
             changeLabel(c.action),
             c.reference ?? '',
             c.party ?? '',
+            c.was,
             c.amount,
             c.who,
+            c.allowedBy ?? '',
             c.reason ?? '',
           ],
           link: c.documentId == null
@@ -377,14 +410,19 @@ ReportTable changedBills(ReportPeriod period, List<ChangeRecord> changes) {
         null,
         null,
         null,
+        null,
+        null,
       ], style: RowStyle.total),
     ],
     summary: [
-      ReportFigure.count('Voids', voids),
-      ReportFigure.count('Returns', returns),
-      ReportFigure.count('Edits', edits),
+      ReportFigure.count('Voids', count(ChangeKind.void_)),
+      ReportFigure.count('Returns', count(ChangeKind.return_)),
+      ReportFigure.count('Edits', count(ChangeKind.edit)),
+      if (letGo > 0) ReportFigure.count('Let go', letGo),
+      if (books > 0) ReportFigure.count('Closed books', books),
+      if (allowed > 0) ReportFigure.count('By PIN', allowed),
     ],
-    notes: const [_changesNote],
+    notes: const [_changesNote, _wasNote],
   );
 }
 
@@ -393,11 +431,38 @@ const _changesNote =
     'bill. An edited entry is the old one cancelled and a new one made in '
     'its place; the amount is the new one.';
 
-bool _isVoid(String action) =>
-    action == 'DOCUMENT_VOIDED' || action == 'PAYMENT_VOIDED';
+const _wasNote =
+    'Was is what an edited entry or an opening balance came to before. '
+    'Allowed by is whose PIN let the change through, when one was asked for.';
 
-bool _isReturn(String action) =>
-    action == 'SALE_RETURNED' || action == 'PURCHASE_RETURNED';
+/// What kind of change an audit code is (M58).
+enum ChangeKind {
+  /// Cancelled: a bill, a payment, a loan entry.
+  void_,
+
+  /// Goods brought back or sent back.
+  return_,
+
+  /// Put right: an entry replaced by a corrected one, an opening balance.
+  edit,
+
+  /// Udhaar written off or let go to settle (M44).
+  letGo,
+
+  /// The closed books let into or opened again (M42).
+  books,
+}
+
+/// The kind [action] is.
+ChangeKind changeKindOf(String action) => switch (action) {
+  'DOCUMENT_VOIDED' ||
+  'PAYMENT_VOIDED' ||
+  'LOAN_ENTRY_CANCELLED' => ChangeKind.void_,
+  'SALE_RETURNED' || 'PURCHASE_RETURNED' => ChangeKind.return_,
+  'BAD_DEBT_WRITTEN_OFF' || 'SETTLEMENT_DISCOUNT_GIVEN' => ChangeKind.letGo,
+  closedBooksOverrideAction || booksReopenedAction => ChangeKind.books,
+  _ => ChangeKind.edit,
+};
 
 /// The audit codes the Changed and cancelled bills report lists, as it
 /// writes them.
@@ -410,6 +475,12 @@ String changeLabel(String action) => switch (action) {
   'CHARGE_EDITED' => 'Charge edited',
   'PAYMENT_EDITED' => 'Payment edited',
   'OPENING_BALANCE_CORRECTED' => 'Opening balance put right',
+  // M58
+  'BAD_DEBT_WRITTEN_OFF' => 'Written off',
+  'SETTLEMENT_DISCOUNT_GIVEN' => 'Settlement discount',
+  'LOAN_ENTRY_CANCELLED' => 'Loan entry cancelled',
+  closedBooksOverrideAction => 'Let into closed books',
+  booksReopenedAction => 'Books opened again',
   _ => action,
 };
 
@@ -423,6 +494,13 @@ const changeActions = [
   'CHARGE_EDITED',
   'PAYMENT_EDITED',
   'OPENING_BALANCE_CORRECTED',
+  // M58: udhaar let go (M44), a loan entry cancelled (M48), and the closed
+  // books let into or opened again (M42).
+  'BAD_DEBT_WRITTEN_OFF',
+  'SETTLEMENT_DISCOUNT_GIVEN',
+  'LOAN_ENTRY_CANCELLED',
+  closedBooksOverrideAction,
+  booksReopenedAction,
 ];
 
 const _byCashierNote =
