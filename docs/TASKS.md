@@ -156,7 +156,8 @@ time, on the latest master (schema is v8 today).
 - [ ] Saved report views ("my Monday udhaar list")
 
 ### Getting shops to switch
-- [ ] M52 · (in progress) Importer presets for Vyapar and Khatabook Excel exports (items, parties, opening balances) — Vyapar's service in Pakistan is disrupted and its users are stranded
+- [x] M52 · Moving off Vyapar/Khatabook — DONE (ee47eba): "Where is this file from?" with auto-detection; balances on the right side; Indian GST/HSN never carried; units matched; duplicates skipped or updated by choice; old .xls read with no new dependency; preview in Urdu/English; large files off the main thread
+  - Not verified: Vyapar's exact export headings (no public sample) — by-hand column mapping is the backstop; supplier opening balances still go in as purchase bills
 
 ### Pakistan specifics (from the research appendix §1–2)
 - [ ] Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
