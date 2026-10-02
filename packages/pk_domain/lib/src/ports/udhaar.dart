@@ -10,10 +10,12 @@ library;
 import 'package:pk_money/pk_money.dart';
 
 import '../identity/actor_context.dart';
+import '../receivables/allowance.dart';
 import '../receivables/due_dates.dart';
 import '../receivables/promise.dart';
 import '../receivables/reminder_templates.dart';
 import 'app_queries.dart';
+import 'settlement_writer.dart';
 
 /// A customer who owes, as the chase list needs them.
 final class DueParty {
@@ -173,6 +175,17 @@ abstract interface class UdhaarQueries {
     String firmId,
     String partyId, {
     int limit = 20,
+  });
+
+  /// Every write-off (or settlement discount) in the shop, newest first,
+  /// cancelled ones included and marked (M44): who, how much, why, and who
+  /// let it go. The bad-debts list reads it, and a reports milestone can
+  /// register it as the Bad Debts report, narrowed to a period.
+  Future<List<AllowanceRow>> allowances(
+    String firmId, {
+    required AllowanceKind kind,
+    String? fromDateLocal,
+    String? toDateLocal,
   });
 }
 

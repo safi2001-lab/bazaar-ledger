@@ -41,6 +41,14 @@ import 'khata_providers.dart';
 /// one. The preview counts the bills it settled as open again, because by
 /// the time the corrected receipt is allocated they will be — the old one's
 /// money comes off them first, in the same transaction.
+///
+/// ## Baqi chhor do (M44)
+///
+/// A customer owing Rs 10,000 hands over Rs 9,500 and the shopkeeper lets
+/// the rest go. "Let the rest go" settles every bill: the money is taken as
+/// any receipt is, and what it did not cover is posted to Settlement
+/// Discount, in the same transaction. A cashier may let go up to their
+/// role's discount ceiling; past it, the sheet says who can.
 Future<bool> showReceivePaymentSheet(
   BuildContext context, {
   required PartySummary party,
@@ -71,6 +79,10 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
   final _chequeNo = TextEditingController();
   final _chequeBank = TextEditingController();
   final _reason = ReasonController();
+  final _discountReason = TextEditingController();
+
+  /// Letting the rest go (M44).
+  bool _settle = false;
 
   String _mode = 'cash';
   String? _accountId;
@@ -115,7 +127,16 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
     _chequeNo.dispose();
     _chequeBank.dispose();
     _reason.dispose();
+    _discountReason.dispose();
     super.dispose();
+  }
+
+  /// What would be let go to settle: what is owed less what was handed
+  /// over, when the shopkeeper has said to let it go.
+  Money get _discount {
+    if (!_settle || widget.editing != null) return Money.zero;
+    final rest = widget.party.balance - _entered;
+    return rest.isPositive ? rest : Money.zero;
   }
 
   Money get _entered {
@@ -146,6 +167,15 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
     });
 
     final services = ref.read(appServicesProvider);
+    final discount = _discount;
+    if (discount.isPositive &&
+        !services.udhaar.maySettle(received: _entered, discount: discount)) {
+      setState(() {
+        _busy = false;
+        _error = s.settleDiscountOverCeiling;
+      });
+      return;
+    }
     final container = ProviderScope.containerOf(context, listen: false);
     try {
       final draft = ReceiptDraft(
@@ -168,7 +198,18 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
       );
       final editing = widget.editing;
       final String said;
-      if (editing == null) {
+      if (editing == null && discount.isPositive) {
+        // The money and what is let go, in one transaction (M44).
+        final settled = await services.udhaar.settleWithDiscount(
+          draft,
+          discount: discount,
+          reason: _discountReason.text.trim(),
+        );
+        said = s.settleDiscountSaved(
+          settled.receipt.amount.amountOnly,
+          settled.discount?.amount.amountOnly ?? Money.zero.amountOnly,
+        );
+      } else if (editing == null) {
         final receipt = await services.recordReceipt(
           services.actorNow(),
           draft,
@@ -294,12 +335,48 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
               BlField(controller: _reference, label: s.wasooliReference),
             ],
 
+            // "Baqi chhor do" (M44): the rest let go, every bill settled.
+            if (editing == null && widget.party.balance.isPositive) ...[
+              const SizedBox(height: BlTokens.space2),
+              SwitchListTile.adaptive(
+                value: _settle,
+                contentPadding: EdgeInsets.zero,
+                title: Text(s.settleDiscountToggle),
+                onChanged: (v) => setState(() {
+                  _settle = v;
+                  _error = null;
+                }),
+              ),
+              if (_settle) ...[
+                Text(
+                  _discount.isPositive
+                      ? s.settleDiscountLine(_discount.amountOnly)
+                      : s.settleDiscountNone,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: _discount.isPositive ? t.warning : t.inkMuted,
+                  ),
+                ),
+                if (_discount.isPositive) ...[
+                  const SizedBox(height: BlTokens.space2),
+                  BlField(
+                    controller: _discountReason,
+                    label: s.settleDiscountReason,
+                  ),
+                ],
+              ],
+            ],
+
             const SizedBox(height: BlTokens.space4),
             bills.when(
               loading: () => const BlSkeletonList(rows: 2),
               error: (error, _) =>
                   BlError(title: s.commonSomethingWentWrong, message: '$error'),
-              data: (rows) => _Preview(amount: _entered, bills: rows),
+              // With the rest let go, the bills it settles are the ones the
+              // money and the discount clear together.
+              data: (rows) =>
+                  _Preview(amount: _entered + _discount, bills: rows),
             ),
 
             if (editing != null) ...[

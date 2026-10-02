@@ -5221,4 +5221,130 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get templatesSampleName => 'Aslam Karyana';
+
+  @override
+  String get khataWriteOff => 'Write off as bad debt';
+
+  @override
+  String get writeOffTitle => 'Write off as bad debt';
+
+  @override
+  String get writeOffExplain =>
+      'This comes off the khata and goes to the Bad Debts expense, which the profit and loss shows. If it was a mistake, cancel the entry on the khata and the udhaar comes back.';
+
+  @override
+  String writeOffWhole(String amount) {
+    return 'Owed in all: Rs $amount';
+  }
+
+  @override
+  String get writeOffWholeShort => 'All of it';
+
+  @override
+  String get writeOffBills => 'Some bills';
+
+  @override
+  String get writeOffWhy => 'Why is it being let go?';
+
+  @override
+  String get writeOffReasonMoved => 'Moved away';
+
+  @override
+  String get writeOffReasonDied => 'Passed away';
+
+  @override
+  String get writeOffReasonRefused => 'Refuses to pay';
+
+  @override
+  String get writeOffReasonClosed => 'Their business closed';
+
+  @override
+  String get writeOffReasonText => 'Write the reason';
+
+  @override
+  String get writeOffReasonRequired => 'A write-off has to say why';
+
+  @override
+  String get writeOffPickBills => 'Pick at least one bill';
+
+  @override
+  String get writeOffSave => 'Write it off';
+
+  @override
+  String writeOffSaved(String no, String amount) {
+    return '$no: Rs $amount written off';
+  }
+
+  @override
+  String get badDebtsTitle => 'Money let go';
+
+  @override
+  String get badDebtsWrittenOff => 'Bad debts';
+
+  @override
+  String get badDebtsDiscounts => 'Discounts';
+
+  @override
+  String get badDebtsEmpty => 'Nothing let go yet';
+
+  @override
+  String get allowanceTotal => 'Total (not counting cancelled)';
+
+  @override
+  String allowanceBy(String name) {
+    return 'Let go by $name';
+  }
+
+  @override
+  String allowanceDiscountLine(String no) {
+    return 'Discount $no';
+  }
+
+  @override
+  String allowanceWriteOffLine(String no) {
+    return 'Written off $no';
+  }
+
+  @override
+  String entryDiscountTitle(String no) {
+    return 'Settlement discount $no';
+  }
+
+  @override
+  String entryWriteOffTitle(String no) {
+    return 'Bad debt $no';
+  }
+
+  @override
+  String get entryAllowanceNoEdit =>
+      'This is not edited: cancel it and enter it again.';
+
+  @override
+  String get tenderModeAdjustment => 'Let go';
+
+  @override
+  String get settleDiscountToggle => 'Let the rest go (settle with a discount)';
+
+  @override
+  String settleDiscountLine(String amount) {
+    return 'Discount: Rs $amount, every bill settled';
+  }
+
+  @override
+  String get settleDiscountNone => 'This settles it all; no discount is needed';
+
+  @override
+  String get settleDiscountReason => 'Reason for the discount (optional)';
+
+  @override
+  String settleDiscountSaved(String amount, String discount) {
+    return 'Rs $amount received, Rs $discount let go';
+  }
+
+  @override
+  String get settleDiscountOverCeiling =>
+      'That much discount is more than your role gives. The owner, a manager or the accountant can settle it.';
+
+  @override
+  String get chaseBadDebts => 'Money let go';
 }

@@ -2929,5 +2929,87 @@
   "templatesSaved": "Message saved",
   "templatesReset": "Back to the shop's words",
   "templatesResetDone": "The shop's words are back",
-  "templatesSampleName": "Aslam Karyana"
+  "templatesSampleName": "Aslam Karyana",
+  "khataWriteOff": "Write off as bad debt",
+  "writeOffTitle": "Write off as bad debt",
+  "writeOffExplain": "This comes off the khata and goes to the Bad Debts expense, which the profit and loss shows. If it was a mistake, cancel the entry on the khata and the udhaar comes back.",
+  "writeOffWhole": "Owed in all: Rs {amount}",
+  "@writeOffWhole": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "writeOffWholeShort": "All of it",
+  "writeOffBills": "Some bills",
+  "writeOffWhy": "Why is it being let go?",
+  "writeOffReasonMoved": "Moved away",
+  "writeOffReasonDied": "Passed away",
+  "writeOffReasonRefused": "Refuses to pay",
+  "writeOffReasonClosed": "Their business closed",
+  "writeOffReasonText": "Write the reason",
+  "writeOffReasonRequired": "A write-off has to say why",
+  "writeOffPickBills": "Pick at least one bill",
+  "writeOffSave": "Write it off",
+  "writeOffSaved": "{no}: Rs {amount} written off",
+  "@writeOffSaved": {
+    "placeholders": {
+      "no": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "badDebtsTitle": "Money let go",
+  "badDebtsWrittenOff": "Bad debts",
+  "badDebtsDiscounts": "Discounts",
+  "badDebtsEmpty": "Nothing let go yet",
+  "allowanceTotal": "Total (not counting cancelled)",
+  "allowanceBy": "Let go by {name}",
+  "@allowanceBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "allowanceDiscountLine": "Discount {no}",
+  "@allowanceDiscountLine": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "allowanceWriteOffLine": "Written off {no}",
+  "@allowanceWriteOffLine": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryDiscountTitle": "Settlement discount {no}",
+  "@entryDiscountTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryWriteOffTitle": "Bad debt {no}",
+  "@entryWriteOffTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryAllowanceNoEdit": "This is not edited: cancel it and enter it again.",
+  "tenderModeAdjustment": "Let go",
+  "settleDiscountToggle": "Let the rest go (settle with a discount)",
+  "settleDiscountLine": "Discount: Rs {amount}, every bill settled",
+  "@settleDiscountLine": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "settleDiscountNone": "This settles it all; no discount is needed",
+  "settleDiscountReason": "Reason for the discount (optional)",
+  "settleDiscountSaved": "Rs {amount} received, Rs {discount} let go",
+  "@settleDiscountSaved": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "discount": {"type": "String"}
+    }
+  },
+  "settleDiscountOverCeiling": "That much discount is more than your role gives. The owner, a manager or the accountant can settle it.",
+  "chaseBadDebts": "Money let go"
 }

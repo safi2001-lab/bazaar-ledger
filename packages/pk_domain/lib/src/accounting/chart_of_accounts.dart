@@ -417,6 +417,19 @@ const List<AccountSpec> defaultChartOfAccounts = [
     systemKey: 'bad_debts',
     parentCode: '6000',
   ),
+  // What the shop forgives to be paid today (M44): "Rs 500 chhor diye" on
+  // Rs 10,000 settled. An expense of its own, beside Bad Debts and apart
+  // from Discount Given, which is off the price at the counter: the first
+  // is the cost of collecting, the second of selling.
+  AccountSpec(
+    code: '6410',
+    nameEn: 'Settlement Discount',
+    nameUr: 'Wasooli par Riayat',
+    type: AccountType.expense,
+    normalSide: NormalSide.debit,
+    systemKey: 'settlement_discount',
+    parentCode: '6000',
+  ),
   // What the drawer was short or over when the day was closed. A shortage is
   // a debit, a cost to the shop; an excess a credit. Kept on its own line so
   // a counter that is short every week is one number, not a mystery spread

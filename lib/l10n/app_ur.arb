@@ -3043,5 +3043,87 @@
   "templatesSaved": "Paigham save ho gaya",
   "templatesReset": "Dukaan ke asal alfaz wapas layein",
   "templatesResetDone": "Asal alfaz wapas aa gaye",
-  "templatesSampleName": "Aslam Karyana"
+  "templatesSampleName": "Aslam Karyana",
+  "khataWriteOff": "Doobi hui raqam likhein",
+  "writeOffTitle": "Doobi hui raqam",
+  "writeOffExplain": "Yeh raqam khate se hat kar 'Doobi hui raqam' kharche mein jayegi aur munafa nuqsan mein nazar aayegi. Ghalti ho to khate mein is entry ko mansookh karein, udhaar wapas aa jayega.",
+  "writeOffWhole": "Kul baqaya: Rs {amount}",
+  "@writeOffWhole": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "writeOffWholeShort": "Poora baqaya",
+  "writeOffBills": "Sirf kuch bill",
+  "writeOffWhy": "Kyun chhor rahe hain?",
+  "writeOffReasonMoved": "Gahak chala gaya",
+  "writeOffReasonDied": "Wafaat ho gayi",
+  "writeOffReasonRefused": "Dene se inkaar",
+  "writeOffReasonClosed": "Un ka kaam band",
+  "writeOffReasonText": "Wajah likhein",
+  "writeOffReasonRequired": "Wajah zaroori hai",
+  "writeOffPickBills": "Kam se kam aik bill chunein",
+  "writeOffSave": "Doobi hui raqam mein likh dein",
+  "writeOffSaved": "{no}: Rs {amount} doobi hui raqam mein likh diye",
+  "@writeOffSaved": {
+    "placeholders": {
+      "no": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "badDebtsTitle": "Chhori hui raqam",
+  "badDebtsWrittenOff": "Doobi hui",
+  "badDebtsDiscounts": "Riayat",
+  "badDebtsEmpty": "Abhi kuch nahi chhora",
+  "allowanceTotal": "Kul (mansookh ke ilawa)",
+  "allowanceBy": "{name} ne chhora",
+  "@allowanceBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "allowanceDiscountLine": "Riayat {no}",
+  "@allowanceDiscountLine": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "allowanceWriteOffLine": "Doobi hui raqam {no}",
+  "@allowanceWriteOffLine": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryDiscountTitle": "Riayat {no}",
+  "@entryDiscountTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryWriteOffTitle": "Doobi hui raqam {no}",
+  "@entryWriteOffTitle": {
+    "placeholders": {
+      "no": {"type": "String"}
+    }
+  },
+  "entryAllowanceNoEdit": "Isay badla nahi jata: mansookh kar ke dobara likhein.",
+  "tenderModeAdjustment": "Chhoot",
+  "settleDiscountToggle": "Baqi chhor dein (riayat se hisaab saaf)",
+  "settleDiscountLine": "Riayat: Rs {amount}, sab bill saaf",
+  "@settleDiscountLine": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "settleDiscountNone": "Itne mein poora hisaab saaf hai, riayat ki zaroorat nahi",
+  "settleDiscountReason": "Riayat ki wajah (marzi se)",
+  "settleDiscountSaved": "Rs {amount} wasool, Rs {discount} chhor diye",
+  "@settleDiscountSaved": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "discount": {"type": "String"}
+    }
+  },
+  "settleDiscountOverCeiling": "Itni riayat aap ki hadd se ziyada hai. Malik, manager ya accountant se karwayein.",
+  "chaseBadDebts": "Chhori hui raqam"
 }

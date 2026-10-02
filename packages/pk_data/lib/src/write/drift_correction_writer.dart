@@ -105,9 +105,17 @@ final class _DriftCorrectionWriteContext implements CorrectionWriteContext {
       "WHERE firm_id = ? AND source_type = 'payment' "
       '  AND deleted_at_utc IS NULL '
       '  AND (payment_id = ? OR payment_id IS NULL) '
-      '  AND narration IN (?, ?) '
+      '  AND narration IN (?, ?, ?, ?) '
       'ORDER BY entry_date_utc, id LIMIT 1',
-      [actor.firmId, paymentId, 'Receipt $no', 'Payment $no'],
+      [
+        actor.firmId,
+        paymentId,
+        'Receipt $no',
+        'Payment $no',
+        // A settlement discount or a write-off (M44): cancelled the same
+        // way, which puts the udhaar back exactly.
+        for (final kind in AllowanceKind.values) '${kind.narration} $no',
+      ],
     );
 
     final allocations = await _tx.select(

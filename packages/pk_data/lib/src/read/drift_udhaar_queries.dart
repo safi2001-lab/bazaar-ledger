@@ -360,6 +360,64 @@ final class DriftUdhaarQueries implements UdhaarQueries {
     ];
   }
 
+  // -------------------------------------------------------------------------
+  // Udhaar let go (M44)
+  // -------------------------------------------------------------------------
+
+  @override
+  Future<List<AllowanceRow>> allowances(
+    String firmId, {
+    required AllowanceKind kind,
+    String? fromDateLocal,
+    String? toDateLocal,
+  }) async {
+    // Known by their number series (`WO-`, `SD-`), which no other payment
+    // is numbered in, and by the mode the schema keeps for exactly this.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT p.id, p.payment_no, p.party_id, p.payment_date_local,
+                 p.amount_paisa, p.status,
+                 COALESCE(p.notes, '') AS notes,
+                 COALESCE(pa.name, '') AS party_name,
+                 COALESCE(u.name, '') AS by_name
+          FROM payments p
+          LEFT JOIN parties pa ON pa.id = p.party_id
+          LEFT JOIN users u ON u.id = p.created_by
+          WHERE p.firm_id = ?1 AND p.mode = 'adjustment'
+            AND p.direction = 'in'
+            AND p.payment_no LIKE ?2
+            AND p.deleted_at_utc IS NULL
+            AND (?3 IS NULL OR p.payment_date_local >= ?3)
+            AND (?4 IS NULL OR p.payment_date_local <= ?4)
+          ORDER BY p.payment_date_local DESC, p.payment_no DESC
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>('${kind.prefix}-%'),
+            Variable<String>(fromDateLocal),
+            Variable<String>(toDateLocal),
+          ],
+          readsFrom: {_db.payments, _db.parties, _db.users},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        AllowanceRow(
+          paymentId: r.read<String>('id'),
+          paymentNo: r.read<String>('payment_no'),
+          kind: kind,
+          partyId: r.readNullable<String>('party_id') ?? '',
+          partyName: r.read<String>('party_name'),
+          dateLocal: r.read<String>('payment_date_local'),
+          amount: Money.paisa(r.read<int>('amount_paisa')),
+          reason: r.read<String>('notes'),
+          byName: r.read<String>('by_name'),
+          cancelled: r.read<String>('status') == 'void',
+        ),
+    ];
+  }
+
   /// Every customer's reminder settings, by key range on the settings
   /// index: `reminder.party.` up to `reminder.party/`.
   Future<Map<String, ReminderPrefs>> _allPrefs(String firmId) async {

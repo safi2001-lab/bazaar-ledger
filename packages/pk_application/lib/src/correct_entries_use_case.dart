@@ -127,6 +127,14 @@ final class CorrectEntriesUseCase {
         'and is corrected as one.',
       );
     }
+    // A settlement discount or a write-off (M44) is cancelled and let go
+    // again, never edited: the edit path would take it back as money.
+    if (direction != null && snapshot.mode == 'adjustment') {
+      throw VoidRefused(
+        '${snapshot.paymentNo} was let go, not paid, and is not edited. '
+        'Cancel it, and let the right amount go.',
+      );
+    }
     if (partyId != null && snapshot.partyId != partyId) {
       // Moving money from one khata to another is two corrections a
       // shopkeeper should see as two: this one cancelled, the right one

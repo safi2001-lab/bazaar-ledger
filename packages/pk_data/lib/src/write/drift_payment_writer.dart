@@ -148,6 +148,7 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
       'cheque_bank': payment.chequeBank,
       'cheque_date_utc': payment.chequeDateUtcMillis,
       'cheque_status': payment.isCheque ? 'issued' : null,
+      'notes': payment.notes,
     });
 
     for (final allocation in posting.allocations) {
@@ -224,7 +225,9 @@ final class _DriftPaymentWriteContext implements PaymentWriteContext {
     }
 
     _tx.audit(
-      action: payment.direction == 'out' ? 'PAYMENT_MADE' : 'PAYMENT_RECEIVED',
+      action:
+          posting.auditAction ??
+          (payment.direction == 'out' ? 'PAYMENT_MADE' : 'PAYMENT_RECEIVED'),
       entityTable: 'payments',
       entityId: paymentId,
       summary: posting.auditSummary,

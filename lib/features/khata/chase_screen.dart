@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'bad_debts_screen.dart';
 import 'due_chip.dart';
 import 'khata_screen.dart';
 import 'reminder_queue.dart';
@@ -176,6 +177,15 @@ class _ChaseScreenState extends ConsumerState<ChaseScreen> {
       appBar: AppBar(
         title: Text(s.chaseTitle),
         actions: [
+          // Bad debts and settlement discounts (M44).
+          if (!_picking)
+            BlIconButton(
+              icon: Icons.money_off_outlined,
+              label: s.chaseBadDebts,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const BadDebtsScreen()),
+              ),
+            ),
           if (!_picking && rows.isNotEmpty)
             BlIconButton(
               icon: Icons.campaign_outlined,

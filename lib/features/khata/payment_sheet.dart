@@ -96,6 +96,10 @@ class _Body extends ConsumerWidget {
       PaymentLock.none || PaymentLock.cancelled => null,
     };
     final mayCorrect = canCorrect(ref);
+    // A settlement discount or a write-off (M44): money that did not come.
+    // Titled as what it is; cancelled to put the udhaar back, never edited
+    // (the edit path would take it back as money), never sent as a receipt.
+    final allowance = AllowanceKind.ofPaymentNo(payment.paymentNo);
 
     return SingleChildScrollView(
       child: Column(
@@ -103,9 +107,16 @@ class _Body extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            payment.isReceipt
-                ? s.entryReceiptTitle(payment.paymentNo)
-                : s.entryPaymentTitle(payment.paymentNo),
+            switch (allowance) {
+              AllowanceKind.settlementDiscount => s.entryDiscountTitle(
+                payment.paymentNo,
+              ),
+              AllowanceKind.writeOff => s.entryWriteOffTitle(payment.paymentNo),
+              null =>
+                payment.isReceipt
+                    ? s.entryReceiptTitle(payment.paymentNo)
+                    : s.entryPaymentTitle(payment.paymentNo),
+            },
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w700,
@@ -244,23 +255,29 @@ class _Body extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: BlTokens.space4),
-          BlButton(
-            label: s.entryShare,
-            icon: Icons.picture_as_pdf_outlined,
-            kind: BlButtonKind.secondary,
-            onPressed: () =>
-                unawaited(sharePaymentReceipt(context, ref, payment)),
-          ),
+          if (allowance == null)
+            BlButton(
+              label: s.entryShare,
+              icon: Icons.picture_as_pdf_outlined,
+              kind: BlButtonKind.secondary,
+              onPressed: () =>
+                  unawaited(sharePaymentReceipt(context, ref, payment)),
+            ),
           if (lock == PaymentLock.none) ...[
             const SizedBox(height: BlTokens.space3),
             if (mayCorrect) ...[
-              BlButton(
-                label: s.actionEdit,
-                icon: Icons.edit_outlined,
-                kind: BlButtonKind.secondary,
-                onPressed: () => unawaited(_edit(context)),
-              ),
-              const SizedBox(height: BlTokens.space3),
+              if (allowance == null) ...[
+                BlButton(
+                  label: s.actionEdit,
+                  icon: Icons.edit_outlined,
+                  kind: BlButtonKind.secondary,
+                  onPressed: () => unawaited(_edit(context)),
+                ),
+                const SizedBox(height: BlTokens.space3),
+              ] else ...[
+                EntryNote(s.entryAllowanceNoEdit),
+                const SizedBox(height: BlTokens.space3),
+              ],
               BlButton(
                 label: s.entryCancel,
                 icon: Icons.block,

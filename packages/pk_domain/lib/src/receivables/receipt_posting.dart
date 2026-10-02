@@ -56,6 +56,7 @@ final class ReceiptPosting {
     required this.unapplied,
     required this.journal,
     required this.auditSummary,
+    this.auditAction,
   });
 
   final PaymentPosting payment;
@@ -68,6 +69,11 @@ final class ReceiptPosting {
 
   final JournalEntryPosting journal;
   final String auditSummary;
+
+  /// The audit action, when it is not a plain receipt or payment: a
+  /// settlement discount or a write-off (M44) is written by the same writer
+  /// and said in the activity log as what it is.
+  final String? auditAction;
 
   /// Asserts the entry balances, before anyone tries to write it.
   ///

@@ -50,6 +50,11 @@ final class DocumentSeries {
     DocumentSeries(docType: 'sale_order', prefix: 'SO', padWidth: 4),
     DocumentSeries(docType: 'purchase_order', prefix: 'PO', padWidth: 4),
     DocumentSeries(docType: 'assembly', prefix: 'ASM', padWidth: 4),
+    // Udhaar let go (M44): forgiven to settle, and written off. Numbered
+    // apart from receipts so the khata, a reprinted bill and the activity
+    // log say which it was.
+    DocumentSeries(docType: 'settlement_discount', prefix: 'SD', padWidth: 4),
+    DocumentSeries(docType: 'write_off', prefix: 'WO', padWidth: 4),
   ];
 
   static DocumentSeries? forType(String docType) {

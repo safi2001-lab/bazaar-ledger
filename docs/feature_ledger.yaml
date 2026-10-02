@@ -1580,6 +1580,63 @@ milestones:
       - lib/features/khata/send_reminder.dart
       - lib/features/settings/reminder_templates_screen.dart
 
+  - id: M44
+    title: "Baqi chhor do: a balance settled with a discount or written off, with the reason kept"
+    # Opened and sealed 3 Oct 2026 at 1/1. Taking money on a khata now
+    # offers "let the rest go": a customer owing Rs 10,000 hands over
+    # Rs 9,500, the receipt is taken as any receipt is, and the Rs 500 it
+    # did not cover settles the remaining bills and is posted to a new
+    # Settlement Discount expense (6410, beside Bad Debts, apart from
+    # Discount Given, which is off the price at the counter). A balance
+    # given up on is written off from the khata — all of it, or the bills
+    # picked — with a reason that may not be blank, to the Bad Debts
+    # expense the chart has carried since M0. The khata shows each as a
+    # line ("Riayat SD-…", "Doobi hui raqam WO-…"); the chase list opens a
+    # list of everything let go with who, why, how much and who let it go,
+    # cancelled ones struck through.
+    #
+    # Modelled as an allowance: a payment in of mode `adjustment` (the mode
+    # the schema has kept since M0 for exactly this), allocated to bills the
+    # way a receipt is and written by the receipt's own writer, with the
+    # debit on the expense instead of the drawer. So the receivable comes
+    # down by exactly what was let go, the profit and loss shows it, the
+    # books balance in the same commit, and no cash figure moves: its rows
+    # sit under a hidden payment account of mode `adjustment`, which the
+    # drawer, the cash book and the day close (all read mode `cash`) never
+    # count and no tender sheet offers. Each kind has its own number series
+    # (SD-, WO-), so a reprinted bill, the khata and the activity log say
+    # which it was without a column — no schema change was open. A
+    # write-off of an opening balance clears it on the customer's advances,
+    # as a receipt against an opening balance does.
+    #
+    # Reversible by M31's cancel, unchanged in spirit: the cancel path finds
+    # an allowance's entry by its narration as it finds a receipt's, mirrors
+    # it, reopens the bills and strikes the allocations, so a cancelled
+    # write-off puts the udhaar back to the paisa. An edit is refused in
+    # words (the edit path would take it back as money); the payment page
+    # offers only Cancel for one, and no receipt PDF.
+    #
+    # Permissions: a write-off needs M31's correctEntries (owner, manager,
+    # accountant). A settlement discount is open to whoever takes payments
+    # within their role's discount ceiling (a cashier five per cent of what
+    # is settled, M22), and unlimited to whoever may write off; past the
+    # ceiling the sheet says who can, and the service refuses anyway. The
+    # bad-debts list reads `services.udhaar.queries.allowances`, which a
+    # reports milestone can register as the Bad Debts report by period.
+    #
+    # Not built, and why: a settlement discount with no money taken at all
+    # (that is a write-off, and is done as one); recovering a written-off
+    # debt as income (cancel the write-off and take the money, which keeps
+    # one story on the khata); a write-off of what a supplier is owed.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/receivables/allowance.dart
+      - packages/pk_domain/lib/src/ports/settlement_writer.dart
+      - packages/pk_application/lib/src/settle_khata_use_case.dart
+      - packages/pk_data/lib/src/write/drift_settlement_writer.dart
+      - lib/features/khata/write_off_sheet.dart
+      - lib/features/khata/bad_debts_screen.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6184,3 +6241,38 @@ features:
       - the shop's payment details reach the message
       - at 200% on a small phone the round and the tick list fit
       - at 200% on a small phone the reminder messages screen fits
+  - id: M44-LETGO-01
+    milestone: M44
+    title: A balance is settled with a discount or written off as a bad debt, with its reason, balanced, listed and reversible
+    status: done
+    # Allowances are payments of mode adjustment debiting an expense; the
+    # books, the drawer and the cancel path are checked against a real
+    # database and through the screens.
+    proof:
+      - a write-off debits the expense and credits the receivable, and balances
+      - a write-off has to say why
+      - a write-off lets go only what is owed
+      - a write-off of picked bills clears exactly those, in full
+      - a write-off of an opening balance clears it the way a receipt does
+      - a settlement discount goes oldest first and says what it is
+      - a settlement discount is known by its number
+      - who may let udhaar go a cashier up to their ceiling, and no further
+      - who may let udhaar go whoever puts the books right, any amount, and a write-off
+      - settling with a discount Rs 9,500 taken on Rs 10,000 settles every bill and posts Rs 500 to the settlement discount
+      - settling with a discount the profit and loss shows the discount as an expense
+      - settling with a discount a discount larger than what is left is refused, and nothing is written
+      - writing off the whole balance goes to bad debts with its reason, and the khata shows the line
+      - writing off chosen bills go in full and the rest is still owed
+      - writing off an opening balance is written off too
+      - writing off a write-off cancelled puts the udhaar back exactly, and is marked in the list
+      - writing off a write-off is not edited into a receipt
+      - writing off a write-off says why, or is refused
+      - an older shop whose settlement discount account was archived is refused in words, and nothing is written
+      - an older shop the allowance accounts are hidden from every tender
+      - Rs 9,500 taken on Rs 10,000 with the rest let go settles every bill
+      - a cashier lets go up to their ceiling, and is told who can past it
+      - a balance is written off with its reason, shows on the khata, and is cancelled back
+      - the bills picked are written off and the rest is still owed
+      - what was let go is listed with who, why and how much
+      - at 200% on a small phone the write-off sheet and the list of what was let go fit
+      - at 200% on a small phone the receipt sheet with the rest let go fits

@@ -23,6 +23,7 @@ import 'receive_payment_sheet.dart';
 import 'send_reminder.dart';
 import 'statement.dart';
 import 'udhaar_providers.dart';
+import 'write_off_sheet.dart';
 
 /// One customer's khata: what they owe, on which bills, and a way to take it.
 ///
@@ -78,6 +79,16 @@ class KhataScreen extends ConsumerWidget {
               icon: Icons.chat_outlined,
               label: s.khataRemind,
               onPressed: () => unawaited(_remind(context, ref, current)),
+            ),
+          // Given up on as a bad debt (M44): whoever may put the books right.
+          if (receivable &&
+              current.balance.isPositive &&
+              ref.read(appServicesProvider).udhaar.mayWriteOffNow)
+            BlIconButton(
+              icon: Icons.money_off_outlined,
+              label: s.khataWriteOff,
+              onPressed: () =>
+                  unawaited(showWriteOffSheet(context, party: current)),
             ),
           // A charge with no sale behind it: a bank's bounce fee, a
           // transporter's fare.
@@ -472,6 +483,9 @@ class _History extends ConsumerWidget {
                           Icon(
                             entry.kind == 'return'
                                 ? Icons.undo
+                                : AllowanceKind.ofPaymentNo(entry.reference) !=
+                                      null
+                                ? Icons.money_off_outlined
                                 : entry.isPayment
                                 ? Icons.south_west
                                 : Icons.north_east,
@@ -491,6 +505,21 @@ class _History extends ConsumerWidget {
                                   switch (entry.kind) {
                                     'opening' => s.partyOpeningBalance,
                                     'return' => s.khataReturn(entry.reference),
+                                    // Let go, not paid (M44).
+                                    'payment' =>
+                                      switch (AllowanceKind.ofPaymentNo(
+                                        entry.reference,
+                                      )) {
+                                        AllowanceKind.settlementDiscount =>
+                                          s.allowanceDiscountLine(
+                                            entry.reference,
+                                          ),
+                                        AllowanceKind.writeOff =>
+                                          s.allowanceWriteOffLine(
+                                            entry.reference,
+                                          ),
+                                        null => entry.reference,
+                                      },
                                     _ => entry.reference,
                                   },
                                   maxLines: 1,

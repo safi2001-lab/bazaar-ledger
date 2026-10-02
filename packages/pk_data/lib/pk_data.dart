@@ -37,6 +37,7 @@ export 'src/write/drift_purchase_writer.dart';
 export 'src/write/drift_quotation_writer.dart';
 export 'src/write/drift_return_writer.dart';
 export 'src/write/drift_sale_writer.dart';
+export 'src/write/drift_settlement_writer.dart';
 export 'src/write/drift_shop_money_writer.dart';
 export 'src/write/drift_staff_store.dart';
 export 'src/write/drift_udhaar_store.dart';

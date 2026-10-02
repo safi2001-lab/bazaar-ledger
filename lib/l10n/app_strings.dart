@@ -9115,6 +9115,216 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Aslam Karyana'**
   String get templatesSampleName;
+
+  /// No description provided for @khataWriteOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi hui raqam likhein'**
+  String get khataWriteOff;
+
+  /// No description provided for @writeOffTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi hui raqam'**
+  String get writeOffTitle;
+
+  /// No description provided for @writeOffExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh raqam khate se hat kar \'Doobi hui raqam\' kharche mein jayegi aur munafa nuqsan mein nazar aayegi. Ghalti ho to khate mein is entry ko mansookh karein, udhaar wapas aa jayega.'**
+  String get writeOffExplain;
+
+  /// No description provided for @writeOffWhole.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul baqaya: Rs {amount}'**
+  String writeOffWhole(String amount);
+
+  /// No description provided for @writeOffWholeShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poora baqaya'**
+  String get writeOffWholeShort;
+
+  /// No description provided for @writeOffBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf kuch bill'**
+  String get writeOffBills;
+
+  /// No description provided for @writeOffWhy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kyun chhor rahe hain?'**
+  String get writeOffWhy;
+
+  /// No description provided for @writeOffReasonMoved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak chala gaya'**
+  String get writeOffReasonMoved;
+
+  /// No description provided for @writeOffReasonDied.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wafaat ho gayi'**
+  String get writeOffReasonDied;
+
+  /// No description provided for @writeOffReasonRefused.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dene se inkaar'**
+  String get writeOffReasonRefused;
+
+  /// No description provided for @writeOffReasonClosed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Un ka kaam band'**
+  String get writeOffReasonClosed;
+
+  /// No description provided for @writeOffReasonText.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah likhein'**
+  String get writeOffReasonText;
+
+  /// No description provided for @writeOffReasonRequired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah zaroori hai'**
+  String get writeOffReasonRequired;
+
+  /// No description provided for @writeOffPickBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam se kam aik bill chunein'**
+  String get writeOffPickBills;
+
+  /// No description provided for @writeOffSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi hui raqam mein likh dein'**
+  String get writeOffSave;
+
+  /// No description provided for @writeOffSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{no}: Rs {amount} doobi hui raqam mein likh diye'**
+  String writeOffSaved(String no, String amount);
+
+  /// No description provided for @badDebtsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhori hui raqam'**
+  String get badDebtsTitle;
+
+  /// No description provided for @badDebtsWrittenOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi hui'**
+  String get badDebtsWrittenOff;
+
+  /// No description provided for @badDebtsDiscounts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Riayat'**
+  String get badDebtsDiscounts;
+
+  /// No description provided for @badDebtsEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi kuch nahi chhora'**
+  String get badDebtsEmpty;
+
+  /// No description provided for @allowanceTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul (mansookh ke ilawa)'**
+  String get allowanceTotal;
+
+  /// No description provided for @allowanceBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ne chhora'**
+  String allowanceBy(String name);
+
+  /// No description provided for @allowanceDiscountLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Riayat {no}'**
+  String allowanceDiscountLine(String no);
+
+  /// No description provided for @allowanceWriteOffLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi hui raqam {no}'**
+  String allowanceWriteOffLine(String no);
+
+  /// No description provided for @entryDiscountTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Riayat {no}'**
+  String entryDiscountTitle(String no);
+
+  /// No description provided for @entryWriteOffTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doobi hui raqam {no}'**
+  String entryWriteOffTitle(String no);
+
+  /// No description provided for @entryAllowanceNoEdit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Isay badla nahi jata: mansookh kar ke dobara likhein.'**
+  String get entryAllowanceNoEdit;
+
+  /// No description provided for @tenderModeAdjustment.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhoot'**
+  String get tenderModeAdjustment;
+
+  /// No description provided for @settleDiscountToggle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi chhor dein (riayat se hisaab saaf)'**
+  String get settleDiscountToggle;
+
+  /// No description provided for @settleDiscountLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Riayat: Rs {amount}, sab bill saaf'**
+  String settleDiscountLine(String amount);
+
+  /// No description provided for @settleDiscountNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itne mein poora hisaab saaf hai, riayat ki zaroorat nahi'**
+  String get settleDiscountNone;
+
+  /// No description provided for @settleDiscountReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Riayat ki wajah (marzi se)'**
+  String get settleDiscountReason;
+
+  /// No description provided for @settleDiscountSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} wasool, Rs {discount} chhor diye'**
+  String settleDiscountSaved(String amount, String discount);
+
+  /// No description provided for @settleDiscountOverCeiling.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itni riayat aap ki hadd se ziyada hai. Malik, manager ya accountant se karwayein.'**
+  String get settleDiscountOverCeiling;
+
+  /// No description provided for @chaseBadDebts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhori hui raqam'**
+  String get chaseBadDebts;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

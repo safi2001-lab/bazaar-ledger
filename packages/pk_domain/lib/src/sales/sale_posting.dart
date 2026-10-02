@@ -158,6 +158,7 @@ final class PaymentPosting {
     this.chequeNo,
     this.chequeBank,
     this.chequeDateUtcMillis,
+    this.notes,
   });
 
   final String paymentNo;
@@ -180,6 +181,9 @@ final class PaymentPosting {
   final String? chequeNo;
   final String? chequeBank;
   final int? chequeDateUtcMillis;
+
+  /// Words kept on the payment row: why udhaar was let go (M44).
+  final String? notes;
 
   bool get isCheque => mode == 'cheque';
 }

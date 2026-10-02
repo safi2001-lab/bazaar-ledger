@@ -49,8 +49,8 @@ void main() {
       // the loop ran; empty the list and it becomes 0 == 0.
       // 38 since M6 added Cheques Issued, 39 since M7 added Goods on Challan,
       // 40 since M9 added Cash Short and Over, 41 since M10 added Opening
-      // Balances.
-      expect(await count('accounts'), 42);
+      // Balances, 43 since M44 added Settlement Discount.
+      expect(await count('accounts'), 43);
       // pcs, dozen, kg, g, maund, seer, tola, l, ml, cm, m, gaz; and the
       // packs M56 added, carton, dabba, packet, strip and tablet, which
       // ship with no conversion because their size belongs to the item.

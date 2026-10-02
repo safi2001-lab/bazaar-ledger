@@ -149,4 +149,89 @@ final class UdhaarServices {
     if (firm == null) return const [];
     return queries.remindersSent(firm.id, partyId);
   }
+
+  // -------------------------------------------------------------------------
+  // Udhaar let go (M44)
+  // -------------------------------------------------------------------------
+
+  /// The signed-in role; the owner on a shop with no staff.
+  Role get _role => _app._signedIn?.role ?? Role.owner;
+
+  SettleKhataUseCase get _settle =>
+      SettleKhataUseCase(writer: DriftSettlementWriter(runner: _app._runner));
+
+  /// Whether whoever is signed in may let [discount] go to settle with
+  /// [received] — asked by the sheet before Save, so it can say so in
+  /// words instead of offering a button the books then refuse.
+  bool maySettle({required Money received, required Money discount}) =>
+      _app.can(Permission.takePayments) &&
+      settlementDiscountAllowed(
+        role: _role,
+        settled: received + discount,
+        discount: discount,
+      );
+
+  /// Whether whoever is signed in may write a balance off.
+  bool get mayWriteOffNow =>
+      _app.can(Permission.takePayments) && _app.can(Permission.correctEntries);
+
+  /// Takes [receipt] and lets [discount] go off what is left: "Rs 9,500
+  /// mile, Rs 500 chhor diye", every bill settled.
+  ///
+  /// Whoever takes payments may, within their role's discount ceiling (a
+  /// cashier five per cent of what is settled, M22); whoever may put the
+  /// books right may let any amount go, as they could write it all off.
+  Future<SettledKhata> settleWithDiscount(
+    ReceiptDraft receipt, {
+    required Money discount,
+    String reason = '',
+  }) {
+    _app.require(Permission.takePayments);
+    // A cheque is a cheque however it is settled (M21).
+    if (receipt.mode == 'cheque') _app.plans.require(PlanFeature.cheques);
+    if (discount.isPositive &&
+        !settlementDiscountAllowed(
+          role: _role,
+          settled: receipt.amount + discount,
+          discount: discount,
+        )) {
+      throw PermissionDenied(
+        Permission.correctEntries,
+        'Rs ${discount.amountOnly} off Rs '
+        '${(receipt.amount + discount).amountOnly} is more than a '
+        '${_role.name} may let go. The owner, a manager or the accountant '
+        'can settle it.',
+      );
+    }
+    return _settle.settleWithDiscount(
+      _app.actorNow(),
+      receipt: receipt,
+      discount: discount,
+      reason: reason,
+    );
+  }
+
+  /// Writes [amount] of [partyId]'s udhaar off as a bad debt: the whole
+  /// balance, or the bills in [documentIds], with [reason]. Only whoever
+  /// may put the books right (M31's permission): a write-off is the books
+  /// saying the money will not come.
+  Future<RecordedReceipt> writeOff(
+    String partyId, {
+    required String reason,
+    required Money amount,
+    List<String>? documentIds,
+  }) {
+    _app.require(Permission.takePayments);
+    _app.require(Permission.correctEntries);
+    return _settle.letGo(
+      _app.actorNow(),
+      AllowanceDraft(
+        partyId: partyId,
+        kind: AllowanceKind.writeOff,
+        amount: amount,
+        reason: reason,
+        documentIds: documentIds,
+      ),
+    );
+  }
 }

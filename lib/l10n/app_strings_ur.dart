@@ -5219,4 +5219,131 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get templatesSampleName => 'Aslam Karyana';
+
+  @override
+  String get khataWriteOff => 'Doobi hui raqam likhein';
+
+  @override
+  String get writeOffTitle => 'Doobi hui raqam';
+
+  @override
+  String get writeOffExplain =>
+      'Yeh raqam khate se hat kar \'Doobi hui raqam\' kharche mein jayegi aur munafa nuqsan mein nazar aayegi. Ghalti ho to khate mein is entry ko mansookh karein, udhaar wapas aa jayega.';
+
+  @override
+  String writeOffWhole(String amount) {
+    return 'Kul baqaya: Rs $amount';
+  }
+
+  @override
+  String get writeOffWholeShort => 'Poora baqaya';
+
+  @override
+  String get writeOffBills => 'Sirf kuch bill';
+
+  @override
+  String get writeOffWhy => 'Kyun chhor rahe hain?';
+
+  @override
+  String get writeOffReasonMoved => 'Gahak chala gaya';
+
+  @override
+  String get writeOffReasonDied => 'Wafaat ho gayi';
+
+  @override
+  String get writeOffReasonRefused => 'Dene se inkaar';
+
+  @override
+  String get writeOffReasonClosed => 'Un ka kaam band';
+
+  @override
+  String get writeOffReasonText => 'Wajah likhein';
+
+  @override
+  String get writeOffReasonRequired => 'Wajah zaroori hai';
+
+  @override
+  String get writeOffPickBills => 'Kam se kam aik bill chunein';
+
+  @override
+  String get writeOffSave => 'Doobi hui raqam mein likh dein';
+
+  @override
+  String writeOffSaved(String no, String amount) {
+    return '$no: Rs $amount doobi hui raqam mein likh diye';
+  }
+
+  @override
+  String get badDebtsTitle => 'Chhori hui raqam';
+
+  @override
+  String get badDebtsWrittenOff => 'Doobi hui';
+
+  @override
+  String get badDebtsDiscounts => 'Riayat';
+
+  @override
+  String get badDebtsEmpty => 'Abhi kuch nahi chhora';
+
+  @override
+  String get allowanceTotal => 'Kul (mansookh ke ilawa)';
+
+  @override
+  String allowanceBy(String name) {
+    return '$name ne chhora';
+  }
+
+  @override
+  String allowanceDiscountLine(String no) {
+    return 'Riayat $no';
+  }
+
+  @override
+  String allowanceWriteOffLine(String no) {
+    return 'Doobi hui raqam $no';
+  }
+
+  @override
+  String entryDiscountTitle(String no) {
+    return 'Riayat $no';
+  }
+
+  @override
+  String entryWriteOffTitle(String no) {
+    return 'Doobi hui raqam $no';
+  }
+
+  @override
+  String get entryAllowanceNoEdit =>
+      'Isay badla nahi jata: mansookh kar ke dobara likhein.';
+
+  @override
+  String get tenderModeAdjustment => 'Chhoot';
+
+  @override
+  String get settleDiscountToggle => 'Baqi chhor dein (riayat se hisaab saaf)';
+
+  @override
+  String settleDiscountLine(String amount) {
+    return 'Riayat: Rs $amount, sab bill saaf';
+  }
+
+  @override
+  String get settleDiscountNone =>
+      'Itne mein poora hisaab saaf hai, riayat ki zaroorat nahi';
+
+  @override
+  String get settleDiscountReason => 'Riayat ki wajah (marzi se)';
+
+  @override
+  String settleDiscountSaved(String amount, String discount) {
+    return 'Rs $amount wasool, Rs $discount chhor diye';
+  }
+
+  @override
+  String get settleDiscountOverCeiling =>
+      'Itni riayat aap ki hadd se ziyada hai. Malik, manager ya accountant se karwayein.';
+
+  @override
+  String get chaseBadDebts => 'Chhori hui raqam';
 }

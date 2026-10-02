@@ -192,6 +192,8 @@ String modeLabel(AppStrings s, String mode) => switch (mode) {
   'raast' => s.tenderModeRaast,
   'card' => s.tenderModeCard,
   'cheque' => s.tenderModeCheque,
+  // A settlement discount or a write-off (M44): nothing came.
+  'adjustment' => s.tenderModeAdjustment,
   _ => mode,
 };
 
