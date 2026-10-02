@@ -22,35 +22,39 @@ Last updated: 2 Oct 2026.
   `dart analyze --fatal-infos`, `tool/arch_check.dart`, ledger shape, every
   package test, the app tests, and ledger proofs.
 - Every string in both English and Roman Urdu.
-- No database schema change without coordinating the version number (v8 now).
+- No database schema change without coordinating the version number (v8 now; v9 is reserved for M56 if it needs one).
 - Agents building this work alone: a subagent may not launch its own
   subagents. Every subagent brief says so.
 
-## Wave 1 — tester complaints and the reports hub (in progress)
+## Wave 1 — tester complaints and the reports hub (M30, M31, M32 done; M33 in progress)
 
-### M30 · A bill is found again and sent again
+### M30 · A bill is found again and sent again — DONE (7475907, merged)
 Tester: "we can share an invoice when we make it, but not later."
-- [ ] Sales list: search by bill no, customer name, phone, amount
-- [ ] Sales list: filters — today / week / month / last month / custom; paid / udhaar / cancelled
-- [ ] Row actions on every bill: Share PDF, Send on WhatsApp, Print
-- [ ] Send on WhatsApp to the customer's own number with a typed summary
-- [ ] Share a bill as an image (PNG), not only PDF
-- [ ] Purchase bills, quotations, challans can be opened later and shared
-- [ ] Tests + ledger rows; all gates green
+- [x] Sales list: search by bill no, customer name, phone (any format), amount (5525 / 5,525 / Rs 5525)
+- [x] Sales list: filters — all / today / this week / this month / last month / date range; all / paid / udhaar / cancelled (in SQL, paging kept)
+- [x] Send button and long-press on every bill row (list and home): WhatsApp, PDF, picture, print
+- [x] WhatsApp opens the customer's own chat with shop, bill no, date, total, paid, still owed typed out; no number → share sheet
+- [x] Share a bill as a picture (PNG) — no new dependency
+- [x] Purchase bills (now openable — a tap used to go straight to send-back), quotations and challans can be opened later and shared
+- [x] CANCELLED / MANSOOKH mark on a cancelled bill's PDF, picture and message; DUPLICATE / DOBARA COPY on a bill already printed
+- [x] Tests + ledger rows (22 proofs); gates green
+- Not built: a file straight into a named WhatsApp chat (WhatsApp links carry text only; files go through the share sheet with the message as caption); marks on thermal reprints; opening returns (no list yet).
 
-### M31 · Every khata entry can be opened and put right
+### M31 · Every khata entry can be opened and put right — DONE (cb3f157, merged)
 Tester: "customer account entries aren't editable once added."
-- [ ] Khata open bills show the bill number (not an internal ID) and open the bill
-- [ ] Every khata history entry is tappable (bill → bill; payment → payment detail)
-- [ ] Payment detail: share a payment receipt PDF
-- [ ] Cancel a payment received / paid (reversal, allocations released, balances right)
-- [ ] Cheque payments respect the cheque lifecycle
-- [ ] Edit a payment / charge / expense = cancel + re-record in one transaction
-- [ ] Expenses openable with Edit and Cancel
-- [ ] A party's opening balance can be corrected
-- [ ] Permission: a cashier cannot cancel or edit money entries
-- [ ] A posted sale bill still offers no edit
-- [ ] Tests + ledger rows; all gates green
+- [x] Khata open bills show the bill number and date (not an internal ID) and open the bill
+- [x] Every khata line opens: bill → bill; payment → payment page (amount, mode, account, cheque, bills settled, who/when, edit history); charge; bounced cheque; opening balance
+- [x] Payment receipt PDF to share (marked CANCELLED with the reason if cancelled)
+- [x] Cancel a payment received / paid: mirror entry, bills owed again, allocations released, audit row
+- [x] Cheque at the bank / cleared / bounced: refused in words (it moves through the Cheques screen)
+- [x] Edit a payment / charge / expense = cancel + re-record in one transaction (a failed edit leaves the original)
+- [x] Expenses open from the list with Edit and Cancel
+- [x] A party's opening balance can be corrected (from the khata or the party's details)
+- [x] Reason presets: Wrong entry / Duplicate / Wrong amount / Customer dispute / Other
+- [x] New permission "correct entries": owner, manager, accountant — not a cashier
+- [x] A posted sale bill still offers no edit
+- [x] Tests (14 database tests + 8 widget tests) + ledger row; gates green
+- Not built: moving a payment to another party (cancel + re-enter); back-dated corrections; showing cancelled entries struck through; returns to a supplier opening.
 
 ### M32 · A new customer or item is added from the bill — DONE (3e1f50a, merged)
 Tester: "in Vyapar a new product or person is added while billing."
@@ -119,21 +123,21 @@ time, on the latest master (schema is v8 today).
 - [ ] M37 · (in progress) Last 5 rates for this party and item, shown when the item goes on the bill, one tap to reuse; a loose-item line (amount only, never saved as an item)
 - [ ] M43 · Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
 - [ ] M45 · Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
-- [ ] M51 · Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
+- [ ] M51 · (in progress) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
 - [ ] M53 · Negative stock policy per item (allow / warn / block); app font-size setting
 - [ ] Recurring bills (weekly/monthly for fixed customers), made on the phone when due
-- [ ] Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
+- [ ] (in M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
 
 ### Udhaar and money
-- [ ] M38 · Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
-- [ ] M39 · Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
-- [ ] M44 · Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
+- [ ] M38 · (in progress) Credit days → due date on every bill; promise-to-pay ("wasooli") date per customer; a "due today / overdue" list on the home screen; ageing by due date with a "not yet due" bucket
+- [ ] M39 · (in progress) Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
+- [ ] M44 · (in progress) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
 - [ ] M48 · (in progress) Loan accounts: loan taken, repayments split into principal and interest, loan statement
 - [ ] M55 · Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
 - [ ] Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
 
 ### Stock and buying
-- [ ] M40 · Party groups (area, route, mohalla, type) — set on parties, used by every report
+- [ ] M40 · (in progress) Party groups (area, route, mohalla, type) — set on parties, used by every report
 - [ ] M41 · Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
 - [ ] M49 · Pharmacy pack: near-expiry by supplier, expiry return to the supplier with a return note, salt/generic search with substitutes, Schedule B/D register
 - [ ] M50 · Mobile-shop pack: IMEI search and history, warranty end date, PTA status field + SMS to 8484, used-phone purchase with seller's CNIC and photo, qist (instalment) plans with overdue list and guarantor
@@ -150,15 +154,15 @@ time, on the latest master (schema is v8 today).
 - [ ] Saved report views ("my Monday udhaar list")
 
 ### Getting shops to switch
-- [ ] M52 · Importer presets for Vyapar and Khatabook Excel exports (items, parties, opening balances) — Vyapar's service in Pakistan is disrupted and its users are stranded
+- [ ] M52 · (in progress) Importer presets for Vyapar and Khatabook Excel exports (items, parties, opening balances) — Vyapar's service in Pakistan is disrupted and its users are stranded
 
 ### Pakistan specifics (from the research appendix §1–2)
 - [ ] Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
 - [ ] Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
 - [ ] FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
 - [ ] Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
-- [ ] Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
-- [ ] Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams
+- [ ] M56 · (in progress) Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
+- [ ] M56 · (in progress) Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams; app text-size setting
 - [ ] Photo of a paper parchi attached to an entry (check what attachments already do)
 - [ ] Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
