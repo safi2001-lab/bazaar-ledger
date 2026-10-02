@@ -107,6 +107,10 @@ void main() {
       of: find.text('Cash flow'),
       matching: find.byType(InkWell),
     );
+    // Today's figures sit above the groups since M46, so the tile may be
+    // below the fold of the test's small screen.
+    await tester.ensureVisible(tile.first);
+    await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(
         of: tile.first,
@@ -114,6 +118,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('PASANDEEDA'), -200);
 
     expect(find.text('PASANDEEDA'), findsOneWidget);
     expect(find.text('Cash flow'), findsNWidgets(2));
