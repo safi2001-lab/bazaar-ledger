@@ -430,4 +430,8 @@ features:
 /// Every milestone a real commit subject in this repository might name. The
 /// fixture declares them all, so R5 has nothing to say about a commit that
 /// is really being used to test R4; raise it when milestones outgrow it.
-const _lastMilestone = 40;
+///
+/// Raised from 40 to 99 by M52, whose commit became the newest to touch
+/// lib/ and so the one this test borrows, and which the fixture then said
+/// nobody had declared. The build list runs past M50; 99 leaves room.
+const _lastMilestone = 99;
