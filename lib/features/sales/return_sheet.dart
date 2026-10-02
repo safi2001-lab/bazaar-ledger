@@ -28,6 +28,15 @@ import '../../l10n/app_strings.dart';
 /// sheet opening and Save. The writer re-reads inside its transaction, so the
 /// write is right and the screen was optimistic, which is the correct
 /// direction for that error to run.
+///
+/// ## In the unit it was sold in, at what was paid (M57)
+///
+/// A line sold by the maund is offered back by the maund, and plus takes
+/// one maund — not one kilo labelled a maund, which is what the sheet did
+/// when it counted in the shelf's unit and printed the bill's. What each
+/// line and the whole return give back is the domain's own figure, the
+/// share of what the line was CHARGED, after its discount and its part of
+/// the bill's: the number on this sheet is the number that gets written.
 Future<bool> showReturnSheet(
   BuildContext context, {
   required String documentId,
@@ -56,7 +65,7 @@ class _SheetState extends ConsumerState<_ReturnSheet> {
   final _reason = TextEditingController();
   final _refund = TextEditingController();
 
-  /// Thousandths chosen per document line.
+  /// Thousandths chosen per document line, in the unit it was sold in.
   final _chosen = <String, int>{};
 
   bool _busy = false;
@@ -71,8 +80,7 @@ class _SheetState extends ConsumerState<_ReturnSheet> {
 
   Money _total(List<SoldLine> lines) => Money.sum([
     for (final line in lines)
-      if ((_chosen[line.documentLineId] ?? 0) > 0)
-        line.rate.amountFor(Qty.raw(_chosen[line.documentLineId]!)),
+      ?_refundOf(line, _chosen[line.documentLineId] ?? 0),
   ]);
 
   Future<void> _save(List<SoldLine> lines) async {
@@ -256,6 +264,19 @@ class _SheetState extends ConsumerState<_ReturnSheet> {
   }
 }
 
+/// What [chosen] thousandths of [line], in the unit it was sold in, give
+/// back: the builder's own arithmetic, so the sheet cannot promise a figure
+/// the save then writes differently. Null for nothing chosen, or for a part
+/// the shelf cannot hold exactly — the save says why in words.
+Money? _refundOf(SoldLine line, int chosen) {
+  if (chosen <= 0) return null;
+  try {
+    return line.shareOf(Qty.raw(chosen)).refund;
+  } on ReturnRefused {
+    return null;
+  }
+}
+
 /// One line, with how much of it is still returnable.
 class _LineRow extends StatelessWidget {
   const _LineRow({
@@ -272,7 +293,10 @@ class _LineRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    // In the unit the line was sold in: a maund line has one maund to give
+    // back, not forty (M57).
     final max = line.returnable.inThousandths;
+    final back = _refundOf(line, chosen);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: BlTokens.space2),
@@ -297,12 +321,17 @@ class _LineRow extends StatelessWidget {
                     s.returnLeft('${line.returnable.display} ${line.unitCode}'),
                     style: TextStyle(fontSize: 12, color: t.inkMuted),
                   ),
+                  // What this line gives back, at what was paid for it, so a
+                  // shopkeeper who gave Rs 100 off can see it come back off.
+                  if (back != null) BlMoney(back, size: 13),
                 ],
               ),
             ),
-            // Whole units up and down. A kiryana return is a tin or a packet;
-            // a keyboard here would be four taps where two will do, and would
-            // let a shopkeeper type past what is left.
+            // Whole units of the unit it was sold in, up and down. A kiryana
+            // return is a tin or a packet; a keyboard here would be four
+            // taps where two will do, and would let a shopkeeper type past
+            // what is left. A part unit left over (half a maund) is reached
+            // by the clamp: plus from nothing offers all of it.
             BlIconButton(
               icon: Icons.remove_circle_outline,
               label: s.actionDelete,

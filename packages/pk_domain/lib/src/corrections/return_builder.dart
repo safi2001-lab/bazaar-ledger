@@ -22,6 +22,30 @@
 /// place: a historical document's cost is a snapshot, and every report that
 /// recomputes margin from today's average silently restates last month's
 /// profit.
+///
+/// ## The money that comes back (M57)
+///
+/// Exactly what the line was charged, never its list price. This used to
+/// multiply the rate by the quantity coming back, which was wrong twice over:
+///
+///  * a line sold with something off came back at full price. Ten soaps at
+///    Rs 100 with 10% off were paid Rs 900 for, and the return handed back
+///    Rs 1,000 — the shop paid the customer Rs 100 to change their mind, and
+///    Discount Given kept the Rs 100 it had been debited for goods that were
+///    no longer sold;
+///  * the rate is per the unit the line was SOLD in, and the quantity was in
+///    the item's base unit. A maund of atta at Rs 5,000 is forty kilos on
+///    the shelf, so the sheet offered "40 maund" back and taking them all
+///    gave the customer Rs 2,00,000 for a Rs 5,000 sale — forty times over,
+///    twelve times for a dozen, the pack size for a carton.
+///
+/// So a return now takes a SHARE of what the sale stored on the line — its
+/// total after the line discount and its part of the bill discount, its
+/// taxes, its discount and its cost — in proportion to the base quantity
+/// coming back, and the quantity is entered and recorded in the unit the
+/// line was sold in. See [returnedShare] for how the shares are rounded so
+/// that a line coming back a piece at a time gives back exactly what it was
+/// charged, to the paisa, and never more.
 library;
 
 import 'package:pk_money/pk_money.dart';
@@ -31,7 +55,90 @@ import '../sales/sale_posting.dart';
 import '../sales/sale_posting_builder.dart';
 import '../tax/tax_charge.dart';
 
+/// What one return takes of an amount spread over a line.
+///
+/// [whole] is spread evenly over [outOf] — the line's quantity, in base
+/// thousandths. Earlier returns took [before] of that quantity and this one
+/// takes [taking]. The share is the difference of two cumulative figures,
+/// each rounded once, the way the sale rounded:
+///
+///     round(whole × (before + taking) / outOf) − round(whole × before / outOf)
+///
+/// Why cumulative, rather than rounding each return's own part. Rs 299.99
+/// over three soaps is Rs 99.996 each; rounded on its own, every soap comes
+/// back at Rs 100.00 and the three refunds come to Rs 300.00 — a paisa the
+/// customer was never charged. Rounding what has come back SO FAR, and
+/// taking the difference, gives Rs 100.00, Rs 99.99 and Rs 100.00: never more
+/// than the line in total, never less, and the last return takes exactly
+/// what is left. A return of the whole line in one go is the whole amount,
+/// and the first return of any line is its own part rounded once.
+Money returnedShare(
+  Money whole, {
+  required int before,
+  required int taking,
+  required int outOf,
+  RoundingMode mode = RoundingMode.halfUp,
+}) {
+  if (outOf <= 0 || taking <= 0 || whole.isZero) return Money.zero;
+  int upTo(int n) {
+    if (n >= outOf) return whole.inPaisa;
+    if (n <= 0) return 0;
+    return _mulDiv(whole.inPaisa, n, outOf, mode);
+  }
+
+  return Money.paisa(upTo(before + taking) - upTo(before));
+}
+
+/// `value × times / over`, rounded once per [mode], without wrapping.
+///
+/// A line of a crore against a thousand maunds in thousandths is past what a
+/// 64-bit product can hold; that case goes through [BigInt] rather than
+/// wrapping silently into a negative refund.
+int _mulDiv(int value, int times, int over, RoundingMode mode) {
+  const maxSafe = 9223372036854775807;
+  if (value == 0 || times == 0) return 0;
+  if (value.abs() <= maxSafe ~/ times.abs()) {
+    return divideRounded(value * times, over, mode);
+  }
+  final n = BigInt.from(value) * BigInt.from(times);
+  final d = BigInt.from(over);
+  final magnitude = n.abs();
+  var q = magnitude ~/ d;
+  final r = magnitude.remainder(d);
+  if (r != BigInt.zero) {
+    final twice = r * BigInt.two;
+    q += switch (mode) {
+      RoundingMode.truncate => BigInt.zero,
+      RoundingMode.ceilAbs => BigInt.one,
+      RoundingMode.halfUp => twice >= d ? BigInt.one : BigInt.zero,
+      RoundingMode.halfEven =>
+        twice > d || (twice == d && q.isOdd) ? BigInt.one : BigInt.zero,
+    };
+  }
+  final result = n.isNegative ? -q : q;
+  if (!result.isValidInt) {
+    throw StateError('A share of ${Money.paisa(value)} is too large to hold.');
+  }
+  return result.toInt();
+}
+
+/// The rounding mode a document was posted with, from its stored code.
+///
+/// The inverse of `roundingModeCode`. A return rounds its shares the way
+/// the bill it came off rounded, so the paisa land where they landed.
+RoundingMode roundingModeFor(String? code) => switch (code) {
+  'half_even' => RoundingMode.halfEven,
+  'truncate' => RoundingMode.truncate,
+  'ceil_abs' => RoundingMode.ceilAbs,
+  _ => RoundingMode.halfUp,
+};
+
 /// One line of the original bill, as it was sold.
+///
+/// The money fields are what the bill STORED for the whole line, read off
+/// `document_lines` and `document_line_taxes`, never worked out again from
+/// the rate. A rate times a quantity knows nothing of the discount that was
+/// typed on the line or the share of the bill discount it carried.
 final class SoldLine {
   const SoldLine({
     required this.documentLineId,
@@ -43,9 +150,17 @@ final class SoldLine {
     required this.alreadyReturned,
     required this.rate,
     required this.cost,
+    this._qty,
+    this._charged,
+    this.discount = Money.zero,
     this.salesTax = Money.zero,
+    this.salesTaxBp = 0,
     this.furtherTax = Money.zero,
+    this.furtherTaxBp = 0,
     this.taxInclusive = false,
+    this.roundingMode = RoundingMode.halfUp,
+    this.itemCode,
+    this.hsCode,
   });
 
   final String documentLineId;
@@ -55,34 +170,220 @@ final class SoldLine {
   /// shelf for it to go back onto and no cost to reverse.
   final String? itemId;
   final String itemName;
+  final String? itemCode;
+
+  /// As it was on the bill, which is what a credit note to FBR (M28) has to
+  /// name — not whatever the item says today.
+  final String? hsCode;
   final String unitId;
+
+  /// The unit the line was SOLD in: maund, dozen, carton. What is left is
+  /// shown in it and what comes back is typed in it.
   final String unitCode;
 
-  /// In the item's base unit; for a loose line, as it was typed.
+  /// In the item's base unit; for a loose line, as it was typed. Stock
+  /// comes back on this.
   final Qty soldQty;
 
-  /// What earlier returns against this line already took back. A customer
-  /// returning one tin twice from a bill for two is two separate visits, and
-  /// the second must not be allowed to take back a third.
+  final Qty? _qty;
+
+  /// How much was sold, in the unit it was sold in: a maund of atta is 1
+  /// here and 40 in [soldQty]. The two together are the conversion the bill
+  /// was made with — a maund that was forty kilos on the day comes back as
+  /// forty kilos, whatever the shop's maund says now, the same snapshot rule
+  /// as the cost.
+  Qty get qty => _qty ?? soldQty;
+
+  /// What earlier returns against this line already took back, in the base
+  /// unit. A customer returning one tin twice from a bill for two is two
+  /// separate visits, and the second must not be allowed to take back a
+  /// third.
   final Qty alreadyReturned;
 
-  /// What the customer paid per base unit.
+  /// What the line was priced at per the unit it was sold in, before any
+  /// discount. Printed on the return as it was on the bill; never multiplied
+  /// into what comes back.
   final Rate rate;
 
   /// What the goods cost the shop when they left, in whole paisa for the
   /// WHOLE line. A snapshot, never recomputed.
   final Money cost;
 
-  /// The sales tax on the whole line as sold, and whether it was inside the
-  /// price. A return gives back the part of it that comes back.
-  final Money salesTax;
+  final Money? _charged;
 
-  /// The further tax on the whole line as sold, always on top of the price.
+  /// What the customer was charged for the whole line: after the discount
+  /// typed on it and its share of a bill discount, with the tax added on top
+  /// where it was added on top. `line_total_paisa`. A bill rounded to the
+  /// rupee rounded the bill, not the line, so the round-off stays with it.
+  ///
+  /// Defaulted for a line built by hand (a test, a loose line) from the
+  /// rate, the discount and the tax, which is how the sale arrived at it.
+  Money get charged =>
+      _charged ??
+      rate.amountFor(qty, mode: roundingMode) -
+          discount +
+          (taxInclusive ? Money.zero : salesTax) +
+          furtherTax;
+
+  /// The line discount and the line's share of the bill discount, together:
+  /// what the sale debited to Discount Given for this line.
+  final Money discount;
+
+  /// Every tax on the line that the sale credited to Output Sales Tax, and
+  /// its rate. Whether it was inside the price is [taxInclusive].
+  final Money salesTax;
+  final int salesTaxBp;
+
+  /// The further tax on the line, always on top of the price.
   final Money furtherTax;
+  final int furtherTaxBp;
   final bool taxInclusive;
 
-  Qty get returnable =>
-      Qty.raw(soldQty.inThousandths - alreadyReturned.inThousandths);
+  /// How the bill rounded. Its shares round the same way.
+  final RoundingMode roundingMode;
+
+  /// What is left to come back, in the base unit.
+  Qty get returnableBase {
+    final left = soldQty.inThousandths - alreadyReturned.inThousandths;
+    return left > 0 ? Qty.raw(left) : Qty.zero;
+  }
+
+  /// What is left to come back, in the unit it was sold in: what the sheet
+  /// shows and what a shopkeeper may type. Rounded down, so it never offers
+  /// more than the shelf took away.
+  Qty get returnable {
+    final left = returnableBase.inThousandths;
+    if (left == 0 || soldQty.inThousandths <= 0) return Qty.zero;
+    if (qty.inThousandths == soldQty.inThousandths) return Qty.raw(left);
+    return Qty.raw(
+      _mulDiv(
+        left,
+        qty.inThousandths,
+        soldQty.inThousandths,
+        RoundingMode.truncate,
+      ),
+    );
+  }
+
+  /// [inUnit] of the unit sold, in the base unit — exactly, or refused.
+  ///
+  /// Everything that is left always converts to everything that is left,
+  /// so a line one earlier visit took an awkward part of can still be
+  /// emptied.
+  Qty _baseOf(Qty inUnit) {
+    if (inUnit == returnable) return returnableBase;
+    if (qty.inThousandths == soldQty.inThousandths) return inUnit;
+    final numerator = inUnit.inThousandths * soldQty.inThousandths;
+    if (numerator % qty.inThousandths != 0) {
+      throw ReturnRefused(
+        '${inUnit.display} $unitCode of $itemName does not come out even on '
+        'the shelf. Take back a whole number of $unitCode, or all of it.',
+      );
+    }
+    return Qty.raw(numerator ~/ qty.inThousandths);
+  }
+
+  /// What coming back [inUnit] of the unit sold gives back, exactly.
+  ///
+  /// Refused, in words, for nothing at all and for more than is left.
+  ReturnShare shareOf(Qty inUnit) {
+    if (!inUnit.isPositive) {
+      throw ReturnRefused('A return of nothing on $itemName is not a return.');
+    }
+    if (inUnit > returnable) {
+      // The check that stops a customer returning three tins from a bill
+      // for two — across visits, not just within one. Without counting what
+      // earlier returns took, a shop can be walked out of its entire stock
+      // one bill at a time. Counted in the unit it was sold in, so a maund
+      // sold is one maund, not forty.
+      throw ReturnRefused(
+        'Only ${returnable.display} $unitCode of $itemName is left to come '
+        'back on that bill.',
+      );
+    }
+    final base = _baseOf(inUnit);
+    final before = alreadyReturned.inThousandths;
+    Money part(Money whole) => returnedShare(
+      whole,
+      before: before < 0 ? 0 : before,
+      taking: base.inThousandths,
+      outOf: soldQty.inThousandths,
+      mode: roundingMode,
+    );
+
+    final refund = part(charged);
+    var st = part(salesTax);
+    var ft = part(furtherTax);
+    // The value of the goods is what is left of the refund once the taxes
+    // on it are taken out, so the three always add back to the refund and
+    // the entry balances to the paisa. Each is rounded on its own, so on a
+    // return worth less than a few paisa the taxes could come to more than
+    // the refund; the tax gives way, because the refund is what the
+    // customer is owed and a negative value of goods is not a return.
+    var taxable = refund - st - ft;
+    if (taxable.isNegative) {
+      var short = -taxable;
+      final fromFurther = short < ft ? short : ft;
+      ft -= fromFurther;
+      short -= fromFurther;
+      st -= short < st ? short : st;
+      taxable = refund - st - ft;
+    }
+    final discount = part(this.discount);
+    return ReturnShare(
+      qty: inUnit,
+      baseQty: base,
+      refund: refund,
+      discount: discount,
+      taxable: taxable,
+      salesTax: st,
+      furtherTax: ft,
+      gross: taxable + discount + (taxInclusive ? st : Money.zero),
+      cost: part(cost),
+    );
+  }
+}
+
+/// What one line gives back when part or all of it comes back.
+///
+/// Each figure is the returned share of what the sale stored, so it mirrors
+/// the sale line for line: [refund] is [taxable] plus both taxes, and
+/// [gross] is the price before the discount, as on the bill.
+final class ReturnShare {
+  const ReturnShare({
+    required this.qty,
+    required this.baseQty,
+    required this.refund,
+    required this.discount,
+    required this.taxable,
+    required this.salesTax,
+    required this.furtherTax,
+    required this.gross,
+    required this.cost,
+  });
+
+  /// In the unit it was sold in.
+  final Qty qty;
+
+  /// In the item's base unit: what goes back on the shelf.
+  final Qty baseQty;
+
+  /// What the customer gets back for it.
+  final Money refund;
+  final Money discount;
+
+  /// The value of the goods, after the discount and without the tax.
+  final Money taxable;
+  final Money salesTax;
+  final Money furtherTax;
+  final Money gross;
+
+  /// At what the goods left at. See the library comment.
+  final Money cost;
+
+  /// What Sales Returns is debited: what the sale credited to Sales for
+  /// these goods, before the discount, which comes back off Discount Given.
+  Money get sales => taxable + discount;
 }
 
 /// How much of one line is coming back.
@@ -90,6 +391,9 @@ final class ReturnLineDraft {
   const ReturnLineDraft({required this.documentLineId, required this.qty});
 
   final String documentLineId;
+
+  /// In the unit the line was sold in — a maund line comes back in maunds
+  /// (M57). On a delivery, in the unit it was billed in.
   final Qty qty;
 }
 
@@ -219,10 +523,14 @@ final class ReturnBuilder {
     final lines = <DocumentLinePosting>[];
     final movements = <StockMovementPosting>[];
     var goods = Money.zero;
-    var goodsNetTotal = Money.zero;
+    var grossTotal = Money.zero;
+    var discountBack = Money.zero;
+    var salesBack = Money.zero;
+    var taxableBack = Money.zero;
     var salesTaxBack = Money.zero;
     var furtherTaxBack = Money.zero;
     var costBack = Money.zero;
+    var roundingMode = RoundingMode.halfUp;
     var lineNo = 1;
 
     for (final wanted in draft.lines) {
@@ -233,85 +541,64 @@ final class ReturnBuilder {
           'what was actually sold.',
         );
       }
-      if (!wanted.qty.isPositive) {
-        throw ReturnRefused(
-          'A return of nothing on ${sold.itemName} is not a return.',
-        );
-      }
-      if (wanted.qty.inThousandths > sold.returnable.inThousandths) {
-        // The check that stops a customer returning three tins from a bill
-        // for two — across visits, not just within one. Without counting what
-        // earlier returns took, a shop can be walked out of its entire stock
-        // one bill at a time.
-        throw ReturnRefused(
-          'Only ${sold.returnable.display} ${sold.unitCode} of '
-          '${sold.itemName} is left to come back on that bill.',
-        );
-      }
+      // Exactly what the line was charged, in proportion to what comes back,
+      // with the quantity in the unit it was sold in. Refused in words for
+      // nothing, and for more than is left across every earlier visit.
+      final share = sold.shareOf(wanted.qty);
+      roundingMode = sold.roundingMode;
 
-      final priceValue = sold.rate.amountFor(wanted.qty);
-      // The line's cost, pro-rated by how much of it is coming back. Whole
-      // paisa, allocated so a part return of an odd cost cannot lose one.
-      Money share(Money whole) =>
-          sold.soldQty.inThousandths == wanted.qty.inThousandths
-          ? whole
-          : whole.isZero
-          ? Money.zero
-          : whole.allocate([
-              wanted.qty.inThousandths,
-              sold.soldQty.inThousandths - wanted.qty.inThousandths,
-            ]).first;
-      final costOfReturn = share(sold.cost);
-      // The tax on what comes back comes back with it, in the same share: it
-      // was never the shop's, and the return reduces what is owed over.
-      final stBack = share(sold.salesTax);
-      final ftBack = share(sold.furtherTax);
-      final goodsNet = sold.taxInclusive ? priceValue - stBack : priceValue;
-      final refundValue = goodsNet + stBack + ftBack;
-
-      goods += refundValue;
-      goodsNetTotal += goodsNet;
-      salesTaxBack += stBack;
-      furtherTaxBack += ftBack;
-      costBack += costOfReturn;
+      goods += share.refund;
+      grossTotal += share.gross;
+      discountBack += share.discount;
+      salesBack += share.sales;
+      taxableBack += share.taxable;
+      salesTaxBack += share.salesTax;
+      furtherTaxBack += share.furtherTax;
+      costBack += share.cost;
 
       lines.add(
         DocumentLinePosting(
           lineNo: lineNo,
           itemId: sold.itemId,
           itemNameSnapshot: sold.itemName,
-          qty: wanted.qty,
+          itemCodeSnapshot: sold.itemCode,
+          hsCodeSnapshot: sold.hsCode,
+          // In the unit it was sold in, at the rate it was sold at, so the
+          // return reads like the bill it came off: "0.5 maund @ 5,000".
+          qty: share.qty,
           // A line sold with no unit named comes back with none, not with an
           // empty id pointing at no unit at all.
           unitId: sold.unitId.isEmpty ? null : sold.unitId,
           unitCodeSnapshot: sold.unitCode,
-          baseQty: wanted.qty,
+          baseQty: share.baseQty,
           rate: sold.rate,
-          gross: priceValue,
-          discount: Money.zero,
+          gross: share.gross,
+          discount: share.discount,
           discountBp: 0,
-          taxable: goodsNet,
-          tax: stBack + ftBack,
-          lineTotal: refundValue,
-          cost: costOfReturn,
+          taxable: share.taxable,
+          tax: share.salesTax + share.furtherTax,
+          lineTotal: share.refund,
+          cost: share.cost,
           isFreeItem: false,
+          // The rate the sale charged, so the sales tax summary and a credit
+          // note to FBR (M28) both say at what the tax came back.
           taxes: [
-            if (!stBack.isZero)
+            if (!share.salesTax.isZero)
               TaxCharge(
                 kind: TaxKind.salesTax,
                 code: 'ST_RETURN',
-                rateBp: 0,
-                base: goodsNet,
-                amount: stBack,
+                rateBp: sold.salesTaxBp,
+                base: share.taxable,
+                amount: share.salesTax,
                 isInclusive: sold.taxInclusive,
               ),
-            if (!ftBack.isZero)
+            if (!share.furtherTax.isZero)
               TaxCharge(
                 kind: TaxKind.furtherTax,
                 code: 'FURTHER_RETURN',
-                rateBp: 0,
-                base: goodsNet,
-                amount: ftBack,
+                rateBp: sold.furtherTaxBp,
+                base: share.taxable,
+                amount: share.furtherTax,
               ),
           ],
         ),
@@ -330,19 +617,21 @@ final class ReturnBuilder {
           itemId: itemId,
           locationCode: draft.locationCode,
           txnType: 'sale_return',
-          qtyDelta: wanted.qty,
+          // The shelf speaks the base unit: a maund comes back as forty
+          // kilos.
+          qtyDelta: share.baseQty,
           // At the cost it left at. See the library comment: today's average
           // would book a profit or a loss on a customer changing their mind.
-          rate: sold.cost.isZero
+          rate: share.cost.isZero
               ? const Rate.raw(0)
               : Rate.raw(
                   divideRounded(
-                    scaleOrThrow(costOfReturn.inPaisa, 1000000, 'return cost'),
-                    wanted.qty.inThousandths,
+                    scaleOrThrow(share.cost.inPaisa, 1000000, 'return cost'),
+                    share.baseQty.inThousandths,
                     RoundingMode.halfUp,
                   ),
                 ),
-          valueDelta: costOfReturn,
+          valueDelta: share.cost,
           occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
           occurredOnLocal: actor.businessDate.value,
           lineNo: lineNo,
@@ -384,11 +673,18 @@ final class ReturnBuilder {
     // Dr Sales Returns, gross. A contra-revenue account rather than a debit
     // to Sales, because a shopkeeper who took Rs 40,000 of returns in a month
     // needs to be able to see that number — netting it into Sales hides it.
+    //
+    // Gross of the discount, as the sale credited Sales gross, and the
+    // discount on what came back comes off Discount Given: the mirror of the
+    // sale's contra entry (M57). Netting it here instead would leave
+    // Discount Given carrying riayat on goods that are no longer sold, and
+    // the month's discount figure would overstate what was given away.
     post(
       key: 'sales_returns',
-      debit: goodsNetTotal,
+      debit: salesBack,
       narration: 'Returned on $originalDocNo',
     );
+    post(key: 'discount_given', credit: discountBack);
     // The tax charged on what came back is no longer owed over.
     post(key: 'output_tax', debit: salesTaxBack);
     post(key: 'further_tax_payable', debit: furtherTaxBack);
@@ -460,10 +756,14 @@ final class ReturnBuilder {
         fiscalYear: actor.businessDate.fiscalYear,
         docDateUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
         docDateLocal: actor.businessDate.value,
-        subtotal: goods,
-        lineDiscount: Money.zero,
+        // The same shape as the bill's own totals, so a return prints the
+        // way a bill does: the price before the discount, the discount, the
+        // tax, and what came back. The discount is the line's and its share
+        // of the bill's together; the bill stored them per line as one.
+        subtotal: grossTotal,
+        lineDiscount: discountBack,
         billDiscount: Money.zero,
-        taxable: goodsNetTotal,
+        taxable: taxableBack,
         tax: salesTaxBack,
         furtherTax: furtherTaxBack,
         withholding: Money.zero,
@@ -473,7 +773,7 @@ final class ReturnBuilder {
         paid: draft.refundNow,
         balance: Money.zero,
         cost: costBack,
-        roundingMode: 'half_up',
+        roundingMode: roundingModeCode(roundingMode),
         taxRuleVersion: '',
         cashThresholdBreached: false,
         partyId: partyId,

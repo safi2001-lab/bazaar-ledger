@@ -26,6 +26,10 @@ final returnableDeliveryProvider = FutureProvider.autoDispose
 /// line, counted through earlier returns, so a quantity the save would refuse
 /// is never offered. What the shelf can give up is checked by the writer:
 /// goods already sold cannot go back, and it says so in words.
+///
+/// Counted in the unit the delivery was billed in (M57): two maunds offer
+/// two maunds back, and plus sends one maund — forty kilos off the shelf —
+/// where it used to send one kilo with the maund's name on it.
 Future<bool> showSendBackSheet(
   BuildContext context, {
   required String documentId,
@@ -54,7 +58,7 @@ class _SheetState extends ConsumerState<_SendBackSheet> {
   final _reason = TextEditingController();
   final _refund = TextEditingController();
 
-  /// Thousandths chosen per delivery line.
+  /// Thousandths chosen per delivery line, in the unit it was billed in.
   final _chosen = <String, int>{};
 
   bool _busy = false;
@@ -67,17 +71,21 @@ class _SheetState extends ConsumerState<_SendBackSheet> {
     super.dispose();
   }
 
-  /// What the supplier credits, pro-rated the way the builder does it.
+  /// What the supplier credits, by the builder's own arithmetic.
   Money _credit(List<BoughtLine> lines) => Money.sum([
-    for (final line in lines)
-      if ((_chosen[line.documentLineId] ?? 0) > 0)
-        _chosen[line.documentLineId] == line.boughtQty.inThousandths
-            ? line.goodsValue
-            : line.goodsValue.allocate([
-                _chosen[line.documentLineId]!,
-                line.boughtQty.inThousandths - _chosen[line.documentLineId]!,
-              ]).first,
+    for (final line in lines) ?_creditOf(line, _chosen[line.documentLineId]),
   ]);
+
+  /// Null for nothing chosen, or a part the shelf cannot hold exactly; the
+  /// save says why in words.
+  static Money? _creditOf(BoughtLine line, int? chosen) {
+    if (chosen == null || chosen <= 0) return null;
+    try {
+      return line.shareOf(line.baseOf(Qty.raw(chosen))).credit;
+    } on ReturnRefused {
+      return null;
+    }
+  }
 
   Future<void> _save() async {
     if (_busy) return;

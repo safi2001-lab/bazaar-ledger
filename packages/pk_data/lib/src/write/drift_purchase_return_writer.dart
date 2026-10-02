@@ -30,8 +30,13 @@ final class DriftPurchaseReturnWriter implements PurchaseReturnWriter {
 }
 
 /// What earlier returns already sent back of one delivery line, through
-/// `doc_links`. The same subquery the read side uses, so the screen cannot
-/// offer a quantity this refuses.
+/// `doc_links`, in the base unit. The same subquery the read side uses, so
+/// the screen cannot offer a quantity this refuses.
+///
+/// Matched on the unit as well as the item (M57), which every return line
+/// copies from the line it came off: a delivery of two maunds of atta and
+/// ten kilos of the same atta is two lines, and a maund sent back off one is
+/// not counted off the other.
 const returnedOffDeliveryLine = '''
   COALESCE((
     SELECT SUM(rl.base_qty_thousandths)
@@ -45,6 +50,7 @@ const returnedOffDeliveryLine = '''
       AND r.status = 'posted'
       AND r.deleted_at_utc IS NULL
       AND rl.item_id = dl.item_id
+      AND rl.unit_code_snapshot = dl.unit_code_snapshot
       AND rl.deleted_at_utc IS NULL
   ), 0)
 ''';
@@ -86,7 +92,8 @@ final class _DriftPurchaseReturnWriteContext
     final lineRows = await _tx.select(
       '''
       SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.unit_id,
-             dl.unit_code_snapshot, dl.base_qty_thousandths,
+             dl.unit_code_snapshot, dl.qty_thousandths,
+             dl.base_qty_thousandths, dl.rate_milli_paisa,
              dl.line_total_paisa, dl.cost_paisa,
              $returnedOffDeliveryLine AS returned
       FROM document_lines dl
@@ -324,6 +331,10 @@ BoughtLine boughtLineFrom(QueryRow r) => BoughtLine(
   itemName: r.read<String>('item_name_snapshot'),
   unitId: r.readNullable<String>('unit_id') ?? '',
   unitCode: r.read<String>('unit_code_snapshot'),
+  // As billed and as shelved: the pair is the conversion the delivery was
+  // made with, which is what a maund sent back is converted by (M57).
+  qty: Qty.raw(r.read<int>('qty_thousandths')),
+  rate: Rate.raw(r.read<int>('rate_milli_paisa')),
   boughtQty: Qty.raw(r.read<int>('base_qty_thousandths')),
   alreadyReturned: Qty.raw(r.read<int>('returned')),
   goodsValue: Money.paisa(r.read<int>('line_total_paisa')),

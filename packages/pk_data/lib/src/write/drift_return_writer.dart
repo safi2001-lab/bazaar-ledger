@@ -1,7 +1,113 @@
+import 'package:drift/drift.dart' show QueryRow;
 import 'package:pk_domain/pk_domain.dart';
 
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
+
+/// Each line of a posted sale bill as a return reads it, and what earlier
+/// returns already took off it. Bound to the bill's id and the firm's.
+///
+/// One string for the sheet and for the writer, which reads it again inside
+/// its transaction. Two different counts of what is left would let the
+/// screen offer a quantity the writer then refuses, which is the worst of
+/// both — the shopkeeper picks, taps, and is told no.
+///
+/// What earlier returns took is counted through `doc_links`, so a second
+/// visit knows what the first took. Counted here rather than cached on the
+/// line, because a cache is a second answer and the whole point of the limit
+/// is that it cannot be walked past. A return line is matched to the line it
+/// came off by its item (or, for a loose line, its name), its unit and its
+/// rate, all of which it copies: a bill with a bori of atta and five kilos
+/// of the same atta has two lines, and a return off one is not counted off
+/// the other (M57). Two lines alike in all three are counted together, which
+/// can only ever offer less back than is left, never more.
+///
+/// The money is what the bill stored for the line — its total, its
+/// discount, its taxes and its cost — never rebuilt from the rate (M57).
+/// Every tax the sale credited to Output Sales Tax is summed as sales tax,
+/// as the sale posted them.
+const soldLinesSql = '''
+  SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.item_code_snapshot,
+         dl.hs_code_snapshot, dl.unit_id, dl.unit_code_snapshot,
+         dl.qty_thousandths, dl.base_qty_thousandths, dl.rate_milli_paisa,
+         dl.discount_paisa, dl.line_total_paisa, dl.cost_paisa,
+         d.rounding_mode,
+         COALESCE((
+           SELECT SUM(rl.base_qty_thousandths)
+           FROM doc_links link
+           JOIN documents r ON r.id = link.to_document_id
+           JOIN document_lines rl ON rl.document_id = r.id
+           WHERE link.from_document_id = dl.document_id
+             AND link.link_type = 'returns'
+             AND link.deleted_at_utc IS NULL
+             AND r.doc_type = 'sale_return'
+             AND r.status = 'posted'
+             AND r.deleted_at_utc IS NULL
+             AND (rl.item_id = dl.item_id
+                  -- A loose line (M37) has no item to match on. It is
+                  -- known by what it was called, which the return line
+                  -- copies from it.
+                  OR (dl.item_id IS NULL AND rl.item_id IS NULL
+                      AND rl.item_name_snapshot = dl.item_name_snapshot))
+             AND rl.rate_milli_paisa = dl.rate_milli_paisa
+             AND rl.unit_code_snapshot = dl.unit_code_snapshot
+             AND rl.deleted_at_utc IS NULL
+         ), 0) AS returned,
+         COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                    WHERE t.document_line_id = dl.id
+                      AND t.tax_kind NOT IN ('further_tax', 'withholding')
+                      AND t.deleted_at_utc IS NULL), 0) AS sales_tax,
+         COALESCE((SELECT MAX(t.rate_bp) FROM document_line_taxes t
+                    WHERE t.document_line_id = dl.id
+                      AND t.tax_kind = 'sales_tax'
+                      AND t.deleted_at_utc IS NULL), 0) AS sales_tax_bp,
+         COALESCE((SELECT MAX(t.is_inclusive) FROM document_line_taxes t
+                    WHERE t.document_line_id = dl.id
+                      AND t.tax_kind = 'sales_tax'
+                      AND t.deleted_at_utc IS NULL), 0) AS tax_inclusive,
+         COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
+                    WHERE t.document_line_id = dl.id
+                      AND t.tax_kind = 'further_tax'
+                      AND t.deleted_at_utc IS NULL), 0) AS further_tax,
+         COALESCE((SELECT MAX(t.rate_bp) FROM document_line_taxes t
+                    WHERE t.document_line_id = dl.id
+                      AND t.tax_kind = 'further_tax'
+                      AND t.deleted_at_utc IS NULL), 0) AS further_tax_bp
+  FROM document_lines dl
+  JOIN documents d ON d.id = dl.document_id
+  WHERE dl.document_id = ? AND d.firm_id = ?
+    AND d.doc_type = 'sale_invoice'
+    AND d.status = 'posted'
+    AND d.deleted_at_utc IS NULL
+    AND dl.deleted_at_utc IS NULL
+  ORDER BY dl.line_no
+''';
+
+/// One row of [soldLinesSql], as the return sheet and the writer both read
+/// it.
+SoldLine soldLineFrom(QueryRow r) => SoldLine(
+  documentLineId: r.read<String>('id'),
+  itemId: r.readNullable<String>('item_id'),
+  itemName: r.read<String>('item_name_snapshot'),
+  itemCode: r.readNullable<String>('item_code_snapshot'),
+  hsCode: r.readNullable<String>('hs_code_snapshot'),
+  unitId: r.readNullable<String>('unit_id') ?? '',
+  unitCode: r.read<String>('unit_code_snapshot'),
+  qty: Qty.raw(r.read<int>('qty_thousandths')),
+  soldQty: Qty.raw(r.read<int>('base_qty_thousandths')),
+  alreadyReturned: Qty.raw(r.read<int>('returned')),
+  rate: Rate.raw(r.read<int>('rate_milli_paisa')),
+  charged: Money.paisa(r.read<int>('line_total_paisa')),
+  discount: Money.paisa(r.read<int>('discount_paisa')),
+  // The snapshot. Never today's average — see ReturnBuilder.
+  cost: Money.paisa(r.read<int>('cost_paisa')),
+  salesTax: Money.paisa(r.read<int>('sales_tax')),
+  salesTaxBp: r.read<int>('sales_tax_bp'),
+  furtherTax: Money.paisa(r.read<int>('further_tax')),
+  furtherTaxBp: r.read<int>('further_tax_bp'),
+  taxInclusive: r.read<int>('tax_inclusive') == 1,
+  roundingMode: roundingModeFor(r.readNullable<String>('rounding_mode')),
+);
 
 /// The drift implementation of [ReturnWriter].
 ///
@@ -57,76 +163,16 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
     );
     if (doc == null) return null;
 
-    // Each line as sold, and what earlier returns already took off it.
-    //
-    // The subquery counts returns through `doc_links`, so a second visit
-    // knows what the first took. Counted here rather than cached on the line,
-    // because a cache is a second answer and the whole point of the limit is
-    // that it cannot be walked past.
-    final lineRows = await _tx.select(
-      '''
-      SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.unit_id,
-             dl.unit_code_snapshot, dl.base_qty_thousandths,
-             dl.rate_milli_paisa, dl.cost_paisa,
-             COALESCE((
-               SELECT SUM(rl.base_qty_thousandths)
-               FROM doc_links link
-               JOIN documents r ON r.id = link.to_document_id
-               JOIN document_lines rl ON rl.document_id = r.id
-               WHERE link.from_document_id = dl.document_id
-                 AND link.link_type = 'returns'
-                 AND link.deleted_at_utc IS NULL
-                 AND r.status = 'posted'
-                 AND r.deleted_at_utc IS NULL
-                 AND (rl.item_id = dl.item_id
-                      -- A loose line (M37) has no item to match on. It is
-                      -- known by what it was called, its price and its
-                      -- unit, which the return line copies from it.
-                      OR (dl.item_id IS NULL AND rl.item_id IS NULL
-                          AND rl.item_name_snapshot = dl.item_name_snapshot
-                          AND rl.rate_milli_paisa = dl.rate_milli_paisa
-                          AND rl.unit_code_snapshot = dl.unit_code_snapshot))
-                 AND rl.deleted_at_utc IS NULL
-             ), 0) AS returned,
-             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
-                        WHERE t.document_line_id = dl.id
-                          AND t.tax_kind = 'sales_tax'), 0) AS sales_tax,
-             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
-                        WHERE t.document_line_id = dl.id
-                          AND t.tax_kind = 'further_tax'), 0) AS further_tax,
-             COALESCE((SELECT MAX(t.is_inclusive) FROM document_line_taxes t
-                        WHERE t.document_line_id = dl.id
-                          AND t.tax_kind = 'sales_tax'), 0) AS tax_inclusive
-      FROM document_lines dl
-      WHERE dl.document_id = ? AND dl.deleted_at_utc IS NULL
-      ORDER BY dl.line_no
-      ''',
-      [documentId],
-    );
+    // Each line as sold, and what earlier returns already took off it: the
+    // same read the sheet makes, now, inside this transaction.
+    final lineRows = await _tx.select(soldLinesSql, [documentId, actor.firmId]);
 
     return ReturnableBill(
       documentId: documentId,
       docNo: doc.read<String>('doc_no'),
       partyId: doc.readNullable<String>('party_id'),
       outstanding: Money.paisa(doc.read<int>('balance_paisa')),
-      lines: [
-        for (final r in lineRows)
-          SoldLine(
-            documentLineId: r.read<String>('id'),
-            itemId: r.readNullable<String>('item_id'),
-            itemName: r.read<String>('item_name_snapshot'),
-            unitId: r.readNullable<String>('unit_id') ?? '',
-            unitCode: r.read<String>('unit_code_snapshot'),
-            soldQty: Qty.raw(r.read<int>('base_qty_thousandths')),
-            alreadyReturned: Qty.raw(r.read<int>('returned')),
-            rate: Rate.raw(r.read<int>('rate_milli_paisa')),
-            // The snapshot. Never today's average — see ReturnBuilder.
-            cost: Money.paisa(r.read<int>('cost_paisa')),
-            salesTax: Money.paisa(r.read<int>('sales_tax')),
-            furtherTax: Money.paisa(r.read<int>('further_tax')),
-            taxInclusive: r.read<int>('tax_inclusive') == 1,
-          ),
-      ],
+      lines: [for (final r in lineRows) soldLineFrom(r)],
     );
   }
 
@@ -240,6 +286,10 @@ final class _DriftReturnWriteContext implements ReturnWriteContext {
         'line_no': line.lineNo,
         'item_id': line.itemId,
         'item_name_snapshot': line.itemNameSnapshot,
+        // As on the bill, so a credit note to FBR names the goods the way
+        // the invoice it credits did.
+        'item_code_snapshot': line.itemCodeSnapshot,
+        'hs_code_snapshot': line.hsCodeSnapshot,
         'qty_thousandths': line.qty.inThousandths,
         'unit_id': line.unitId,
         'unit_code_snapshot': line.unitCodeSnapshot,

@@ -15,6 +15,7 @@ import '../write/drift_cheque_writer.dart'
 import '../write/drift_day_close_writer.dart' show cashInDrawerSql;
 import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
+import '../write/drift_return_writer.dart' show soldLineFrom, soldLinesSql;
 import '../write/drift_van_writer.dart' show vanCashSql, vanStockSql;
 import 'spelling_search.dart';
 
@@ -979,74 +980,25 @@ final class DriftAppQueries implements AppQueries {
     String firmId,
     String documentId,
   ) async {
-    // Deliberately the same query as `DriftReturnWriter.billFor`, down to the
-    // subquery that counts earlier returns. Two different counts of what is
-    // left would let the screen offer a quantity the writer then refuses,
-    // which is the worst of both — the shopkeeper picks, taps, and is told no.
+    // Deliberately the same query as `DriftReturnWriter.billFor`, as one
+    // shared string, down to the subquery that counts earlier returns. Two
+    // different counts of what is left would let the screen offer a quantity
+    // the writer then refuses, which is the worst of both — the shopkeeper
+    // picks, taps, and is told no.
     final rows = await _db
         .customSelect(
-          '''
-          SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.unit_id,
-                 dl.unit_code_snapshot, dl.base_qty_thousandths,
-                 dl.rate_milli_paisa, dl.cost_paisa,
-                 COALESCE((
-                   SELECT SUM(rl.base_qty_thousandths)
-                   FROM doc_links link
-                   JOIN documents r ON r.id = link.to_document_id
-                   JOIN document_lines rl ON rl.document_id = r.id
-                   WHERE link.from_document_id = dl.document_id
-                     AND link.link_type = 'returns'
-                     AND link.deleted_at_utc IS NULL
-                     AND r.status = 'posted'
-                     AND r.deleted_at_utc IS NULL
-                     AND (rl.item_id = dl.item_id
-                          -- A loose line (M37) has no item to match on. It is
-                          -- known by what it was called, its price and its
-                          -- unit, which the return line copies from it.
-                          OR (dl.item_id IS NULL AND rl.item_id IS NULL
-                              AND rl.item_name_snapshot = dl.item_name_snapshot
-                              AND rl.rate_milli_paisa = dl.rate_milli_paisa
-                              AND rl.unit_code_snapshot = dl.unit_code_snapshot))
-                     AND rl.deleted_at_utc IS NULL
-                 ), 0) AS returned,
-             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
-                        WHERE t.document_line_id = dl.id
-                          AND t.tax_kind = 'sales_tax'), 0) AS sales_tax,
-             COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
-                        WHERE t.document_line_id = dl.id
-                          AND t.tax_kind = 'further_tax'), 0) AS further_tax,
-             COALESCE((SELECT MAX(t.is_inclusive) FROM document_line_taxes t
-                        WHERE t.document_line_id = dl.id
-                          AND t.tax_kind = 'sales_tax'), 0) AS tax_inclusive
-          FROM document_lines dl
-          JOIN documents d ON d.id = dl.document_id
-          WHERE dl.document_id = ? AND d.firm_id = ?
-            AND d.status = 'posted'
-            AND dl.deleted_at_utc IS NULL
-          ORDER BY dl.line_no
-          ''',
+          soldLinesSql,
           variables: [Variable<String>(documentId), Variable<String>(firmId)],
-          readsFrom: {_db.documentLines, _db.documents, _db.docLinks},
+          readsFrom: {
+            _db.documentLines,
+            _db.documents,
+            _db.docLinks,
+            _db.documentLineTaxes,
+          },
         )
         .get();
 
-    return [
-      for (final r in rows)
-        SoldLine(
-          documentLineId: r.read<String>('id'),
-          itemId: r.readNullable<String>('item_id'),
-          itemName: r.read<String>('item_name_snapshot'),
-          unitId: r.readNullable<String>('unit_id') ?? '',
-          unitCode: r.read<String>('unit_code_snapshot'),
-          soldQty: Qty.raw(r.read<int>('base_qty_thousandths')),
-          alreadyReturned: Qty.raw(r.read<int>('returned')),
-          rate: Rate.raw(r.read<int>('rate_milli_paisa')),
-          cost: Money.paisa(r.read<int>('cost_paisa')),
-          salesTax: Money.paisa(r.read<int>('sales_tax')),
-          furtherTax: Money.paisa(r.read<int>('further_tax')),
-          taxInclusive: r.read<int>('tax_inclusive') == 1,
-        ),
-    ];
+    return [for (final r in rows) soldLineFrom(r)];
   }
 
   @override
@@ -1169,10 +1121,8 @@ final class DriftAppQueries implements AppQueries {
       SaleStanding.all => '',
       // Nothing left to pay. A return can take a settled bill below zero,
       // and that bill is not udhaar either.
-      SaleStanding.paid =>
-        " AND d.status = 'posted' AND d.balance_paisa <= 0",
-      SaleStanding.udhaar =>
-        " AND d.status = 'posted' AND d.balance_paisa > 0",
+      SaleStanding.paid => " AND d.status = 'posted' AND d.balance_paisa <= 0",
+      SaleStanding.udhaar => " AND d.status = 'posted' AND d.balance_paisa > 0",
       SaleStanding.cancelled => " AND d.status = 'void'",
     });
 
@@ -1299,10 +1249,8 @@ final class DriftAppQueries implements AppQueries {
 
   /// [raw] with LIKE's own wildcards taken literally. A bill series written
   /// `INV_26` is a shop's choice, and `_` would otherwise match any letter.
-  static String _escapeLike(String raw) => raw
-      .replaceAll(r'\', r'\\')
-      .replaceAll('%', r'\%')
-      .replaceAll('_', r'\_');
+  static String _escapeLike(String raw) =>
+      raw.replaceAll(r'\', r'\\').replaceAll('%', r'\%').replaceAll('_', r'\_');
 
   @override
   Future<DayTotals> dayTotals(String firmId, String dateLocal) async {
@@ -1970,7 +1918,8 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           '''
           SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.unit_id,
-                 dl.unit_code_snapshot, dl.base_qty_thousandths,
+                 dl.unit_code_snapshot, dl.qty_thousandths,
+                 dl.base_qty_thousandths, dl.rate_milli_paisa,
                  dl.line_total_paisa, dl.cost_paisa,
                  $returnedOffDeliveryLine AS returned
           FROM document_lines dl
@@ -2200,6 +2149,9 @@ final class DriftAppQueries implements AppQueries {
       // here before, and it would have fallen to the default and called
       // itself an Invoice, with the mill as its customer.
       'purchase_bill' => ('Purchase Bill', 'Purchase No'),
+      // Goods a customer brought back (M57). It fell to the default and
+      // called itself an Invoice, which is the one thing a credit is not.
+      'sale_return' => ('Sale Return', 'Return No'),
       _ => ('Invoice', 'Bill No'),
     };
     final isPurchase = docType == 'purchase_bill';

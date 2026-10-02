@@ -1229,6 +1229,60 @@ milestones:
       - packages/pk_data/lib/src/write/unit_top_up.dart
       - lib/design/text_size.dart
 
+  - id: M57
+    title: A return gives back exactly what was charged, in the unit it was sold in
+    # Opened and sealed 3 Oct 2026 at 1/1. Two bugs M37 found in taking
+    # goods back, both reproduced first against a real database. A return
+    # multiplied the line's rate by the quantity coming back, which was
+    # wrong twice. A line sold with something off came back at its list
+    # price: ten soaps at Rs 100 less 10% were paid Rs 900 for and the
+    # return gave back Rs 1,000, a soap Rs 100 not Rs 90, a line's share of
+    # a bill discount was never given back off, and Discount Given kept the
+    # riayat on goods no longer sold. And the rate is per the unit the line
+    # was sold in while the quantity was the shelf's: a maund of atta (forty
+    # kilos) was offered back as "40 maund", plus took back one kilo for
+    # Rs 5,000, and taking all of it gave Rs 2,00,000 for a Rs 4,500 sale;
+    # half a maund put half a kilo back on the shelf. Three part returns of
+    # a Rs 299.99 line gave back Rs 300.00 between them.
+    #
+    # Now a return takes a share of what the bill STORED for the line: its
+    # total after its discount and its part of the bill's, its taxes, its
+    # discount and its cost, in proportion to the base quantity coming
+    # back. Each share is the difference of two cumulative figures, what has
+    # come back so far rounded once the way the bill rounded, so a line
+    # returned whole gives back exactly what it was charged, part returns
+    # never add up to more, and the last takes what is left to the paisa
+    # (a property test runs two thousand taxed and discounted bills in four
+    # units through random part returns). The value of the goods is the
+    # refund less its taxes, so the entry always balances. The quantity is
+    # shown, typed and recorded in the unit sold, converted to the shelf's
+    # by the bill's own ratio (the maund it was on the day, as the cost is
+    # the cost on the day), exactly or refused in words; all that is left
+    # always converts to all that is left. The limit across visits holds in
+    # either unit, and a return off one line of a bill no longer counts off
+    # another line of the same item in another unit or at another price.
+    # The entry mirrors the sale: Sales Returns is debited gross and the
+    # discount comes back off Discount Given, the taxes off Output and
+    # Further Tax at the rate they were charged at. Cost of goods still
+    # comes back at what it left at. A loose line still comes back as money.
+    # The return prints as a Sale Return in the unit sold, with its
+    # discount; a credit note to FBR now carries the quantity in the unit
+    # sold, the discount, the 18% (it said 0%) and what came back, and the
+    # HS code as billed.
+    #
+    # Sent back to a supplier: a delivery's lines carry no discount, so the
+    # money was right, but quantities were counted in kilos under the
+    # maund's name in the same way; now in the unit billed, credited by the
+    # same cumulative share. Not changed, and why: a return off a bill
+    # rounded to the rupee leaves the round-off with the bill (it was the
+    # bill's, not a line's); a line's discount and its share of the bill's
+    # come back together, as the bill stored them per line; and two lines
+    # alike in item, unit and price are still counted together, which can
+    # only offer less back, never more. No schema change; the schema stays
+    # at v8.
+    state: sealed
+    owns: []
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5586,3 +5640,39 @@ features:
       - Larger text is applied the moment it is chosen, and the phone remembers it
       - the shop's Larger text on a phone already at 200% is held at 200%, and the counter still fits
       - the text size survives a restart, and an older file reads as Normal
+  - id: M57-REFUND-01
+    milestone: M57
+    title: A return gives back exactly what the line was charged, in the unit it was sold in
+    status: done
+    proof:
+      - what comes back a line with 10% off comes back at the Rs 900 paid, not Rs 1,000
+      - what comes back its share of a discount on the whole bill comes back with it
+      - what comes back a maund is counted, offered and taken back in maunds
+      - what comes back a dozen comes back as twelve pieces on the shelf
+      - what comes back a part that does not come out even on the shelf is refused
+      - what comes back what an awkward earlier return left still comes back whole
+      - part returns of one line the first return is its own part, rounded once, half up
+      - part returns of one line Rs 299.99 across three soaps comes back as 100.00, 99.99, 100.00
+      - part returns of one line property: any run of part returns adds up to the line to the paisa
+      - part returns of one line a crore line over a thousand maunds does not wrap
+      - part returns of one line a return worth less than a paisa never posts a negative
+      - the entry mirrors the sale Sales Returns is debited gross and the discount comes off Discount Given
+      - the entry mirrors the sale the tax comes back at the rate it was charged at
+      - the entry mirrors the sale a loose line still comes back as money only
+      - a delivery sent back goes back in maunds, at the maund it was billed at
+      - a delivery sent back part returns are credited exactly what the line was billed
+      - a line sold with something off comes back at the Rs 900 that was paid for it, not the Rs 1,000 it listed at
+      - a line sold with something off one of the ten comes back at the Rs 90 paid for it
+      - a line sold with something off its share of a discount on the whole bill comes back with it
+      - a line sold with something off the discount account is not left holding the part that came back
+      - a line sold in another unit a maund comes back as a maund: Rs 5,000 and 40 kg, not Rs 2,00,000
+      - a line sold in another unit half a maund comes back as 20 kg for Rs 2,500
+      - a line sold in another unit a dozen comes back by the dozen, at the dozen paid for
+      - a line sold in another unit the limit holds in the unit it was sold in, across visits
+      - part returns of one line add up to exactly what it was charged, to the paisa
+      - a taxed line with something off, sold in maunds gives back every paisa of both taxes and the discount
+      - a taxed line with something off, sold in maunds prices that include the tax give it back from inside
+      - the paper a return prints shows the maund, the discount and what came back
+      - a delivery bought in maunds goes back by the maund, at the maund it was billed at
+      - fbr credit note a return off a discounted maund carries what came back
+      - the sheet offers a maund back by the maund, at what was paid

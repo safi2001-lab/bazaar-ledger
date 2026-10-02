@@ -39,6 +39,22 @@ import '../sales/sale_posting_builder.dart';
 import 'return_builder.dart';
 
 /// One line of the delivery, as it came in.
+///
+/// ## In the unit it was billed in (M57)
+///
+/// A mill bills in maunds and the shelf counts kilos. What can go back used
+/// to be counted, shown and typed in kilos with the maund's name on it, so a
+/// delivery of two maunds offered "80 maund" back, a tap on plus sent one
+/// kilo, and the return's own line said "1 maund" for a kilo. The money
+/// was right — the supplier's line total pro-rated over the kilos — but
+/// nothing a shopkeeper read about the quantity was. It is now counted in
+/// the unit the delivery was billed in, converted to the shelf's unit by
+/// the conversion the delivery itself was made with.
+///
+/// The bill to a supplier carries no discount and no tax of its own here
+/// (a delivery's lines are rate times quantity), so the first of the sale
+/// return's two bugs has nothing to bite on: what the supplier credits is
+/// already a share of the line total they billed.
 final class BoughtLine {
   const BoughtLine({
     required this.documentLineId,
@@ -50,18 +66,37 @@ final class BoughtLine {
     required this.alreadyReturned,
     required this.goodsValue,
     required this.landedCost,
+    this._qty,
+    this._rate,
   });
 
   final String documentLineId;
   final String itemId;
   final String itemName;
   final String unitId;
+
+  /// The unit the supplier billed in.
   final String unitCode;
 
   /// In the item's base unit.
   final Qty boughtQty;
 
-  /// What earlier returns against this line already sent back.
+  final Qty? _qty;
+
+  /// As billed: two maunds is 2 here and 80 in [boughtQty].
+  Qty get qty => _qty ?? boughtQty;
+
+  final Rate? _rate;
+
+  /// Per the unit billed in, as on the supplier's bill.
+  Rate get rate =>
+      _rate ??
+      (qty.isPositive
+          ? Rate.fromPack(goodsValue, qty, mode: RoundingMode.halfUp)
+          : Rate.zero);
+
+  /// What earlier returns against this line already sent back, in the base
+  /// unit.
   final Qty alreadyReturned;
 
   /// What the supplier billed for the whole line.
@@ -70,8 +105,50 @@ final class BoughtLine {
   /// What the whole line cost the shop, freight included. A snapshot.
   final Money landedCost;
 
-  Qty get returnable =>
-      Qty.raw(boughtQty.inThousandths - alreadyReturned.inThousandths);
+  /// What can still go back, in the base unit.
+  Qty get returnableBase {
+    final left = boughtQty.inThousandths - alreadyReturned.inThousandths;
+    return left > 0 ? Qty.raw(left) : Qty.zero;
+  }
+
+  /// What can still go back, in the unit billed in: what the sheet shows
+  /// and what may be typed. Rounded down.
+  Qty get returnable {
+    final left = returnableBase.inThousandths;
+    if (left == 0 || boughtQty.inThousandths <= 0) return Qty.zero;
+    if (qty.inThousandths == boughtQty.inThousandths) return Qty.raw(left);
+    return Qty.raw(left * qty.inThousandths ~/ boughtQty.inThousandths);
+  }
+
+  /// [inUnit] of the unit billed in, in the base unit: exactly, or refused.
+  /// All that is left is always all that is left.
+  Qty baseOf(Qty inUnit) {
+    if (inUnit == returnable) return returnableBase;
+    if (qty.inThousandths == boughtQty.inThousandths) return inUnit;
+    final numerator = inUnit.inThousandths * boughtQty.inThousandths;
+    if (numerator % qty.inThousandths != 0) {
+      throw ReturnRefused(
+        '${inUnit.display} $unitCode of $itemName does not come out even on '
+        'the shelf. Send back a whole number of $unitCode, or all of it.',
+      );
+    }
+    return Qty.raw(numerator ~/ qty.inThousandths);
+  }
+
+  /// What sending back [base] (in the base unit) is credited at, and what
+  /// it gives up off the shelf: each the cumulative share of the line, so
+  /// two sacks sent back on two days are credited exactly what the line
+  /// was billed at between them, never a paisa more.
+  ({Money credit, Money landed}) shareOf(Qty base) {
+    final before = alreadyReturned.inThousandths;
+    Money part(Money whole) => returnedShare(
+      whole,
+      before: before < 0 ? 0 : before,
+      taking: base.inThousandths,
+      outOf: boughtQty.inThousandths,
+    );
+    return (credit: part(goodsValue), landed: part(landedCost));
+  }
 }
 
 /// What the shopkeeper entered.
@@ -86,7 +163,7 @@ final class PurchaseReturnDraft {
 
   final String originalDocumentId;
 
-  /// Quantities in the item's base unit.
+  /// Quantities in the unit each line was billed in (M57).
   final List<ReturnLineDraft> lines;
   final String reason;
 
@@ -209,39 +286,39 @@ final class PurchaseReturnBuilder {
           'A return of nothing on ${bought.itemName} is not a return.',
         );
       }
-      if (wanted.qty.inThousandths > bought.returnable.inThousandths) {
+      if (wanted.qty > bought.returnable) {
         throw ReturnRefused(
           'Only ${bought.returnable.display} ${bought.unitCode} of '
           '${bought.itemName} is left to go back on that delivery.',
         );
       }
+      // Typed in the unit billed in; the shelf speaks the base unit.
+      final baseQty = bought.baseOf(wanted.qty);
 
       final before = running[bought.itemId] ?? CostPosition.zero;
-      if (wanted.qty.inThousandths > before.qty.inThousandths) {
+      if (baseQty > before.qty) {
         // Goods that have been sold cannot be sent back. Letting this through
         // would drive the shelf negative with stock the shop is claiming to
-        // hold and does not.
+        // hold and does not. Said in the unit the shopkeeper typed in.
+        final onShelf =
+            bought.qty.inThousandths == bought.boughtQty.inThousandths
+            ? before.qty
+            : Qty.raw(
+                before.qty.inThousandths *
+                    bought.qty.inThousandths ~/
+                    bought.boughtQty.inThousandths,
+              );
         throw ReturnRefused(
-          'The shelf holds ${before.qty.display} ${bought.unitCode} of '
+          'The shelf holds ${onShelf.display} ${bought.unitCode} of '
           '${bought.itemName}. What has already been sold cannot go back.',
         );
       }
 
-      final whole = wanted.qty.inThousandths == bought.boughtQty.inThousandths;
-      List<int> shares() => [
-        wanted.qty.inThousandths,
-        bought.boughtQty.inThousandths - wanted.qty.inThousandths,
-      ];
-      final goodsBack = whole
-          ? bought.goodsValue
-          : bought.goodsValue.allocate(shares()).first;
-      final costBack = whole
-          ? bought.landedCost
-          : bought.landedCost.allocate(shares()).first;
+      final (credit: goodsBack, landed: costBack) = bought.shareOf(baseQty);
 
       final change = returnStock(
         before: before,
-        qtyOut: wanted.qty,
+        qtyOut: baseQty,
         valueOut: costBack,
       );
       running[bought.itemId] = change.after;
@@ -249,24 +326,18 @@ final class PurchaseReturnBuilder {
       credit += goodsBack;
       shelfOut += before.value - change.after.value;
 
-      final rate = Rate.raw(
-        divideRounded(
-          scaleOrThrow(goodsBack.inPaisa, 1000000, 'returned value'),
-          wanted.qty.inThousandths,
-          RoundingMode.halfUp,
-        ),
-      );
-
       lines.add(
         DocumentLinePosting(
           lineNo: lineNo,
           itemId: bought.itemId,
           itemNameSnapshot: bought.itemName,
+          // In the unit it was billed in, at the rate it was billed at, so
+          // the return reads like the supplier's paper: "1 maund @ 4,800".
           qty: wanted.qty,
           unitId: bought.unitId,
           unitCodeSnapshot: bought.unitCode,
-          baseQty: wanted.qty,
-          rate: rate,
+          baseQty: baseQty,
+          rate: bought.rate,
           gross: goodsBack,
           discount: Money.zero,
           discountBp: 0,
@@ -282,7 +353,7 @@ final class PurchaseReturnBuilder {
         StockMovementPosting(
           itemId: bought.itemId,
           txnType: 'purchase_return',
-          qtyDelta: Qty.raw(-wanted.qty.inThousandths),
+          qtyDelta: Qty.raw(-baseQty.inThousandths),
           rate: change.after.avg,
           valueDelta: Money.paisa(-(before.value - change.after.value).inPaisa),
           occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
