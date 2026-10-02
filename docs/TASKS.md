@@ -155,7 +155,7 @@ time, on the latest master (schema is v8 today).
 - [x] M47 · DONE (a2592e7) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
 
 ### Reports polish
-- [ ] M46 · (in progress with M58) Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
+- [x] M46 · DONE with M58 (55fa8d2) Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
 - [ ] Saved report views ("my Monday udhaar list")
 
 ### Getting shops to switch
@@ -180,13 +180,13 @@ time, on the latest master (schema is v8 today).
 - [ ] Urdu PDFs readable; bigger font option
 
 
-### Follow-ups found while merging (M58 in progress takes the reports ones; M36 the preview text size)
-- [ ] Reports: Day Book / All Transactions call a party-less `other_income` document "Charge" — it is shop income (M47); expense reports must leave out or show apart the owner's drawings
-- [ ] Reports: M8 "Sales by item" inner-joins items, so khula maal lines are missing from it
-- [ ] Reports: Loan Statement in the hub's Loans group (M48 builder exists)
-- [ ] Reports: due-date ageing and bad-debts reports from the udhaar pack's queries
-- [ ] Receipt preview grows with the app text size — wrap it in `MediaQuery.withNoTextScaling` (lib/features/sales)
-- [ ] `recentExpenses` reads the head as required and would throw on a shop's own head (no caller now)
+### Follow-ups found while merging — DONE by M58 (55fa8d2) and M36, except the owner decisions
+- [x] Reports: Day Book / All Transactions call a party-less `other_income` document "Charge" — it is shop income (M47); expense reports must leave out or show apart the owner's drawings
+- [x] Reports: M8 "Sales by item" inner-joins items, so khula maal lines are missing from it
+- [x] Reports: Loan Statement in the hub's Loans group (M48 builder exists)
+- [x] Reports: due-date ageing and bad-debts reports from the udhaar pack's queries
+- [x] Receipt preview grows with the app text size — wrap it in `MediaQuery.withNoTextScaling` (lib/features/sales)
+- [x] `recentExpenses` reads the head as required and would throw on a shop's own head (no caller now)
 - [ ] Owner to confirm: seer = 1 kg (40 kg maund) rather than 933 g; separate permissions for quick-add and khula maal lines
 
 ## Finish line for each wave
