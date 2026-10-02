@@ -136,7 +136,15 @@ final class RemotePeer implements SyncPeer {
         "shop's wi-fi and the master has sync turned on.",
       );
     } on TimeoutException {
-      throw SyncRefused('The master at $host did not answer in time.');
+      // The same advice as a refusal, because on a shop's wi-fi it is the
+      // same cause far more often than not: a phone that has left the
+      // network, or a master with sync off, is met with silence rather than
+      // a refusal (and Windows answers a closed port with silence too).
+      // "Did not answer in time" on its own gives a shopkeeper nothing to do.
+      throw SyncRefused(
+        'The master at $host did not answer in time. Check both phones are '
+        "on the shop's wi-fi and the master has sync turned on.",
+      );
     } on HttpException {
       throw SyncRefused('The connection to the master at $host broke.');
     } finally {
