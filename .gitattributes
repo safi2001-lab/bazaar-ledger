@@ -14,3 +14,9 @@ gradlew          text eol=lf
 # Golden test images must never be normalised or the comparator sees a diff
 # that is only line endings.
 test/goldens/** binary
+
+# Read by tests that split on "\n" (gate_parity_test, ledger_gate_test). On a
+# Windows checkout with core.autocrlf on they arrive as CRLF and both tests
+# fail on the line ending alone, while CI's Linux checkout passes.
+melos.yaml               text eol=lf
+docs/feature_ledger.yaml text eol=lf
