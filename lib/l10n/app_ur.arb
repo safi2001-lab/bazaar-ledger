@@ -2112,5 +2112,86 @@
     "placeholders": {
       "name": {"type": "String"}
     }
+  },
+  "partyGroup": "Group (marzi se)",
+  "@partyGroup": {
+    "description": "M40. The area, route or kind of customer a party is filed under."
+  },
+  "partyGroupHint": "Mohalla, route ya qisam",
+  "partyRemarks": "Counter ke liye note",
+  "@partyRemarks": {
+    "description": "M40. A note about the customer shown to the cashier on the payment sheet."
+  },
+  "partyRemarksHint": "Jaise: Sirf cash — cheque bounce ho chuka",
+  "groupsTitle": "Group",
+  "groupsEmpty": "Abhi koi group nahi",
+  "groupsEmptyHint": "Gahak ke form mein group likhein — mohalla, route ya qisam — ya list mein kai gahak chun kar ek saath group lagayein",
+  "groupAll": "Sab",
+  "groupNone": "Baghair group",
+  "groupMembers": "{count, plural, =1{1 shakhs} other{{count} log}}",
+  "@groupMembers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupReceivable": "Lene hain",
+  "groupPayable": "Dene hain",
+  "groupRename": "Naam badlein",
+  "groupNewName": "Naya naam",
+  "groupRenameMerges": "'{name}' pehle se hai — dono group ek ho jayenge",
+  "@groupRenameMerges": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupMerge": "Doosre group mein milayein",
+  "groupMergeInto": "Kis group mein milana hai?",
+  "groupMergeConfirm": "'{from}' ke sab log '{to}' mein chale jayenge, aur '{from}' khatam ho jayega.",
+  "@groupMergeConfirm": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "groupNoOther": "Milane ke liye koi doosra group nahi",
+  "groupMoved": "{count, plural, =1{1 shakhs '{name}' mein} other{{count} log '{name}' mein}}",
+  "@groupMoved": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "groupCleared": "{count, plural, =1{1 shakhs group se bahar} other{{count} log group se bahar}}",
+  "@groupCleared": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupSet": "Group lagayein",
+  "groupSetFor": "{count, plural, =1{1 gahak ka group} other{{count} gahak ka group}}",
+  "@groupSetFor": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupClear": "Group se nikalein",
+  "groupMembersTitle": "Is group ke log",
+  "groupNobody": "Is group mein koi nahi",
+  "partiesSelect": "Kai gahak chunein",
+  "partiesSelected": "{count} chune",
+  "@partiesSelected": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "partiesSort": "Tarteeb",
+  "partiesSortName": "Naam se",
+  "partiesSortBalance": "Zyada udhaar pehle",
+  "partiesSortOldest": "Sab se purana udhaar pehle",
+  "partiesCapped": "Pehle {count} dikhaye — baqi talash se dhoondein",
+  "@partiesCapped": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

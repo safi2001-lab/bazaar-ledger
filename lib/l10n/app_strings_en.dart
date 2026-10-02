@@ -3640,4 +3640,144 @@ class AppStringsEn extends AppStrings {
   String posBillFor(String name) {
     return 'Bill for $name';
   }
+
+  @override
+  String get partyGroup => 'Group (optional)';
+
+  @override
+  String get partyGroupHint => 'Area, route or kind';
+
+  @override
+  String get partyRemarks => 'Note for the counter';
+
+  @override
+  String get partyRemarksHint => 'e.g. Cash only — a cheque bounced';
+
+  @override
+  String get groupsTitle => 'Groups';
+
+  @override
+  String get groupsEmpty => 'No groups yet';
+
+  @override
+  String get groupsEmptyHint =>
+      'Type a group on a customer\'s form — area, route or kind — or pick several in the list and set their group at once';
+
+  @override
+  String get groupAll => 'All';
+
+  @override
+  String get groupNone => 'No group';
+
+  @override
+  String groupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people',
+      one: '1 person',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupReceivable => 'To receive';
+
+  @override
+  String get groupPayable => 'To pay';
+
+  @override
+  String get groupRename => 'Rename';
+
+  @override
+  String get groupNewName => 'New name';
+
+  @override
+  String groupRenameMerges(String name) {
+    return '\'$name\' already exists — the two groups will become one';
+  }
+
+  @override
+  String get groupMerge => 'Merge into another group';
+
+  @override
+  String get groupMergeInto => 'Merge into which group?';
+
+  @override
+  String groupMergeConfirm(String from, String to) {
+    return 'Everyone in \'$from\' moves to \'$to\', and \'$from\' is gone.';
+  }
+
+  @override
+  String get groupNoOther => 'There is no other group to merge into';
+
+  @override
+  String groupMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count moved to \'$name\'',
+      one: '1 moved to \'$name\'',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count taken out of their group',
+      one: '1 taken out of their group',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupSet => 'Set group';
+
+  @override
+  String groupSetFor(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Group for $count customers',
+      one: 'Group for 1 customer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupClear => 'Take out of group';
+
+  @override
+  String get groupMembersTitle => 'People in this group';
+
+  @override
+  String get groupNobody => 'Nobody in this group';
+
+  @override
+  String get partiesSelect => 'Select several';
+
+  @override
+  String partiesSelected(int count) {
+    return '$count selected';
+  }
+
+  @override
+  String get partiesSort => 'Sort';
+
+  @override
+  String get partiesSortName => 'By name';
+
+  @override
+  String get partiesSortBalance => 'Most owed first';
+
+  @override
+  String get partiesSortOldest => 'Oldest due first';
+
+  @override
+  String partiesCapped(int count) {
+    return 'Showing the first $count — search to find the rest';
+  }
 }

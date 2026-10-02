@@ -54,6 +54,7 @@ export 'src/ports/expense_writer.dart';
 export 'src/ports/health.dart';
 export 'src/ports/journal_writer.dart';
 export 'src/ports/manufacturing.dart';
+export 'src/ports/party_groups.dart';
 export 'src/ports/payment_writer.dart';
 export 'src/ports/printer.dart';
 export 'src/ports/printer_settings.dart';

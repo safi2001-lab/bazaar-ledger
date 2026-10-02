@@ -6505,6 +6505,204 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{name} ka bill'**
   String posBillFor(String name);
+
+  /// M40. The area, route or kind of customer a party is filed under.
+  ///
+  /// In ur, this message translates to:
+  /// **'Group (marzi se)'**
+  String get partyGroup;
+
+  /// No description provided for @partyGroupHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mohalla, route ya qisam'**
+  String get partyGroupHint;
+
+  /// M40. A note about the customer shown to the cashier on the payment sheet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter ke liye note'**
+  String get partyRemarks;
+
+  /// No description provided for @partyRemarksHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jaise: Sirf cash — cheque bounce ho chuka'**
+  String get partyRemarksHint;
+
+  /// No description provided for @groupsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Group'**
+  String get groupsTitle;
+
+  /// No description provided for @groupsEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi group nahi'**
+  String get groupsEmpty;
+
+  /// No description provided for @groupsEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ke form mein group likhein — mohalla, route ya qisam — ya list mein kai gahak chun kar ek saath group lagayein'**
+  String get groupsEmptyHint;
+
+  /// No description provided for @groupAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab'**
+  String get groupAll;
+
+  /// No description provided for @groupNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baghair group'**
+  String get groupNone;
+
+  /// No description provided for @groupMembers.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 shakhs} other{{count} log}}'**
+  String groupMembers(int count);
+
+  /// No description provided for @groupReceivable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Lene hain'**
+  String get groupReceivable;
+
+  /// No description provided for @groupPayable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dene hain'**
+  String get groupPayable;
+
+  /// No description provided for @groupRename.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam badlein'**
+  String get groupRename;
+
+  /// No description provided for @groupNewName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya naam'**
+  String get groupNewName;
+
+  /// No description provided for @groupRenameMerges.
+  ///
+  /// In ur, this message translates to:
+  /// **'\'{name}\' pehle se hai — dono group ek ho jayenge'**
+  String groupRenameMerges(String name);
+
+  /// No description provided for @groupMerge.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doosre group mein milayein'**
+  String get groupMerge;
+
+  /// No description provided for @groupMergeInto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis group mein milana hai?'**
+  String get groupMergeInto;
+
+  /// No description provided for @groupMergeConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'\'{from}\' ke sab log \'{to}\' mein chale jayenge, aur \'{from}\' khatam ho jayega.'**
+  String groupMergeConfirm(String from, String to);
+
+  /// No description provided for @groupNoOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Milane ke liye koi doosra group nahi'**
+  String get groupNoOther;
+
+  /// No description provided for @groupMoved.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 shakhs \'{name}\' mein} other{{count} log \'{name}\' mein}}'**
+  String groupMoved(int count, String name);
+
+  /// No description provided for @groupCleared.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 shakhs group se bahar} other{{count} log group se bahar}}'**
+  String groupCleared(int count);
+
+  /// No description provided for @groupSet.
+  ///
+  /// In ur, this message translates to:
+  /// **'Group lagayein'**
+  String get groupSet;
+
+  /// No description provided for @groupSetFor.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 gahak ka group} other{{count} gahak ka group}}'**
+  String groupSetFor(int count);
+
+  /// No description provided for @groupClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Group se nikalein'**
+  String get groupClear;
+
+  /// No description provided for @groupMembersTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is group ke log'**
+  String get groupMembersTitle;
+
+  /// No description provided for @groupNobody.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is group mein koi nahi'**
+  String get groupNobody;
+
+  /// No description provided for @partiesSelect.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kai gahak chunein'**
+  String get partiesSelect;
+
+  /// No description provided for @partiesSelected.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} chune'**
+  String partiesSelected(int count);
+
+  /// No description provided for @partiesSort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tarteeb'**
+  String get partiesSort;
+
+  /// No description provided for @partiesSortName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam se'**
+  String get partiesSortName;
+
+  /// No description provided for @partiesSortBalance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zyada udhaar pehle'**
+  String get partiesSortBalance;
+
+  /// No description provided for @partiesSortOldest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab se purana udhaar pehle'**
+  String get partiesSortOldest;
+
+  /// No description provided for @partiesCapped.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle {count} dikhaye — baqi talash se dhoondein'**
+  String partiesCapped(int count);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

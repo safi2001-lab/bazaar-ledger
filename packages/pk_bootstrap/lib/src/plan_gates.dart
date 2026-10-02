@@ -96,6 +96,22 @@ final class _PlanCatalogue implements CatalogueWriter {
     _plans.require(PlanFeature.godowns);
     return _inner.transferStock(actor, draft);
   }
+
+  // Groups are free on every plan (M40): sorting a khata into routes is how
+  // a shop keeps it at all, not an extra.
+  @override
+  Future<int> setPartyGroup(
+    ActorContext actor,
+    List<String> partyIds,
+    String? group,
+  ) => _inner.setPartyGroup(actor, partyIds, group);
+
+  @override
+  Future<int> renamePartyGroup(
+    ActorContext actor, {
+    required String from,
+    required String to,
+  }) => _inner.renamePartyGroup(actor, from: from, to: to);
 }
 
 /// Receipts and supplier payments: a new cheque needs a plan with cheques.

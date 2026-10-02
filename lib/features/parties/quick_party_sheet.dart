@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../subscription/plans_screen.dart';
+import 'party_groups.dart';
 
 /// A new customer, or a new supplier, without leaving the bill (M32).
 ///
@@ -28,15 +29,24 @@ import '../subscription/plans_screen.dart';
 /// before a second khata is opened for them. Two khatas for one person is
 /// two balances, and the one a shopkeeper chases is never the one that is
 /// owed.
+///
+/// [group] starts the optional group field (M40): the picker passes the
+/// route it is narrowed to, so a new retailer met on Route 3 is filed on
+/// Route 3 without anybody typing it.
 Future<PartySummary?> showQuickPartySheet(
   BuildContext context, {
   required String name,
   required String partyType,
+  String? group,
 }) => showModalBottomSheet<PartySummary>(
   context: context,
   isScrollControlled: true,
   useSafeArea: true,
-  builder: (_) => QuickPartySheet(initialName: name, partyType: partyType),
+  builder: (_) => QuickPartySheet(
+    initialName: name,
+    partyType: partyType,
+    initialGroup: group,
+  ),
 );
 
 /// A Pakistani mobile number as the khata keeps it from here: `0300 4471203`.
@@ -111,7 +121,11 @@ class QuickPartySheet extends ConsumerStatefulWidget {
     super.key,
     required this.initialName,
     this.partyType = 'customer',
+    this.initialGroup,
   });
+
+  /// The group the new party starts in, if any (M40).
+  final String? initialGroup;
 
   /// What was typed in the picker, so it is never typed twice.
   final String initialName;
@@ -130,6 +144,9 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
   );
   final _phone = TextEditingController();
   final _limit = TextEditingController();
+  late final TextEditingController _group = TextEditingController(
+    text: widget.initialGroup ?? '',
+  );
   PriceTier _tier = PriceTier.retail;
 
   bool _busy = false;
@@ -146,6 +163,7 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
     _name.dispose();
     _phone.dispose();
     _limit.dispose();
+    _group.dispose();
     super.dispose();
   }
 
@@ -187,6 +205,7 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
             ? Money.tryParse(_limit.text)
             : null,
         priceTier: _forCustomer ? _tier : PriceTier.retail,
+        group: _group.text,
       );
 
       if (!anyway) {
@@ -307,9 +326,16 @@ class _QuickPartySheetState extends ConsumerState<QuickPartySheet> {
                 controller: _limit,
                 label: s.quickPartyCreditLimit,
                 numeric: true,
-                textInputAction: TextInputAction.done,
+                textInputAction: TextInputAction.next,
               ),
             ],
+            // Optional, like the limit (M40): left blank, they are in no
+            // group, and the full form can file them later.
+            const SizedBox(height: BlTokens.space3),
+            PartyGroupField(
+              controller: _group,
+              textInputAction: TextInputAction.done,
+            ),
             if (mayPriceList) ...[
               const SizedBox(height: BlTokens.space4),
               Text(

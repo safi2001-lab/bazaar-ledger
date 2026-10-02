@@ -3641,4 +3641,144 @@ class AppStringsUr extends AppStrings {
   String posBillFor(String name) {
     return '$name ka bill';
   }
+
+  @override
+  String get partyGroup => 'Group (marzi se)';
+
+  @override
+  String get partyGroupHint => 'Mohalla, route ya qisam';
+
+  @override
+  String get partyRemarks => 'Counter ke liye note';
+
+  @override
+  String get partyRemarksHint => 'Jaise: Sirf cash — cheque bounce ho chuka';
+
+  @override
+  String get groupsTitle => 'Group';
+
+  @override
+  String get groupsEmpty => 'Abhi koi group nahi';
+
+  @override
+  String get groupsEmptyHint =>
+      'Gahak ke form mein group likhein — mohalla, route ya qisam — ya list mein kai gahak chun kar ek saath group lagayein';
+
+  @override
+  String get groupAll => 'Sab';
+
+  @override
+  String get groupNone => 'Baghair group';
+
+  @override
+  String groupMembers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count log',
+      one: '1 shakhs',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupReceivable => 'Lene hain';
+
+  @override
+  String get groupPayable => 'Dene hain';
+
+  @override
+  String get groupRename => 'Naam badlein';
+
+  @override
+  String get groupNewName => 'Naya naam';
+
+  @override
+  String groupRenameMerges(String name) {
+    return '\'$name\' pehle se hai — dono group ek ho jayenge';
+  }
+
+  @override
+  String get groupMerge => 'Doosre group mein milayein';
+
+  @override
+  String get groupMergeInto => 'Kis group mein milana hai?';
+
+  @override
+  String groupMergeConfirm(String from, String to) {
+    return '\'$from\' ke sab log \'$to\' mein chale jayenge, aur \'$from\' khatam ho jayega.';
+  }
+
+  @override
+  String get groupNoOther => 'Milane ke liye koi doosra group nahi';
+
+  @override
+  String groupMoved(int count, String name) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count log \'$name\' mein',
+      one: '1 shakhs \'$name\' mein',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String groupCleared(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count log group se bahar',
+      one: '1 shakhs group se bahar',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupSet => 'Group lagayein';
+
+  @override
+  String groupSetFor(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gahak ka group',
+      one: '1 gahak ka group',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get groupClear => 'Group se nikalein';
+
+  @override
+  String get groupMembersTitle => 'Is group ke log';
+
+  @override
+  String get groupNobody => 'Is group mein koi nahi';
+
+  @override
+  String get partiesSelect => 'Kai gahak chunein';
+
+  @override
+  String partiesSelected(int count) {
+    return '$count chune';
+  }
+
+  @override
+  String get partiesSort => 'Tarteeb';
+
+  @override
+  String get partiesSortName => 'Naam se';
+
+  @override
+  String get partiesSortBalance => 'Zyada udhaar pehle';
+
+  @override
+  String get partiesSortOldest => 'Sab se purana udhaar pehle';
+
+  @override
+  String partiesCapped(int count) {
+    return 'Pehle $count dikhaye — baqi talash se dhoondein';
+  }
 }

@@ -11,6 +11,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import 'parties_screen.dart';
 import 'party_editor.dart';
+import 'party_groups.dart';
 import 'quick_party_sheet.dart';
 
 /// Choose who the bill is for, from the tender sheet.
@@ -37,6 +38,11 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
   Timer? _debounce;
   String _query = '';
 
+  /// The group the list is narrowed to (M40), or null for everyone. An
+  /// order-booker billing Route 3 picks from Route 3's forty names, not the
+  /// shop's four hundred.
+  String? _group;
+
   @override
   void dispose() {
     _debounce?.cancel();
@@ -60,6 +66,7 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
       context,
       name: _query,
       partyType: type,
+      group: _group,
     );
     if (party != null && mounted) navigator.pop<PartySummary>(party);
   }
@@ -89,7 +96,18 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
-    final parties = ref.watch(partySearchProvider(_query));
+    // Everyone through the khata's own search, as before; one group through
+    // the narrowed list. A namesake in another group is not in the narrowed
+    // rows, so the offer to add may stand for them — and the short form's
+    // check for the same name or mobile across the whole khata still finds
+    // them before a second khata is opened.
+    final group = _group;
+    final parties = group == null
+        ? ref.watch(partySearchProvider(_query))
+        : ref.watch(
+            partyListProvider(PartyListFilter(query: _query, group: group)),
+          );
+    final groups = ref.watch(partyGroupsProvider).valueOrNull ?? const [];
 
     return Padding(
       padding: EdgeInsets.only(
@@ -129,6 +147,24 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
             onChanged: _onChanged,
             prefix: const Icon(Icons.search, size: 20),
           ),
+          if (groups.isNotEmpty) ...[
+            const SizedBox(height: BlTokens.space2),
+            GroupChipRow(
+              children: [
+                ChoiceChip(
+                  selected: group == null,
+                  label: Text(s.groupAll),
+                  onSelected: (_) => setState(() => _group = null),
+                ),
+                for (final g in groups)
+                  ChoiceChip(
+                    selected: group == g.name,
+                    label: Text(g.name),
+                    onSelected: (_) => setState(() => _group = g.name),
+                  ),
+              ],
+            ),
+          ],
           const SizedBox(height: BlTokens.space3),
           ConstrainedBox(
             constraints: BoxConstraints(
@@ -140,7 +176,9 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
                 title: s.commonSomethingWentWrong,
                 message: '$error',
                 retryLabel: s.actionRetry,
-                onRetry: () => ref.invalidate(partySearchProvider(_query)),
+                onRetry: () => group == null
+                    ? ref.invalidate(partySearchProvider(_query))
+                    : ref.invalidate(partyListProvider),
               ),
               data: (rows) {
                 final offer = _offer(s, rows);
@@ -149,8 +187,8 @@ class _PartyPickerState extends ConsumerState<PartyPicker> {
                   // the offer stands where "add your first customer" was.
                   return offer ??
                       BlEmpty(
-                        title: s.partiesEmpty,
-                        message: s.partiesEmptyHint,
+                        title: group == null ? s.partiesEmpty : s.groupNobody,
+                        message: group == null ? s.partiesEmptyHint : null,
                         icon: Icons.people_alt_outlined,
                       );
                 }

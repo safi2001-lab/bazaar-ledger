@@ -2,6 +2,7 @@ import 'package:pk_money/pk_money.dart';
 
 import '../identity/actor_context.dart';
 import '../pricing/price_tier.dart';
+import 'party_groups.dart';
 
 /// An item as the quick-add and edit screens describe it.
 final class ItemDraft {
@@ -83,10 +84,26 @@ final class PartyDraft {
     this.creditDays,
     this.priceTier = PriceTier.retail,
     this.defaultDiscountBp = 0,
+    this.group,
+    this.remarks,
   });
 
   final String name;
   final String partyType;
+
+  /// The area, route or kind of customer they are filed under (M40):
+  /// "Mohalla Gulberg", "Route 3", "Hotels". Null is no group.
+  ///
+  /// Written as given, tidied by [partyGroupName], and spelt the way the
+  /// shop already spells it when it matches a group in another case — so
+  /// "route 3" typed in a hurry joins "Route 3" instead of starting a second
+  /// route with one customer on it.
+  final String? group;
+
+  /// What the cashier should know before giving them credit (M40): "Sirf
+  /// cash — cheque bounce ho chuka", "Delivery after 5pm". Shown under their
+  /// name on the payment sheet, read-only there. Null or blank is nothing.
+  final String? remarks;
 
   /// Which of an item's prices they are sold at.
   final PriceTier priceTier;
@@ -232,6 +249,32 @@ abstract interface class CatalogueWriter {
   /// item kept by batch. Nothing is bought or sold, so nothing reaches the
   /// books; the goods are only somewhere else.
   Future<void> transferStock(ActorContext actor, StockTransferDraft draft);
+
+  /// Puts each of [partyIds] in [group], or in no group when it is null or
+  /// blank (M40). Returns how many actually moved: one already there is not
+  /// written again.
+  ///
+  /// One transaction, every party its own update through the outbox, so
+  /// the other counters on the shop's Wi-Fi receive each move and none of
+  /// them can see half a route reassigned.
+  Future<int> setPartyGroup(
+    ActorContext actor,
+    List<String> partyIds,
+    String? group,
+  );
+
+  /// Renames the group [from] to [to], moving every member, hidden ones
+  /// included (M40). Returns how many moved.
+  ///
+  /// When [to] is a group the shop already has, the two become one: that is
+  /// what merging is, and it is the same act — a shopkeeper who renames
+  /// "Rt 3" to "Route 3" has merged them whether he meant to or not, and the
+  /// screen says so before he does it.
+  Future<int> renamePartyGroup(
+    ActorContext actor, {
+    required String from,
+    required String to,
+  });
 }
 
 /// Goods moved from one place the shop keeps them to another: the shop

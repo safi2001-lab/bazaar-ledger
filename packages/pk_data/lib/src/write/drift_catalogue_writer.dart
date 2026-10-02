@@ -5,6 +5,18 @@ import '../write/opening_entries.dart';
 import '../write/sequence_allocator.dart';
 import '../write/tx_runner.dart';
 
+/// The settings key a party's note for the counter is kept under (M40).
+///
+/// Shared with the read side, which looks it up beside every party it
+/// reads; two spellings of this key would be a note written and never seen.
+const partyRemarksKeyPrefix = 'party.remarks.';
+
+String partyRemarksKey(String partyId) => '$partyRemarksKeyPrefix$partyId';
+
+/// The id of the settings row holding [partyId]'s note: derived, so every
+/// counter writes the same row. See `DriftCatalogueWriter._keepRemarks`.
+String partyRemarksRowId(String partyId) => 'remarks-$partyId';
+
 /// The drift implementation of [CatalogueWriter].
 ///
 /// Everything goes through [TxRunner], so an item added here appears in the
@@ -138,7 +150,11 @@ final class DriftCatalogueWriter implements CatalogueWriter {
   Future<String> addParty(ActorContext actor, PartyDraft draft) {
     _validateParty(draft);
     return _runner.run(actor, (tx) async {
-      final partyId = await tx.insert('parties', _partyColumns(draft, actor));
+      final partyId = await tx.insert('parties', {
+        ..._partyColumns(draft, actor),
+        'party_group': await _groupAsKept(tx, draft.group),
+      });
+      await _keepRemarks(tx, partyId, draft.remarks);
       await postOpeningBalance(
         tx,
         partyId: partyId,
@@ -179,7 +195,16 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         // the "nothing owed" guard archiveParty makes them pass. The audit row
         // said only "edited".
         ..remove('is_active');
+      // Their own current group is left out of the spelling lookup, or a
+      // shopkeeper correcting "route 3" to "Route 3" on its only member
+      // would be told the shop already spells it "route 3".
+      columns['party_group'] = await _groupAsKept(
+        tx,
+        draft.group,
+        excludingPartyId: partyId,
+      );
       await tx.update('parties', partyId, columns);
+      await _keepRemarks(tx, partyId, draft.remarks);
       tx.audit(
         action: 'PARTY_UPDATED',
         entityTable: 'parties',
@@ -287,6 +312,105 @@ final class DriftCatalogueWriter implements CatalogueWriter {
           summary: 'Back in the khata',
         );
       });
+
+  @override
+  Future<int> setPartyGroup(
+    ActorContext actor,
+    List<String> partyIds,
+    String? group,
+  ) => _runner.run(actor, (tx) async {
+    final target = await _groupAsKept(tx, group);
+    var moved = 0;
+    for (final partyId in partyIds.toSet()) {
+      final row = await tx.selectOne(
+        'SELECT party_group FROM parties '
+        'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+        [partyId, actor.firmId],
+      );
+      if (row == null) {
+        throw StateError('No customer $partyId in this shop.');
+      }
+      // Not written again when already there. A rewrite that changes
+      // nothing still bumps the revision and travels to every counter, and
+      // on the next sync it can overwrite a real change made over there.
+      if (row.readNullable<String>('party_group') == target) continue;
+      await tx.update('parties', partyId, {'party_group': target});
+      moved++;
+    }
+    if (moved > 0) {
+      tx.audit(
+        action: 'PARTY_GROUP_SET',
+        entityTable: 'parties',
+        entityId: actor.firmId,
+        summary: target == null
+            ? '$moved taken out of their group'
+            : '$moved put in $target',
+      );
+    }
+    return moved;
+  });
+
+  @override
+  Future<int> renamePartyGroup(
+    ActorContext actor, {
+    required String from,
+    required String to,
+  }) {
+    final source = partyGroupName(from);
+    final wanted = partyGroupName(to);
+    if (source == null) {
+      throw ArgumentError.value(from, 'from', 'which group is being renamed?');
+    }
+    if (wanted == null) {
+      throw ArgumentError.value(to, 'to', 'a group needs a name');
+    }
+    return _runner.run(actor, (tx) async {
+      // Hidden members too. A customer hidden for the season keeps their
+      // route, and restoring them must not bring back a route the shop has
+      // since renamed.
+      final members = await tx.select(
+        'SELECT id FROM parties '
+        'WHERE firm_id = ? AND deleted_at_utc IS NULL AND party_group = ? '
+        'ORDER BY id',
+        [actor.firmId, source],
+      );
+      if (members.isEmpty) {
+        throw StateError('Nobody is in $source, so there is nothing to move.');
+      }
+      // Another group already spelt this way, in any case, is a merge: the
+      // members go into it under its own spelling, and the two are one.
+      final other = await tx.selectOne(
+        'SELECT party_group FROM parties '
+        'WHERE firm_id = ? AND deleted_at_utc IS NULL '
+        '  AND lower(party_group) = lower(?) AND party_group <> ? '
+        'ORDER BY party_group = ? DESC, id LIMIT 1',
+        [actor.firmId, wanted, source, wanted],
+      );
+      final target = other?.read<String>('party_group') ?? wanted;
+      if (target == source) return 0;
+
+      // Every member its own update, in this one transaction: each goes into
+      // the outbox, so a counter on the shop's Wi-Fi receives every move, and
+      // a failure on the thirtieth leaves all thirty where they were rather
+      // than a route split between two names.
+      for (final member in members) {
+        await tx.update('parties', member.read<String>('id'), {
+          'party_group': target,
+        });
+      }
+      tx.audit(
+        action: other == null ? 'PARTY_GROUP_RENAMED' : 'PARTY_GROUPS_MERGED',
+        entityTable: 'parties',
+        entityId: actor.firmId,
+        summary: other == null
+            ? '$source renamed to $target: ${members.length} moved'
+            : '$source merged into $target: ${members.length} moved',
+        before: {'party_group': source},
+        after: {'party_group': target},
+      );
+      return members.length;
+    });
+  }
 
   @override
   Future<void> transferStock(ActorContext actor, StockTransferDraft draft) =>
@@ -628,6 +752,67 @@ final class DriftCatalogueWriter implements CatalogueWriter {
         'default_discount_bp': d.defaultDiscountBp,
         'is_active': 1,
       };
+
+  /// [raw] as it is kept: tidied, and spelt the way the shop already spells
+  /// that group when one matches it in another case.
+  ///
+  /// "route 3" typed in a hurry joins "Route 3" rather than starting a second
+  /// route with one customer on it, which would then be missing from every
+  /// list and every report filtered by the real one. An exact match is
+  /// preferred where both spellings already exist.
+  static Future<String?> _groupAsKept(
+    Tx tx,
+    String? raw, {
+    String? excludingPartyId,
+  }) async {
+    final tidy = partyGroupName(raw);
+    if (tidy == null) return null;
+    final kept = await tx.selectOne(
+      'SELECT party_group FROM parties '
+      'WHERE firm_id = ? AND deleted_at_utc IS NULL '
+      '  AND lower(party_group) = lower(?) AND (? IS NULL OR id <> ?) '
+      'ORDER BY party_group = ? DESC, id LIMIT 1',
+      [tx.actor.firmId, tidy, excludingPartyId, excludingPartyId, tidy],
+    );
+    return kept?.read<String>('party_group') ?? tidy;
+  }
+
+  /// Keeps what the counter is told about a party, in the shop's settings.
+  ///
+  /// The parties table has no column for it and this milestone changes no
+  /// schema, so the note is a settings row keyed by the party. Its id is
+  /// derived from the party's, not a fresh ULID: two counters that each
+  /// write the first note for the same customer while apart then write the
+  /// same row, and the LAN merge keeps the later of the two by its clock —
+  /// as it does for any other edit to a customer. Two fresh ids would have
+  /// collided on the settings key instead, and one note would have arrived
+  /// renamed as a clash.
+  ///
+  /// Never struck out: a note cleared is a row holding nothing, so the next
+  /// note goes back into the same row rather than colliding with its own
+  /// tombstone.
+  static Future<void> _keepRemarks(
+    Tx tx,
+    String partyId,
+    String? remarks,
+  ) async {
+    final text = remarks?.trim() ?? '';
+    final rowId = partyRemarksRowId(partyId);
+    final held = await tx.selectOne(
+      'SELECT setting_value FROM settings WHERE id = ? AND firm_id = ?',
+      [rowId, tx.actor.firmId],
+    );
+    if (held == null) {
+      if (text.isEmpty) return;
+      await tx.insert('settings', {
+        'setting_key': partyRemarksKey(partyId),
+        'setting_value': text,
+        'value_type': 'string',
+      }, id: rowId);
+    } else if (held.read<String>('setting_value') != text) {
+      await tx.update('settings', rowId, {'setting_value': text});
+    }
+  }
 
   static Future<void> _assertItemCodeFree(
     Tx tx,

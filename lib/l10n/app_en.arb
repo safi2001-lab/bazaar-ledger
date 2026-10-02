@@ -2004,5 +2004,80 @@
     "placeholders": {
       "name": {"type": "String"}
     }
+  },
+  "partyGroup": "Group (optional)",
+  "partyGroupHint": "Area, route or kind",
+  "partyRemarks": "Note for the counter",
+  "partyRemarksHint": "e.g. Cash only — a cheque bounced",
+  "groupsTitle": "Groups",
+  "groupsEmpty": "No groups yet",
+  "groupsEmptyHint": "Type a group on a customer's form — area, route or kind — or pick several in the list and set their group at once",
+  "groupAll": "All",
+  "groupNone": "No group",
+  "groupMembers": "{count, plural, =1{1 person} other{{count} people}}",
+  "@groupMembers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupReceivable": "To receive",
+  "groupPayable": "To pay",
+  "groupRename": "Rename",
+  "groupNewName": "New name",
+  "groupRenameMerges": "'{name}' already exists — the two groups will become one",
+  "@groupRenameMerges": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "groupMerge": "Merge into another group",
+  "groupMergeInto": "Merge into which group?",
+  "groupMergeConfirm": "Everyone in '{from}' moves to '{to}', and '{from}' is gone.",
+  "@groupMergeConfirm": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "groupNoOther": "There is no other group to merge into",
+  "groupMoved": "{count, plural, =1{1 moved to '{name}'} other{{count} moved to '{name}'}}",
+  "@groupMoved": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "name": {"type": "String"}
+    }
+  },
+  "groupCleared": "{count, plural, =1{1 taken out of their group} other{{count} taken out of their group}}",
+  "@groupCleared": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupSet": "Set group",
+  "groupSetFor": "{count, plural, =1{Group for 1 customer} other{Group for {count} customers}}",
+  "@groupSetFor": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "groupClear": "Take out of group",
+  "groupMembersTitle": "People in this group",
+  "groupNobody": "Nobody in this group",
+  "partiesSelect": "Select several",
+  "partiesSelected": "{count} selected",
+  "@partiesSelected": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "partiesSort": "Sort",
+  "partiesSortName": "By name",
+  "partiesSortBalance": "Most owed first",
+  "partiesSortOldest": "Oldest due first",
+  "partiesCapped": "Showing the first {count} — search to find the rest",
+  "@partiesCapped": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

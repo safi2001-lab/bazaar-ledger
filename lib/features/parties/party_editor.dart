@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../khata/opening_balance_sheet.dart';
 import '../subscription/plans_screen.dart';
+import 'party_groups.dart';
 
 /// Add a customer, or change one.
 class PartyEditorScreen extends ConsumerStatefulWidget {
@@ -37,6 +38,11 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
   final _address = TextEditingController();
   final _city = TextEditingController();
   final _cnic = TextEditingController();
+
+  /// The area, route or kind they are filed under, and what the counter is
+  /// told about them (M40).
+  final _group = TextEditingController();
+  final _remarks = TextEditingController();
   late final TextEditingController _discount = TextEditingController(
     text: _percent(widget.party?.defaultDiscountBp ?? 0),
   );
@@ -82,6 +88,8 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
       _address.text = saved?.addressLine1 ?? '';
       _city.text = saved?.city ?? '';
       _cnic.text = saved?.cnic ?? '';
+      _group.text = saved?.group ?? '';
+      _remarks.text = saved?.remarks ?? '';
       _buyerRegistered = saved?.buyerRegistrationType == 'registered';
       _buyerOnAtl = saved?.isOnAtl ?? false;
     });
@@ -112,6 +120,8 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
     _address.dispose();
     _city.dispose();
     _cnic.dispose();
+    _group.dispose();
+    _remarks.dispose();
     _discount.dispose();
     super.dispose();
   }
@@ -158,6 +168,8 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
         creditDays: saved?.creditDays,
         priceTier: _tier,
         defaultDiscountBp: _bp(_discount.text) ?? 0,
+        group: text(_group),
+        remarks: text(_remarks),
       );
 
       final actor = services.actorNow();
@@ -308,6 +320,10 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             textInputAction: TextInputAction.next,
                           ),
                           const SizedBox(height: BlTokens.space4),
+                          // Picked from the routes the shop already has, or
+                          // typed for a new one (M40).
+                          PartyGroupField(controller: _group),
+                          const SizedBox(height: BlTokens.space4),
                           if (!_isEdit) ...[
                             BlField(
                               controller: _opening,
@@ -416,6 +432,22 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             validator: (v) => _bp(v ?? '') == null
                                 ? s.partyDiscountInvalid
                                 : null,
+                          ),
+                          const SizedBox(height: BlTokens.space4),
+                          // Shown to the cashier under their name on the
+                          // payment sheet, where the decision to give credit
+                          // is made (M40). Written here, by whoever keeps
+                          // the khata; read-only at the counter.
+                          BlField(
+                            controller: _remarks,
+                            label: s.partyRemarks,
+                            hint: s.partyRemarksHint,
+                            maxLines: 2,
+                            keyboardType: TextInputType.multiline,
+                            prefix: const Icon(
+                              Icons.sticky_note_2_outlined,
+                              size: 20,
+                            ),
                           ),
                           const SizedBox(height: BlTokens.space4),
                           // What a legal notice, a delivery challan and a proper

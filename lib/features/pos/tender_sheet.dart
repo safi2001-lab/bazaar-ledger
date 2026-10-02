@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
 import '../sales/receipt_screen.dart';
 import '../subscription/plans_screen.dart';
@@ -527,6 +528,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             // Who is this bill for. A walk-in needs nobody, which is the
             // common case at a kiryana counter and must never be an obstacle.
             _CustomerRow(cart: cart),
+            // What the shop wrote about them, read-only, under their name
+            // where credit is given (M40). Nothing at all when there is none.
+            if (cart.partyId != null) PartyRemarksLine(partyId: cart.partyId!),
             const SizedBox(height: BlTokens.space4),
 
             BlSectionHeader(s.tenderOnUdhaar),

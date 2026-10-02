@@ -934,6 +934,55 @@ milestones:
       - lib/features/pos/past_deals.dart
       - packages/pk_domain/lib/src/sales/past_deal.dart
 
+  - id: M40
+    title: Customers in groups by area, route or kind, and a note about each that the counter sees
+    # Opened and sealed 3 Oct 2026 at 1/1. A wholesaler keeps his khata by
+    # route, and the schema had kept a `parties.party_group` column since v1
+    # that nothing wrote and nothing read. Now a customer or supplier is
+    # filed in a group from their details or from the short form on the
+    # bill: typed, or picked from the groups the shop already uses, shown as
+    # chips under the field. "route 3" typed in a hurry joins "Route 3"
+    # rather than starting a second route. The Customers list narrows to a
+    # group (or to nobody's) with the group's members, what they owe and
+    # what the shop owes them at the top, summed in SQL over every member
+    # and never over the rows loaded; it sorts by name, by who owes most and
+    # by who has owed longest; and several names are ticked and filed at
+    # once. A Groups page lists each group with its totals and members; a
+    # group is renamed (every member moves, hidden ones too) or merged into
+    # another, the screen saying before Save when a new name is another
+    # group's. A rename is one transaction with every member its own update
+    # in the outbox, so the counters on the shop's Wi-Fi receive each move
+    # and a rename that fails half-way moves nobody. The picker at the
+    # counter narrows by group and labels each name with theirs; a new
+    # customer met while it is narrowed is filed on that group. The list no
+    # longer stops silently at forty names: it reads 300 and says so.
+    #
+    # The note for the counter ("Sirf cash — cheque bounce ho chuka",
+    # "Delivery after 5pm") is written on the party's details and shown,
+    # read-only, under their name on the payment sheet the moment they are
+    # chosen. Parties have no column for it and the schema stays at v8, so
+    # it is a settings row keyed `party.remarks.<party id>` whose id is
+    # derived from the party's: two counters writing a first note for one
+    # customer while apart write the same row and the LAN merge keeps the
+    # later, where two fresh ids would have collided on the key.
+    #
+    # For the reports: partyGroups, partyList and partyGroupTotals (sale,
+    # returns, purchase, receivable and payable by group for a period, with
+    # one row for the ungrouped, adding up to the shop's own totals).
+    # Balances are as they stand today, as every other balance read is.
+    #
+    # Not built, and why: a table of groups of their own (a group is a name
+    # on its members and exists while somebody is in it; no schema change);
+    # a "new empty group" button for the same reason; a permission for
+    # renaming groups (no role is barred from editing parties today, which
+    # is the owner's call); the note on the khata screen, which is another
+    # milestone's file; balances as of a past date by group.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/ports/party_groups.dart
+      - lib/features/parties/party_groups.dart
+      - lib/features/parties/party_groups_screen.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5074,3 +5123,32 @@ features:
       - a shop reporting to FBR is told why there is no loose line
       - a supplier's last prices are on the delivery, a tap from the cost
       - at 200% on a small phone the last prices and the loose sheet fit
+  - id: M40-GROUPS-01
+    milestone: M40
+    title: Customers filed by area, route or kind, the list and the picker narrowed by it, and the shop's note shown at the counter
+    status: done
+    proof:
+      - a group set on a customer filters the list with the right totals
+      - the list is put in order of who owes most
+      - renaming a group moves every member in one go
+      - a rename onto another group says so, and the two become one
+      - a group is merged into another from its page
+      - several customers are picked and given a group at once
+      - the counter shows the remarks
+      - the picker at the counter narrows to a group and labels each name with it
+      - at 200% on a small phone the customers list, its groups and picking fit
+      - at 200% on a small phone the customer form with its group and note fits
+      - at 200% on a small phone the groups page and a group fit
+      - at 200% on a small phone the payment sheet with a long note fits
+      - a group typed in another case joins the one the shop already has
+      - a group carries what its members owe, and what the shop owes them
+      - the khata list sorts by balance and by the oldest debt
+      - the khata list narrows to the people in no group
+      - renaming a group moves every member in one transaction, each through the outbox
+      - renaming a group into a group the shop already has merges the two
+      - renaming a group that cannot finish moves nobody
+      - renaming a group refuses a blank name, and a group nobody is in
+      - setting a group on several moves those not already there, and can take them out
+      - a note for the counter is kept with the party, edited, and cleared
+      - a note for the counter nobody without one has one
+      - group totals for the reports sale, purchase, receivable and payable for a period

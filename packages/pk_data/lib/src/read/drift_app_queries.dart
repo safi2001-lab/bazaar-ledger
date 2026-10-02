@@ -4,6 +4,8 @@ import 'package:drift/drift.dart';
 import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
+import '../write/drift_catalogue_writer.dart'
+    show partyRemarksKey, partyRemarksKeyPrefix;
 import '../write/drift_cheque_writer.dart'
     show
         chequeInHandFrom,
@@ -466,7 +468,13 @@ final class DriftAppQueries implements AppQueries {
   /// the credit limit is checked against.
   static const _partySelect = '''
     SELECT p.id, p.name, p.phone, p.party_type, p.credit_limit_paisa,
-           p.price_tier, p.default_discount_bp,
+           p.price_tier, p.default_discount_bp, p.party_group,
+           -- What the counter is told about them (M40), kept in settings
+           -- under their id. One lookup on idx_settings_key per party.
+           (SELECT s.setting_value FROM settings s
+             WHERE s.firm_id = p.firm_id
+               AND s.setting_key = '$partyRemarksKeyPrefix' || p.id
+               AND s.deleted_at_utc IS NULL) AS remarks,
            p.opening_balance_paisa
              + COALESCE((
                  SELECT SUM(d.balance_paisa) FROM documents d
@@ -529,6 +537,8 @@ final class DriftAppQueries implements AppQueries {
     creditLimit: r.readNullable<int>('credit_limit_paisa') == null
         ? null
         : Money.paisa(r.read<int>('credit_limit_paisa')),
+    group: _blankToNull(r.readNullable<String>('party_group')),
+    remarks: _blankToNull(r.readNullable<String>('remarks'))?.trim(),
   );
 
   @override
@@ -1689,6 +1699,19 @@ final class DriftAppQueries implements AppQueries {
     if (r == null) return null;
     final atl = r.readNullable<int>('is_on_atl');
     final limit = r.readNullable<int>('credit_limit_paisa');
+    // The note lives in settings, not on the row (M40). Read here so the
+    // editor writes it back rather than clearing it on every save.
+    final remarks = await _db
+        .customSelect(
+          'SELECT setting_value FROM settings '
+          'WHERE firm_id = ? AND setting_key = ? AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(partyRemarksKey(partyId)),
+          ],
+          readsFrom: {_db.settings},
+        )
+        .getSingleOrNull();
     return PartyDraft(
       name: r.read<String>('name'),
       partyType: r.read<String>('party_type'),
@@ -1706,6 +1729,8 @@ final class DriftAppQueries implements AppQueries {
       creditDays: r.readNullable<int>('credit_days'),
       priceTier: PriceTier.parse(r.read<String>('price_tier')),
       defaultDiscountBp: r.read<int>('default_discount_bp'),
+      group: _blankToNull(r.readNullable<String>('party_group')),
+      remarks: _blankToNull(remarks?.read<String>('setting_value'))?.trim(),
     );
   }
 
@@ -2730,6 +2755,205 @@ final class DriftAppQueries implements AppQueries {
       paidFromAccountId: paidFrom?.read<String>('id'),
       paidBy: [for (final r in paidBy) r.read<String>('payment_no')],
     );
+  }
+
+  // -------------------------------------------------------------------------
+  // M40 — customers in groups, and a note the counter sees
+  // -------------------------------------------------------------------------
+
+  /// What a group's members owe and are owed, from the khata's own balance
+  /// expression. Payable is the shop's debts to them as suppliers plus any
+  /// money it is holding for them as an advance: both are money the shop
+  /// owes them, and neither is netted against what they owe.
+  static const _groupMoney = '''
+    COALESCE(SUM(CASE WHEN x.balance_paisa > 0
+                      THEN x.balance_paisa ELSE 0 END), 0) AS receivable,
+    COALESCE(SUM(x.payable_paisa
+                 + CASE WHEN x.balance_paisa < 0
+                        THEN -x.balance_paisa ELSE 0 END), 0) AS payable
+  ''';
+
+  @override
+  Future<List<PartyGroupSummary>> partyGroups(String firmId) async {
+    // A SUM over the same rows the list shows, never a sum in Dart over a
+    // page of them: a route of 400 retailers has a header that counts all
+    // 400, whatever the list below it has loaded.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT x.party_group AS name, COUNT(*) AS members, $_groupMoney
+          FROM (
+            $_partySelect
+            WHERE p.firm_id = ?
+              AND p.deleted_at_utc IS NULL
+              AND p.is_active = 1
+              AND p.party_group IS NOT NULL
+              AND TRIM(p.party_group) <> ''
+          ) x
+          GROUP BY x.party_group
+          ORDER BY lower(x.party_group), x.party_group
+          ''',
+          variables: [Variable<String>(firmId)],
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PartyGroupSummary(
+          name: r.read<String>('name'),
+          members: r.read<int>('members'),
+          receivable: Money.paisa(r.read<int>('receivable')),
+          payable: Money.paisa(r.read<int>('payable')),
+        ),
+    ];
+  }
+
+  @override
+  Future<List<PartySummary>> partyList(
+    String firmId, {
+    PartyListFilter filter = const PartyListFilter(),
+    int limit = 300,
+  }) async {
+    final term = _normalise(filter.query);
+    // Matched exactly as stored: the chips offer the names the groups query
+    // returned, and a tidied copy of one would match nobody.
+    final group = filter.group;
+    final order = switch (filter.sort) {
+      PartySort.name => 'p.name_search, p.id',
+      // Most owed first, then the shop's own debts to them: a supplier the
+      // shop owes Rs 90,000 belongs above one it owes nothing.
+      PartySort.balance =>
+        'balance_paisa DESC, payable_paisa DESC, p.name_search, p.id',
+      // The date of the oldest debt still standing: the oldest open bill,
+      // or the opening balance a customer brought into the app, whichever
+      // is older. Nobody who owes nothing is "overdue", so they go last,
+      // after anyone whose debt has no date at all.
+      PartySort.oldestDue =>
+        '''
+        CASE WHEN balance_paisa <= 0 THEN '9999-12-31'
+             ELSE COALESCE(
+               MIN(
+                 COALESCE(
+                   (SELECT MIN(d.doc_date_local) FROM documents d
+                     WHERE d.party_id = p.id
+                       AND d.firm_id = p.firm_id
+                       AND d.doc_type IN ('sale_invoice', 'other_income')
+                       AND d.balance_paisa > 0
+                       AND d.status NOT IN ('void', 'draft')
+                       AND d.deleted_at_utc IS NULL),
+                   CASE WHEN p.opening_balance_paisa > 0
+                        THEN p.opening_balance_as_of_local END),
+                 COALESCE(
+                   CASE WHEN p.opening_balance_paisa > 0
+                        THEN p.opening_balance_as_of_local END,
+                   (SELECT MIN(d.doc_date_local) FROM documents d
+                     WHERE d.party_id = p.id
+                       AND d.firm_id = p.firm_id
+                       AND d.doc_type IN ('sale_invoice', 'other_income')
+                       AND d.balance_paisa > 0
+                       AND d.status NOT IN ('void', 'draft')
+                       AND d.deleted_at_utc IS NULL))),
+               '9999-12-30')
+        END,
+        balance_paisa DESC, p.name_search, p.id''',
+    };
+    final rows = await _db
+        .customSelect(
+          """
+          $_partySelect
+          WHERE p.firm_id = ?
+            AND p.deleted_at_utc IS NULL
+            AND p.is_active = 1
+            AND (? = '' OR p.name_search LIKE ? OR p.phone LIKE ?)
+            AND (? IS NULL OR p.party_group = ?)
+            AND (? = 0 OR p.party_group IS NULL OR TRIM(p.party_group) = '')
+          ORDER BY $order
+          LIMIT ?
+          """,
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(term),
+            Variable<String>('%$term%'),
+            Variable<String>('%${filter.query.trim()}%'),
+            Variable<String>(group),
+            Variable<String>(group),
+            Variable<int>(filter.ungrouped ? 1 : 0),
+            Variable<int>(limit),
+          ],
+        )
+        .get();
+    return [for (final r in rows) _party(r)];
+  }
+
+  @override
+  Future<List<PartyGroupTotals>> partyGroupTotals(
+    String firmId, {
+    required BusinessDate from,
+    required BusinessDate to,
+  }) async {
+    // Every party the shop has not deleted, hidden ones included: a
+    // customer hidden in June still bought in May, and a report for May
+    // whose rows did not add up to May's sales would be a report nobody
+    // trusts. The trade is joined once per party from one pass over the
+    // period's documents, on idx_documents_list.
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT NULLIF(TRIM(x.party_group), '') AS grp,
+                 COUNT(*) AS parties,
+                 COALESCE(SUM(t.sales), 0) AS sales,
+                 COALESCE(SUM(t.sales_returns), 0) AS sales_returns,
+                 COALESCE(SUM(t.purchases), 0) AS purchases,
+                 COALESCE(SUM(t.purchase_returns), 0) AS purchase_returns,
+                 $_groupMoney
+          FROM (
+            $_partySelect
+            WHERE p.firm_id = ?1
+              AND p.deleted_at_utc IS NULL
+          ) x
+          LEFT JOIN (
+            SELECT d.party_id,
+                   SUM(CASE WHEN d.doc_type = 'sale_invoice'
+                            THEN d.total_paisa ELSE 0 END) AS sales,
+                   SUM(CASE WHEN d.doc_type = 'sale_return'
+                            THEN d.total_paisa ELSE 0 END) AS sales_returns,
+                   SUM(CASE WHEN d.doc_type = 'purchase_bill'
+                            THEN d.total_paisa ELSE 0 END) AS purchases,
+                   SUM(CASE WHEN d.doc_type = 'purchase_return'
+                            THEN d.total_paisa ELSE 0 END)
+                     AS purchase_returns
+            FROM documents d
+            WHERE d.firm_id = ?1
+              AND d.doc_type IN ('sale_invoice', 'sale_return',
+                                 'purchase_bill', 'purchase_return')
+              AND d.status = 'posted'
+              AND d.doc_date_local BETWEEN ?2 AND ?3
+              AND d.party_id IS NOT NULL
+              AND d.deleted_at_utc IS NULL
+            GROUP BY d.party_id
+          ) t ON t.party_id = x.id
+          GROUP BY grp
+          ORDER BY grp IS NULL, lower(grp), grp
+          ''',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(from.value),
+            Variable<String>(to.value),
+          ],
+        )
+        .get();
+    return [
+      for (final r in rows)
+        PartyGroupTotals(
+          group: r.readNullable<String>('grp'),
+          parties: r.read<int>('parties'),
+          sales: Money.paisa(r.read<int>('sales')),
+          salesReturns: Money.paisa(r.read<int>('sales_returns')),
+          purchases: Money.paisa(r.read<int>('purchases')),
+          purchaseReturns: Money.paisa(r.read<int>('purchase_returns')),
+          receivable: Money.paisa(r.read<int>('receivable')),
+          payable: Money.paisa(r.read<int>('payable')),
+        ),
+    ];
   }
 
   static Map<String, Object?> _jsonOf(String? raw) {

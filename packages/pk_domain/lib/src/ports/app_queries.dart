@@ -18,6 +18,7 @@ import '../time/clock.dart';
 import 'catalogue_writer.dart';
 import 'entry_details.dart';
 import 'manufacturing.dart';
+import 'party_groups.dart';
 import 'purchase_return_writer.dart';
 import 'receipt.dart';
 import 'sale_search.dart';
@@ -320,7 +321,16 @@ final class PartySummary {
     this.bouncedCheques = 0,
     this.priceTier = PriceTier.retail,
     this.defaultDiscountBp = 0,
+    this.group,
+    this.remarks,
   });
+
+  /// The area, route or kind they are filed under (M40). Null is none.
+  final String? group;
+
+  /// What the counter is told about them before it gives credit (M40).
+  /// Null when the shop has written nothing.
+  final String? remarks;
 
   /// Which of an item's prices they are sold at.
   final PriceTier priceTier;
@@ -774,6 +784,40 @@ abstract interface class AppQueries {
     required String itemId,
     String? supplierId,
     int limit = 5,
+  });
+
+  // -------------------------------------------------------------------------
+  // M40 — customers in groups, and a note the counter sees
+  // -------------------------------------------------------------------------
+
+  /// Every group the shop has put somebody in, A to Z, with how many are in
+  /// it and what they owe and are owed.
+  ///
+  /// The totals are SUMs over the khata's own balance expression, so a
+  /// group's header can never disagree with the rows under it.
+  Future<List<PartyGroupSummary>> partyGroups(String firmId);
+
+  /// The khata list: searched, narrowed to one group (or to nobody's), and
+  /// put in the order asked for.
+  ///
+  /// [limit] bounds it; the screen says when it was reached, and the search
+  /// box finds the rest.
+  Future<List<PartySummary>> partyList(
+    String firmId, {
+    PartyListFilter filter = const PartyListFilter(),
+    int limit = 300,
+  });
+
+  /// Sale, purchase, receivable and payable for every group, and one row for
+  /// the parties in none, over the period [from] to [to] inclusive (M40).
+  ///
+  /// For Sale/Purchase by Party Group and every report a group filter
+  /// narrows. Groups with no trade in the period still have a row, so a
+  /// route that bought nothing this month is seen to have bought nothing.
+  Future<List<PartyGroupTotals>> partyGroupTotals(
+    String firmId, {
+    required BusinessDate from,
+    required BusinessDate to,
   });
 }
 
