@@ -1,314 +1,192 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
-import '../printing/pdf_font.dart';
 import '../subscription/plans_screen.dart';
+import 'report_registry.dart';
+import 'report_screen.dart';
+import 'report_shelf.dart';
 
-/// The report pack: did the shop make money this month, and where did it go.
+export 'report_registry.dart' show isAccountingReport, reportName;
+export 'report_screen.dart' show ReportScreen;
+
+/// The reports hub: did the shop make money, who owes what, where did it go
+/// (M8; grouped, searched and starred since M33).
 ///
-/// Every figure is computed by `pk_reports` from the books before it gets
-/// here. This screen lays the table out and adds nothing up itself.
-class ReportsScreen extends ConsumerWidget {
+/// The reports sit in groups the way the shop apps this market already
+/// knows lay them out, every group in one scroll: transactions, parties,
+/// items and stock, business status, taxes, expenses, orders, loans. A
+/// group with nothing in it yet is not shown. Above them sit the reports
+/// this phone starred and the last few it opened, and a search in the bar
+/// finds any of them by name.
+///
+/// The list is the registry (`report_registry.dart`), so a report added
+/// there appears here in its group with nothing else to change. A report
+/// about what goods cost is not listed for a role that may not see costs,
+/// and the engine refuses it to them as well.
+class ReportsScreen extends ConsumerStatefulWidget {
   const ReportsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final s = AppStrings.of(context);
-    final t = context.bl;
-    return Scaffold(
-      backgroundColor: t.paper,
-      appBar: AppBar(title: Text(s.reportsTitle)),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(BlTokens.space4),
-          children: [
-            for (final kind in ReportKind.values)
-              Padding(
-                padding: const EdgeInsets.only(bottom: BlTokens.space2),
-                child: BlCard(
-                  onTap: () => isAccountingReport(kind)
-                      ? openWithPlan(
-                          context,
-                          ref,
-                          PlanFeature.accountingReports,
-                          () => ReportScreen(kind: kind),
-                        )
-                      : Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => ReportScreen(kind: kind),
-                          ),
-                        ),
-                  child: Row(
-                    children: [
-                      Icon(_icon(kind), color: t.inkMuted),
-                      const SizedBox(width: BlTokens.space3),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              reportName(s, kind),
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: t.ink,
-                              ),
-                            ),
-                            Text(
-                              _hint(s, kind),
-                              style: TextStyle(fontSize: 13, color: t.inkMuted),
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (isAccountingReport(kind))
-                        const PlanLock(PlanFeature.accountingReports),
-                      Icon(Icons.chevron_right, color: t.inkMuted),
-                    ],
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  static IconData _icon(ReportKind kind) => switch (kind) {
-    ReportKind.profitAndLoss => Icons.trending_up,
-    ReportKind.salesTax => Icons.receipt_long_outlined,
-    ReportKind.tajirDost => Icons.percent,
-    ReportKind.salesByDay => Icons.calendar_month_outlined,
-    ReportKind.receivables => Icons.hourglass_bottom_outlined,
-    ReportKind.payables => Icons.local_shipping_outlined,
-    ReportKind.trialBalance => Icons.balance_outlined,
-    ReportKind.balanceSheet => Icons.account_balance_outlined,
-    ReportKind.expiry => Icons.event_busy_outlined,
-    ReportKind.purchaseRegister => Icons.inventory_outlined,
-    ReportKind.salesByItem => Icons.shopping_basket_outlined,
-    ReportKind.expenses => Icons.receipt_outlined,
-    ReportKind.cashBook => Icons.point_of_sale_outlined,
-    ReportKind.dayBook => Icons.menu_book_outlined,
-    ReportKind.stockValue => Icons.inventory_2_outlined,
-  };
-
-  static String _hint(AppStrings s, ReportKind kind) => switch (kind) {
-    ReportKind.profitAndLoss => s.reportProfitAndLossHint,
-    ReportKind.salesTax => s.reportSalesTaxHint,
-    ReportKind.tajirDost => s.reportTajirDostHint,
-    ReportKind.salesByDay => s.reportSalesByDayHint,
-    ReportKind.receivables => s.reportReceivablesHint,
-    ReportKind.payables => s.reportPayablesHint,
-    ReportKind.trialBalance => s.reportTrialBalanceHint,
-    ReportKind.balanceSheet => s.reportBalanceSheetHint,
-    ReportKind.expiry => s.reportExpiryHint,
-    ReportKind.purchaseRegister => s.reportPurchaseRegisterHint,
-    ReportKind.salesByItem => s.reportSalesByItemHint,
-    ReportKind.expenses => s.reportExpensesHint,
-    ReportKind.cashBook => s.reportCashBookHint,
-    ReportKind.dayBook => s.reportDayBookHint,
-    ReportKind.stockValue => s.reportStockValueHint,
-  };
+  ConsumerState<ReportsScreen> createState() => _ReportsScreenState();
 }
 
-/// A report's name as the shop reads it.
-/// The books and tax reports a paid plan opens (M21); the day's sales,
-/// cash, stock and khatas are free.
-bool isAccountingReport(ReportKind kind) => switch (kind) {
-  ReportKind.profitAndLoss ||
-  ReportKind.trialBalance ||
-  ReportKind.balanceSheet ||
-  ReportKind.salesTax ||
-  ReportKind.tajirDost ||
-  ReportKind.purchaseRegister => true,
-  _ => false,
-};
-
-String reportName(AppStrings s, ReportKind kind) => switch (kind) {
-  ReportKind.profitAndLoss => s.reportProfitAndLoss,
-  ReportKind.salesTax => s.reportSalesTax,
-  ReportKind.tajirDost => s.reportTajirDost,
-  ReportKind.salesByDay => s.reportSalesByDay,
-  ReportKind.receivables => s.reportReceivables,
-  ReportKind.payables => s.reportPayables,
-  ReportKind.trialBalance => s.reportTrialBalance,
-  ReportKind.balanceSheet => s.reportBalanceSheet,
-  ReportKind.expiry => s.reportExpiry,
-  ReportKind.purchaseRegister => s.reportPurchaseRegister,
-  ReportKind.salesByItem => s.reportSalesByItem,
-  ReportKind.expenses => s.reportExpenses,
-  ReportKind.cashBook => s.reportCashBook,
-  ReportKind.dayBook => s.reportDayBook,
-  ReportKind.stockValue => s.reportStockValue,
-};
-
-/// The periods offered, as the shop says them.
-enum _Span { today, thisMonth, lastMonth, thisYear }
-
-typedef _Request = ({ReportKind kind, ReportPeriod period});
-
-final _reportProvider = FutureProvider.autoDispose
-    .family<ReportTable, _Request>((ref, request) async {
-      ref.watch(refreshTickProvider);
-      final services = ref.watch(appServicesProvider);
-      final firm = await ref.watch(firmProvider.future);
-      if (firm == null) throw StateError('No shop is set up yet.');
-      return services.reports.run(
-        request.kind,
-        firmId: firm.id,
-        period: request.period,
-        today: BusinessDate.now(services.clock),
-      );
-    });
-
-/// One report, for the period chosen.
-class ReportScreen extends ConsumerStatefulWidget {
-  const ReportScreen({required this.kind, super.key});
-
-  final ReportKind kind;
+class _ReportsScreenState extends ConsumerState<ReportsScreen> {
+  final _search = TextEditingController();
+  bool _searching = false;
+  String _query = '';
 
   @override
-  ConsumerState<ReportScreen> createState() => _ReportScreenState();
-}
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
 
-class _ReportScreenState extends ConsumerState<ReportScreen> {
-  late _Span _span = switch (widget.kind) {
-    ReportKind.cashBook || ReportKind.dayBook => _Span.today,
-    _ => _Span.thisMonth,
-  };
-  bool _sharing = false;
-
-  bool get _hasPeriod => !ReportEngine.isAsOfToday(widget.kind);
-
-  ReportPeriod _period(BusinessDate today) => switch (_span) {
-    _Span.today => ReportPeriod.day(today),
-    _Span.thisMonth => ReportPeriod.monthOf(today),
-    _Span.lastMonth => ReportPeriod.monthBefore(today),
-    _Span.thisYear => ReportPeriod.fiscalYearOf(today),
-  };
-
-  /// Sends [table] on as a CSV, or as a PDF when [pdf].
-  Future<void> _share(ReportTable table, {required bool pdf}) async {
-    if (_sharing) return;
-    setState(() => _sharing = true);
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final List<int> bytes;
-      if (pdf) {
-        final firm = await ref.read(firmProvider.future);
-        bytes = await reportToPdf(
-          table,
-          shopName: firm?.name ?? '',
-          unicodeFont: await PdfUnicodeFont.bytes(),
-        );
-      } else {
-        bytes = reportToCsvBytes(table);
-      }
-      final dir = await getTemporaryDirectory();
-      final name = reportFileName(table, extension: pdf ? 'pdf' : 'csv');
-      final file = File('${dir.path}${Platform.pathSeparator}$name');
-      await file.writeAsBytes(bytes, flush: true);
-      await SharePlus.instance.share(
-        ShareParams(
-          files: [
-            XFile(file.path, mimeType: pdf ? 'application/pdf' : 'text/csv'),
-          ],
-          subject: '${table.title}, ${table.period.label}',
-        ),
-      );
-    } on Object catch (error) {
-      messenger.showSnackBar(SnackBar(content: Text('$error')));
-    } finally {
-      if (mounted) setState(() => _sharing = false);
+  void _toggleSearch() => setState(() {
+    _searching = !_searching;
+    if (!_searching) {
+      _search.clear();
+      _query = '';
     }
+  });
+
+  Future<void> _open(ReportEntry entry) async {
+    final services = ref.read(appServicesProvider);
+    final plan = entry.plan;
+    if (plan == null || services.plans.has(plan)) {
+      ref.read(reportShelfProvider.notifier).opened(entry.kind);
+    }
+    if (plan != null) {
+      await openWithPlan(
+        context,
+        ref,
+        plan,
+        () => ReportScreen(kind: entry.kind),
+      );
+      return;
+    }
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => ReportScreen(kind: entry.kind)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
-    final period = _period(today);
-    final report = ref.watch(
-      _reportProvider((kind: widget.kind, period: period)),
+    final services = ref.watch(appServicesProvider);
+    final shelf = ref.watch(reportShelfProvider);
+
+    final allowed = [
+      for (final e in reportRegistry)
+        if (!e.showsCost || services.can(Permission.seeCosts)) e,
+    ];
+    final query = _query.trim().toLowerCase();
+    bool matches(ReportEntry e) =>
+        query.isEmpty ||
+        e.name(s).toLowerCase().contains(query) ||
+        e.hint(s).toLowerCase().contains(query);
+
+    final byKind = {for (final e in allowed) e.kind: e};
+    final favourites = [for (final k in shelf.favourites) ?byKind[k]];
+    final recent = [
+      for (final k in shelf.recent)
+        if (byKind[k] case final e? when !shelf.isFavourite(k)) e,
+    ];
+    final groups = [
+      for (final g in ReportGroup.values)
+        (
+          group: g,
+          entries: [
+            for (final e in allowed)
+              if (e.group == g && matches(e)) e,
+          ],
+        ),
+    ].where((g) => g.entries.isNotEmpty).toList();
+
+    Widget section(String title, List<ReportEntry> entries) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        BlSectionHeader(title),
+        BlCard(
+          padding: EdgeInsets.zero,
+          child: Column(
+            children: [
+              for (var i = 0; i < entries.length; i++) ...[
+                if (i > 0) Divider(height: 1, color: t.line),
+                _ReportTile(
+                  entry: entries[i],
+                  starred: shelf.isFavourite(entries[i].kind),
+                  onOpen: () => unawaited(_open(entries[i])),
+                  onStar: () => ref
+                      .read(reportShelfProvider.notifier)
+                      .toggleFavourite(entries[i].kind),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
     );
 
     return Scaffold(
       backgroundColor: t.paper,
       appBar: AppBar(
-        title: Text(reportName(s, widget.kind)),
+        title: _searching
+            ? TextField(
+                controller: _search,
+                autofocus: true,
+                decoration: InputDecoration(
+                  hintText: s.reportSearchHint,
+                  border: InputBorder.none,
+                ),
+                onChanged: (v) => setState(() => _query = v),
+              )
+            : Text(s.reportsTitle),
         actions: [
-          if (report.valueOrNull case final table?) ...[
-            BlIconButton(
-              icon: Icons.picture_as_pdf_outlined,
-              label: s.reportSharePdf,
-              onPressed: _sharing
-                  ? null
-                  : () => unawaited(_share(table, pdf: true)),
-            ),
-            BlIconButton(
-              icon: Icons.table_view_outlined,
-              label: s.reportShareCsv,
-              onPressed: _sharing
-                  ? null
-                  : () => unawaited(_share(table, pdf: false)),
-            ),
-          ],
+          BlIconButton(
+            icon: _searching ? Icons.close : Icons.search,
+            label: _searching ? s.actionClose : s.actionSearch,
+            onPressed: _toggleSearch,
+          ),
         ],
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(BlTokens.space4),
+          padding: const EdgeInsets.fromLTRB(
+            BlTokens.space4,
+            0,
+            BlTokens.space4,
+            BlTokens.space6,
+          ),
           children: [
-            if (_hasPeriod)
+            if (query.isEmpty && favourites.isNotEmpty)
+              section(s.reportFavourites, favourites),
+            if (query.isEmpty && recent.isNotEmpty) ...[
+              BlSectionHeader(s.reportRecent),
               Wrap(
                 spacing: BlTokens.space2,
-                runSpacing: BlTokens.space2,
+                runSpacing: BlTokens.space1,
                 children: [
-                  for (final span in _Span.values)
-                    ChoiceChip(
-                      selected: span == _span,
-                      label: Text(switch (span) {
-                        _Span.today => s.reportToday,
-                        _Span.thisMonth => s.reportThisMonth,
-                        _Span.lastMonth => s.reportLastMonth,
-                        _Span.thisYear => s.reportThisYear,
-                      }),
-                      onSelected: (_) => setState(() => _span = span),
+                  for (final e in recent)
+                    ActionChip(
+                      avatar: Icon(e.icon, size: 16),
+                      label: Text(e.name(s)),
+                      onPressed: () => unawaited(_open(e)),
                     ),
                 ],
-              )
-            else
-              Text(
-                s.reportAsOfNow,
-                style: TextStyle(fontSize: 13, color: t.inkMuted),
               ),
-            const SizedBox(height: BlTokens.space2),
-            Text(
-              _hasPeriod ? period.label : today.value,
-              style: TextStyle(fontSize: 13, color: t.inkMuted),
-            ),
-            const SizedBox(height: BlTokens.space3),
-            report.when(
-              loading: () => const BlSkeletonList(rows: 6),
-              error: (error, _) => BlError(
-                title: s.commonSomethingWentWrong,
-                message: '$error',
-                retryLabel: s.actionRetry,
-                onRetry: () => ref.invalidate(_reportProvider),
-              ),
-              data: (table) => _Table(table: table),
-            ),
+            ],
+            for (final g in groups)
+              section(reportGroupName(s, g.group), g.entries),
+            if (groups.isEmpty)
+              BlEmpty(title: s.reportSearchNone, icon: Icons.search_off),
           ],
         ),
       ),
@@ -316,103 +194,66 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   }
 }
 
-/// The table as computed, one row per row, totals in bold.
-class _Table extends StatelessWidget {
-  const _Table({required this.table});
+/// One report in a group: what it is, what it answers, whether the plan
+/// has it, and its star.
+class _ReportTile extends StatelessWidget {
+  const _ReportTile({
+    required this.entry,
+    required this.starred,
+    required this.onOpen,
+    required this.onStar,
+  });
 
-  final ReportTable table;
+  final ReportEntry entry;
+  final bool starred;
+  final VoidCallback onOpen;
+  final VoidCallback onStar;
 
   @override
   Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
     final t = context.bl;
-    final columns = table.columns;
-
-    Widget cell(Object? value, int i, RowStyle style) {
-      final numeric = columns[i].isNumeric && style != RowStyle.heading;
-      final strong = style != RowStyle.line;
-      final negative = switch (value) {
-        final Money m => m.isNegative,
-        _ => false,
-      };
-      return Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: BlTokens.space2,
-          vertical: BlTokens.space1 + 2,
+    return InkWell(
+      onTap: onOpen,
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: BlTokens.space4,
+          top: BlTokens.space2,
+          bottom: BlTokens.space2,
         ),
-        child: Text(
-          reportCellText(value, columns[i].kind),
-          textAlign: numeric ? TextAlign.end : TextAlign.start,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: strong ? FontWeight.w700 : FontWeight.w400,
-            color: negative ? t.danger : t.ink,
-            fontFeatures: const [FontFeature.tabularFigures()],
-          ),
-        ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        BlCard(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Table(
-              defaultColumnWidth: const IntrinsicColumnWidth(),
-              children: [
-                TableRow(
-                  decoration: BoxDecoration(
-                    border: Border(bottom: BorderSide(color: t.line)),
+        child: Row(
+          children: [
+            Icon(entry.icon, color: t.inkMuted),
+            const SizedBox(width: BlTokens.space3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    entry.name(s),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: t.ink,
+                    ),
                   ),
-                  children: [
-                    for (var i = 0; i < columns.length; i++)
-                      Padding(
-                        padding: const EdgeInsets.all(BlTokens.space2),
-                        child: Text(
-                          columns[i].title,
-                          textAlign: columns[i].isNumeric
-                              ? TextAlign.end
-                              : TextAlign.start,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: t.inkMuted,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-                for (final row in table.rows)
-                  TableRow(
-                    decoration: row.style == RowStyle.total
-                        ? BoxDecoration(
-                            border: Border(top: BorderSide(color: t.line)),
-                          )
-                        : null,
-                    children: [
-                      for (var i = 0; i < columns.length; i++)
-                        cell(row.cells[i], i, row.style),
-                    ],
+                  Text(
+                    entry.hint(s),
+                    style: TextStyle(fontSize: 13, color: t.inkMuted),
                   ),
-              ],
+                ],
+              ),
             ),
-          ),
+            if (entry.plan case final plan?) PlanLock(plan),
+            BlIconButton(
+              icon: starred ? Icons.star : Icons.star_border,
+              label: starred ? s.reportUnstar : s.reportStar,
+              colour: starred ? t.accent : t.inkMuted,
+              onPressed: onStar,
+            ),
+          ],
         ),
-        for (final note in table.notes) ...[
-          const SizedBox(height: BlTokens.space2),
-          Text(note, style: TextStyle(fontSize: 13, color: t.inkMuted)),
-        ],
-      ],
+      ),
     );
   }
 }
-
-/// A cell as the screen writes it.
-String reportCellText(Object? value, CellKind kind) => switch (value) {
-  null => '',
-  final Money m => m.amountOnly,
-  final Qty q => q.display,
-  final int bp when kind == CellKind.percent => formatBp(bp),
-  _ => '$value',
-};

@@ -5605,6 +5605,474 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Maal wapas karein'**
   String get purchaseSendBack;
+
+  /// No description provided for @reportGroupTransaction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Len den'**
+  String get reportGroupTransaction;
+
+  /// No description provided for @reportGroupParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party ki report'**
+  String get reportGroupParty;
+
+  /// No description provided for @reportGroupItemStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheezen aur stock'**
+  String get reportGroupItemStock;
+
+  /// No description provided for @reportGroupBusiness.
+  ///
+  /// In ur, this message translates to:
+  /// **'Karobar ki halat'**
+  String get reportGroupBusiness;
+
+  /// No description provided for @reportGroupTaxes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tax'**
+  String get reportGroupTaxes;
+
+  /// No description provided for @reportGroupExpense.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharchay'**
+  String get reportGroupExpense;
+
+  /// No description provided for @reportGroupOrders.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri aur khareed ke order'**
+  String get reportGroupOrders;
+
+  /// No description provided for @reportGroupLoans.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qarz ke khate'**
+  String get reportGroupLoans;
+
+  /// No description provided for @reportFavourites.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pasandeeda'**
+  String get reportFavourites;
+
+  /// No description provided for @reportRecent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haal hi mein khole'**
+  String get reportRecent;
+
+  /// No description provided for @reportSearchHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Report ka naam likhein'**
+  String get reportSearchHint;
+
+  /// No description provided for @reportSearchNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is naam ki koi report nahi'**
+  String get reportSearchNone;
+
+  /// No description provided for @reportStar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pasandeeda mein daalein'**
+  String get reportStar;
+
+  /// No description provided for @reportUnstar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pasandeeda se hatayein'**
+  String get reportUnstar;
+
+  /// No description provided for @reportSale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri report'**
+  String get reportSale;
+
+  /// No description provided for @reportSaleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har bill: kul, kitna mila, kitna baqi, kaise diya'**
+  String get reportSaleHint;
+
+  /// No description provided for @reportPurchase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed report'**
+  String get reportPurchase;
+
+  /// No description provided for @reportPurchaseHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har khareed ka bill: kul, kitna diya, kitna baqi'**
+  String get reportPurchaseHint;
+
+  /// No description provided for @reportAllTransactions.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tamam len den'**
+  String get reportAllTransactions;
+
+  /// No description provided for @reportAllTransactionsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har bill, wapsi, kharcha aur payment, ek jagah'**
+  String get reportAllTransactionsHint;
+
+  /// No description provided for @reportBillWiseProfit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill-war nafa'**
+  String get reportBillWiseProfit;
+
+  /// No description provided for @reportBillWiseProfitHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har bill par laagat se upar kitna kamaya'**
+  String get reportBillWiseProfitHint;
+
+  /// No description provided for @reportCashflow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cash flow'**
+  String get reportCashflow;
+
+  /// No description provided for @reportCashflowHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Galle aur bank mein paisa kahan se aaya, kahan gaya'**
+  String get reportCashflowHint;
+
+  /// No description provided for @reportPartyStatement.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party ka statement'**
+  String get reportPartyStatement;
+
+  /// No description provided for @reportPartyStatementHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek party ka poora hisaab, har entry ke baad baqi'**
+  String get reportPartyStatementHint;
+
+  /// No description provided for @reportPartyProfit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party-war nafa nuqsan'**
+  String get reportPartyProfit;
+
+  /// No description provided for @reportPartyProfitHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis gahak se kitna nafa hua'**
+  String get reportPartyProfitHint;
+
+  /// No description provided for @reportAllParties.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tamam parties'**
+  String get reportAllParties;
+
+  /// No description provided for @reportAllPartiesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har party ka lena, dena aur udhaar ki hadd'**
+  String get reportAllPartiesHint;
+
+  /// No description provided for @reportPartyItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party ki cheezen'**
+  String get reportPartyItems;
+
+  /// No description provided for @reportPartyItemsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party ne kaunsi cheez kitni li ya di'**
+  String get reportPartyItemsHint;
+
+  /// No description provided for @reportSalePurchaseByParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party-war bikri aur khareed'**
+  String get reportSalePurchaseByParty;
+
+  /// No description provided for @reportSalePurchaseByPartyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har party ko kitna becha, us se kitna khareeda'**
+  String get reportSalePurchaseByPartyHint;
+
+  /// No description provided for @reportSalePurchaseByGroup.
+  ///
+  /// In ur, this message translates to:
+  /// **'Group-war bikri aur khareed'**
+  String get reportSalePurchaseByGroup;
+
+  /// No description provided for @reportSalePurchaseByGroupHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har party group ki bikri aur khareed'**
+  String get reportSalePurchaseByGroupHint;
+
+  /// No description provided for @reportYesterday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kal'**
+  String get reportYesterday;
+
+  /// No description provided for @reportThisWeek.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is hafta'**
+  String get reportThisWeek;
+
+  /// No description provided for @reportThisQuarter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh teen mahine'**
+  String get reportThisQuarter;
+
+  /// No description provided for @reportLastYear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichla saal'**
+  String get reportLastYear;
+
+  /// No description provided for @reportCustom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Apni tareekhen'**
+  String get reportCustom;
+
+  /// No description provided for @reportFilterParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party'**
+  String get reportFilterParty;
+
+  /// No description provided for @reportFilterItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez'**
+  String get reportFilterItem;
+
+  /// No description provided for @reportFilterCategory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez ki qisam'**
+  String get reportFilterCategory;
+
+  /// No description provided for @reportFilterGroup.
+  ///
+  /// In ur, this message translates to:
+  /// **'Party group'**
+  String get reportFilterGroup;
+
+  /// No description provided for @reportFilterType.
+  ///
+  /// In ur, this message translates to:
+  /// **'Len den ki qisam'**
+  String get reportFilterType;
+
+  /// No description provided for @reportFilterMode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaise diya'**
+  String get reportFilterMode;
+
+  /// No description provided for @reportFilterUser.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ne likha'**
+  String get reportFilterUser;
+
+  /// No description provided for @reportFilterStatus.
+  ///
+  /// In ur, this message translates to:
+  /// **'Adaigi'**
+  String get reportFilterStatus;
+
+  /// No description provided for @reportFilterWithBalance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf jin ka baqi hai'**
+  String get reportFilterWithBalance;
+
+  /// No description provided for @reportFilterClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hatayein'**
+  String get reportFilterClear;
+
+  /// No description provided for @reportFilterNothing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch nahi mila'**
+  String get reportFilterNothing;
+
+  /// No description provided for @reportFilterUngrouped.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bina group'**
+  String get reportFilterUngrouped;
+
+  /// No description provided for @reportStatusPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poora mila'**
+  String get reportStatusPaid;
+
+  /// No description provided for @reportStatusPartial.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch mila'**
+  String get reportStatusPartial;
+
+  /// No description provided for @reportStatusUnpaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch nahi mila'**
+  String get reportStatusUnpaid;
+
+  /// No description provided for @reportTypeSale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri'**
+  String get reportTypeSale;
+
+  /// No description provided for @reportTypeSaleReturn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri ki wapsi'**
+  String get reportTypeSaleReturn;
+
+  /// No description provided for @reportTypePurchase.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed'**
+  String get reportTypePurchase;
+
+  /// No description provided for @reportTypePurchaseReturn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed ki wapsi'**
+  String get reportTypePurchaseReturn;
+
+  /// No description provided for @reportTypeExpense.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kharcha'**
+  String get reportTypeExpense;
+
+  /// No description provided for @reportTypeCharge.
+  ///
+  /// In ur, this message translates to:
+  /// **'Charge'**
+  String get reportTypeCharge;
+
+  /// No description provided for @reportTypeQuotation.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation'**
+  String get reportTypeQuotation;
+
+  /// No description provided for @reportTypeChallan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Challan'**
+  String get reportTypeChallan;
+
+  /// No description provided for @reportTypeSaleOrder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri ka order'**
+  String get reportTypeSaleOrder;
+
+  /// No description provided for @reportTypePurchaseOrder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed ka order'**
+  String get reportTypePurchaseOrder;
+
+  /// No description provided for @reportTypeProforma.
+  ///
+  /// In ur, this message translates to:
+  /// **'Proforma'**
+  String get reportTypeProforma;
+
+  /// No description provided for @reportTypePaymentIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay aaye'**
+  String get reportTypePaymentIn;
+
+  /// No description provided for @reportTypePaymentOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay diye'**
+  String get reportTypePaymentOut;
+
+  /// No description provided for @reportShareExcel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Excel bhejein'**
+  String get reportShareExcel;
+
+  /// No description provided for @reportShowMore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur dikhayein ({shown} / {total})'**
+  String reportShowMore(int shown, int total);
+
+  /// No description provided for @reportChooseParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Statement dekhne ke liye party chunein'**
+  String get reportChooseParty;
+
+  /// No description provided for @reportVsPrevious.
+  ///
+  /// In ur, this message translates to:
+  /// **'{change} pichli dafa se'**
+  String reportVsPrevious(String change);
+
+  /// No description provided for @reportSortedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{column} se tarteeb'**
+  String reportSortedBy(String column);
+
+  /// No description provided for @reportExcel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Excel'**
+  String get reportExcel;
+
+  /// No description provided for @reportCsv.
+  ///
+  /// In ur, this message translates to:
+  /// **'CSV'**
+  String get reportCsv;
+
+  /// No description provided for @reportPrint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Print'**
+  String get reportPrint;
+
+  /// No description provided for @reportPrintTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Printer par chhapein'**
+  String get reportPrintTitle;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

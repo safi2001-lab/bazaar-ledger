@@ -1,8 +1,10 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'party_builders.dart';
 import 'period.dart';
 import 'report_source.dart';
 import 'report_table.dart';
+import 'transaction_source.dart';
 
 /// The contra accounts under expenses. They carry credit balances that
 /// reduce the cost of goods, and are not money the shop spent.
@@ -34,10 +36,20 @@ List<AccountMovement> _byCode(Iterable<AccountMovement> accounts) =>
 /// Read off the ledger rather than off the bills, so a void, a return, a
 /// debit note and an expense all land where the double entry put them, and
 /// the figure here cannot disagree with the books.
+///
+/// With [stock] (M33) the cost of sales is laid out the way every trading
+/// account in the market is, and the way Vyapar shows it: opening stock,
+/// plus purchases, less purchase returns, less closing stock. The books
+/// here cost each sale as it happens, so the figure that line arrives at is
+/// still the Cost of Goods Sold account to the paisa; what moved the shelf
+/// for any other reason (a count, a write-off, a challan, a production run,
+/// stock brought in as an opening) is shown on its own line so the sum can
+/// be followed on paper.
 ReportTable profitAndLoss(
   ReportPeriod period,
-  List<AccountMovement> movements,
-) {
+  List<AccountMovement> movements, {
+  StockFigures? stock,
+}) {
   final revenue = _byCode(
     movements.where((a) => a.type == 'income' && a.systemKey != 'other_income'),
   );
@@ -62,13 +74,38 @@ ReportTable profitAndLoss(
   final expenses = Money.sum(indirect.map((a) => a.net));
   final net = gross + other - expenses;
 
+  // The trading account's lines, when the stock figures were read.
+  final goodsSold = Money.sum([
+    for (final a in direct)
+      if (a.systemKey == 'cogs') a.net,
+  ]);
+  final otherwise = stock == null
+      ? Money.zero
+      : goodsSold -
+            (stock.opening +
+                stock.purchases -
+                stock.purchaseReturns -
+                stock.closing);
+
   const width = 2;
   final rows = <ReportRow>[
     ReportRow.heading('Sales', width),
     for (final a in revenue) ReportRow([a.name, earned(a)]),
     ReportRow(['Net sales', netSales], style: RowStyle.subtotal),
     ReportRow.heading('Cost of sales', width),
-    for (final a in direct) ReportRow([a.name, a.net]),
+    if (stock == null)
+      for (final a in direct) ReportRow([a.name, a.net])
+    else ...[
+      ReportRow(['Opening stock', stock.opening]),
+      ReportRow(['Purchases', stock.purchases]),
+      if (!stock.purchaseReturns.isZero)
+        ReportRow(['Purchase returns', -stock.purchaseReturns]),
+      if (!otherwise.isZero) ReportRow([_stockOtherwise, otherwise]),
+      ReportRow(['Closing stock', -stock.closing]),
+      ReportRow(['Cost of goods sold', goodsSold], style: RowStyle.subtotal),
+      for (final a in direct)
+        if (a.systemKey != 'cogs') ReportRow([a.name, a.net]),
+    ],
     ReportRow(['Total cost of sales', costOfSales], style: RowStyle.subtotal),
     ReportRow(['Gross profit', gross], style: RowStyle.subtotal),
     if (otherIncome.isNotEmpty) ...[
@@ -98,9 +135,17 @@ ReportTable profitAndLoss(
       if (netSales.isPositive)
         'Gross margin ${formatBp(shareBp(gross, netSales))} of net sales.',
       'Cost of sales is what the goods sold cost when they left the shelf.',
+      if (stock != null) _stockAtCost,
     ],
   );
 }
+
+const _stockOtherwise = 'Stock in or out otherwise';
+
+const _stockAtCost =
+    'Opening and closing stock are the Inventory account at cost. Stock in '
+    'or out otherwise is stock counted in or written off, sent on a challan, '
+    'used or made in production, or brought in as an opening.';
 
 /// What the shop spent in [period], by head, largest first.
 ReportTable expensesByHead(
@@ -198,38 +243,74 @@ ReportTable cashBook(
 }
 
 /// Every entry in the books in [period], in the order it was recorded.
+///
+/// Since M33 laid out as a shop's roznamcha is: each transaction with who it
+/// was with, the number on its paper, what it came to, and the money that
+/// came in or went out with it. The day's money in and money out are summed
+/// at the foot, and their difference is what the drawer, the bank and the
+/// wallets gained between them.
 ReportTable dayBook(ReportPeriod period, List<DayBookEntry> entries) {
-  final total = Money.sum(entries.map((e) => e.amount));
+  final moneyIn = Money.sum(entries.map((e) => e.moneyIn));
+  final moneyOut = Money.sum(entries.map((e) => e.moneyOut));
   return ReportTable(
     id: 'day_book',
     title: 'Day Book',
     period: period,
     columns: const [
       ReportColumn('Date', CellKind.text),
-      ReportColumn('Entry', CellKind.text),
+      ReportColumn('Number', CellKind.text),
       ReportColumn('Type', CellKind.text),
+      ReportColumn('Party', CellKind.text),
       ReportColumn('Details', CellKind.text),
-      ReportColumn('Amount', CellKind.money),
+      ReportColumn('Total', CellKind.money),
+      ReportColumn('Money in', CellKind.money),
+      ReportColumn('Money out', CellKind.money),
     ],
     rows: [
       for (final e in entries)
-        ReportRow([
-          e.date.value,
-          e.entryNo,
-          _sourceLabel(e.sourceType),
-          e.narration,
-          e.amount,
-        ]),
+        ReportRow(
+          [
+            e.date.value,
+            e.reference ?? e.entryNo,
+            _sourceLabel(e.sourceType),
+            e.party ?? '',
+            e.narration,
+            e.amount,
+            e.moneyIn.isZero ? null : e.moneyIn,
+            e.moneyOut.isZero ? null : e.moneyOut,
+          ],
+          link: e.documentId == null
+              ? null
+              : ReportLink.document(
+                  e.documentId!,
+                  label: e.reference ?? e.entryNo,
+                  docType: e.docType,
+                ),
+        ),
       ReportRow([
         null,
         null,
         null,
+        null,
         entries.length == 1 ? '1 entry' : '${entries.length} entries',
-        total,
+        null,
+        moneyIn,
+        moneyOut,
       ], style: RowStyle.total),
     ],
+    summary: [
+      ReportFigure('Money in', moneyIn),
+      ReportFigure('Money out', moneyOut),
+      ReportFigure('Net', moneyIn - moneyOut),
+    ],
+    notes: const [_moneyInAndOut],
   );
 }
+
+const _moneyInAndOut =
+    'Money in and out is cash in the drawer, the bank and mobile wallets. A '
+    'cheque is counted when it clears, and a bill left on udhaar moves no '
+    'money until it is paid.';
 
 String _sourceLabel(String sourceType) => switch (sourceType) {
   'sale' => 'Sale',
@@ -242,6 +323,8 @@ String _sourceLabel(String sourceType) => switch (sourceType) {
   'opening' => 'Opening',
   'adjustment' => 'Adjustment',
   'reversal' => 'Reversal',
+  'manual' => 'Journal voucher',
+  'year_close' => 'Year closed',
   _ => sourceType,
 };
 
@@ -265,9 +348,9 @@ ReportTable salesByItem(ReportPeriod period, List<ItemSales> sales) {
       ReportColumn('Qty', CellKind.qty),
       ReportColumn('Unit', CellKind.text),
       ReportColumn('Sales', CellKind.money),
-      ReportColumn('Cost', CellKind.money),
-      ReportColumn('Profit', CellKind.money),
-      ReportColumn('Margin', CellKind.percent),
+      ReportColumn('Cost', CellKind.money, isCost: true),
+      ReportColumn('Profit', CellKind.money, isCost: true),
+      ReportColumn('Margin', CellKind.percent, isCost: true),
     ],
     rows: [
       for (final s in items)
@@ -824,32 +907,15 @@ ReportTable partyStatement({
   required List<LedgerEntry> entries,
   bool owedToUs = true,
 }) {
-  final before = entries
-      .where((e) => e.dateLocal.compareTo(period.from.value) < 0)
-      .toList();
-  final opening = before.isEmpty ? Money.zero : before.last.balanceAfter;
-  final within = entries
-      .where((e) => period.contains(BusinessDate(e.dateLocal)))
-      .toList();
-  final closing = within.isEmpty ? opening : within.last.balanceAfter;
-  final up = Money.sum([
-    for (final e in within)
-      if (!e.amount.isNegative) e.amount,
-  ]);
-  final down = -Money.sum([
-    for (final e in within)
-      if (e.amount.isNegative) e.amount,
-  ]);
-  String what(String kind) => switch (kind) {
-    'sale' => 'Bill',
-    'charge' => 'Charge',
-    'payment' => 'Payment',
-    'bounce' => 'Cheque bounced',
-    'purchase' => 'Delivery',
-    'expense' => 'Expense',
-    'opening' => 'Opening balance',
-    _ => kind,
-  };
+  // The section the party reports share (M33): the same opening, the same
+  // lines and the same closing, so the PDF the khata sends and the party
+  // statement in the reports cannot tell a customer two different things.
+  final section = statementSection(
+    period: period,
+    entries: entries,
+    owedToUs: owedToUs,
+  );
+  final closing = section.closing;
   return ReportTable(
     id: 'statement',
     title: 'Statement of account: $partyName',
@@ -862,33 +928,7 @@ ReportTable partyStatement({
       ReportColumn(owedToUs ? 'Credit' : 'Debit', CellKind.money),
       const ReportColumn('Balance', CellKind.money),
     ],
-    rows: [
-      ReportRow([
-        period.from.value,
-        'Opening balance',
-        '',
-        null,
-        null,
-        opening,
-      ], style: RowStyle.subtotal),
-      for (final e in within)
-        ReportRow([
-          e.dateLocal,
-          what(e.kind),
-          e.reference,
-          e.amount.isNegative ? null : e.amount,
-          e.amount.isNegative ? -e.amount : null,
-          e.balanceAfter,
-        ]),
-      ReportRow([
-        period.to.value,
-        owedToUs ? 'Balance owed to us' : 'Balance we owe',
-        '',
-        up,
-        down,
-        closing,
-      ], style: RowStyle.total),
-    ],
+    rows: section.rows,
     notes: [
       if (closing.isNegative)
         owedToUs

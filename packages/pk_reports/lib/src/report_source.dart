@@ -1,6 +1,9 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'filters.dart';
+import 'party_source.dart';
 import 'period.dart';
+import 'transaction_source.dart';
 
 /// What moved through one account in a period.
 final class AccountMovement {
@@ -46,6 +49,10 @@ final class CashMovement {
 }
 
 /// One journal entry, as the day book lists it.
+///
+/// Since M33 it carries what the day book of every other shop app shows:
+/// who it was with, the paper's own number, and the money that went into
+/// or out of the drawer, the bank and the wallets with it.
 final class DayBookEntry {
   const DayBookEntry({
     required this.date,
@@ -53,6 +60,12 @@ final class DayBookEntry {
     required this.sourceType,
     required this.narration,
     required this.amount,
+    this.reference,
+    this.party,
+    this.moneyIn = Money.zero,
+    this.moneyOut = Money.zero,
+    this.documentId,
+    this.docType,
   });
 
   final BusinessDate date;
@@ -61,7 +74,26 @@ final class DayBookEntry {
   /// `sale`, `purchase`, `payment`, `expense`, `reversal` and so on.
   final String sourceType;
   final String narration;
+
+  /// What the transaction came to: the bill's total, or the payment's
+  /// amount, or for an entry with neither, the entry's own size.
   final Money amount;
+
+  /// The bill or payment number on the paper, when there is one.
+  final String? reference;
+
+  /// The customer or supplier, when there is one.
+  final String? party;
+
+  /// Into the drawer, a bank account or a wallet with this entry.
+  final Money moneyIn;
+
+  /// Out of them.
+  final Money moneyOut;
+
+  /// The document behind the entry, for opening it from the report.
+  final String? documentId;
+  final String? docType;
 }
 
 /// What one item sold for in a period, net of what came back.
@@ -226,7 +258,21 @@ final class PurchaseRegisterLine {
 /// Where the reports read from. Implemented against the database in
 /// pk_data; every method is a read, and none of them adds anything up that a
 /// builder then adds up again.
-abstract interface class ReportSource {
+///
+/// Each group of reports added since M33 declares its reads in its own
+/// interface, beside its own row types, and this one takes them all: a new
+/// group is a new file and one more name on the `implements` line.
+abstract interface class ReportSource
+    implements TransactionReportSource, PartyReportSource {
+  /// What a filter can be set to: the items, categories, party groups or
+  /// staff the shop has, matching [query] (M33).
+  Future<List<ReportChoice>> choices(
+    String firmId,
+    ReportFilter filter, {
+    String query = '',
+    int limit = 50,
+  });
+
   /// Every account with anything posted to it in [period].
   Future<List<AccountMovement>> accountMovements(
     String firmId,
@@ -239,8 +285,13 @@ abstract interface class ReportSource {
   /// Every posting to cash in [period], in the order it was recorded.
   Future<List<CashMovement>> cashMovements(String firmId, ReportPeriod period);
 
-  /// Every journal entry in [period], in the order it was recorded.
-  Future<List<DayBookEntry>> dayBook(String firmId, ReportPeriod period);
+  /// Every journal entry in [period], in the order it was recorded, with the
+  /// money it moved; narrowed to one person's entries by [filters].
+  Future<List<DayBookEntry>> dayBook(
+    String firmId,
+    ReportPeriod period, {
+    ReportFilters filters = ReportFilters.none,
+  });
 
   /// Sales and returns per item in [period].
   Future<List<ItemSales>> itemSales(String firmId, ReportPeriod period);

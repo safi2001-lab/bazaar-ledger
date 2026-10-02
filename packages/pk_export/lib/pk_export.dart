@@ -3,3 +3,5 @@ library;
 
 export 'src/csv.dart';
 export 'src/pdf.dart';
+export 'src/slip.dart';
+export 'src/xlsx.dart';

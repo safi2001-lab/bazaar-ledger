@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:bazaar_ledger/features/reports/report_shelf.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
@@ -18,7 +20,7 @@ void main() {
   setUp(_sheet.paths.clear);
 
   testWidgets("this month's profit is on the phone", (tester) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await _aDayOfTrade(app);
 
     await tapText(tester, 'Report');
@@ -32,7 +34,7 @@ void main() {
   });
 
   testWidgets('last month shows nothing earned this month', (tester) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await _aDayOfTrade(app);
 
     await tapText(tester, 'Report');
@@ -46,7 +48,7 @@ void main() {
   testWidgets('a report goes out as a CSV the accountant can open', (
     tester,
   ) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await _aDayOfTrade(app);
 
     await tapText(tester, 'Report');
@@ -63,7 +65,7 @@ void main() {
   testWidgets('a report goes out as a PDF headed with the shop', (
     tester,
   ) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await _aDayOfTrade(app);
 
     await tapText(tester, 'Report');
@@ -77,7 +79,7 @@ void main() {
   });
 
   testWidgets('stock value is as of now and lists the shelf', (tester) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500, openingStock: 12);
 
     await tapText(tester, 'Report');
@@ -89,7 +91,7 @@ void main() {
   });
 
   testWidgets('udhaar by age is as of now and lists who owes', (tester) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await app.seedParty(name: 'Rashid Traders', owedRupees: 4500);
 
     await tapText(tester, 'Report');
@@ -103,7 +105,7 @@ void main() {
   });
 
   testWidgets('what is owed to suppliers is on its own page', (tester) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     final supplier = await app.services.catalogue.addParty(
       app.services.actorNow(),
       const PartyDraft(name: 'Malik Property', partyType: 'supplier'),
@@ -127,7 +129,7 @@ void main() {
   });
 
   testWidgets('sales by day shows the day the bill was rung', (tester) async {
-    final app = await Harness.startWithShop(tester);
+    final app = await Harness.startWithShop(tester, overrides: _ownShelf());
     await _aDayOfTrade(app);
 
     await tapText(tester, 'Report');
@@ -182,6 +184,15 @@ Future<void> _aDayOfTrade(Harness app) async {
     ),
   );
 }
+
+/// A shelf of its own for each test (M33). The phone remembers the period
+/// each report was last read for, and one test choosing last month must not
+/// open the next test's report on last month.
+List<Override> _ownShelf() => [
+  reportShelfDirectoryProvider.overrideWith(
+    (ref) async => Directory.systemTemp.createTempSync('report_shelf'),
+  ),
+];
 
 final class _FakeShareSheet extends SharePlatform {
   final paths = <String>[];

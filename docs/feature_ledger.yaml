@@ -739,6 +739,81 @@ milestones:
       - lib/features/items/quick_item_sheet.dart
       - lib/design/add_offer.dart
 
+  - id: M33
+    title: The reports hub, and every transaction and party report the market's apps have
+    # Opened and sealed 2 Oct 2026 at 4/4. The Report tile opens a hub laid
+    # out the way the shop apps this market knows lay theirs out: groups for
+    # transactions, parties, items and stock, business status, taxes,
+    # expenses, orders and loans, each shown once it has a report in it; a
+    # search in the bar that finds a report by name; a star on every report
+    # that puts it under Favourites at the top, kept on the phone beside the
+    # language and theme, never in the books; the last few opened as chips;
+    # and the plan's lock on the paid ones. The hub is a registry, one entry
+    # per report with its group, name, hint, icon, plan and the filters it
+    # takes, and a test fails until every report has exactly one.
+    #
+    # A report opens on the period it was last read for: today, yesterday,
+    # this week, this month, last month, this quarter, this fiscal year
+    # (1 July to 30 June), last fiscal year, or two dates picked. It is
+    # narrowed by party, item, item category, party group, transaction
+    # type, payment mode, payment status, who entered it, or only parties
+    # with a balance, as each report declares; every filter is a WHERE in
+    # the SQL with its value bound, never a filter over rows read into the
+    # phone, and an export of a narrowed report says what it was narrowed
+    # by. Headline tiles sit over the table with how each compares with the
+    # period before; any column of a list sorts either way with the total
+    # kept at the foot; a sale bill opens its receipt and a party opens its
+    # statement; a long list draws two hundred rows at a time. It goes out
+    # as a PDF, an Excel workbook (written here, a zip of six XML files, on
+    # the archive package the app already carries), a CSV, or on the
+    # counter's receipt printer through the receipt queue.
+    #
+    # New reports: the sale and purchase reports; all transactions, voids
+    # listed and counted nowhere, a tender taken with its bill not listed
+    # twice; bill-wise profit at the cost each bill recorded; cash flow by
+    # what moved the money, drawer and bank apart; the party statement,
+    # both sides of a party who buys and sells kept apart; party-wise
+    # profit and loss; all parties with the khata's balance each way; a
+    # party's items; sale and purchase by party and by party group. The day
+    # book now shows each transaction's party, number, total and the money
+    # in and out with it; the profit and loss lays its cost of sales out as
+    # opening stock, purchases, purchase returns and closing stock, landing
+    # on the books' cost of goods sold to the paisa. A role that may not see
+    # costs is refused the reports about cost and gets Sales by item without
+    # its cost columns. Each ties to the books in a test, and on a
+    # development machine a year of twenty thousand bills reads the sale
+    # report in about half a second and one customer's year in a few
+    # milliseconds; the handset's number is still to be measured.
+    #
+    # Found on the way: the khata's own ledger leaves out goods a customer
+    # brought back, so its running balance runs ahead of the khata by the
+    # return; the party statement here reads a ledger that includes them
+    # and lands on the khata's balance. The khata screen is not this
+    # milestone's to change. A receipt's journal entry names no payment, so
+    # the day book finds a receipt's party on its receivable line.
+    #
+    # Not built, and why: printing an A4 page straight to a printer (the
+    # app has no print plugin and adding one is a native dependency; the
+    # PDF goes to any viewer that prints), charts and a column chooser.
+    # Item, stock, tax, expense, bank, discount, order and loan reports are
+    # M34's and M35's, on this registry.
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/filters.dart
+      - packages/pk_reports/lib/src/transaction_builders.dart
+      - packages/pk_reports/lib/src/transaction_source.dart
+      - packages/pk_reports/lib/src/party_builders.dart
+      - packages/pk_reports/lib/src/party_source.dart
+      - packages/pk_export/lib/src/xlsx.dart
+      - packages/pk_export/lib/src/slip.dart
+      - packages/pk_data/lib/src/read/reports/**
+      - lib/features/reports/report_registry.dart
+      - lib/features/reports/report_screen.dart
+      - lib/features/reports/report_shelf.dart
+      - lib/features/reports/report_filters_bar.dart
+      - lib/features/reports/report_table_view.dart
+      - lib/features/reports/report_export.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -4720,3 +4795,103 @@ features:
       - at 200% on a small phone the scale label offer fits
       - at 200% on a small phone the new-customer offer and sheet fit
       - at 200% on a small phone and in English
+  - id: M33-HUB-01
+    milestone: M33
+    title: The reports hub is grouped, searched and starred, and remembers each report's period
+    status: done
+    # One registry entry per report, a test holding it to exactly one; the
+    # hub lists them by group, finds them by name, keeps a star and the last
+    # few opened on the phone, and each report opens on the period it was
+    # last read for, from presets that include the fiscal year.
+    proof:
+      - every report is in the registry exactly once, in a group
+      - the reports sit in their groups, and the search finds them by name
+      - a starred report sits under favourites, and the phone keeps the star
+      - the report shelf survives a restart, and a file it cannot read is an empty shelf
+      - a report opens on the period it was last read for
+      - date presets a week runs Monday to Sunday
+      - date presets yesterday on the first of the month is the last of the one before
+      - date presets a quarter is three calendar months, and July opens the fiscal one
+      - date presets this fiscal year is July to June, and last year the one before
+  - id: M33-SCREEN-01
+    milestone: M33
+    title: A report is narrowed in its SQL, compared, sorted, opened to its bill, and sent as PDF, Excel, CSV or to the printer
+    status: done
+    # Filters declared per report travel into the query as bound values and
+    # head every export; the tiles compare with the period before; a list
+    # sorts either way with its total at the foot; cost columns never reach
+    # a role that may not see costs; a year of twenty thousand bills stays
+    # inside the budget the catalogue set.
+    proof:
+      - report filters a report keeps only the filters it accepts
+      - report filters a narrowed report says so at its head
+      - sale report a narrowed sale report is narrowed in the query
+      - the sale report narrows to a party, its tiles say what was sold, received and owed, and a bill opens its receipt
+      - a column sorts either way, and the total stays at the foot
+      - sorting any column, either way, the total kept at the foot
+      - sorting a report with sections keeps its order
+      - report engine the period before is the same shape: a month, a quarter, a year, or as many days
+      - report engine vs the period before is a percentage of what it was, and nothing when there was nothing
+      - report engine a role that may not see costs is refused every report that shows them, before anything is read
+      - report engine sales by item still runs for a role that may not see costs, with the cost, profit and margin struck out
+      - xlsx the workbook opens as the app's own import reads Excel, every figure where it was
+      - xlsx money is a number with two places, a share a percentage, and a name that looks like a formula stays text
+      - xlsx the file is named for the report and its dates
+      - filters in exports a narrowed report says what it was narrowed by, in every format
+      - a report goes out as an Excel workbook the app's own import can read
+      - slip the day book fits the roll: figures against the edge, every line the paper's width
+      - slip a two-column report prints each line as label and amount
+      - slip a long report prints its figures and totals and sends the rest to the PDF
+      - the day book prints on the counter's receipt printer
+      - a year of every bill reads inside its budget
+      - one customer's year is an index away, not a scan
+      - summaries over a year stay inside their budget
+  - id: M33-TXN-01
+    milestone: M33
+    title: The sale and purchase reports, day book, all transactions, bill-wise profit, profit and loss and cash flow tie to the books
+    status: done
+    # Each new transaction report proved against its builder and against a
+    # real day's books: the sale report's total is the day's sales, bill-
+    # wise profit is the profit in Sales by item, the trading account lands
+    # on the Cost of Goods Sold account, the cash flow's drawer closes where
+    # the Cash Book does.
+    proof:
+      - sale report every bill with what is received and owed, and whether it is settled
+      - purchase report every delivery with what is paid and what is unpaid
+      - bill-wise profit each bill at the cost it left at, and a return takes its profit back
+      - all transactions every kind is listed, summed by kind, and a void counted nowhere
+      - cash flow opening, plus what came in, less what went out, is the closing, for the drawer and the bank apart
+      - profit and loss with stock opening stock and purchases less closing stock arrive at the cost of goods sold
+      - day book lists every entry and counts them
+      - sale report every bill that stands, and its total is the day's sales
+      - the purchase report shows the delivery and what is still unpaid
+      - bill-wise profit ties to sales by item and to profit by party
+      - all transactions lists every document and the receipt, the void shown, the counter's own tenders not
+      - the day book shows what each entry moved, and the receipt's party
+      - the cash flow's drawer closes where the cash book does
+      - the trading account arrives at the books' cost of goods sold, and the profit is unchanged
+  - id: M33-PARTY-01
+    milestone: M33
+    title: A party's statement, profit by party, every party's balance, a party's items, and trade by party and by group
+    status: done
+    # The party statement reads both sides of a party, never netted, and
+    # with the returns the khata's own list leaves out lands on the khata's
+    # balance; all parties carries the khata's figure each way for every
+    # party; trade by group counts the ungrouped and the walk-ins apart.
+    proof:
+      - party statement a customer's account reads as the khata statement does, returns included
+      - party statement a party on both sides has two accounts, never netted
+      - party statement with no party chosen it asks for one
+      - party reports profit by party, the most profitable first, summing to the period's profit
+      - party reports sale and purchase by party, each net of what came back
+      - party reports by party group, a party with no group is Ungrouped and the walk-ins are their own row
+      - party reports every party with the khata's balance each way, the settled left out on request
+      - party reports what a party bought and sold, item by item
+      - report engine a party statement with no party reads nothing
+      - party statement closes on the khata's balance, the return included
+      - party statement a supplier's closes on what the shop owes them
+      - all parties shows the khata's balance each way for every party
+      - a party's items, sold and bought, net of returns
+      - sale and purchase by party and by group, each net of returns
+      - a filter offers what the shop has
+      - a party's statement closes on what their khata says

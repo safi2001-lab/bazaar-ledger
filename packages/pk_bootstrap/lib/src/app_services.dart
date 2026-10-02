@@ -206,10 +206,14 @@ final class AppServices {
     );
   }
 
-  /// The report pack, read from the books as they stand.
+  /// The report pack, read from the books as they stand. A role that may
+  /// not see what goods cost is refused the reports that show it (M33).
   ReportEngine get reports {
     require(Permission.reports);
-    return ReportEngine(DriftReportSource(database));
+    return ReportEngine(
+      DriftReportSource(database),
+      canSeeCosts: can(Permission.seeCosts),
+    );
   }
 
   RecordDebitNoteUseCase get chargeParty {

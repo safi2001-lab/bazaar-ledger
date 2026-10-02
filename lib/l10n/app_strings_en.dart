@@ -3136,4 +3136,253 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get purchaseSendBack => 'Send goods back';
+
+  @override
+  String get reportGroupTransaction => 'Transaction';
+
+  @override
+  String get reportGroupParty => 'Party reports';
+
+  @override
+  String get reportGroupItemStock => 'Item and stock';
+
+  @override
+  String get reportGroupBusiness => 'Business status';
+
+  @override
+  String get reportGroupTaxes => 'Taxes';
+
+  @override
+  String get reportGroupExpense => 'Expense';
+
+  @override
+  String get reportGroupOrders => 'Sale and purchase orders';
+
+  @override
+  String get reportGroupLoans => 'Loan accounts';
+
+  @override
+  String get reportFavourites => 'Favourites';
+
+  @override
+  String get reportRecent => 'Recently opened';
+
+  @override
+  String get reportSearchHint => 'Type a report\'s name';
+
+  @override
+  String get reportSearchNone => 'No report by that name';
+
+  @override
+  String get reportStar => 'Add to favourites';
+
+  @override
+  String get reportUnstar => 'Remove from favourites';
+
+  @override
+  String get reportSale => 'Sale report';
+
+  @override
+  String get reportSaleHint =>
+      'Every bill: total, received, balance, how it was paid';
+
+  @override
+  String get reportPurchase => 'Purchase report';
+
+  @override
+  String get reportPurchaseHint => 'Every purchase bill: total, paid, unpaid';
+
+  @override
+  String get reportAllTransactions => 'All transactions';
+
+  @override
+  String get reportAllTransactionsHint =>
+      'Every bill, return, expense and payment in one place';
+
+  @override
+  String get reportBillWiseProfit => 'Bill-wise profit';
+
+  @override
+  String get reportBillWiseProfitHint =>
+      'What each bill made over what its goods cost';
+
+  @override
+  String get reportCashflow => 'Cash flow';
+
+  @override
+  String get reportCashflowHint =>
+      'Where the money in the drawer and the bank came from and went';
+
+  @override
+  String get reportPartyStatement => 'Party statement';
+
+  @override
+  String get reportPartyStatementHint =>
+      'One party\'s whole account, with the balance after each entry';
+
+  @override
+  String get reportPartyProfit => 'Party-wise profit and loss';
+
+  @override
+  String get reportPartyProfitHint => 'The profit made on each customer';
+
+  @override
+  String get reportAllParties => 'All parties';
+
+  @override
+  String get reportAllPartiesHint =>
+      'Every party: to receive, to pay, credit limit';
+
+  @override
+  String get reportPartyItems => 'Party report by items';
+
+  @override
+  String get reportPartyItemsHint =>
+      'What a party bought and sold, item by item';
+
+  @override
+  String get reportSalePurchaseByParty => 'Sale and purchase by party';
+
+  @override
+  String get reportSalePurchaseByPartyHint =>
+      'What was sold to and bought from each party';
+
+  @override
+  String get reportSalePurchaseByGroup => 'Sale and purchase by party group';
+
+  @override
+  String get reportSalePurchaseByGroupHint =>
+      'Sales and purchases of each party group';
+
+  @override
+  String get reportYesterday => 'Yesterday';
+
+  @override
+  String get reportThisWeek => 'This week';
+
+  @override
+  String get reportThisQuarter => 'This quarter';
+
+  @override
+  String get reportLastYear => 'Last year';
+
+  @override
+  String get reportCustom => 'Pick dates';
+
+  @override
+  String get reportFilterParty => 'Party';
+
+  @override
+  String get reportFilterItem => 'Item';
+
+  @override
+  String get reportFilterCategory => 'Item category';
+
+  @override
+  String get reportFilterGroup => 'Party group';
+
+  @override
+  String get reportFilterType => 'Transaction type';
+
+  @override
+  String get reportFilterMode => 'Paid by';
+
+  @override
+  String get reportFilterUser => 'Entered by';
+
+  @override
+  String get reportFilterStatus => 'Payment';
+
+  @override
+  String get reportFilterWithBalance => 'Only with a balance';
+
+  @override
+  String get reportFilterClear => 'Clear';
+
+  @override
+  String get reportFilterNothing => 'Nothing found';
+
+  @override
+  String get reportFilterUngrouped => 'Ungrouped';
+
+  @override
+  String get reportStatusPaid => 'Paid';
+
+  @override
+  String get reportStatusPartial => 'Partly paid';
+
+  @override
+  String get reportStatusUnpaid => 'Unpaid';
+
+  @override
+  String get reportTypeSale => 'Sale';
+
+  @override
+  String get reportTypeSaleReturn => 'Sale return';
+
+  @override
+  String get reportTypePurchase => 'Purchase';
+
+  @override
+  String get reportTypePurchaseReturn => 'Purchase return';
+
+  @override
+  String get reportTypeExpense => 'Expense';
+
+  @override
+  String get reportTypeCharge => 'Charge';
+
+  @override
+  String get reportTypeQuotation => 'Quotation';
+
+  @override
+  String get reportTypeChallan => 'Challan';
+
+  @override
+  String get reportTypeSaleOrder => 'Sale order';
+
+  @override
+  String get reportTypePurchaseOrder => 'Purchase order';
+
+  @override
+  String get reportTypeProforma => 'Proforma';
+
+  @override
+  String get reportTypePaymentIn => 'Payment in';
+
+  @override
+  String get reportTypePaymentOut => 'Payment out';
+
+  @override
+  String get reportShareExcel => 'Send Excel';
+
+  @override
+  String reportShowMore(int shown, int total) {
+    return 'Show more ($shown of $total)';
+  }
+
+  @override
+  String get reportChooseParty => 'Choose a party to see the statement';
+
+  @override
+  String reportVsPrevious(String change) {
+    return '$change vs the period before';
+  }
+
+  @override
+  String reportSortedBy(String column) {
+    return 'Sort by $column';
+  }
+
+  @override
+  String get reportExcel => 'Excel';
+
+  @override
+  String get reportCsv => 'CSV';
+
+  @override
+  String get reportPrint => 'Print';
+
+  @override
+  String get reportPrintTitle => 'Print on the receipt printer';
 }

@@ -9,6 +9,9 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  # The zip an .xlsx is (M33). Already in the app twice over: pk_import
+  # reads workbooks with it, and pdf depends on it.
+  archive: ^4.0.0
   # Pure Dart, and already in the app for receipts and notices.
   pdf: ^3.11.0
   pk_domain:
@@ -20,4 +23,7 @@ dependencies:
 
 dev_dependencies:
   lints: ^6.0.0
+  # Reads an exported workbook back the way the app's own import does.
+  pk_import:
+    path: ../pk_import
   test: ^1.26.0

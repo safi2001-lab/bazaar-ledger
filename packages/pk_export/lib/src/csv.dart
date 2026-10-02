@@ -5,14 +5,16 @@ import 'package:pk_reports/pk_reports.dart';
 
 /// A report as CSV, the file every accountant's spreadsheet opens.
 ///
-/// The title and period first, then the table as it stands on screen, then
-/// its notes. Money is written as a plain number with two places and no
-/// grouping, so a spreadsheet reads it as a number and its SUM agrees with
-/// the report's own total; the total rows are written too, and marked.
+/// The title and period first, then what it was narrowed by if anything
+/// (M33), then the table as it stands on screen, then its notes. Money is
+/// written as a plain number with two places and no grouping, so a
+/// spreadsheet reads it as a number and its SUM agrees with the report's own
+/// total; the total rows are written too, and marked.
 String reportToCsv(ReportTable table) {
   final lines = <List<String>>[
     [table.title],
     ['Period', table.period.label],
+    for (final f in table.filters) [_text(f)],
     [],
     [for (final c in table.columns) c.title],
     for (final row in table.rows)

@@ -3136,4 +3136,253 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get purchaseSendBack => 'Maal wapas karein';
+
+  @override
+  String get reportGroupTransaction => 'Len den';
+
+  @override
+  String get reportGroupParty => 'Party ki report';
+
+  @override
+  String get reportGroupItemStock => 'Cheezen aur stock';
+
+  @override
+  String get reportGroupBusiness => 'Karobar ki halat';
+
+  @override
+  String get reportGroupTaxes => 'Tax';
+
+  @override
+  String get reportGroupExpense => 'Kharchay';
+
+  @override
+  String get reportGroupOrders => 'Bikri aur khareed ke order';
+
+  @override
+  String get reportGroupLoans => 'Qarz ke khate';
+
+  @override
+  String get reportFavourites => 'Pasandeeda';
+
+  @override
+  String get reportRecent => 'Haal hi mein khole';
+
+  @override
+  String get reportSearchHint => 'Report ka naam likhein';
+
+  @override
+  String get reportSearchNone => 'Is naam ki koi report nahi';
+
+  @override
+  String get reportStar => 'Pasandeeda mein daalein';
+
+  @override
+  String get reportUnstar => 'Pasandeeda se hatayein';
+
+  @override
+  String get reportSale => 'Bikri report';
+
+  @override
+  String get reportSaleHint =>
+      'Har bill: kul, kitna mila, kitna baqi, kaise diya';
+
+  @override
+  String get reportPurchase => 'Khareed report';
+
+  @override
+  String get reportPurchaseHint =>
+      'Har khareed ka bill: kul, kitna diya, kitna baqi';
+
+  @override
+  String get reportAllTransactions => 'Tamam len den';
+
+  @override
+  String get reportAllTransactionsHint =>
+      'Har bill, wapsi, kharcha aur payment, ek jagah';
+
+  @override
+  String get reportBillWiseProfit => 'Bill-war nafa';
+
+  @override
+  String get reportBillWiseProfitHint =>
+      'Har bill par laagat se upar kitna kamaya';
+
+  @override
+  String get reportCashflow => 'Cash flow';
+
+  @override
+  String get reportCashflowHint =>
+      'Galle aur bank mein paisa kahan se aaya, kahan gaya';
+
+  @override
+  String get reportPartyStatement => 'Party ka statement';
+
+  @override
+  String get reportPartyStatementHint =>
+      'Ek party ka poora hisaab, har entry ke baad baqi';
+
+  @override
+  String get reportPartyProfit => 'Party-war nafa nuqsan';
+
+  @override
+  String get reportPartyProfitHint => 'Kis gahak se kitna nafa hua';
+
+  @override
+  String get reportAllParties => 'Tamam parties';
+
+  @override
+  String get reportAllPartiesHint =>
+      'Har party ka lena, dena aur udhaar ki hadd';
+
+  @override
+  String get reportPartyItems => 'Party ki cheezen';
+
+  @override
+  String get reportPartyItemsHint => 'Party ne kaunsi cheez kitni li ya di';
+
+  @override
+  String get reportSalePurchaseByParty => 'Party-war bikri aur khareed';
+
+  @override
+  String get reportSalePurchaseByPartyHint =>
+      'Har party ko kitna becha, us se kitna khareeda';
+
+  @override
+  String get reportSalePurchaseByGroup => 'Group-war bikri aur khareed';
+
+  @override
+  String get reportSalePurchaseByGroupHint =>
+      'Har party group ki bikri aur khareed';
+
+  @override
+  String get reportYesterday => 'Kal';
+
+  @override
+  String get reportThisWeek => 'Is hafta';
+
+  @override
+  String get reportThisQuarter => 'Yeh teen mahine';
+
+  @override
+  String get reportLastYear => 'Pichla saal';
+
+  @override
+  String get reportCustom => 'Apni tareekhen';
+
+  @override
+  String get reportFilterParty => 'Party';
+
+  @override
+  String get reportFilterItem => 'Cheez';
+
+  @override
+  String get reportFilterCategory => 'Cheez ki qisam';
+
+  @override
+  String get reportFilterGroup => 'Party group';
+
+  @override
+  String get reportFilterType => 'Len den ki qisam';
+
+  @override
+  String get reportFilterMode => 'Kaise diya';
+
+  @override
+  String get reportFilterUser => 'Kis ne likha';
+
+  @override
+  String get reportFilterStatus => 'Adaigi';
+
+  @override
+  String get reportFilterWithBalance => 'Sirf jin ka baqi hai';
+
+  @override
+  String get reportFilterClear => 'Hatayein';
+
+  @override
+  String get reportFilterNothing => 'Kuch nahi mila';
+
+  @override
+  String get reportFilterUngrouped => 'Bina group';
+
+  @override
+  String get reportStatusPaid => 'Poora mila';
+
+  @override
+  String get reportStatusPartial => 'Kuch mila';
+
+  @override
+  String get reportStatusUnpaid => 'Kuch nahi mila';
+
+  @override
+  String get reportTypeSale => 'Bikri';
+
+  @override
+  String get reportTypeSaleReturn => 'Bikri ki wapsi';
+
+  @override
+  String get reportTypePurchase => 'Khareed';
+
+  @override
+  String get reportTypePurchaseReturn => 'Khareed ki wapsi';
+
+  @override
+  String get reportTypeExpense => 'Kharcha';
+
+  @override
+  String get reportTypeCharge => 'Charge';
+
+  @override
+  String get reportTypeQuotation => 'Quotation';
+
+  @override
+  String get reportTypeChallan => 'Challan';
+
+  @override
+  String get reportTypeSaleOrder => 'Bikri ka order';
+
+  @override
+  String get reportTypePurchaseOrder => 'Khareed ka order';
+
+  @override
+  String get reportTypeProforma => 'Proforma';
+
+  @override
+  String get reportTypePaymentIn => 'Paisay aaye';
+
+  @override
+  String get reportTypePaymentOut => 'Paisay diye';
+
+  @override
+  String get reportShareExcel => 'Excel bhejein';
+
+  @override
+  String reportShowMore(int shown, int total) {
+    return 'Aur dikhayein ($shown / $total)';
+  }
+
+  @override
+  String get reportChooseParty => 'Statement dekhne ke liye party chunein';
+
+  @override
+  String reportVsPrevious(String change) {
+    return '$change pichli dafa se';
+  }
+
+  @override
+  String reportSortedBy(String column) {
+    return '$column se tarteeb';
+  }
+
+  @override
+  String get reportExcel => 'Excel';
+
+  @override
+  String get reportCsv => 'CSV';
+
+  @override
+  String get reportPrint => 'Print';
+
+  @override
+  String get reportPrintTitle => 'Printer par chhapein';
 }

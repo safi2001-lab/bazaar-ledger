@@ -5,25 +5,37 @@ import 'package:pk_reports/pk_reports.dart';
 import '../db/app_database.dart';
 import 'drift_app_queries.dart';
 
+part 'reports/party_queries.dart';
+part 'reports/sql_filters.dart';
+part 'reports/transaction_queries.dart';
+
 /// The drift implementation of [ReportSource].
 ///
 /// Every figure is summed by SQLite over the period's rows, on the business
 /// date column the rows were written with, so a report on a year of a busy
 /// shop is a handful of indexed aggregates and never a table read into Dart.
-final class DriftReportSource implements ReportSource {
+///
+/// Since M33 each group of reports keeps its queries in its own part file,
+/// as a mixin over the same database: the transaction reports in
+/// `reports/transaction_queries.dart`, the party reports in
+/// `reports/party_queries.dart`. A later group adds its own part and one
+/// more name to the `with` clause, and the filters every group narrows by
+/// are written once, in `reports/sql_filters.dart`.
+final class DriftReportSource
+    with _TransactionQueries, _PartyQueries
+    implements ReportSource {
   const DriftReportSource(this._db);
 
+  @override
   final AppDatabase _db;
 
   /// The accounts that hold the drawer: Cash in Hand, and whatever account
   /// each cash tender posts into, which a shop with two drawers may have
   /// split out.
-  static const _cashAccounts = '''
-    SELECT id FROM accounts WHERE firm_id = ?1 AND system_key = 'cash_in_hand'
-    UNION
-    SELECT ledger_account_id FROM payment_accounts
-     WHERE firm_id = ?1 AND mode_label = 'cash'
-  ''';
+  ///
+  /// Written once, in `reports/sql_filters.dart`, where the cash flow reads
+  /// the same drawer (M33).
+  static const _cashAccounts = _drawerAccounts;
 
   @override
   Future<List<AccountMovement>> accountMovements(
@@ -182,24 +194,65 @@ final class DriftReportSource implements ReportSource {
   }
 
   @override
-  Future<List<DayBookEntry>> dayBook(String firmId, ReportPeriod period) async {
+  Future<List<DayBookEntry>> dayBook(
+    String firmId,
+    ReportPeriod period, {
+    ReportFilters filters = ReportFilters.none,
+  }) async {
+    // One row per journal entry, as before, now with the paper behind it and
+    // the money it moved (M33). The money is read off the entry's own lines
+    // against the drawer, the banks and the wallets, so a sale on udhaar
+    // moves nothing and a cheque moves money only when it clears. The party
+    // is the bill's, or for a receipt, whose entry names no document, the
+    // party on its receivable or payable line.
+    final q = _Params(firmId, period);
+    final byUser = filters.userId == null
+        ? ''
+        : 'AND je.created_by = ${q.text(filters.userId!)}';
     final rows = await _db
         .customSelect(
           '''
-          SELECT entry_date_local, entry_no, source_type, narration,
-                 total_debit_paisa
-          FROM journal_entries
-          WHERE firm_id = ?1
-            AND entry_date_local BETWEEN ?2 AND ?3
-            AND deleted_at_utc IS NULL
-          ORDER BY entry_date_local, created_at_utc, id
+          WITH money AS ($_moneyAccounts)
+          SELECT je.id, je.entry_date_local, je.entry_no, je.source_type,
+                 je.narration, je.total_debit_paisa, je.document_id,
+                 d.doc_type, d.doc_no, d.total_paisa AS doc_total,
+                 COALESCE(d.party_name_snapshot, dp.name, (
+                   SELECT pp.name FROM journal_lines pl
+                   JOIN parties pp ON pp.id = pl.party_id
+                   WHERE pl.journal_entry_id = je.id
+                     AND pl.deleted_at_utc IS NULL
+                   LIMIT 1
+                 )) AS party,
+                 COALESCE((
+                   SELECT SUM(jl.debit_paisa) FROM journal_lines jl
+                   WHERE jl.journal_entry_id = je.id
+                     AND jl.deleted_at_utc IS NULL
+                     AND jl.account_id IN (SELECT id FROM money)
+                 ), 0) AS money_in,
+                 COALESCE((
+                   SELECT SUM(jl.credit_paisa) FROM journal_lines jl
+                   WHERE jl.journal_entry_id = je.id
+                     AND jl.deleted_at_utc IS NULL
+                     AND jl.account_id IN (SELECT id FROM money)
+                 ), 0) AS money_out
+          FROM journal_entries je
+          LEFT JOIN documents d ON d.id = je.document_id
+          LEFT JOIN parties dp ON dp.id = d.party_id
+          WHERE je.firm_id = ?1
+            AND je.entry_date_local BETWEEN ?2 AND ?3
+            AND je.deleted_at_utc IS NULL
+            $byUser
+          ORDER BY je.entry_date_local, je.created_at_utc, je.id
           ''',
-          variables: [
-            Variable<String>(firmId),
-            Variable<String>(period.from.value),
-            Variable<String>(period.to.value),
-          ],
-          readsFrom: {_db.journalEntries},
+          variables: q.variables,
+          readsFrom: {
+            _db.journalEntries,
+            _db.journalLines,
+            _db.documents,
+            _db.parties,
+            _db.accounts,
+            _db.paymentAccounts,
+          },
         )
         .get();
     return [
@@ -209,7 +262,16 @@ final class DriftReportSource implements ReportSource {
           entryNo: r.read<String>('entry_no'),
           sourceType: r.read<String>('source_type'),
           narration: r.readNullable<String>('narration') ?? '',
-          amount: Money.paisa(r.read<int>('total_debit_paisa')),
+          amount: Money.paisa(
+            r.readNullable<int>('doc_total') ??
+                r.read<int>('total_debit_paisa'),
+          ),
+          reference: r.readNullable<String>('doc_no'),
+          party: r.readNullable<String>('party'),
+          moneyIn: Money.paisa(r.read<int>('money_in')),
+          moneyOut: Money.paisa(r.read<int>('money_out')),
+          documentId: r.readNullable<String>('document_id'),
+          docType: r.readNullable<String>('doc_type'),
         ),
     ];
   }
@@ -615,5 +677,129 @@ final class DriftReportSource implements ReportSource {
           isReturn: r.read<String>('doc_type') == 'purchase_return',
         ),
     ];
+  }
+
+  @override
+  Future<List<ReportChoice>> choices(
+    String firmId,
+    ReportFilter filter, {
+    String query = '',
+    int limit = 50,
+  }) async {
+    // What a filter can be set to (M33), each a short indexed read: items
+    // by idx_items_firm_name, categories by idx_items_category, groups by
+    // the parties of the firm, staff by idx_users_firm. The fixed lists (a
+    // transaction type, a payment mode, a payment status) are the screen's
+    // own, in the shop's language.
+    final term = query.trim().toLowerCase();
+    final like = '%$term%';
+    Future<List<QueryRow>> select(String sql) => _db
+        .customSelect(
+          sql,
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(term),
+            Variable<String>(like),
+            Variable<int>(limit),
+          ],
+          readsFrom: {_db.items, _db.parties, _db.users},
+        )
+        .get();
+
+    switch (filter) {
+      case ReportFilter.item:
+        final rows = await select('''
+          SELECT id, name, code FROM items
+          WHERE firm_id = ?1 AND deleted_at_utc IS NULL
+            AND (?2 = '' OR name_search LIKE ?3 OR LOWER(code) LIKE ?3)
+          ORDER BY name_search
+          LIMIT ?4
+          ''');
+        return [
+          for (final r in rows)
+            ReportChoice(
+              id: r.read<String>('id'),
+              label: r.read<String>('name'),
+              detail: r.readNullable<String>('code'),
+            ),
+        ];
+      case ReportFilter.itemCategory:
+        final rows = await select('''
+          SELECT DISTINCT TRIM(category) AS name FROM items
+          WHERE firm_id = ?1 AND deleted_at_utc IS NULL
+            AND category IS NOT NULL AND TRIM(category) <> ''
+            AND (?2 = '' OR LOWER(category) LIKE ?3)
+          ORDER BY LOWER(TRIM(category))
+          LIMIT ?4
+          ''');
+        return [
+          for (final r in rows)
+            ReportChoice(
+              id: r.read<String>('name'),
+              label: r.read<String>('name'),
+            ),
+        ];
+      case ReportFilter.partyGroup:
+        final rows = await select('''
+          SELECT DISTINCT TRIM(party_group) AS name FROM parties
+          WHERE firm_id = ?1 AND deleted_at_utc IS NULL
+            AND party_group IS NOT NULL AND TRIM(party_group) <> ''
+            AND (?2 = '' OR LOWER(party_group) LIKE ?3)
+          ORDER BY LOWER(TRIM(party_group))
+          LIMIT ?4
+          ''');
+        return [
+          // Every shop has the parties nobody put in a group, and until a
+          // group is used anywhere they are all of them.
+          if (term.isEmpty ||
+              ReportFilters.ungrouped.toLowerCase().contains(term))
+            const ReportChoice(
+              id: ReportFilters.ungrouped,
+              label: ReportFilters.ungrouped,
+            ),
+          for (final r in rows)
+            ReportChoice(
+              id: r.read<String>('name'),
+              label: r.read<String>('name'),
+            ),
+        ];
+      case ReportFilter.user:
+        final rows = await select('''
+          SELECT id, name, role FROM users
+          WHERE firm_id = ?1 AND deleted_at_utc IS NULL
+            AND (?2 = '' OR LOWER(name) LIKE ?3)
+          ORDER BY LOWER(name)
+          LIMIT ?4
+          ''');
+        return [
+          for (final r in rows)
+            ReportChoice(
+              id: r.read<String>('id'),
+              label: r.read<String>('name'),
+              detail: r.read<String>('role'),
+            ),
+        ];
+      case ReportFilter.party:
+        final rows = await select('''
+          SELECT id, name, phone FROM parties
+          WHERE firm_id = ?1 AND deleted_at_utc IS NULL AND is_active = 1
+            AND (?2 = '' OR name_search LIKE ?3 OR phone LIKE ?3)
+          ORDER BY name_search
+          LIMIT ?4
+          ''');
+        return [
+          for (final r in rows)
+            ReportChoice(
+              id: r.read<String>('id'),
+              label: r.read<String>('name'),
+              detail: r.readNullable<String>('phone'),
+            ),
+        ];
+      case ReportFilter.transactionType ||
+          ReportFilter.paymentMode ||
+          ReportFilter.paymentStatus ||
+          ReportFilter.withBalance:
+        return const [];
+    }
   }
 }

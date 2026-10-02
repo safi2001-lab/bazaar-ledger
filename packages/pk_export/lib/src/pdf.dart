@@ -68,6 +68,16 @@ Future<Uint8List> reportToPdf(
             '${table.title} · ${table.period.label}',
             style: pw.TextStyle(font: sans, fontSize: 11),
           ),
+          // What the report was narrowed to (M33), so a page forwarded on
+          // its own cannot be read as the whole shop.
+          if (table.filters.isNotEmpty)
+            pw.Text(
+              table.filters.join(' · '),
+              textDirection: _isLatin(table.filters.join())
+                  ? null
+                  : pw.TextDirection.rtl,
+              style: pw.TextStyle(font: sans, fontSize: 9),
+            ),
           pw.SizedBox(height: 12),
         ],
       ),

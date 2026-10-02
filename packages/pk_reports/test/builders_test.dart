@@ -147,6 +147,10 @@ void main() {
           sourceType: 'sale',
           narration: 'Sale INV-2627-0001',
           amount: Money.rupees(2500),
+          reference: 'INV-2627-0001',
+          moneyIn: Money.rupees(2500),
+          documentId: 'doc1',
+          docType: 'sale_invoice',
         ),
         const DayBookEntry(
           date: BusinessDate('2026-09-26'),
@@ -154,13 +158,21 @@ void main() {
           sourceType: 'reversal',
           narration: 'Void of INV-2627-0001',
           amount: Money.rupees(2500),
+          moneyOut: Money.rupees(2500),
         ),
       ]);
       expect(t.rows[1].cells[2], 'Reversal');
-      expect(t.totals.single.cells.skip(3), [
+      // Since M33 the number on the paper, and the money each way.
+      expect(t.rows[0].cells[1], 'INV-2627-0001');
+      expect(t.rows[0].link?.id, 'doc1');
+      expect(t.rows[1].cells[1], 'JV-2627-00002');
+      expect(t.totals.single.cells.skip(4), [
         '2 entries',
-        const Money.rupees(5000),
+        null,
+        const Money.rupees(2500),
+        const Money.rupees(2500),
       ]);
+      expect(t.summary.last.amount, Money.zero, reason: 'net of the day');
     });
   });
 

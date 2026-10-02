@@ -1,11 +1,21 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'builders.dart';
+import 'filters.dart';
+import 'party_builders.dart';
 import 'period.dart';
 import 'report_source.dart';
 import 'report_table.dart';
+import 'transaction_builders.dart';
 
 /// The reports a shop can run.
+///
+/// Adding one (M33 onward) is four things, and the compiler or a test holds
+/// each of them to account: a value here, a builder that turns rows into a
+/// table, a read on the [ReportSource] that fetches the rows, and a case in
+/// [ReportEngine.run]. The app's report registry then gives it a name, a
+/// group, an icon, a plan and the filters it takes, and a test fails until
+/// every value here has exactly one entry there.
 enum ReportKind {
   profitAndLoss,
   salesTax,
@@ -36,11 +46,44 @@ enum ReportKind {
 
   /// Every purchase bill in the period (M24).
   purchaseRegister,
+
+  /// Every sale bill in the period, with what is paid and owed (M33).
+  saleReport,
+
+  /// Every purchase bill in the period, the same way (M33).
+  purchaseReport,
+
+  /// Every document and payment of every kind (M33).
+  allTransactions,
+
+  /// What each sale bill made over its cost (M33).
+  billWiseProfit,
+
+  /// Money in and out by what moved it, cash and bank (M33).
+  cashflow,
+
+  /// One party's account over the period (M33).
+  partyStatement,
+
+  /// Profit by customer (M33).
+  partyProfitAndLoss,
+
+  /// Every party with its balance each way; as of today (M33).
+  allParties,
+
+  /// What one party bought and sold, item by item (M33).
+  partyItems,
+
+  /// Sales and purchases by party (M33).
+  salePurchaseByParty,
+
+  /// Sales and purchases by party group (M33).
+  salePurchaseByPartyGroup,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
 final class ReportEngine {
-  const ReportEngine(this.source);
+  const ReportEngine(this.source, {this.canSeeCosts = true});
 
   /// Whether [kind] is as of today rather than over a period.
   static bool isAsOfToday(ReportKind kind) =>
@@ -49,19 +92,93 @@ final class ReportEngine {
       kind == ReportKind.payables ||
       kind == ReportKind.trialBalance ||
       kind == ReportKind.balanceSheet ||
-      kind == ReportKind.expiry;
+      kind == ReportKind.expiry ||
+      kind == ReportKind.allParties;
+
+  /// Whether [kind] is about what goods cost through and through: the cost
+  /// of sales, a profit per bill, a shelf at cost. A role that may not see
+  /// costs (a cashier, under the roles in `roles.dart`) is refused these
+  /// here, at the one door every screen goes through, not only by a hidden
+  /// tile. Any other report that carries a cost column, Sales by item, still
+  /// runs for them, with the cost, profit and margin columns struck out.
+  static bool showsCost(ReportKind kind) => switch (kind) {
+    ReportKind.profitAndLoss ||
+    ReportKind.stockValue ||
+    ReportKind.trialBalance ||
+    ReportKind.balanceSheet ||
+    ReportKind.expiry ||
+    ReportKind.billWiseProfit ||
+    ReportKind.partyProfitAndLoss => true,
+    _ => false,
+  };
 
   final ReportSource source;
 
+  /// Whether whoever is running reports may see what goods cost.
+  final bool canSeeCosts;
+
+  /// Builds [kind] for [period], narrowed by [filters]. The table says what
+  /// it was narrowed by, so no export of it can be mistaken for the whole.
   Future<ReportTable> run(
     ReportKind kind, {
     required String firmId,
     required ReportPeriod period,
     required BusinessDate today,
-  }) async => switch (kind) {
+    ReportFilters filters = ReportFilters.none,
+  }) async {
+    if (!canSeeCosts && showsCost(kind)) {
+      throw const PermissionDenied(
+        Permission.seeCosts,
+        'This report shows what the goods cost, which this role does not see.',
+      );
+    }
+    final table = await _build(kind, firmId, period, today, filters);
+    final seen = canSeeCosts ? table : table.withoutCostColumns();
+    return seen.withFilters(filters.describe());
+  }
+
+  /// What [filter] can be set to in this shop, matching [query]: the
+  /// screen's pickers read through here, behind the same permission as the
+  /// reports themselves.
+  Future<List<ReportChoice>> choices(
+    String firmId,
+    ReportFilter filter, {
+    String query = '',
+    int limit = 50,
+  }) => source.choices(firmId, filter, query: query, limit: limit);
+
+  /// The headline figures of [kind] for the period before [period], to set
+  /// beside this period's as "vs last month" (M33). Empty for a report that
+  /// is as of today, which has no period before it.
+  Future<List<ReportFigure>> previousSummary(
+    ReportKind kind, {
+    required String firmId,
+    required ReportPeriod period,
+    required BusinessDate today,
+    ReportFilters filters = ReportFilters.none,
+  }) async {
+    if (isAsOfToday(kind) || kind == ReportKind.partyStatement) return const [];
+    final before = await run(
+      kind,
+      firmId: firmId,
+      period: period.previous,
+      today: today,
+      filters: filters,
+    );
+    return before.summary;
+  }
+
+  Future<ReportTable> _build(
+    ReportKind kind,
+    String firmId,
+    ReportPeriod period,
+    BusinessDate today,
+    ReportFilters filters,
+  ) async => switch (kind) {
     ReportKind.profitAndLoss => profitAndLoss(
       period,
       await source.accountMovements(firmId, period),
+      stock: await source.stockFigures(firmId, period),
     ),
     ReportKind.expenses => expensesByHead(
       period,
@@ -108,7 +225,10 @@ final class ReportEngine {
       await source.cashBefore(firmId, period.from),
       await source.cashMovements(firmId, period),
     ),
-    ReportKind.dayBook => dayBook(period, await source.dayBook(firmId, period)),
+    ReportKind.dayBook => dayBook(
+      period,
+      await source.dayBook(firmId, period, filters: filters),
+    ),
     ReportKind.purchaseRegister => purchaseRegister(
       period,
       await source.purchaseRegister(firmId, period),
@@ -117,6 +237,70 @@ final class ReportEngine {
       today,
       await source.stockPositions(firmId),
       await source.inventoryInBooks(firmId),
+    ),
+    ReportKind.saleReport => saleReport(
+      period,
+      await source.bills(
+        firmId,
+        period,
+        docTypes: const {TransactionType.sale},
+        filters: filters,
+      ),
+    ),
+    ReportKind.purchaseReport => purchaseReport(
+      period,
+      await source.bills(
+        firmId,
+        period,
+        docTypes: const {TransactionType.purchase},
+        filters: filters,
+      ),
+    ),
+    ReportKind.billWiseProfit => billWiseProfit(
+      period,
+      await source.bills(
+        firmId,
+        period,
+        docTypes: const {TransactionType.sale, TransactionType.saleReturn},
+        filters: filters,
+      ),
+    ),
+    ReportKind.allTransactions => allTransactions(
+      period,
+      await source.transactions(firmId, period, filters: filters),
+    ),
+    ReportKind.cashflow => cashflow(
+      period,
+      await source.moneyBefore(firmId, period.from),
+      await source.moneyFlows(firmId, period),
+    ),
+    ReportKind.partyStatement => partyStatementReport(
+      period: period,
+      ledgers: filters.partyId == null
+          ? null
+          : await source.partyLedgers(firmId, filters.partyId!),
+    ),
+    ReportKind.partyProfitAndLoss => partyProfitAndLoss(
+      period,
+      await source.partyTrade(firmId, period, filters: filters),
+    ),
+    ReportKind.allParties => allParties(
+      today,
+      await source.partyBalances(firmId, filters: filters),
+      withBalanceOnly: filters.withBalanceOnly,
+    ),
+    ReportKind.partyItems => partyItemsReport(
+      period,
+      await source.partyItems(firmId, period, filters: filters),
+      partyName: filters.partyId == null ? null : filters.partyName,
+    ),
+    ReportKind.salePurchaseByParty => salePurchaseByParty(
+      period,
+      await source.partyTrade(firmId, period, filters: filters),
+    ),
+    ReportKind.salePurchaseByPartyGroup => salePurchaseByPartyGroup(
+      period,
+      await source.partyTrade(firmId, period, filters: filters),
     ),
   };
 }
