@@ -71,10 +71,16 @@ void main() {
     await tapText(tester, 'Excel se laayein');
     await tapText(tester, 'Khata');
     await tapButton(tester, 'File chunein');
-    await tapButton(tester, '2 laayein');
+    // Bilal Store is already in the khata. Since M52 that is said before
+    // anything is written, and the button offers only what will come in.
+    expect(find.text('1 pehle se dukaan mein hain'), findsOneWidget);
+    await tapButton(tester, '1 laayein');
 
     expect(find.text('1 aa gaye, 1 chhor diye'), findsOneWidget);
-    expect(find.textContaining('already in the khata'), findsOneWidget);
+    expect(
+      find.text('Line 3: Bilal Store pehle se khate mein hai'),
+      findsOneWidget,
+    );
     final owed = await app.scalar<int>(
       "SELECT opening_balance_paisa FROM parties WHERE name = 'Rashid Traders'",
     );

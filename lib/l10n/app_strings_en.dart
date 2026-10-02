@@ -2291,7 +2291,7 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get importHint =>
-      'Choose your old list as .xlsx or .csv. The first row should name the columns, e.g. Name, Sale price, Stock.';
+      'Choose your old list as .xlsx, .xls or .csv. The first row should name the columns, e.g. Name, Sale price, Stock.';
 
   @override
   String get importItems => 'Items';
@@ -3780,4 +3780,366 @@ class AppStringsEn extends AppStrings {
   String partiesCapped(int count) {
     return 'Showing the first $count — search to find the rest';
   }
+
+  @override
+  String get importFromWhere => 'Where is this file from?';
+
+  @override
+  String get importSourceOurs => 'Bazaar Ledger list';
+
+  @override
+  String get importSourceVyaparItems => 'Vyapar items';
+
+  @override
+  String get importSourceVyaparParties => 'Vyapar parties';
+
+  @override
+  String get importSourceKhatabook => 'Khatabook';
+
+  @override
+  String get importSourceOther => 'Other';
+
+  @override
+  String importRecognised(String source) {
+    return 'Recognised: $source';
+  }
+
+  @override
+  String get importGuideTitle => 'How to get this file';
+
+  @override
+  String importGuideOurs(String headings) {
+    return 'Put these headings in the first row: $headings. Then one item, or one customer, on each row.';
+  }
+
+  @override
+  String get importGuideVyaparItems =>
+      '1. Open Vyapar on the computer or phone your shop is on.\n2. From the menu open Utilities, then Export Items, and save it as Excel.\n3. Send the file to this phone (WhatsApp it to yourself, or by cable) and choose it below.\nVyapar\'s Import Items sheet, filled in, comes in the same way.';
+
+  @override
+  String get importGuideVyaparParties =>
+      '1. In Vyapar open Reports, then Party Reports, then All Parties.\n2. Tap the Excel button at the top and save the file.\n3. Send it to this phone and choose it below.\nEach balance comes in on its own side: To Receive is what a customer owes you.';
+
+  @override
+  String get importGuideKhatabook =>
+      '1. Khatabook\'s phone app saves its reports as PDF, and a PDF cannot be read. If your Khatabook, on a computer or the web, gives the customer list as Excel or CSV, download that.\n2. If it only gives a PDF, make a sheet with the headings Name, Phone, You will get, You will give, and copy the balances in.\n3. Send the file to this phone and choose it below.';
+
+  @override
+  String get importGuideOther =>
+      'Any .xlsx, .xls or .csv with headings in the first row. A heading this app does not know can be chosen by hand under Columns.';
+
+  @override
+  String get importReading => 'Reading the file…';
+
+  @override
+  String get importChecking => 'Checking against what the shop already has…';
+
+  @override
+  String get importColumnsTitle => 'Columns';
+
+  @override
+  String get importColumnsHint =>
+      'If a column was read wrong, choose the right one.';
+
+  @override
+  String get importColumnNone => 'Not in this file';
+
+  @override
+  String importColumnLetter(String letter) {
+    return 'Column $letter';
+  }
+
+  @override
+  String get importFieldName => 'Name';
+
+  @override
+  String get importFieldSalePrice => 'Sale price';
+
+  @override
+  String get importFieldPurchasePrice => 'Purchase price';
+
+  @override
+  String get importFieldWholesalePrice => 'Wholesale price';
+
+  @override
+  String get importFieldMrp => 'MRP';
+
+  @override
+  String get importFieldStock => 'Stock on hand';
+
+  @override
+  String get importFieldMinStock => 'Minimum stock';
+
+  @override
+  String get importFieldUnit => 'Unit';
+
+  @override
+  String get importFieldSecondaryUnit => 'Second unit';
+
+  @override
+  String get importFieldConversion => 'Second units in one';
+
+  @override
+  String get importFieldCode => 'Code';
+
+  @override
+  String get importFieldBarcode => 'Barcode';
+
+  @override
+  String get importFieldCategory => 'Category';
+
+  @override
+  String get importFieldDescription => 'Description';
+
+  @override
+  String get importFieldHsCode => 'HS / PCT code';
+
+  @override
+  String get importFieldItemType => 'Item or service';
+
+  @override
+  String get importFieldHsn => 'HSN (India\'s, not kept)';
+
+  @override
+  String get importFieldTax => 'Tax rate (not read)';
+
+  @override
+  String get importFieldPhone => 'Phone';
+
+  @override
+  String get importFieldBalance => 'Balance';
+
+  @override
+  String get importFieldReceivable => 'They owe you';
+
+  @override
+  String get importFieldPayable => 'You owe them';
+
+  @override
+  String get importFieldBalanceType => 'To receive or to pay';
+
+  @override
+  String get importFieldType => 'Customer or supplier';
+
+  @override
+  String get importFieldCity => 'City';
+
+  @override
+  String get importFieldAddress => 'Address';
+
+  @override
+  String get importFieldCreditLimit => 'Credit limit';
+
+  @override
+  String get importFieldGstin => 'GSTIN (India\'s, not kept)';
+
+  @override
+  String importNoteGst(String count, String rates) {
+    return '$count items had an Indian GST rate ($rates). GST is not Pakistan\'s sales tax, so no rate is carried: each item takes the shop\'s usual tax, as one added by hand does.';
+  }
+
+  @override
+  String importNoteTax(String count) {
+    return '$count items had a tax rate. It is not read: each item takes the shop\'s usual tax, as one added by hand does.';
+  }
+
+  @override
+  String importNoteHsn(String count) {
+    return '$count items had an HSN code. That is India\'s; Pakistan\'s is the PCT code, so none is kept. Add PCT codes to the items you report to FBR.';
+  }
+
+  @override
+  String importNoteGstin(String count) {
+    return '$count parties had a GSTIN. That is India\'s tax number, not an NTN, so it is not kept.';
+  }
+
+  @override
+  String get importNoteRupee =>
+      'Amounts carried the ₹ sign, as Vyapar writes it. They are read as the rupees you kept them in.';
+
+  @override
+  String importNoteColumns(String columns) {
+    return 'Not kept: $columns';
+  }
+
+  @override
+  String importNoteServices(String count) {
+    return '$count services come in with no stock to count.';
+  }
+
+  @override
+  String importUnknownUnit(String count, String unit) {
+    return '$count items are in \"$unit\", which this shop has no unit for: they are kept in pieces, prices and stock as the file has them.';
+  }
+
+  @override
+  String importSecondUnit(String count, String unit) {
+    return '$count items have a second unit ($unit): they are kept in their first unit only.';
+  }
+
+  @override
+  String importBalancesOwed(String count, String amount) {
+    return '$count owe you $amount';
+  }
+
+  @override
+  String importBalancesAhead(String count, String amount) {
+    return '$count paid ahead: you hold $amount of theirs';
+  }
+
+  @override
+  String importBalancesSuppliers(String count, String amount) {
+    return '$count suppliers you owe $amount: not brought in. Enter each as a purchase bill.';
+  }
+
+  @override
+  String importOwedQuestion(String count) {
+    return '$count you owe, and the file does not say who they are. They are:';
+  }
+
+  @override
+  String get importOwedSuppliers => 'Suppliers';
+
+  @override
+  String get importOwedCustomers => 'Customers who paid ahead';
+
+  @override
+  String importDuplicates(String count) {
+    return '$count already in the shop';
+  }
+
+  @override
+  String get importDuplicatesSkip => 'Leave them as they are';
+
+  @override
+  String get importDuplicatesUpdate => 'Bring them up to date';
+
+  @override
+  String get importDuplicatesItemsHint =>
+      'Prices come from the file; a code or barcode only where the item has none. The stock on the shelf is not changed.';
+
+  @override
+  String get importDuplicatesPartiesHint =>
+      'Phone, address and credit limit are filled in where missing. What they owe is not changed.';
+
+  @override
+  String importPartial(String count) {
+    return '$count come in with something left out';
+  }
+
+  @override
+  String importMore(String count) {
+    return 'and $count more';
+  }
+
+  @override
+  String importLine(String line, String reason) {
+    return 'Row $line: $reason';
+  }
+
+  @override
+  String get importIssueNoName => 'no name';
+
+  @override
+  String importIssueTwice(String name) {
+    return '$name is in the file twice';
+  }
+
+  @override
+  String get importIssueTotal => 'a total line, not an item or a party';
+
+  @override
+  String importIssueNoPrice(String name) {
+    return '$name has no sale price';
+  }
+
+  @override
+  String importIssueNotPrice(String name, String value) {
+    return '$name: \"$value\" is not a price';
+  }
+
+  @override
+  String importIssueNotQty(String name, String value) {
+    return '$name: \"$value\" is not a stock quantity';
+  }
+
+  @override
+  String importIssueNotAmount(String name, String value) {
+    return '$name: \"$value\" is not an amount';
+  }
+
+  @override
+  String importIssueNegativeStock(String name, String value) {
+    return '$name comes in with no stock; the file says $value';
+  }
+
+  @override
+  String importIssueBarcode(String name, String value) {
+    return '$name comes in without its barcode; Excel saved it as $value';
+  }
+
+  @override
+  String importIssueSupplierOwed(String name, String value) {
+    return '$name comes in as a supplier without the Rs $value you owe them: enter it as a purchase bill';
+  }
+
+  @override
+  String importIssueSupplierOwes(String name, String value) {
+    return '$name comes in as a supplier without the Rs $value they owe you';
+  }
+
+  @override
+  String importIssueAlreadyItem(String name) {
+    return '$name is already an item';
+  }
+
+  @override
+  String importIssueAlreadyItemAs(String name, String value) {
+    return '$name is already an item, as $value';
+  }
+
+  @override
+  String importIssueAlreadyParty(String name) {
+    return '$name is already in the khata';
+  }
+
+  @override
+  String importIssueAlreadyPartyAs(String name, String value) {
+    return '$name is already in the khata, as $value';
+  }
+
+  @override
+  String importIssueOther(String name, String value) {
+    return '$name: $value';
+  }
+
+  @override
+  String importProgress(String total, String done) {
+    return 'Bringing in $done of $total…';
+  }
+
+  @override
+  String importUpdated(String count) {
+    return '$count brought up to date';
+  }
+
+  @override
+  String get importRefusedUnreadable =>
+      'This file could not be read as a sheet. Open it in Excel or Google Sheets, save it as .xlsx or .csv, and choose that.';
+
+  @override
+  String get importRefusedOld =>
+      'This .xls is from Excel 95 or older. Save it again as .xlsx and choose that.';
+
+  @override
+  String get importRefusedPassword =>
+      'This workbook has a password. Take the password off in Excel, save it, and choose it again.';
+
+  @override
+  String get importNeedItemColumns =>
+      'The Name and Sale price columns were not found. Choose them under Columns below.';
+
+  @override
+  String get importNeedPartyColumns =>
+      'The Name column was not found. Choose it under Columns below.';
 }

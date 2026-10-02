@@ -1225,7 +1225,7 @@
   "syncCounterNameHint": "e.g. Counter 2",
   "syncJoin": "Join",
   "importTitle": "Import from Excel",
-  "importHint": "Choose your old list as .xlsx or .csv. The first row should name the columns, e.g. Name, Sale price, Stock.",
+  "importHint": "Choose your old list as .xlsx, .xls or .csv. The first row should name the columns, e.g. Name, Sale price, Stock.",
   "importItems": "Items",
   "importParties": "Khata",
   "importPick": "Choose file",
@@ -2079,5 +2079,397 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+  "importFromWhere": "Where is this file from?",
+  "importSourceOurs": "Bazaar Ledger list",
+  "importSourceVyaparItems": "Vyapar items",
+  "importSourceVyaparParties": "Vyapar parties",
+  "importSourceKhatabook": "Khatabook",
+  "importSourceOther": "Other",
+  "importRecognised": "Recognised: {source}",
+  "@importRecognised": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "importGuideTitle": "How to get this file",
+  "importGuideOurs": "Put these headings in the first row: {headings}. Then one item, or one customer, on each row.",
+  "@importGuideOurs": {
+    "placeholders": {
+      "headings": {
+        "type": "String"
+      }
+    }
+  },
+  "importGuideVyaparItems": "1. Open Vyapar on the computer or phone your shop is on.\n2. From the menu open Utilities, then Export Items, and save it as Excel.\n3. Send the file to this phone (WhatsApp it to yourself, or by cable) and choose it below.\nVyapar's Import Items sheet, filled in, comes in the same way.",
+  "importGuideVyaparParties": "1. In Vyapar open Reports, then Party Reports, then All Parties.\n2. Tap the Excel button at the top and save the file.\n3. Send it to this phone and choose it below.\nEach balance comes in on its own side: To Receive is what a customer owes you.",
+  "importGuideKhatabook": "1. Khatabook's phone app saves its reports as PDF, and a PDF cannot be read. If your Khatabook, on a computer or the web, gives the customer list as Excel or CSV, download that.\n2. If it only gives a PDF, make a sheet with the headings Name, Phone, You will get, You will give, and copy the balances in.\n3. Send the file to this phone and choose it below.",
+  "importGuideOther": "Any .xlsx, .xls or .csv with headings in the first row. A heading this app does not know can be chosen by hand under Columns.",
+  "importReading": "Reading the file…",
+  "importChecking": "Checking against what the shop already has…",
+  "importColumnsTitle": "Columns",
+  "importColumnsHint": "If a column was read wrong, choose the right one.",
+  "importColumnNone": "Not in this file",
+  "importColumnLetter": "Column {letter}",
+  "@importColumnLetter": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    }
+  },
+  "importFieldName": "Name",
+  "importFieldSalePrice": "Sale price",
+  "importFieldPurchasePrice": "Purchase price",
+  "importFieldWholesalePrice": "Wholesale price",
+  "importFieldMrp": "MRP",
+  "importFieldStock": "Stock on hand",
+  "importFieldMinStock": "Minimum stock",
+  "importFieldUnit": "Unit",
+  "importFieldSecondaryUnit": "Second unit",
+  "importFieldConversion": "Second units in one",
+  "importFieldCode": "Code",
+  "importFieldBarcode": "Barcode",
+  "importFieldCategory": "Category",
+  "importFieldDescription": "Description",
+  "importFieldHsCode": "HS / PCT code",
+  "importFieldItemType": "Item or service",
+  "importFieldHsn": "HSN (India's, not kept)",
+  "importFieldTax": "Tax rate (not read)",
+  "importFieldPhone": "Phone",
+  "importFieldBalance": "Balance",
+  "importFieldReceivable": "They owe you",
+  "importFieldPayable": "You owe them",
+  "importFieldBalanceType": "To receive or to pay",
+  "importFieldType": "Customer or supplier",
+  "importFieldCity": "City",
+  "importFieldAddress": "Address",
+  "importFieldCreditLimit": "Credit limit",
+  "importFieldGstin": "GSTIN (India's, not kept)",
+  "importNoteGst": "{count} items had an Indian GST rate ({rates}). GST is not Pakistan's sales tax, so no rate is carried: each item takes the shop's usual tax, as one added by hand does.",
+  "@importNoteGst": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "rates": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteTax": "{count} items had a tax rate. It is not read: each item takes the shop's usual tax, as one added by hand does.",
+  "@importNoteTax": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteHsn": "{count} items had an HSN code. That is India's; Pakistan's is the PCT code, so none is kept. Add PCT codes to the items you report to FBR.",
+  "@importNoteHsn": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteGstin": "{count} parties had a GSTIN. That is India's tax number, not an NTN, so it is not kept.",
+  "@importNoteGstin": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteRupee": "Amounts carried the ₹ sign, as Vyapar writes it. They are read as the rupees you kept them in.",
+  "importNoteColumns": "Not kept: {columns}",
+  "@importNoteColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteServices": "{count} services come in with no stock to count.",
+  "@importNoteServices": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importUnknownUnit": "{count} items are in \"{unit}\", which this shop has no unit for: they are kept in pieces, prices and stock as the file has them.",
+  "@importUnknownUnit": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "importSecondUnit": "{count} items have a second unit ({unit}): they are kept in their first unit only.",
+  "@importSecondUnit": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "importBalancesOwed": "{count} owe you {amount}",
+  "@importBalancesOwed": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importBalancesAhead": "{count} paid ahead: you hold {amount} of theirs",
+  "@importBalancesAhead": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importBalancesSuppliers": "{count} suppliers you owe {amount}: not brought in. Enter each as a purchase bill.",
+  "@importBalancesSuppliers": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importOwedQuestion": "{count} you owe, and the file does not say who they are. They are:",
+  "@importOwedQuestion": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importOwedSuppliers": "Suppliers",
+  "importOwedCustomers": "Customers who paid ahead",
+  "importDuplicates": "{count} already in the shop",
+  "@importDuplicates": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importDuplicatesSkip": "Leave them as they are",
+  "importDuplicatesUpdate": "Bring them up to date",
+  "importDuplicatesItemsHint": "Prices come from the file; a code or barcode only where the item has none. The stock on the shelf is not changed.",
+  "importDuplicatesPartiesHint": "Phone, address and credit limit are filled in where missing. What they owe is not changed.",
+  "importPartial": "{count} come in with something left out",
+  "@importPartial": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importMore": "and {count} more",
+  "@importMore": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importLine": "Row {line}: {reason}",
+  "@importLine": {
+    "placeholders": {
+      "line": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNoName": "no name",
+  "importIssueTwice": "{name} is in the file twice",
+  "@importIssueTwice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueTotal": "a total line, not an item or a party",
+  "importIssueNoPrice": "{name} has no sale price",
+  "@importIssueNoPrice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNotPrice": "{name}: \"{value}\" is not a price",
+  "@importIssueNotPrice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNotQty": "{name}: \"{value}\" is not a stock quantity",
+  "@importIssueNotQty": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNotAmount": "{name}: \"{value}\" is not an amount",
+  "@importIssueNotAmount": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNegativeStock": "{name} comes in with no stock; the file says {value}",
+  "@importIssueNegativeStock": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueBarcode": "{name} comes in without its barcode; Excel saved it as {value}",
+  "@importIssueBarcode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueSupplierOwed": "{name} comes in as a supplier without the Rs {value} you owe them: enter it as a purchase bill",
+  "@importIssueSupplierOwed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueSupplierOwes": "{name} comes in as a supplier without the Rs {value} they owe you",
+  "@importIssueSupplierOwes": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyItem": "{name} is already an item",
+  "@importIssueAlreadyItem": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyItemAs": "{name} is already an item, as {value}",
+  "@importIssueAlreadyItemAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyParty": "{name} is already in the khata",
+  "@importIssueAlreadyParty": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyPartyAs": "{name} is already in the khata, as {value}",
+  "@importIssueAlreadyPartyAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueOther": "{name}: {value}",
+  "@importIssueOther": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importProgress": "Bringing in {done} of {total}…",
+  "@importProgress": {
+    "placeholders": {
+      "done": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "importUpdated": "{count} brought up to date",
+  "@importUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importRefusedUnreadable": "This file could not be read as a sheet. Open it in Excel or Google Sheets, save it as .xlsx or .csv, and choose that.",
+  "importRefusedOld": "This .xls is from Excel 95 or older. Save it again as .xlsx and choose that.",
+  "importRefusedPassword": "This workbook has a password. Take the password off in Excel, save it, and choose it again.",
+  "importNeedItemColumns": "The Name and Sale price columns were not found. Choose them under Columns below.",
+  "importNeedPartyColumns": "The Name column was not found. Choose it under Columns below."
 }

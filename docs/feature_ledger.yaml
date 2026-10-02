@@ -983,6 +983,65 @@ milestones:
       - lib/features/parties/party_groups.dart
       - lib/features/parties/party_groups_screen.dart
 
+  - id: M52
+    title: A shop leaving Vyapar or Khatabook brings its items, customers and balances in one go
+    # Opened and sealed 3 Oct 2026 at 1/1. Vyapar's licences have not been
+    # renewable in Pakistan since about May 2025, and Khatabook wants an
+    # Indian number's OTP, so both apps' Pakistani shops are stranded with
+    # their lists in a file. The import screen now asks where the file came
+    # from (this app's own list, Vyapar's items, Vyapar's parties, Khatabook,
+    # or anything else), with a few steps for getting it out of each, and
+    # recognises an app's file from its headings whatever was chosen.
+    # Balances come in on the side they are owed. Receivable, To Receive,
+    # You will get and Dr are udhaar the customer owes; Payable, To Pay, You
+    # will give and Cr are the shop's: an advance on a customer's khata, or
+    # for a supplier said and left for a purchase bill, as M14 left it. Who
+    # a party the shop owes is, when the row does not say, is the shop's to
+    # choose on the preview (suppliers for Vyapar, customers for Khatabook).
+    # No Indian GST rate or HSN code is carried: every item takes the tax an
+    # item added by hand takes, and the preview names the rates it saw. A ₹
+    # sign is read as the rupees the shop kept. Before anything is written
+    # the preview names the rows left out and why, the rows that come in
+    # with something left out (an oversold shelf, a supplier's balance, a
+    # barcode Excel saved as 8.96E+12), units the shop has no unit for, and
+    # whatever the shop already has by barcode, code, mobile or name, which
+    # is left alone or brought up to date by choice and never doubled. Any
+    # field can be pointed at another column by hand. Old binary .xls
+    # workbooks are read by a compound-file and BIFF8 reader of our own, with
+    # no dependency, and so are the HTML tables and Excel 2003 XML that web
+    # apps save as .xls. A file over 256 KB or 2,000 rows is read and checked
+    # on an isolate while the screen says it is reading.
+    #
+    # Found on the way: a row's problem was an English sentence, shown as it
+    # was to a shop reading Roman Urdu; M14 read a column headed HSN into
+    # the HS code FBR invoices carry, so an Indian tariff code would have
+    # reached FBR; a row Excel leaves out of an .xlsx moved every row number
+    # after it on the preview; and a unit the shop did not have became
+    # pieces without a word.
+    #
+    # What was verified, and what was not. Vyapar's menus are from its own
+    # pages on vyaparapp.in: Utilities, then Export Items, Import Items and
+    # Import Parties; Reports, Party Reports, All Parties, exported to Excel.
+    # Its column headings are on no public page, so the presets use its
+    # import template's headings as commonly reproduced, compared without
+    # case, spaces, brackets or the asterisk, with the choice by hand as the
+    # backstop. Khatabook's help documents only PDF reports from the phone
+    # app; "You will get" and "You will give" are its own words, its
+    # export's columns are not verified. The .xls fixtures were written by
+    # Excel itself and by xlwt, not by this reader's own code.
+    #
+    # Not built: a supplier's opening balance (the books keep what the shop
+    # owes as purchase bills and the khata reads it from them, so posting
+    # one needs a document of its own, which is data-layer work); Vyapar's
+    # second unit for an item (the catalogue writer has no per-item
+    # conversion, so the preview says the item comes in by its first unit);
+    # Khatabook's PDF and Vyapar's .vyb backup; Excel 95 workbooks and ones
+    # with a password, which are refused in words.
+    state: sealed
+    owns:
+      - packages/pk_import/lib/src/sources.dart
+      - packages/pk_import/lib/src/xls.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -5152,3 +5211,31 @@ features:
       - a note for the counter is kept with the party, edited, and cleared
       - a note for the counter nobody without one has one
       - group totals for the reports sale, purchase, receivable and payable for a period
+  - id: M52-MOVE-01
+    milestone: M52
+    title: Items, customers and balances come in from Vyapar's and Khatabook's files, each on its own side, never doubled
+    status: done
+    # pk_import reads the file (xlsx, BIFF8 xls, HTML or Excel 2003 XML,
+    # CSV), recognises the app, and plans each row with what was left out
+    # and why; ImportServices finds what the shop already has and writes
+    # through the catalogue writer, so opening stock and balances reach the
+    # books as if typed.
+    proof:
+      - moving from another app a Vyapar item file is recognised and read with prices, stock and units
+      - moving from another app an Indian GST rate or HSN code is never carried across, and is said
+      - moving from another app a Vyapar party report brings balances in on the side they are owed
+      - moving from another app a Khatabook list reads You will get as owed to the shop and You will give as owed by it
+      - moving from another app balances written with To Receive, To Pay, Dr and Cr read the right way
+      - moving from another app old binary .xls workbooks are read, from Excel and from other programs
+      - moving from another app web exports saved as .xls — an HTML table or Excel 2003 XML — are read
+      - moving from another app a column the app does not know is pointed at its field by hand
+      - moving from another app a list made with the headings on screen is recognised as the shop's own
+      - moving from another app units are read as the shop keeps them
+      - moving from another app five thousand rows are read and checked without stalling
+      - moving from Vyapar or Khatabook a Vyapar item workbook comes in with its stock, and its GST and HSN are left out and said
+      - moving from Vyapar or Khatabook a Vyapar party report brings what customers owe onto their khata, and says what suppliers are owed
+      - moving from Vyapar or Khatabook a Khatabook list comes in with udhaar owed and advances held, and the books balance
+      - moving from Vyapar or Khatabook a list brought in twice is never doubled, and can bring prices up to date
+      - moving from Vyapar or Khatabook six thousand rows are read away from the screen, which says so and stays live
+      - moving from Vyapar or Khatabook a column the app does not know is chosen by hand
+      - at 200% on a small phone the import preview for a Vyapar party report fits

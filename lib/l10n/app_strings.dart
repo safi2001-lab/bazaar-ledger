@@ -4157,7 +4157,7 @@ abstract class AppStrings {
   /// No description provided for @importHint.
   ///
   /// In ur, this message translates to:
-  /// **'Apni purani list .xlsx ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.'**
+  /// **'Apni purani list .xlsx, .xls ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.'**
   String get importHint;
 
   /// No description provided for @importItems.
@@ -6703,6 +6703,564 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Pehle {count} dikhaye — baqi talash se dhoondein'**
   String partiesCapped(int count);
+
+  /// No description provided for @importFromWhere.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh file kahan se aayi hai?'**
+  String get importFromWhere;
+
+  /// No description provided for @importSourceOurs.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bazaar Ledger ki list'**
+  String get importSourceOurs;
+
+  /// No description provided for @importSourceVyaparItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Vyapar ka maal'**
+  String get importSourceVyaparItems;
+
+  /// No description provided for @importSourceVyaparParties.
+  ///
+  /// In ur, this message translates to:
+  /// **'Vyapar ki parties'**
+  String get importSourceVyaparParties;
+
+  /// No description provided for @importSourceKhatabook.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khatabook'**
+  String get importSourceKhatabook;
+
+  /// No description provided for @importSourceOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi aur'**
+  String get importSourceOther;
+
+  /// No description provided for @importRecognised.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehchaan liya: {source}'**
+  String importRecognised(String source);
+
+  /// No description provided for @importGuideTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh file kaise nikalein'**
+  String get importGuideTitle;
+
+  /// No description provided for @importGuideOurs.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehli line mein yeh naam likhein: {headings}. Phir har line par ek cheez, ya ek customer.'**
+  String importGuideOurs(String headings);
+
+  /// No description provided for @importGuideVyaparItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'1. Jis computer ya phone par dukaan ka Vyapar hai, us par Vyapar kholein.\n2. Menu se Utilities, phir Export Items kholein aur Excel mein save karein.\n3. File is phone par bhejein (apne aap ko WhatsApp karein, ya cable se) aur neeche chunein.\nVyapar ki Import Items wali bhari hui sheet bhi isi tarah aa jati hai.'**
+  String get importGuideVyaparItems;
+
+  /// No description provided for @importGuideVyaparParties.
+  ///
+  /// In ur, this message translates to:
+  /// **'1. Vyapar mein Reports, phir Party Reports, phir All Parties kholein.\n2. Oopar Excel ka button dabayein aur file save karein.\n3. File is phone par bhejein aur neeche chunein.\nHar baqaya apni taraf aata hai: To Receive woh hai jo customer ne aap ko dena hai.'**
+  String get importGuideVyaparParties;
+
+  /// No description provided for @importGuideKhatabook.
+  ///
+  /// In ur, this message translates to:
+  /// **'1. Khatabook ki phone app report PDF mein deti hai, aur PDF parhi nahin ja sakti. Agar aap ka Khatabook, computer ya web par, customers ki list Excel ya CSV mein deta hai to woh download karein.\n2. Agar sirf PDF milti hai to ek sheet banayein jis mein Name, Phone, You will get, You will give likha ho, aur baqaya us mein likh dein.\n3. File is phone par bhejein aur neeche chunein.'**
+  String get importGuideKhatabook;
+
+  /// No description provided for @importGuideOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi bhi .xlsx, .xls ya .csv jis ki pehli line mein columns ke naam hon. Jo naam app na pehchane, use Columns mein khud chun lein.'**
+  String get importGuideOther;
+
+  /// No description provided for @importReading.
+  ///
+  /// In ur, this message translates to:
+  /// **'File parhi ja rahi hai…'**
+  String get importReading;
+
+  /// No description provided for @importChecking.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan mein pehle se maujood cheezon se mila rahe hain…'**
+  String get importChecking;
+
+  /// No description provided for @importColumnsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Columns'**
+  String get importColumnsTitle;
+
+  /// No description provided for @importColumnsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agar koi column ghalat parha gaya ho to sahi chunein.'**
+  String get importColumnsHint;
+
+  /// No description provided for @importColumnNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is file mein nahin'**
+  String get importColumnNone;
+
+  /// No description provided for @importColumnLetter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Column {letter}'**
+  String importColumnLetter(String letter);
+
+  /// No description provided for @importFieldName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam'**
+  String get importFieldName;
+
+  /// No description provided for @importFieldSalePrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne ki qeemat'**
+  String get importFieldSalePrice;
+
+  /// No description provided for @importFieldPurchasePrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareed ki qeemat'**
+  String get importFieldPurchasePrice;
+
+  /// No description provided for @importFieldWholesalePrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Thok ki qeemat'**
+  String get importFieldWholesalePrice;
+
+  /// No description provided for @importFieldMrp.
+  ///
+  /// In ur, this message translates to:
+  /// **'MRP'**
+  String get importFieldMrp;
+
+  /// No description provided for @importFieldStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maujooda stock'**
+  String get importFieldStock;
+
+  /// No description provided for @importFieldMinStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam stock'**
+  String get importFieldMinStock;
+
+  /// No description provided for @importFieldUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Unit'**
+  String get importFieldUnit;
+
+  /// No description provided for @importFieldSecondaryUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doosra unit'**
+  String get importFieldSecondaryUnit;
+
+  /// No description provided for @importFieldConversion.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek mein doosre unit kitne'**
+  String get importFieldConversion;
+
+  /// No description provided for @importFieldCode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Code'**
+  String get importFieldCode;
+
+  /// No description provided for @importFieldBarcode.
+  ///
+  /// In ur, this message translates to:
+  /// **'Barcode'**
+  String get importFieldBarcode;
+
+  /// No description provided for @importFieldCategory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qism'**
+  String get importFieldCategory;
+
+  /// No description provided for @importFieldDescription.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tafseel'**
+  String get importFieldDescription;
+
+  /// No description provided for @importFieldHsCode.
+  ///
+  /// In ur, this message translates to:
+  /// **'HS / PCT code'**
+  String get importFieldHsCode;
+
+  /// No description provided for @importFieldItemType.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal ya service'**
+  String get importFieldItemType;
+
+  /// No description provided for @importFieldHsn.
+  ///
+  /// In ur, this message translates to:
+  /// **'HSN (India ka, nahin rakha jata)'**
+  String get importFieldHsn;
+
+  /// No description provided for @importFieldTax.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tax rate (nahin parha jata)'**
+  String get importFieldTax;
+
+  /// No description provided for @importFieldPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone'**
+  String get importFieldPhone;
+
+  /// No description provided for @importFieldBalance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqaya'**
+  String get importFieldBalance;
+
+  /// No description provided for @importFieldReceivable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Unhon ne aap ko dena hai'**
+  String get importFieldReceivable;
+
+  /// No description provided for @importFieldPayable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aap ne unhein dena hai'**
+  String get importFieldPayable;
+
+  /// No description provided for @importFieldBalanceType.
+  ///
+  /// In ur, this message translates to:
+  /// **'Lena ya dena'**
+  String get importFieldBalanceType;
+
+  /// No description provided for @importFieldType.
+  ///
+  /// In ur, this message translates to:
+  /// **'Customer ya supplier'**
+  String get importFieldType;
+
+  /// No description provided for @importFieldCity.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shehar'**
+  String get importFieldCity;
+
+  /// No description provided for @importFieldAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pata'**
+  String get importFieldAddress;
+
+  /// No description provided for @importFieldCreditLimit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ki hadd'**
+  String get importFieldCreditLimit;
+
+  /// No description provided for @importFieldGstin.
+  ///
+  /// In ur, this message translates to:
+  /// **'GSTIN (India ka, nahin rakha jata)'**
+  String get importFieldGstin;
+
+  /// No description provided for @importNoteGst.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezon par India ka GST rate tha ({rates}). GST Pakistan ka sales tax nahin, is liye koi rate nahin liya gaya: har cheez par dukaan ka aam tax lagega, jaise haath se daali cheez par.'**
+  String importNoteGst(String count, String rates);
+
+  /// No description provided for @importNoteTax.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezon par tax rate tha. Woh nahin parha gaya: har cheez par dukaan ka aam tax lagega, jaise haath se daali cheez par.'**
+  String importNoteTax(String count);
+
+  /// No description provided for @importNoteHsn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezon ka HSN code tha. Woh India ka hai; Pakistan ka PCT code hota hai, is liye nahin rakha gaya. FBR ko report hone wali cheezon mein PCT code daalein.'**
+  String importNoteHsn(String count);
+
+  /// No description provided for @importNoteGstin.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} parties ka GSTIN tha. Woh India ka tax number hai, NTN nahin, is liye nahin rakha gaya.'**
+  String importNoteGstin(String count);
+
+  /// No description provided for @importNoteRupee.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam par ₹ ka nishaan tha, jaise Vyapar likhta hai. Inhein aap ke rupay hi samjha gaya hai.'**
+  String get importNoteRupee;
+
+  /// No description provided for @importNoteColumns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nahin rakhe gaye: {columns}'**
+  String importNoteColumns(String columns);
+
+  /// No description provided for @importNoteServices.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} services ka stock nahin gina jata.'**
+  String importNoteServices(String count);
+
+  /// No description provided for @importUnknownUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezein \"{unit}\" mein hain, jo is dukaan ka unit nahin: yeh adad mein rakhi jayengi, qeemat aur stock file jaise.'**
+  String importUnknownUnit(String count, String unit);
+
+  /// No description provided for @importSecondUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezon ka doosra unit hai ({unit}): yeh sirf pehle unit mein rakhi jayengi.'**
+  String importSecondUnit(String count, String unit);
+
+  /// No description provided for @importBalancesOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} ne aap ko {amount} dene hain'**
+  String importBalancesOwed(String count, String amount);
+
+  /// No description provided for @importBalancesAhead.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} ne pehle se diye: aap ke paas un ke {amount} hain'**
+  String importBalancesAhead(String count, String amount);
+
+  /// No description provided for @importBalancesSuppliers.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} suppliers jin ko aap ne {amount} dene hain: yeh baqaya nahin laaya gaya. Har ek ka purchase bill darj karein.'**
+  String importBalancesSuppliers(String count, String amount);
+
+  /// No description provided for @importOwedQuestion.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} jin ko aap ne dena hai, aur file nahin batati ke woh kaun hain. Woh hain:'**
+  String importOwedQuestion(String count);
+
+  /// No description provided for @importOwedSuppliers.
+  ///
+  /// In ur, this message translates to:
+  /// **'Suppliers'**
+  String get importOwedSuppliers;
+
+  /// No description provided for @importOwedCustomers.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle se paise de chuke customers'**
+  String get importOwedCustomers;
+
+  /// No description provided for @importDuplicates.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} pehle se dukaan mein hain'**
+  String importDuplicates(String count);
+
+  /// No description provided for @importDuplicatesSkip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jaise hain rehne dein'**
+  String get importDuplicatesSkip;
+
+  /// No description provided for @importDuplicatesUpdate.
+  ///
+  /// In ur, this message translates to:
+  /// **'File se naya karein'**
+  String get importDuplicatesUpdate;
+
+  /// No description provided for @importDuplicatesItemsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat file se aayegi; code ya barcode sirf wahan jahan pehle nahin. Shelf ka stock nahin badlega.'**
+  String get importDuplicatesItemsHint;
+
+  /// No description provided for @importDuplicatesPartiesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone, pata aur udhaar ki hadd sirf khaali jagah bhari jayegi. Baqaya nahin badlega.'**
+  String get importDuplicatesPartiesHint;
+
+  /// No description provided for @importPartial.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} kuch chhor kar aayenge'**
+  String importPartial(String count);
+
+  /// No description provided for @importMore.
+  ///
+  /// In ur, this message translates to:
+  /// **'aur {count}'**
+  String importMore(String count);
+
+  /// No description provided for @importLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Line {line}: {reason}'**
+  String importLine(String line, String reason);
+
+  /// No description provided for @importIssueNoName.
+  ///
+  /// In ur, this message translates to:
+  /// **'naam nahin'**
+  String get importIssueNoName;
+
+  /// No description provided for @importIssueTwice.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} file mein do dafa hai'**
+  String importIssueTwice(String name);
+
+  /// No description provided for @importIssueTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'yeh total ki line hai, koi cheez ya party nahin'**
+  String get importIssueTotal;
+
+  /// No description provided for @importIssueNoPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ki bechne ki qeemat nahin'**
+  String importIssueNoPrice(String name);
+
+  /// No description provided for @importIssueNotPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: \"{value}\" qeemat nahin'**
+  String importIssueNotPrice(String name, String value);
+
+  /// No description provided for @importIssueNotQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: \"{value}\" stock ki tadaad nahin'**
+  String importIssueNotQty(String name, String value);
+
+  /// No description provided for @importIssueNotAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: \"{value}\" raqam nahin'**
+  String importIssueNotAmount(String name, String value);
+
+  /// No description provided for @importIssueNegativeStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} baghair stock ke aayega; file mein {value} likha hai'**
+  String importIssueNegativeStock(String name, String value);
+
+  /// No description provided for @importIssueBarcode.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} baghair barcode ke aayega; Excel ne use {value} bana diya'**
+  String importIssueBarcode(String name, String value);
+
+  /// No description provided for @importIssueSupplierOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} supplier ban kar aayega, aap ke dene wale Rs {value} ke baghair: yeh purchase bill mein darj karein'**
+  String importIssueSupplierOwed(String name, String value);
+
+  /// No description provided for @importIssueSupplierOwes.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} supplier ban kar aayega, un ke dene wale Rs {value} ke baghair'**
+  String importIssueSupplierOwes(String name, String value);
+
+  /// No description provided for @importIssueAlreadyItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} pehle se maal mein hai'**
+  String importIssueAlreadyItem(String name);
+
+  /// No description provided for @importIssueAlreadyItemAs.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} pehle se maal mein hai, {value} ke naam se'**
+  String importIssueAlreadyItemAs(String name, String value);
+
+  /// No description provided for @importIssueAlreadyParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} pehle se khate mein hai'**
+  String importIssueAlreadyParty(String name);
+
+  /// No description provided for @importIssueAlreadyPartyAs.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} pehle se khate mein hai, {value} ke naam se'**
+  String importIssueAlreadyPartyAs(String name, String value);
+
+  /// No description provided for @importIssueOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: {value}'**
+  String importIssueOther(String name, String value);
+
+  /// No description provided for @importProgress.
+  ///
+  /// In ur, this message translates to:
+  /// **'{total} mein se {done} aa rahe hain…'**
+  String importProgress(String total, String done);
+
+  /// No description provided for @importUpdated.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} naye kiye gaye'**
+  String importUpdated(String count);
+
+  /// No description provided for @importRefusedUnreadable.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh file sheet ki tarah parhi nahin ja saki. Ise Excel ya Google Sheets mein khol kar .xlsx ya .csv mein save karein, phir woh chunein.'**
+  String get importRefusedUnreadable;
+
+  /// No description provided for @importRefusedOld.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh .xls Excel 95 ya us se purani hai. Ise .xlsx mein dobara save kar ke chunein.'**
+  String get importRefusedOld;
+
+  /// No description provided for @importRefusedPassword.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is workbook par password hai. Excel mein password hata kar save karein aur dobara chunein.'**
+  String get importRefusedPassword;
+
+  /// No description provided for @importNeedItemColumns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam aur bechne ki qeemat ke columns nahin mile. Neeche Columns mein chunein.'**
+  String get importNeedItemColumns;
+
+  /// No description provided for @importNeedPartyColumns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam ka column nahin mila. Neeche Columns mein chunein.'**
+  String get importNeedPartyColumns;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

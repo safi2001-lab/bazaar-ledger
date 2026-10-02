@@ -2292,7 +2292,7 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get importHint =>
-      'Apni purani list .xlsx ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.';
+      'Apni purani list .xlsx, .xls ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.';
 
   @override
   String get importItems => 'Maal';
@@ -3781,4 +3781,368 @@ class AppStringsUr extends AppStrings {
   String partiesCapped(int count) {
     return 'Pehle $count dikhaye — baqi talash se dhoondein';
   }
+
+  @override
+  String get importFromWhere => 'Yeh file kahan se aayi hai?';
+
+  @override
+  String get importSourceOurs => 'Bazaar Ledger ki list';
+
+  @override
+  String get importSourceVyaparItems => 'Vyapar ka maal';
+
+  @override
+  String get importSourceVyaparParties => 'Vyapar ki parties';
+
+  @override
+  String get importSourceKhatabook => 'Khatabook';
+
+  @override
+  String get importSourceOther => 'Koi aur';
+
+  @override
+  String importRecognised(String source) {
+    return 'Pehchaan liya: $source';
+  }
+
+  @override
+  String get importGuideTitle => 'Yeh file kaise nikalein';
+
+  @override
+  String importGuideOurs(String headings) {
+    return 'Pehli line mein yeh naam likhein: $headings. Phir har line par ek cheez, ya ek customer.';
+  }
+
+  @override
+  String get importGuideVyaparItems =>
+      '1. Jis computer ya phone par dukaan ka Vyapar hai, us par Vyapar kholein.\n2. Menu se Utilities, phir Export Items kholein aur Excel mein save karein.\n3. File is phone par bhejein (apne aap ko WhatsApp karein, ya cable se) aur neeche chunein.\nVyapar ki Import Items wali bhari hui sheet bhi isi tarah aa jati hai.';
+
+  @override
+  String get importGuideVyaparParties =>
+      '1. Vyapar mein Reports, phir Party Reports, phir All Parties kholein.\n2. Oopar Excel ka button dabayein aur file save karein.\n3. File is phone par bhejein aur neeche chunein.\nHar baqaya apni taraf aata hai: To Receive woh hai jo customer ne aap ko dena hai.';
+
+  @override
+  String get importGuideKhatabook =>
+      '1. Khatabook ki phone app report PDF mein deti hai, aur PDF parhi nahin ja sakti. Agar aap ka Khatabook, computer ya web par, customers ki list Excel ya CSV mein deta hai to woh download karein.\n2. Agar sirf PDF milti hai to ek sheet banayein jis mein Name, Phone, You will get, You will give likha ho, aur baqaya us mein likh dein.\n3. File is phone par bhejein aur neeche chunein.';
+
+  @override
+  String get importGuideOther =>
+      'Koi bhi .xlsx, .xls ya .csv jis ki pehli line mein columns ke naam hon. Jo naam app na pehchane, use Columns mein khud chun lein.';
+
+  @override
+  String get importReading => 'File parhi ja rahi hai…';
+
+  @override
+  String get importChecking =>
+      'Dukaan mein pehle se maujood cheezon se mila rahe hain…';
+
+  @override
+  String get importColumnsTitle => 'Columns';
+
+  @override
+  String get importColumnsHint =>
+      'Agar koi column ghalat parha gaya ho to sahi chunein.';
+
+  @override
+  String get importColumnNone => 'Is file mein nahin';
+
+  @override
+  String importColumnLetter(String letter) {
+    return 'Column $letter';
+  }
+
+  @override
+  String get importFieldName => 'Naam';
+
+  @override
+  String get importFieldSalePrice => 'Bechne ki qeemat';
+
+  @override
+  String get importFieldPurchasePrice => 'Khareed ki qeemat';
+
+  @override
+  String get importFieldWholesalePrice => 'Thok ki qeemat';
+
+  @override
+  String get importFieldMrp => 'MRP';
+
+  @override
+  String get importFieldStock => 'Maujooda stock';
+
+  @override
+  String get importFieldMinStock => 'Kam az kam stock';
+
+  @override
+  String get importFieldUnit => 'Unit';
+
+  @override
+  String get importFieldSecondaryUnit => 'Doosra unit';
+
+  @override
+  String get importFieldConversion => 'Ek mein doosre unit kitne';
+
+  @override
+  String get importFieldCode => 'Code';
+
+  @override
+  String get importFieldBarcode => 'Barcode';
+
+  @override
+  String get importFieldCategory => 'Qism';
+
+  @override
+  String get importFieldDescription => 'Tafseel';
+
+  @override
+  String get importFieldHsCode => 'HS / PCT code';
+
+  @override
+  String get importFieldItemType => 'Maal ya service';
+
+  @override
+  String get importFieldHsn => 'HSN (India ka, nahin rakha jata)';
+
+  @override
+  String get importFieldTax => 'Tax rate (nahin parha jata)';
+
+  @override
+  String get importFieldPhone => 'Phone';
+
+  @override
+  String get importFieldBalance => 'Baqaya';
+
+  @override
+  String get importFieldReceivable => 'Unhon ne aap ko dena hai';
+
+  @override
+  String get importFieldPayable => 'Aap ne unhein dena hai';
+
+  @override
+  String get importFieldBalanceType => 'Lena ya dena';
+
+  @override
+  String get importFieldType => 'Customer ya supplier';
+
+  @override
+  String get importFieldCity => 'Shehar';
+
+  @override
+  String get importFieldAddress => 'Pata';
+
+  @override
+  String get importFieldCreditLimit => 'Udhaar ki hadd';
+
+  @override
+  String get importFieldGstin => 'GSTIN (India ka, nahin rakha jata)';
+
+  @override
+  String importNoteGst(String count, String rates) {
+    return '$count cheezon par India ka GST rate tha ($rates). GST Pakistan ka sales tax nahin, is liye koi rate nahin liya gaya: har cheez par dukaan ka aam tax lagega, jaise haath se daali cheez par.';
+  }
+
+  @override
+  String importNoteTax(String count) {
+    return '$count cheezon par tax rate tha. Woh nahin parha gaya: har cheez par dukaan ka aam tax lagega, jaise haath se daali cheez par.';
+  }
+
+  @override
+  String importNoteHsn(String count) {
+    return '$count cheezon ka HSN code tha. Woh India ka hai; Pakistan ka PCT code hota hai, is liye nahin rakha gaya. FBR ko report hone wali cheezon mein PCT code daalein.';
+  }
+
+  @override
+  String importNoteGstin(String count) {
+    return '$count parties ka GSTIN tha. Woh India ka tax number hai, NTN nahin, is liye nahin rakha gaya.';
+  }
+
+  @override
+  String get importNoteRupee =>
+      'Raqam par ₹ ka nishaan tha, jaise Vyapar likhta hai. Inhein aap ke rupay hi samjha gaya hai.';
+
+  @override
+  String importNoteColumns(String columns) {
+    return 'Nahin rakhe gaye: $columns';
+  }
+
+  @override
+  String importNoteServices(String count) {
+    return '$count services ka stock nahin gina jata.';
+  }
+
+  @override
+  String importUnknownUnit(String count, String unit) {
+    return '$count cheezein \"$unit\" mein hain, jo is dukaan ka unit nahin: yeh adad mein rakhi jayengi, qeemat aur stock file jaise.';
+  }
+
+  @override
+  String importSecondUnit(String count, String unit) {
+    return '$count cheezon ka doosra unit hai ($unit): yeh sirf pehle unit mein rakhi jayengi.';
+  }
+
+  @override
+  String importBalancesOwed(String count, String amount) {
+    return '$count ne aap ko $amount dene hain';
+  }
+
+  @override
+  String importBalancesAhead(String count, String amount) {
+    return '$count ne pehle se diye: aap ke paas un ke $amount hain';
+  }
+
+  @override
+  String importBalancesSuppliers(String count, String amount) {
+    return '$count suppliers jin ko aap ne $amount dene hain: yeh baqaya nahin laaya gaya. Har ek ka purchase bill darj karein.';
+  }
+
+  @override
+  String importOwedQuestion(String count) {
+    return '$count jin ko aap ne dena hai, aur file nahin batati ke woh kaun hain. Woh hain:';
+  }
+
+  @override
+  String get importOwedSuppliers => 'Suppliers';
+
+  @override
+  String get importOwedCustomers => 'Pehle se paise de chuke customers';
+
+  @override
+  String importDuplicates(String count) {
+    return '$count pehle se dukaan mein hain';
+  }
+
+  @override
+  String get importDuplicatesSkip => 'Jaise hain rehne dein';
+
+  @override
+  String get importDuplicatesUpdate => 'File se naya karein';
+
+  @override
+  String get importDuplicatesItemsHint =>
+      'Qeemat file se aayegi; code ya barcode sirf wahan jahan pehle nahin. Shelf ka stock nahin badlega.';
+
+  @override
+  String get importDuplicatesPartiesHint =>
+      'Phone, pata aur udhaar ki hadd sirf khaali jagah bhari jayegi. Baqaya nahin badlega.';
+
+  @override
+  String importPartial(String count) {
+    return '$count kuch chhor kar aayenge';
+  }
+
+  @override
+  String importMore(String count) {
+    return 'aur $count';
+  }
+
+  @override
+  String importLine(String line, String reason) {
+    return 'Line $line: $reason';
+  }
+
+  @override
+  String get importIssueNoName => 'naam nahin';
+
+  @override
+  String importIssueTwice(String name) {
+    return '$name file mein do dafa hai';
+  }
+
+  @override
+  String get importIssueTotal =>
+      'yeh total ki line hai, koi cheez ya party nahin';
+
+  @override
+  String importIssueNoPrice(String name) {
+    return '$name ki bechne ki qeemat nahin';
+  }
+
+  @override
+  String importIssueNotPrice(String name, String value) {
+    return '$name: \"$value\" qeemat nahin';
+  }
+
+  @override
+  String importIssueNotQty(String name, String value) {
+    return '$name: \"$value\" stock ki tadaad nahin';
+  }
+
+  @override
+  String importIssueNotAmount(String name, String value) {
+    return '$name: \"$value\" raqam nahin';
+  }
+
+  @override
+  String importIssueNegativeStock(String name, String value) {
+    return '$name baghair stock ke aayega; file mein $value likha hai';
+  }
+
+  @override
+  String importIssueBarcode(String name, String value) {
+    return '$name baghair barcode ke aayega; Excel ne use $value bana diya';
+  }
+
+  @override
+  String importIssueSupplierOwed(String name, String value) {
+    return '$name supplier ban kar aayega, aap ke dene wale Rs $value ke baghair: yeh purchase bill mein darj karein';
+  }
+
+  @override
+  String importIssueSupplierOwes(String name, String value) {
+    return '$name supplier ban kar aayega, un ke dene wale Rs $value ke baghair';
+  }
+
+  @override
+  String importIssueAlreadyItem(String name) {
+    return '$name pehle se maal mein hai';
+  }
+
+  @override
+  String importIssueAlreadyItemAs(String name, String value) {
+    return '$name pehle se maal mein hai, $value ke naam se';
+  }
+
+  @override
+  String importIssueAlreadyParty(String name) {
+    return '$name pehle se khate mein hai';
+  }
+
+  @override
+  String importIssueAlreadyPartyAs(String name, String value) {
+    return '$name pehle se khate mein hai, $value ke naam se';
+  }
+
+  @override
+  String importIssueOther(String name, String value) {
+    return '$name: $value';
+  }
+
+  @override
+  String importProgress(String total, String done) {
+    return '$total mein se $done aa rahe hain…';
+  }
+
+  @override
+  String importUpdated(String count) {
+    return '$count naye kiye gaye';
+  }
+
+  @override
+  String get importRefusedUnreadable =>
+      'Yeh file sheet ki tarah parhi nahin ja saki. Ise Excel ya Google Sheets mein khol kar .xlsx ya .csv mein save karein, phir woh chunein.';
+
+  @override
+  String get importRefusedOld =>
+      'Yeh .xls Excel 95 ya us se purani hai. Ise .xlsx mein dobara save kar ke chunein.';
+
+  @override
+  String get importRefusedPassword =>
+      'Is workbook par password hai. Excel mein password hata kar save karein aur dobara chunein.';
+
+  @override
+  String get importNeedItemColumns =>
+      'Naam aur bechne ki qeemat ke columns nahin mile. Neeche Columns mein chunein.';
+
+  @override
+  String get importNeedPartyColumns =>
+      'Naam ka column nahin mila. Neeche Columns mein chunein.';
 }

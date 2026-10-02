@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import 'package:archive/archive.dart';
 import 'package:xml/xml.dart';
 
+import 'xls.dart';
+
 /// A sheet read into rows of text, as the shopkeeper typed it.
 final class SheetRows {
   const SheetRows(this.rows);
@@ -21,18 +23,35 @@ final class ImportRefused implements Exception {
   String toString() => reason;
 }
 
-/// Reads the first sheet of an `.xlsx` workbook, or a `.csv` file.
+/// Reads the first sheet of a workbook — `.xlsx`, the old binary `.xls`, or
+/// the HTML or XML that web apps save under an `.xls` name — or a `.csv`.
+///
+/// What a file is comes from its first bytes, not its name: a phone's file
+/// picker hands over whatever the sender called it, and an "xls" from a web
+/// app's Export button is as often an HTML table as a workbook.
 SheetRows readSpreadsheet(Uint8List bytes, {required String fileName}) {
   final name = fileName.toLowerCase();
-  if (name.endsWith('.xls')) {
-    throw const ImportRefused(
-      'This is an old .xls file. Open it in Excel and save it as .xlsx or '
-      '.csv, then import that.',
-    );
-  }
+  if (isCompoundFile(bytes)) return readXls(bytes);
   final isZip = bytes.length > 4 && bytes[0] == 0x50 && bytes[1] == 0x4b;
   if (name.endsWith('.xlsx') || isZip) return _readXlsx(bytes);
-  return readCsv(_text(bytes));
+  final text = _text(bytes);
+  final lower = text.trimLeft().toLowerCase();
+  if (lower.startsWith('<')) {
+    // Excel 2003's XML has a <Table> of its own, so it is told apart by
+    // its namespace; an HTML page (even Excel's own "web page") has none.
+    if (lower.contains('<workbook') &&
+        lower.contains('urn:schemas-microsoft-com:office:spreadsheet')) {
+      return _readSpreadsheetMl(text);
+    }
+    if (lower.contains('<table')) return _readHtmlTable(text);
+  }
+  if (name.endsWith('.xls')) {
+    throw const ImportRefused(
+      'This .xls file could not be read. Open it in Excel and save it as '
+      '.xlsx or .csv, then import that.',
+    );
+  }
+  return readCsv(text);
 }
 
 String _text(Uint8List bytes) {
@@ -152,6 +171,12 @@ SheetRows _readXlsx(Uint8List bytes) {
   }
   final rows = <List<String>>[];
   for (final r in parse(sheetXml).findAllElements('row')) {
+    // Excel leaves an empty row out of the file altogether. Its number is
+    // kept, so "row 12" on the preview is row 12 in Excel too.
+    final number = int.tryParse(r.getAttribute('r') ?? '');
+    if (number != null && number - 1 > rows.length && number < 1048577) {
+      rows.addAll(List.filled(number - 1 - rows.length, const <String>[]));
+    }
     final cells = <int, String>{};
     var next = 0;
     for (final c in r.findElements('c')) {
@@ -185,4 +210,93 @@ int _columnIndex(String ref) {
     n = n * 26 + (unit - 64);
   }
   return n - 1;
+}
+
+/// Excel 2003's XML spreadsheet, which some programs still write under an
+/// `.xls` name: rows of cells, a cell able to skip ahead with `ss:Index`.
+SheetRows _readSpreadsheetMl(String text) {
+  final XmlDocument doc;
+  try {
+    doc = XmlDocument.parse(text);
+  } on Object {
+    throw const ImportRefused('This workbook is damaged.');
+  }
+  final table = doc.findAllElements('Table').firstOrNull;
+  if (table == null) throw const ImportRefused('This workbook has no sheets.');
+  String? index(XmlElement e) =>
+      e.attributes.where((a) => a.name.local == 'Index').firstOrNull?.value;
+  final rows = <List<String>>[];
+  for (final r in table.findElements('Row')) {
+    final at = int.tryParse(index(r) ?? '');
+    if (at != null && at - 1 > rows.length && at < 1048577) {
+      rows.addAll(List.filled(at - 1 - rows.length, const <String>[]));
+    }
+    final row = <String>[];
+    for (final c in r.findElements('Cell')) {
+      final col = int.tryParse(index(c) ?? '');
+      if (col != null && col - 1 > row.length && col < 16385) {
+        row.addAll(List.filled(col - 1 - row.length, ''));
+      }
+      row.add(c.findElements('Data').map((d) => d.innerText).join());
+    }
+    rows.add(row);
+  }
+  return SheetRows(rows);
+}
+
+/// The first table of an HTML page — what a web app's "Export to Excel"
+/// often is, under an `.xls` name that Excel opens without complaint.
+/// Read by its tags rather than as XML, since such pages are seldom
+/// well-formed.
+SheetRows _readHtmlTable(String html) {
+  final table = RegExp(
+    r'<table\b.*?</table\s*>',
+    caseSensitive: false,
+    dotAll: true,
+  ).firstMatch(html);
+  if (table == null) throw const ImportRefused('This file has no table in it.');
+  final rows = <List<String>>[];
+  for (final tr in RegExp(
+    r'<tr\b[^>]*>(.*?)</tr\s*>',
+    caseSensitive: false,
+    dotAll: true,
+  ).allMatches(table[0]!)) {
+    rows.add([
+      for (final td in RegExp(
+        r'<t[dh]\b[^>]*>(.*?)</t[dh]\s*>',
+        caseSensitive: false,
+        dotAll: true,
+      ).allMatches(tr[1]!))
+        _htmlText(td[1]!),
+    ]);
+  }
+  return SheetRows(rows);
+}
+
+String _htmlText(String inner) {
+  final text = inner
+      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), ' ')
+      .replaceAll(RegExp('<[^>]*>'), '')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim();
+  return text.replaceAllMapped(RegExp(r'&(#x?[0-9a-fA-F]+|[a-zA-Z]+);'), (m) {
+    final e = m[1]!;
+    if (e.startsWith('#x') || e.startsWith('#X')) {
+      final code = int.tryParse(e.substring(2), radix: 16);
+      return code == null ? m[0]! : String.fromCharCode(code);
+    }
+    if (e.startsWith('#')) {
+      final code = int.tryParse(e.substring(1));
+      return code == null ? m[0]! : String.fromCharCode(code);
+    }
+    return switch (e.toLowerCase()) {
+      'amp' => '&',
+      'lt' => '<',
+      'gt' => '>',
+      'quot' => '"',
+      'apos' => "'",
+      'nbsp' => ' ',
+      _ => m[0]!,
+    };
+  });
 }

@@ -2,4 +2,5 @@
 library;
 
 export 'src/plan.dart';
+export 'src/sources.dart';
 export 'src/spreadsheet.dart';

@@ -1304,7 +1304,7 @@
   "syncCounterNameHint": "maslan Counter 2",
   "syncJoin": "Jurein",
   "importTitle": "Excel se laayein",
-  "importHint": "Apni purani list .xlsx ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.",
+  "importHint": "Apni purani list .xlsx, .xls ya .csv mein chunein. Pehli line mein columns ke naam hon, maslan Name, Sale price, Stock.",
   "importItems": "Maal",
   "importParties": "Khata",
   "importPick": "File chunein",
@@ -2193,5 +2193,397 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+  "importFromWhere": "Yeh file kahan se aayi hai?",
+  "importSourceOurs": "Bazaar Ledger ki list",
+  "importSourceVyaparItems": "Vyapar ka maal",
+  "importSourceVyaparParties": "Vyapar ki parties",
+  "importSourceKhatabook": "Khatabook",
+  "importSourceOther": "Koi aur",
+  "importRecognised": "Pehchaan liya: {source}",
+  "@importRecognised": {
+    "placeholders": {
+      "source": {
+        "type": "String"
+      }
+    }
+  },
+  "importGuideTitle": "Yeh file kaise nikalein",
+  "importGuideOurs": "Pehli line mein yeh naam likhein: {headings}. Phir har line par ek cheez, ya ek customer.",
+  "@importGuideOurs": {
+    "placeholders": {
+      "headings": {
+        "type": "String"
+      }
+    }
+  },
+  "importGuideVyaparItems": "1. Jis computer ya phone par dukaan ka Vyapar hai, us par Vyapar kholein.\n2. Menu se Utilities, phir Export Items kholein aur Excel mein save karein.\n3. File is phone par bhejein (apne aap ko WhatsApp karein, ya cable se) aur neeche chunein.\nVyapar ki Import Items wali bhari hui sheet bhi isi tarah aa jati hai.",
+  "importGuideVyaparParties": "1. Vyapar mein Reports, phir Party Reports, phir All Parties kholein.\n2. Oopar Excel ka button dabayein aur file save karein.\n3. File is phone par bhejein aur neeche chunein.\nHar baqaya apni taraf aata hai: To Receive woh hai jo customer ne aap ko dena hai.",
+  "importGuideKhatabook": "1. Khatabook ki phone app report PDF mein deti hai, aur PDF parhi nahin ja sakti. Agar aap ka Khatabook, computer ya web par, customers ki list Excel ya CSV mein deta hai to woh download karein.\n2. Agar sirf PDF milti hai to ek sheet banayein jis mein Name, Phone, You will get, You will give likha ho, aur baqaya us mein likh dein.\n3. File is phone par bhejein aur neeche chunein.",
+  "importGuideOther": "Koi bhi .xlsx, .xls ya .csv jis ki pehli line mein columns ke naam hon. Jo naam app na pehchane, use Columns mein khud chun lein.",
+  "importReading": "File parhi ja rahi hai…",
+  "importChecking": "Dukaan mein pehle se maujood cheezon se mila rahe hain…",
+  "importColumnsTitle": "Columns",
+  "importColumnsHint": "Agar koi column ghalat parha gaya ho to sahi chunein.",
+  "importColumnNone": "Is file mein nahin",
+  "importColumnLetter": "Column {letter}",
+  "@importColumnLetter": {
+    "placeholders": {
+      "letter": {
+        "type": "String"
+      }
+    }
+  },
+  "importFieldName": "Naam",
+  "importFieldSalePrice": "Bechne ki qeemat",
+  "importFieldPurchasePrice": "Khareed ki qeemat",
+  "importFieldWholesalePrice": "Thok ki qeemat",
+  "importFieldMrp": "MRP",
+  "importFieldStock": "Maujooda stock",
+  "importFieldMinStock": "Kam az kam stock",
+  "importFieldUnit": "Unit",
+  "importFieldSecondaryUnit": "Doosra unit",
+  "importFieldConversion": "Ek mein doosre unit kitne",
+  "importFieldCode": "Code",
+  "importFieldBarcode": "Barcode",
+  "importFieldCategory": "Qism",
+  "importFieldDescription": "Tafseel",
+  "importFieldHsCode": "HS / PCT code",
+  "importFieldItemType": "Maal ya service",
+  "importFieldHsn": "HSN (India ka, nahin rakha jata)",
+  "importFieldTax": "Tax rate (nahin parha jata)",
+  "importFieldPhone": "Phone",
+  "importFieldBalance": "Baqaya",
+  "importFieldReceivable": "Unhon ne aap ko dena hai",
+  "importFieldPayable": "Aap ne unhein dena hai",
+  "importFieldBalanceType": "Lena ya dena",
+  "importFieldType": "Customer ya supplier",
+  "importFieldCity": "Shehar",
+  "importFieldAddress": "Pata",
+  "importFieldCreditLimit": "Udhaar ki hadd",
+  "importFieldGstin": "GSTIN (India ka, nahin rakha jata)",
+  "importNoteGst": "{count} cheezon par India ka GST rate tha ({rates}). GST Pakistan ka sales tax nahin, is liye koi rate nahin liya gaya: har cheez par dukaan ka aam tax lagega, jaise haath se daali cheez par.",
+  "@importNoteGst": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "rates": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteTax": "{count} cheezon par tax rate tha. Woh nahin parha gaya: har cheez par dukaan ka aam tax lagega, jaise haath se daali cheez par.",
+  "@importNoteTax": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteHsn": "{count} cheezon ka HSN code tha. Woh India ka hai; Pakistan ka PCT code hota hai, is liye nahin rakha gaya. FBR ko report hone wali cheezon mein PCT code daalein.",
+  "@importNoteHsn": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteGstin": "{count} parties ka GSTIN tha. Woh India ka tax number hai, NTN nahin, is liye nahin rakha gaya.",
+  "@importNoteGstin": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteRupee": "Raqam par ₹ ka nishaan tha, jaise Vyapar likhta hai. Inhein aap ke rupay hi samjha gaya hai.",
+  "importNoteColumns": "Nahin rakhe gaye: {columns}",
+  "@importNoteColumns": {
+    "placeholders": {
+      "columns": {
+        "type": "String"
+      }
+    }
+  },
+  "importNoteServices": "{count} services ka stock nahin gina jata.",
+  "@importNoteServices": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importUnknownUnit": "{count} cheezein \"{unit}\" mein hain, jo is dukaan ka unit nahin: yeh adad mein rakhi jayengi, qeemat aur stock file jaise.",
+  "@importUnknownUnit": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "importSecondUnit": "{count} cheezon ka doosra unit hai ({unit}): yeh sirf pehle unit mein rakhi jayengi.",
+  "@importSecondUnit": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  },
+  "importBalancesOwed": "{count} ne aap ko {amount} dene hain",
+  "@importBalancesOwed": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importBalancesAhead": "{count} ne pehle se diye: aap ke paas un ke {amount} hain",
+  "@importBalancesAhead": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importBalancesSuppliers": "{count} suppliers jin ko aap ne {amount} dene hain: yeh baqaya nahin laaya gaya. Har ek ka purchase bill darj karein.",
+  "@importBalancesSuppliers": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "importOwedQuestion": "{count} jin ko aap ne dena hai, aur file nahin batati ke woh kaun hain. Woh hain:",
+  "@importOwedQuestion": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importOwedSuppliers": "Suppliers",
+  "importOwedCustomers": "Pehle se paise de chuke customers",
+  "importDuplicates": "{count} pehle se dukaan mein hain",
+  "@importDuplicates": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importDuplicatesSkip": "Jaise hain rehne dein",
+  "importDuplicatesUpdate": "File se naya karein",
+  "importDuplicatesItemsHint": "Qeemat file se aayegi; code ya barcode sirf wahan jahan pehle nahin. Shelf ka stock nahin badlega.",
+  "importDuplicatesPartiesHint": "Phone, pata aur udhaar ki hadd sirf khaali jagah bhari jayegi. Baqaya nahin badlega.",
+  "importPartial": "{count} kuch chhor kar aayenge",
+  "@importPartial": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importMore": "aur {count}",
+  "@importMore": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importLine": "Line {line}: {reason}",
+  "@importLine": {
+    "placeholders": {
+      "line": {
+        "type": "String"
+      },
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNoName": "naam nahin",
+  "importIssueTwice": "{name} file mein do dafa hai",
+  "@importIssueTwice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueTotal": "yeh total ki line hai, koi cheez ya party nahin",
+  "importIssueNoPrice": "{name} ki bechne ki qeemat nahin",
+  "@importIssueNoPrice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNotPrice": "{name}: \"{value}\" qeemat nahin",
+  "@importIssueNotPrice": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNotQty": "{name}: \"{value}\" stock ki tadaad nahin",
+  "@importIssueNotQty": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNotAmount": "{name}: \"{value}\" raqam nahin",
+  "@importIssueNotAmount": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueNegativeStock": "{name} baghair stock ke aayega; file mein {value} likha hai",
+  "@importIssueNegativeStock": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueBarcode": "{name} baghair barcode ke aayega; Excel ne use {value} bana diya",
+  "@importIssueBarcode": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueSupplierOwed": "{name} supplier ban kar aayega, aap ke dene wale Rs {value} ke baghair: yeh purchase bill mein darj karein",
+  "@importIssueSupplierOwed": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueSupplierOwes": "{name} supplier ban kar aayega, un ke dene wale Rs {value} ke baghair",
+  "@importIssueSupplierOwes": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyItem": "{name} pehle se maal mein hai",
+  "@importIssueAlreadyItem": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyItemAs": "{name} pehle se maal mein hai, {value} ke naam se",
+  "@importIssueAlreadyItemAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyParty": "{name} pehle se khate mein hai",
+  "@importIssueAlreadyParty": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueAlreadyPartyAs": "{name} pehle se khate mein hai, {value} ke naam se",
+  "@importIssueAlreadyPartyAs": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importIssueOther": "{name}: {value}",
+  "@importIssueOther": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "importProgress": "{total} mein se {done} aa rahe hain…",
+  "@importProgress": {
+    "placeholders": {
+      "total": {
+        "type": "String"
+      },
+      "done": {
+        "type": "String"
+      }
+    }
+  },
+  "importUpdated": "{count} naye kiye gaye",
+  "@importUpdated": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "importRefusedUnreadable": "Yeh file sheet ki tarah parhi nahin ja saki. Ise Excel ya Google Sheets mein khol kar .xlsx ya .csv mein save karein, phir woh chunein.",
+  "importRefusedOld": "Yeh .xls Excel 95 ya us se purani hai. Ise .xlsx mein dobara save kar ke chunein.",
+  "importRefusedPassword": "Is workbook par password hai. Excel mein password hata kar save karein aur dobara chunein.",
+  "importNeedItemColumns": "Naam aur bechne ki qeemat ke columns nahin mile. Neeche Columns mein chunein.",
+  "importNeedPartyColumns": "Naam ka column nahin mila. Neeche Columns mein chunein."
 }
