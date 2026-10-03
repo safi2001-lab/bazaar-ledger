@@ -22,7 +22,7 @@ Last updated: 2 Oct 2026.
   `dart analyze --fatal-infos`, `tool/arch_check.dart`, ledger shape, every
   package test, the app tests, and ledger proofs.
 - Every string in both English and Roman Urdu.
-- No database schema change without coordinating the version number (v11 now — M49; v12 reserved for M50).
+- No database schema change without coordinating the version number (v12 now — M50).
 - Agents building this work alone: a subagent may not launch its own
   subagents. Every subagent brief says so.
 
@@ -146,7 +146,7 @@ time, on the latest master (schema is v8 today).
 - [x] M40 · Party groups — DONE: groups on customers/suppliers (form + quick-add), filter/sort/bulk-assign on the Customers list with group totals, rename/merge groups, group chips at the counter, a "Counter ke liye note" shown on the payment sheet
 - [x] M41 · DONE (ee1bf11) Purchase orders and sale orders as documents; shortage list ("*" at the counter); reorder suggestion (average sales × cover days − stock − open orders) grouped by last supplier → a purchase order sent on WhatsApp; quoted rate checked at delivery
 - [x] M49 · DONE (83ab445, schema v11) Pharmacy pack: near-expiry by supplier, expiry return to the supplier with a return note, salt/generic search with substitutes, Schedule B/D register
-- [ ] M50 · (in progress, schema v12) Mobile-shop pack: IMEI search and history, warranty end date, PTA status field + SMS to 8484, used-phone purchase with seller's CNIC and photo, qist (instalment) plans with overdue list and guarantor
+- [x] M50 · DONE (51db127, schema v12) Mobile-shop pack: IMEI search and history, warranty end date, PTA status field + SMS to 8484, used-phone purchase with seller's CNIC and photo, qist (instalment) plans with overdue list and guarantor
 
 ### Trust and control
 - [x] M42 · DONE (a1d31f4, d1676e6) Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
@@ -174,11 +174,11 @@ time, on the latest master (schema is v8 today).
 - [x] M49 · Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
 ### Checks on things we may already do (test, fix if wrong)
-- [ ] M62 · (in progress) An old bill keeps the party's name/address as they were (myBillBook bug +550)
-- [ ] M62 · (in progress) Split payments (cash + JazzCash) are separate rows in every report and export (Vyapar's top 2026 complaint)
+- [x] M62 · DONE (0a5d135) An old bill keeps the party's name/address as they were (myBillBook bug +550)
+- [x] M62 · DONE (0a5d135) Split payments (cash + JazzCash) are separate rows in every report and export (Vyapar's top 2026 complaint)
 - [x] Never silently sell into negative stock — M53
-- [ ] M62 · (in progress) Big shop performance: 50,000 bills, lists and reports stay fast
-- [ ] M62 · (in progress) Urdu PDFs readable — bigger font option already done in M56
+- [x] M62 · DONE (0a5d135) Big shop performance: 50,000 bills, lists and reports stay fast
+- [x] M62 · DONE (0a5d135) Urdu PDFs readable — bigger font option already done in M56
 
 
 ### Follow-ups found while merging — DONE by M58 (55fa8d2) and M36, except the owner decisions
