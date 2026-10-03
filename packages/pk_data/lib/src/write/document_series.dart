@@ -55,6 +55,9 @@ final class DocumentSeries {
     // log say which it was.
     DocumentSeries(docType: 'settlement_discount', prefix: 'SD', padWidth: 4),
     DocumentSeries(docType: 'write_off', prefix: 'WO', padWidth: 4),
+    // M55: the recovery man's round, numbered so his paper, the owner's
+    // screen and the activity log name the same sheet.
+    DocumentSeries(docType: 'collection_sheet', prefix: 'WS', padWidth: 4),
   ];
 
   static DocumentSeries? forType(String docType) {

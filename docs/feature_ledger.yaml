@@ -2492,6 +2492,119 @@ milestones:
       - packages/pk_bootstrap/lib/src/recycle_services.dart
       - packages/pk_platform/lib/src/media/paper_photo.dart
 
+  - id: M55
+    title: Goods on the khata now, priced later; and the recovery man's round on one sheet
+    # Opened and sealed 3 Oct 2026 at 2/2. "Das kilo ghee de diya, rate baad
+    # mein": in a mandi, and in a kiryana whose households settle on salary
+    # day, goods go out on the word and the price is the price on the day
+    # they settle. DigiKhata's users asked for a khata line with a quantity
+    # and no amount; Marg's wholesalers send a man on a route with a party's
+    # open bills on a numbered sheet and mark it on his return.
+    #
+    # Goods given rate-later are a delivery challan (M25) whose lines carry
+    # no rate, and nothing else was invented. The challan was already the
+    # right document: the goods leave the shelf at what they cost into Goods
+    # on Challan, still the shop's asset, owed by nobody (its balance is
+    # nothing, so no khata query reads it as udhaar); the bill made from it
+    # moves them to cost of sales at that cost without moving stock again,
+    # several challans to one customer on one bill, and the bill must be for
+    # exactly the goods sent. Only the price was missing, and a challan line
+    # at no rate that is not a free item is exactly "rate baqi" — derived
+    # from the row, so no column, no marker and no new document type; a
+    # challan the counter sent with an item that has no price reads the same
+    # way, which is the truth about it. They are given from the customer's
+    # khata (pick the goods and how much; the shelf asked as at the counter,
+    # M53) or from the counter's payment sheet ("Rate baad mein" beside
+    # "Challan banayein"), both through the challan's own use case with the
+    # rates taken off (`rateLater`).
+    #
+    # The khata shows every challan to the customer not yet billed in a card
+    # of its own, apart from the balance and never added to it: what went,
+    # how much, "rate baqi" against each line still waiting, "3 cheezein
+    # bina rate ke". "Rate lagayein" opens every line with a rate to fill —
+    # a priced line keeps its price, a rate-later line starts at what the
+    # counter would charge this customer today (never a blank, because one
+    # blank forgotten on twelve lines is ten kilos given away) with what he
+    # paid last time a tap away (M37, shown, never applied) — and puts the
+    # ticked challans on the counter at those rates, M25's path unchanged:
+    # the shopkeeper takes it as udhaar or takes the money there, where tax,
+    # the credit limit and FBR apply. The chase list says "1 cheez bina rate
+    # ke" on a customer's row and, above it, who holds goods with no rate at
+    # all — a household owing nothing in money is not otherwise on the list;
+    # the khata's statement says under the account which goods are not in
+    # it.
+    #
+    # The collection sheet ("Wasooli sheet") is made from the chase list:
+    # everyone who owes, oldest debt first — the khata list's read, because
+    # the chase list counts open bills and a customer whose whole debt is
+    # the old register's purana baqaya has none — narrowed to the late, to
+    # those due today (M38) or to a route (M40), ticked in the order the man
+    # goes. He is a member of staff or a name typed in. It is numbered from
+    # its own series, WS-2627-0001, and lists each customer with phone and
+    # route, every open bill with its number, date and what is left on it,
+    # the purana baqaya, goods with no rate, and a line to write what he was
+    # given; it prints on the counter's roll (58mm or 80mm, through the
+    # print queue and its log), goes as a PDF, or as a WhatsApp message.
+    # The amount on each line is the khata's own figure read inside the
+    # transaction that makes the sheet, so a customer who paid at the
+    # counter a minute before is refused rather than chased.
+    #
+    # On his return each line is marked Pura diya, Kuch diya (how much),
+    # Wada (the day, and an amount if said), Dukaan band or Inkaar, or left
+    # unmarked for not reached, with how the money came (cash unless said;
+    # a cheque is taken on the khata, where its number and bank are
+    # written). One save, one transaction: every payment taken by the
+    # receipt use case's own body (`RecordReceiptUseCase.recordOn`) on the
+    # same handle, oldest bill first, its note "Wasooli WS-… · Rafiq"; every
+    # promise written as M38 keeps one (the same key, JSON and audit
+    # action, so the khata and the home screen read it as any other); the
+    # sheet closed. One bad line and nothing is written. A sheet is recorded
+    # once. The sheet then says what was expected, what came, the cash he
+    # should hand over, what was promised, and how many paid, promised, did
+    # not pay or were not reached.
+    #
+    # Storage, decided: a sheet is a row in the firm's `settings`
+    # (`collection.sheet.<id>`, JSON, the row's id in its key), written
+    # through TxRunner with an audit row when made (COLLECTION_SHEET_MADE)
+    # and when settled (COLLECTION_SHEET_SETTLED). No schema change: a sheet
+    # is written twice in its life and the money in it is not in it — the
+    # receipts and promises are the books' own rows.
+    #
+    # Permissions: giving goods is selling (the challan path asks `sell`).
+    # The chase list asks nothing to be read and everything written from it
+    # takes `takePayments`, so making a sheet does; recording his return
+    # takes receipts and takes `takePayments` at its own door.
+    #
+    # Found on the way and fixed: a receipt's note was asked for on the
+    # draft and dropped by the receipt builder, so it never reached the
+    # payment row (only M44's allowances, built elsewhere, kept theirs); it
+    # does now, and a receipt corrected through M31's edit keeps the note of
+    # the one it replaces.
+    #
+    # Not built, and why: a rate-later line on a quotation or on a bill
+    # (a challan is what moves goods without a price); pricing part of a
+    # challan's lines and leaving the rest (the bill is for exactly the
+    # goods sent, M25); a new number series for rate-later challans (they
+    # are challans, CHL-, and read as rate-later by their lines); recording
+    # a sheet's results in two sittings (a round is recorded once, whole);
+    # two counters recording the same sheet while apart on the shop's Wi-Fi
+    # both take its receipts, as two tills taking one payment would — the
+    # settings row merges, the receipts do not, and the second recorder is
+    # refused only once they have met; a cheque collected on the round; a
+    # rider's van settlement (M18) folded into the sheet.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/collections/**
+      - packages/pk_domain/lib/src/ports/collections.dart
+      - packages/pk_application/lib/src/collection_sheet_use_case.dart
+      - packages/pk_data/lib/src/read/drift_collection_queries.dart
+      - packages/pk_data/lib/src/write/drift_collection_writer.dart
+      - packages/pk_bootstrap/lib/src/collection_services.dart
+      - lib/features/collections/**
+      - lib/features/khata/goods_given.dart
+      - lib/features/khata/give_goods_sheet.dart
+      - lib/features/khata/price_goods_sheet.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7525,3 +7638,42 @@ features:
       - a recipe put away from its page comes back from Hidden
       - an expense head hidden says who hid it and when, and comes back
       - with Data Lock on, putting a van away asks for the PIN on screen
+  - id: M55-RATELATER-01
+    milestone: M55
+    title: Goods given with the rate to be agreed leave the shelf at cost, owe nothing, show apart on the khata, and are priced at settlement into one bill
+    status: done
+    # The books proved through the services against a real database; then
+    # driven from the khata, the counter, the chase list and the statement.
+    proof:
+      - goods given rate later leave the shelf at what they cost and owe nothing until priced
+      - goods given rate later priced at settlement, several on one bill: the khata owes exactly the bill, and nothing leaves the shelf twice
+      - goods given rate later a bill made from them is for exactly the goods given
+      - goods given rate later goods that came back cancel them, and they wait for no rate
+      - goods given rate later every line goes at no rate and no discount; the goods, the units and the customer stay
+      - goods given rate later a line at no rate waits for one; a free item does not
+      - goods given on the khata with no rate leave the shelf and owe nothing
+      - rates set on the khata bill the goods at the counter, and the khata owes exactly the bill
+      - a rate left blank is asked for before anything goes to the counter
+      - the counter hands goods over rate later
+      - the chase list and the statement say what has no rate yet
+      - at 200% on a small phone goods given, and their rates, fit
+  - id: M55-ROUND-01
+    milestone: M55
+    title: A numbered collection sheet for the recovery man, printed or sent, whose return is written on every khata at once
+    status: done
+    # The sheet as a value; then made and settled through the services, the
+    # khatas falling by exactly what came and the books balancing; then a
+    # route driven from the chase list to his return.
+    proof:
+      - a collection sheet owes what the khata said, the bills behind it and the rest from before
+      - a collection sheet settled: what came, the cash to hand over and what was promised
+      - a collection sheet is kept as JSON and read back whole
+      - a collection sheet a mark is refused in words when it cannot be written
+      - the recovery round a sheet lists each customer with their open bills and what the khata says they owe, numbered from its own series
+      - the recovery round paid and partial lines become receipts and the khatas fall by exactly that; a promise is written on the khata
+      - the recovery round a round with one bad line writes nothing at all
+      - the recovery round a sheet is refused for a customer who owes nothing, and a cheque is taken on the khata
+      - a route is put on a numbered sheet, and his return is written on every khata at once
+      - the sheet goes out as a PDF and as a WhatsApp message
+      - the sheet fits a 58mm and an 80mm receipt roll
+      - at 200% on a small phone a sheet being marked fits

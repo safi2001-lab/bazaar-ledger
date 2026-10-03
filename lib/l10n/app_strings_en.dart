@@ -6670,4 +6670,285 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get recipePutAwayDone => 'Recipe put away';
+
+  @override
+  String get goodsGivenRateLater => 'Goods given, rate later';
+
+  @override
+  String get goodsGivenTitle => 'Goods given, not billed yet';
+
+  @override
+  String get goodsGivenNotOwed =>
+      'Not in what they owe yet. It becomes a bill once the rate is set.';
+
+  @override
+  String goodsGivenUnpriced(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items without a rate',
+      one: '1 item without a rate',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get goodsGivenRateMissing => 'rate to agree';
+
+  @override
+  String get goodsGivenPrice => 'Set the rates';
+
+  @override
+  String get goodsGivenBill => 'Make the bill';
+
+  @override
+  String get goodsGivenMore => 'More goods given';
+
+  @override
+  String giveGoodsSaved(String docNo) {
+    return 'Written down: $docNo, rate later';
+  }
+
+  @override
+  String get giveGoodsHint =>
+      'Pick the goods and how much. The rate is set on the day you settle.';
+
+  @override
+  String get giveGoodsSearch => 'Find an item';
+
+  @override
+  String get giveGoodsQty => 'How much';
+
+  @override
+  String get giveGoodsRemove => 'Remove';
+
+  @override
+  String get giveGoodsNote => 'Note (optional)';
+
+  @override
+  String get giveGoodsSave => 'Goods given';
+
+  @override
+  String get giveGoodsNothing => 'Pick an item first.';
+
+  @override
+  String get giveGoodsQtyMissing => 'Write how much of each item.';
+
+  @override
+  String get giveGoodsSerial =>
+      'Give an item sold by serial number from the counter, by scanning it.';
+
+  @override
+  String statementUnpriced(int count, String items) {
+    return 'Goods given, rate to agree ($count), not in this account: $items';
+  }
+
+  @override
+  String get priceGoodsHint =>
+      'Write the rates agreed today. The bill is made at the counter: put it on the khata there, or take the money.';
+
+  @override
+  String priceGoodsRate(String unit) {
+    return 'Rate per $unit';
+  }
+
+  @override
+  String get priceGoodsTotal => 'Total';
+
+  @override
+  String get priceGoodsBill => 'Make the bill at the counter';
+
+  @override
+  String get priceGoodsFree => 'Free';
+
+  @override
+  String priceGoodsRateMissing(String name) {
+    return 'Write a rate for $name.';
+  }
+
+  @override
+  String get priceGoodsNonePicked => 'Tick at least one challan.';
+
+  @override
+  String get counterRateLater => 'Rate later (goods given)';
+
+  @override
+  String chaseUnpriced(int parties, int lines) {
+    return 'Rate to agree: $parties customers, $lines items';
+  }
+
+  @override
+  String get chaseUnpricedTitle => 'Goods given, rate to agree';
+
+  @override
+  String chaseUnpricedSince(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String get sheetsTitle => 'Collection sheets';
+
+  @override
+  String get sheetsEmpty => 'No collection sheets yet';
+
+  @override
+  String get sheetsEmptyHint =>
+      'Pick a route or the late customers and hand the recovery man a numbered sheet.';
+
+  @override
+  String get sheetNew => 'New collection sheet';
+
+  @override
+  String sheetCustomers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count customers',
+      one: '1 customer',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sheetOut => 'Out';
+
+  @override
+  String get sheetSettled => 'Return recorded';
+
+  @override
+  String get sheetCollector => 'Recovery man';
+
+  @override
+  String get sheetCollectorName => 'Or type a name';
+
+  @override
+  String get sheetCollectorMissing => 'Pick or type the recovery man\'s name.';
+
+  @override
+  String get sheetNoneTicked => 'Tick at least one customer.';
+
+  @override
+  String get sheetPickWho => 'Collect from whom?';
+
+  @override
+  String get sheetTickAll => 'Tick everyone shown';
+
+  @override
+  String sheetMake(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Make the sheet · $count customers',
+      one: 'Make the sheet · 1 customer',
+      zero: 'Make the sheet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sheetPaperTitle => 'Collection sheet';
+
+  @override
+  String sheetCollectorLine(String name) {
+    return 'Recovery: $name';
+  }
+
+  @override
+  String get sheetPaperGot => 'Got:';
+
+  @override
+  String get sheetExpected => 'To collect';
+
+  @override
+  String get sheetCollected => 'Collected';
+
+  @override
+  String get sheetCash => 'Cash to hand over';
+
+  @override
+  String get sheetPromised => 'Promised';
+
+  @override
+  String get sheetColumnNo => 'No.';
+
+  @override
+  String get sheetColumnCustomer => 'Customer';
+
+  @override
+  String get sheetColumnBills => 'Bills';
+
+  @override
+  String get sheetColumnResult => 'Result';
+
+  @override
+  String sheetSettledBy(String name) {
+    return 'Recorded by $name';
+  }
+
+  @override
+  String sheetPaidLine(String amount) {
+    return 'Paid in full $amount';
+  }
+
+  @override
+  String sheetPartialLine(String amount) {
+    return 'Paid part $amount';
+  }
+
+  @override
+  String sheetPromiseLine(String date) {
+    return 'Promised: $date';
+  }
+
+  @override
+  String sheetPromiseAmountLine(String date, String amount) {
+    return 'Promised: $date, $amount';
+  }
+
+  @override
+  String get outcomePaid => 'Paid in full';
+
+  @override
+  String get outcomePartial => 'Paid part';
+
+  @override
+  String get outcomePromise => 'Promised';
+
+  @override
+  String get outcomeShopClosed => 'Shop closed';
+
+  @override
+  String get outcomeRefused => 'Refused';
+
+  @override
+  String get sheetRecord => 'Record his return';
+
+  @override
+  String get sheetSave => 'Write it on every khata';
+
+  @override
+  String sheetSaved(String amount) {
+    return 'Round recorded: Rs $amount came in';
+  }
+
+  @override
+  String get sheetAmount => 'How much came';
+
+  @override
+  String get sheetNote => 'What they said (optional)';
+
+  @override
+  String sheetAmountMissing(String name) {
+    return '$name: write how much came.';
+  }
+
+  @override
+  String sheetPromiseDayMissing(String name) {
+    return '$name: pick the day promised.';
+  }
+
+  @override
+  String sheetCounts(int paid, int promised, int notPaid, int notReached) {
+    return 'Paid: $paid · Promised: $promised · Not paid: $notPaid · Not reached: $notReached';
+  }
 }

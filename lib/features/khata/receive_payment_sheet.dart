@@ -195,6 +195,9 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
         chequeDateUtcMillis: _mode == 'cheque'
             ? chequeDueUtcMillis(_chequeDue ?? BusinessDate.now(services.clock))
             : null,
+        // M55: a corrected receipt keeps the words of the one it replaces —
+        // "Wasooli WS-… · Rafiq" says which round brought the money.
+        notes: widget.editing?.notes,
       );
       final editing = widget.editing;
       final String said;

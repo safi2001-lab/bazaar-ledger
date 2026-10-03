@@ -14,6 +14,7 @@ import '../sales/receipt_screen.dart';
 import 'charge_sheet.dart';
 import 'due_chip.dart';
 import 'entry_actions.dart';
+import 'goods_given.dart';
 import 'khata_providers.dart';
 import 'opening_balance_sheet.dart';
 import 'pay_supplier_sheet.dart';
@@ -181,6 +182,10 @@ class KhataScreen extends ConsumerWidget {
       const SizedBox(height: BlTokens.space3),
       // What they said they would pay, and when (M38).
       PromiseCard(party: current),
+      const SizedBox(height: BlTokens.space3),
+      // Goods given and not yet billed, rate-later ones first among them
+      // (M55): shown apart from the balance, never added to it.
+      GoodsGivenCard(party: current),
       const SizedBox(height: BlTokens.space4),
       Row(
         children: [

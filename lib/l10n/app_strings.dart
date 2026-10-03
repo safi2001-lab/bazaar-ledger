@@ -11449,6 +11449,444 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Recipe hata di gayi'**
   String get recipePutAwayDone;
+
+  /// No description provided for @goodsGivenRateLater.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal diya, rate baad mein'**
+  String get goodsGivenRateLater;
+
+  /// No description provided for @goodsGivenTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal diya, bill baqi'**
+  String get goodsGivenTitle;
+
+  /// No description provided for @goodsGivenNotOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh abhi udhaar mein shamil nahi. Rate lagne par bill banega.'**
+  String get goodsGivenNotOwed;
+
+  /// No description provided for @goodsGivenUnpriced.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 cheez bina rate ke} other{{count} cheezein bina rate ke}}'**
+  String goodsGivenUnpriced(int count);
+
+  /// No description provided for @goodsGivenRateMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'rate baqi'**
+  String get goodsGivenRateMissing;
+
+  /// No description provided for @goodsGivenPrice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate lagayein'**
+  String get goodsGivenPrice;
+
+  /// No description provided for @goodsGivenBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill banayein'**
+  String get goodsGivenBill;
+
+  /// No description provided for @goodsGivenMore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur maal diya'**
+  String get goodsGivenMore;
+
+  /// No description provided for @giveGoodsSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal likh liya: {docNo}, rate baad mein'**
+  String giveGoodsSaved(String docNo);
+
+  /// No description provided for @giveGoodsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez aur miqdar likhein. Rate us din lagega jab hisaab hoga.'**
+  String get giveGoodsHint;
+
+  /// No description provided for @giveGoodsSearch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez talash karein'**
+  String get giveGoodsSearch;
+
+  /// No description provided for @giveGoodsQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitna'**
+  String get giveGoodsQty;
+
+  /// No description provided for @giveGoodsRemove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hatayein'**
+  String get giveGoodsRemove;
+
+  /// No description provided for @giveGoodsNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Note (marzi se)'**
+  String get giveGoodsNote;
+
+  /// No description provided for @giveGoodsSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal de diya'**
+  String get giveGoodsSave;
+
+  /// No description provided for @giveGoodsNothing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle koi cheez chunein.'**
+  String get giveGoodsNothing;
+
+  /// No description provided for @giveGoodsQtyMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har cheez ki miqdar likhein.'**
+  String get giveGoodsQtyMissing;
+
+  /// No description provided for @giveGoodsSerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serial number wali cheez counter se, scan kar ke dein.'**
+  String get giveGoodsSerial;
+
+  /// No description provided for @statementUnpriced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal diya, rate baqi ({count}), is hisaab mein shamil nahi: {items}'**
+  String statementUnpriced(int count, String items);
+
+  /// No description provided for @priceGoodsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj jo rate tay hua woh likhein. Bill counter par banega: wahan udhaar likhein ya paisay lein.'**
+  String get priceGoodsHint;
+
+  /// No description provided for @priceGoodsRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate fi {unit}'**
+  String priceGoodsRate(String unit);
+
+  /// No description provided for @priceGoodsTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul'**
+  String get priceGoodsTotal;
+
+  /// No description provided for @priceGoodsBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter par bill banayein'**
+  String get priceGoodsBill;
+
+  /// No description provided for @priceGoodsFree.
+  ///
+  /// In ur, this message translates to:
+  /// **'Muft'**
+  String get priceGoodsFree;
+
+  /// No description provided for @priceGoodsRateMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka rate likhein.'**
+  String priceGoodsRateMissing(String name);
+
+  /// No description provided for @priceGoodsNonePicked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam ek challan chunein.'**
+  String get priceGoodsNonePicked;
+
+  /// No description provided for @counterRateLater.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate baad mein (maal de diya)'**
+  String get counterRateLater;
+
+  /// No description provided for @chaseUnpriced.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate baqi: {parties} gahak, {lines} cheezein'**
+  String chaseUnpriced(int parties, int lines);
+
+  /// No description provided for @chaseUnpricedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal diya, rate baqi'**
+  String get chaseUnpricedTitle;
+
+  /// No description provided for @chaseUnpricedSince.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} se'**
+  String chaseUnpricedSince(String date);
+
+  /// No description provided for @sheetsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasooli sheets'**
+  String get sheetsTitle;
+
+  /// No description provided for @sheetsEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi wasooli sheet nahi'**
+  String get sheetsEmpty;
+
+  /// No description provided for @sheetsEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Route ya der wale gahak chun kar recovery wale ko numbered sheet dein.'**
+  String get sheetsEmptyHint;
+
+  /// No description provided for @sheetNew.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nayi wasooli sheet'**
+  String get sheetNew;
+
+  /// No description provided for @sheetCustomers.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 gahak} other{{count} gahak}}'**
+  String sheetCustomers(int count);
+
+  /// No description provided for @sheetOut.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bahar hai'**
+  String get sheetOut;
+
+  /// No description provided for @sheetSettled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi likh li'**
+  String get sheetSettled;
+
+  /// No description provided for @sheetCollector.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recovery wala'**
+  String get sheetCollector;
+
+  /// No description provided for @sheetCollectorName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ya naam likhein'**
+  String get sheetCollectorName;
+
+  /// No description provided for @sheetCollectorMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recovery wale ka naam chunein ya likhein.'**
+  String get sheetCollectorMissing;
+
+  /// No description provided for @sheetNoneTicked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam ek gahak chunein.'**
+  String get sheetNoneTicked;
+
+  /// No description provided for @sheetPickWho.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis kis se wasooli?'**
+  String get sheetPickWho;
+
+  /// No description provided for @sheetTickAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab chunein'**
+  String get sheetTickAll;
+
+  /// No description provided for @sheetMake.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =0{Sheet banayein} =1{Sheet banayein · 1 gahak} other{Sheet banayein · {count} gahak}}'**
+  String sheetMake(int count);
+
+  /// No description provided for @sheetPaperTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasooli sheet'**
+  String get sheetPaperTitle;
+
+  /// No description provided for @sheetCollectorLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recovery: {name}'**
+  String sheetCollectorLine(String name);
+
+  /// No description provided for @sheetPaperGot.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mila:'**
+  String get sheetPaperGot;
+
+  /// No description provided for @sheetExpected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Lena hai'**
+  String get sheetExpected;
+
+  /// No description provided for @sheetCollected.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasool hua'**
+  String get sheetCollected;
+
+  /// No description provided for @sheetCash.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cash hawale karna hai'**
+  String get sheetCash;
+
+  /// No description provided for @sheetPromised.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wade'**
+  String get sheetPromised;
+
+  /// No description provided for @sheetColumnNo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nambar'**
+  String get sheetColumnNo;
+
+  /// No description provided for @sheetColumnCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak'**
+  String get sheetColumnCustomer;
+
+  /// No description provided for @sheetColumnBills.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill'**
+  String get sheetColumnBills;
+
+  /// No description provided for @sheetColumnResult.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya hua'**
+  String get sheetColumnResult;
+
+  /// No description provided for @sheetSettledBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ne likha'**
+  String sheetSettledBy(String name);
+
+  /// No description provided for @sheetPaidLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pura diya {amount}'**
+  String sheetPaidLine(String amount);
+
+  /// No description provided for @sheetPartialLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch diya {amount}'**
+  String sheetPartialLine(String amount);
+
+  /// No description provided for @sheetPromiseLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada: {date}'**
+  String sheetPromiseLine(String date);
+
+  /// No description provided for @sheetPromiseAmountLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada: {date}, {amount}'**
+  String sheetPromiseAmountLine(String date, String amount);
+
+  /// No description provided for @outcomePaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pura diya'**
+  String get outcomePaid;
+
+  /// No description provided for @outcomePartial.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch diya'**
+  String get outcomePartial;
+
+  /// No description provided for @outcomePromise.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wada'**
+  String get outcomePromise;
+
+  /// No description provided for @outcomeShopClosed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan band'**
+  String get outcomeShopClosed;
+
+  /// No description provided for @outcomeRefused.
+  ///
+  /// In ur, this message translates to:
+  /// **'Inkaar'**
+  String get outcomeRefused;
+
+  /// No description provided for @sheetRecord.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi par likhein'**
+  String get sheetRecord;
+
+  /// No description provided for @sheetSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab khaton par likhein'**
+  String get sheetSave;
+
+  /// No description provided for @sheetSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wasooli likh li: Rs {amount} aaye'**
+  String sheetSaved(String amount);
+
+  /// No description provided for @sheetAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne mile'**
+  String get sheetAmount;
+
+  /// No description provided for @sheetNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya kaha (marzi se)'**
+  String get sheetNote;
+
+  /// No description provided for @sheetAmountMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: kitne mile, likhein.'**
+  String sheetAmountMissing(String name);
+
+  /// No description provided for @sheetPromiseDayMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: wade ka din chunein.'**
+  String sheetPromiseDayMissing(String name);
+
+  /// No description provided for @sheetCounts.
+  ///
+  /// In ur, this message translates to:
+  /// **'Diye: {paid} · Wade: {promised} · Nahi diye: {notPaid} · Nahi gaye: {notReached}'**
+  String sheetCounts(int paid, int promised, int notPaid, int notReached);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

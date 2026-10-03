@@ -6662,4 +6662,286 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get recipePutAwayDone => 'Recipe hata di gayi';
+
+  @override
+  String get goodsGivenRateLater => 'Maal diya, rate baad mein';
+
+  @override
+  String get goodsGivenTitle => 'Maal diya, bill baqi';
+
+  @override
+  String get goodsGivenNotOwed =>
+      'Yeh abhi udhaar mein shamil nahi. Rate lagne par bill banega.';
+
+  @override
+  String goodsGivenUnpriced(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cheezein bina rate ke',
+      one: '1 cheez bina rate ke',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get goodsGivenRateMissing => 'rate baqi';
+
+  @override
+  String get goodsGivenPrice => 'Rate lagayein';
+
+  @override
+  String get goodsGivenBill => 'Bill banayein';
+
+  @override
+  String get goodsGivenMore => 'Aur maal diya';
+
+  @override
+  String giveGoodsSaved(String docNo) {
+    return 'Maal likh liya: $docNo, rate baad mein';
+  }
+
+  @override
+  String get giveGoodsHint =>
+      'Cheez aur miqdar likhein. Rate us din lagega jab hisaab hoga.';
+
+  @override
+  String get giveGoodsSearch => 'Cheez talash karein';
+
+  @override
+  String get giveGoodsQty => 'Kitna';
+
+  @override
+  String get giveGoodsRemove => 'Hatayein';
+
+  @override
+  String get giveGoodsNote => 'Note (marzi se)';
+
+  @override
+  String get giveGoodsSave => 'Maal de diya';
+
+  @override
+  String get giveGoodsNothing => 'Pehle koi cheez chunein.';
+
+  @override
+  String get giveGoodsQtyMissing => 'Har cheez ki miqdar likhein.';
+
+  @override
+  String get giveGoodsSerial =>
+      'Serial number wali cheez counter se, scan kar ke dein.';
+
+  @override
+  String statementUnpriced(int count, String items) {
+    return 'Maal diya, rate baqi ($count), is hisaab mein shamil nahi: $items';
+  }
+
+  @override
+  String get priceGoodsHint =>
+      'Aaj jo rate tay hua woh likhein. Bill counter par banega: wahan udhaar likhein ya paisay lein.';
+
+  @override
+  String priceGoodsRate(String unit) {
+    return 'Rate fi $unit';
+  }
+
+  @override
+  String get priceGoodsTotal => 'Kul';
+
+  @override
+  String get priceGoodsBill => 'Counter par bill banayein';
+
+  @override
+  String get priceGoodsFree => 'Muft';
+
+  @override
+  String priceGoodsRateMissing(String name) {
+    return '$name ka rate likhein.';
+  }
+
+  @override
+  String get priceGoodsNonePicked => 'Kam az kam ek challan chunein.';
+
+  @override
+  String get counterRateLater => 'Rate baad mein (maal de diya)';
+
+  @override
+  String chaseUnpriced(int parties, int lines) {
+    return 'Rate baqi: $parties gahak, $lines cheezein';
+  }
+
+  @override
+  String get chaseUnpricedTitle => 'Maal diya, rate baqi';
+
+  @override
+  String chaseUnpricedSince(String date) {
+    return '$date se';
+  }
+
+  @override
+  String get sheetsTitle => 'Wasooli sheets';
+
+  @override
+  String get sheetsEmpty => 'Abhi koi wasooli sheet nahi';
+
+  @override
+  String get sheetsEmptyHint =>
+      'Route ya der wale gahak chun kar recovery wale ko numbered sheet dein.';
+
+  @override
+  String get sheetNew => 'Nayi wasooli sheet';
+
+  @override
+  String sheetCustomers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gahak',
+      one: '1 gahak',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sheetOut => 'Bahar hai';
+
+  @override
+  String get sheetSettled => 'Wapsi likh li';
+
+  @override
+  String get sheetCollector => 'Recovery wala';
+
+  @override
+  String get sheetCollectorName => 'Ya naam likhein';
+
+  @override
+  String get sheetCollectorMissing =>
+      'Recovery wale ka naam chunein ya likhein.';
+
+  @override
+  String get sheetNoneTicked => 'Kam az kam ek gahak chunein.';
+
+  @override
+  String get sheetPickWho => 'Kis kis se wasooli?';
+
+  @override
+  String get sheetTickAll => 'Sab chunein';
+
+  @override
+  String sheetMake(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Sheet banayein · $count gahak',
+      one: 'Sheet banayein · 1 gahak',
+      zero: 'Sheet banayein',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sheetPaperTitle => 'Wasooli sheet';
+
+  @override
+  String sheetCollectorLine(String name) {
+    return 'Recovery: $name';
+  }
+
+  @override
+  String get sheetPaperGot => 'Mila:';
+
+  @override
+  String get sheetExpected => 'Lena hai';
+
+  @override
+  String get sheetCollected => 'Wasool hua';
+
+  @override
+  String get sheetCash => 'Cash hawale karna hai';
+
+  @override
+  String get sheetPromised => 'Wade';
+
+  @override
+  String get sheetColumnNo => 'Nambar';
+
+  @override
+  String get sheetColumnCustomer => 'Gahak';
+
+  @override
+  String get sheetColumnBills => 'Bill';
+
+  @override
+  String get sheetColumnResult => 'Kya hua';
+
+  @override
+  String sheetSettledBy(String name) {
+    return '$name ne likha';
+  }
+
+  @override
+  String sheetPaidLine(String amount) {
+    return 'Pura diya $amount';
+  }
+
+  @override
+  String sheetPartialLine(String amount) {
+    return 'Kuch diya $amount';
+  }
+
+  @override
+  String sheetPromiseLine(String date) {
+    return 'Wada: $date';
+  }
+
+  @override
+  String sheetPromiseAmountLine(String date, String amount) {
+    return 'Wada: $date, $amount';
+  }
+
+  @override
+  String get outcomePaid => 'Pura diya';
+
+  @override
+  String get outcomePartial => 'Kuch diya';
+
+  @override
+  String get outcomePromise => 'Wada';
+
+  @override
+  String get outcomeShopClosed => 'Dukaan band';
+
+  @override
+  String get outcomeRefused => 'Inkaar';
+
+  @override
+  String get sheetRecord => 'Wapsi par likhein';
+
+  @override
+  String get sheetSave => 'Sab khaton par likhein';
+
+  @override
+  String sheetSaved(String amount) {
+    return 'Wasooli likh li: Rs $amount aaye';
+  }
+
+  @override
+  String get sheetAmount => 'Kitne mile';
+
+  @override
+  String get sheetNote => 'Kya kaha (marzi se)';
+
+  @override
+  String sheetAmountMissing(String name) {
+    return '$name: kitne mile, likhein.';
+  }
+
+  @override
+  String sheetPromiseDayMissing(String name) {
+    return '$name: wade ka din chunein.';
+  }
+
+  @override
+  String sheetCounts(int paid, int promised, int notPaid, int notReached) {
+    return 'Diye: $paid · Wade: $promised · Nahi diye: $notPaid · Nahi gaye: $notReached';
+  }
 }

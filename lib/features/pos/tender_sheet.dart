@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
 import '../khata/entry_actions.dart' show modeLabel;
+import '../khata/goods_given.dart' show giveFromCounter; // M55
 import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
 import '../sales/receipt_screen.dart';
@@ -214,6 +215,21 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         });
       }
     }
+  }
+
+  // M55: hands the counter's goods to its customer, rate later.
+  Future<void> _rateLater() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _failure = null;
+    });
+    final failure = await giveFromCounter(context, ref);
+    if (!mounted || failure == null) return;
+    setState(() {
+      _busy = false;
+      _failure = failure.isEmpty ? null : failure;
+    });
   }
 
   Future<void> _post() async {
@@ -916,6 +932,15 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                 icon: Icons.assignment_turned_in_outlined,
                 kind: BlButtonKind.secondary,
                 onPressed: _busy ? null : () => unawaited(_keep(challan: true)),
+              ),
+              // M55: the goods handed over with the rate to be agreed — a
+              // challan with no rate, priced later from the khata.
+              const SizedBox(height: BlTokens.space2),
+              BlButton(
+                label: s.counterRateLater,
+                icon: Icons.scale_outlined,
+                kind: BlButtonKind.secondary,
+                onPressed: _busy ? null : () => unawaited(_rateLater()),
               ),
             ],
           ],

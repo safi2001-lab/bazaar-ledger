@@ -3995,5 +3995,179 @@
   "vanPutAwayDone": "Gaari hata di gayi",
   "recipePutAway": "Recipe hatayein",
   "recipePutAwayConfirm": "Yeh recipe list se hat jaye gi. Pehle banaya hua maal aur hisaab waise hi rahega, aur 'Hatayi hui cheezein' se wapas aa sakti hai.",
-  "recipePutAwayDone": "Recipe hata di gayi"
+  "recipePutAwayDone": "Recipe hata di gayi",
+  "goodsGivenRateLater": "Maal diya, rate baad mein",
+  "goodsGivenTitle": "Maal diya, bill baqi",
+  "goodsGivenNotOwed": "Yeh abhi udhaar mein shamil nahi. Rate lagne par bill banega.",
+  "goodsGivenUnpriced": "{count, plural, =1{1 cheez bina rate ke} other{{count} cheezein bina rate ke}}",
+  "@goodsGivenUnpriced": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "goodsGivenRateMissing": "rate baqi",
+  "goodsGivenPrice": "Rate lagayein",
+  "goodsGivenBill": "Bill banayein",
+  "goodsGivenMore": "Aur maal diya",
+  "giveGoodsSaved": "Maal likh liya: {docNo}, rate baad mein",
+  "@giveGoodsSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "giveGoodsHint": "Cheez aur miqdar likhein. Rate us din lagega jab hisaab hoga.",
+  "giveGoodsSearch": "Cheez talash karein",
+  "giveGoodsQty": "Kitna",
+  "giveGoodsRemove": "Hatayein",
+  "giveGoodsNote": "Note (marzi se)",
+  "giveGoodsSave": "Maal de diya",
+  "giveGoodsNothing": "Pehle koi cheez chunein.",
+  "giveGoodsQtyMissing": "Har cheez ki miqdar likhein.",
+  "giveGoodsSerial": "Serial number wali cheez counter se, scan kar ke dein.",
+  "statementUnpriced": "Maal diya, rate baqi ({count}), is hisaab mein shamil nahi: {items}",
+  "@statementUnpriced": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "items": {"type": "String"}
+    }
+  },
+  "priceGoodsHint": "Aaj jo rate tay hua woh likhein. Bill counter par banega: wahan udhaar likhein ya paisay lein.",
+  "priceGoodsRate": "Rate fi {unit}",
+  "@priceGoodsRate": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "priceGoodsTotal": "Kul",
+  "priceGoodsBill": "Counter par bill banayein",
+  "priceGoodsFree": "Muft",
+  "priceGoodsRateMissing": "{name} ka rate likhein.",
+  "@priceGoodsRateMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "priceGoodsNonePicked": "Kam az kam ek challan chunein.",
+  "counterRateLater": "Rate baad mein (maal de diya)",
+  "chaseUnpriced": "Rate baqi: {parties} gahak, {lines} cheezein",
+  "@chaseUnpriced": {
+    "placeholders": {
+      "parties": {"type": "int"},
+      "lines": {"type": "int"}
+    }
+  },
+  "chaseUnpricedTitle": "Maal diya, rate baqi",
+  "chaseUnpricedSince": "{date} se",
+  "@chaseUnpricedSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "sheetsTitle": "Wasooli sheets",
+  "sheetsEmpty": "Abhi koi wasooli sheet nahi",
+  "sheetsEmptyHint": "Route ya der wale gahak chun kar recovery wale ko numbered sheet dein.",
+  "sheetNew": "Nayi wasooli sheet",
+  "sheetCustomers": "{count, plural, =1{1 gahak} other{{count} gahak}}",
+  "@sheetCustomers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "sheetOut": "Bahar hai",
+  "sheetSettled": "Wapsi likh li",
+  "sheetCollector": "Recovery wala",
+  "sheetCollectorName": "Ya naam likhein",
+  "sheetCollectorMissing": "Recovery wale ka naam chunein ya likhein.",
+  "sheetNoneTicked": "Kam az kam ek gahak chunein.",
+  "sheetPickWho": "Kis kis se wasooli?",
+  "sheetTickAll": "Sab chunein",
+  "sheetMake": "{count, plural, =0{Sheet banayein} =1{Sheet banayein · 1 gahak} other{Sheet banayein · {count} gahak}}",
+  "@sheetMake": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "sheetPaperTitle": "Wasooli sheet",
+  "sheetCollectorLine": "Recovery: {name}",
+  "@sheetCollectorLine": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetPaperGot": "Mila:",
+  "sheetExpected": "Lena hai",
+  "sheetCollected": "Wasool hua",
+  "sheetCash": "Cash hawale karna hai",
+  "sheetPromised": "Wade",
+  "sheetColumnNo": "Nambar",
+  "sheetColumnCustomer": "Gahak",
+  "sheetColumnBills": "Bill",
+  "sheetColumnResult": "Kya hua",
+  "sheetSettledBy": "{name} ne likha",
+  "@sheetSettledBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetPaidLine": "Pura diya {amount}",
+  "@sheetPaidLine": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "sheetPartialLine": "Kuch diya {amount}",
+  "@sheetPartialLine": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "sheetPromiseLine": "Wada: {date}",
+  "@sheetPromiseLine": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "sheetPromiseAmountLine": "Wada: {date}, {amount}",
+  "@sheetPromiseAmountLine": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "outcomePaid": "Pura diya",
+  "outcomePartial": "Kuch diya",
+  "outcomePromise": "Wada",
+  "outcomeShopClosed": "Dukaan band",
+  "outcomeRefused": "Inkaar",
+  "sheetRecord": "Wapsi par likhein",
+  "sheetSave": "Sab khaton par likhein",
+  "sheetSaved": "Wasooli likh li: Rs {amount} aaye",
+  "@sheetSaved": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "sheetAmount": "Kitne mile",
+  "sheetNote": "Kya kaha (marzi se)",
+  "sheetAmountMissing": "{name}: kitne mile, likhein.",
+  "@sheetAmountMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetPromiseDayMissing": "{name}: wade ka din chunein.",
+  "@sheetPromiseDayMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetCounts": "Diye: {paid} · Wade: {promised} · Nahi diye: {notPaid} · Nahi gaye: {notReached}",
+  "@sheetCounts": {
+    "placeholders": {
+      "paid": {"type": "int"},
+      "promised": {"type": "int"},
+      "notPaid": {"type": "int"},
+      "notReached": {"type": "int"}
+    }
+  }
 }

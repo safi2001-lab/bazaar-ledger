@@ -10,6 +10,8 @@ export 'package:drift/drift.dart' show QueryExecutor, QueryRow, Value, Variable;
 
 export 'src/db/app_database.dart';
 export 'src/read/drift_app_queries.dart';
+export 'src/read/drift_collection_queries.dart' // M55
+    show DriftCollectionQueries;
 export 'src/read/drift_loan_reads.dart';
 export 'src/read/drift_order_reads.dart';
 export 'src/read/drift_record_history.dart';
@@ -24,6 +26,7 @@ export 'src/write/drift_attachments.dart';
 export 'src/write/drift_catalogue_writer.dart';
 export 'src/write/drift_challan_writer.dart';
 export 'src/write/drift_cheque_writer.dart' show DriftChequeWriter;
+export 'src/write/drift_collection_writer.dart'; // M55
 export 'src/write/drift_correction_writer.dart';
 export 'src/write/drift_day_close_writer.dart';
 export 'src/write/drift_debit_note_writer.dart' show DriftDebitNoteWriter;

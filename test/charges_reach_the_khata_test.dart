@@ -51,6 +51,13 @@ void main() {
     await typeInto(tester, 'Kis cheez ka (zaroori)', 'Bilty ka kiraya');
     await tapButton(tester, 'Khate mein dalein');
 
+    // Scrolled to first, and clear of the note the save left at the foot of
+    // the screen: the khata has grown above its history (M55's goods given),
+    // and a line under the fold is not tapped by a plain tap.
+    await tester.pump(const Duration(seconds: 5));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.textContaining('Bilty ka kiraya'));
+    await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Bilty ka kiraya'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Yeh charge wapas lein').last);

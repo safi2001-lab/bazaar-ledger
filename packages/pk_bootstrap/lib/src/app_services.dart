@@ -22,6 +22,7 @@ import 'printing_services.dart';
 
 part 'audit_services.dart';
 part 'bill_design_services.dart';
+part 'collection_services.dart'; // M55
 part 'counter_tax_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
@@ -450,6 +451,9 @@ final class AppServices {
 
   /// What the shop has hidden, and bringing it back (M60).
   late final RecycleServices recycle = RecycleServices._(this);
+
+  /// Goods given rate-later, and the recovery man's round (M55).
+  late final CollectionServices collections = CollectionServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

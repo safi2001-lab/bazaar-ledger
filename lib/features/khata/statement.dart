@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../app/providers.dart';
 import '../../l10n/app_strings.dart';
 import '../printing/pdf_font.dart';
+import 'goods_given.dart';
 
 /// How far back a statement goes.
 enum StatementSpan { thisMonth, lastMonth, thisYear, all }
@@ -22,6 +23,7 @@ Future<ReportTable> statementFor(
   PartySummary party, {
   required StatementSpan span,
   required bool owedToUs,
+  List<String> unpriced = const [],
 }) async {
   final firmId = (await services.queries.currentFirm())!.id;
   final entries = owedToUs
@@ -41,11 +43,25 @@ Future<ReportTable> statementFor(
       today,
     ),
   };
-  return partyStatement(
+  final statement = partyStatement(
     partyName: party.name,
     period: period,
     entries: entries,
     owedToUs: owedToUs,
+  );
+  // Goods given with the rate still to be agreed (M55) are not in the
+  // account, and the paper says so under it, so the figure is not read as
+  // all the customer holds: "is hisaab mein shamil nahi".
+  if (!owedToUs || unpriced.isEmpty) return statement;
+  return ReportTable(
+    id: statement.id,
+    title: statement.title,
+    period: statement.period,
+    columns: statement.columns,
+    rows: statement.rows,
+    notes: [...statement.notes, ...unpriced],
+    summary: statement.summary,
+    filters: statement.filters,
   );
 }
 
@@ -87,6 +103,10 @@ Future<void> shareStatement(
       party,
       span: span,
       owedToUs: owedToUs,
+      // M55: goods given and not yet priced, said under the account.
+      unpriced: owedToUs
+          ? unpricedNotes(s, await services.collections.goodsGivenTo(party.id))
+          : const [],
     );
     final firm = await ref.read(firmProvider.future);
     final bytes = await reportToPdf(

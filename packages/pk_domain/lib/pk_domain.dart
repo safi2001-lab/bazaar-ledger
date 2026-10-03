@@ -25,6 +25,9 @@ export 'src/catalogue/units.dart';
 export 'src/cheques/cheque_dates.dart';
 export 'src/cheques/cheque_lifecycle.dart';
 export 'src/cheques/demand_notice.dart';
+// M55: goods given rate-later, and the recovery man's round.
+export 'src/collections/collection_sheet.dart';
+export 'src/collections/goods_given.dart';
 export 'src/corrections/opening_correction.dart';
 export 'src/corrections/payment_void.dart';
 export 'src/corrections/purchase_return_builder.dart';
@@ -54,6 +57,7 @@ export 'src/ports/attachments.dart';
 export 'src/ports/catalogue_writer.dart';
 export 'src/ports/challan_writer.dart';
 export 'src/ports/cheque_writer.dart';
+export 'src/ports/collections.dart'; // M55
 export 'src/ports/correction_writer.dart';
 export 'src/ports/day_close_writer.dart';
 export 'src/ports/debit_note_writer.dart';

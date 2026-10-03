@@ -201,6 +201,10 @@ final class ReceiptBuilder {
         chequeDateUtcMillis: draft.chequeDateUtcMillis,
         paymentDateUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
         paymentDateLocal: actor.businessDate.value,
+        // M55: the draft's words reach the payment row. They were dropped
+        // here, so a receipt's note was asked for and never kept; a round's
+        // receipt names its recovery man in it.
+        notes: draft.notes,
       ),
       allocations: allocations,
       settlements: settlements,

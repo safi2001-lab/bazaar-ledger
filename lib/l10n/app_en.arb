@@ -3670,5 +3670,179 @@
   "vanPutAwayDone": "Van put away",
   "recipePutAway": "Put the recipe away",
   "recipePutAwayConfirm": "This recipe leaves the list. What was made with it, and the books, stay as they were, and it can come back from 'Hidden'.",
-  "recipePutAwayDone": "Recipe put away"
+  "recipePutAwayDone": "Recipe put away",
+  "goodsGivenRateLater": "Goods given, rate later",
+  "goodsGivenTitle": "Goods given, not billed yet",
+  "goodsGivenNotOwed": "Not in what they owe yet. It becomes a bill once the rate is set.",
+  "goodsGivenUnpriced": "{count, plural, =1{1 item without a rate} other{{count} items without a rate}}",
+  "@goodsGivenUnpriced": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "goodsGivenRateMissing": "rate to agree",
+  "goodsGivenPrice": "Set the rates",
+  "goodsGivenBill": "Make the bill",
+  "goodsGivenMore": "More goods given",
+  "giveGoodsSaved": "Written down: {docNo}, rate later",
+  "@giveGoodsSaved": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "giveGoodsHint": "Pick the goods and how much. The rate is set on the day you settle.",
+  "giveGoodsSearch": "Find an item",
+  "giveGoodsQty": "How much",
+  "giveGoodsRemove": "Remove",
+  "giveGoodsNote": "Note (optional)",
+  "giveGoodsSave": "Goods given",
+  "giveGoodsNothing": "Pick an item first.",
+  "giveGoodsQtyMissing": "Write how much of each item.",
+  "giveGoodsSerial": "Give an item sold by serial number from the counter, by scanning it.",
+  "statementUnpriced": "Goods given, rate to agree ({count}), not in this account: {items}",
+  "@statementUnpriced": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "items": {"type": "String"}
+    }
+  },
+  "priceGoodsHint": "Write the rates agreed today. The bill is made at the counter: put it on the khata there, or take the money.",
+  "priceGoodsRate": "Rate per {unit}",
+  "@priceGoodsRate": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "priceGoodsTotal": "Total",
+  "priceGoodsBill": "Make the bill at the counter",
+  "priceGoodsFree": "Free",
+  "priceGoodsRateMissing": "Write a rate for {name}.",
+  "@priceGoodsRateMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "priceGoodsNonePicked": "Tick at least one challan.",
+  "counterRateLater": "Rate later (goods given)",
+  "chaseUnpriced": "Rate to agree: {parties} customers, {lines} items",
+  "@chaseUnpriced": {
+    "placeholders": {
+      "parties": {"type": "int"},
+      "lines": {"type": "int"}
+    }
+  },
+  "chaseUnpricedTitle": "Goods given, rate to agree",
+  "chaseUnpricedSince": "Since {date}",
+  "@chaseUnpricedSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "sheetsTitle": "Collection sheets",
+  "sheetsEmpty": "No collection sheets yet",
+  "sheetsEmptyHint": "Pick a route or the late customers and hand the recovery man a numbered sheet.",
+  "sheetNew": "New collection sheet",
+  "sheetCustomers": "{count, plural, =1{1 customer} other{{count} customers}}",
+  "@sheetCustomers": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "sheetOut": "Out",
+  "sheetSettled": "Return recorded",
+  "sheetCollector": "Recovery man",
+  "sheetCollectorName": "Or type a name",
+  "sheetCollectorMissing": "Pick or type the recovery man's name.",
+  "sheetNoneTicked": "Tick at least one customer.",
+  "sheetPickWho": "Collect from whom?",
+  "sheetTickAll": "Tick everyone shown",
+  "sheetMake": "{count, plural, =0{Make the sheet} =1{Make the sheet · 1 customer} other{Make the sheet · {count} customers}}",
+  "@sheetMake": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "sheetPaperTitle": "Collection sheet",
+  "sheetCollectorLine": "Recovery: {name}",
+  "@sheetCollectorLine": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetPaperGot": "Got:",
+  "sheetExpected": "To collect",
+  "sheetCollected": "Collected",
+  "sheetCash": "Cash to hand over",
+  "sheetPromised": "Promised",
+  "sheetColumnNo": "No.",
+  "sheetColumnCustomer": "Customer",
+  "sheetColumnBills": "Bills",
+  "sheetColumnResult": "Result",
+  "sheetSettledBy": "Recorded by {name}",
+  "@sheetSettledBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetPaidLine": "Paid in full {amount}",
+  "@sheetPaidLine": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "sheetPartialLine": "Paid part {amount}",
+  "@sheetPartialLine": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "sheetPromiseLine": "Promised: {date}",
+  "@sheetPromiseLine": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "sheetPromiseAmountLine": "Promised: {date}, {amount}",
+  "@sheetPromiseAmountLine": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "outcomePaid": "Paid in full",
+  "outcomePartial": "Paid part",
+  "outcomePromise": "Promised",
+  "outcomeShopClosed": "Shop closed",
+  "outcomeRefused": "Refused",
+  "sheetRecord": "Record his return",
+  "sheetSave": "Write it on every khata",
+  "sheetSaved": "Round recorded: Rs {amount} came in",
+  "@sheetSaved": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "sheetAmount": "How much came",
+  "sheetNote": "What they said (optional)",
+  "sheetAmountMissing": "{name}: write how much came.",
+  "@sheetAmountMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetPromiseDayMissing": "{name}: pick the day promised.",
+  "@sheetPromiseDayMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "sheetCounts": "Paid: {paid} · Promised: {promised} · Not paid: {notPaid} · Not reached: {notReached}",
+  "@sheetCounts": {
+    "placeholders": {
+      "paid": {"type": "int"},
+      "promised": {"type": "int"},
+      "notPaid": {"type": "int"},
+      "notReached": {"type": "int"}
+    }
+  }
 }

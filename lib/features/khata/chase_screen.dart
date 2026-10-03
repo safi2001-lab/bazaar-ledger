@@ -8,8 +8,10 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../collections/collections_screen.dart';
 import 'bad_debts_screen.dart';
 import 'due_chip.dart';
+import 'goods_given.dart';
 import 'khata_screen.dart';
 import 'reminder_queue.dart';
 import 'reminder_queue_screen.dart';
@@ -171,12 +173,28 @@ class _ChaseScreenState extends ConsumerState<ChaseScreen> {
     final today = ref.watch(appServicesProvider).udhaar.today;
 
     final rows = chase.valueOrNull ?? const <DueParty>[];
+    // Goods given with the rate still to be agreed (M55), by customer.
+    final unpriced =
+        ref.watch(unpricedPartiesProvider).valueOrNull ??
+        const <UnpricedParty>[];
+    final unpricedBy = {for (final u in unpriced) u.partyId: u.lines};
 
     return Scaffold(
       backgroundColor: t.paper,
       appBar: AppBar(
         title: Text(s.chaseTitle),
         actions: [
+          // The recovery man's round (M55): a numbered sheet from this list.
+          if (!_picking)
+            BlIconButton(
+              icon: Icons.assignment_ind_outlined,
+              label: s.sheetsTitle,
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const CollectionsScreen(),
+                ),
+              ),
+            ),
           // Bad debts and settlement discounts (M44).
           if (!_picking)
             BlIconButton(
@@ -216,6 +234,8 @@ class _ChaseScreenState extends ConsumerState<ChaseScreen> {
                   onCarryOn: () => unawaited(_walk(round)),
                   onDiscard: () => unawaited(_discard()),
                 ),
+              if (unpriced.isNotEmpty && !_picking)
+                _Unpriced(parties: unpriced),
               if (_picking)
                 _Picking(
                   count: _picked.length,
@@ -293,6 +313,8 @@ class _ChaseScreenState extends ConsumerState<ChaseScreen> {
                   child: _ChaseRow(
                     due: shown[i - header.length],
                     today: today,
+                    unpriced:
+                        unpricedBy[shown[i - header.length].party.id] ?? 0,
                     picking: _picking,
                     picked: _picked.contains(shown[i - header.length].party.id),
                     onPick: (on) => setState(() {
@@ -447,6 +469,7 @@ class _ChaseRow extends StatelessWidget {
   const _ChaseRow({
     required this.due,
     required this.today,
+    this.unpriced = 0,
     this.picking = false,
     this.picked = false,
     this.onPick,
@@ -454,6 +477,10 @@ class _ChaseRow extends StatelessWidget {
 
   final DueParty due;
   final String today;
+
+  /// Lines of goods given them with the rate still to be agreed (M55): not
+  /// in what they owe, and said on the row so the call can mention them.
+  final int unpriced;
 
   /// Ticking for a round of reminders (M39): the row ticks instead of
   /// opening the khata, and a customer who asked not to be messaged cannot
@@ -537,6 +564,12 @@ class _ChaseRow extends StatelessWidget {
                         BlChip(
                           s.khataRemindOff,
                           icon: Icons.notifications_off_outlined,
+                        ),
+                      if (unpriced > 0)
+                        BlChip(
+                          s.goodsGivenUnpriced(unpriced),
+                          tone: BlChipTone.warn,
+                          icon: Icons.scale_outlined,
                         ),
                     ],
                   ),
@@ -670,6 +703,121 @@ class _Picking extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Customers holding goods with the rate still to be agreed (M55).
+///
+/// A household on a salary-day khata may owe nothing in money and still have
+/// ten kilos of ghee to settle for, so it is not on the list below; this
+/// says who, and each name opens their khata, where the rate is put on.
+class _Unpriced extends ConsumerWidget {
+  const _Unpriced({required this.parties});
+
+  final List<UnpricedParty> parties;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final lines = parties.fold(0, (n, p) => n + p.lines);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        BlTokens.space4,
+        BlTokens.space4,
+        BlTokens.space4,
+        0,
+      ),
+      child: BlCard(
+        onTap: () => unawaited(_open(context, ref)),
+        child: Row(
+          children: [
+            Icon(Icons.scale_outlined, color: t.warning),
+            const SizedBox(width: BlTokens.space3),
+            Expanded(
+              child: Text(
+                s.chaseUnpriced(parties.length, lines),
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: t.ink,
+                ),
+              ),
+            ),
+            Icon(Icons.chevron_right, color: t.inkMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _open(BuildContext context, WidgetRef ref) async {
+    final services = ref.read(appServicesProvider);
+    final navigator = Navigator.of(context);
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (context) {
+        final s = AppStrings.of(context);
+        final t = context.bl;
+        return ListView(
+          shrinkWrap: true,
+          padding: const EdgeInsets.all(BlTokens.space4),
+          children: [
+            Text(
+              s.chaseUnpricedTitle,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: t.ink,
+              ),
+            ),
+            const SizedBox(height: BlTokens.space3),
+            for (final p in parties)
+              Padding(
+                padding: const EdgeInsets.only(bottom: BlTokens.space2),
+                child: BlCard(
+                  onTap: () => Navigator.of(context).pop(p.partyId),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              p.partyName,
+                              style: TextStyle(fontSize: 15, color: t.ink),
+                            ),
+                            Text(
+                              s.chaseUnpricedSince(shortDate(p.oldestLocal)),
+                              style: TextStyle(fontSize: 12, color: t.inkMuted),
+                            ),
+                          ],
+                        ),
+                      ),
+                      BlChip(
+                        s.goodsGivenUnpriced(p.lines),
+                        tone: BlChipTone.warn,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+          ],
+        );
+      },
+    );
+    if (picked == null) return;
+    final firm = await services.queries.currentFirm();
+    if (firm == null) return;
+    final party = await services.queries.partyById(firm.id, picked);
+    if (party == null) return;
+    unawaited(
+      navigator.push(
+        MaterialPageRoute<void>(builder: (_) => KhataScreen(party: party)),
       ),
     );
   }

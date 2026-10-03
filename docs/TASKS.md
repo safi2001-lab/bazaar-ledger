@@ -138,8 +138,9 @@ time, on the latest master (schema is v8 today).
 - [x] M44 · DONE (d955b94) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
 - [x] M48 · Loan accounts — DONE (895802e): Accounts → Loans; take a loan (fee kept back in one entry), repay with principal/interest/charges split and interest suggested, statement per loan as PDF/CSV, cancel by reversal; interest and fees in P&L, each loan a liability
   - [ ] Loan Statement in the Reports hub (Loans group) — hook `buildLoanStatement` / `DriftLoanReads` into the registry (small follow-up after M35)
-- [ ] M55 · (in progress) Quantity-only khata lines ("10 kg ghee given, rate later"), priced at settlement
-- [ ] M55 · (in progress) Collection sheet for the recovery man: a numbered list of a route's open bills, marked Paid / Partial / Shop closed on return
+- [x] M55 · DONE Goods given rate later ("10 kg ghee given, rate later"): a challan with no rate from the khata or the counter, off the shelf at cost and owing nothing, shown apart on the khata, the chase list and the statement; "Rate lagayein" puts the rates on and bills it at the counter (M25's path, several challans on one bill)
+- [x] M55 · DONE Collection sheet for the recovery man: customers by route, late or due today, numbered WS-…, printed 58/80mm, PDF or WhatsApp; on return each line Paid / Partial / Promise / Shop closed / Refused, receipts and promises on every khata in one go, expected vs collected and cash to hand over
+  - Found: a receipt's note never reached the payment row (fixed); not built: cheques on the round, recording one sheet in two sittings
 
 ### Stock and buying
 - [x] M40 · Party groups — DONE: groups on customers/suppliers (form + quick-add), filter/sort/bulk-assign on the Customers list with group totals, rename/merge groups, group chips at the counter, a "Counter ke liye note" shown on the payment sheet
