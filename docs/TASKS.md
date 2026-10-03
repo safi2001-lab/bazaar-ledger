@@ -129,7 +129,7 @@ time, on the latest master (schema is v8 today).
 - [x] M45 · DONE (c262b6d, a1adfa3) Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
 - [x] M51 · DONE (baf5795) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
 - [x] M53 · DONE (3f12774, schema v10) Negative stock policy per item (allow / warn / block); app font-size setting
-- [ ] M63 · (in progress) Recurring bills (weekly/monthly for fixed customers), made on the phone when due
+- [x] M63 · DONE (e04e01c) Recurring bills (weekly/monthly for fixed customers), made on the phone when due
 - [x] (M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
 
 ### Udhaar and money
