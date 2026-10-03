@@ -9,6 +9,7 @@ import '../../l10n/app_strings.dart';
 import '../batches/stock_places_screen.dart';
 import '../scan/scan_screen.dart';
 import '../subscription/plans_screen.dart';
+import '../tax/item_tax_fields.dart'; // M59
 import 'item_history_screen.dart';
 import 'item_packs_field.dart';
 import 'item_picture.dart';
@@ -96,6 +97,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   /// shop's rule.
   late NegativeStock? _rule = widget.item?.negativeStock;
 
+  // M59: on its printed price, or a service the province taxes.
+  late bool _thirdSchedule = widget.item?.isThirdSchedule ?? false;
+  late bool _service = widget.item?.isService ?? false;
+
   /// The packs as edited here, or null while untouched — and an untouched
   /// list is not sent, so a save that changes the price never rewrites the
   /// carton (M53).
@@ -145,6 +150,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       setState(() => _failure = s.commonRequired);
       return;
     }
+    // M59: a Third Schedule item is taxed on its MRP, so it needs one.
+    if (itemTaxKindProblem(s, thirdSchedule: _thirdSchedule, mrp: _mrp.text)
+        case final problem?) {
+      setState(() => _failure = problem);
+      return;
+    }
 
     setState(() {
       _busy = true;
@@ -185,6 +196,8 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         minStock: Qty.tryParse(_minStock.text) ?? Qty.zero,
         negativeStock: _rule,
         packs: _packs,
+        isThirdSchedule: _thirdSchedule, // M59
+        isService: _service,
       );
 
       final actor = services.actorNow();
@@ -683,6 +696,19 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                               controller: _hsCode,
                               label: s.itemHsCode,
                               textInputAction: TextInputAction.next,
+                            ),
+                            // M59: how the item is taxed.
+                            ItemTaxKindFields(
+                              thirdSchedule: _thirdSchedule,
+                              service: _service,
+                              onChanged:
+                                  ({
+                                    required thirdSchedule,
+                                    required service,
+                                  }) => setState(() {
+                                    _thirdSchedule = thirdSchedule;
+                                    _service = service;
+                                  }),
                             ),
                             const SizedBox(height: BlTokens.space4),
                             BlField(

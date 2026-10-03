@@ -9,6 +9,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'fbr_offline_line.dart';
 
 final _fbrSettingsProvider = FutureProvider.autoDispose<FbrSettings>((ref) {
   ref.watch(refreshTickProvider);
@@ -163,6 +164,8 @@ class _FbrScreenState extends ConsumerState<FbrScreen> {
                 ),
               ],
             ),
+            // Rule 150XC (M59): bills issued offline, and those late.
+            const FbrOfflineSummary(),
             for (final b in bills)
               Padding(
                 padding: const EdgeInsets.only(bottom: BlTokens.space2),
@@ -200,6 +203,18 @@ class _FbrScreenState extends ConsumerState<FbrScreen> {
                         SelectableText(
                           no,
                           style: TextStyle(fontSize: 13, color: t.ink),
+                        ),
+                      // Rule 150XC (M59): issued while FBR could not be
+                      // reached, and late a day after it could again.
+                      if (b.isOfflineOverdue(now))
+                        Text(
+                          s.fbrOverdueBadge,
+                          style: TextStyle(fontSize: 12, color: t.danger),
+                        )
+                      else if (b.isOffline)
+                        Text(
+                          s.fbrOfflineBadge,
+                          style: TextStyle(fontSize: 12, color: t.warning),
                         ),
                       if (b.isLate(now))
                         Text(

@@ -6456,4 +6456,120 @@ class AppStringsUr extends AppStrings {
   String posStockWords(String qty) {
     return 'Stock: $qty';
   }
+
+  @override
+  String mrpOnLine(String mrp) {
+    return 'MRP Rs $mrp';
+  }
+
+  @override
+  String get mrpAbove => 'chhapi qeemat se zyada';
+
+  @override
+  String get buyerNameTitle => 'Khareedar ka naam: Rs 1 lakh se bara bill';
+
+  @override
+  String get buyerNameRequiredHint =>
+      'FBR ko Rs 1,00,000 se bare bill par khareedar ka naam chahiye.';
+
+  @override
+  String get buyerNameWarnHint =>
+      'Registered dukaan Rs 1,00,000 se bare bill par khareedar ka naam likhti hai. Gahak de to likh lein.';
+
+  @override
+  String get buyerName => 'Khareedar ka naam';
+
+  @override
+  String get buyerCnic => 'CNIC (agar dein)';
+
+  @override
+  String get buyerNameMissing =>
+      'Pehle khareedar ka naam likhein: Rs 1,00,000 se bare bill par FBR ko chahiye.';
+
+  @override
+  String get buyerCnicWrong =>
+      'CNIC 13 hindson ka hota hai, jaise 35202-1234567-1.';
+
+  @override
+  String get serviceTaxTitle => 'Services par sales tax (soobah)';
+
+  @override
+  String get serviceTaxHint =>
+      'Repair, salon, darzi ya restaurant ke liye. Jo item service hain un par maal wale 18% ki jagah soobe ka tax lagta hai, aur card, wallet ya QR se bill dene par kam.';
+
+  @override
+  String get serviceTaxNone => 'Koi nahi';
+
+  @override
+  String get serviceTaxPra => 'PRA (Punjab)';
+
+  @override
+  String get serviceTaxSrb => 'SRB (Sindh)';
+
+  @override
+  String get serviceTaxKpra => 'KPRA (Khyber Pakhtunkhwa)';
+
+  @override
+  String get serviceTaxBra => 'BRA (Balochistan)';
+
+  @override
+  String get serviceTaxStandard => 'Naqad par rate (%)';
+
+  @override
+  String get serviceTaxDigital => 'Card, wallet ya QR par rate (%)';
+
+  @override
+  String get serviceTaxUnchecked =>
+      'Is soobe ke rate check nahi kiye gaye: apne notice wale rate likhein.';
+
+  @override
+  String get serviceTaxSave => 'Service tax save karein';
+
+  @override
+  String get serviceTaxSaved => 'Service tax save ho gaya';
+
+  @override
+  String get serviceTaxRateWrong =>
+      'Har rate 0 se 50 tak percent mein likhein.';
+
+  @override
+  String get itemThirdSchedule =>
+      'Third Schedule (chhapi qeemat par bikta hai)';
+
+  @override
+  String get itemThirdScheduleHint =>
+      'Sales tax MRP par lagta hai (MRP x 18/118), aur MRP se mehnga bechne par counter khabardar karta hai.';
+
+  @override
+  String get itemThirdScheduleNeedsMrp =>
+      'Third Schedule item ki MRP (chhapi qeemat) likhein.';
+
+  @override
+  String get itemService => 'Service hai (repair, salon, khana)';
+
+  @override
+  String get itemServiceHint =>
+      'Is par soobe ka tax (PRA, SRB) lagta hai, maal wala 18% nahi.';
+
+  @override
+  String get fbrOfflineBadge => 'Offline bana: FBR ka intezar';
+
+  @override
+  String get fbrOverdueBadge =>
+      'Der: connection aane ke 24 ghante baad bhi nahi gaya';
+
+  @override
+  String fbrOfflineSummary(int count) {
+    return '$count bill offline bane, FBR ka intezar';
+  }
+
+  @override
+  String fbrOverdueSummary(int count) {
+    return '$count connection aane ke 24 ghante baad bhi nahi gaye (FBR Rule 150XC). Abhi bhejein dabayein.';
+  }
+
+  @override
+  String homeFbrOverdue(int count) {
+    return 'FBR: $count offline bill der se. Abhi bhejein.';
+  }
 }

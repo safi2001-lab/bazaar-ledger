@@ -751,6 +751,11 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     'is_active': d.isActive ? 1 : 0,
     // Null follows the shop's own rule (M53).
     'negative_stock': d.negativeStock?.code,
+    // M59: how it is taxed. Left out when the form did not say, so an edit
+    // from a form that does not show them leaves them as they were.
+    if (d.isThirdSchedule case final third?) 'is_third_schedule': third ? 1 : 0,
+    if (d.isService case final service?)
+      'item_type': service ? 'service' : 'goods',
   };
 
   /// Makes [itemId]'s packs exactly [packs] (M53): each one its own

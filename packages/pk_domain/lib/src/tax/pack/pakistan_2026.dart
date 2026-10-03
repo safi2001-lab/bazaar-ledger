@@ -12,7 +12,11 @@
 ///    prices already include it.
 ///  * **Third Schedule goods** (packaged goods sold on a printed retail
 ///    price) carry the tax inside the retail price: it is taken out of what
-///    the customer pays, never added on top.
+///    the customer pays, never added on top. Since M59 it is worked out on
+///    the printed price (MRP x 18/118) when the item has one, whatever the
+///    line was sold for; see `third_schedule.dart`.
+///  * **Services** are not this pack's: the calculator gives a service line
+///    the province's tax instead (M59, `service_tax.dart`).
 ///  * **Further tax at 4%** (s.3(1A) STA, as amended by the Finance Act
 ///    2023) on a supply to a named buyer who is not registered, or is not
 ///    on the Active Taxpayers List, or whose standing nobody has checked.
@@ -28,6 +32,7 @@ library;
 import 'package:pk_money/pk_money.dart';
 
 import '../tax_charge.dart';
+import '../third_schedule.dart';
 
 /// Standard sales tax, in basis points.
 const standardSalesTaxBp = 1800;
@@ -61,7 +66,16 @@ final class PakistanTaxEngine implements TaxEngine {
     if (taxableBase.isZero) return const [];
 
     final inclusive = isThirdSchedule || context.pricesIncludeTax;
-    final salesTax = inclusive
+    // M59: a Third Schedule line is taxed on its printed retail price,
+    // which the calculator hands over as [mrp] — the pack's MRP over the
+    // line's quantity — and on what was charged where the item has none.
+    final salesTax = isThirdSchedule
+        ? thirdScheduleTax(
+            saleValue: taxableBase,
+            retailValue: mrp,
+            rateBp: standardSalesTaxBp,
+          )
+        : inclusive
         ? _inside(taxableBase, standardSalesTaxBp)
         : taxableBase.percentBp(standardSalesTaxBp);
     final valueOfSupply = inclusive ? taxableBase - salesTax : taxableBase;

@@ -3567,5 +3567,57 @@
     "placeholders": {
       "qty": {"type": "String"}
     }
+  },
+  "mrpOnLine": "MRP Rs {mrp}",
+  "@mrpOnLine": {
+    "placeholders": {
+      "mrp": {"type": "String"}
+    }
+  },
+  "mrpAbove": "above the printed price",
+  "buyerNameTitle": "Buyer's name: bill over Rs 1 lakh",
+  "buyerNameRequiredHint": "FBR wants the buyer's name on a single bill over Rs 100,000.",
+  "buyerNameWarnHint": "A registered shop writes the buyer's name on a bill over Rs 100,000. Write it if the customer will give it.",
+  "buyerName": "Buyer's name",
+  "buyerCnic": "CNIC (if they will give it)",
+  "buyerNameMissing": "Write the buyer's name first: FBR wants it on a bill over Rs 100,000.",
+  "buyerCnicWrong": "A CNIC is 13 digits, like 35202-1234567-1.",
+  "serviceTaxTitle": "Sales tax on services (province)",
+  "serviceTaxHint": "For a repair shop, salon, tailor or restaurant. Items marked as a service are taxed by the province instead of the 18% on goods, and less when the bill is paid by card, wallet or QR.",
+  "serviceTaxNone": "None",
+  "serviceTaxPra": "PRA (Punjab)",
+  "serviceTaxSrb": "SRB (Sindh)",
+  "serviceTaxKpra": "KPRA (Khyber Pakhtunkhwa)",
+  "serviceTaxBra": "BRA (Balochistan)",
+  "serviceTaxStandard": "Rate in cash (%)",
+  "serviceTaxDigital": "Rate by card, wallet or QR (%)",
+  "serviceTaxUnchecked": "These rates have not been checked for this province: type the ones your notice gives.",
+  "serviceTaxSave": "Save service tax",
+  "serviceTaxSaved": "Service tax saved",
+  "serviceTaxRateWrong": "Type each rate as a percent from 0 to 50.",
+  "itemThirdSchedule": "Third Schedule (sold on its printed price)",
+  "itemThirdScheduleHint": "Sales tax is worked out on the MRP (MRP x 18/118), and the counter warns when it is sold above it.",
+  "itemThirdScheduleNeedsMrp": "A Third Schedule item needs its MRP (printed price).",
+  "itemService": "A service (repair, salon, food)",
+  "itemServiceHint": "Taxed by the province (PRA, SRB), not with the 18% on goods.",
+  "fbrOfflineBadge": "Issued offline: waiting for FBR",
+  "fbrOverdueBadge": "Overdue: not sent 24 hours after the connection came back",
+  "fbrOfflineSummary": "{count} bills issued in offline mode, waiting for FBR",
+  "@fbrOfflineSummary": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "fbrOverdueSummary": "{count} still not sent 24 hours after the connection came back (FBR Rule 150XC). Tap Send now.",
+  "@fbrOverdueSummary": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "homeFbrOverdue": "FBR: {count} offline bills overdue. Send them now.",
+  "@homeFbrOverdue": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

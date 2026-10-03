@@ -16,6 +16,7 @@ import '../orders/shortage_screen.dart';
 import '../parties/party_picker.dart';
 import '../sales/bill_again.dart';
 import '../scan/scan_screen.dart';
+import '../tax/counter_tax.dart'; // M59
 import 'cart.dart';
 import 'counted_line.dart'; // M45
 import 'loose_line_sheet.dart';
@@ -58,7 +59,17 @@ final buyerTaxProvider = FutureProvider.autoDispose
           .taxContextFor(firm.id, partyId);
     });
 
-final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
+final cartPreviewProvider = Provider<CalculatedSale?>(
+  (ref) => ref.watch(cartPreviewByProvider(null)), // M59: at the cash rate
+);
+
+/// M59: the same bill as it comes to if [mode] pays all of it — what the
+/// payment sheet shows once a mode is picked. Only a service's provincial
+/// tax changes with how the bill is paid; null is cash.
+final cartPreviewByProvider = Provider.family<CalculatedSale?, String?>((
+  ref,
+  mode,
+) {
   final cart = ref.watch(cartProvider);
   final firm = ref.watch(firmProvider).valueOrNull;
   final units = ref.watch(unitConverterProvider).valueOrNull;
@@ -69,7 +80,7 @@ final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
     ref.watch(schemeBookProvider).valueOrNull ?? SchemeBook.empty,
   );
 
-  return AppServices.taxCalculator.calculate(
+  return AppServices.taxCalculator.settledWholly(
     SaleDraft(
       lines: books.lines,
       partyId: cart.partyId,
@@ -87,6 +98,7 @@ final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
           ruleVersion: 'pk-2026-27-v1',
           hasNamedBuyer: cart.partyId != null,
         ),
+    mode,
   );
 });
 
@@ -1234,6 +1246,8 @@ class _CartLineTile extends ConsumerWidget {
                   ),
                 ),
               ],
+              // M59: "MRP Rs X", and a warning when sold above it.
+              ThirdScheduleLineNote(line: line),
               // Said on the line, so nobody reading the bill back takes it
               // for an item the shelf will be short of (M37).
               if (line.isLoose) ...[

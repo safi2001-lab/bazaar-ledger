@@ -33,6 +33,13 @@ Future<TaxContext> taxContextOf(Tx tx, String? partyId) async {
     }
   }
 
+  // M59: the province's tax on the shop's services, from its settings row.
+  final serviceTax = await tx.selectOne(
+    'SELECT setting_value FROM settings WHERE firm_id = ? '
+    'AND setting_key = ? AND deleted_at_utc IS NULL',
+    [tx.actor.firmId, serviceTaxSettingKey],
+  );
+
   return TaxContext(
     hasNamedBuyer: partyId != null,
     isSellerRegistered: firm.read<int>('is_sales_tax_registered') == 1,
@@ -41,6 +48,9 @@ Future<TaxContext> taxContextOf(Tx tx, String? partyId) async {
     province: firm.read<String>('province'),
     pricesIncludeTax: firm.read<int>('prices_include_tax') == 1,
     ruleVersion: 'untaxed-v1',
+    serviceTax: ServiceTaxSetting.decode(
+      serviceTax?.read<String>('setting_value'),
+    ),
   );
 }
 

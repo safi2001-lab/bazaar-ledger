@@ -1446,6 +1446,18 @@ final class DriftAppQueries implements AppQueries {
               )
               .getSingleOrNull();
     final atl = party?.readNullable<int>('is_on_atl');
+    // M59: the province's tax on the shop's services, from its settings row.
+    final serviceTax = await _db
+        .customSelect(
+          'SELECT setting_value FROM settings WHERE firm_id = ? '
+          'AND setting_key = ? AND deleted_at_utc IS NULL',
+          variables: [
+            Variable<String>(firmId),
+            Variable<String>(serviceTaxSettingKey),
+          ],
+          readsFrom: {_db.settings},
+        )
+        .getSingleOrNull();
     return TaxContext(
       hasNamedBuyer: partyId != null,
       isSellerRegistered: firm.read<int>('is_sales_tax_registered') == 1,
@@ -1455,6 +1467,9 @@ final class DriftAppQueries implements AppQueries {
       province: firm.read<String>('province'),
       pricesIncludeTax: firm.read<int>('prices_include_tax') == 1,
       ruleVersion: 'pk-2026-27-v1',
+      serviceTax: ServiceTaxSetting.decode(
+        serviceTax?.read<String>('setting_value'),
+      ),
     );
   }
 
@@ -2176,6 +2191,23 @@ final class DriftAppQueries implements AppQueries {
 
     final cashier = await userName(doc.read<String>('created_by'));
 
+    // M59: the province's tax on the bill's services, one row per rate, so
+    // the paper says "PRA 8% (card)" rather than lumping it in sales tax.
+    final serviceTaxes = await _db
+        .customSelect(
+          '''
+          SELECT tax_code, rate_bp, SUM(amount_paisa) AS amount
+          FROM document_line_taxes
+          WHERE document_id = ? AND tax_kind = 'provincial_st'
+            AND deleted_at_utc IS NULL
+          GROUP BY tax_code, rate_bp
+          ORDER BY tax_code DESC, rate_bp DESC
+          ''',
+          variables: [Variable<String>(documentId)],
+          readsFrom: {_db.documentLineTaxes},
+        )
+        .get();
+
     final docType = doc.read<String>('doc_type');
     final (docTitle, docLabel) = switch (docType) {
       'quotation' => ('Quotation', 'Quotation No'),
@@ -2240,6 +2272,17 @@ final class DriftAppQueries implements AppQueries {
             doc.read<int>('bill_discount_paisa'),
       ),
       tax: Money.paisa(doc.read<int>('tax_paisa')),
+      serviceTaxes: [
+        for (final t in serviceTaxes)
+          if (t.read<int>('amount') != 0)
+            ReceiptTaxLine(
+              label: serviceTaxLabel(
+                t.read<String>('tax_code'),
+                t.read<int>('rate_bp'),
+              ),
+              amount: Money.paisa(t.read<int>('amount')),
+            ),
+      ],
       furtherTax: Money.paisa(doc.read<int>('further_tax_paisa')),
       withholding: Money.paisa(doc.read<int>('withholding_paisa')),
       extraCharges: Money.paisa(doc.read<int>('extra_charges_paisa')),
@@ -3127,6 +3170,11 @@ final class DriftAppQueries implements AppQueries {
     negativeStock: NegativeStock.fromCode(
       r.readNullable<String>('negative_stock'),
     ),
+    // M59: how the item is taxed — on its printed price, or by the province
+    // as a service. Read off the row's own map, so a query that does not
+    // carry them reads goods.
+    isThirdSchedule: r.data['is_third_schedule'] == 1,
+    isService: r.data['item_type'] == 'service',
   );
 
   /// Null stays null rather than becoming zero.

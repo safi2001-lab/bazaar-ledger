@@ -14,6 +14,7 @@ import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
 import '../sales/receipt_screen.dart';
 import '../subscription/plans_screen.dart';
+import '../tax/counter_tax.dart'; // M59
 import 'cart.dart';
 import 'pos_screen.dart';
 import 'scheme_book.dart'; // M43
@@ -40,6 +41,10 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   final _reference = TextEditingController();
   final _chequeNo = TextEditingController();
   final _chequeBank = TextEditingController();
+
+  // M59: a walk-in's name and CNIC, on a bill over Rs 100,000.
+  final _buyerName = TextEditingController();
+  final _buyerCnic = TextEditingController();
 
   /// The day the cheque can be banked. Null until the sheet first draws with
   /// a clock, then today unless the shopkeeper picks a term.
@@ -112,6 +117,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     _reference.dispose();
     _chequeNo.dispose();
     _chequeBank.dispose();
+    _buyerName.dispose(); // M59
+    _buyerCnic.dispose();
     super.dispose();
   }
 
@@ -222,7 +229,9 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     });
 
     final s = AppStrings.of(context);
-    final preview = ref.read(cartPreviewProvider);
+    // M59: priced at the mode picked — a service's provincial tax is less
+    // by card, wallet or QR.
+    final preview = ref.read(cartPreviewByProvider(_onUdhaar ? null : _mode));
     final cart = ref.read(cartProvider);
     // Read before the write, not through `ref` afterwards: this is what turns
     // "two maunds" into the eighty kilos that actually leave the shelf.
@@ -246,6 +255,29 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         });
       }
       return;
+    }
+
+    // M59: a walk-in bill over Rs 100,000 names its buyer. Required of a
+    // shop registered for sales tax, and the sale path refuses the bill
+    // without it; any other shop is asked and may leave it.
+    if (buyerNameNeeded(
+      total: preview.total,
+      partyId: cart.partyId,
+      buyerName: null,
+    )) {
+      final problem = buyerNameProblem(
+        s,
+        name: _buyerName.text,
+        cnic: _buyerCnic.text,
+        required: firm.isSalesTaxRegistered,
+      );
+      if (problem != null) {
+        setState(() {
+          _failure = problem;
+          _busy = false;
+        });
+        return;
+      }
     }
 
     // Anything left owing is somebody's khata, whether the switch was flipped
@@ -460,7 +492,11 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           locationCode: location,
           lines: books.lines,
           partyId: cart.partyId,
-          partyName: cart.partyName,
+          // M59: the walk-in's name and CNIC, when the counter asked.
+          partyName: cart.partyId == null && _buyerName.text.trim().isNotEmpty
+              ? _buyerName.text.trim()
+              : cart.partyName,
+          partyNtn: cart.partyId == null ? tidyCnic(_buyerCnic.text) : null,
           tenders: tenders,
           billDiscount: books.billDiscount,
           roundToRupee: firm.roundInvoiceToRupee,
@@ -529,7 +565,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final preview = ref.watch(cartPreviewProvider);
+    // M59: at the mode picked, as _post prices it.
+    final preview = ref.watch(cartPreviewByProvider(_onUdhaar ? null : _mode));
     final cart = ref.watch(cartProvider);
 
     if (preview == null) return const SizedBox.shrink();
@@ -586,6 +623,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             const SizedBox(height: BlTokens.space3),
             _DueCard(due: due, change: change, short: short),
             const BillSlabRow(), // M43: the shop's discount on a big bill.
+            ServiceTaxNote(sale: preview), // M59: "PRA 8% (card)"
             if (cart.paidBefore case final paid? when cart.replacesNo != null)
               _PaidBefore(
                 docNo: cart.replacesNo!,
@@ -604,6 +642,20 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             // What the shop wrote about them, read-only, under their name
             // where credit is given (M40). Nothing at all when there is none.
             if (cart.partyId != null) PartyRemarksLine(partyId: cart.partyId!),
+            // M59: the buyer's name on a walk-in bill over Rs 100,000.
+            if (buyerNameNeeded(
+              total: preview.total,
+              partyId: cart.partyId,
+              buyerName: null,
+            ))
+              BuyerNameFields(
+                name: _buyerName,
+                cnic: _buyerCnic,
+                required:
+                    ref.watch(firmProvider).valueOrNull?.isSalesTaxRegistered ??
+                    false,
+                onChanged: () => setState(() => _failure = null),
+              ),
             const SizedBox(height: BlTokens.space4),
 
             BlSectionHeader(s.tenderOnUdhaar),

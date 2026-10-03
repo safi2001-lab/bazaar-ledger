@@ -456,7 +456,14 @@ final class _Bill {
                 pw.Text(
                   'FBR Invoice No: $fbrNo',
                   style: pw.TextStyle(font: sans, fontSize: size),
-                ),
+                )
+              // Rule 150XC (M59): issued while FBR could not be reached.
+              else if (d.fbrPending)
+                for (final mark in offlineInvoiceMark)
+                  pw.Text(
+                    mark,
+                    style: pw.TextStyle(font: sansBold, fontSize: size),
+                  ),
             ],
           ),
         ],
@@ -973,12 +980,16 @@ final class _Bill {
               l.tax?.valueExclTax ?? (l.amount - l.discount),
           ]).amountOnly,
         ),
-        totalRow('Sales tax', d.tax.amountOnly),
+        // M59: the province's tax on services on rows of its own.
+        totalRow('Sales tax', d.federalTax.amountOnly),
+        for (final t in d.serviceTaxes) totalRow(t.label, t.amount.amountOnly),
       ] else ...[
         totalRow('Subtotal', d.subtotal.amountOnly),
         if (d.discount.isPositive)
           totalRow('Discount', '-${d.discount.amountOnly}'),
-        if (d.tax.isPositive) totalRow('Sales Tax', d.tax.amountOnly),
+        if (d.federalTax.isPositive)
+          totalRow('Sales Tax', d.federalTax.amountOnly),
+        for (final t in d.serviceTaxes) totalRow(t.label, t.amount.amountOnly),
       ],
       if (d.furtherTax.isPositive)
         totalRow('Further Tax', d.furtherTax.amountOnly),
@@ -1124,12 +1135,15 @@ final class _Bill {
       ];
     }
     if (d.fbrPending) {
+      // Rule 150XC (M59): a bill FBR has not answered for was issued in
+      // offline mode, and says so until FBR has numbered it.
       return [
         pw.SizedBox(height: 6),
-        pw.Text(
-          'FBR: pending',
-          style: pw.TextStyle(font: sans, fontSize: size),
-        ),
+        for (final mark in offlineInvoiceMark)
+          pw.Text(
+            mark,
+            style: pw.TextStyle(font: sansBold, fontSize: size),
+          ),
       ];
     }
     return const [];

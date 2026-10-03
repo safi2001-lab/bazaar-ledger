@@ -22,6 +22,7 @@ import 'printing_services.dart';
 
 part 'audit_services.dart';
 part 'bill_design_services.dart';
+part 'counter_tax_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
@@ -188,12 +189,15 @@ final class AppServices {
   PostSaleUseCase get postSale {
     require(Permission.sell);
     return PostSaleUseCase(
-      writer: _FbrSales(
-        _CeilingSales(
-          _PlanSales(DriftSaleWriter(runner: _runner), plans),
+      // M59: a registered shop's big walk-in bill names its buyer.
+      writer: _BuyerNameSales(
+        _FbrSales(
+          _CeilingSales(
+            _PlanSales(DriftSaleWriter(runner: _runner), plans),
+            this,
+          ),
           this,
         ),
-        this,
       ),
       calculator: taxCalculator,
       // M53: a blocked item is refused beneath every screen.
@@ -409,6 +413,10 @@ final class AppServices {
 
   /// Reporting bills to FBR (M19).
   late final FbrServices fbr = FbrServices._(this);
+
+  /// The province's tax on services, and the buyer's name on a big bill
+  /// (M59).
+  late final CounterTaxServices counterTax = CounterTaxServices._(this);
 
   /// Items and parties from a spreadsheet.
   late final ImportServices import = ImportServices._(this);

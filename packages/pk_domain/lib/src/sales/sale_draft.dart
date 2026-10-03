@@ -38,7 +38,13 @@ final class SaleLineDraft {
     this.lotId,
     this.isFreeItem = false,
     this.tracksStock = true,
+    this.isService = false,
   });
+
+  /// A service rather than goods — a haircut, a repair, a meal (M59). It is
+  /// taxed by the province at the rate of how the bill is paid, and never
+  /// with the federal sales tax on goods.
+  final bool isService;
 
   /// The item sold, or null for a loose line (see the class comment).
   final String? itemId;
@@ -109,6 +115,7 @@ final class SaleLineDraft {
     lotId: lotId,
     isFreeItem: isFreeItem,
     tracksStock: tracksStock,
+    isService: isService,
   );
 }
 

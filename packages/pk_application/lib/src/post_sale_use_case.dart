@@ -140,5 +140,7 @@ final class PostSaleUseCase {
         lotId: line.lotId,
         isFreeItem: line.isFreeItem,
         tracksStock: line.tracksStock,
+        // M59: a service keeps its provincial tax once costed.
+        isService: line.isService,
       );
 }

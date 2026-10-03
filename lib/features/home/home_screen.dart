@@ -22,6 +22,7 @@ import '../reports/reports_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
 import '../subscription/plans_screen.dart';
+import '../tax/fbr_offline_line.dart'; // M59
 import '../vans/vans_screen.dart';
 
 /// The day, at a glance, and the way to everything else.
@@ -80,6 +81,7 @@ class HomeScreen extends ConsumerWidget {
               const _ChequesDue(),
               // Udhaar due today, late, and promised for today (M38).
               const UdhaarDueCard(),
+              const FbrOverdueLine(), // M59: FBR bills late under Rule 150XC
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.homeTitle),
               const SizedBox(height: BlTokens.space3),

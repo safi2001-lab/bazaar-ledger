@@ -103,6 +103,11 @@ abstract final class CartDraft {
           // a fortieth of the goods.
           'sellingUnitId': line.unitId,
           'sellingUnitCode': line.unitCode,
+          // M59: how the line is taxed. Optional keys, so a v5 draft
+          // written before them reads as goods with no MRP, as it was.
+          if (line.item.mrp case final mrp?) 'mrpPaisa': mrp.inPaisa,
+          if (line.item.isThirdSchedule) 'thirdSchedule': true,
+          if (line.item.isService) 'service': true,
         },
     ],
   });
@@ -240,6 +245,13 @@ abstract final class CartDraft {
         stockOnHand: Qty.raw(stock),
         minStock: Qty.raw(minStock),
         tracksStock: tracksStock,
+        // M59.
+        mrp: switch (raw['mrpPaisa']) {
+          final int paisa => Money.paisa(paisa),
+          _ => null,
+        },
+        isThirdSchedule: raw['thirdSchedule'] == true,
+        isService: raw['service'] == true,
       ),
       qty: Qty.raw(qty),
       rate: Rate.raw(rate),

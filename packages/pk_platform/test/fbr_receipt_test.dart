@@ -64,7 +64,10 @@ void main() {
         _withFbr(receipt(), pending: true),
       );
       final paper = VirtualPrinter(dots: 576).print(bytes);
-      expect(paper.line('FBR: pending'), isNotNull);
+      // Rule 150XC (M59): "FBR: pending" became the offline-mode mark.
+      expect(paper.line('OFFLINE INVOICE'), isNotNull);
+      expect(paper.line('Issued in offline mode'), isNotNull);
+      expect(paper.line('FBR invoice no. to follow'), isNotNull);
       expect(paper.rasters, isEmpty);
     });
   });

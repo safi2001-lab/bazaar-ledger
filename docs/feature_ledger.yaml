@@ -2284,6 +2284,133 @@ milestones:
       - lib/features/pos/counted_line.dart
       - lib/features/purchases/counted_purchase.dart
 
+  - id: M59
+    title: Pakistan's rules kept at the counter -- the printed price, the buyer's name, bills made offline, and tax on services
+    # Opened and sealed 3 Oct 2026 at 1/1. Four rules a Pakistani counter
+    # is held to, each from the research appendix (s.1.1-1.3), kept where
+    # the bill is made rather than in a report read a month later.
+    #
+    # The printed price. An item can now be marked Third Schedule in its
+    # editor, and it then needs its MRP. Its tax is worked out on the
+    # printed price of what left the shelf (the pack's MRP times the
+    # quantity in its own unit, so a carton of 24 is 24 printed prices):
+    # MRP x 18/118, whatever the line was sold for. Verified: M12 took the
+    # tax out of the price CHARGED, which is the same figure at the MRP and
+    # too little below it (a Rs 118 pack sold at Rs 100 carried Rs 15.25,
+    # not the Rs 18 printed on it); it is now the printed price's. Sold
+    # above the MRP, the line says "MRP Rs X - chhapi qeemat se zyada" in
+    # red at the counter (a warning, never a block: the MRP typed may be
+    # last year's) and the tax is the tax inside what was charged, never
+    # less. The tax is never more than the line. The check lives in
+    # pk_domain/tax/third_schedule.dart and is the same arithmetic as M49's
+    # pricing/mrp.dart; the two should become one once both are merged.
+    #
+    # The buyer's name. A walk-in bill over Rs 100,000 asks, on the payment
+    # sheet, for the buyer's name and, if they will give it, their CNIC.
+    # Both go on the bill's own party snapshot (the name in
+    # party_name_snapshot, the CNIC tidied to 35202-1234567-1 in
+    # party_ntn_snapshot: FBR has used the CNIC as an individual's tax
+    # number since 2019 and DI's buyer field takes either), so the receipt
+    # and the FBR payload carry them. For a shop registered for sales tax it
+    # is required, and the sale path refuses the bill without it beneath
+    # every screen, inside the sale's transaction, so nothing of a refused
+    # bill is written, not even its number; any other shop is asked and may
+    # leave it blank. A customer in the khata already names the bill. The
+    # s.21(s) Rs 200,000 cash flag is untouched and still applies.
+    #
+    # Bills made offline (Rule 150XC). For a shop reporting to FBR (M19), a
+    # bill FBR has not answered for prints and PDFs as "OFFLINE INVOICE /
+    # Issued in offline mode / FBR invoice no. to follow" where it used to
+    # say "FBR: pending", and the mark comes off a reprint once FBR has
+    # numbered it. The queue now notes, in two settings rows written only
+    # when the state changes, when FBR was first found out of reach and
+    # when it was next heard from; the moment the connection came back, for
+    # a bill, is the first time FBR answered anything after it was made --
+    # a bill numbered (its own fbr_posted_at_utc, so another counter's
+    # numbered bill arriving by sync counts too) or a bill refused. A bill
+    # still unanswered 24 hours after that is overdue: said on the FBR
+    # screen, bill by bill and in a line above them, and in one small line
+    # on Home that opens the FBR screen. Nothing new is sent anywhere.
+    #
+    # Tax on services. Settings, Tax now has the province's service-tax
+    # authority: none, PRA (16% in cash, 8% by card, wallet or QR, filled in
+    # as published), SRB (15% / 8%), or KPRA and BRA with both rates left
+    # for the owner to type. An item can be marked a service in its editor.
+    # A service line carries the province's tax (the M12 pack's
+    # provincial_st kind, codes PRA_STD and PRA_CARD) and never the federal
+    # 18%; goods on the same bill keep theirs. Card, JazzCash, Easypaisa and
+    # Raast are the reduced-rate tenders; cash, cheque, bank transfer and
+    # udhaar the standard. The payment sheet prices the bill at the mode
+    # picked, so the amount due moves when Card is tapped and the rows
+    # under it say "PRA 8% (card)"; the receipt and the PDF print the same
+    # rows apart from sales tax.
+    #
+    # Decided: a bill paid two ways is taxed pro-rata by tender share, each
+    # tender paying the part of every line its money buys AT ITS OWN RATE.
+    # A card payment c against a bill that would come to T8 all on the card
+    # pays the fraction c/T8 of every line at 8%, and the rest is taxed at
+    # 16%, so total = c + (1 - c/T8) x T16 and the card's slice comes to
+    # exactly what was put on the card. Each service line's value is split
+    # by that share to the paisa (half up, in BigInt) and each part is
+    # taxed and rounded on its own as its own tax row, so the two bases add
+    # back to the line's value exactly and the bill's tax is the sum of its
+    # rows exactly (proved on 400 random bills). A card within a rupee of
+    # the whole bill has paid the whole of it. The counter's own sheet
+    # takes one mode at a time, so a split reaches the books through the
+    # sale path (SaleDraft.tenders), where it is proved; a split tender on
+    # the sheet itself is not built.
+    #
+    # Verified against the appendix's sources, not against gazettes: the
+    # Rs 100,000 buyer's-name rule (ProPakistani 2021), Rule 150XC's offline
+    # marking and 24 hours (FBR POS booklet 2025, EY), the Third Schedule's
+    # 18% of retail price (STA s.3(2)(a); STGO 8 of 2026), PRA 16%/8% from
+    # 1 Jul 2026 and SRB 15%/8% (ProPakistani, pkrevenue). UNVERIFIED and
+    # assumed: that a pack sold below its MRP owes the tax on the MRP (the
+    # Act's words, not a ruling); the higher tax when sold above it; that
+    # Raast counts as QR and a bank transfer does not count as card; that
+    # the reduced rate is every service's (it is "restaurants and several
+    # services" -- so the owner may set the card rate equal to the cash
+    # rate); KPRA's and BRA's rates (never filled in for the owner); that a
+    # CNIC belongs in the NTN snapshot.
+    #
+    # Found on the way: no screen ever set items.is_third_schedule or
+    # item_type, and the counter never put an MRP or the Third Schedule mark
+    # on a line, so M12's Third Schedule rule had never reached a real bill;
+    # FBR's payload took the buyer's name from the khata only, so a named
+    # walk-in went to FBR nameless; a restored cart forgot an item's MRP.
+    #
+    # Not built, and why: provincial tax to PRA's or SRB's own e-invoicing
+    # (a separate integration, and nothing new may be sent); a separate
+    # "PRA payable" account (the tax posts to Output Sales Tax with the
+    # federal tax -- a new system account needs every shop's chart seeded,
+    # which is a migration this milestone may not make); a loose line as a
+    # service (it has no item to mark); knowing the signal came back
+    # before FBR answers (there is no connectivity watcher, so Rule 150XC's
+    # clock starts at FBR's first answer, and a phone left shut while the
+    # signal was back sends its bills late rather than being told so).
+    # Reports are M58's, and need, precisely: the Tax rate report
+    # (rateTax in pk_data reports/tax_queries.dart) reads only sales_tax
+    # and further_tax rows, so a PRA-taxed service shows as an untaxed
+    # supply under kind "none"; the party tax report and the HS code report
+    # leave provincial_st out of their tax columns; Annex-C lists service
+    # lines as federal supplies at no tax; the Sales tax summary lists the
+    # PRA rows by code (PRA_CARD, PRA_STD) but its "Sales tax owed" and
+    # "Total owed" leave them out, rightly for FBR, with no "owed to PRA"
+    # line; a return of a service line gives its provincial tax back as
+    # ST_RETURN, a federal code, and reads tax_inclusive from sales_tax
+    # rows only.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/tax/third_schedule.dart
+      - packages/pk_domain/lib/src/tax/service_tax.dart
+      - packages/pk_domain/lib/src/tax/buyer_name.dart
+      - packages/pk_domain/lib/src/tax/offline_invoice.dart
+      - packages/pk_bootstrap/lib/src/counter_tax_services.dart
+      - lib/features/tax/counter_tax.dart
+      - lib/features/tax/service_tax_card.dart
+      - lib/features/tax/item_tax_fields.dart
+      - lib/features/tax/fbr_offline_line.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7221,3 +7348,51 @@ features:
       - at 200% on a small phone the counter line, its quantity box with the stepper and the carton calculator fit
       - at 200% on a small phone the delivery picker, its quantity box with the stepper and the carton calculator fit
       - at 200% on a small phone the item list and the shelf count fit
+  - id: M59-COUNTER-01
+    milestone: M59
+    title: The printed price, the buyer's name, bills made offline, and the province's tax on services, at the counter
+    status: done
+    # The arithmetic as pure functions over 400 random bills; the sale path,
+    # the receipt, the FBR queue and the tax summary against a real
+    # database; and each rule from the screens, at 200% on a small phone.
+    proof:
+      - third schedule a pack sold at its MRP carries MRP x 18/118, as M12 did
+      - third schedule a pack sold below its MRP still carries the tax on its printed price
+      - third schedule a carton of 24 is taxed on 24 printed prices
+      - third schedule selling above the MRP is flagged, and the tax is never less than inside what was charged
+      - third schedule with no MRP the tax is taken out of the price charged, as before
+      - third schedule the tax is never more than the line itself
+      - third schedule an unregistered shop charges none, MRP or not
+      - provincial tax on services PRA charges 16% on a service paid in cash
+      - provincial tax on services PRA charges 8% on a service paid by card
+      - provincial tax on services the price before the money is taken follows the mode picked
+      - provincial tax on services a split tender taxes each part at its rate, pro-rata, and the card pays exactly its slice
+      - provincial tax on services any split of any bill adds up to the paisa
+      - provincial tax on services SRB charges 15% in cash and 8% by card
+      - provincial tax on services goods on the same bill keep the federal tax, and a service never carries it
+      - provincial tax on services a shop with no authority set charges no tax on a service
+      - provincial tax on services prices that include tax have the provincial tax taken out, at the rate of the mode
+      - provincial tax on services a card rate set equal to the cash rate never changes with the tender
+      - provincial tax on services a card cannot pay more than the bill at the card rate
+      - provincial tax on services the setting reads back what was written, and nonsense reads as none
+      - buyer name a walk-in bill over Rs 100,000 asks for a name; a named one or a smaller one does not
+      - buyer name a CNIC is written with its dashes from thirteen digits, and nothing else is one
+      - offline mode the connection came back at the first answer after the bill, and the bill is late a day later
+      - buyer name over Rs 100,000 a registered shop's walk-in bill over the line is refused without a name, and nothing is written
+      - buyer name over Rs 100,000 with the name and CNIC the bill keeps both, and FBR is sent the name
+      - buyer name over Rs 100,000 a shop not registered for sales tax is only asked, and the bill goes without a name
+      - buyer name over Rs 100,000 a customer in the khata already names the bill, and the s.21(s) cash flag still stands
+      - provincial tax on services PRA by card is 8% and in cash 16%, on the bill's own tax rows, and the books balance
+      - provincial tax on services a split tender, part card and part cash, taxes each part at its rate and the paisa add up
+      - provincial tax on services the receipt says PRA 8% (card), and the sales tax summary lists it on its own row
+      - provincial tax on services the owner's setting is kept in the shop's settings and every change is audited
+      - third schedule an item keeps its flag and MRP through an edit that does not show them, and a pack sold below its MRP is taxed on the MRP
+      - offline mode a bill made while FBR cannot be reached prints the offline mark, and a bill still unsent a day after the connection came back is overdue
+      - offline mode a shop that does not report has nothing offline, ever
+      - fbr receipt a bill FBR has not answered yet says so, with no QR
+      - a Rs 120,000 walk-in bill asks for the buyer's name, and the name is on the bill
+      - a Third Schedule item sold above its printed price is warned of on its line
+      - the owner marks an item Third Schedule in its editor, and it needs its MRP
+      - a salon sets PRA in Tax, and the payment sheet charges 16% in cash and 8% by card
+      - a bill FBR has not taken a day after the connection came back is shown on Home and the FBR screen
+      - at 200% on a small phone the MRP warning, the buyer's name and the PRA rows fit

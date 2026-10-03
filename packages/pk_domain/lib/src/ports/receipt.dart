@@ -74,6 +74,15 @@ final class ReceiptShop {
   final Uint8List? logoImage;
 }
 
+/// One labelled tax on a receipt's totals: "PRA 8% (card)" and its amount
+/// (M59).
+final class ReceiptTaxLine {
+  const ReceiptTaxLine({required this.label, required this.amount});
+
+  final String label;
+  final Money amount;
+}
+
 /// One printed line of a receipt.
 final class ReceiptLine {
   const ReceiptLine({
@@ -385,7 +394,17 @@ final class ReceiptData {
     this.transport = ReceiptTransport.none,
     this.billOwed,
     this.paymentQr,
+    this.serviceTaxes = const [],
   });
+
+  /// The province's tax on the bill's services, one row per rate (M59):
+  /// "PRA 16%", "PRA 8% (card)". Part of [tax], which the paper prints as
+  /// sales tax less these, so the printed parts still add up to the total.
+  final List<ReceiptTaxLine> serviceTaxes;
+
+  /// The federal sales tax: [tax] less the province's on services.
+  Money get federalTax =>
+      tax - Money.sum([for (final t in serviceTaxes) t.amount]);
 
   /// What the paper is: Invoice, or Quotation. A quotation printed as an
   /// invoice is a bill for goods that never left the shop.
@@ -561,6 +580,7 @@ final class ReceiptData {
     customerNtn: customerNtn ?? this.customerNtn,
     customerStrn: customerStrn ?? this.customerStrn,
     transport: transport ?? this.transport,
+    serviceTaxes: serviceTaxes,
   );
 
   Money get runningBalance => khata?.after ?? balance;

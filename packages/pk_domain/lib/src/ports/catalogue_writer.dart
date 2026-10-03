@@ -31,7 +31,17 @@ final class ItemDraft {
     this.isActive = true,
     this.negativeStock,
     this.packs,
+    this.isThirdSchedule,
+    this.isService,
   });
+
+  /// Sold on its printed retail price (M59). Null leaves it as it is, so a
+  /// form that does not show it — the quick-add sheet, the importer — never
+  /// takes it off.
+  final bool? isThirdSchedule;
+
+  /// A service rather than goods (M59); null leaves it as it is.
+  final bool? isService;
 
   final String name;
   final String? code;

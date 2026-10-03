@@ -1,6 +1,8 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../tax/service_tax.dart';
 import '../tax/tax_charge.dart';
+import '../tax/third_schedule.dart';
 import 'sale_draft.dart';
 
 /// One line, fully priced.
@@ -185,6 +187,41 @@ final class SaleCalculator {
   final int cashThresholdPaisa;
 
   CalculatedSale calculate(SaleDraft draft, TaxContext context) {
+    // M59: the province's tax on a service turns on how the bill is paid,
+    // so the share its card, wallet and QR tenders pay is settled first —
+    // pro-rata, each tender paying its slice of every line at its own rate
+    // (service_tax.dart says why that and not another split).
+    final share = digitalShareFor(
+      setting: context.serviceTax,
+      hasServices: draft.lines.any((l) => l.isService),
+      tenders: [
+        for (final t in draft.tenders) (mode: t.mode, amount: t.amount),
+      ],
+      totalAt: (s) => _calculate(draft, context, s, const []).total,
+    );
+    return _calculate(draft, context, share, draft.tenders);
+  }
+
+  /// M59: the bill as it would come to if [mode] paid all of it — what the
+  /// payment sheet shows as due once a mode is picked. Null is cash, or a
+  /// bill with no mode yet. Only a service line's tax can change with it.
+  CalculatedSale settledWholly(
+    SaleDraft draft,
+    TaxContext context,
+    String? mode,
+  ) => _calculate(
+    draft,
+    context,
+    DigitalShare.wholly(context.serviceTax, mode),
+    draft.tenders,
+  );
+
+  CalculatedSale _calculate(
+    SaleDraft draft,
+    TaxContext context,
+    DigitalShare share,
+    List<TenderDraft> tenders,
+  ) {
     if (draft.lines.isEmpty) {
       throw ArgumentError.value(
         draft.lines,
@@ -272,13 +309,23 @@ final class SaleCalculator {
       final line = draft.lines[i];
       final taxable = netOfLineDiscount[i] - apportioned[i];
 
-      final taxes = taxEngine.chargesFor(
-        taxableBase: taxable,
-        mrp: line.mrp,
-        itemTaxRuleId: line.taxRuleId,
-        isThirdSchedule: line.isThirdSchedule,
-        context: context,
-      );
+      // M59: a service is the province's to tax, at its share's rates;
+      // goods are the pack's, a Third Schedule line on the printed price of
+      // what left the shelf.
+      final taxes = line.isService
+          ? serviceTaxCharges(
+              value: taxable,
+              setting: context.serviceTax,
+              share: share,
+              inclusive: context.pricesIncludeTax,
+            )
+          : taxEngine.chargesFor(
+              taxableBase: taxable,
+              mrp: retailValueOf(mrp: line.mrp, baseQty: line.baseQty),
+              itemTaxRuleId: line.taxRuleId,
+              isThirdSchedule: line.isThirdSchedule,
+              context: context,
+            );
       final taxTotal = Money.sum([for (final t in taxes) t.amount]);
       // A price that already includes the tax: the tax is inside it, so the
       // value the tax is charged on is the price less the tax, and the line
@@ -343,7 +390,7 @@ final class SaleCalculator {
     // zero-amount payment row and a negative receivable — both refused by the
     // schema three layers later, as a raw constraint error on a sale the
     // shopkeeper had already been told was going through.
-    for (final t in draft.tenders) {
+    for (final t in tenders) {
       // A negative tender is a refund wearing a sale's clothes. Allowed
       // through, it produced a negative receivable that balanced — the sums
       // still matched — and then died on the schema's own
@@ -358,7 +405,7 @@ final class SaleCalculator {
     }
 
     final nonCash = Money.sum([
-      for (final t in draft.tenders)
+      for (final t in tenders)
         if (!t.isCash) t.amount,
     ]);
     if (nonCash > total) {
@@ -377,8 +424,8 @@ final class SaleCalculator {
     var cashDue = total - nonCash;
     if (cashDue.isNegative) cashDue = Money.zero;
 
-    for (var i = 0; i < draft.tenders.length; i++) {
-      final t = draft.tenders[i];
+    for (var i = 0; i < tenders.length; i++) {
+      final t = tenders[i];
       final Money offered;
       final Money settled;
       if (t.isCash) {

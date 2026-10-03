@@ -1,5 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
+import 'service_tax.dart';
+
 /// The kinds of tax a single line can carry.
 ///
 /// One line can carry several at once, each with its own base — a 3rd Schedule
@@ -68,7 +70,13 @@ final class TaxContext {
     required this.pricesIncludeTax,
     required this.ruleVersion,
     this.hasNamedBuyer = false,
+    this.serviceTax,
   });
+
+  /// The province's tax on the shop's services, and its rates (M59). Null
+  /// for a shop that has set none, whose services then carry no tax at all
+  /// — never the federal 18%, which is a tax on goods.
+  final ServiceTaxSetting? serviceTax;
 
   /// Whether the bill names who it is to. Further tax is a charge on supplies
   /// to a business that is not registered or not active; a walk-in customer
@@ -112,6 +120,9 @@ final class TaxContext {
 /// The Pakistan rule pack (M12) is `PakistanTaxEngine`, which charges
 /// nothing for an unregistered shop exactly as [UntaxedEngine] does.
 abstract interface class TaxEngine {
+  /// [mrp] is the printed retail price of the goods on the line — the
+  /// pack's MRP times how many left the shelf (M59) — or null when the item
+  /// has none. Third Schedule goods are taxed on it.
   List<TaxCharge> chargesFor({
     required Money taxableBase,
     required Money? mrp,

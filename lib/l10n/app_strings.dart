@@ -11113,6 +11113,198 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Stock: {qty}'**
   String posStockWords(String qty);
+
+  /// No description provided for @mrpOnLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'MRP Rs {mrp}'**
+  String mrpOnLine(String mrp);
+
+  /// No description provided for @mrpAbove.
+  ///
+  /// In ur, this message translates to:
+  /// **'chhapi qeemat se zyada'**
+  String get mrpAbove;
+
+  /// No description provided for @buyerNameTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareedar ka naam: Rs 1 lakh se bara bill'**
+  String get buyerNameTitle;
+
+  /// No description provided for @buyerNameRequiredHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR ko Rs 1,00,000 se bare bill par khareedar ka naam chahiye.'**
+  String get buyerNameRequiredHint;
+
+  /// No description provided for @buyerNameWarnHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Registered dukaan Rs 1,00,000 se bare bill par khareedar ka naam likhti hai. Gahak de to likh lein.'**
+  String get buyerNameWarnHint;
+
+  /// No description provided for @buyerName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareedar ka naam'**
+  String get buyerName;
+
+  /// No description provided for @buyerCnic.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC (agar dein)'**
+  String get buyerCnic;
+
+  /// No description provided for @buyerNameMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle khareedar ka naam likhein: Rs 1,00,000 se bare bill par FBR ko chahiye.'**
+  String get buyerNameMissing;
+
+  /// No description provided for @buyerCnicWrong.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC 13 hindson ka hota hai, jaise 35202-1234567-1.'**
+  String get buyerCnicWrong;
+
+  /// No description provided for @serviceTaxTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Services par sales tax (soobah)'**
+  String get serviceTaxTitle;
+
+  /// No description provided for @serviceTaxHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Repair, salon, darzi ya restaurant ke liye. Jo item service hain un par maal wale 18% ki jagah soobe ka tax lagta hai, aur card, wallet ya QR se bill dene par kam.'**
+  String get serviceTaxHint;
+
+  /// No description provided for @serviceTaxNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi nahi'**
+  String get serviceTaxNone;
+
+  /// No description provided for @serviceTaxPra.
+  ///
+  /// In ur, this message translates to:
+  /// **'PRA (Punjab)'**
+  String get serviceTaxPra;
+
+  /// No description provided for @serviceTaxSrb.
+  ///
+  /// In ur, this message translates to:
+  /// **'SRB (Sindh)'**
+  String get serviceTaxSrb;
+
+  /// No description provided for @serviceTaxKpra.
+  ///
+  /// In ur, this message translates to:
+  /// **'KPRA (Khyber Pakhtunkhwa)'**
+  String get serviceTaxKpra;
+
+  /// No description provided for @serviceTaxBra.
+  ///
+  /// In ur, this message translates to:
+  /// **'BRA (Balochistan)'**
+  String get serviceTaxBra;
+
+  /// No description provided for @serviceTaxStandard.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naqad par rate (%)'**
+  String get serviceTaxStandard;
+
+  /// No description provided for @serviceTaxDigital.
+  ///
+  /// In ur, this message translates to:
+  /// **'Card, wallet ya QR par rate (%)'**
+  String get serviceTaxDigital;
+
+  /// No description provided for @serviceTaxUnchecked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is soobe ke rate check nahi kiye gaye: apne notice wale rate likhein.'**
+  String get serviceTaxUnchecked;
+
+  /// No description provided for @serviceTaxSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Service tax save karein'**
+  String get serviceTaxSave;
+
+  /// No description provided for @serviceTaxSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Service tax save ho gaya'**
+  String get serviceTaxSaved;
+
+  /// No description provided for @serviceTaxRateWrong.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har rate 0 se 50 tak percent mein likhein.'**
+  String get serviceTaxRateWrong;
+
+  /// No description provided for @itemThirdSchedule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Third Schedule (chhapi qeemat par bikta hai)'**
+  String get itemThirdSchedule;
+
+  /// No description provided for @itemThirdScheduleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sales tax MRP par lagta hai (MRP x 18/118), aur MRP se mehnga bechne par counter khabardar karta hai.'**
+  String get itemThirdScheduleHint;
+
+  /// No description provided for @itemThirdScheduleNeedsMrp.
+  ///
+  /// In ur, this message translates to:
+  /// **'Third Schedule item ki MRP (chhapi qeemat) likhein.'**
+  String get itemThirdScheduleNeedsMrp;
+
+  /// No description provided for @itemService.
+  ///
+  /// In ur, this message translates to:
+  /// **'Service hai (repair, salon, khana)'**
+  String get itemService;
+
+  /// No description provided for @itemServiceHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is par soobe ka tax (PRA, SRB) lagta hai, maal wala 18% nahi.'**
+  String get itemServiceHint;
+
+  /// No description provided for @fbrOfflineBadge.
+  ///
+  /// In ur, this message translates to:
+  /// **'Offline bana: FBR ka intezar'**
+  String get fbrOfflineBadge;
+
+  /// No description provided for @fbrOverdueBadge.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der: connection aane ke 24 ghante baad bhi nahi gaya'**
+  String get fbrOverdueBadge;
+
+  /// No description provided for @fbrOfflineSummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} bill offline bane, FBR ka intezar'**
+  String fbrOfflineSummary(int count);
+
+  /// No description provided for @fbrOverdueSummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} connection aane ke 24 ghante baad bhi nahi gaye (FBR Rule 150XC). Abhi bhejein dabayein.'**
+  String fbrOverdueSummary(int count);
+
+  /// No description provided for @homeFbrOverdue.
+  ///
+  /// In ur, this message translates to:
+  /// **'FBR: {count} offline bill der se. Abhi bhejein.'**
+  String homeFbrOverdue(int count);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

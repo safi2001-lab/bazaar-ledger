@@ -102,7 +102,17 @@ final class ItemSummary {
     this.mrp,
     this.hsCode,
     this.negativeStock,
+    this.isThirdSchedule = false,
+    this.isService = false,
   });
+
+  /// Sold on the retail price printed on its pack (M59): taxed on [mrp], and
+  /// warned of when sold above it.
+  final bool isThirdSchedule;
+
+  /// A service — a repair, a haircut, a meal — taxed by the province rather
+  /// than with the federal sales tax on goods (M59).
+  final bool isService;
 
   final String id;
   final String name;

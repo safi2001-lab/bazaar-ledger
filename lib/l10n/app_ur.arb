@@ -3892,5 +3892,57 @@
     "placeholders": {
       "qty": {"type": "String"}
     }
+  },
+  "mrpOnLine": "MRP Rs {mrp}",
+  "@mrpOnLine": {
+    "placeholders": {
+      "mrp": {"type": "String"}
+    }
+  },
+  "mrpAbove": "chhapi qeemat se zyada",
+  "buyerNameTitle": "Khareedar ka naam: Rs 1 lakh se bara bill",
+  "buyerNameRequiredHint": "FBR ko Rs 1,00,000 se bare bill par khareedar ka naam chahiye.",
+  "buyerNameWarnHint": "Registered dukaan Rs 1,00,000 se bare bill par khareedar ka naam likhti hai. Gahak de to likh lein.",
+  "buyerName": "Khareedar ka naam",
+  "buyerCnic": "CNIC (agar dein)",
+  "buyerNameMissing": "Pehle khareedar ka naam likhein: Rs 1,00,000 se bare bill par FBR ko chahiye.",
+  "buyerCnicWrong": "CNIC 13 hindson ka hota hai, jaise 35202-1234567-1.",
+  "serviceTaxTitle": "Services par sales tax (soobah)",
+  "serviceTaxHint": "Repair, salon, darzi ya restaurant ke liye. Jo item service hain un par maal wale 18% ki jagah soobe ka tax lagta hai, aur card, wallet ya QR se bill dene par kam.",
+  "serviceTaxNone": "Koi nahi",
+  "serviceTaxPra": "PRA (Punjab)",
+  "serviceTaxSrb": "SRB (Sindh)",
+  "serviceTaxKpra": "KPRA (Khyber Pakhtunkhwa)",
+  "serviceTaxBra": "BRA (Balochistan)",
+  "serviceTaxStandard": "Naqad par rate (%)",
+  "serviceTaxDigital": "Card, wallet ya QR par rate (%)",
+  "serviceTaxUnchecked": "Is soobe ke rate check nahi kiye gaye: apne notice wale rate likhein.",
+  "serviceTaxSave": "Service tax save karein",
+  "serviceTaxSaved": "Service tax save ho gaya",
+  "serviceTaxRateWrong": "Har rate 0 se 50 tak percent mein likhein.",
+  "itemThirdSchedule": "Third Schedule (chhapi qeemat par bikta hai)",
+  "itemThirdScheduleHint": "Sales tax MRP par lagta hai (MRP x 18/118), aur MRP se mehnga bechne par counter khabardar karta hai.",
+  "itemThirdScheduleNeedsMrp": "Third Schedule item ki MRP (chhapi qeemat) likhein.",
+  "itemService": "Service hai (repair, salon, khana)",
+  "itemServiceHint": "Is par soobe ka tax (PRA, SRB) lagta hai, maal wala 18% nahi.",
+  "fbrOfflineBadge": "Offline bana: FBR ka intezar",
+  "fbrOverdueBadge": "Der: connection aane ke 24 ghante baad bhi nahi gaya",
+  "fbrOfflineSummary": "{count} bill offline bane, FBR ka intezar",
+  "@fbrOfflineSummary": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "fbrOverdueSummary": "{count} connection aane ke 24 ghante baad bhi nahi gaye (FBR Rule 150XC). Abhi bhejein dabayein.",
+  "@fbrOverdueSummary": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "homeFbrOverdue": "FBR: {count} offline bill der se. Abhi bhejein.",
+  "@homeFbrOverdue": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

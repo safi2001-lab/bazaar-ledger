@@ -9,7 +9,12 @@ final class FbrSettings {
     this.baseUrl = '',
     this.token = '',
     this.sinceUtcMillis,
+    this.raw = const {},
   });
+
+  /// Every `fbr.` row as it is stored, for what the queue keeps about
+  /// itself (M59: when FBR went out of reach and came back).
+  final Map<String, String> raw;
 
   final bool enabled;
 
@@ -33,11 +38,28 @@ final class FbrBill {
     required this.status,
     this.fbrInvoiceNo,
     this.error,
+    this.connectionBackAtUtc,
   });
 
   final String documentId;
   final String docNo;
   final DateTime madeAtUtc;
+
+  /// The first time FBR answered anything after this bill was made (M59):
+  /// when, for Rule 150XC, the connection came back. Null while FBR has not
+  /// been heard from since.
+  final DateTime? connectionBackAtUtc;
+
+  /// Made while FBR could not be reached, and not answered for yet: issued
+  /// in offline mode, and printed so (Rule 150XC, M59).
+  bool get isOffline => status == 'pending';
+
+  /// Still unsent 24 hours after the connection came back (Rule 150XC, M59).
+  bool isOfflineOverdue(DateTime nowUtc) => offlineOverdue(
+    status: status,
+    connectionBackAtUtc: connectionBackAtUtc,
+    nowUtc: nowUtc,
+  );
 
   /// `pending`, `posted` or `rejected`.
   final String status;
@@ -52,6 +74,21 @@ final class FbrBill {
 
 /// What one pass over the queue did.
 typedef FbrSendReport = ({int posted, int rejected, int waiting});
+
+/// Bills issued in offline mode, and those past Rule 150XC's 24 hours
+/// (M59): what the FBR screen and Home say about the queue.
+final class FbrOfflineWatch {
+  const FbrOfflineWatch({this.offline = 0, this.overdue = const []});
+
+  static const none = FbrOfflineWatch();
+
+  /// Bills FBR has not answered for yet.
+  final int offline;
+
+  /// Bills still unsent 24 hours after the connection came back, oldest
+  /// first.
+  final List<FbrBill> overdue;
+}
 
 /// Reporting bills to FBR's Digital Invoicing gateway.
 ///
@@ -76,6 +113,11 @@ final class FbrServices {
     baseUrl: 'fbr.base_url',
     token: 'fbr.token',
     since: 'fbr.since',
+    // M59: when FBR was first found out of reach, and when it was next
+    // heard from -- the "restoration" Rule 150XC counts 24 hours from.
+    // Written only when the state changes, never on every pass.
+    offlineSince: 'fbr.offline_since',
+    backAt: 'fbr.back_at',
   );
 
   ActorContext _actor() {
@@ -109,6 +151,7 @@ final class FbrServices {
       baseUrl: v[_keys.baseUrl] ?? '',
       token: v[_keys.token] ?? '',
       sinceUtcMillis: int.tryParse(v[_keys.since] ?? ''),
+      raw: v,
     );
   }
 
@@ -211,24 +254,40 @@ final class FbrServices {
     });
   }
 
-  /// Every bill (and credit note) made since reporting began, newest first.
-  Future<List<FbrBill>> bills({int limit = 100}) async {
+  /// Every bill (and credit note) made since reporting began, newest first;
+  /// with [waitingOnly], only those FBR has not answered for (M59).
+  Future<List<FbrBill>> bills({
+    int limit = 100,
+    bool waitingOnly = false,
+  }) async {
     final id = _app._identity;
     final s = await settings();
     if (id == null || s.sinceUtcMillis == null) return const [];
     final rows = await _app.database
         .customSelect(
           '''
-          SELECT id, doc_no, created_at_utc, fbr_status, fbr_invoice_no,
-                 fbr_error
-          FROM documents
-          WHERE firm_id = ? AND doc_type IN ('sale_invoice', 'sale_return')
-            AND status = 'posted'
-            AND (doc_type = 'sale_invoice' OR fbr_status IS NOT NULL)
-            AND deleted_at_utc IS NULL AND created_at_utc >= ?
+          SELECT d.id, d.doc_no, d.created_at_utc, d.fbr_status,
+                 d.fbr_invoice_no, d.fbr_error,
+                 -- M59: for a bill still waiting, the first bill FBR
+                 -- numbered after it was made: FBR was reachable then,
+                 -- whatever this bill says. Asked only of the waiting, and
+                 -- through the FBR index, so the list stays quick.
+                 CASE WHEN COALESCE(d.fbr_status, 'pending') = 'pending'
+                   THEN (SELECT MIN(o.fbr_posted_at_utc) FROM documents o
+                          WHERE o.firm_id = d.firm_id
+                            AND o.fbr_status = 'posted'
+                            AND o.fbr_posted_at_utc >= d.created_at_utc)
+                 END AS answered_after
+          FROM documents d
+          WHERE d.firm_id = ?
+            AND d.doc_type IN ('sale_invoice', 'sale_return')
+            AND d.status = 'posted'
+            AND (d.doc_type = 'sale_invoice' OR d.fbr_status IS NOT NULL)
+            AND d.deleted_at_utc IS NULL AND d.created_at_utc >= ?
+            ${waitingOnly ? "AND d.fbr_status = 'pending'" : ''}
           -- Newest first; within one moment a credit note after its bill.
-          ORDER BY created_at_utc DESC,
-                   CASE doc_type WHEN 'sale_return' THEN 0 ELSE 1 END
+          ORDER BY d.created_at_utc DESC,
+                   CASE d.doc_type WHEN 'sale_return' THEN 0 ELSE 1 END
           LIMIT ?
           ''',
           variables: [
@@ -238,21 +297,102 @@ final class FbrServices {
           ],
         )
         .get();
-    return [
-      for (final r in rows)
-        FbrBill(
-          documentId: r.read<String>('id'),
-          docNo: r.read<String>('doc_no'),
-          madeAtUtc: DateTime.fromMillisecondsSinceEpoch(
-            r.read<int>('created_at_utc'),
-            isUtc: true,
-          ),
-          status: r.readNullable<String>('fbr_status') ?? 'pending',
-          fbrInvoiceNo: r.readNullable<String>('fbr_invoice_no'),
-          error: r.readNullable<String>('fbr_error'),
-        ),
-    ];
+    final backAt = _utcOrNull(s.raw[_keys.backAt]);
+    return [for (final r in rows) _billFrom(r, backAt)];
   }
+
+  static FbrBill _billFrom(QueryRow r, DateTime? backAt) {
+    final made = DateTime.fromMillisecondsSinceEpoch(
+      r.read<int>('created_at_utc'),
+      isUtc: true,
+    );
+    return FbrBill(
+      documentId: r.read<String>('id'),
+      docNo: r.read<String>('doc_no'),
+      madeAtUtc: made,
+      status: r.readNullable<String>('fbr_status') ?? 'pending',
+      fbrInvoiceNo: r.readNullable<String>('fbr_invoice_no'),
+      error: r.readNullable<String>('fbr_error'),
+      connectionBackAtUtc: connectionBackFor(
+        madeAtUtc: made,
+        answeredAtUtc: [
+          _utcOrNull('${r.readNullable<int>('answered_after') ?? ''}'),
+          backAt,
+        ],
+      ),
+    );
+  }
+
+  /// Bills issued in offline mode, and those past Rule 150XC's 24 hours
+  /// (M59). Nothing for a shop that does not report.
+  Future<FbrOfflineWatch> offlineWatch() async {
+    if (_app._identity == null || !(await settings()).enabled) {
+      return FbrOfflineWatch.none;
+    }
+    final now = _app.clock.nowUtc();
+    // Read on Home after every bill, so only the waiting bills, through
+    // the partial index on fbr_status: a shop with fifty thousand numbered
+    // bills reads the handful still waiting.
+    final waiting = await bills(limit: 1000, waitingOnly: true);
+    return FbrOfflineWatch(
+      offline: waiting.length,
+      overdue: [
+        for (final b in waiting.reversed)
+          if (b.isOfflineOverdue(now)) b,
+      ],
+    );
+  }
+
+  static DateTime? _utcOrNull(String? millis) =>
+      switch (int.tryParse(millis ?? '')) {
+        final int ms => DateTime.fromMillisecondsSinceEpoch(ms, isUtc: true),
+        null => null,
+      };
+
+  /// FBR answered (M59). If it had been out of reach, the connection is
+  /// back from now, and Rule 150XC's 24 hours start.
+  Future<void> _heardFromFbr() async {
+    final held = (await settings()).raw;
+    if ((held[_keys.offlineSince] ?? '').isEmpty) return;
+    await _putSettings({
+      _keys.backAt: '${_app.clock.nowUtc().millisecondsSinceEpoch}',
+      _keys.offlineSince: '',
+    });
+  }
+
+  /// FBR could not be reached (M59): noted once, when it first happens.
+  Future<void> _outOfReach() async {
+    final held = (await settings()).raw;
+    if ((held[_keys.offlineSince] ?? '').isNotEmpty) return;
+    await _putSettings({
+      _keys.offlineSince: '${_app.clock.nowUtc().millisecondsSinceEpoch}',
+    });
+  }
+
+  /// Writes the queue's own rows (M59). Each has an id worked out from the
+  /// shop's and the key, as the shelf rule's has (M53): two counters that
+  /// both find FBR out of reach while apart write one row twice, and the
+  /// merge keeps the later, where two fresh ids would clash on the key.
+  Future<void> _putSettings(Map<String, String> values) =>
+      _app._runner.run(_actor(), (tx) async {
+        for (final MapEntry(:key, :value) in values.entries) {
+          final held = await tx.selectOne(
+            'SELECT id, setting_value FROM settings WHERE firm_id = ? '
+            'AND setting_key = ? AND deleted_at_utc IS NULL',
+            [tx.actor.firmId, key],
+          );
+          if (held == null) {
+            await tx.insert('settings', {
+              'setting_key': key,
+              'setting_value': value,
+            }, id: '$key-${tx.actor.firmId}');
+          } else if (held.read<String>('setting_value') != value) {
+            await tx.update('settings', held.read<String>('id'), {
+              'setting_value': value,
+            });
+          }
+        }
+      });
 
   /// Sends every bill still waiting. Never throws: FBR being out of reach
   /// is the normal state of a shop's connection, not an error.
@@ -267,6 +407,8 @@ final class FbrServices {
     var posted = 0;
     var rejected = 0;
     var waiting = 0;
+    // M59: whether FBR has answered anything in this pass yet.
+    var heard = false;
     // Oldest first, so a bill reaches FBR before the credit note that
     // takes goods back off it.
     for (final bill in (await bills(limit: 500)).reversed) {
@@ -280,9 +422,16 @@ final class FbrServices {
         continue;
       }
       final problems = sale == null ? ['The bill is gone.'] : fbrProblems(sale);
+      // M59: a bill refused here never reached FBR, so says nothing about
+      // whether FBR can be reached.
+      final askedFbr = problems.isEmpty;
       final FbrOutcome outcome = problems.isNotEmpty
           ? FbrRejected(problems.first.split(':').first, problems.join('\n'))
           : await gateway.post(fbrPayload(sale!));
+      if (askedFbr && outcome is! FbrTryLater && !heard) {
+        heard = true;
+        await _heardFromFbr();
+      }
       switch (outcome) {
         case FbrPosted(:final fbrInvoiceNo):
           posted++;
@@ -305,6 +454,7 @@ final class FbrServices {
             'fbr_status': 'pending',
             'fbr_error': reason,
           });
+          await _outOfReach();
           // FBR is out of reach; the rest would only wait the same way.
           return (posted: posted, rejected: rejected, waiting: waiting);
       }
@@ -331,7 +481,12 @@ final class FbrServices {
         .customSelect(
           '''
           SELECT d.doc_no, d.doc_date_utc, d.doc_type, f.ntn AS seller_ntn,
-                 f.strn AS seller_strn, d.party_ntn_snapshot, p.name AS buyer,
+                 f.strn AS seller_strn, d.party_ntn_snapshot,
+                 -- M59: the name the bill was made out to, which for a
+                 -- walk-in over Rs 100,000 is the one the counter asked
+                 -- for; a customer in the khata as they were named then.
+                 COALESCE(NULLIF(TRIM(d.party_name_snapshot), ''), p.name)
+                   AS buyer,
                  p.ntn AS party_ntn, p.buyer_registration_type,
                  (SELECT o.fbr_invoice_no FROM doc_links l
                   JOIN documents o ON o.id = l.from_document_id

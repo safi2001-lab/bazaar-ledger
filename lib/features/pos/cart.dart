@@ -156,6 +156,10 @@ final class CartLine {
           explicitDiscount: discounts?[i],
           tracksStock: item.tracksStock,
           lotId: lotIds[i],
+          // M59: taxed on the printed price, or by the province.
+          mrp: item.mrp,
+          isThirdSchedule: item.isThirdSchedule,
+          isService: item.isService,
         ),
     ];
   }
@@ -194,6 +198,10 @@ final class CartLine {
     discountBp: discountBp,
     explicitDiscount: explicitDiscount,
     tracksStock: item.tracksStock,
+    // M59: taxed on the printed price, or by the province.
+    mrp: item.mrp,
+    isThirdSchedule: item.isThirdSchedule,
+    isService: item.isService,
   );
 
   /// A loose line goes to the books with no item, no stock to move and no

@@ -53,9 +53,15 @@ final class Harness {
     String shopName = 'Chishti Kiryana Store',
     List<PrinterTransport>? transports,
     List<Override> overrides = const [],
+    Clock clock = const SystemClock(),
   }) async {
     _stubPlatformChannels();
-    final services = await openInMemoryServices(transports: transports);
+    // A clock the test can move on, for rules that turn on time passing
+    // (M59: a day after FBR could be reached again).
+    final services = await openInMemoryServices(
+      transports: transports,
+      clock: clock,
+    );
     addTearDown(services.close);
 
     await services.setUpShop(
@@ -114,20 +120,20 @@ final class Harness {
     required String name,
     int owedRupees = 0,
     String? phone,
-  }) =>
-      services.catalogue.addParty(
-        services.actorNow(),
-        PartyDraft(
-          name: name,
-          phone: phone,
-          openingBalance: Money.rupees(owedRupees),
-        ),
-      );
+  }) => services.catalogue.addParty(
+    services.actorNow(),
+    PartyDraft(
+      name: name,
+      phone: phone,
+      openingBalance: Money.rupees(owedRupees),
+    ),
+  );
 
   /// How many rows a table holds right now.
   Future<int> countIn(String table) async {
-    final rows =
-        await services.database.customSelect('SELECT COUNT(*) c FROM $table').get();
+    final rows = await services.database
+        .customSelect('SELECT COUNT(*) c FROM $table')
+        .get();
     return rows.first.read<int>('c');
   }
 
@@ -176,10 +182,7 @@ Future<void> tapButton(WidgetTester tester, String label) async {
   // Matched on a substring, because several buttons carry a count alongside
   // the verb — "Paisay lein · 2 cheezein".
   final button = find
-      .ancestor(
-        of: find.textContaining(label),
-        matching: find.byType(BlButton),
-      )
+      .ancestor(of: find.textContaining(label), matching: find.byType(BlButton))
       .first;
   await tester.ensureVisible(button);
   await tester.pumpAndSettle();
@@ -215,11 +218,7 @@ Future<void> openSettings(WidgetTester tester) async {
 }
 
 /// Types into a field found by its label, scrolling it into view first.
-Future<void> typeInto(
-  WidgetTester tester,
-  String label,
-  String text,
-) async {
+Future<void> typeInto(WidgetTester tester, String label, String text) async {
   final field = find.widgetWithText(TextFormField, label).first;
   await tester.ensureVisible(field);
   await tester.pumpAndSettle();
@@ -239,7 +238,7 @@ void _stubPlatformChannels() {
   final temp = Directory.systemTemp.createTempSync('bazaar_ledger_test').path;
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-    const MethodChannel('plugins.flutter.io/path_provider'),
-    (call) async => temp,
-  );
+        const MethodChannel('plugins.flutter.io/path_provider'),
+        (call) async => temp,
+      );
 }

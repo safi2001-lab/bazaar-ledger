@@ -11,6 +11,7 @@ import '../../l10n/app_strings.dart';
 import '../reports/reports_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'fbr_screen.dart';
+import 'service_tax_card.dart';
 
 final _thisMonthTurnover = FutureProvider.autoDispose<Money>((ref) async {
   ref.watch(refreshTickProvider);
@@ -90,7 +91,12 @@ class _TaxScreenState extends ConsumerState<TaxScreen> {
             ),
             SwitchListTile.adaptive(
               value: firm?.pricesIncludeTax ?? false,
-              onChanged: _busy || !(firm?.isSalesTaxRegistered ?? false)
+              // M59: a salon taxed by PRA alone may quote prices with the
+              // tax inside them too.
+              onChanged:
+                  _busy ||
+                      !((firm?.isSalesTaxRegistered ?? false) ||
+                          ref.watch(serviceTaxProvider).valueOrNull != null)
                   ? null
                   : (v) => unawaited(_set('prices_include_tax', v)),
               contentPadding: EdgeInsets.zero,
@@ -163,6 +169,11 @@ class _TaxScreenState extends ConsumerState<TaxScreen> {
                   ),
                 ),
               ),
+            // The province's tax on services (M59), for a shop that sells
+            // them, registered with FBR or not. Last, because most shops
+            // sell none and the month's Tajir Dost is what they come for.
+            const SizedBox(height: BlTokens.space4),
+            const ServiceTaxCard(),
           ],
         ),
       ),

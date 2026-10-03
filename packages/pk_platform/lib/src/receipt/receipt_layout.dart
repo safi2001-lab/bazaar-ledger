@@ -212,7 +212,14 @@ final class ReceiptLayout {
     if (d.discount.isPositive) {
       out.add(_row('Discount', '-${d.discount.amountOnly}'));
     }
-    if (d.tax.isPositive) out.add(_row('Sales Tax', d.tax.amountOnly));
+    // M59: the province's tax on services on lines of its own — "PRA 8%
+    // (card)" — and sales tax as what is left, so the parts still add up.
+    if (d.federalTax.isPositive) {
+      out.add(_row('Sales Tax', d.federalTax.amountOnly));
+    }
+    for (final t in d.serviceTaxes) {
+      out.add(_row(t.label, t.amount.amountOnly));
+    }
     if (d.furtherTax.isPositive) {
       out.add(_row('Further Tax', d.furtherTax.amountOnly));
     }
@@ -293,8 +300,12 @@ final class ReceiptLayout {
         out.add(_centre(part));
       }
     } else if (d.fbrPending) {
+      // Rule 150XC (M59): a bill FBR has not answered for was issued in
+      // offline mode, and the paper says so until FBR has numbered it.
       rule('-');
-      centred('FBR: pending');
+      for (final mark in offlineInvoiceMark) {
+        centred(mark);
+      }
     }
 
     rule('=');

@@ -6467,4 +6467,117 @@ class AppStringsEn extends AppStrings {
   String posStockWords(String qty) {
     return 'Stock: $qty';
   }
+
+  @override
+  String mrpOnLine(String mrp) {
+    return 'MRP Rs $mrp';
+  }
+
+  @override
+  String get mrpAbove => 'above the printed price';
+
+  @override
+  String get buyerNameTitle => 'Buyer\'s name: bill over Rs 1 lakh';
+
+  @override
+  String get buyerNameRequiredHint =>
+      'FBR wants the buyer\'s name on a single bill over Rs 100,000.';
+
+  @override
+  String get buyerNameWarnHint =>
+      'A registered shop writes the buyer\'s name on a bill over Rs 100,000. Write it if the customer will give it.';
+
+  @override
+  String get buyerName => 'Buyer\'s name';
+
+  @override
+  String get buyerCnic => 'CNIC (if they will give it)';
+
+  @override
+  String get buyerNameMissing =>
+      'Write the buyer\'s name first: FBR wants it on a bill over Rs 100,000.';
+
+  @override
+  String get buyerCnicWrong => 'A CNIC is 13 digits, like 35202-1234567-1.';
+
+  @override
+  String get serviceTaxTitle => 'Sales tax on services (province)';
+
+  @override
+  String get serviceTaxHint =>
+      'For a repair shop, salon, tailor or restaurant. Items marked as a service are taxed by the province instead of the 18% on goods, and less when the bill is paid by card, wallet or QR.';
+
+  @override
+  String get serviceTaxNone => 'None';
+
+  @override
+  String get serviceTaxPra => 'PRA (Punjab)';
+
+  @override
+  String get serviceTaxSrb => 'SRB (Sindh)';
+
+  @override
+  String get serviceTaxKpra => 'KPRA (Khyber Pakhtunkhwa)';
+
+  @override
+  String get serviceTaxBra => 'BRA (Balochistan)';
+
+  @override
+  String get serviceTaxStandard => 'Rate in cash (%)';
+
+  @override
+  String get serviceTaxDigital => 'Rate by card, wallet or QR (%)';
+
+  @override
+  String get serviceTaxUnchecked =>
+      'These rates have not been checked for this province: type the ones your notice gives.';
+
+  @override
+  String get serviceTaxSave => 'Save service tax';
+
+  @override
+  String get serviceTaxSaved => 'Service tax saved';
+
+  @override
+  String get serviceTaxRateWrong => 'Type each rate as a percent from 0 to 50.';
+
+  @override
+  String get itemThirdSchedule => 'Third Schedule (sold on its printed price)';
+
+  @override
+  String get itemThirdScheduleHint =>
+      'Sales tax is worked out on the MRP (MRP x 18/118), and the counter warns when it is sold above it.';
+
+  @override
+  String get itemThirdScheduleNeedsMrp =>
+      'A Third Schedule item needs its MRP (printed price).';
+
+  @override
+  String get itemService => 'A service (repair, salon, food)';
+
+  @override
+  String get itemServiceHint =>
+      'Taxed by the province (PRA, SRB), not with the 18% on goods.';
+
+  @override
+  String get fbrOfflineBadge => 'Issued offline: waiting for FBR';
+
+  @override
+  String get fbrOverdueBadge =>
+      'Overdue: not sent 24 hours after the connection came back';
+
+  @override
+  String fbrOfflineSummary(int count) {
+    return '$count bills issued in offline mode, waiting for FBR';
+  }
+
+  @override
+  String fbrOverdueSummary(int count) {
+    return '$count still not sent 24 hours after the connection came back (FBR Rule 150XC). Tap Send now.';
+  }
+
+  @override
+  String homeFbrOverdue(int count) {
+    return 'FBR: $count offline bills overdue. Send them now.';
+  }
 }
