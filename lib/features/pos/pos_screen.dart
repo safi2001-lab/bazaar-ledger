@@ -12,6 +12,8 @@ import '../../design/counted_qty_field.dart'; // M45
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
+import '../mobile/phone_counter.dart'; // M50
+import '../mobile/pta.dart'; // M50
 import '../orders/shortage_screen.dart';
 import '../parties/party_picker.dart';
 import '../pharmacy/pharmacy_counter.dart';
@@ -246,10 +248,19 @@ class _PosScreenState extends ConsumerState<PosScreen> {
 
     // A phone's IMEI, or any piece sold by its serial number.
     if (scanned == null) {
-      final piece = await services.queries.serialOnHand(firm.id, text);
+      final piece =
+          await services.queries.serialOnHand(firm.id, text) ??
+          // M50: part of an IMEI, in a mobile shop.
+          (mounted ? await phoneOnCounter(context, ref, text) : null);
       if (piece != null) {
         final item = await services.queries.itemById(firm.id, piece.itemId);
         if (!mounted || item == null) return;
+        // M50: a phone PTA called non-compliant is said before it goes on.
+        if (!await ptaAllowsSale(context, ref, piece.lotId)) {
+          _clearSearch();
+          return;
+        }
+        if (!mounted) return;
         final added = ref
             .read(cartProvider.notifier)
             .addSerial(item, lotId: piece.lotId, serial: piece.lotNo);

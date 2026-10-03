@@ -783,6 +783,16 @@ final class _Bill {
                 color: PdfColors.grey700,
               ),
             ),
+          // M50: a phone's IMEIs, its warranty's last day, its PTA standing.
+          for (final detail in l.details)
+            pw.Text(
+              detail,
+              style: pw.TextStyle(
+                font: sans,
+                fontSize: 7,
+                color: PdfColors.grey700,
+              ),
+            ),
         ],
       );
     }
@@ -1007,7 +1017,7 @@ final class _Bill {
       if (d.withholding.isPositive)
         totalRow('Withholding', '-${d.withholding.amountOnly}'),
       if (d.extraCharges.isPositive)
-        totalRow('Other Charges', d.extraCharges.amountOnly),
+        totalRow(d.extraChargesLabel, d.extraCharges.amountOnly), // M50
       if (!d.roundOff.isZero)
         totalRow('Round Off', _signedRoundOff(d.roundOff)),
       pw.Divider(thickness: 1, height: 6, color: accent),

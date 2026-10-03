@@ -20988,6 +20988,2551 @@ i1.GeneratedColumn<String> _column_337(String aliasedName) =>
       type: i1.DriftSqlType.string,
       $customConstraints: '',
     );
+
+final class Schema12 extends i0.VersionedSchema {
+  Schema12({required super.database}) : super(version: 12);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    firms,
+    devices,
+    users,
+    parties,
+    documents,
+    usedPhoneBuys,
+    idxUsedphoneDoc,
+    idxUsedphoneFirmCnic,
+    idxUsedphoneParty,
+    units,
+    taxRules,
+    attachments,
+    items,
+    stockLots,
+    warrantyClaims,
+    idxWclaimsFirmLot,
+    idxWclaimsLot,
+    qistPlans,
+    idxQistDoc,
+    idxQistFirmParty,
+    idxQistParty,
+    qistInstalments,
+    idxQinstPlanSeq,
+    idxQinstFirmDue,
+    vans,
+    idxVansLocation,
+    idxVansRider,
+    accounts,
+    paymentAccounts,
+    payments,
+    journalEntries,
+    vanSettlements,
+    idxVansettleDay,
+    idxVansettleVan,
+    idxVansettleJournal,
+    boms,
+    idxBomsFirm,
+    idxBomsOutput,
+    bomLines,
+    idxBomlinesFirm,
+    idxBomlinesBom,
+    idxBomlinesItem,
+    assemblies,
+    idxAssembliesNo,
+    idxAssembliesBom,
+    idxAssembliesOutput,
+    idxAssembliesJournal,
+    auditLog,
+    idxAuditEntity,
+    idxAuditFirmTime,
+    idxAuditActor,
+    idxAuditAction,
+    changeLog,
+    idxChangelogSeq,
+    idxChangelogOutbox,
+    idxChangelogEntity,
+    idxAttachOwner,
+    idxAttachFirmKind,
+    idxAttachSha,
+    idxTaxrulesCode,
+    idxTaxrulesLookup,
+    printJobs,
+    idxPrintjobsKey,
+    idxPrintjobsDoc,
+    idxPrintjobsOpen,
+    idxAccountsCode,
+    idxAccountsSyskey,
+    idxAccountsParent,
+    idxAccountsType,
+    idxJeNo,
+    idxJeDate,
+    idxJeDoc,
+    idxJePayment,
+    idxJeReverses,
+    idxJeSource,
+    journalLines,
+    idxJlSeq,
+    idxJlAccount,
+    idxJlFirmAccount,
+    idxJlParty,
+    idxJlItem,
+    idxLotsNo,
+    idxLotsItem,
+    idxLotsExpiry,
+    idxLotsGtin,
+    idxLotsSupplier,
+    idxLotsSerial,
+    idxLotsSerial2,
+    documentLines,
+    stockLedger,
+    idxStockPosition,
+    idxStockItem,
+    idxStockDoc,
+    idxStockDocLine,
+    idxStockLot,
+    idxStockDaybook,
+    idxPaymentsNo,
+    idxPaymentsParty,
+    idxPaymentsAccount,
+    idxPaymentsDaybook,
+    idxPaymentsCheques,
+    idxPaymentsChequeImg,
+    paymentAllocations,
+    idxAllocPair,
+    idxAllocDoc,
+    idxAllocFirm,
+    idxDocumentsNo,
+    idxDocumentsList,
+    idxDocumentsParty,
+    idxDocumentsStatus,
+    idxDocumentsOpenBalance,
+    idxDocumentsSupersedes,
+    idxDocumentsVoidedBy,
+    idxDocumentsSalesperson,
+    idxDocumentsFbr,
+    idxDoclinesSeq,
+    idxDoclinesItem,
+    idxDoclinesFirmItem,
+    idxDoclinesUnit,
+    idxDoclinesLot,
+    documentLineTaxes,
+    idxLinetaxLine,
+    idxLinetaxDoc,
+    idxLinetaxRegister,
+    idxLinetaxRule,
+    docLinks,
+    idxDoclinksPair,
+    idxDoclinksTo,
+    idxDoclinksFirm,
+    prescriptions,
+    idxPrescriptionsLine,
+    idxPrescriptionsDoc,
+    idxPrescriptionsFirmItem,
+    idxPrescriptionsItem,
+    idxUnitsCode,
+    unitConversions,
+    idxUconvFirmwide,
+    idxUconvPeritem,
+    idxUconvFirmItem,
+    idxUconvFromUnit,
+    idxUconvToUnit,
+    idxUconvItem,
+    idxItemsFirmName,
+    idxItemsGeneric,
+    idxItemsCode,
+    idxItemsBarcode,
+    idxItemsCategory,
+    idxItemsBaseUnit,
+    idxItemsDisplayUnit,
+    idxItemsTaxRule,
+    idxItemsImage,
+    idxPartiesFirmName,
+    idxPartiesFirmType,
+    idxPartiesPhone,
+    idxPayacctFirm,
+    idxPayacctLedger,
+    idxPayacctQr,
+    settings,
+    idxUsersFirm,
+    idxDevicesFirm,
+    idxSettingsKey,
+    numberingSequences,
+    idxNumberingScope,
+    idxNumberingDevice,
+  ];
+  late final Shape0 firms = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'firms',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['CHECK(firm_id = id)'],
+      columns: [
+        _column_0,
+        _column_1,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_338,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_24,
+        _column_25,
+        _column_26,
+        _column_27,
+        _column_28,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape1 devices = Shape1(
+    source: i0.VersionedTable(
+      entityName: 'devices',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_4,
+        _column_5,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_35,
+        _column_36,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_41,
+        _column_42,
+        _column_43,
+        _column_44,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape2 users = Shape2(
+    source: i0.VersionedTable(
+      entityName: 'users',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_47,
+        _column_21,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+        _column_54,
+        _column_55,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape27 parties = Shape27(
+    source: i0.VersionedTable(
+      entityName: 'parties',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_98,
+        _column_99,
+        _column_100,
+        _column_21,
+        _column_22,
+        _column_23,
+        _column_18,
+        _column_19,
+        _column_20,
+        _column_101,
+        _column_13,
+        _column_14,
+        _column_15,
+        _column_102,
+        _column_103,
+        _column_104,
+        _column_105,
+        _column_106,
+        _column_107,
+        _column_108,
+        _column_54,
+        _column_298,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape35 documents = Shape35(
+    source: i0.VersionedTable(
+      entityName: 'documents',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK(revision = 1 OR supersedes_id IS NOT NULL)',
+        'CHECK(balance_paisa <= 0 OR party_id IS NOT NULL)',
+        'CHECK(status <> \'posted\' OR posted_at_utc IS NOT NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_109,
+        _column_110,
+        _column_111,
+        _column_112,
+        _column_113,
+        _column_114,
+        _column_115,
+        _column_116,
+        _column_117,
+        _column_118,
+        _column_119,
+        _column_120,
+        _column_121,
+        _column_122,
+        _column_123,
+        _column_124,
+        _column_125,
+        _column_126,
+        _column_127,
+        _column_128,
+        _column_129,
+        _column_130,
+        _column_131,
+        _column_132,
+        _column_133,
+        _column_134,
+        _column_135,
+        _column_136,
+        _column_137,
+        _column_138,
+        _column_28,
+        _column_26,
+        _column_139,
+        _column_140,
+        _column_141,
+        _column_142,
+        _column_143,
+        _column_144,
+        _column_145,
+        _column_146,
+        _column_147,
+        _column_148,
+        _column_296,
+        _column_149,
+        _column_150,
+        _column_315,
+        _column_321,
+        _column_322,
+        _column_323,
+        _column_324,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape40 usedPhoneBuys = Shape40(
+    source: i0.VersionedTable(
+      entityName: 'used_phone_buys',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_246,
+        _column_339,
+        _column_340,
+        _column_341,
+        _column_342,
+        _column_343,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxUsedphoneDoc = i1.Index(
+    'idx_usedphone_doc',
+    'CREATE UNIQUE INDEX idx_usedphone_doc ON used_phone_buys (document_id)',
+  );
+  final i1.Index idxUsedphoneFirmCnic = i1.Index(
+    'idx_usedphone_firm_cnic',
+    'CREATE INDEX idx_usedphone_firm_cnic ON used_phone_buys (firm_id, seller_cnic)',
+  );
+  final i1.Index idxUsedphoneParty = i1.Index(
+    'idx_usedphone_party',
+    'CREATE INDEX idx_usedphone_party ON used_phone_buys (party_id)',
+  );
+  late final Shape14 units = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'units',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_202,
+        _column_203,
+        _column_204,
+        _column_54,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape3 taxRules = Shape3(
+    source: i0.VersionedTable(
+      entityName: 'tax_rules',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK(effective_to_local IS NULL OR effective_to_local >= effective_from_local)',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_56,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_60,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_65,
+        _column_66,
+        _column_67,
+        _column_68,
+        _column_69,
+        _column_70,
+        _column_71,
+        _column_54,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape4 attachments = Shape4(
+    source: i0.VersionedTable(
+      entityName: 'attachments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK(bytes IS NOT NULL OR storage_path IS NOT NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_72,
+        _column_73,
+        _column_74,
+        _column_75,
+        _column_76,
+        _column_77,
+        _column_78,
+        _column_79,
+        _column_80,
+        _column_81,
+        _column_82,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape41 items = Shape41(
+    source: i0.VersionedTable(
+      entityName: 'items',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_205,
+        _column_10,
+        _column_98,
+        _column_206,
+        _column_207,
+        _column_208,
+        _column_209,
+        _column_210,
+        _column_211,
+        _column_212,
+        _column_213,
+        _column_214,
+        _column_215,
+        _column_216,
+        _column_217,
+        _column_218,
+        _column_219,
+        _column_220,
+        _column_221,
+        _column_222,
+        _column_223,
+        _column_224,
+        _column_225,
+        _column_226,
+        _column_227,
+        _column_228,
+        _column_54,
+        _column_299,
+        _column_325,
+        _column_326,
+        _column_327,
+        _column_328,
+        _column_329,
+        _column_330,
+        _column_344,
+        _column_345,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape42 stockLots = Shape42(
+    source: i0.VersionedTable(
+      entityName: 'stock_lots',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_236,
+        _column_237,
+        _column_238,
+        _column_239,
+        _column_240,
+        _column_217,
+        _column_241,
+        _column_242,
+        _column_243,
+        _column_244,
+        _column_245,
+        _column_331,
+        _column_346,
+        _column_347,
+        _column_348,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape43 warrantyClaims = Shape43(
+    source: i0.VersionedTable(
+      entityName: 'warranty_claims',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_349,
+        _column_350,
+        _column_351,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxWclaimsFirmLot = i1.Index(
+    'idx_wclaims_firm_lot',
+    'CREATE INDEX idx_wclaims_firm_lot ON warranty_claims (firm_id, lot_id)',
+  );
+  final i1.Index idxWclaimsLot = i1.Index(
+    'idx_wclaims_lot',
+    'CREATE INDEX idx_wclaims_lot ON warranty_claims (lot_id)',
+  );
+  late final Shape44 qistPlans = Shape44(
+    source: i0.VersionedTable(
+      entityName: 'qist_plans',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK(closed_on_local IS NULL OR closed_on_local >= sold_on_local)',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_246,
+        _column_339,
+        _column_352,
+        _column_353,
+        _column_354,
+        _column_355,
+        _column_356,
+        _column_357,
+        _column_358,
+        _column_359,
+        _column_360,
+        _column_361,
+        _column_362,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxQistDoc = i1.Index(
+    'idx_qist_doc',
+    'CREATE UNIQUE INDEX idx_qist_doc ON qist_plans (document_id)',
+  );
+  final i1.Index idxQistFirmParty = i1.Index(
+    'idx_qist_firm_party',
+    'CREATE INDEX idx_qist_firm_party ON qist_plans (firm_id, party_id)',
+  );
+  final i1.Index idxQistParty = i1.Index(
+    'idx_qist_party',
+    'CREATE INDEX idx_qist_party ON qist_plans (party_id)',
+  );
+  late final Shape45 qistInstalments = Shape45(
+    source: i0.VersionedTable(
+      entityName: 'qist_instalments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_363,
+        _column_364,
+        _column_365,
+        _column_182,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxQinstPlanSeq = i1.Index(
+    'idx_qinst_plan_seq',
+    'CREATE UNIQUE INDEX idx_qinst_plan_seq ON qist_instalments (plan_id, seq)',
+  );
+  final i1.Index idxQinstFirmDue = i1.Index(
+    'idx_qinst_firm_due',
+    'CREATE INDEX idx_qinst_firm_due ON qist_instalments (firm_id, due_on_local)',
+  );
+  late final Shape32 vans = Shape32(
+    source: i0.VersionedTable(
+      entityName: 'vans',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_313,
+        _column_314,
+        _column_54,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxVansLocation = i1.Index(
+    'idx_vans_location',
+    'CREATE UNIQUE INDEX idx_vans_location ON vans (firm_id, location_code)',
+  );
+  final i1.Index idxVansRider = i1.Index(
+    'idx_vans_rider',
+    'CREATE INDEX idx_vans_rider ON vans (rider_user_id)',
+  );
+  late final Shape10 accounts = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'accounts',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['CHECK(parent_id IS NULL OR parent_id <> id)'],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_57,
+        _column_10,
+        _column_164,
+        _column_165,
+        _column_166,
+        _column_167,
+        _column_168,
+        _column_54,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape11 paymentAccounts = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'payment_accounts',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_169,
+        _column_170,
+        _column_30,
+        _column_171,
+        _column_172,
+        _column_173,
+        _column_29,
+        _column_174,
+        _column_104,
+        _column_175,
+        _column_176,
+        _column_54,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape12 payments = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'payments',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK(tendered_paisa IS NULL OR(tendered_paisa >= amount_paisa AND change_paisa = tendered_paisa - amount_paisa))',
+        'CHECK(mode <> \'cheque\' OR cheque_no IS NOT NULL)',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_177,
+        _column_178,
+        _column_116,
+        _column_179,
+        _column_180,
+        _column_181,
+        _column_182,
+        _column_183,
+        _column_184,
+        _column_185,
+        _column_186,
+        _column_187,
+        _column_188,
+        _column_189,
+        _column_190,
+        _column_191,
+        _column_192,
+        _column_143,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape13 journalEntries = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'journal_entries',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['CHECK(total_debit_paisa = total_credit_paisa)'],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_193,
+        _column_194,
+        _column_195,
+        _column_113,
+        _column_196,
+        _column_152,
+        _column_197,
+        _column_198,
+        _column_199,
+        _column_200,
+        _column_201,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape34 vanSettlements = Shape34(
+    source: i0.VersionedTable(
+      entityName: 'van_settlements',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_316,
+        _column_317,
+        _column_318,
+        _column_319,
+        _column_320,
+        _column_311,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxVansettleDay = i1.Index(
+    'idx_vansettle_day',
+    'CREATE UNIQUE INDEX idx_vansettle_day ON van_settlements (firm_id, van_id, settled_on_local)',
+  );
+  final i1.Index idxVansettleVan = i1.Index(
+    'idx_vansettle_van',
+    'CREATE INDEX idx_vansettle_van ON van_settlements (van_id)',
+  );
+  final i1.Index idxVansettleJournal = i1.Index(
+    'idx_vansettle_journal',
+    'CREATE INDEX idx_vansettle_journal ON van_settlements (journal_entry_id)',
+  );
+  late final Shape29 boms = Shape29(
+    source: i0.VersionedTable(
+      entityName: 'boms',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_300,
+        _column_301,
+        _column_302,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxBomsFirm = i1.Index(
+    'idx_boms_firm',
+    'CREATE INDEX idx_boms_firm ON boms (firm_id, name)',
+  );
+  final i1.Index idxBomsOutput = i1.Index(
+    'idx_boms_output',
+    'CREATE INDEX idx_boms_output ON boms (output_item_id)',
+  );
+  late final Shape30 bomLines = Shape30(
+    source: i0.VersionedTable(
+      entityName: 'bom_lines',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_303,
+        _column_304,
+        _column_305,
+        _column_306,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxBomlinesFirm = i1.Index(
+    'idx_bomlines_firm',
+    'CREATE INDEX idx_bomlines_firm ON bom_lines (firm_id, bom_id)',
+  );
+  final i1.Index idxBomlinesBom = i1.Index(
+    'idx_bomlines_bom',
+    'CREATE INDEX idx_bomlines_bom ON bom_lines (bom_id, line_no)',
+  );
+  final i1.Index idxBomlinesItem = i1.Index(
+    'idx_bomlines_item',
+    'CREATE INDEX idx_bomlines_item ON bom_lines (component_item_id)',
+  );
+  late final Shape31 assemblies = Shape31(
+    source: i0.VersionedTable(
+      entityName: 'assemblies',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_303,
+        _column_307,
+        _column_308,
+        _column_300,
+        _column_301,
+        _column_309,
+        _column_310,
+        _column_311,
+        _column_312,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxAssembliesNo = i1.Index(
+    'idx_assemblies_no',
+    'CREATE UNIQUE INDEX idx_assemblies_no ON assemblies (firm_id, assembly_no)',
+  );
+  final i1.Index idxAssembliesBom = i1.Index(
+    'idx_assemblies_bom',
+    'CREATE INDEX idx_assemblies_bom ON assemblies (bom_id)',
+  );
+  final i1.Index idxAssembliesOutput = i1.Index(
+    'idx_assemblies_output',
+    'CREATE INDEX idx_assemblies_output ON assemblies (output_item_id)',
+  );
+  final i1.Index idxAssembliesJournal = i1.Index(
+    'idx_assemblies_journal',
+    'CREATE INDEX idx_assemblies_journal ON assemblies (journal_entry_id)',
+  );
+  late final Shape5 auditLog = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'audit_log',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_83,
+        _column_84,
+        _column_85,
+        _column_86,
+        _column_87,
+        _column_88,
+        _column_89,
+        _column_90,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxAuditEntity = i1.Index(
+    'idx_audit_entity',
+    'CREATE INDEX idx_audit_entity ON audit_log (entity_table, entity_id, at_utc)',
+  );
+  final i1.Index idxAuditFirmTime = i1.Index(
+    'idx_audit_firm_time',
+    'CREATE INDEX idx_audit_firm_time ON audit_log (firm_id, at_utc, id)',
+  );
+  final i1.Index idxAuditActor = i1.Index(
+    'idx_audit_actor',
+    'CREATE INDEX idx_audit_actor ON audit_log (firm_id, created_by, at_utc)',
+  );
+  final i1.Index idxAuditAction = i1.Index(
+    'idx_audit_action',
+    'CREATE INDEX idx_audit_action ON audit_log (firm_id, action_code, at_utc)',
+  );
+  late final Shape6 changeLog = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'change_log',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_91,
+        _column_84,
+        _column_85,
+        _column_92,
+        _column_93,
+        _column_94,
+        _column_95,
+        _column_90,
+        _column_96,
+        _column_97,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxChangelogSeq = i1.Index(
+    'idx_changelog_seq',
+    'CREATE UNIQUE INDEX idx_changelog_seq ON change_log (origin_device_id, seq)',
+  );
+  final i1.Index idxChangelogOutbox = i1.Index(
+    'idx_changelog_outbox',
+    'CREATE INDEX idx_changelog_outbox ON change_log (firm_id, sync_state, seq)',
+  );
+  final i1.Index idxChangelogEntity = i1.Index(
+    'idx_changelog_entity',
+    'CREATE INDEX idx_changelog_entity ON change_log (entity_table, entity_id, seq)',
+  );
+  final i1.Index idxAttachOwner = i1.Index(
+    'idx_attach_owner',
+    'CREATE INDEX idx_attach_owner ON attachments (owner_table, owner_id)',
+  );
+  final i1.Index idxAttachFirmKind = i1.Index(
+    'idx_attach_firm_kind',
+    'CREATE INDEX idx_attach_firm_kind ON attachments (firm_id, kind)',
+  );
+  final i1.Index idxAttachSha = i1.Index(
+    'idx_attach_sha',
+    'CREATE INDEX idx_attach_sha ON attachments (firm_id, sha256)',
+  );
+  final i1.Index idxTaxrulesCode = i1.Index(
+    'idx_taxrules_code',
+    'CREATE UNIQUE INDEX idx_taxrules_code ON tax_rules (firm_id, code, effective_from_local)',
+  );
+  final i1.Index idxTaxrulesLookup = i1.Index(
+    'idx_taxrules_lookup',
+    'CREATE INDEX idx_taxrules_lookup ON tax_rules (firm_id, tax_kind, jurisdiction, effective_from_local)',
+  );
+  late final Shape9 printJobs = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'print_jobs',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK((status = \'sending\')=(finished_at_utc IS NULL))',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_151,
+        _column_152,
+        _column_153,
+        _column_154,
+        _column_155,
+        _column_156,
+        _column_157,
+        _column_158,
+        _column_159,
+        _column_160,
+        _column_161,
+        _column_162,
+        _column_163,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxPrintjobsKey = i1.Index(
+    'idx_printjobs_key',
+    'CREATE UNIQUE INDEX idx_printjobs_key ON print_jobs (firm_id, job_key)',
+  );
+  final i1.Index idxPrintjobsDoc = i1.Index(
+    'idx_printjobs_doc',
+    'CREATE INDEX idx_printjobs_doc ON print_jobs (document_id)',
+  );
+  final i1.Index idxPrintjobsOpen = i1.Index(
+    'idx_printjobs_open',
+    'CREATE INDEX idx_printjobs_open ON print_jobs (firm_id, status, started_at_utc)',
+  );
+  final i1.Index idxAccountsCode = i1.Index(
+    'idx_accounts_code',
+    'CREATE UNIQUE INDEX idx_accounts_code ON accounts (firm_id, code)',
+  );
+  final i1.Index idxAccountsSyskey = i1.Index(
+    'idx_accounts_syskey',
+    'CREATE UNIQUE INDEX idx_accounts_syskey ON accounts (firm_id, system_key) WHERE system_key IS NOT NULL',
+  );
+  final i1.Index idxAccountsParent = i1.Index(
+    'idx_accounts_parent',
+    'CREATE INDEX idx_accounts_parent ON accounts (parent_id)',
+  );
+  final i1.Index idxAccountsType = i1.Index(
+    'idx_accounts_type',
+    'CREATE INDEX idx_accounts_type ON accounts (firm_id, account_type)',
+  );
+  final i1.Index idxJeNo = i1.Index(
+    'idx_je_no',
+    'CREATE UNIQUE INDEX idx_je_no ON journal_entries (firm_id, entry_no)',
+  );
+  final i1.Index idxJeDate = i1.Index(
+    'idx_je_date',
+    'CREATE INDEX idx_je_date ON journal_entries (firm_id, entry_date_local, id)',
+  );
+  final i1.Index idxJeDoc = i1.Index(
+    'idx_je_doc',
+    'CREATE INDEX idx_je_doc ON journal_entries (document_id)',
+  );
+  final i1.Index idxJePayment = i1.Index(
+    'idx_je_payment',
+    'CREATE INDEX idx_je_payment ON journal_entries (payment_id)',
+  );
+  final i1.Index idxJeReverses = i1.Index(
+    'idx_je_reverses',
+    'CREATE INDEX idx_je_reverses ON journal_entries (reverses_entry_id)',
+  );
+  final i1.Index idxJeSource = i1.Index(
+    'idx_je_source',
+    'CREATE INDEX idx_je_source ON journal_entries (firm_id, source_type, entry_date_local)',
+  );
+  late final Shape16 journalLines = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'journal_lines',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['CHECK((debit_paisa = 0)<>(credit_paisa = 0))'],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_229,
+        _column_230,
+        _column_231,
+        _column_232,
+        _column_233,
+        _column_116,
+        _column_234,
+        _column_235,
+        _column_199,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxJlSeq = i1.Index(
+    'idx_jl_seq',
+    'CREATE UNIQUE INDEX idx_jl_seq ON journal_lines (journal_entry_id, line_no)',
+  );
+  final i1.Index idxJlAccount = i1.Index(
+    'idx_jl_account',
+    'CREATE INDEX idx_jl_account ON journal_lines (account_id, created_at_utc)',
+  );
+  final i1.Index idxJlFirmAccount = i1.Index(
+    'idx_jl_firm_account',
+    'CREATE INDEX idx_jl_firm_account ON journal_lines (firm_id, account_id)',
+  );
+  final i1.Index idxJlParty = i1.Index(
+    'idx_jl_party',
+    'CREATE INDEX idx_jl_party ON journal_lines (party_id, created_at_utc)',
+  );
+  final i1.Index idxJlItem = i1.Index(
+    'idx_jl_item',
+    'CREATE INDEX idx_jl_item ON journal_lines (item_id, created_at_utc)',
+  );
+  final i1.Index idxLotsNo = i1.Index(
+    'idx_lots_no',
+    'CREATE UNIQUE INDEX idx_lots_no ON stock_lots (firm_id, item_id, lot_no)',
+  );
+  final i1.Index idxLotsItem = i1.Index(
+    'idx_lots_item',
+    'CREATE INDEX idx_lots_item ON stock_lots (item_id)',
+  );
+  final i1.Index idxLotsExpiry = i1.Index(
+    'idx_lots_expiry',
+    'CREATE INDEX idx_lots_expiry ON stock_lots (firm_id, expiry_date_local) WHERE expiry_date_local IS NOT NULL',
+  );
+  final i1.Index idxLotsGtin = i1.Index(
+    'idx_lots_gtin',
+    'CREATE INDEX idx_lots_gtin ON stock_lots (firm_id, gtin) WHERE gtin IS NOT NULL',
+  );
+  final i1.Index idxLotsSupplier = i1.Index(
+    'idx_lots_supplier',
+    'CREATE INDEX idx_lots_supplier ON stock_lots (supplier_party_id)',
+  );
+  final i1.Index idxLotsSerial = i1.Index(
+    'idx_lots_serial',
+    'CREATE INDEX idx_lots_serial ON stock_lots (firm_id, serial) WHERE serial IS NOT NULL',
+  );
+  final i1.Index idxLotsSerial2 = i1.Index(
+    'idx_lots_serial2',
+    'CREATE INDEX idx_lots_serial2 ON stock_lots (firm_id, serial_2) WHERE serial_2 IS NOT NULL',
+  );
+  late final Shape46 documentLines = Shape46(
+    source: i0.VersionedTable(
+      entityName: 'document_lines',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_246,
+        _column_230,
+        _column_234,
+        _column_247,
+        _column_248,
+        _column_249,
+        _column_208,
+        _column_250,
+        _column_251,
+        _column_252,
+        _column_253,
+        _column_254,
+        _column_217,
+        _column_255,
+        _column_256,
+        _column_257,
+        _column_258,
+        _column_129,
+        _column_130,
+        _column_259,
+        _column_138,
+        _column_260,
+        _column_366,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape19 stockLedger = Shape19(
+    source: i0.VersionedTable(
+      entityName: 'stock_ledger',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_236,
+        _column_261,
+        _column_255,
+        _column_152,
+        _column_262,
+        _column_263,
+        _column_264,
+        _column_265,
+        _column_266,
+        _column_267,
+        _column_268,
+        _column_269,
+        _column_270,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxStockPosition = i1.Index(
+    'idx_stock_position',
+    'CREATE INDEX idx_stock_position ON stock_ledger (firm_id, item_id, location_code, occurred_at_utc, id)',
+  );
+  final i1.Index idxStockItem = i1.Index(
+    'idx_stock_item',
+    'CREATE INDEX idx_stock_item ON stock_ledger (item_id, occurred_at_utc)',
+  );
+  final i1.Index idxStockDoc = i1.Index(
+    'idx_stock_doc',
+    'CREATE INDEX idx_stock_doc ON stock_ledger (document_id)',
+  );
+  final i1.Index idxStockDocLine = i1.Index(
+    'idx_stock_doc_line',
+    'CREATE INDEX idx_stock_doc_line ON stock_ledger (document_line_id)',
+  );
+  final i1.Index idxStockLot = i1.Index(
+    'idx_stock_lot',
+    'CREATE INDEX idx_stock_lot ON stock_ledger (lot_id, occurred_at_utc)',
+  );
+  final i1.Index idxStockDaybook = i1.Index(
+    'idx_stock_daybook',
+    'CREATE INDEX idx_stock_daybook ON stock_ledger (firm_id, occurred_on_local, txn_type)',
+  );
+  final i1.Index idxPaymentsNo = i1.Index(
+    'idx_payments_no',
+    'CREATE UNIQUE INDEX idx_payments_no ON payments (firm_id, payment_no)',
+  );
+  final i1.Index idxPaymentsParty = i1.Index(
+    'idx_payments_party',
+    'CREATE INDEX idx_payments_party ON payments (party_id, payment_date_local)',
+  );
+  final i1.Index idxPaymentsAccount = i1.Index(
+    'idx_payments_account',
+    'CREATE INDEX idx_payments_account ON payments (payment_account_id, payment_date_local)',
+  );
+  final i1.Index idxPaymentsDaybook = i1.Index(
+    'idx_payments_daybook',
+    'CREATE INDEX idx_payments_daybook ON payments (firm_id, payment_date_local, direction)',
+  );
+  final i1.Index idxPaymentsCheques = i1.Index(
+    'idx_payments_cheques',
+    'CREATE INDEX idx_payments_cheques ON payments (firm_id, cheque_status, cheque_date_utc) WHERE cheque_no IS NOT NULL',
+  );
+  final i1.Index idxPaymentsChequeImg = i1.Index(
+    'idx_payments_cheque_img',
+    'CREATE INDEX idx_payments_cheque_img ON payments (cheque_image_attachment_id)',
+  );
+  late final Shape20 paymentAllocations = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'payment_allocations',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_271,
+        _column_246,
+        _column_182,
+        _column_272,
+        _column_273,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxAllocPair = i1.Index(
+    'idx_alloc_pair',
+    'CREATE UNIQUE INDEX idx_alloc_pair ON payment_allocations (payment_id, document_id)',
+  );
+  final i1.Index idxAllocDoc = i1.Index(
+    'idx_alloc_doc',
+    'CREATE INDEX idx_alloc_doc ON payment_allocations (document_id)',
+  );
+  final i1.Index idxAllocFirm = i1.Index(
+    'idx_alloc_firm',
+    'CREATE INDEX idx_alloc_firm ON payment_allocations (firm_id, allocated_at_utc)',
+  );
+  final i1.Index idxDocumentsNo = i1.Index(
+    'idx_documents_no',
+    'CREATE UNIQUE INDEX idx_documents_no ON documents (firm_id, doc_type, doc_no, revision)',
+  );
+  final i1.Index idxDocumentsList = i1.Index(
+    'idx_documents_list',
+    'CREATE INDEX idx_documents_list ON documents (firm_id, doc_type, doc_date_local, id)',
+  );
+  final i1.Index idxDocumentsParty = i1.Index(
+    'idx_documents_party',
+    'CREATE INDEX idx_documents_party ON documents (party_id, doc_date_local)',
+  );
+  final i1.Index idxDocumentsStatus = i1.Index(
+    'idx_documents_status',
+    'CREATE INDEX idx_documents_status ON documents (firm_id, status, doc_date_local)',
+  );
+  final i1.Index idxDocumentsOpenBalance = i1.Index(
+    'idx_documents_open_balance',
+    'CREATE INDEX idx_documents_open_balance ON documents (firm_id, party_id, doc_date_local) WHERE balance_paisa <> 0',
+  );
+  final i1.Index idxDocumentsSupersedes = i1.Index(
+    'idx_documents_supersedes',
+    'CREATE INDEX idx_documents_supersedes ON documents (supersedes_id)',
+  );
+  final i1.Index idxDocumentsVoidedBy = i1.Index(
+    'idx_documents_voided_by',
+    'CREATE INDEX idx_documents_voided_by ON documents (voided_by_id)',
+  );
+  final i1.Index idxDocumentsSalesperson = i1.Index(
+    'idx_documents_salesperson',
+    'CREATE INDEX idx_documents_salesperson ON documents (salesperson_id)',
+  );
+  final i1.Index idxDocumentsFbr = i1.Index(
+    'idx_documents_fbr',
+    'CREATE INDEX idx_documents_fbr ON documents (firm_id, fbr_status) WHERE fbr_status IS NOT NULL',
+  );
+  final i1.Index idxDoclinesSeq = i1.Index(
+    'idx_doclines_seq',
+    'CREATE UNIQUE INDEX idx_doclines_seq ON document_lines (document_id, line_no)',
+  );
+  final i1.Index idxDoclinesItem = i1.Index(
+    'idx_doclines_item',
+    'CREATE INDEX idx_doclines_item ON document_lines (item_id, created_at_utc)',
+  );
+  final i1.Index idxDoclinesFirmItem = i1.Index(
+    'idx_doclines_firm_item',
+    'CREATE INDEX idx_doclines_firm_item ON document_lines (firm_id, item_id)',
+  );
+  final i1.Index idxDoclinesUnit = i1.Index(
+    'idx_doclines_unit',
+    'CREATE INDEX idx_doclines_unit ON document_lines (unit_id)',
+  );
+  final i1.Index idxDoclinesLot = i1.Index(
+    'idx_doclines_lot',
+    'CREATE INDEX idx_doclines_lot ON document_lines (lot_id)',
+  );
+  late final Shape21 documentLineTaxes = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'document_line_taxes',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_274,
+        _column_246,
+        _column_219,
+        _column_60,
+        _column_275,
+        _column_62,
+        _column_276,
+        _column_277,
+        _column_278,
+        _column_68,
+        _column_69,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxLinetaxLine = i1.Index(
+    'idx_linetax_line',
+    'CREATE INDEX idx_linetax_line ON document_line_taxes (document_line_id)',
+  );
+  final i1.Index idxLinetaxDoc = i1.Index(
+    'idx_linetax_doc',
+    'CREATE INDEX idx_linetax_doc ON document_line_taxes (document_id)',
+  );
+  final i1.Index idxLinetaxRegister = i1.Index(
+    'idx_linetax_register',
+    'CREATE INDEX idx_linetax_register ON document_line_taxes (firm_id, tax_kind, created_at_utc)',
+  );
+  final i1.Index idxLinetaxRule = i1.Index(
+    'idx_linetax_rule',
+    'CREATE INDEX idx_linetax_rule ON document_line_taxes (tax_rule_id)',
+  );
+  late final Shape22 docLinks = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'doc_links',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['CHECK(from_document_id <> to_document_id)'],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_279,
+        _column_280,
+        _column_281,
+        _column_282,
+        _column_89,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxDoclinksPair = i1.Index(
+    'idx_doclinks_pair',
+    'CREATE UNIQUE INDEX idx_doclinks_pair ON doc_links (from_document_id, to_document_id, link_type)',
+  );
+  final i1.Index idxDoclinksTo = i1.Index(
+    'idx_doclinks_to',
+    'CREATE INDEX idx_doclinks_to ON doc_links (to_document_id)',
+  );
+  final i1.Index idxDoclinksFirm = i1.Index(
+    'idx_doclinks_firm',
+    'CREATE INDEX idx_doclinks_firm ON doc_links (firm_id, link_type)',
+  );
+  late final Shape39 prescriptions = Shape39(
+    source: i0.VersionedTable(
+      entityName: 'prescriptions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_246,
+        _column_274,
+        _column_236,
+        _column_332,
+        _column_333,
+        _column_334,
+        _column_335,
+        _column_336,
+        _column_337,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxPrescriptionsLine = i1.Index(
+    'idx_prescriptions_line',
+    'CREATE UNIQUE INDEX idx_prescriptions_line ON prescriptions (document_line_id)',
+  );
+  final i1.Index idxPrescriptionsDoc = i1.Index(
+    'idx_prescriptions_doc',
+    'CREATE INDEX idx_prescriptions_doc ON prescriptions (document_id)',
+  );
+  final i1.Index idxPrescriptionsFirmItem = i1.Index(
+    'idx_prescriptions_firm_item',
+    'CREATE INDEX idx_prescriptions_firm_item ON prescriptions (firm_id, item_id)',
+  );
+  final i1.Index idxPrescriptionsItem = i1.Index(
+    'idx_prescriptions_item',
+    'CREATE INDEX idx_prescriptions_item ON prescriptions (item_id)',
+  );
+  final i1.Index idxUnitsCode = i1.Index(
+    'idx_units_code',
+    'CREATE UNIQUE INDEX idx_units_code ON units (firm_id, code)',
+  );
+  late final Shape23 unitConversions = Shape23(
+    source: i0.VersionedTable(
+      entityName: 'unit_conversions',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: ['CHECK(from_unit_id <> to_unit_id)'],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_283,
+        _column_284,
+        _column_285,
+        _column_234,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxUconvFirmwide = i1.Index(
+    'idx_uconv_firmwide',
+    'CREATE UNIQUE INDEX idx_uconv_firmwide ON unit_conversions (firm_id, from_unit_id, to_unit_id) WHERE item_id IS NULL AND deleted_at_utc IS NULL',
+  );
+  final i1.Index idxUconvPeritem = i1.Index(
+    'idx_uconv_peritem',
+    'CREATE UNIQUE INDEX idx_uconv_peritem ON unit_conversions (firm_id, item_id, from_unit_id, to_unit_id) WHERE item_id IS NOT NULL AND deleted_at_utc IS NULL',
+  );
+  final i1.Index idxUconvFirmItem = i1.Index(
+    'idx_uconv_firm_item',
+    'CREATE INDEX idx_uconv_firm_item ON unit_conversions (firm_id, item_id)',
+  );
+  final i1.Index idxUconvFromUnit = i1.Index(
+    'idx_uconv_from_unit',
+    'CREATE INDEX idx_uconv_from_unit ON unit_conversions (from_unit_id)',
+  );
+  final i1.Index idxUconvToUnit = i1.Index(
+    'idx_uconv_to_unit',
+    'CREATE INDEX idx_uconv_to_unit ON unit_conversions (to_unit_id)',
+  );
+  final i1.Index idxUconvItem = i1.Index(
+    'idx_uconv_item',
+    'CREATE INDEX idx_uconv_item ON unit_conversions (item_id)',
+  );
+  final i1.Index idxItemsFirmName = i1.Index(
+    'idx_items_firm_name',
+    'CREATE INDEX idx_items_firm_name ON items (firm_id, name_search)',
+  );
+  final i1.Index idxItemsGeneric = i1.Index(
+    'idx_items_generic',
+    'CREATE INDEX idx_items_generic ON items (firm_id, generic_search) WHERE generic_search IS NOT NULL',
+  );
+  final i1.Index idxItemsCode = i1.Index(
+    'idx_items_code',
+    'CREATE UNIQUE INDEX idx_items_code ON items (firm_id, code) WHERE code IS NOT NULL',
+  );
+  final i1.Index idxItemsBarcode = i1.Index(
+    'idx_items_barcode',
+    'CREATE UNIQUE INDEX idx_items_barcode ON items (firm_id, barcode) WHERE barcode IS NOT NULL',
+  );
+  final i1.Index idxItemsCategory = i1.Index(
+    'idx_items_category',
+    'CREATE INDEX idx_items_category ON items (firm_id, category)',
+  );
+  final i1.Index idxItemsBaseUnit = i1.Index(
+    'idx_items_base_unit',
+    'CREATE INDEX idx_items_base_unit ON items (base_unit_id)',
+  );
+  final i1.Index idxItemsDisplayUnit = i1.Index(
+    'idx_items_display_unit',
+    'CREATE INDEX idx_items_display_unit ON items (display_unit_id)',
+  );
+  final i1.Index idxItemsTaxRule = i1.Index(
+    'idx_items_tax_rule',
+    'CREATE INDEX idx_items_tax_rule ON items (tax_rule_id)',
+  );
+  final i1.Index idxItemsImage = i1.Index(
+    'idx_items_image',
+    'CREATE INDEX idx_items_image ON items (image_attachment_id)',
+  );
+  final i1.Index idxPartiesFirmName = i1.Index(
+    'idx_parties_firm_name',
+    'CREATE INDEX idx_parties_firm_name ON parties (firm_id, name_search)',
+  );
+  final i1.Index idxPartiesFirmType = i1.Index(
+    'idx_parties_firm_type',
+    'CREATE INDEX idx_parties_firm_type ON parties (firm_id, party_type)',
+  );
+  final i1.Index idxPartiesPhone = i1.Index(
+    'idx_parties_phone',
+    'CREATE INDEX idx_parties_phone ON parties (firm_id, phone) WHERE phone IS NOT NULL',
+  );
+  final i1.Index idxPayacctFirm = i1.Index(
+    'idx_payacct_firm',
+    'CREATE INDEX idx_payacct_firm ON payment_accounts (firm_id, is_active)',
+  );
+  final i1.Index idxPayacctLedger = i1.Index(
+    'idx_payacct_ledger',
+    'CREATE INDEX idx_payacct_ledger ON payment_accounts (ledger_account_id)',
+  );
+  final i1.Index idxPayacctQr = i1.Index(
+    'idx_payacct_qr',
+    'CREATE INDEX idx_payacct_qr ON payment_accounts (qr_attachment_id)',
+  );
+  late final Shape24 settings = Shape24(
+    source: i0.VersionedTable(
+      entityName: 'settings',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_286,
+        _column_287,
+        _column_288,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxUsersFirm = i1.Index(
+    'idx_users_firm',
+    'CREATE INDEX idx_users_firm ON users (firm_id, is_active)',
+  );
+  final i1.Index idxDevicesFirm = i1.Index(
+    'idx_devices_firm',
+    'CREATE INDEX idx_devices_firm ON devices (firm_id, last_seen_at_utc)',
+  );
+  final i1.Index idxSettingsKey = i1.Index(
+    'idx_settings_key',
+    'CREATE UNIQUE INDEX idx_settings_key ON settings (firm_id, setting_key)',
+  );
+  late final Shape25 numberingSequences = Shape25(
+    source: i0.VersionedTable(
+      entityName: 'numbering_sequences',
+      withoutRowId: false,
+      isStrict: true,
+      tableConstraints: [
+        'CHECK(block_end >= block_start)',
+        'CHECK(next_value >= block_start)',
+      ],
+      columns: [
+        _column_0,
+        _column_33,
+        _column_2,
+        _column_3,
+        _column_45,
+        _column_46,
+        _column_6,
+        _column_34,
+        _column_8,
+        _column_9,
+        _column_289,
+        _column_290,
+        _column_113,
+        _column_291,
+        _column_292,
+        _column_293,
+        _column_294,
+        _column_295,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Index idxNumberingScope = i1.Index(
+    'idx_numbering_scope',
+    'CREATE UNIQUE INDEX idx_numbering_scope ON numbering_sequences (firm_id, doc_type, device_id, fiscal_year)',
+  );
+  final i1.Index idxNumberingDevice = i1.Index(
+    'idx_numbering_device',
+    'CREATE INDEX idx_numbering_device ON numbering_sequences (device_id)',
+  );
+}
+
+i1.GeneratedColumn<String> _column_338(
+  String aliasedName,
+) => i1.GeneratedColumn<String>(
+  'business_kind',
+  aliasedName,
+  false,
+  type: i1.DriftSqlType.string,
+  $customConstraints:
+      'NOT NULL DEFAULT \'general\' CHECK (business_kind IN (\'general\', \'kiryana\', \'pharmacy\', \'garments\', \'cloth\', \'hardware\', \'electronics\', \'restaurant\', \'services\', \'wholesale\', \'mobile\'))',
+  defaultValue: const i1.CustomExpression('\'general\''),
+);
+
+class Shape40 extends i0.VersionedTable {
+  Shape40({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get documentId =>
+      columnsByName['document_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get partyId =>
+      columnsByName['party_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sellerName =>
+      columnsByName['seller_name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sellerCnic =>
+      columnsByName['seller_cnic']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get sellerPhone =>
+      columnsByName['seller_phone']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get conditionNote =>
+      columnsByName['condition_note']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_339(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'party_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints:
+          'NOT NULL REFERENCES parties(id)DEFERRABLE INITIALLY DEFERRED',
+    );
+i1.GeneratedColumn<String> _column_340(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'seller_name',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL CHECK (length(trim(seller_name)) > 0)',
+    );
+i1.GeneratedColumn<String> _column_341(
+  String aliasedName,
+) => i1.GeneratedColumn<String>(
+  'seller_cnic',
+  aliasedName,
+  false,
+  type: i1.DriftSqlType.string,
+  $customConstraints:
+      'NOT NULL CHECK (length(seller_cnic) = 13 AND seller_cnic NOT GLOB \'*[^0-9]*\')',
+);
+i1.GeneratedColumn<String> _column_342(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'seller_phone',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_343(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'condition_note',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+
+class Shape41 extends i0.VersionedTable {
+  Shape41({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get code =>
+      columnsByName['code']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get nameSearch =>
+      columnsByName['name_search']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get itemType =>
+      columnsByName['item_type']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get category =>
+      columnsByName['category']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get description =>
+      columnsByName['description']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get barcode =>
+      columnsByName['barcode']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get baseUnitId =>
+      columnsByName['base_unit_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get displayUnitId =>
+      columnsByName['display_unit_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get displayFactorThousandths =>
+      columnsByName['display_factor_thousandths']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get saleRateMilliPaisa =>
+      columnsByName['sale_rate_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get wholesaleRateMilliPaisa =>
+      columnsByName['wholesale_rate_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get purchaseRateMilliPaisa =>
+      columnsByName['purchase_rate_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get avgCostMilliPaisa =>
+      columnsByName['avg_cost_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get mrpPaisa =>
+      columnsByName['mrp_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get hsCode =>
+      columnsByName['hs_code']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get taxRuleId =>
+      columnsByName['tax_rule_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get priceIncludesTax =>
+      columnsByName['price_includes_tax']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isThirdSchedule =>
+      columnsByName['is_third_schedule']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get trackStock =>
+      columnsByName['track_stock']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get trackBatch =>
+      columnsByName['track_batch']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get trackSerial =>
+      columnsByName['track_serial']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get minStockThousandths =>
+      columnsByName['min_stock_thousandths']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get openingStockThousandths =>
+      columnsByName['opening_stock_thousandths']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get openingRateMilliPaisa =>
+      columnsByName['opening_rate_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get imageAttachmentId =>
+      columnsByName['image_attachment_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get isActive =>
+      columnsByName['is_active']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get vipRateMilliPaisa =>
+      columnsByName['vip_rate_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get negativeStock =>
+      columnsByName['negative_stock']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get genericName =>
+      columnsByName['generic_name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get strength =>
+      columnsByName['strength']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get genericSearch =>
+      columnsByName['generic_search']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get manufacturer =>
+      columnsByName['manufacturer']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get scheduleClass =>
+      columnsByName['schedule_class']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get warrantyMonths =>
+      columnsByName['warranty_months']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get warrantyKind =>
+      columnsByName['warranty_kind']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<int> _column_344(
+  String aliasedName,
+) => i1.GeneratedColumn<int>(
+  'warranty_months',
+  aliasedName,
+  true,
+  type: i1.DriftSqlType.int,
+  $customConstraints:
+      'CHECK (warranty_months IS NULL OR warranty_months BETWEEN 1 AND 120)',
+);
+i1.GeneratedColumn<String> _column_345(
+  String aliasedName,
+) => i1.GeneratedColumn<String>(
+  'warranty_kind',
+  aliasedName,
+  true,
+  type: i1.DriftSqlType.string,
+  $customConstraints:
+      'CHECK (warranty_kind IS NULL OR warranty_kind IN (\'shop\', \'brand\'))',
+);
+
+class Shape42 extends i0.VersionedTable {
+  Shape42({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get itemId =>
+      columnsByName['item_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get lotNo =>
+      columnsByName['lot_no']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get batchNo =>
+      columnsByName['batch_no']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get mfgDateLocal =>
+      columnsByName['mfg_date_local']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get expiryDateLocal =>
+      columnsByName['expiry_date_local']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get mrpPaisa =>
+      columnsByName['mrp_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get costMilliPaisa =>
+      columnsByName['cost_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get gtin =>
+      columnsByName['gtin']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get serial =>
+      columnsByName['serial']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get receivedAtUtc =>
+      columnsByName['received_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get supplierPartyId =>
+      columnsByName['supplier_party_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get holdReason =>
+      columnsByName['hold_reason']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get serial2 =>
+      columnsByName['serial_2']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get ptaStatus =>
+      columnsByName['pta_status']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get ptaCheckedOnLocal =>
+      columnsByName['pta_checked_on_local']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_346(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'serial_2',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_347(
+  String aliasedName,
+) => i1.GeneratedColumn<String>(
+  'pta_status',
+  aliasedName,
+  true,
+  type: i1.DriftSqlType.string,
+  $customConstraints:
+      'CHECK (pta_status IS NULL OR pta_status IN (\'approved\', \'valid_unapproved\', \'non_compliant\', \'unknown\'))',
+);
+i1.GeneratedColumn<String> _column_348(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'pta_checked_on_local',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+
+class Shape43 extends i0.VersionedTable {
+  Shape43({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get lotId =>
+      columnsByName['lot_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get claimedOnLocal =>
+      columnsByName['claimed_on_local']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get note =>
+      columnsByName['note']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_349(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'lot_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints:
+          'NOT NULL REFERENCES stock_lots(id)DEFERRABLE INITIALLY DEFERRED',
+    );
+i1.GeneratedColumn<String> _column_350(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'claimed_on_local',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<String> _column_351(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'note',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL CHECK (length(trim(note)) > 0)',
+    );
+
+class Shape44 extends i0.VersionedTable {
+  Shape44({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get documentId =>
+      columnsByName['document_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get partyId =>
+      columnsByName['party_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get soldOnLocal =>
+      columnsByName['sold_on_local']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get downPaymentPaisa =>
+      columnsByName['down_payment_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get markupPaisa =>
+      columnsByName['markup_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get financedPaisa =>
+      columnsByName['financed_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get instalmentCount =>
+      columnsByName['instalment_count']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get dueDay =>
+      columnsByName['due_day']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get guarantorName =>
+      columnsByName['guarantor_name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get guarantorCnic =>
+      columnsByName['guarantor_cnic']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get guarantorPhone =>
+      columnsByName['guarantor_phone']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get closedOnLocal =>
+      columnsByName['closed_on_local']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get closeNote =>
+      columnsByName['close_note']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_352(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'sold_on_local',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+i1.GeneratedColumn<int> _column_353(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'down_payment_paisa',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (down_payment_paisa >= 0)',
+    );
+i1.GeneratedColumn<int> _column_354(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'markup_paisa',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL DEFAULT 0 CHECK (markup_paisa >= 0)',
+      defaultValue: const i1.CustomExpression('0'),
+    );
+i1.GeneratedColumn<int> _column_355(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'financed_paisa',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (financed_paisa > 0)',
+    );
+i1.GeneratedColumn<int> _column_356(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'instalment_count',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (instalment_count BETWEEN 1 AND 60)',
+    );
+i1.GeneratedColumn<int> _column_357(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'due_day',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (due_day BETWEEN 1 AND 31)',
+    );
+i1.GeneratedColumn<String> _column_358(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'guarantor_name',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_359(
+  String aliasedName,
+) => i1.GeneratedColumn<String>(
+  'guarantor_cnic',
+  aliasedName,
+  true,
+  type: i1.DriftSqlType.string,
+  $customConstraints:
+      'CHECK (guarantor_cnic IS NULL OR(length(guarantor_cnic) = 13 AND guarantor_cnic NOT GLOB \'*[^0-9]*\'))',
+);
+i1.GeneratedColumn<String> _column_360(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'guarantor_phone',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_361(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'closed_on_local',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+i1.GeneratedColumn<String> _column_362(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'close_note',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
+
+class Shape45 extends i0.VersionedTable {
+  Shape45({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get planId =>
+      columnsByName['plan_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get seq =>
+      columnsByName['seq']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get dueOnLocal =>
+      columnsByName['due_on_local']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get amountPaisa =>
+      columnsByName['amount_paisa']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<String> _column_363(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'plan_id',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints:
+          'NOT NULL REFERENCES qist_plans(id)DEFERRABLE INITIALLY DEFERRED',
+    );
+i1.GeneratedColumn<int> _column_364(String aliasedName) =>
+    i1.GeneratedColumn<int>(
+      'seq',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.int,
+      $customConstraints: 'NOT NULL CHECK (seq >= 1)',
+    );
+i1.GeneratedColumn<String> _column_365(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'due_on_local',
+      aliasedName,
+      false,
+      type: i1.DriftSqlType.string,
+      $customConstraints: 'NOT NULL',
+    );
+
+class Shape46 extends i0.VersionedTable {
+  Shape46({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<String> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get firmId =>
+      columnsByName['firm_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get createdAtUtc =>
+      columnsByName['created_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get updatedAtUtc =>
+      columnsByName['updated_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get createdBy =>
+      columnsByName['created_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get updatedBy =>
+      columnsByName['updated_by']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get deletedAtUtc =>
+      columnsByName['deleted_at_utc']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get originDeviceId =>
+      columnsByName['origin_device_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hlc =>
+      columnsByName['hlc']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get rev =>
+      columnsByName['rev']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get documentId =>
+      columnsByName['document_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get lineNo =>
+      columnsByName['line_no']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get itemId =>
+      columnsByName['item_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get itemNameSnapshot =>
+      columnsByName['item_name_snapshot']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get itemCodeSnapshot =>
+      columnsByName['item_code_snapshot']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get hsCodeSnapshot =>
+      columnsByName['hs_code_snapshot']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get description =>
+      columnsByName['description']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get qtyThousandths =>
+      columnsByName['qty_thousandths']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get unitId =>
+      columnsByName['unit_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get unitCodeSnapshot =>
+      columnsByName['unit_code_snapshot']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get baseQtyThousandths =>
+      columnsByName['base_qty_thousandths']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get rateMilliPaisa =>
+      columnsByName['rate_milli_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get mrpPaisa =>
+      columnsByName['mrp_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get lotId =>
+      columnsByName['lot_id']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get grossPaisa =>
+      columnsByName['gross_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get discountBp =>
+      columnsByName['discount_bp']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get discountPaisa =>
+      columnsByName['discount_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get taxablePaisa =>
+      columnsByName['taxable_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get taxPaisa =>
+      columnsByName['tax_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get lineTotalPaisa =>
+      columnsByName['line_total_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get costPaisa =>
+      columnsByName['cost_paisa']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get isFreeItem =>
+      columnsByName['is_free_item']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get warrantyUntilLocal =>
+      columnsByName['warranty_until_local']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<String> _column_366(String aliasedName) =>
+    i1.GeneratedColumn<String>(
+      'warranty_until_local',
+      aliasedName,
+      true,
+      type: i1.DriftSqlType.string,
+      $customConstraints: '',
+    );
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -20999,6 +23544,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema9 schema) from8To9,
   required Future<void> Function(i1.Migrator m, Schema10 schema) from9To10,
   required Future<void> Function(i1.Migrator m, Schema11 schema) from10To11,
+  required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -21052,6 +23598,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from10To11(migrator, schema);
         return 11;
+      case 11:
+        final schema = Schema12(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from11To12(migrator, schema);
+        return 12;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -21069,6 +23620,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema9 schema) from8To9,
   required Future<void> Function(i1.Migrator m, Schema10 schema) from9To10,
   required Future<void> Function(i1.Migrator m, Schema11 schema) from10To11,
+  required Future<void> Function(i1.Migrator m, Schema12 schema) from11To12,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -21081,5 +23633,6 @@ i1.OnUpgrade stepByStep({
     from8To9: from8To9,
     from9To10: from9To10,
     from10To11: from10To11,
+    from11To12: from11To12,
   ),
 );

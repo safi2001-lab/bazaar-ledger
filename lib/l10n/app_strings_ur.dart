@@ -7601,4 +7601,508 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get recurringPickDate => 'Tareekh chunein';
+
+  @override
+  String get businessKindMobile => 'Mobile shop';
+
+  @override
+  String get mobileSearchTitle => 'Phone dhoondein';
+
+  @override
+  String get mobileSearchLabel => 'IMEI (poora, ya aakhri hindsay)';
+
+  @override
+  String get mobileSearchHint => 'maslan 43809';
+
+  @override
+  String get mobileSearchTypeMore =>
+      'IMEI 1 ya IMEI 2 ke kam az kam 3 hindsay likhein. Number dabbe par hai, ya phone par *#06# milayein.';
+
+  @override
+  String mobileSearchNone(String digits) {
+    return 'Kisi phone ke IMEI mein $digits nahi';
+  }
+
+  @override
+  String get mobileInShop => 'Dukaan mein';
+
+  @override
+  String get mobileNotInShop => 'Dukaan mein nahi';
+
+  @override
+  String get mobileBuyUsedTitle => 'Purana phone khareedein';
+
+  @override
+  String get mobileQistPlansTitle => 'Qist wale phone';
+
+  @override
+  String get mobileStoryGone => 'Yeh phone ab khaate mein nahi.';
+
+  @override
+  String get mobileAddImei2 => 'IMEI 2 likhein';
+
+  @override
+  String get mobilePtaTitle => 'PTA';
+
+  @override
+  String get mobilePtaApproved => 'PTA approved';
+
+  @override
+  String get mobilePtaValidUnapproved => 'Theek hai, PTA approved nahi';
+
+  @override
+  String get mobilePtaNonCompliant => 'Non-compliant (block ho sakta hai)';
+
+  @override
+  String get mobilePtaUnknown => 'PTA check nahi kiya';
+
+  @override
+  String mobilePtaCheckedOn(String status, String date) {
+    return '$status · $date ko likha';
+  }
+
+  @override
+  String get mobilePtaBlockedNote =>
+      'PTA ke mutabiq non-compliant phone 60 din mein block ho jata hai. Bechne se pehle customer ko batayein.';
+
+  @override
+  String get mobilePtaCheck => '8484 par check karein';
+
+  @override
+  String get mobilePtaWriteAnswer => 'PTA ka jawab likhein';
+
+  @override
+  String get mobilePtaHow =>
+      'Aap ki messages app khulegi, IMEI 8484 ko likha hua. Send aap apni SIM se dabayein; PTA SMS se jawab dega, woh yahan likh dein. Yeh app khud kuch nahi bhejti.';
+
+  @override
+  String mobilePtaNoSmsApp(String imei) {
+    return 'Messages app nahi khuli. $imei khud SMS se 8484 par bhejein.';
+  }
+
+  @override
+  String get mobilePtaAnswerTitle => 'PTA ne kya jawab diya?';
+
+  @override
+  String get mobilePtaUnverifiedNote =>
+      'Yeh PTA ke jawab akhbaar ke mutabiq hain; is app ne PTA ke apne qawaid se inhein check nahi kiya.';
+
+  @override
+  String get mobilePtaWarnTitle => 'PTA non-compliant';
+
+  @override
+  String mobilePtaWarnBody(String item, String imei) {
+    return '$item ($imei) PTA ke hisaab se non-compliant likha hai. PTA ke mutabiq aise phone 60 din mein block ho jate hain. Sirf tab bechein jab customer ko pata ho.';
+  }
+
+  @override
+  String get mobilePtaWarnSellAnyway => 'Bechein, customer ko pata hai';
+
+  @override
+  String get mobileWarrantyTitle => 'Warranty';
+
+  @override
+  String get mobileWarrantyNone => 'Is phone par koi warranty nahi di gayi.';
+
+  @override
+  String mobileWarrantyTill(String date) {
+    return '$date tak warranty';
+  }
+
+  @override
+  String get mobileInWarranty => 'Warranty mein';
+
+  @override
+  String get mobileOutOfWarranty => 'Warranty khatam';
+
+  @override
+  String get mobileWarrantyBrand => 'Company warranty';
+
+  @override
+  String get mobileWarrantyShop => 'Dukaan ki warranty';
+
+  @override
+  String get mobileClaimAdd => 'Warranty claim likhein';
+
+  @override
+  String get mobileClaimNote => 'Kya kharabi hai, aur kya kiya';
+
+  @override
+  String get mobileClaimHint => 'Screen band, Samsung centre bheja';
+
+  @override
+  String get mobileQistOpenPlan => 'Is ka qist plan dekhein';
+
+  @override
+  String get mobileSellerTitle => 'Kis se khareeda';
+
+  @override
+  String get mobileStoryTitle => 'Phone ki kahani';
+
+  @override
+  String get mobileStoryEmpty => 'Abhi tak is phone ka koi len den nahi.';
+
+  @override
+  String get mobileEventWalkIn => 'walk-in';
+
+  @override
+  String mobileEventBought(String who) {
+    return '$who se khareeda';
+  }
+
+  @override
+  String mobileEventSold(String who) {
+    return '$who ko becha';
+  }
+
+  @override
+  String mobileEventReturned(String who) {
+    return '$who wapas laye';
+  }
+
+  @override
+  String mobileEventSentBack(String who) {
+    return '$who ko wapas bheja';
+  }
+
+  @override
+  String get mobileEventMoved => 'Doosri jagah bheja';
+
+  @override
+  String get mobileEventAdjusted => 'Stock theek kiya';
+
+  @override
+  String get mobileEventCancelled => 'mansookh';
+
+  @override
+  String get mobileImeiEmpty =>
+      'IMEI likhein: 15 hindsay, dabbe par ya *#06# se.';
+
+  @override
+  String get mobileImeiNotDigits => 'IMEI mein sirf hindsay hote hain.';
+
+  @override
+  String mobileImeiLength(int count) {
+    return 'IMEI 15 hindson ka hota hai; is mein $count hain.';
+  }
+
+  @override
+  String mobileImeiMistyped(String digits, String last) {
+    return 'IMEI $digits ghalat likha hai: aakhri hindsa $last hona chahiye. Dabbe se ya *#06# se dobara likhein.';
+  }
+
+  @override
+  String get mobileImeiSameTwice =>
+      'IMEI 2 aur IMEI 1 ek hi hain. Ek SIM wale phone mein IMEI 2 khaali chhorein.';
+
+  @override
+  String get mobileSellerCnic => 'Bechne wale ka CNIC';
+
+  @override
+  String mobileSellerKnown(String name) {
+    return 'Pehle bhi phone de chuke hain, $name ke naam se';
+  }
+
+  @override
+  String get mobileSellerName => 'Bechne wale ka naam';
+
+  @override
+  String get mobileSellerPhone => 'Bechne wale ka phone number';
+
+  @override
+  String get mobilePhotosStayHere =>
+      'CNIC aur phone ki tasveerein isi phone aur is ke backup mein rehti hain. Kisi aur counter ya kahin aur nahi jaatin.';
+
+  @override
+  String get mobilePhoneTitle => 'Phone';
+
+  @override
+  String get mobileNoModels =>
+      'Abhi koi model IMEI se nahi rakha. Pehle Maal mein model banayein, \"Serial / IMEI se\" ke saath.';
+
+  @override
+  String get mobileModel => 'Model';
+
+  @override
+  String get mobileImei1 => 'IMEI 1';
+
+  @override
+  String get mobileImei2 => 'IMEI 2';
+
+  @override
+  String get mobileImei2Hint => 'Sirf do SIM wale mein';
+
+  @override
+  String get mobileCondition => 'Haalat';
+
+  @override
+  String get mobileConditionHint => 'Peechhe se toota, dabba charger nahi';
+
+  @override
+  String get mobilePaidTitle => 'Ada kiya';
+
+  @override
+  String get mobilePricePaid => 'Bechne wale ko diye';
+
+  @override
+  String get mobilePaidFrom => 'Kahan se diye';
+
+  @override
+  String get mobileBuySave => 'Khareedein aur stock mein daalein';
+
+  @override
+  String get mobileSellerNameNeeded => 'Bechne wale ka naam likhein.';
+
+  @override
+  String get mobileCnicBad => 'CNIC 13 hindson ka hota hai: 12345-1234567-1.';
+
+  @override
+  String get mobileModelNeeded => 'Phone ka model chunein.';
+
+  @override
+  String get mobilePriceNeeded => 'Phone ke kitne diye, likhein.';
+
+  @override
+  String get mobileBuyFailed => 'Phone nahi khareeda gaya. Kuch save nahi hua.';
+
+  @override
+  String mobileBuyDone(String docNo) {
+    return '$docNo par khareeda, IMEI ke saath stock mein aur purane phone register mein. Ab tasveerein lagayein.';
+  }
+
+  @override
+  String get mobileCnicPhoto => 'Bechne wale ke CNIC ki tasveer';
+
+  @override
+  String get mobilePhonePhoto => 'Phone ki tasveer';
+
+  @override
+  String get mobileOpenStory => 'Phone ki kahani dekhein';
+
+  @override
+  String mobileCounterPick(String digits) {
+    return 'Dukaan ke phone jin ke IMEI mein $digits hai';
+  }
+
+  @override
+  String get mobileQistSell => 'Qist par bechein';
+
+  @override
+  String get mobileQistNeedsCustomer =>
+      'Pehle customer chunein: qistein un ke khaate mein jayengi.';
+
+  @override
+  String get mobileQistPhones => 'Maal';
+
+  @override
+  String get mobileQistMarkup => 'Qist ka munafa (Rs)';
+
+  @override
+  String get mobileQistMarkupNote =>
+      'Bill par alag line mein chhapega, total ke andar: customer dekhta hai ke qist ka kitna zyada hai.';
+
+  @override
+  String get mobileQistDown => 'Abhi naqd advance (Rs)';
+
+  @override
+  String get mobileQistCount => 'Qistein';
+
+  @override
+  String get mobileQistDay => 'Har mahine ki tareekh';
+
+  @override
+  String get mobileQistBillTotal => 'Bill ka total';
+
+  @override
+  String get mobileQistDownNow => 'Advance';
+
+  @override
+  String get mobileQistOnQist => 'Qist par';
+
+  @override
+  String mobileQistEach(int count, String amount) {
+    return '$count x Rs $amount';
+  }
+
+  @override
+  String mobileQistEachLast(int count, String amount, String last) {
+    return '$count x Rs $amount, phir Rs $last';
+  }
+
+  @override
+  String mobileQistFromTo(String from, String to) {
+    return '$from se $to tak';
+  }
+
+  @override
+  String get mobileQistGuarantor => 'Zamin (agar ho)';
+
+  @override
+  String get mobileQistGuarantorName => 'Zamin ka naam';
+
+  @override
+  String get mobileQistGuarantorCnic => 'Zamin ka CNIC';
+
+  @override
+  String get mobileQistGuarantorPhone => 'Zamin ka phone';
+
+  @override
+  String get mobileQistSave => 'Qist par save karein';
+
+  @override
+  String mobileQistCountBad(int max) {
+    return '1 se $max qiston tak.';
+  }
+
+  @override
+  String get mobileQistDayBad => 'Mahine ki tareekh 1 se 31 tak.';
+
+  @override
+  String get mobileQistDownBad =>
+      'Advance ke baad qist ke liye kuch baqi hona chahiye.';
+
+  @override
+  String get mobileQistPlanTitle => 'Qist plan';
+
+  @override
+  String get mobileQistGone => 'Yeh qist plan ab khaate mein nahi.';
+
+  @override
+  String get mobileQistRunning => 'Chal raha hai';
+
+  @override
+  String get mobileQistOverdue => 'Der ho gayi';
+
+  @override
+  String get mobileQistPaidOff => 'Poora ada';
+
+  @override
+  String get mobileQistClosed => 'Pehle band';
+
+  @override
+  String get mobileQistCancelled => 'Bill mansookh';
+
+  @override
+  String get mobileQistMarkupIncluded => 'Munafa shamil';
+
+  @override
+  String get mobileQistPaid => 'Ab tak ada';
+
+  @override
+  String get mobileQistLeft => 'Baqi';
+
+  @override
+  String get mobileQistOverdueAmount => 'Der wali raqam';
+
+  @override
+  String mobileQistGuarantorIs(String name) {
+    return 'Zamin: $name';
+  }
+
+  @override
+  String mobileQistClosedOn(String date) {
+    return '$date ko pehle band: baqi ab wajib';
+  }
+
+  @override
+  String get mobileQistSchedule => 'Qistein';
+
+  @override
+  String get mobileQistInstalmentPaid => 'Ada';
+
+  @override
+  String mobileQistInstalmentLate(int days, String amount) {
+    return '$days din der · Rs $amount baqi';
+  }
+
+  @override
+  String mobileQistInstalmentToday(String amount) {
+    return 'Aaj wajib · Rs $amount';
+  }
+
+  @override
+  String mobileQistInstalmentPart(String amount) {
+    return 'Kuch ada · Rs $amount baqi';
+  }
+
+  @override
+  String get mobileQistInstalmentDue => 'Aane wali';
+
+  @override
+  String get mobileQistHowPaid =>
+      'Paisay customer ke khaate par lein: har wasooli sab se purani qist pehle ada karti hai.';
+
+  @override
+  String get mobileQistCloseEarly => 'Plan pehle band karein';
+
+  @override
+  String mobileQistCloseConfirm(String amount) {
+    return 'Plan ke baqi Rs $amount aaj hi poore wajib ho jayenge, khaate par. Jaldi dene ki riayat khaate par settlement discount se dein.';
+  }
+
+  @override
+  String get mobileQistCloseNote => 'Wajah (agar ho)';
+
+  @override
+  String get mobileQistShowOpen => 'Chal rahe';
+
+  @override
+  String get mobileQistShowAll => 'Sab';
+
+  @override
+  String get mobileQistNone => 'Yahan qist par koi phone nahi';
+
+  @override
+  String get mobileQistNoneHint =>
+      'Counter par paisay wali sheet se qist par bechein.';
+
+  @override
+  String mobileQistPaidOf(int paid, int count) {
+    return '$count mein se $paid ada';
+  }
+
+  @override
+  String mobileQistLeftAmount(String amount) {
+    return 'Rs $amount baqi';
+  }
+
+  @override
+  String mobileQistOverdueShort(String amount) {
+    return 'Rs $amount der';
+  }
+
+  @override
+  String mobileQistNext(String date) {
+    return 'agli $date';
+  }
+
+  @override
+  String get mobileWarrantyMonths => 'Warranty (mahine)';
+
+  @override
+  String get mobileWarrantyWhose => 'Kis ki warranty';
+
+  @override
+  String get mobileWarrantyNote =>
+      'Har bill par khatam hone ki tareekh chhapegi: \"Warranty till 3 Apr 2027\". Khaali ka matlab koi warranty nahi.';
+
+  @override
+  String get mobileWarrantyMonthsBad => '1 se 120 mahine, ya khaali chhorein.';
+
+  @override
+  String get reportGroupMobile => 'Mobile shop';
+
+  @override
+  String get reportUsedPhones => 'Khareede gaye purane phone';
+
+  @override
+  String get reportUsedPhonesHint =>
+      'Har purana phone, bechne wale ke CNIC aur IMEI ke saath';
+
+  @override
+  String get reportQistInstalments => 'Qistein';
+
+  @override
+  String get reportQistInstalmentsHint =>
+      'Har qist wala phone: ada, baqi, der wali';
 }

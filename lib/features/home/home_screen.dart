@@ -14,6 +14,7 @@ import '../expenses/expenses_screen.dart';
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../khata/udhaar_due_card.dart';
+import '../mobile/phone_search_screen.dart'; // M50
 import '../orders/orders_screen.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
@@ -208,6 +209,14 @@ class HomeScreen extends ConsumerWidget {
                     icon: Icons.production_quantity_limits_outlined,
                     onTap: () => _open(context, const LowStockScreen()),
                   ),
+                  // M50: a mobile shop's phones by IMEI, used phones bought
+                  // and qist (mobile/phone_search_screen.dart).
+                  if (firm?.isMobileShop ?? false)
+                    _NavTile(
+                      label: s.mobileSearchTitle,
+                      icon: Icons.phone_android_outlined,
+                      onTap: () => _open(context, const PhoneSearchScreen()),
+                    ),
                 ],
               ),
               const SizedBox(height: BlTokens.space5),

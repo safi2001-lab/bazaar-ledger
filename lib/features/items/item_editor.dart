@@ -8,6 +8,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../audit/history_screen.dart';
 import '../batches/stock_places_screen.dart';
+import '../mobile/warranty_fields.dart'; // M50
 import '../pharmacy/medicine_fields.dart';
 import '../pharmacy/substitutes_card.dart';
 import '../scan/scan_screen.dart';
@@ -113,6 +114,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   /// and then not sent (pharmacy/medicine_fields.dart).
   MedicineDetails? _medicine;
 
+  /// M50: its warranty, as edited here; null while untouched, and then not
+  /// sent (mobile/warranty_fields.dart).
+  ItemWarranty? _warranty;
+
   bool _busy = false;
   String? _failure;
 
@@ -206,6 +211,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         isThirdSchedule: _thirdSchedule, // M59
         isService: _service,
         medicine: _medicine, // M49
+        warranty: _warranty, // M50
       );
 
       final actor = services.actorNow();
@@ -654,6 +660,11 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                           onChanged: (m) => _medicine = m,
                         ),
                         if (_isEdit) SubstitutesCard(item: widget.item!),
+                        // M50: how long its warranty runs, and whose.
+                        WarrantyFields(
+                          initial: widget.item?.warranty,
+                          onChanged: (w) => _warranty = w,
+                        ),
 
                         // Folded away, because most of a kiryana catalogue
                         // needs none of it. A wholesaler needs the trade

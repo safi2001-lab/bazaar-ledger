@@ -1,6 +1,8 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'chart_top_up.dart';
+import 'drift_mobile_writer.dart'
+    show refuseImeiHeldElsewhere, warrantyMonthsOf;
 import 'tx_runner.dart';
 
 /// The tax context a document for [partyId] is priced under: the firm's
@@ -151,6 +153,12 @@ Future<(String, Map<int, String>)> insertDocumentRows(
   });
 
   // --- Lines and their taxes -------------------------------------------
+  // M50: a sale stamps the day each line's warranty ends, from the item as
+  // it is now, so the paper and the phone's story say the same day for
+  // ever after.
+  final warranties = doc.docType == 'sale_invoice'
+      ? await warrantyMonthsOf(tx, [for (final l in lines) ?l.itemId])
+      : const <String, int>{};
   final lineIdByNo = <int, String>{};
   for (final line in lines) {
     final lineId = await tx.insert('document_lines', {
@@ -176,6 +184,14 @@ Future<(String, Map<int, String>)> insertDocumentRows(
       'line_total_paisa': line.lineTotal.inPaisa,
       'cost_paisa': line.cost.inPaisa,
       'is_free_item': line.isFreeItem ? 1 : 0,
+      // M50
+      'warranty_until_local': switch (warranties[line.itemId]) {
+        final months? => warrantyEndsOn(
+          BusinessDate(doc.docDateLocal),
+          months,
+        ).value,
+        null => null,
+      },
     });
     lineIdByNo[line.lineNo] = lineId;
 
@@ -358,19 +374,53 @@ Future<String> _lotFor(
   );
   if (existing != null) {
     if (lot.serial != null) {
-      throw StockRefused(
-        'Serial ${lot.serial} has come in before. A serial number is one '
-        'piece, and arrives once.',
+      // M50: a phone the shop sold and has back — traded in, or bought used
+      // from whoever it went to — comes back into the lot it always had,
+      // so its story runs on. One still in the shop has not left, and
+      // cannot arrive twice.
+      final lotId = existing.read<String>('id');
+      final held = await tx.selectOne(
+        'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q '
+        'FROM stock_ledger WHERE lot_id = ? AND deleted_at_utc IS NULL',
+        [lotId],
       );
+      if ((held?.read<int>('q') ?? 0) > 0) {
+        throw StockRefused(
+          'Serial ${lot.serial} has come in before. A serial number is one '
+          'piece, and arrives once.',
+        );
+      }
+      await refuseImeiHeldElsewhere(tx, [?lot.serial2], exceptLotId: lotId);
+      final from = documentId == null || movement.txnType != 'purchase'
+          ? null
+          : await tx.selectOne('SELECT party_id FROM documents WHERE id = ?', [
+              documentId,
+            ]);
+      await tx.update('stock_lots', lotId, {
+        'cost_milli_paisa': movement.rate.inMilliPaisa,
+        'received_at_utc': movement.occurredAtUtcMillis,
+        // Who it came from this time, as a new lot would remember (M49).
+        'supplier_party_id': ?from?.readNullable<String>('party_id'),
+        'serial_2': ?lot.serial2,
+        // An answer from PTA is written; "not checked" keeps the last one.
+        if (lot.pta case final pta? when pta != PtaStatus.unknown) ...{
+          'pta_status': pta.code,
+          'pta_checked_on_local': tx.actor.businessDate.value,
+        },
+      });
+      return lotId;
     }
     return existing.read<String>('id');
   }
+  // M50: one IMEI is one phone, whichever item it came in as.
+  if (lot.serial != null) {
+    await refuseImeiHeldElsewhere(tx, [lot.serial!, ?lot.serial2]);
+  }
   final supplier = documentId == null || movement.txnType != 'purchase'
       ? null
-      : await tx.selectOne(
-          'SELECT party_id FROM documents WHERE id = ?',
-          [documentId],
-        );
+      : await tx.selectOne('SELECT party_id FROM documents WHERE id = ?', [
+          documentId,
+        ]);
   return tx.insert('stock_lots', {
     'item_id': movement.itemId,
     'lot_no': lot.lotNo,
@@ -382,6 +432,12 @@ Future<String> _lotFor(
     // M49
     'mrp_paisa': lot.mrp?.inPaisa,
     'supplier_party_id': supplier?.readNullable<String>('party_id'),
+    // M50: a phone's second IMEI, and what PTA said of it on the day.
+    'serial_2': lot.serial2,
+    'pta_status': lot.pta?.code,
+    'pta_checked_on_local': lot.pta == null || lot.pta == PtaStatus.unknown
+        ? null
+        : tx.actor.businessDate.value,
   });
 }
 

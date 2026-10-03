@@ -759,6 +759,12 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     // M49: what it is as a medicine, only when the form said; a form that
     // knows nothing of medicines leaves them as they are.
     if (d.medicine case final m?) ...medicineColumns(m),
+    // M50: how long its warranty runs and whose it is, only when the form
+    // said; none takes it off.
+    if (d.warranty case final w?) ...{
+      'warranty_months': w.isNone ? null : w.months,
+      'warranty_kind': w.isNone ? null : w.kind.code,
+    },
   };
 
   /// The item columns [details] is stored in (M49), the salt's search key

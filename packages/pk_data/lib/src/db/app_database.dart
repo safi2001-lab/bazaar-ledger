@@ -27,6 +27,8 @@ part 'app_database.g.dart';
     'tables/system.drift',
     'tables/manufacturing.drift',
     'tables/vans.drift',
+    // M50: used phones bought, warranty claims, qist plans.
+    'tables/mobile.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {
@@ -41,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 11;
+  static const currentSchemaVersion = 12;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -225,6 +227,61 @@ class AppDatabase extends _$AppDatabase {
               schema.idxPrescriptionsDoc,
               schema.idxPrescriptionsFirmItem,
               schema.idxPrescriptionsItem,
+            ]) {
+              await migrator.create(index);
+            }
+          },
+          // v11 → v12 (M50): the mobile-shop pack. stock_lots gains a
+          // phone's second IMEI and what PTA said of it; items how long its
+          // warranty runs and whose it is; document_lines the day a sold
+          // line's warranty ends. Every column is added in place and is
+          // empty on every existing row, so no piece becomes a phone, no
+          // item gains a warranty and no bill a warranty date by the
+          // upgrade. Used phones bought, warranty claims and qist plans are
+          // new tables with their indexes. firms is rebuilt, as parties was
+          // at v5, because its CHECK on business_kind has to learn 'mobile'
+          // and SQLite cannot change a CHECK any other way; every row is
+          // copied across as it was.
+          from11To12: (migrator, schema) async {
+            for (final column in [
+              schema.stockLots.serial2,
+              schema.stockLots.ptaStatus,
+              schema.stockLots.ptaCheckedOnLocal,
+            ]) {
+              await migrator.addColumn(schema.stockLots, column);
+            }
+            await migrator.create(schema.idxLotsSerial);
+            await migrator.create(schema.idxLotsSerial2);
+            for (final column in [
+              schema.items.warrantyMonths,
+              schema.items.warrantyKind,
+            ]) {
+              await migrator.addColumn(schema.items, column);
+            }
+            await migrator.addColumn(
+              schema.documentLines,
+              schema.documentLines.warrantyUntilLocal,
+            );
+            await migrator.alterTable(TableMigration(schema.firms));
+            for (final table in [
+              schema.usedPhoneBuys,
+              schema.warrantyClaims,
+              schema.qistPlans,
+              schema.qistInstalments,
+            ]) {
+              await migrator.createTable(table);
+            }
+            for (final index in [
+              schema.idxUsedphoneDoc,
+              schema.idxUsedphoneFirmCnic,
+              schema.idxUsedphoneParty,
+              schema.idxWclaimsFirmLot,
+              schema.idxWclaimsLot,
+              schema.idxQistDoc,
+              schema.idxQistFirmParty,
+              schema.idxQistParty,
+              schema.idxQinstPlanSeq,
+              schema.idxQinstFirmDue,
             ]) {
               await migrator.create(index);
             }

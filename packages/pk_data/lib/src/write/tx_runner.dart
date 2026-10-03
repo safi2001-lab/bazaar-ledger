@@ -509,6 +509,10 @@ final class Tx {
     'journal_entries': 'entry_date_local',
     'payments': 'payment_date_local',
     'stock_ledger': 'occurred_on_local',
+    // M50: a qist plan is filed under its bill's day, and a warranty claim
+    // under the day it was written down.
+    'qist_plans': 'sold_on_local',
+    'warranty_claims': 'claimed_on_local',
   };
 
   /// Papers that are not in the books at all. A quotation dated last month
@@ -620,6 +624,8 @@ final class Tx {
       },
       'payments' => 'Payment',
       'journal_entries' => 'Journal entry',
+      'qist_plans' => 'Qist plan', // M50
+      'warranty_claims' => 'Warranty claim', // M50
       _ => 'A stock movement',
     };
     final no = row['doc_no'] ?? row['payment_no'] ?? row['entry_no'];

@@ -9,6 +9,7 @@ import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
 import '../documents/quotation.dart';
 import '../entitlement/activity.dart';
+import '../mobile/imei.dart';
 import '../pharmacy/medicine.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
@@ -58,6 +59,10 @@ final class FirmProfile {
   /// A chemist (M49): the DRAP price is enforced, and the pharmacy's own
   /// screens and fields are shown.
   bool get isPharmacy => businessKind == 'pharmacy';
+
+  /// A mobile phone shop (M50): a phone's IMEI story, its warranty and PTA
+  /// standing, used phones bought over the counter and qist are shown.
+  bool get isMobileShop => businessKind == 'mobile';
   final String? city;
   final String? addressLine1;
   final String? phone;
@@ -115,6 +120,7 @@ final class ItemSummary {
     this.isThirdSchedule = false,
     this.isService = false,
     this.medicine,
+    this.warranty,
   });
 
   /// Sold on the retail price printed on its pack (M59): taxed on [mrp], and
@@ -131,6 +137,9 @@ final class ItemSummary {
   /// What it is as a medicine (M49): its salt and strength, maker and
   /// Schedule class. Null for an item that is not one.
   final MedicineDetails? medicine;
+
+  /// How long its warranty runs and whose it is (M50); null for none.
+  final ItemWarranty? warranty;
   final String? code;
   final String? barcode;
   final String? category;

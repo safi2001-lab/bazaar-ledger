@@ -6,6 +6,8 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../mobile/mobile_providers.dart'; // M50
+import '../mobile/phone_lines.dart'; // M50
 
 /// One line of a delivery as it actually arrived (M41): a line filled in
 /// from the purchase order, changed to what the supplier's bill says.
@@ -44,7 +46,10 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
     text: widget.line.expiry?.value ?? '',
   );
   late final _serials = TextEditingController(
-    text: widget.line.serials.join('\n'),
+    // M50: a line of phones shows each as "IMEI 1 / IMEI 2".
+    text: widget.line.phones.isEmpty
+        ? widget.line.serials.join('\n')
+        : widget.line.phones.map(phoneLine).join('\n'),
   );
   String? _problem;
 
@@ -65,6 +70,14 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
       for (final l in _serials.text.split(RegExp(r'[\n,]')))
         if (l.trim().isNotEmpty) l.trim(),
     ];
+    // M50: in a mobile shop, phones by IMEI, checked (phone_lines.dart).
+    final phones = (item?.tracksSerial ?? false) && ref.read(isMobileShopProvider)
+        ? phonesFromLines(serials)
+        : const <PhoneUnitDraft>[];
+    if (phonesProblem(s, phones) case final problem?) {
+      setState(() => _problem = problem);
+      return;
+    }
     final qty = item?.tracksSerial ?? false
         ? Qty.units(serials.length)
         : Qty.tryParse(_qty.text.trim());
@@ -107,7 +120,8 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
         rate: rate,
         batchNo: item?.tracksBatch ?? false ? _batch.text.trim() : null,
         expiry: item?.tracksBatch ?? false ? expiry : null,
-        serials: serials,
+        serials: phones.isEmpty ? serials : const [],
+        phones: phones, // M50
       ),
     );
   }

@@ -17,6 +17,7 @@ import '../write/drift_purchase_return_writer.dart'
     show boughtLineFrom, returnedOffDeliveryLine;
 import '../write/drift_return_writer.dart' show soldLineFrom, soldLinesSql;
 import '../write/drift_van_writer.dart' show vanCashSql, vanStockSql;
+import 'drift_mobile_reads.dart' show phonesOnPaper; // M50
 import 'spelling_search.dart';
 
 /// Every read the app performs, as indexed SQL.
@@ -1596,7 +1597,9 @@ final class DriftAppQueries implements AppQueries {
         .customSelect(
           '''
           $_lotSelect
-          WHERE l.firm_id = ?1 AND l.serial = ?2 AND l.deleted_at_utc IS NULL
+          WHERE l.firm_id = ?1 AND l.deleted_at_utc IS NULL
+            -- M50: a dual-SIM phone answers to either IMEI.
+            AND (l.serial = ?2 OR l.serial_2 = ?2)
           GROUP BY l.id
           HAVING SUM(s.qty_delta_thousandths) > 0
           ''',
@@ -2269,7 +2272,7 @@ final class DriftAppQueries implements AppQueries {
     final supplierBillNo = _blankToNull(
       doc.readNullable<String>('supplier_bill_no'),
     );
-    return ReceiptData(
+    final paper = ReceiptData(
       shop: firm.toReceiptShop(),
       docNo: doc.read<String>('doc_no'),
       fbrInvoiceNo: _blankToNull(doc.readNullable<String>('fbr_invoice_no')),
@@ -2362,6 +2365,9 @@ final class DriftAppQueries implements AppQueries {
         if (madeWith?.call() ?? false) madeWithLine,
       ],
     );
+    // M50: a phone's IMEIs, warranty and PTA under its line, and a qist
+    // bill's instalments at its foot (drift_mobile_reads.dart).
+    return phonesOnPaper(_db, documentId, paper);
   }
 
   /// What the paper needs to count a bill's lines in packs (M45): each
@@ -3216,6 +3222,16 @@ final class DriftAppQueries implements AppQueries {
     isService: r.data['item_type'] == 'service',
     // M49: what it is as a medicine, from the same `i.*`.
     medicine: _medicineFrom(r),
+    // M50: its warranty, off the row's own map like M59's columns.
+    warranty: switch (r.data['warranty_months']) {
+      final int months => ItemWarranty(
+        months: months,
+        kind:
+            WarrantyKind.fromCode(r.data['warranty_kind'] as String?) ??
+            WarrantyKind.shop,
+      ),
+      _ => null,
+    },
   );
 
   /// An item's medicine columns (M49), or null when it has none.

@@ -171,7 +171,20 @@ CREATE TABLE items (
   -- A controlled drug (Punjab Drug Sale Rules 2007): Schedule B or D, or
   -- another the shop keeps a register for. Sold only on a registered
   -- practitioner's prescription, and every sale is written in the register.
-  schedule_class TEXT CHECK (schedule_class IN ('B', 'D', 'other'))
+  schedule_class TEXT CHECK (schedule_class IN ('B', 'D', 'other')),
+
+  -- The mobile-shop pack (M50), added in v12, last because SQLite adds a
+  -- column at the end. How long the shop stands behind what it sells: a
+  -- phone's year from the brand, a charger's six months from the shop.
+  -- Empty is no warranty, which is every item of a shop that never says.
+  -- A bill stamps the day it ends on each line it sells (document_lines.
+  -- warranty_until_local), so changing it here changes no phone already
+  -- sold.
+  warranty_months INTEGER
+    CHECK (warranty_months IS NULL OR warranty_months BETWEEN 1 AND 120),
+  -- Whose promise it is: the shop's own ('shop'), or the maker's official
+  -- one honoured at its service centre ('brand'). The customer asks which.
+  warranty_kind TEXT CHECK (warranty_kind IS NULL OR warranty_kind IN ('shop', 'brand'))
 ) STRICT;
 
 CREATE INDEX idx_items_firm_name ON items (firm_id, name_search);

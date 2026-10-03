@@ -1,0 +1,169 @@
+import 'core.drift';
+import 'catalogue.drift';
+import 'documents.drift';
+import 'stock.drift';
+
+-- Bazaar Ledger — schema v12 (M50): the mobile-shop pack.
+--
+-- A mobile shop is asked two questions a kiryana never is. "Where did this
+-- phone come from?" — by the customer whose phone was stolen, by the man
+-- whose new phone was blocked by PTA, by the police. And "how much is left
+-- to pay?" — by the shop, of the customer who took a phone on qist. Every
+-- phone already moves through the books by its IMEI (M11): it is a lot of
+-- its own on the stock ledger, bought on a delivery and sold on a bill. What
+-- was missing is who sold the shop a used one, and the instalments a phone
+-- sold on qist is paid off by. These tables are those two things, and the
+-- warranty claims written against a phone.
+
+-- A used phone bought over the counter from whoever walked in with it.
+--
+-- The purchase itself is an ordinary delivery: the phone comes onto the
+-- shelf at what was paid, by its IMEI, and the cash goes out of the drawer.
+-- This row is what the police and the market association ask for beside it:
+-- who the seller was, by name and CNIC, how to reach them, and what state
+-- the phone was in. The seller is also kept as a supplier (found again by
+-- CNIC the next time they come), but this row is copied as it was said on
+-- the day, as a bill's party snapshot is, so a seller who later gives
+-- another name does not rewrite what the register said.
+--
+-- Photographs of the seller's CNIC and of the phone are attachments rows —
+-- on the seller's khata and on the delivery — which never leave the phone
+-- they were taken on (M60).
+CREATE TABLE used_phone_buys (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  document_id TEXT NOT NULL REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+  party_id TEXT NOT NULL REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED,
+
+  -- Never blank: a used phone bought from nobody in particular is the phone
+  -- the register exists to account for. A UI rule protects only the UI.
+  seller_name TEXT NOT NULL CHECK (length(trim(seller_name)) > 0),
+  -- Thirteen digits, kept without the dashes ("35202-1234567-1" is
+  -- 3520212345671) so one CNIC is one string however it was typed.
+  seller_cnic TEXT NOT NULL
+    CHECK (length(seller_cnic) = 13 AND seller_cnic NOT GLOB '*[^0-9]*'),
+  seller_phone TEXT,
+  -- "Screen cracked, box and charger missing": what the shop saw.
+  condition_note TEXT
+) STRICT AS UsedPhoneBuyRow;
+
+CREATE UNIQUE INDEX idx_usedphone_doc ON used_phone_buys (document_id);
+CREATE INDEX idx_usedphone_firm_cnic ON used_phone_buys (firm_id, seller_cnic);
+CREATE INDEX idx_usedphone_party ON used_phone_buys (party_id);
+
+-- A warranty claim written against one phone: "screen dead, sent to the
+-- Samsung centre 4 Oct". A note, not money — a repair the shop charges for
+-- is a bill like any other.
+CREATE TABLE warranty_claims (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  lot_id TEXT NOT NULL REFERENCES stock_lots(id) DEFERRABLE INITIALLY DEFERRED,
+  claimed_on_local TEXT NOT NULL,
+  note TEXT NOT NULL CHECK (length(trim(note)) > 0)
+) STRICT AS WarrantyClaimRow;
+
+CREATE INDEX idx_wclaims_firm_lot ON warranty_claims (firm_id, lot_id);
+CREATE INDEX idx_wclaims_lot ON warranty_claims (lot_id);
+
+-- A phone sold on qist: a down payment now and the rest in monthly
+-- instalments.
+--
+-- The sale is an ordinary bill. What the customer still owes after the down
+-- payment is the bill's balance, on their khata like any udhaar, settled by
+-- receipts like any udhaar; the markup, when the shop charges one, is a
+-- charge on the bill in plain sight (its "other charges"), never folded
+-- into the phone's price. This row is the agreement: how many instalments,
+-- on which day of the month, and who stood guarantor.
+--
+-- What has been paid is NOT kept here. It is the bill's own balance — the
+-- amount financed less what is still owed on the bill — and the instalments
+-- are paid oldest first out of it. So a receipt cancelled next week puts the
+-- instalment it paid back to owing without anybody touching this table, and
+-- the plan can never disagree with the khata.
+CREATE TABLE qist_plans (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  document_id TEXT NOT NULL REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+  party_id TEXT NOT NULL REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED,
+  -- The bill's own business date. The books file the plan under it, so a
+  -- plan inside books the owner has closed is refused as the bill is (M42).
+  sold_on_local TEXT NOT NULL,
+
+  down_payment_paisa INTEGER NOT NULL CHECK (down_payment_paisa >= 0),
+  -- The markup charged on the bill for selling on instalments; zero when
+  -- the shop charges none. Already inside the bill's total.
+  markup_paisa INTEGER NOT NULL DEFAULT 0 CHECK (markup_paisa >= 0),
+  -- What the instalments add up to: the bill's balance when it was made.
+  financed_paisa INTEGER NOT NULL CHECK (financed_paisa > 0),
+  instalment_count INTEGER NOT NULL CHECK (instalment_count BETWEEN 1 AND 60),
+  -- The day of the month each instalment falls due: the 5th, the 10th. In a
+  -- month too short for it, the month's last day.
+  due_day INTEGER NOT NULL CHECK (due_day BETWEEN 1 AND 31),
+
+  -- Who stands behind the customer, when the shop asked for somebody.
+  guarantor_name TEXT,
+  guarantor_cnic TEXT CHECK (guarantor_cnic IS NULL
+    OR (length(guarantor_cnic) = 13 AND guarantor_cnic NOT GLOB '*[^0-9]*')),
+  guarantor_phone TEXT,
+
+  -- Closed early: from this day whatever is left on the bill is due at
+  -- once, rather than instalment by instalment.
+  closed_on_local TEXT,
+  close_note TEXT,
+  CHECK (closed_on_local IS NULL OR closed_on_local >= sold_on_local)
+) STRICT AS QistPlanRow;
+
+CREATE UNIQUE INDEX idx_qist_doc ON qist_plans (document_id);
+CREATE INDEX idx_qist_firm_party ON qist_plans (firm_id, party_id);
+CREATE INDEX idx_qist_party ON qist_plans (party_id);
+
+-- One instalment of a plan: which, when it falls due, and how much. Written
+-- once, with the plan, and never ticked off: what is paid is read off the
+-- bill's balance (see qist_plans).
+CREATE TABLE qist_instalments (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  plan_id TEXT NOT NULL REFERENCES qist_plans(id) DEFERRABLE INITIALLY DEFERRED,
+  seq INTEGER NOT NULL CHECK (seq >= 1),
+  due_on_local TEXT NOT NULL,
+  amount_paisa INTEGER NOT NULL CHECK (amount_paisa > 0)
+) STRICT AS QistInstalmentRow;
+
+CREATE UNIQUE INDEX idx_qinst_plan_seq ON qist_instalments (plan_id, seq);
+CREATE INDEX idx_qinst_firm_due ON qist_instalments (firm_id, due_on_local);

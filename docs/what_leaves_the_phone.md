@@ -223,6 +223,20 @@ Meta's servers, which is a network request this product does not make on a
 shopkeeper's behalf. The fallback is the system share sheet, which reaches
 SMS — still common in this market — and needs no network at all.
 
+**The PTA check (M50).** A mobile shop's *8484 par check karein* opens the
+phone's own messages app with one phone's IMEI typed to 8484, PTA's IMEI
+check by SMS (as reported in the press; not read on PTA's own pages). The
+shopkeeper presses Send from the shop's own SIM, at the SIM's own rate, and
+PTA's reply arrives as an ordinary message that this app never reads: the
+shopkeeper writes the answer down by hand. The IMEI reaches PTA only when the
+shopkeeper sends it, the app holds neither `SEND_SMS` nor `READ_SMS`, and it
+makes no network call for it. It rides the `sms` intent already declared for
+reminders (M39). The register of used phones bought keeps each seller's name,
+CNIC number and phone; like every row of the books it reaches the shop's own
+other counters over its wi-fi, and leaves the shop only as a PDF or Excel the
+shopkeeper shares. The photograph of the seller's CNIC does not travel even
+that far: it stays on the phone it was taken on (M60).
+
 The `<queries>` block naming `com.whatsapp` and `com.whatsapp.w4b` exists so
 `canLaunchUrl` can answer whether WhatsApp is there before the button offers
 itself. On Android 11 and above it returns false without that block however

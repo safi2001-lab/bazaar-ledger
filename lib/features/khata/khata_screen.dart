@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../attachments/attachment_strip.dart'; // M60
+import '../mobile/qist_plans_screen.dart'; // M50
 import '../parties/party_editor.dart';
 import '../recurring/repeat_entry.dart'; // M63
 import '../sales/receipt_screen.dart';
@@ -189,6 +190,7 @@ class KhataScreen extends ConsumerWidget {
       // (M55): shown apart from the balance, never added to it.
       GoodsGivenCard(party: current),
       const SizedBox(height: BlTokens.space4),
+      QistPlansCard(partyId: current.id), // M50: phones on qist
       Row(
         children: [
           Expanded(

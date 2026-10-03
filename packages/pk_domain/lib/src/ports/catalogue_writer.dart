@@ -4,6 +4,7 @@ import '../catalogue/packs.dart';
 import '../catalogue/shelf.dart';
 import '../catalogue/spelling.dart';
 import '../identity/actor_context.dart';
+import '../mobile/imei.dart';
 import '../pharmacy/medicine.dart';
 import '../pricing/price_tier.dart';
 import 'party_groups.dart';
@@ -35,6 +36,7 @@ final class ItemDraft {
     this.isThirdSchedule,
     this.isService,
     this.medicine,
+    this.warranty,
   });
 
   /// Sold on its printed retail price (M59). Null leaves it as it is, so a
@@ -54,6 +56,11 @@ final class ItemDraft {
   /// medicines — the quick-add sheet, the importer — never wipes them. An
   /// empty [MedicineDetails] makes it not a medicine.
   final MedicineDetails? medicine;
+
+  /// How long the shop or the maker stands behind it (M50). Null leaves
+  /// the item's as it is, so a form that knows nothing of warranties never
+  /// wipes one; [ItemWarranty.none] takes it off.
+  final ItemWarranty? warranty;
   final String? code;
   final String? barcode;
   final String? category;

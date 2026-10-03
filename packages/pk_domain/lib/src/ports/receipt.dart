@@ -98,7 +98,14 @@ final class ReceiptLine {
     this.isFreeItem = false,
     this.tax,
     this.qtyWords,
+    this.details = const [],
   });
+
+  /// What the paper says under the line besides its money (M50): a phone's
+  /// "IMEI 1: 356938035643809", "IMEI 2: …", "Warranty till 3 Apr 2027"
+  /// and "PTA Approved". Printed after the line, one to a row; empty on
+  /// every line that is not a phone or an item under warranty.
+  final List<String> details;
 
   final String name;
   final String qtyDisplay;
@@ -133,6 +140,21 @@ final class ReceiptLine {
     isFreeItem: isFreeItem,
     tax: value,
     qtyWords: qtyWords,
+    details: details, // M50
+  );
+
+  /// The same line with [more] said under it (M50).
+  ReceiptLine withDetails(List<String> more) => ReceiptLine(
+    name: name,
+    qtyDisplay: qtyDisplay,
+    unitCode: unitCode,
+    rate: rate,
+    amount: amount,
+    discount: discount,
+    isFreeItem: isFreeItem,
+    tax: tax,
+    qtyWords: qtyWords,
+    details: [...details, ...more],
   );
 }
 
@@ -444,7 +466,13 @@ final class ReceiptData {
     this.billOwed,
     this.paymentQr,
     this.serviceTaxes = const [],
+    this.extraChargesLabel = 'Other Charges',
   });
+
+  /// What [extraCharges] is called on the paper (M50): "Qist markup" on a
+  /// phone sold on instalments, so the customer reads the price of waiting
+  /// as what it is; "Other Charges" on every other bill.
+  final String extraChargesLabel;
 
   /// The province's tax on the bill's services, one row per rate (M59):
   /// "PRA 16%", "PRA 8% (card)". Part of [tax], which the paper prints as
@@ -592,6 +620,7 @@ final class ReceiptData {
     String? customerNtn,
     String? customerStrn,
     ReceiptTransport? transport,
+    String? extraChargesLabel,
   }) => ReceiptData(
     shop: shop ?? this.shop,
     docNo: docNo,
@@ -630,6 +659,7 @@ final class ReceiptData {
     customerStrn: customerStrn ?? this.customerStrn,
     transport: transport ?? this.transport,
     serviceTaxes: serviceTaxes,
+    extraChargesLabel: extraChargesLabel ?? this.extraChargesLabel, // M50
   );
 
   Money get runningBalance => khata?.after ?? balance;

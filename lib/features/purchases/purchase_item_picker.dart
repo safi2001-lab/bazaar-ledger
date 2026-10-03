@@ -13,6 +13,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/pack_choice.dart';
 import '../items/quick_item_sheet.dart';
+import '../mobile/mobile_providers.dart'; // M50
+import '../mobile/phone_lines.dart'; // M50
 import '../pos/past_deals.dart';
 import 'counted_purchase.dart'; // M45
 
@@ -217,6 +219,15 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     if (item == null) return;
     final s = AppStrings.of(context);
     final serials = item.tracksSerial ? _serialList : const <String>[];
+    // M50: in a mobile shop each line is a phone, "IMEI 1 / IMEI 2" for a
+    // dual-SIM one, its check digit checked (mobile/phone_lines.dart).
+    final phones = ref.read(isMobileShopProvider)
+        ? phonesFromLines(serials)
+        : const <PhoneUnitDraft>[];
+    if (phonesProblem(s, phones) case final problem?) {
+      setState(() => _problem = problem);
+      return;
+    }
     // M45: "10 ctn 5" is 245 pieces, billed by the piece; "10" with the
     // carton chip on is ten cartons, as before.
     final count = item.tracksSerial ? null : _count(_qty.text);
@@ -279,7 +290,8 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         rate: Rate.fromPack(cost, qty),
         batchNo: item.tracksBatch ? _batch.text.trim() : null,
         expiry: item.tracksBatch ? expiry : null,
-        serials: serials,
+        serials: phones.isEmpty ? serials : const [],
+        phones: phones, // M50
         freeQty: freeInLine, // M43, in the line's own unit
         freeBaseQty: freeBase,
         // M49: kept on the batch, which DRAP prices batch by batch.

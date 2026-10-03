@@ -5,6 +5,8 @@ import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
 import 'drift_app_queries.dart';
+import 'drift_mobile_reads.dart'
+    show onQistSql, qistNextDueSql, qistOwedSql; // M50
 
 /// A bill's due date, in SQL: its business date plus its customer's credit
 /// days, or the shop's usual month when they have none (M38).
@@ -31,6 +33,30 @@ const _openBill = '''
   AND d.deleted_at_utc IS NULL
 ''';
 
+/// The day bill `d` falls due on the khata: the earliest instalment it
+/// still owes when it was sold on qist (M50), else its customer's term.
+const _billDueOnSql = 'COALESCE($qistNextDueSql, $dueOnSql)';
+
+/// Every bill still owed on, as rows of `document_id`, `party_id`, `owed`
+/// and `due_on` (M50): a bill by its customer's term, and a bill sold on
+/// qist one row per instalment it still owes, each on its own day — so an
+/// instalment past its day is overdue and the rest of the plan is not.
+/// [where] narrows the bills (`d` and its party `p`).
+String owedRowsSql(String where) =>
+    '''
+    SELECT d.id AS document_id, d.party_id AS party_id,
+           d.balance_paisa AS owed, $dueOnSql AS due_on
+    FROM documents d
+    JOIN parties p ON p.id = d.party_id
+    WHERE $where AND $_openBill AND NOT $onQistSql
+    UNION ALL
+    SELECT qo.document_id, qo.party_id, qo.owed, qo.due_on
+    FROM (${qistOwedSql()}) qo
+    JOIN documents d ON d.id = qo.document_id
+    JOIN parties p ON p.id = d.party_id
+    WHERE $where AND $_openBill AND qo.owed > 0
+    ''';
+
 /// The drift implementation of [UdhaarQueries].
 ///
 /// Days late are counted on business dates with julianday, never on an
@@ -53,8 +79,9 @@ final class DriftUdhaarQueries implements UdhaarQueries {
         .customSelect(
           '''
           SELECT d.id, d.doc_no, d.doc_type, d.doc_date_local,
-                 d.balance_paisa, $dueOnSql AS due_on,
-                 CAST(julianday(?3) - julianday($dueOnSql) AS INTEGER) AS late
+                 d.balance_paisa, $_billDueOnSql AS due_on,
+                 CAST(julianday(?3) - julianday($_billDueOnSql) AS INTEGER)
+                   AS late
           FROM documents d
           JOIN parties p ON p.id = d.party_id
           WHERE d.firm_id = ?1 AND d.party_id = ?2 AND $_openBill
@@ -92,11 +119,9 @@ final class DriftUdhaarQueries implements UdhaarQueries {
     final rows = await _db
         .customSelect(
           '''
-          SELECT CAST(julianday(?2) - julianday($dueOnSql) AS INTEGER) AS late,
-                 SUM(d.balance_paisa) AS owed
-          FROM documents d
-          JOIN parties p ON p.id = d.party_id
-          WHERE d.firm_id = ?1 AND $_openBill
+          SELECT CAST(julianday(?2) - julianday(due_on) AS INTEGER) AS late,
+                 SUM(owed) AS owed
+          FROM (${owedRowsSql('d.firm_id = ?1')})
           GROUP BY late
           ''',
           variables: [
@@ -134,16 +159,14 @@ final class DriftUdhaarQueries implements UdhaarQueries {
         .customSelect(
           '''
           WITH due AS (
-            SELECT d.party_id AS party_id, d.balance_paisa AS owed,
-                   $dueOnSql AS due_on
-            FROM documents d
-            JOIN parties p ON p.id = d.party_id
-            WHERE d.firm_id = ?1 AND $_openBill
-              AND p.deleted_at_utc IS NULL AND p.is_active = 1
+            ${owedRowsSql('d.firm_id = ?1 AND p.deleted_at_utc IS NULL '
+          'AND p.is_active = 1')}
           ),
           per_party AS (
             SELECT party_id,
-                   COUNT(*) AS open_bills,
+                   -- M50: a bill on qist is one bill however many of its
+                   -- instalments are owed.
+                   COUNT(DISTINCT document_id) AS open_bills,
                    MIN(due_on) AS oldest_due,
                    SUM(CASE WHEN due_on < ?2 THEN owed ELSE 0 END) AS overdue,
                    SUM(CASE WHEN due_on = ?2 THEN owed ELSE 0 END) AS due_today

@@ -9,6 +9,7 @@ import 'package:test/test.dart';
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v10.dart' as v10;
+import 'generated/schema_v11.dart' as v11;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
@@ -737,6 +738,185 @@ void main() {
     });
   });
 
+  group('v11 to v12 — the mobile-shop pack', () {
+    test('a shop and its phone come through the rebuild of firms whole, '
+        'nothing a phone or under warranty, and the shop may now say it is '
+        'a mobile shop', () async {
+      // firms is rebuilt to teach its CHECK 'mobile', so every column of the
+      // shop's row has to come across, and the rows pointing at it — every
+      // row in the books — must still find it.
+      final schema = await verifier.schemaAt(11);
+      final old = v11.DatabaseAtV11(schema.newConnection());
+      const firmId = 'FIRM0000000000000000000001';
+      const userId = 'USER0000000000000000000001';
+      const deviceId = 'DEV00000000000000000000001';
+      const itemId = 'ITM00000000000000000000001';
+      const lotId = 'LOT00000000000000000000001';
+      await old.customStatement('PRAGMA foreign_keys = OFF');
+      await old.customStatement(
+        'INSERT INTO firms (id, firm_id, created_at_utc, updated_at_utc, '
+        'created_by, updated_by, origin_device_id, hlc, rev, name, '
+        'business_kind, ntn, city, phone, fiscal_year_start_month, '
+        'base_currency, rounding_mode, raast_alias) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 4, ?, ?, ?, ?, ?, 7, ?, ?, ?)',
+        [
+          firmId,
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'a-0000-$deviceId',
+          'Hafeez Centre Mobiles',
+          'electronics',
+          '1234567-8',
+          'Lahore',
+          '042-35761234',
+          'PKR',
+          'half_up',
+          '03001234567',
+        ],
+      );
+      await old.customStatement(
+        'INSERT INTO users (id, firm_id, created_at_utc, updated_at_utc, '
+        'created_by, updated_by, origin_device_id, hlc, rev, name, role) '
+        "VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, 'Bilal', 'owner')",
+        [userId, firmId, userId, userId, deviceId, 'b-0000-$deviceId'],
+      );
+      await old.customStatement(
+        'INSERT INTO items (id, firm_id, created_at_utc, updated_at_utc, '
+        'created_by, updated_by, origin_device_id, hlc, rev, name, '
+        'name_search, base_unit_id, sale_rate_milli_paisa, track_serial) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 2, ?, ?, ?, ?, 1)',
+        [
+          itemId,
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'c-0000-$deviceId',
+          'Samsung A15',
+          nameSearchColumn('Samsung A15'),
+          'UNIT0000000000000000000001',
+          60000000,
+        ],
+      );
+      await old.customStatement(
+        'INSERT INTO stock_lots (id, firm_id, created_at_utc, '
+        'updated_at_utc, created_by, updated_by, origin_device_id, hlc, '
+        'rev, item_id, lot_no, serial, cost_milli_paisa) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, ?, ?, ?)',
+        [
+          lotId,
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'd-0000-$deviceId',
+          itemId,
+          '356938035643809',
+          '356938035643809',
+          50000000,
+        ],
+      );
+      await old.close();
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 12);
+
+      final shop = await db
+          .customSelect(
+            'SELECT name, rev, hlc, business_kind, ntn, city, phone, '
+            'raast_alias FROM firms',
+          )
+          .getSingle();
+      expect(shop.data, {
+        'name': 'Hafeez Centre Mobiles',
+        'rev': 4,
+        'hlc': 'a-0000-$deviceId',
+        'business_kind': 'electronics',
+        'ntn': '1234567-8',
+        'city': 'Lahore',
+        'phone': '042-35761234',
+        'raast_alias': '03001234567',
+      });
+      final user = await db
+          .customSelect(
+            'SELECT u.name FROM users u JOIN firms f ON f.id = u.firm_id',
+          )
+          .getSingle();
+      expect(user.data['name'], 'Bilal', reason: 'still finds its shop');
+
+      final item = await db
+          .customSelect(
+            'SELECT name, rev, track_serial, warranty_months, warranty_kind '
+            'FROM items',
+          )
+          .getSingle();
+      expect(item.data['name'], 'Samsung A15');
+      expect(item.data['rev'], 2);
+      expect(item.data['track_serial'], 1);
+      expect(item.data['warranty_months'], isNull, reason: 'no warranty');
+      expect(item.data['warranty_kind'], isNull);
+      final lot = await db
+          .customSelect(
+            'SELECT serial, cost_milli_paisa, serial_2, pta_status, '
+            'pta_checked_on_local FROM stock_lots',
+          )
+          .getSingle();
+      expect(lot.data['serial'], '356938035643809');
+      expect(lot.data['cost_milli_paisa'], 50000000);
+      for (final column in ['serial_2', 'pta_status', 'pta_checked_on_local']) {
+        expect(lot.data[column], isNull, reason: 'no piece becomes a phone');
+      }
+
+      // The shop may now say it is a mobile shop; a kind nobody planned is
+      // still refused. The new columns hold what they are for, and refuse
+      // what they are not.
+      await db.customStatement("UPDATE firms SET business_kind = 'mobile'");
+      await expectLater(
+        db.customStatement("UPDATE firms SET business_kind = 'bakery'"),
+        throwsA(anything),
+      );
+      await db.customStatement(
+        "UPDATE stock_lots SET serial_2 = '356938035643817', "
+        "pta_status = 'non_compliant'",
+      );
+      await expectLater(
+        db.customStatement("UPDATE stock_lots SET pta_status = 'blocked'"),
+        throwsA(anything),
+        reason: 'a PTA answer the pack does not know is refused',
+      );
+      await expectLater(
+        db.customStatement('UPDATE items SET warranty_months = 0'),
+        throwsA(anything),
+        reason: 'no warranty is empty, not zero months',
+      );
+      final tables = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN "
+            "('used_phone_buys', 'warranty_claims', 'qist_plans', "
+            "'qist_instalments') ORDER BY name",
+          )
+          .get();
+      expect(
+        [for (final t in tables) t.read<String>('name')],
+        [
+          'qist_instalments',
+          'qist_plans',
+          'used_phone_buys',
+          'warranty_claims',
+        ],
+      );
+      final dangling = await db.customSelect('PRAGMA foreign_key_check').get();
+      expect(
+        dangling.where((r) => r.data['parent'] == 'firms'),
+        isEmpty,
+        reason: 'nothing points at a shop that is not there',
+      );
+    });
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -765,4 +945,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 11;
+const _currentVersion = 12;

@@ -12961,6 +12961,870 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Tareekh chunein'**
   String get recurringPickDate;
+
+  /// No description provided for @businessKindMobile.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mobile shop'**
+  String get businessKindMobile;
+
+  /// No description provided for @mobileSearchTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone dhoondein'**
+  String get mobileSearchTitle;
+
+  /// No description provided for @mobileSearchLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI (poora, ya aakhri hindsay)'**
+  String get mobileSearchLabel;
+
+  /// No description provided for @mobileSearchHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'maslan 43809'**
+  String get mobileSearchHint;
+
+  /// No description provided for @mobileSearchTypeMore.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI 1 ya IMEI 2 ke kam az kam 3 hindsay likhein. Number dabbe par hai, ya phone par *#06# milayein.'**
+  String get mobileSearchTypeMore;
+
+  /// No description provided for @mobileSearchNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kisi phone ke IMEI mein {digits} nahi'**
+  String mobileSearchNone(String digits);
+
+  /// No description provided for @mobileInShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan mein'**
+  String get mobileInShop;
+
+  /// No description provided for @mobileNotInShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan mein nahi'**
+  String get mobileNotInShop;
+
+  /// No description provided for @mobileBuyUsedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purana phone khareedein'**
+  String get mobileBuyUsedTitle;
+
+  /// No description provided for @mobileQistPlansTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist wale phone'**
+  String get mobileQistPlansTitle;
+
+  /// No description provided for @mobileStoryGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh phone ab khaate mein nahi.'**
+  String get mobileStoryGone;
+
+  /// No description provided for @mobileAddImei2.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI 2 likhein'**
+  String get mobileAddImei2;
+
+  /// No description provided for @mobilePtaTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA'**
+  String get mobilePtaTitle;
+
+  /// No description provided for @mobilePtaApproved.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA approved'**
+  String get mobilePtaApproved;
+
+  /// No description provided for @mobilePtaValidUnapproved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Theek hai, PTA approved nahi'**
+  String get mobilePtaValidUnapproved;
+
+  /// No description provided for @mobilePtaNonCompliant.
+  ///
+  /// In ur, this message translates to:
+  /// **'Non-compliant (block ho sakta hai)'**
+  String get mobilePtaNonCompliant;
+
+  /// No description provided for @mobilePtaUnknown.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA check nahi kiya'**
+  String get mobilePtaUnknown;
+
+  /// No description provided for @mobilePtaCheckedOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{status} · {date} ko likha'**
+  String mobilePtaCheckedOn(String status, String date);
+
+  /// No description provided for @mobilePtaBlockedNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA ke mutabiq non-compliant phone 60 din mein block ho jata hai. Bechne se pehle customer ko batayein.'**
+  String get mobilePtaBlockedNote;
+
+  /// No description provided for @mobilePtaCheck.
+  ///
+  /// In ur, this message translates to:
+  /// **'8484 par check karein'**
+  String get mobilePtaCheck;
+
+  /// No description provided for @mobilePtaWriteAnswer.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA ka jawab likhein'**
+  String get mobilePtaWriteAnswer;
+
+  /// No description provided for @mobilePtaHow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aap ki messages app khulegi, IMEI 8484 ko likha hua. Send aap apni SIM se dabayein; PTA SMS se jawab dega, woh yahan likh dein. Yeh app khud kuch nahi bhejti.'**
+  String get mobilePtaHow;
+
+  /// No description provided for @mobilePtaNoSmsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'Messages app nahi khuli. {imei} khud SMS se 8484 par bhejein.'**
+  String mobilePtaNoSmsApp(String imei);
+
+  /// No description provided for @mobilePtaAnswerTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA ne kya jawab diya?'**
+  String get mobilePtaAnswerTitle;
+
+  /// No description provided for @mobilePtaUnverifiedNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh PTA ke jawab akhbaar ke mutabiq hain; is app ne PTA ke apne qawaid se inhein check nahi kiya.'**
+  String get mobilePtaUnverifiedNote;
+
+  /// No description provided for @mobilePtaWarnTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'PTA non-compliant'**
+  String get mobilePtaWarnTitle;
+
+  /// No description provided for @mobilePtaWarnBody.
+  ///
+  /// In ur, this message translates to:
+  /// **'{item} ({imei}) PTA ke hisaab se non-compliant likha hai. PTA ke mutabiq aise phone 60 din mein block ho jate hain. Sirf tab bechein jab customer ko pata ho.'**
+  String mobilePtaWarnBody(String item, String imei);
+
+  /// No description provided for @mobilePtaWarnSellAnyway.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechein, customer ko pata hai'**
+  String get mobilePtaWarnSellAnyway;
+
+  /// No description provided for @mobileWarrantyTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Warranty'**
+  String get mobileWarrantyTitle;
+
+  /// No description provided for @mobileWarrantyNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is phone par koi warranty nahi di gayi.'**
+  String get mobileWarrantyNone;
+
+  /// No description provided for @mobileWarrantyTill.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak warranty'**
+  String mobileWarrantyTill(String date);
+
+  /// No description provided for @mobileInWarranty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Warranty mein'**
+  String get mobileInWarranty;
+
+  /// No description provided for @mobileOutOfWarranty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Warranty khatam'**
+  String get mobileOutOfWarranty;
+
+  /// No description provided for @mobileWarrantyBrand.
+  ///
+  /// In ur, this message translates to:
+  /// **'Company warranty'**
+  String get mobileWarrantyBrand;
+
+  /// No description provided for @mobileWarrantyShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ki warranty'**
+  String get mobileWarrantyShop;
+
+  /// No description provided for @mobileClaimAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Warranty claim likhein'**
+  String get mobileClaimAdd;
+
+  /// No description provided for @mobileClaimNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kya kharabi hai, aur kya kiya'**
+  String get mobileClaimNote;
+
+  /// No description provided for @mobileClaimHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Screen band, Samsung centre bheja'**
+  String get mobileClaimHint;
+
+  /// No description provided for @mobileQistOpenPlan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ka qist plan dekhein'**
+  String get mobileQistOpenPlan;
+
+  /// No description provided for @mobileSellerTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis se khareeda'**
+  String get mobileSellerTitle;
+
+  /// No description provided for @mobileStoryTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone ki kahani'**
+  String get mobileStoryTitle;
+
+  /// No description provided for @mobileStoryEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi tak is phone ka koi len den nahi.'**
+  String get mobileStoryEmpty;
+
+  /// No description provided for @mobileEventWalkIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'walk-in'**
+  String get mobileEventWalkIn;
+
+  /// No description provided for @mobileEventBought.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who} se khareeda'**
+  String mobileEventBought(String who);
+
+  /// No description provided for @mobileEventSold.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who} ko becha'**
+  String mobileEventSold(String who);
+
+  /// No description provided for @mobileEventReturned.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who} wapas laye'**
+  String mobileEventReturned(String who);
+
+  /// No description provided for @mobileEventSentBack.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who} ko wapas bheja'**
+  String mobileEventSentBack(String who);
+
+  /// No description provided for @mobileEventMoved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doosri jagah bheja'**
+  String get mobileEventMoved;
+
+  /// No description provided for @mobileEventAdjusted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock theek kiya'**
+  String get mobileEventAdjusted;
+
+  /// No description provided for @mobileEventCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'mansookh'**
+  String get mobileEventCancelled;
+
+  /// No description provided for @mobileImeiEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI likhein: 15 hindsay, dabbe par ya *#06# se.'**
+  String get mobileImeiEmpty;
+
+  /// No description provided for @mobileImeiNotDigits.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI mein sirf hindsay hote hain.'**
+  String get mobileImeiNotDigits;
+
+  /// No description provided for @mobileImeiLength.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI 15 hindson ka hota hai; is mein {count} hain.'**
+  String mobileImeiLength(int count);
+
+  /// No description provided for @mobileImeiMistyped.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI {digits} ghalat likha hai: aakhri hindsa {last} hona chahiye. Dabbe se ya *#06# se dobara likhein.'**
+  String mobileImeiMistyped(String digits, String last);
+
+  /// No description provided for @mobileImeiSameTwice.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI 2 aur IMEI 1 ek hi hain. Ek SIM wale phone mein IMEI 2 khaali chhorein.'**
+  String get mobileImeiSameTwice;
+
+  /// No description provided for @mobileSellerCnic.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne wale ka CNIC'**
+  String get mobileSellerCnic;
+
+  /// No description provided for @mobileSellerKnown.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle bhi phone de chuke hain, {name} ke naam se'**
+  String mobileSellerKnown(String name);
+
+  /// No description provided for @mobileSellerName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne wale ka naam'**
+  String get mobileSellerName;
+
+  /// No description provided for @mobileSellerPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne wale ka phone number'**
+  String get mobileSellerPhone;
+
+  /// No description provided for @mobilePhotosStayHere.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC aur phone ki tasveerein isi phone aur is ke backup mein rehti hain. Kisi aur counter ya kahin aur nahi jaatin.'**
+  String get mobilePhotosStayHere;
+
+  /// No description provided for @mobilePhoneTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone'**
+  String get mobilePhoneTitle;
+
+  /// No description provided for @mobileNoModels.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi model IMEI se nahi rakha. Pehle Maal mein model banayein, \"Serial / IMEI se\" ke saath.'**
+  String get mobileNoModels;
+
+  /// No description provided for @mobileModel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Model'**
+  String get mobileModel;
+
+  /// No description provided for @mobileImei1.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI 1'**
+  String get mobileImei1;
+
+  /// No description provided for @mobileImei2.
+  ///
+  /// In ur, this message translates to:
+  /// **'IMEI 2'**
+  String get mobileImei2;
+
+  /// No description provided for @mobileImei2Hint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf do SIM wale mein'**
+  String get mobileImei2Hint;
+
+  /// No description provided for @mobileCondition.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haalat'**
+  String get mobileCondition;
+
+  /// No description provided for @mobileConditionHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peechhe se toota, dabba charger nahi'**
+  String get mobileConditionHint;
+
+  /// No description provided for @mobilePaidTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ada kiya'**
+  String get mobilePaidTitle;
+
+  /// No description provided for @mobilePricePaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne wale ko diye'**
+  String get mobilePricePaid;
+
+  /// No description provided for @mobilePaidFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan se diye'**
+  String get mobilePaidFrom;
+
+  /// No description provided for @mobileBuySave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareedein aur stock mein daalein'**
+  String get mobileBuySave;
+
+  /// No description provided for @mobileSellerNameNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne wale ka naam likhein.'**
+  String get mobileSellerNameNeeded;
+
+  /// No description provided for @mobileCnicBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC 13 hindson ka hota hai: 12345-1234567-1.'**
+  String get mobileCnicBad;
+
+  /// No description provided for @mobileModelNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone ka model chunein.'**
+  String get mobileModelNeeded;
+
+  /// No description provided for @mobilePriceNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone ke kitne diye, likhein.'**
+  String get mobilePriceNeeded;
+
+  /// No description provided for @mobileBuyFailed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone nahi khareeda gaya. Kuch save nahi hua.'**
+  String get mobileBuyFailed;
+
+  /// No description provided for @mobileBuyDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} par khareeda, IMEI ke saath stock mein aur purane phone register mein. Ab tasveerein lagayein.'**
+  String mobileBuyDone(String docNo);
+
+  /// No description provided for @mobileCnicPhoto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne wale ke CNIC ki tasveer'**
+  String get mobileCnicPhoto;
+
+  /// No description provided for @mobilePhonePhoto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone ki tasveer'**
+  String get mobilePhonePhoto;
+
+  /// No description provided for @mobileOpenStory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone ki kahani dekhein'**
+  String get mobileOpenStory;
+
+  /// No description provided for @mobileCounterPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ke phone jin ke IMEI mein {digits} hai'**
+  String mobileCounterPick(String digits);
+
+  /// No description provided for @mobileQistSell.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist par bechein'**
+  String get mobileQistSell;
+
+  /// No description provided for @mobileQistNeedsCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle customer chunein: qistein un ke khaate mein jayengi.'**
+  String get mobileQistNeedsCustomer;
+
+  /// No description provided for @mobileQistPhones.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal'**
+  String get mobileQistPhones;
+
+  /// No description provided for @mobileQistMarkup.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist ka munafa (Rs)'**
+  String get mobileQistMarkup;
+
+  /// No description provided for @mobileQistMarkupNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill par alag line mein chhapega, total ke andar: customer dekhta hai ke qist ka kitna zyada hai.'**
+  String get mobileQistMarkupNote;
+
+  /// No description provided for @mobileQistDown.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi naqd advance (Rs)'**
+  String get mobileQistDown;
+
+  /// No description provided for @mobileQistCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qistein'**
+  String get mobileQistCount;
+
+  /// No description provided for @mobileQistDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine ki tareekh'**
+  String get mobileQistDay;
+
+  /// No description provided for @mobileQistBillTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ka total'**
+  String get mobileQistBillTotal;
+
+  /// No description provided for @mobileQistDownNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Advance'**
+  String get mobileQistDownNow;
+
+  /// No description provided for @mobileQistOnQist.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist par'**
+  String get mobileQistOnQist;
+
+  /// No description provided for @mobileQistEach.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} x Rs {amount}'**
+  String mobileQistEach(int count, String amount);
+
+  /// No description provided for @mobileQistEachLast.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} x Rs {amount}, phir Rs {last}'**
+  String mobileQistEachLast(int count, String amount, String last);
+
+  /// No description provided for @mobileQistFromTo.
+  ///
+  /// In ur, this message translates to:
+  /// **'{from} se {to} tak'**
+  String mobileQistFromTo(String from, String to);
+
+  /// No description provided for @mobileQistGuarantor.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zamin (agar ho)'**
+  String get mobileQistGuarantor;
+
+  /// No description provided for @mobileQistGuarantorName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zamin ka naam'**
+  String get mobileQistGuarantorName;
+
+  /// No description provided for @mobileQistGuarantorCnic.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zamin ka CNIC'**
+  String get mobileQistGuarantorCnic;
+
+  /// No description provided for @mobileQistGuarantorPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zamin ka phone'**
+  String get mobileQistGuarantorPhone;
+
+  /// No description provided for @mobileQistSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist par save karein'**
+  String get mobileQistSave;
+
+  /// No description provided for @mobileQistCountBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'1 se {max} qiston tak.'**
+  String mobileQistCountBad(int max);
+
+  /// No description provided for @mobileQistDayBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine ki tareekh 1 se 31 tak.'**
+  String get mobileQistDayBad;
+
+  /// No description provided for @mobileQistDownBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'Advance ke baad qist ke liye kuch baqi hona chahiye.'**
+  String get mobileQistDownBad;
+
+  /// No description provided for @mobileQistPlanTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qist plan'**
+  String get mobileQistPlanTitle;
+
+  /// No description provided for @mobileQistGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh qist plan ab khaate mein nahi.'**
+  String get mobileQistGone;
+
+  /// No description provided for @mobileQistRunning.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chal raha hai'**
+  String get mobileQistRunning;
+
+  /// No description provided for @mobileQistOverdue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der ho gayi'**
+  String get mobileQistOverdue;
+
+  /// No description provided for @mobileQistPaidOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poora ada'**
+  String get mobileQistPaidOff;
+
+  /// No description provided for @mobileQistClosed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle band'**
+  String get mobileQistClosed;
+
+  /// No description provided for @mobileQistCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill mansookh'**
+  String get mobileQistCancelled;
+
+  /// No description provided for @mobileQistMarkupIncluded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Munafa shamil'**
+  String get mobileQistMarkupIncluded;
+
+  /// No description provided for @mobileQistPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ab tak ada'**
+  String get mobileQistPaid;
+
+  /// No description provided for @mobileQistLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi'**
+  String get mobileQistLeft;
+
+  /// No description provided for @mobileQistOverdueAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der wali raqam'**
+  String get mobileQistOverdueAmount;
+
+  /// No description provided for @mobileQistGuarantorIs.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zamin: {name}'**
+  String mobileQistGuarantorIs(String name);
+
+  /// No description provided for @mobileQistClosedOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ko pehle band: baqi ab wajib'**
+  String mobileQistClosedOn(String date);
+
+  /// No description provided for @mobileQistSchedule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qistein'**
+  String get mobileQistSchedule;
+
+  /// No description provided for @mobileQistInstalmentPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ada'**
+  String get mobileQistInstalmentPaid;
+
+  /// No description provided for @mobileQistInstalmentLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din der · Rs {amount} baqi'**
+  String mobileQistInstalmentLate(int days, String amount);
+
+  /// No description provided for @mobileQistInstalmentToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj wajib · Rs {amount}'**
+  String mobileQistInstalmentToday(String amount);
+
+  /// No description provided for @mobileQistInstalmentPart.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch ada · Rs {amount} baqi'**
+  String mobileQistInstalmentPart(String amount);
+
+  /// No description provided for @mobileQistInstalmentDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aane wali'**
+  String get mobileQistInstalmentDue;
+
+  /// No description provided for @mobileQistHowPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay customer ke khaate par lein: har wasooli sab se purani qist pehle ada karti hai.'**
+  String get mobileQistHowPaid;
+
+  /// No description provided for @mobileQistCloseEarly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Plan pehle band karein'**
+  String get mobileQistCloseEarly;
+
+  /// No description provided for @mobileQistCloseConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Plan ke baqi Rs {amount} aaj hi poore wajib ho jayenge, khaate par. Jaldi dene ki riayat khaate par settlement discount se dein.'**
+  String mobileQistCloseConfirm(String amount);
+
+  /// No description provided for @mobileQistCloseNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah (agar ho)'**
+  String get mobileQistCloseNote;
+
+  /// No description provided for @mobileQistShowOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chal rahe'**
+  String get mobileQistShowOpen;
+
+  /// No description provided for @mobileQistShowAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab'**
+  String get mobileQistShowAll;
+
+  /// No description provided for @mobileQistNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yahan qist par koi phone nahi'**
+  String get mobileQistNone;
+
+  /// No description provided for @mobileQistNoneHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter par paisay wali sheet se qist par bechein.'**
+  String get mobileQistNoneHint;
+
+  /// No description provided for @mobileQistPaidOf.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} mein se {paid} ada'**
+  String mobileQistPaidOf(int paid, int count);
+
+  /// No description provided for @mobileQistLeftAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} baqi'**
+  String mobileQistLeftAmount(String amount);
+
+  /// No description provided for @mobileQistOverdueShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} der'**
+  String mobileQistOverdueShort(String amount);
+
+  /// No description provided for @mobileQistNext.
+  ///
+  /// In ur, this message translates to:
+  /// **'agli {date}'**
+  String mobileQistNext(String date);
+
+  /// No description provided for @mobileWarrantyMonths.
+  ///
+  /// In ur, this message translates to:
+  /// **'Warranty (mahine)'**
+  String get mobileWarrantyMonths;
+
+  /// No description provided for @mobileWarrantyWhose.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis ki warranty'**
+  String get mobileWarrantyWhose;
+
+  /// No description provided for @mobileWarrantyNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har bill par khatam hone ki tareekh chhapegi: \"Warranty till 3 Apr 2027\". Khaali ka matlab koi warranty nahi.'**
+  String get mobileWarrantyNote;
+
+  /// No description provided for @mobileWarrantyMonthsBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'1 se 120 mahine, ya khaali chhorein.'**
+  String get mobileWarrantyMonthsBad;
+
+  /// No description provided for @reportGroupMobile.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mobile shop'**
+  String get reportGroupMobile;
+
+  /// No description provided for @reportUsedPhones.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khareede gaye purane phone'**
+  String get reportUsedPhones;
+
+  /// No description provided for @reportUsedPhonesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har purana phone, bechne wale ke CNIC aur IMEI ke saath'**
+  String get reportUsedPhonesHint;
+
+  /// No description provided for @reportQistInstalments.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qistein'**
+  String get reportQistInstalments;
+
+  /// No description provided for @reportQistInstalmentsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har qist wala phone: ada, baqi, der wali'**
+  String get reportQistInstalmentsHint;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

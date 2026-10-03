@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../mobile/qist.dart';
 import '../pharmacy/medicine.dart';
 
 /// One line as the counter entered it, before any calculation.
@@ -191,7 +192,15 @@ final class SaleDraft {
     this.locationCode = 'MAIN',
     this.replacesId,
     this.prescription,
+    this.qist,
   });
+
+  /// A phone sold on qist (M50): the bill's balance paid off in monthly
+  /// instalments, each a due date on the customer's khata. The down payment
+  /// is the bill's tender and the markup its [extraCharges]; the builder
+  /// works the schedule out from the bill's own figures. Null for every
+  /// other bill.
+  final QistPlanDraft? qist;
 
   /// Where the goods leave from (M18): the shop floor, or a van a rider is
   /// selling from.
@@ -260,5 +269,6 @@ final class SaleDraft {
     locationCode: locationCode,
     replacesId: replacesId,
     prescription: prescription,
+    qist: qist, // M50
   );
 }

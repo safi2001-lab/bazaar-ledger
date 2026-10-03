@@ -56,16 +56,12 @@ mixin _UdhaarReportQueries implements UdhaarReportSource {
                  ), 0) AS advance
           FROM parties p
           LEFT JOIN (
-            SELECT d.party_id AS party_id, d.balance_paisa AS owed,
-                   CAST(julianday($day) - julianday($dueOnSql) AS INTEGER)
+            -- M50: the pack's own rows, so a bill sold on qist is aged
+            -- instalment by instalment here as on the chase list.
+            SELECT o.party_id AS party_id, o.owed AS owed,
+                   CAST(julianday($day) - julianday(o.due_on) AS INTEGER)
                      AS late
-            FROM documents d
-            JOIN parties p ON p.id = d.party_id
-            WHERE d.firm_id = ?1
-              AND d.doc_type IN ('sale_invoice', 'other_income')
-              AND d.balance_paisa > 0
-              AND d.status NOT IN ('void', 'draft')
-              AND d.deleted_at_utc IS NULL
+            FROM (${owedRowsSql('d.firm_id = ?1')}) o
           ) b ON b.party_id = p.id
           WHERE p.firm_id = ?1
             AND ((p.party_type IN ('customer', 'both')

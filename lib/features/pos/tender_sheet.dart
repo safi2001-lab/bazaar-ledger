@@ -11,6 +11,7 @@ import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
 import '../khata/entry_actions.dart' show modeLabel;
 import '../khata/goods_given.dart' show giveFromCounter; // M55
+import '../mobile/qist_sheet.dart'; // M50
 import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
 import '../pharmacy/pharmacy_gate.dart';
@@ -932,6 +933,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               busy: _busy,
               onPressed: _busy ? null : _post,
             ),
+            // M50: a phone sold on qist (mobile/qist_sheet.dart).
+            QistButton(enabled: !_busy),
             // A price asked for, or goods sent ahead of the bill. Not
             // offered while billing a quotation or a challan: that bill is
             // the one being kept. Nor while putting a bill right (M36): what

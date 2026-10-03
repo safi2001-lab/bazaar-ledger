@@ -4614,5 +4614,298 @@
       "date": {"type": "String"}
     }
   },
-  "recurringPickDate": "Tareekh chunein"
+  "recurringPickDate": "Tareekh chunein",
+  "businessKindMobile": "Mobile shop",
+  "mobileSearchTitle": "Phone dhoondein",
+  "mobileSearchLabel": "IMEI (poora, ya aakhri hindsay)",
+  "mobileSearchHint": "maslan 43809",
+  "mobileSearchTypeMore": "IMEI 1 ya IMEI 2 ke kam az kam 3 hindsay likhein. Number dabbe par hai, ya phone par *#06# milayein.",
+  "mobileSearchNone": "Kisi phone ke IMEI mein {digits} nahi",
+  "@mobileSearchNone": {
+    "placeholders": {
+      "digits": {"type": "String"}
+    }
+  },
+  "mobileInShop": "Dukaan mein",
+  "mobileNotInShop": "Dukaan mein nahi",
+  "mobileBuyUsedTitle": "Purana phone khareedein",
+  "mobileQistPlansTitle": "Qist wale phone",
+  "mobileStoryGone": "Yeh phone ab khaate mein nahi.",
+  "mobileAddImei2": "IMEI 2 likhein",
+  "mobilePtaTitle": "PTA",
+  "mobilePtaApproved": "PTA approved",
+  "mobilePtaValidUnapproved": "Theek hai, PTA approved nahi",
+  "mobilePtaNonCompliant": "Non-compliant (block ho sakta hai)",
+  "mobilePtaUnknown": "PTA check nahi kiya",
+  "mobilePtaCheckedOn": "{status} · {date} ko likha",
+  "@mobilePtaCheckedOn": {
+    "placeholders": {
+      "status": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "mobilePtaBlockedNote": "PTA ke mutabiq non-compliant phone 60 din mein block ho jata hai. Bechne se pehle customer ko batayein.",
+  "mobilePtaCheck": "8484 par check karein",
+  "mobilePtaWriteAnswer": "PTA ka jawab likhein",
+  "mobilePtaHow": "Aap ki messages app khulegi, IMEI 8484 ko likha hua. Send aap apni SIM se dabayein; PTA SMS se jawab dega, woh yahan likh dein. Yeh app khud kuch nahi bhejti.",
+  "mobilePtaNoSmsApp": "Messages app nahi khuli. {imei} khud SMS se 8484 par bhejein.",
+  "@mobilePtaNoSmsApp": {
+    "placeholders": {
+      "imei": {"type": "String"}
+    }
+  },
+  "mobilePtaAnswerTitle": "PTA ne kya jawab diya?",
+  "mobilePtaUnverifiedNote": "Yeh PTA ke jawab akhbaar ke mutabiq hain; is app ne PTA ke apne qawaid se inhein check nahi kiya.",
+  "mobilePtaWarnTitle": "PTA non-compliant",
+  "mobilePtaWarnBody": "{item} ({imei}) PTA ke hisaab se non-compliant likha hai. PTA ke mutabiq aise phone 60 din mein block ho jate hain. Sirf tab bechein jab customer ko pata ho.",
+  "@mobilePtaWarnBody": {
+    "placeholders": {
+      "item": {"type": "String"},
+      "imei": {"type": "String"}
+    }
+  },
+  "mobilePtaWarnSellAnyway": "Bechein, customer ko pata hai",
+  "mobileWarrantyTitle": "Warranty",
+  "mobileWarrantyNone": "Is phone par koi warranty nahi di gayi.",
+  "mobileWarrantyTill": "{date} tak warranty",
+  "@mobileWarrantyTill": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "mobileInWarranty": "Warranty mein",
+  "mobileOutOfWarranty": "Warranty khatam",
+  "mobileWarrantyBrand": "Company warranty",
+  "mobileWarrantyShop": "Dukaan ki warranty",
+  "mobileClaimAdd": "Warranty claim likhein",
+  "mobileClaimNote": "Kya kharabi hai, aur kya kiya",
+  "mobileClaimHint": "Screen band, Samsung centre bheja",
+  "mobileQistOpenPlan": "Is ka qist plan dekhein",
+  "mobileSellerTitle": "Kis se khareeda",
+  "mobileStoryTitle": "Phone ki kahani",
+  "mobileStoryEmpty": "Abhi tak is phone ka koi len den nahi.",
+  "mobileEventWalkIn": "walk-in",
+  "mobileEventBought": "{who} se khareeda",
+  "@mobileEventBought": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventSold": "{who} ko becha",
+  "@mobileEventSold": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventReturned": "{who} wapas laye",
+  "@mobileEventReturned": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventSentBack": "{who} ko wapas bheja",
+  "@mobileEventSentBack": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventMoved": "Doosri jagah bheja",
+  "mobileEventAdjusted": "Stock theek kiya",
+  "mobileEventCancelled": "mansookh",
+  "mobileImeiEmpty": "IMEI likhein: 15 hindsay, dabbe par ya *#06# se.",
+  "mobileImeiNotDigits": "IMEI mein sirf hindsay hote hain.",
+  "mobileImeiLength": "IMEI 15 hindson ka hota hai; is mein {count} hain.",
+  "@mobileImeiLength": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "mobileImeiMistyped": "IMEI {digits} ghalat likha hai: aakhri hindsa {last} hona chahiye. Dabbe se ya *#06# se dobara likhein.",
+  "@mobileImeiMistyped": {
+    "placeholders": {
+      "digits": {"type": "String"},
+      "last": {"type": "String"}
+    }
+  },
+  "mobileImeiSameTwice": "IMEI 2 aur IMEI 1 ek hi hain. Ek SIM wale phone mein IMEI 2 khaali chhorein.",
+  "mobileSellerCnic": "Bechne wale ka CNIC",
+  "mobileSellerKnown": "Pehle bhi phone de chuke hain, {name} ke naam se",
+  "@mobileSellerKnown": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "mobileSellerName": "Bechne wale ka naam",
+  "mobileSellerPhone": "Bechne wale ka phone number",
+  "mobilePhotosStayHere": "CNIC aur phone ki tasveerein isi phone aur is ke backup mein rehti hain. Kisi aur counter ya kahin aur nahi jaatin.",
+  "mobilePhoneTitle": "Phone",
+  "mobileNoModels": "Abhi koi model IMEI se nahi rakha. Pehle Maal mein model banayein, \"Serial / IMEI se\" ke saath.",
+  "mobileModel": "Model",
+  "mobileImei1": "IMEI 1",
+  "mobileImei2": "IMEI 2",
+  "mobileImei2Hint": "Sirf do SIM wale mein",
+  "mobileCondition": "Haalat",
+  "mobileConditionHint": "Peechhe se toota, dabba charger nahi",
+  "mobilePaidTitle": "Ada kiya",
+  "mobilePricePaid": "Bechne wale ko diye",
+  "mobilePaidFrom": "Kahan se diye",
+  "mobileBuySave": "Khareedein aur stock mein daalein",
+  "mobileSellerNameNeeded": "Bechne wale ka naam likhein.",
+  "mobileCnicBad": "CNIC 13 hindson ka hota hai: 12345-1234567-1.",
+  "mobileModelNeeded": "Phone ka model chunein.",
+  "mobilePriceNeeded": "Phone ke kitne diye, likhein.",
+  "mobileBuyFailed": "Phone nahi khareeda gaya. Kuch save nahi hua.",
+  "mobileBuyDone": "{docNo} par khareeda, IMEI ke saath stock mein aur purane phone register mein. Ab tasveerein lagayein.",
+  "@mobileBuyDone": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "mobileCnicPhoto": "Bechne wale ke CNIC ki tasveer",
+  "mobilePhonePhoto": "Phone ki tasveer",
+  "mobileOpenStory": "Phone ki kahani dekhein",
+  "mobileCounterPick": "Dukaan ke phone jin ke IMEI mein {digits} hai",
+  "@mobileCounterPick": {
+    "placeholders": {
+      "digits": {"type": "String"}
+    }
+  },
+  "mobileQistSell": "Qist par bechein",
+  "mobileQistNeedsCustomer": "Pehle customer chunein: qistein un ke khaate mein jayengi.",
+  "mobileQistPhones": "Maal",
+  "mobileQistMarkup": "Qist ka munafa (Rs)",
+  "mobileQistMarkupNote": "Bill par alag line mein chhapega, total ke andar: customer dekhta hai ke qist ka kitna zyada hai.",
+  "mobileQistDown": "Abhi naqd advance (Rs)",
+  "mobileQistCount": "Qistein",
+  "mobileQistDay": "Har mahine ki tareekh",
+  "mobileQistBillTotal": "Bill ka total",
+  "mobileQistDownNow": "Advance",
+  "mobileQistOnQist": "Qist par",
+  "mobileQistEach": "{count} x Rs {amount}",
+  "@mobileQistEach": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistEachLast": "{count} x Rs {amount}, phir Rs {last}",
+  "@mobileQistEachLast": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"},
+      "last": {"type": "String"}
+    }
+  },
+  "mobileQistFromTo": "{from} se {to} tak",
+  "@mobileQistFromTo": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "mobileQistGuarantor": "Zamin (agar ho)",
+  "mobileQistGuarantorName": "Zamin ka naam",
+  "mobileQistGuarantorCnic": "Zamin ka CNIC",
+  "mobileQistGuarantorPhone": "Zamin ka phone",
+  "mobileQistSave": "Qist par save karein",
+  "mobileQistCountBad": "1 se {max} qiston tak.",
+  "@mobileQistCountBad": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "mobileQistDayBad": "Mahine ki tareekh 1 se 31 tak.",
+  "mobileQistDownBad": "Advance ke baad qist ke liye kuch baqi hona chahiye.",
+  "mobileQistPlanTitle": "Qist plan",
+  "mobileQistGone": "Yeh qist plan ab khaate mein nahi.",
+  "mobileQistRunning": "Chal raha hai",
+  "mobileQistOverdue": "Der ho gayi",
+  "mobileQistPaidOff": "Poora ada",
+  "mobileQistClosed": "Pehle band",
+  "mobileQistCancelled": "Bill mansookh",
+  "mobileQistMarkupIncluded": "Munafa shamil",
+  "mobileQistPaid": "Ab tak ada",
+  "mobileQistLeft": "Baqi",
+  "mobileQistOverdueAmount": "Der wali raqam",
+  "mobileQistGuarantorIs": "Zamin: {name}",
+  "@mobileQistGuarantorIs": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "mobileQistClosedOn": "{date} ko pehle band: baqi ab wajib",
+  "@mobileQistClosedOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "mobileQistSchedule": "Qistein",
+  "mobileQistInstalmentPaid": "Ada",
+  "mobileQistInstalmentLate": "{days} din der · Rs {amount} baqi",
+  "@mobileQistInstalmentLate": {
+    "placeholders": {
+      "days": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistInstalmentToday": "Aaj wajib · Rs {amount}",
+  "@mobileQistInstalmentToday": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistInstalmentPart": "Kuch ada · Rs {amount} baqi",
+  "@mobileQistInstalmentPart": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistInstalmentDue": "Aane wali",
+  "mobileQistHowPaid": "Paisay customer ke khaate par lein: har wasooli sab se purani qist pehle ada karti hai.",
+  "mobileQistCloseEarly": "Plan pehle band karein",
+  "mobileQistCloseConfirm": "Plan ke baqi Rs {amount} aaj hi poore wajib ho jayenge, khaate par. Jaldi dene ki riayat khaate par settlement discount se dein.",
+  "@mobileQistCloseConfirm": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistCloseNote": "Wajah (agar ho)",
+  "mobileQistShowOpen": "Chal rahe",
+  "mobileQistShowAll": "Sab",
+  "mobileQistNone": "Yahan qist par koi phone nahi",
+  "mobileQistNoneHint": "Counter par paisay wali sheet se qist par bechein.",
+  "mobileQistPaidOf": "{count} mein se {paid} ada",
+  "@mobileQistPaidOf": {
+    "placeholders": {
+      "paid": {"type": "int"},
+      "count": {"type": "int"}
+    }
+  },
+  "mobileQistLeftAmount": "Rs {amount} baqi",
+  "@mobileQistLeftAmount": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistOverdueShort": "Rs {amount} der",
+  "@mobileQistOverdueShort": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistNext": "agli {date}",
+  "@mobileQistNext": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "mobileWarrantyMonths": "Warranty (mahine)",
+  "mobileWarrantyWhose": "Kis ki warranty",
+  "mobileWarrantyNote": "Har bill par khatam hone ki tareekh chhapegi: \"Warranty till 3 Apr 2027\". Khaali ka matlab koi warranty nahi.",
+  "mobileWarrantyMonthsBad": "1 se 120 mahine, ya khaali chhorein.",
+  "reportGroupMobile": "Mobile shop",
+  "reportUsedPhones": "Khareede gaye purane phone",
+  "reportUsedPhonesHint": "Har purana phone, bechne wale ke CNIC aur IMEI ke saath",
+  "reportQistInstalments": "Qistein",
+  "reportQistInstalmentsHint": "Har qist wala phone: ada, baqi, der wali"
 }

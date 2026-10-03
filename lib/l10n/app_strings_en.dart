@@ -7609,4 +7609,510 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get recurringPickDate => 'Pick a date';
+
+  @override
+  String get businessKindMobile => 'Mobile shop';
+
+  @override
+  String get mobileSearchTitle => 'Find a phone';
+
+  @override
+  String get mobileSearchLabel => 'IMEI (all of it, or the last digits)';
+
+  @override
+  String get mobileSearchHint => 'e.g. 43809';
+
+  @override
+  String get mobileSearchTypeMore =>
+      'Type at least 3 digits of IMEI 1 or IMEI 2. The number is on the box, or dial *#06# on the phone.';
+
+  @override
+  String mobileSearchNone(String digits) {
+    return 'No phone has $digits in its IMEI';
+  }
+
+  @override
+  String get mobileInShop => 'In the shop';
+
+  @override
+  String get mobileNotInShop => 'Not in the shop';
+
+  @override
+  String get mobileBuyUsedTitle => 'Buy a used phone';
+
+  @override
+  String get mobileQistPlansTitle => 'Phones on qist';
+
+  @override
+  String get mobileStoryGone => 'This phone is no longer in the books.';
+
+  @override
+  String get mobileAddImei2 => 'Add IMEI 2';
+
+  @override
+  String get mobilePtaTitle => 'PTA';
+
+  @override
+  String get mobilePtaApproved => 'PTA approved';
+
+  @override
+  String get mobilePtaValidUnapproved => 'Valid, not PTA approved';
+
+  @override
+  String get mobilePtaNonCompliant => 'Non-compliant (may be blocked)';
+
+  @override
+  String get mobilePtaUnknown => 'PTA not checked';
+
+  @override
+  String mobilePtaCheckedOn(String status, String date) {
+    return '$status · written $date';
+  }
+
+  @override
+  String get mobilePtaBlockedNote =>
+      'PTA reports a non-compliant phone is blocked within 60 days. Tell the customer before selling it.';
+
+  @override
+  String get mobilePtaCheck => 'Check on 8484';
+
+  @override
+  String get mobilePtaWriteAnswer => 'Write PTA\'s answer';
+
+  @override
+  String get mobilePtaHow =>
+      'Opens your messages app with the IMEI typed to 8484. You press Send from your own SIM; PTA replies by SMS, and you write the answer here. Nothing is sent by this app.';
+
+  @override
+  String mobilePtaNoSmsApp(String imei) {
+    return 'No messages app opened. Send $imei to 8484 by SMS yourself.';
+  }
+
+  @override
+  String get mobilePtaAnswerTitle => 'What did PTA reply?';
+
+  @override
+  String get mobilePtaUnverifiedNote =>
+      'These are PTA\'s answers as reported by the press; this app has not checked them against PTA\'s own rules.';
+
+  @override
+  String get mobilePtaWarnTitle => 'PTA non-compliant';
+
+  @override
+  String mobilePtaWarnBody(String item, String imei) {
+    return '$item ($imei) was written down as non-compliant with PTA. PTA reports such phones are blocked within 60 days. Sell it only if the customer knows.';
+  }
+
+  @override
+  String get mobilePtaWarnSellAnyway => 'Sell, the customer knows';
+
+  @override
+  String get mobileWarrantyTitle => 'Warranty';
+
+  @override
+  String get mobileWarrantyNone => 'No warranty was given on this phone.';
+
+  @override
+  String mobileWarrantyTill(String date) {
+    return 'Warranty till $date';
+  }
+
+  @override
+  String get mobileInWarranty => 'In warranty';
+
+  @override
+  String get mobileOutOfWarranty => 'Out of warranty';
+
+  @override
+  String get mobileWarrantyBrand => 'Brand warranty';
+
+  @override
+  String get mobileWarrantyShop => 'Shop warranty';
+
+  @override
+  String get mobileClaimAdd => 'Write a warranty claim';
+
+  @override
+  String get mobileClaimNote => 'What is wrong, and what was done';
+
+  @override
+  String get mobileClaimHint => 'Screen dead, sent to the Samsung centre';
+
+  @override
+  String get mobileQistOpenPlan => 'Open its qist plan';
+
+  @override
+  String get mobileSellerTitle => 'Bought from';
+
+  @override
+  String get mobileStoryTitle => 'The phone\'s story';
+
+  @override
+  String get mobileStoryEmpty => 'Nothing has moved this phone yet.';
+
+  @override
+  String get mobileEventWalkIn => 'a walk-in';
+
+  @override
+  String mobileEventBought(String who) {
+    return 'Bought from $who';
+  }
+
+  @override
+  String mobileEventSold(String who) {
+    return 'Sold to $who';
+  }
+
+  @override
+  String mobileEventReturned(String who) {
+    return 'Brought back by $who';
+  }
+
+  @override
+  String mobileEventSentBack(String who) {
+    return 'Sent back to $who';
+  }
+
+  @override
+  String get mobileEventMoved => 'Moved to another place';
+
+  @override
+  String get mobileEventAdjusted => 'Stock put right';
+
+  @override
+  String get mobileEventCancelled => 'cancelled';
+
+  @override
+  String get mobileImeiEmpty =>
+      'Write the IMEI: 15 digits, on the box or from *#06#.';
+
+  @override
+  String get mobileImeiNotDigits => 'An IMEI is digits only.';
+
+  @override
+  String mobileImeiLength(int count) {
+    return 'An IMEI is 15 digits; this has $count.';
+  }
+
+  @override
+  String mobileImeiMistyped(String digits, String last) {
+    return 'IMEI $digits is mistyped: its last digit should be $last. Copy it again from the box or from *#06#.';
+  }
+
+  @override
+  String get mobileImeiSameTwice =>
+      'IMEI 2 is the same as IMEI 1. Leave IMEI 2 empty for a single-SIM phone.';
+
+  @override
+  String get mobileSellerCnic => 'Seller\'s CNIC';
+
+  @override
+  String mobileSellerKnown(String name) {
+    return 'Sold us a phone before, as $name';
+  }
+
+  @override
+  String get mobileSellerName => 'Seller\'s name';
+
+  @override
+  String get mobileSellerPhone => 'Seller\'s phone number';
+
+  @override
+  String get mobilePhotosStayHere =>
+      'The CNIC and phone photographs stay on this phone and in its backups. They are never sent to another counter or anywhere else.';
+
+  @override
+  String get mobilePhoneTitle => 'The phone';
+
+  @override
+  String get mobileNoModels =>
+      'No phone model is kept by IMEI yet. Add the model in Items with \"By serial / IMEI\" first.';
+
+  @override
+  String get mobileModel => 'Model';
+
+  @override
+  String get mobileImei1 => 'IMEI 1';
+
+  @override
+  String get mobileImei2 => 'IMEI 2';
+
+  @override
+  String get mobileImei2Hint => 'Dual SIM only';
+
+  @override
+  String get mobileCondition => 'Condition';
+
+  @override
+  String get mobileConditionHint => 'Back cracked, no box or charger';
+
+  @override
+  String get mobilePaidTitle => 'Paid';
+
+  @override
+  String get mobilePricePaid => 'Paid to the seller';
+
+  @override
+  String get mobilePaidFrom => 'Paid from';
+
+  @override
+  String get mobileBuySave => 'Buy and put in stock';
+
+  @override
+  String get mobileSellerNameNeeded => 'Write the seller\'s name.';
+
+  @override
+  String get mobileCnicBad => 'A CNIC is 13 digits: 12345-1234567-1.';
+
+  @override
+  String get mobileModelNeeded => 'Pick the phone model.';
+
+  @override
+  String get mobilePriceNeeded => 'Write what was paid for the phone.';
+
+  @override
+  String get mobileBuyFailed =>
+      'The phone was not bought. Nothing was written.';
+
+  @override
+  String mobileBuyDone(String docNo) {
+    return 'Bought on $docNo, in stock by its IMEI and in the used phones register. Add the photographs now.';
+  }
+
+  @override
+  String get mobileCnicPhoto => 'Photograph of the seller\'s CNIC';
+
+  @override
+  String get mobilePhonePhoto => 'Photograph of the phone';
+
+  @override
+  String get mobileOpenStory => 'Open the phone\'s story';
+
+  @override
+  String mobileCounterPick(String digits) {
+    return 'Phones in the shop with $digits in the IMEI';
+  }
+
+  @override
+  String get mobileQistSell => 'Sell on qist';
+
+  @override
+  String get mobileQistNeedsCustomer =>
+      'Pick the customer first: the instalments go on their khata.';
+
+  @override
+  String get mobileQistPhones => 'Goods';
+
+  @override
+  String get mobileQistMarkup => 'Qist markup (Rs)';
+
+  @override
+  String get mobileQistMarkupNote =>
+      'Printed on the bill as its own line, inside the total: the customer sees what waiting costs.';
+
+  @override
+  String get mobileQistDown => 'Down payment now, in cash (Rs)';
+
+  @override
+  String get mobileQistCount => 'Instalments';
+
+  @override
+  String get mobileQistDay => 'Due on day';
+
+  @override
+  String get mobileQistBillTotal => 'Bill total';
+
+  @override
+  String get mobileQistDownNow => 'Down payment';
+
+  @override
+  String get mobileQistOnQist => 'On qist';
+
+  @override
+  String mobileQistEach(int count, String amount) {
+    return '$count x Rs $amount';
+  }
+
+  @override
+  String mobileQistEachLast(int count, String amount, String last) {
+    return '$count x Rs $amount, then Rs $last';
+  }
+
+  @override
+  String mobileQistFromTo(String from, String to) {
+    return 'From $from to $to';
+  }
+
+  @override
+  String get mobileQistGuarantor => 'Guarantor (if any)';
+
+  @override
+  String get mobileQistGuarantorName => 'Guarantor\'s name';
+
+  @override
+  String get mobileQistGuarantorCnic => 'Guarantor\'s CNIC';
+
+  @override
+  String get mobileQistGuarantorPhone => 'Guarantor\'s phone';
+
+  @override
+  String get mobileQistSave => 'Save on qist';
+
+  @override
+  String mobileQistCountBad(int max) {
+    return 'Between 1 and $max instalments.';
+  }
+
+  @override
+  String get mobileQistDayBad => 'The day of the month is 1 to 31.';
+
+  @override
+  String get mobileQistDownBad =>
+      'The down payment has to leave something to pay in instalments.';
+
+  @override
+  String get mobileQistPlanTitle => 'Qist plan';
+
+  @override
+  String get mobileQistGone => 'This qist plan is no longer in the books.';
+
+  @override
+  String get mobileQistRunning => 'Running';
+
+  @override
+  String get mobileQistOverdue => 'Overdue';
+
+  @override
+  String get mobileQistPaidOff => 'Paid off';
+
+  @override
+  String get mobileQistClosed => 'Closed early';
+
+  @override
+  String get mobileQistCancelled => 'Bill cancelled';
+
+  @override
+  String get mobileQistMarkupIncluded => 'Markup included';
+
+  @override
+  String get mobileQistPaid => 'Paid so far';
+
+  @override
+  String get mobileQistLeft => 'Still to pay';
+
+  @override
+  String get mobileQistOverdueAmount => 'Overdue';
+
+  @override
+  String mobileQistGuarantorIs(String name) {
+    return 'Guarantor: $name';
+  }
+
+  @override
+  String mobileQistClosedOn(String date) {
+    return 'Closed early on $date: what is left is due now';
+  }
+
+  @override
+  String get mobileQistSchedule => 'Instalments';
+
+  @override
+  String get mobileQistInstalmentPaid => 'Paid';
+
+  @override
+  String mobileQistInstalmentLate(int days, String amount) {
+    return '$days days late · Rs $amount left';
+  }
+
+  @override
+  String mobileQistInstalmentToday(String amount) {
+    return 'Due today · Rs $amount';
+  }
+
+  @override
+  String mobileQistInstalmentPart(String amount) {
+    return 'Part paid · Rs $amount left';
+  }
+
+  @override
+  String get mobileQistInstalmentDue => 'To come';
+
+  @override
+  String get mobileQistHowPaid =>
+      'Money is taken on the customer\'s khata: every receipt pays the oldest instalment first.';
+
+  @override
+  String get mobileQistCloseEarly => 'Close the plan early';
+
+  @override
+  String mobileQistCloseConfirm(String amount) {
+    return 'Rs $amount left on the plan becomes due today, all of it, on the khata. A discount for paying early is given on the khata as a settlement discount.';
+  }
+
+  @override
+  String get mobileQistCloseNote => 'Why (optional)';
+
+  @override
+  String get mobileQistShowOpen => 'Running';
+
+  @override
+  String get mobileQistShowAll => 'All';
+
+  @override
+  String get mobileQistNone => 'No phones on qist here';
+
+  @override
+  String get mobileQistNoneHint =>
+      'Sell on qist from the payment sheet at the counter.';
+
+  @override
+  String mobileQistPaidOf(int paid, int count) {
+    return '$paid of $count paid';
+  }
+
+  @override
+  String mobileQistLeftAmount(String amount) {
+    return 'Rs $amount left';
+  }
+
+  @override
+  String mobileQistOverdueShort(String amount) {
+    return 'Rs $amount late';
+  }
+
+  @override
+  String mobileQistNext(String date) {
+    return 'next $date';
+  }
+
+  @override
+  String get mobileWarrantyMonths => 'Warranty (months)';
+
+  @override
+  String get mobileWarrantyWhose => 'Whose warranty';
+
+  @override
+  String get mobileWarrantyNote =>
+      'Every bill prints the day it ends: \"Warranty till 3 Apr 2027\". Empty is no warranty.';
+
+  @override
+  String get mobileWarrantyMonthsBad =>
+      'Months from 1 to 120, or leave it empty.';
+
+  @override
+  String get reportGroupMobile => 'Mobile shop';
+
+  @override
+  String get reportUsedPhones => 'Used phones bought';
+
+  @override
+  String get reportUsedPhonesHint =>
+      'Every used phone bought, with the seller CNIC and IMEI';
+
+  @override
+  String get reportQistInstalments => 'Instalments';
+
+  @override
+  String get reportQistInstalmentsHint =>
+      'Every phone on qist: paid, still to pay, overdue';
 }

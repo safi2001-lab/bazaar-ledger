@@ -52,6 +52,10 @@ export 'src/entitlement/staff.dart';
 export 'src/identity/actor_context.dart';
 export 'src/identity/ulid.dart';
 export 'src/manufacturing/assembly.dart';
+// M50: the mobile-shop pack.
+export 'src/mobile/imei.dart';
+export 'src/mobile/phone_story.dart';
+export 'src/mobile/qist.dart';
 // M49: the pharmacy pack.
 export 'src/pharmacy/medicine.dart';
 export 'src/pharmacy/pharmacy.dart';
@@ -70,6 +74,7 @@ export 'src/ports/expense_writer.dart';
 export 'src/ports/health.dart';
 export 'src/ports/journal_writer.dart';
 export 'src/ports/manufacturing.dart';
+export 'src/ports/mobile.dart'; // M50
 export 'src/ports/other_income_writer.dart';
 export 'src/ports/party_groups.dart';
 export 'src/ports/payment_writer.dart';

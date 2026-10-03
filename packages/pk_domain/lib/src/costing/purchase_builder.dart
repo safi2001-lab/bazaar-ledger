@@ -9,6 +9,7 @@ library;
 import 'package:pk_money/pk_money.dart';
 
 import '../identity/actor_context.dart';
+import '../mobile/imei.dart';
 import '../sales/sale_posting.dart';
 import '../sales/sale_posting_builder.dart';
 import '../stock/lots.dart';
@@ -32,7 +33,15 @@ final class PurchaseLineDraft {
     this.freeQty = Qty.zero,
     this.freeBaseQty = Qty.zero,
     this.mrp,
+    this.phones = const [],
   });
+
+  /// Phones, one per piece, in place of [serials] (M50): each by its IMEI,
+  /// checked digit and all, with its second IMEI for the other SIM slot and
+  /// what PTA said of it. A mistyped IMEI is refused here, beneath every
+  /// screen; plain [serials] stay as M11 took them, because a television's
+  /// serial number is not an IMEI.
+  final List<PhoneUnitDraft> phones;
 
   final String itemId;
   final String itemName;
@@ -262,10 +271,21 @@ final class PurchaseBuilder {
       }
       inventoryDelta += change.after.value - before.value;
 
-      final serials = [
-        for (final s in line.serials)
-          if (s.trim().isNotEmpty) s.trim(),
-      ];
+      // M50: a line of phones names each by IMEI 1, and refuses a mistyped
+      // one, or one number given for two phones, before anything is built.
+      for (final phone in line.phones) {
+        phone.check();
+      }
+      final phoneNumbers = [for (final p in line.phones) ...p.imeis];
+      if (phoneNumbers.toSet().length != phoneNumbers.length) {
+        throw StockRefused('${line.itemName}: the same IMEI is given twice.');
+      }
+      final serials = line.phones.isNotEmpty
+          ? [for (final p in line.phones) p.imeis.first]
+          : [
+              for (final s in line.serials)
+                if (s.trim().isNotEmpty) s.trim(),
+            ];
       if (line.freeQty.isNegative || line.freeBaseQty.isNegative) {
         throw StockRefused(
           '${line.itemName}: free goods cannot be less than nothing.',
@@ -336,7 +356,15 @@ final class PurchaseBuilder {
               occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
               occurredOnLocal: actor.businessDate.value,
               lineNo: paidNo,
-              newLot: LotDraft(lotNo: serials[k], serial: serials[k]),
+              newLot: LotDraft(
+                lotNo: serials[k],
+                serial: serials[k],
+                // M50: the phone's second IMEI and its PTA standing.
+                serial2: line.phones.isEmpty
+                    ? null
+                    : line.phones[k].imeis.skip(1).firstOrNull,
+                pta: line.phones.isEmpty ? null : line.phones[k].pta,
+              ),
             ),
           );
         }

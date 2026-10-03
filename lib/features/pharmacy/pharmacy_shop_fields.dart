@@ -46,6 +46,7 @@ class PharmacyShopFields extends ConsumerWidget {
       'restaurant': s.businessKindRestaurant,
       'services': s.businessKindServices,
       'wholesale': s.businessKindWholesale,
+      'mobile': s.businessKindMobile, // M50
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,

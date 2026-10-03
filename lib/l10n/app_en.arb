@@ -4289,5 +4289,298 @@
       "date": {"type": "String"}
     }
   },
-  "recurringPickDate": "Pick a date"
+  "recurringPickDate": "Pick a date",
+  "businessKindMobile": "Mobile shop",
+  "mobileSearchTitle": "Find a phone",
+  "mobileSearchLabel": "IMEI (all of it, or the last digits)",
+  "mobileSearchHint": "e.g. 43809",
+  "mobileSearchTypeMore": "Type at least 3 digits of IMEI 1 or IMEI 2. The number is on the box, or dial *#06# on the phone.",
+  "mobileSearchNone": "No phone has {digits} in its IMEI",
+  "@mobileSearchNone": {
+    "placeholders": {
+      "digits": {"type": "String"}
+    }
+  },
+  "mobileInShop": "In the shop",
+  "mobileNotInShop": "Not in the shop",
+  "mobileBuyUsedTitle": "Buy a used phone",
+  "mobileQistPlansTitle": "Phones on qist",
+  "mobileStoryGone": "This phone is no longer in the books.",
+  "mobileAddImei2": "Add IMEI 2",
+  "mobilePtaTitle": "PTA",
+  "mobilePtaApproved": "PTA approved",
+  "mobilePtaValidUnapproved": "Valid, not PTA approved",
+  "mobilePtaNonCompliant": "Non-compliant (may be blocked)",
+  "mobilePtaUnknown": "PTA not checked",
+  "mobilePtaCheckedOn": "{status} · written {date}",
+  "@mobilePtaCheckedOn": {
+    "placeholders": {
+      "status": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "mobilePtaBlockedNote": "PTA reports a non-compliant phone is blocked within 60 days. Tell the customer before selling it.",
+  "mobilePtaCheck": "Check on 8484",
+  "mobilePtaWriteAnswer": "Write PTA's answer",
+  "mobilePtaHow": "Opens your messages app with the IMEI typed to 8484. You press Send from your own SIM; PTA replies by SMS, and you write the answer here. Nothing is sent by this app.",
+  "mobilePtaNoSmsApp": "No messages app opened. Send {imei} to 8484 by SMS yourself.",
+  "@mobilePtaNoSmsApp": {
+    "placeholders": {
+      "imei": {"type": "String"}
+    }
+  },
+  "mobilePtaAnswerTitle": "What did PTA reply?",
+  "mobilePtaUnverifiedNote": "These are PTA's answers as reported by the press; this app has not checked them against PTA's own rules.",
+  "mobilePtaWarnTitle": "PTA non-compliant",
+  "mobilePtaWarnBody": "{item} ({imei}) was written down as non-compliant with PTA. PTA reports such phones are blocked within 60 days. Sell it only if the customer knows.",
+  "@mobilePtaWarnBody": {
+    "placeholders": {
+      "item": {"type": "String"},
+      "imei": {"type": "String"}
+    }
+  },
+  "mobilePtaWarnSellAnyway": "Sell, the customer knows",
+  "mobileWarrantyTitle": "Warranty",
+  "mobileWarrantyNone": "No warranty was given on this phone.",
+  "mobileWarrantyTill": "Warranty till {date}",
+  "@mobileWarrantyTill": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "mobileInWarranty": "In warranty",
+  "mobileOutOfWarranty": "Out of warranty",
+  "mobileWarrantyBrand": "Brand warranty",
+  "mobileWarrantyShop": "Shop warranty",
+  "mobileClaimAdd": "Write a warranty claim",
+  "mobileClaimNote": "What is wrong, and what was done",
+  "mobileClaimHint": "Screen dead, sent to the Samsung centre",
+  "mobileQistOpenPlan": "Open its qist plan",
+  "mobileSellerTitle": "Bought from",
+  "mobileStoryTitle": "The phone's story",
+  "mobileStoryEmpty": "Nothing has moved this phone yet.",
+  "mobileEventWalkIn": "a walk-in",
+  "mobileEventBought": "Bought from {who}",
+  "@mobileEventBought": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventSold": "Sold to {who}",
+  "@mobileEventSold": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventReturned": "Brought back by {who}",
+  "@mobileEventReturned": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventSentBack": "Sent back to {who}",
+  "@mobileEventSentBack": {
+    "placeholders": {
+      "who": {"type": "String"}
+    }
+  },
+  "mobileEventMoved": "Moved to another place",
+  "mobileEventAdjusted": "Stock put right",
+  "mobileEventCancelled": "cancelled",
+  "mobileImeiEmpty": "Write the IMEI: 15 digits, on the box or from *#06#.",
+  "mobileImeiNotDigits": "An IMEI is digits only.",
+  "mobileImeiLength": "An IMEI is 15 digits; this has {count}.",
+  "@mobileImeiLength": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "mobileImeiMistyped": "IMEI {digits} is mistyped: its last digit should be {last}. Copy it again from the box or from *#06#.",
+  "@mobileImeiMistyped": {
+    "placeholders": {
+      "digits": {"type": "String"},
+      "last": {"type": "String"}
+    }
+  },
+  "mobileImeiSameTwice": "IMEI 2 is the same as IMEI 1. Leave IMEI 2 empty for a single-SIM phone.",
+  "mobileSellerCnic": "Seller's CNIC",
+  "mobileSellerKnown": "Sold us a phone before, as {name}",
+  "@mobileSellerKnown": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "mobileSellerName": "Seller's name",
+  "mobileSellerPhone": "Seller's phone number",
+  "mobilePhotosStayHere": "The CNIC and phone photographs stay on this phone and in its backups. They are never sent to another counter or anywhere else.",
+  "mobilePhoneTitle": "The phone",
+  "mobileNoModels": "No phone model is kept by IMEI yet. Add the model in Items with \"By serial / IMEI\" first.",
+  "mobileModel": "Model",
+  "mobileImei1": "IMEI 1",
+  "mobileImei2": "IMEI 2",
+  "mobileImei2Hint": "Dual SIM only",
+  "mobileCondition": "Condition",
+  "mobileConditionHint": "Back cracked, no box or charger",
+  "mobilePaidTitle": "Paid",
+  "mobilePricePaid": "Paid to the seller",
+  "mobilePaidFrom": "Paid from",
+  "mobileBuySave": "Buy and put in stock",
+  "mobileSellerNameNeeded": "Write the seller's name.",
+  "mobileCnicBad": "A CNIC is 13 digits: 12345-1234567-1.",
+  "mobileModelNeeded": "Pick the phone model.",
+  "mobilePriceNeeded": "Write what was paid for the phone.",
+  "mobileBuyFailed": "The phone was not bought. Nothing was written.",
+  "mobileBuyDone": "Bought on {docNo}, in stock by its IMEI and in the used phones register. Add the photographs now.",
+  "@mobileBuyDone": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "mobileCnicPhoto": "Photograph of the seller's CNIC",
+  "mobilePhonePhoto": "Photograph of the phone",
+  "mobileOpenStory": "Open the phone's story",
+  "mobileCounterPick": "Phones in the shop with {digits} in the IMEI",
+  "@mobileCounterPick": {
+    "placeholders": {
+      "digits": {"type": "String"}
+    }
+  },
+  "mobileQistSell": "Sell on qist",
+  "mobileQistNeedsCustomer": "Pick the customer first: the instalments go on their khata.",
+  "mobileQistPhones": "Goods",
+  "mobileQistMarkup": "Qist markup (Rs)",
+  "mobileQistMarkupNote": "Printed on the bill as its own line, inside the total: the customer sees what waiting costs.",
+  "mobileQistDown": "Down payment now, in cash (Rs)",
+  "mobileQistCount": "Instalments",
+  "mobileQistDay": "Due on day",
+  "mobileQistBillTotal": "Bill total",
+  "mobileQistDownNow": "Down payment",
+  "mobileQistOnQist": "On qist",
+  "mobileQistEach": "{count} x Rs {amount}",
+  "@mobileQistEach": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistEachLast": "{count} x Rs {amount}, then Rs {last}",
+  "@mobileQistEachLast": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"},
+      "last": {"type": "String"}
+    }
+  },
+  "mobileQistFromTo": "From {from} to {to}",
+  "@mobileQistFromTo": {
+    "placeholders": {
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "mobileQistGuarantor": "Guarantor (if any)",
+  "mobileQistGuarantorName": "Guarantor's name",
+  "mobileQistGuarantorCnic": "Guarantor's CNIC",
+  "mobileQistGuarantorPhone": "Guarantor's phone",
+  "mobileQistSave": "Save on qist",
+  "mobileQistCountBad": "Between 1 and {max} instalments.",
+  "@mobileQistCountBad": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "mobileQistDayBad": "The day of the month is 1 to 31.",
+  "mobileQistDownBad": "The down payment has to leave something to pay in instalments.",
+  "mobileQistPlanTitle": "Qist plan",
+  "mobileQistGone": "This qist plan is no longer in the books.",
+  "mobileQistRunning": "Running",
+  "mobileQistOverdue": "Overdue",
+  "mobileQistPaidOff": "Paid off",
+  "mobileQistClosed": "Closed early",
+  "mobileQistCancelled": "Bill cancelled",
+  "mobileQistMarkupIncluded": "Markup included",
+  "mobileQistPaid": "Paid so far",
+  "mobileQistLeft": "Still to pay",
+  "mobileQistOverdueAmount": "Overdue",
+  "mobileQistGuarantorIs": "Guarantor: {name}",
+  "@mobileQistGuarantorIs": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "mobileQistClosedOn": "Closed early on {date}: what is left is due now",
+  "@mobileQistClosedOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "mobileQistSchedule": "Instalments",
+  "mobileQistInstalmentPaid": "Paid",
+  "mobileQistInstalmentLate": "{days} days late · Rs {amount} left",
+  "@mobileQistInstalmentLate": {
+    "placeholders": {
+      "days": {"type": "int"},
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistInstalmentToday": "Due today · Rs {amount}",
+  "@mobileQistInstalmentToday": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistInstalmentPart": "Part paid · Rs {amount} left",
+  "@mobileQistInstalmentPart": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistInstalmentDue": "To come",
+  "mobileQistHowPaid": "Money is taken on the customer's khata: every receipt pays the oldest instalment first.",
+  "mobileQistCloseEarly": "Close the plan early",
+  "mobileQistCloseConfirm": "Rs {amount} left on the plan becomes due today, all of it, on the khata. A discount for paying early is given on the khata as a settlement discount.",
+  "@mobileQistCloseConfirm": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistCloseNote": "Why (optional)",
+  "mobileQistShowOpen": "Running",
+  "mobileQistShowAll": "All",
+  "mobileQistNone": "No phones on qist here",
+  "mobileQistNoneHint": "Sell on qist from the payment sheet at the counter.",
+  "mobileQistPaidOf": "{paid} of {count} paid",
+  "@mobileQistPaidOf": {
+    "placeholders": {
+      "paid": {"type": "int"},
+      "count": {"type": "int"}
+    }
+  },
+  "mobileQistLeftAmount": "Rs {amount} left",
+  "@mobileQistLeftAmount": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistOverdueShort": "Rs {amount} late",
+  "@mobileQistOverdueShort": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "mobileQistNext": "next {date}",
+  "@mobileQistNext": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "mobileWarrantyMonths": "Warranty (months)",
+  "mobileWarrantyWhose": "Whose warranty",
+  "mobileWarrantyNote": "Every bill prints the day it ends: \"Warranty till 3 Apr 2027\". Empty is no warranty.",
+  "mobileWarrantyMonthsBad": "Months from 1 to 120, or leave it empty.",
+  "reportGroupMobile": "Mobile shop",
+  "reportUsedPhones": "Used phones bought",
+  "reportUsedPhonesHint": "Every used phone bought, with the seller CNIC and IMEI",
+  "reportQistInstalments": "Instalments",
+  "reportQistInstalmentsHint": "Every phone on qist: paid, still to pay, overdue"
 }

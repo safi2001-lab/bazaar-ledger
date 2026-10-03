@@ -3009,6 +3009,130 @@ milestones:
     # a physical handset, which this bench does not have.
     state: sealed
 
+  - id: M50
+    title: The mobile-shop pack — every phone traced by its IMEI, its warranty and PTA, a used phone bought with the seller's CNIC, and phones sold on qist
+    # Opened and sealed 3 Oct 2026 at 1/1. A mobile shop is asked two
+    # questions a kiryana never is: "where did this phone come from?" — by
+    # the customer whose phone was snatched, by the policeman holding one,
+    # by the man PTA has just blocked — and "how much is left to pay?", of
+    # the customer who took one on qist. From HysabOne (IMEI history, qist
+    # plans), PTA's DIRBS and Vyapar's serial report. "Mobile shop" is a
+    # kind of shop in the shop's details, as "Medical store" is (M49); it
+    # puts "Phone dhoondein" on the home screen and the items list, and the
+    # qist button on the payment sheet (an electronics shop has the qist and
+    # the warranty too). What belongs to an item or a phone stays per item.
+    #
+    # The IMEI. Every phone was already a lot of its own named by its serial
+    # (M11). A delivery of phones now names each by IMEI 1 with its IMEI 2
+    # for the second SIM slot and what PTA said of it (on a mobile shop's
+    # purchase screen, one phone a line, "IMEI 1 / IMEI 2"), and the
+    # fifteenth digit is checked (Luhn, 3GPP TS 23.003): a mistyped IMEI is
+    # refused in words — "its last digit should be 9" — beneath every
+    # screen and before the line is added, and IMEI
+    # 2 typed as IMEI 1 likewise. One IMEI is one phone: a number a phone in
+    # the shop already answers to, by either IMEI, is refused; a phone the
+    # shop sold and has back comes into the lot it always had, so its story
+    # runs on. Plain serials stay as M11 took them, because a television's
+    # serial is not an IMEI. One search box takes any part of either IMEI —
+    # "Phone dhoondein", the items list's button, and the counter's own
+    # search, which finds the whole of IMEI 1 or 2 and, in a mobile shop,
+    # five or more of its digits that no item's code answers to, offering a
+    # pick when several phones do. The
+    # phone's story is the stock ledger read in order across every lot the
+    # IMEI came in as: bought from whom, when and at what cost (shown only
+    # to a role that may see costs), sold to whom on which bill, brought
+    # back, sent back, moved; a cancelled bill struck through; each line
+    # opening its paper.
+    #
+    # Warranty. An item carries months (1-120) and whose (the shop's or the
+    # brand's). A sale bill stamps each line's last day of warranty from the
+    # item as it stands — the same day of the month, or the month's last —
+    # so the bill and the story say "Warranty till 3 Apr 2027" for ever, and
+    # changing the item changes no phone sold. The story says in or out of
+    # warranty, and a warranty claim is written against the phone with who
+    # and when.
+    #
+    # PTA. Per phone: approved, valid but not approved, non-compliant, or not
+    # checked, with the day it was written. "Check on 8484" opens the phone's
+    # own messages app with the IMEI typed to 8484; the shopkeeper presses
+    # Send from their own SIM, and writes PTA's reply down. No SEND_SMS, no
+    # server, no network call by this app. The bill prints the standing;
+    # putting a non-compliant phone on a bill asks first, and sells it if
+    # the customer knows. [Unverified: the three statuses, the 8484 number,
+    # the ten paisa and the sixty-day blocking are as reported by
+    # ProPakistani (2018) and Daily Capital, not read on PTA's own pages; the
+    # screens and the code say so.]
+    #
+    # A used phone bought over the counter is a delivery like any other —
+    # the phone onto the shelf by its IMEI at what was paid, the money out
+    # of the drawer, balanced books — and a register row naming the seller
+    # as he gave himself on the day: name, CNIC (13 digits, with or without
+    # its dashes, form only), phone, and the phone's condition. The seller
+    # is kept as a supplier in a "Used phone sellers" group and found again
+    # by CNIC (a customer selling back his old phone becomes both), all in
+    # one transaction through the purchase use case on a write context the
+    # pack's own transaction holds (purchaseContextOn). Photographs of his
+    # CNIC (on his khata, M60's papers, behind the correct-entries
+    # permission) and of the phone (on the delivery) go on through M60's
+    # strip, and the screen says they never leave the phone. "Used phones
+    # bought" in the reports hub lists seller, CNIC, IMEI 1 and 2, PTA,
+    # date and price for the police and the market association [practice as
+    # reported; no written rule found or claimed].
+    #
+    # Qist. Sold from the payment sheet: down payment in cash now, N monthly
+    # instalments on day D from the next month, an optional guarantor (name,
+    # CNIC, phone), an optional markup. The bill is an ordinary bill: the
+    # phone at its price, the markup as the bill's own charge printed "Qist
+    # markup" and booked as other income (no interest hidden in the price;
+    # the total says it all), the down payment its tender, the rest its
+    # balance on the khata. The plan is written with the bill, in its
+    # transaction, the schedule worked out from the bill's balance: whole
+    # rupees each, the remainder on the last, never a paisa out; refused in
+    # words when it does not fit the bill (no customer, nothing left to pay,
+    # a first instalment not after the sale). What is paid is never ticked:
+    # it is the amount financed less what the bill still owes, paid off the
+    # instalments oldest first — so any receipt, at the counter or on the
+    # recovery man's sheet (M55), pays the oldest instalment, and a receipt
+    # cancelled puts it back owing, with nothing to keep in step. M38's
+    # reads fall due by instalment: the khata's chip says the next one owed,
+    # the chase list and the morning card count only instalments past or on
+    # their day as late or due today, the due-date ageing (and M58's report
+    # of it) ages each instalment, and a qist bill is one open bill however
+    # many instalments it owes. A plan closed early brings every remainder
+    # forward to that day. The bill and its PDF print the plan at the foot.
+    # The "Instalments" report lists every plan: total, down, on qist, paid,
+    # still to pay, overdue, instalments paid, next due, standing.
+    #
+    # Schema v12. stock_lots gains serial_2, pta_status and
+    # pta_checked_on_local (indexed by either IMEI); items warranty_months
+    # and warranty_kind; document_lines warranty_until_local; firms is
+    # rebuilt (as parties was at v5) so business_kind can say 'mobile'. New
+    # tables used_phone_buys, warranty_claims, qist_plans and
+    # qist_instalments. Everything added in place is empty on every existing
+    # row. The rows travel to the other counters as every TxRunner write
+    # does, a test proving it over a real socket; photographs stay where
+    # they were taken (M60). qist_plans is filed under its bill's day and
+    # warranty_claims under theirs in M42's closed books.
+    #
+    # Not built, and why: repair job cards (HysabOne's, a milestone of its
+    # own); asking PTA ourselves or reading the reply SMS (a server, or
+    # SMS permissions Play keeps for SMS apps); a discount for settling a
+    # plan early is given on the khata as M44's settlement discount, not by
+    # the plan; a separate markup ledger account (it is other income, as the
+    # bill's other charges always were); the pharmacy-style hiding of the
+    # reports group for shops that are not mobile shops; a plan on a bill
+    # made from a quotation, a challan or putting a bill right.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/mobile/**
+      - packages/pk_domain/lib/src/ports/mobile.dart
+      - packages/pk_data/lib/src/read/drift_mobile_reads.dart
+      - packages/pk_data/lib/src/read/reports/mobile_queries.dart
+      - packages/pk_data/lib/src/write/drift_mobile_writer.dart
+      - packages/pk_reports/lib/src/mobile_reports.dart
+      - packages/pk_bootstrap/lib/src/mobile_services.dart
+      - lib/features/mobile/**
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -8273,3 +8397,43 @@ features:
       - the lists a shopkeeper opens who to chase, and udhaar by age, read only what is owed
       - the heaviest reports a year of every bill, a month of everything, a month of stock
       - the heaviest reports a regular's year, and the day's summary
+  - id: M50-MOBILE-01
+    milestone: M50
+    title: A mobile shop traces every phone by either IMEI, prints its warranty and PTA standing, buys a used phone with the seller's CNIC onto the shelf and into the register, and sells phones on qist that fall due on the khata instalment by instalment
+    status: done
+    # The rules alone; then against a real database, the books balancing;
+    # through the services and over a real socket between two phones; and
+    # through the screens, at 200% on a small phone; the schema change by
+    # migrating a v11 shop through the rebuild of firms.
+    proof:
+      - the IMEI the Luhn check digit catches a digit typed wrong and two swapped
+      - the IMEI a dual-SIM phone names two different IMEIs
+      - the IMEI the PTA check is an SMS of the IMEI to 8484, typed and not sent
+      - a CNIC is thirteen digits, with or without its dashes
+      - a warranty ends the same day of the month, or that month's last
+      - qist a schedule is whole rupees, the remainder on the last, never a paisa out
+      - qist a receipt pays the oldest instalment first
+      - qist a plan that does not fit its bill is refused in words
+      - the IMEI a mistyped IMEI is refused in words, and nothing is written
+      - the IMEI a dual-SIM phone comes in by both IMEIs, and either finds it, in part or whole
+      - the IMEI one IMEI is one phone: a number already in the shop is refused
+      - a phone's story says where it came from, who bought it on which bill, and its warranty, and the bill prints all of it
+      - a phone's story what PTA says is written down by hand, with the day
+      - a used phone bought over the counter lands in stock by its IMEI and in the register with the seller CNIC, the cash out of the drawer, and the books balance
+      - a used phone bought over the counter a seller with a CNIC not in form is refused, and nothing is written
+      - a used phone bought over the counter a phone sold and bought back comes into its own lot, and its story runs on
+      - a phone sold on qist makes the schedule, and its instalments fall due on the khata one by one
+      - a phone sold on qist a receipt settles the oldest instalment first
+      - a phone sold on qist an overdue instalment reaches the chase list, and a plan closed early is due at once
+      - a phone sold on qist the SQL and the domain agree on what each instalment still owes
+      - a phone sold on qist is refused without a customer, or with nothing left to pay
+      - v11 to v12 — the mobile-shop pack a shop and its phone come through the rebuild of firms whole, nothing a phone or under warranty, and the shop may now say it is a mobile shop
+      - a used phone bought through the services lands in stock and on the register, and a cashier may not buy one
+      - a phone on qist, the register and what PTA said reach the other counter, where the instalments fall due on its chase list
+      - a phone is found by the last digits of its second IMEI, and its story says where it came from, its warranty and PTA's answer
+      - a used phone with a mistyped IMEI is refused in words, and a good one goes on the shelf and into the register
+      - a delivery of phones takes each with its second IMEI, and a mistyped one is refused before the line is added
+      - at the counter the last five digits of a phone IMEI put it on the bill, and two phones that answer are offered to pick from
+      - a phone PTA called non-compliant is said at the counter before it goes on the bill
+      - a phone sold on qist at the counter shows its schedule before it is saved, and the plan is written with the bill
+      - at 200% on a small phone a phone's story, the used phone form and the qist sheet fit

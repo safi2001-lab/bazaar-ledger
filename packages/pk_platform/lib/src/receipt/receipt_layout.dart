@@ -136,6 +136,7 @@ final class ReceiptLayout {
           if (words != null) _wordsLine(out, line);
         }
         if (line.isFreeItem) out.add('    (Bonus / muft)'); // M43
+        _detailLines(out, line); // M50
       }
       rule('=');
       out.add(_centre('${d.itemCount} item(s)'));
@@ -203,6 +204,7 @@ final class ReceiptLayout {
       if (line.isFreeItem) {
         out.add('    (Bonus / muft)'); // M43
       }
+      _detailLines(out, line); // M50
     }
 
     rule('-');
@@ -230,7 +232,7 @@ final class ReceiptLayout {
       out.add(_row('Withholding', '-${d.withholding.amountOnly}'));
     }
     if (d.extraCharges.isPositive) {
-      out.add(_row('Other Charges', d.extraCharges.amountOnly));
+      out.add(_row(d.extraChargesLabel, d.extraCharges.amountOnly)); // M50
     }
     if (!d.roundOff.isZero) {
       out.add(_row('Round Off', d.roundOff.signed.replaceAll('Rs ', '')));
@@ -317,6 +319,17 @@ final class ReceiptLayout {
     }
 
     return out;
+  }
+
+  /// What the paper says under a line besides its money (M50): a phone's
+  /// IMEIs, the day its warranty ends and its PTA standing, one to a row,
+  /// wrapped and never clipped — a cut IMEI is a different phone.
+  void _detailLines(List<String> out, ReceiptLine line) {
+    for (final detail in line.details) {
+      for (final part in _wrap(detail, width - 4)) {
+        out.add('    $part');
+      }
+    }
   }
 
   /// A line's count in packs on a line of its own, under the figure, where

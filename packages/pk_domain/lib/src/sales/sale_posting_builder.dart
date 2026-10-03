@@ -2,6 +2,7 @@ import 'package:pk_money/pk_money.dart';
 
 import '../documents/delivery_challan.dart';
 import '../identity/actor_context.dart';
+import '../mobile/qist.dart';
 import 'sale_calculator.dart';
 import 'sale_draft.dart';
 import 'sale_posting.dart';
@@ -315,6 +316,19 @@ final class SalePostingBuilder {
       alsoFromIds: draft.alsoFromIds,
       replacesId: draft.replacesId,
       prescription: draft.prescription,
+      // M50: the instalments, worked out from the bill's own balance, or
+      // the bill refused in words when the plan does not fit it.
+      qist: switch (draft.qist) {
+        final plan? => postQist(
+          plan,
+          partyId: draft.partyId,
+          soldOn: actor.businessDate,
+          total: document.total,
+          paid: document.paid,
+          markup: calculated.extraCharges,
+        ),
+        null => null,
+      },
       payments: payments,
       stockMovements: stock,
       journal: JournalEntryPosting(

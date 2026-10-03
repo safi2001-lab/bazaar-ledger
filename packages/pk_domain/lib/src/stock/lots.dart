@@ -9,6 +9,7 @@ library;
 
 import 'package:pk_money/pk_money.dart';
 
+import '../mobile/imei.dart';
 import '../time/clock.dart';
 
 /// A lot as it arrives on a purchase line.
@@ -19,7 +20,15 @@ final class LotDraft {
     this.expiry,
     this.serial,
     this.mrp,
+    this.serial2,
+    this.pta,
   });
+
+  /// A phone's second IMEI, for the other SIM slot (M50).
+  final String? serial2;
+
+  /// What PTA said of a phone when the shop checked (M50).
+  final PtaStatus? pta;
 
   /// A batch number, or a serial number for a single piece.
   final String lotNo;

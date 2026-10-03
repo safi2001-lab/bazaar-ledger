@@ -30,6 +30,14 @@ final class DriftPurchaseWriter implements PurchaseWriter {
   );
 }
 
+/// The handle a delivery is written through, on a transaction already open
+/// (M50): a used phone bought over the counter is a delivery and the seller's
+/// register row, in the books together or not at all.
+PurchaseWriteContext purchaseContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _DriftPurchaseWriteContext(tx, sequences);
+
 final class _DriftPurchaseWriteContext implements PurchaseWriteContext {
   _DriftPurchaseWriteContext(this._tx, this._sequences);
 

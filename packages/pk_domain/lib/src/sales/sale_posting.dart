@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../mobile/qist.dart';
 import '../pharmacy/medicine.dart';
 import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
@@ -334,9 +335,14 @@ final class SalePosting {
     this.alsoFromIds = const [],
     this.replacesId,
     this.prescription,
+    this.qist,
   });
 
   final DocumentPosting document;
+
+  /// The qist plan the bill's balance is paid off by (M50), written with
+  /// the bill in its own transaction.
+  final QistPosting? qist;
   final List<DocumentLinePosting> lines;
 
   /// The prescription the bill's Schedule lines are registered against
@@ -376,6 +382,7 @@ final class SalePosting {
     List<String>? alsoFromIds,
     String? replacesId,
     Prescription? prescription,
+    QistPosting? qist,
   }) => SalePosting(
     document: document ?? this.document,
     lines: lines ?? this.lines,
@@ -387,6 +394,7 @@ final class SalePosting {
     alsoFromIds: alsoFromIds ?? this.alsoFromIds,
     replacesId: replacesId ?? this.replacesId,
     prescription: prescription ?? this.prescription,
+    qist: qist ?? this.qist, // M50
   );
 
   /// Asserts the entry balances, before anyone tries to write it.

@@ -4,6 +4,7 @@ import 'builders.dart';
 import 'business_reports.dart';
 import 'filters.dart';
 import 'item_stock_reports.dart';
+import 'mobile_reports.dart'; // M50
 import 'money_owed_reports.dart';
 import 'order_reports.dart';
 import 'party_builders.dart';
@@ -231,6 +232,13 @@ enum ReportKind {
 
   /// Every movement of every Schedule medicine, with its prescription.
   scheduleRegister,
+  // M50: the mobile-shop pack, in `mobile_reports.dart`.
+
+  /// Every used phone bought over the counter, with its seller's CNIC.
+  usedPhonesRegister,
+
+  /// Every phone sold on qist: paid, still to pay, overdue; as of today.
+  qistInstalments,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -257,7 +265,8 @@ final class ReportEngine {
       // M35
       businessReportsAsOfToday.contains(kind) ||
       // M58
-      moneyOwedReportsAsOfToday.contains(kind);
+      moneyOwedReportsAsOfToday.contains(kind) ||
+      kind == ReportKind.qistInstalments; // M50
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -551,6 +560,16 @@ final class ReportEngine {
       source: source,
       firmId: firmId,
       period: period,
+      filters: filters,
+    ),
+    // M50
+    ReportKind.usedPhonesRegister ||
+    ReportKind.qistInstalments => buildMobileReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      period: period,
+      today: today,
       filters: filters,
     ),
   };

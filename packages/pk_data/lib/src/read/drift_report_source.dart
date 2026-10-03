@@ -7,6 +7,7 @@ import 'package:pk_reports/pk_reports.dart';
 import '../db/app_database.dart';
 import 'drift_app_queries.dart';
 import 'drift_loan_reads.dart';
+import 'drift_mobile_reads.dart'; // M50
 import 'drift_order_reads.dart';
 import 'drift_udhaar_queries.dart';
 
@@ -14,6 +15,7 @@ part 'reports/business_queries.dart';
 part 'reports/expense_queries.dart';
 part 'reports/item_stock_queries.dart';
 part 'reports/loan_queries.dart';
+part 'reports/mobile_queries.dart'; // M50
 part 'reports/order_queries.dart';
 part 'reports/party_queries.dart';
 part 'reports/pharmacy_queries.dart';
@@ -51,7 +53,9 @@ final class DriftReportSource
         _LoanQueries,
         _UdhaarReportQueries,
         // M49
-        _PharmacyQueries
+        _PharmacyQueries,
+        // M50
+        _MobileQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 

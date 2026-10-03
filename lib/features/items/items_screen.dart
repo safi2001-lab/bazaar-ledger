@@ -10,6 +10,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../manufacturing/recipes_screen.dart';
+import '../mobile/phone_search_screen.dart'; // M50
 import '../orders/shortage_screen.dart';
 import '../pharmacy/near_expiry_screen.dart';
 import '../subscription/plans_screen.dart';
@@ -75,6 +76,8 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
           const ShortageButton(),
           // M49: a pharmacy's batches near expiry, by supplier.
           const NearExpiryButton(),
+          // M50: a mobile shop's phones, by any part of either IMEI.
+          const PhoneSearchButton(),
           // What the shop makes from what it has (M17).
           BlIconButton(
             icon: Icons.blender_outlined,

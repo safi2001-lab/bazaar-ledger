@@ -54,7 +54,24 @@ CREATE TABLE stock_lots (
   -- a batch the counter sells. First-expiry-first-out passes a held batch
   -- by, and a scan or a pick of it is refused with these words. Added in
   -- v11, last because SQLite adds a column at the end.
-  hold_reason TEXT CHECK (hold_reason IS NULL OR length(trim(hold_reason)) > 0)
+  hold_reason TEXT CHECK (hold_reason IS NULL OR length(trim(hold_reason)) > 0),
+
+  -- A phone (M50), added in v12, last because SQLite adds a column at the
+  -- end. Empty on every batch and every piece that is not a phone.
+  --
+  -- A dual-SIM phone has two IMEIs, one per slot, both printed on the box
+  -- and both shown by *#06#. `serial` is IMEI 1; this is IMEI 2. Either one
+  -- finds the phone, and both go on the bill.
+  serial_2 TEXT,
+  -- What PTA's DIRBS said of this phone when the shop asked (an SMS of the
+  -- IMEI to 8484): approved; valid but not approved (an informal import);
+  -- non-compliant, which DIRBS blocks; or not yet asked. The shopkeeper
+  -- sends the SMS from their own phone and writes the answer down here; the
+  -- app asks nobody.
+  pta_status TEXT CHECK (pta_status IS NULL OR pta_status IN (
+    'approved', 'valid_unapproved', 'non_compliant', 'unknown')),
+  -- The day that answer was written down.
+  pta_checked_on_local TEXT
 ) STRICT;
 
 CREATE UNIQUE INDEX idx_lots_no ON stock_lots (firm_id, item_id, lot_no);
@@ -63,6 +80,11 @@ CREATE INDEX idx_lots_expiry
   ON stock_lots (firm_id, expiry_date_local) WHERE expiry_date_local IS NOT NULL;
 CREATE INDEX idx_lots_gtin ON stock_lots (firm_id, gtin) WHERE gtin IS NOT NULL;
 CREATE INDEX idx_lots_supplier ON stock_lots (supplier_party_id);
+-- A phone is found by either of its IMEIs (M50).
+CREATE INDEX idx_lots_serial
+  ON stock_lots (firm_id, serial) WHERE serial IS NOT NULL;
+CREATE INDEX idx_lots_serial2
+  ON stock_lots (firm_id, serial_2) WHERE serial_2 IS NOT NULL;
 
 CREATE TABLE stock_ledger (
   id TEXT NOT NULL PRIMARY KEY,

@@ -2,6 +2,7 @@ import 'package:pk_domain/pk_domain.dart';
 
 import '../db/app_database.dart';
 import 'document_rows.dart';
+import 'drift_mobile_writer.dart' show keepQistPlan; // M50
 import 'drift_order_writer.dart';
 import 'drift_pharmacy_writer.dart';
 import 'sequence_allocator.dart';
@@ -163,6 +164,15 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       lines: posting.lines,
       prescription: posting.prescription,
     );
+    // M50: a phone sold on qist — its plan and instalments, with the bill.
+    if (posting.qist case final plan?) {
+      await keepQistPlan(
+        _tx,
+        documentId: documentId,
+        document: doc,
+        plan: plan,
+      );
+    }
 
     // A bill made from a quotation says so, once. Billing the same
     // quotation twice is two bills for one order, and the second is almost

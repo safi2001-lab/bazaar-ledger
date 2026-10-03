@@ -28,6 +28,7 @@ part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
 part 'loan_services.dart';
+part 'mobile_services.dart'; // M50
 part 'order_services.dart';
 part 'pharmacy_services.dart';
 part 'photo_services.dart';
@@ -455,6 +456,7 @@ final class AppServices {
 
   /// What the shop has hidden, and bringing it back (M60).
   late final RecycleServices recycle = RecycleServices._(this);
+
   /// The pharmacy pack: the DRAP price, substitutes, held batches, the
   /// near-expiry list and its return to the supplier, and the prescription
   /// photograph (M49).
@@ -465,6 +467,10 @@ final class AppServices {
 
   /// The bills that come round every week or month (M63).
   late final RecurringServices recurring = RecurringServices._(this);
+
+  /// The mobile-shop pack: a phone's IMEI story, PTA, warranty, used phones
+  /// bought over the counter, and qist (M50).
+  late final MobileServices mobile = MobileServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

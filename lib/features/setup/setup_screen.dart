@@ -198,6 +198,7 @@ class _SetupScreenState extends ConsumerState<SetupScreen> {
                         'restaurant': s.businessKindRestaurant,
                         'services': s.businessKindServices,
                         'wholesale': s.businessKindWholesale,
+                        'mobile': s.businessKindMobile, // M50
                       },
                       onChanged: (v) => setState(() => _businessKind = v),
                     ),

@@ -50,6 +50,8 @@ enum ReportGroup {
   loans,
   // M49
   pharmacy,
+  // M50
+  mobile,
 }
 
 /// A group's heading, as the shop reads it.
@@ -63,6 +65,7 @@ String reportGroupName(AppStrings s, ReportGroup group) => switch (group) {
   ReportGroup.orders => s.reportGroupOrders,
   ReportGroup.loans => s.reportGroupLoans,
   ReportGroup.pharmacy => s.reportGroupPharmacy, // M49
+  ReportGroup.mobile => s.reportGroupMobile, // M50
 };
 
 /// One report in the hub.
@@ -797,6 +800,26 @@ final _loanReports = [
   ),
 ];
 
+/// M50: a mobile shop's register of used phones bought, for the police and
+/// the market association, and its phones sold on qist.
+final _mobileReports = [
+  ReportEntry(
+    kind: ReportKind.usedPhonesRegister,
+    group: ReportGroup.mobile,
+    name: (s) => s.reportUsedPhones,
+    hint: (s) => s.reportUsedPhonesHint,
+    icon: Icons.phonelink_lock_outlined,
+  ),
+  ReportEntry(
+    kind: ReportKind.qistInstalments,
+    group: ReportGroup.mobile,
+    name: (s) => s.reportQistInstalments,
+    hint: (s) => s.reportQistInstalmentsHint,
+    icon: Icons.calendar_month_outlined,
+    filters: const {ReportFilter.party},
+  ),
+];
+
 /// M49: the pharmacy's register, for the inspector.
 final _pharmacyReports = [
   ReportEntry(
@@ -820,6 +843,7 @@ final List<ReportEntry> reportRegistry = List.unmodifiable([
   ..._orderReports,
   ..._loanReports,
   ..._pharmacyReports, // M49
+  ..._mobileReports, // M50
 ]);
 
 final Map<ReportKind, ReportEntry> _byKind = {

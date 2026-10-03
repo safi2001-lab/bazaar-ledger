@@ -38,9 +38,13 @@ CREATE TABLE firms (
 
   name TEXT NOT NULL,
   legal_name TEXT,
+  -- 'mobile' (M50, v12): a mobile phone shop, which turns on the phone's
+  -- IMEI story, its warranty and PTA status, used phones bought over the
+  -- counter and phones sold on qist. Learning it rebuilt this table, because
+  -- SQLite cannot change a CHECK in place; every row was copied as it was.
   business_kind TEXT NOT NULL DEFAULT 'general' CHECK (business_kind IN (
     'general', 'kiryana', 'pharmacy', 'garments', 'cloth', 'hardware',
-    'electronics', 'restaurant', 'services', 'wholesale')),
+    'electronics', 'restaurant', 'services', 'wholesale', 'mobile')),
 
   -- Registration. Most kiryana stores hold none of these: under s.3(9) STA a
   -- non-Tier-1 retailer pays sales tax through the electricity bill. Nothing
