@@ -5,7 +5,7 @@ either done (with the milestone that proved it), in progress, or queued. Nothing
 is "done" here until its milestone is sealed in `docs/feature_ledger.yaml` with
 passing proof tests — this file tracks the plan; the ledger is what proves it.
 
-Last updated: 2 Oct 2026.
+Last updated: 3 Oct 2026.
 
 ## Ground rules (from the owner)
 
@@ -213,9 +213,9 @@ time, on the latest master (schema is v8 today).
 
 ## Finish line for each wave
 
-- [ ] Merge every branch into master; resolve ARB and ledger conflicts; regenerate l10n
-- [ ] Full gate list green on the merged tree (`melos run ci` equivalent)
-- [ ] Build the phone APK and put it on the Desktop
+- [x] Merge every branch into master; resolve ARB and ledger conflicts; regenerate l10n — M30 to M63 all merged
+- [x] Full gate list green on the merged tree — l10n check, analyze (root + 11 packages), arch, ledger shape, and the full verifier: 253 features, every completed feature has a passing proof (M0's 4 open rows are the handset demo, its recording, CI on a push, and goldens — all need things outside this machine)
+- [x] Build the phone APK and put it on the Desktop
 - [ ] Ask the owner before pushing to GitHub
 
 ## Later (needs a server or an outside service — not now)
