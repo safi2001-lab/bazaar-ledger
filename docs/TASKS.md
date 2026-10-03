@@ -218,6 +218,26 @@ time, on the latest master (schema is v8 today).
 - [x] Build the phone APK and put it on the Desktop
 - [ ] Ask the owner before pushing to GitHub
 
+## Round 4 — what the research offered that the first three rounds left (3 Oct 2026)
+
+Found by re-reading `docs/competitor_research.md` §6–§8 and the appendix against the ledger. Offline-doable only.
+
+### Batch 1 (in progress)
+- [ ] M64 · (in progress) Urdu in its own script: a full Urdu (Nastaliq/Naskh) screen language beside Roman Urdu and English, right-to-left layouts
+- [ ] M65 · (in progress, schema v13) Staff book: employees (not only app users), attendance, salary, advances, payroll posted to the books
+- [ ] M66 · (in progress) Loyalty points; a fixed price list per customer; the margin on a bill shown while billing, owner only
+- [ ] M67 · (in progress) Reports, deeper: ratio analysis (GP%, NP%, stock turnover, days to collect/pay), one exception report, ABC stock classes, ageing buckets the shop sets, stock valued at cost or sale price, per-column filters and a column chooser, "vs last period" on charts
+
+### Batch 2 (queued)
+- [ ] M68 · Control: credit control by bill count and days, a temporary limit, stop billing after a bounced cheque; days older than N lock themselves; random stock checks (cycle count); cashier mode (salesman bills, cashier collects)
+- [ ] M69 · Repair job cards for mobile shops (device, IMEI, fault, estimate, parts from stock, labour, ready/delivered, billed) — schema v14
+- [ ] M70 · More bill designs; after a bill or payment, offer to send the customer their receipt (per-customer on/off); Sindhi, Pashto, Punjabi screens if the Urdu-script work makes them cheap
+
+### Considered and left for now
+- Voice notes on entries (needs the microphone permission; photos already cover the paper)
+- Overseas khatas in SAR/AED/USD (a second currency touches every amount in the books)
+- A Windows PC build of the app (the Android printer, scanner and photo paths would each need a desktop twin)
+
 ## Later (needs a server or an outside service — not now)
 
 - Online invoice links a customer opens in a browser; customer portal / "live khata" links
