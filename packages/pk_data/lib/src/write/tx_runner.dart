@@ -106,7 +106,12 @@ final class TxRunner {
               List.unmodifiable(approvals),
             );
             await tx._begin();
-            final result = await body(tx);
+            // M68: the body runs knowing its Tx, for a gate wrapped round a
+            // writer that is only handed the writer's own handle (Tx.current).
+            final result = await runZoned(
+              () => body(tx),
+              zoneValues: {Tx._current: tx},
+            );
             await tx._finish();
             return result;
           }),
@@ -170,6 +175,33 @@ final class Tx {
   /// How many rows this transaction has written so far. Used by tests and by
   /// the fault-injection harness.
   int get mutationCount => _mutations;
+
+  // M68 -------------------------------------------------------------------
+
+  static final Object _current = Object();
+
+  /// The transaction the caller is running inside, or null outside every
+  /// run (M68).
+  ///
+  /// For a check made beneath a run by code that is never handed its Tx: a
+  /// gate wrapped round the sale writer, which sees only the writer's own
+  /// handle, but must ask for the owner's PIN and leave its audit row in
+  /// the bill's own commit. Not a second way to write: it is only ever the
+  /// run the caller is already inside, with everything that run checks at
+  /// commit.
+  static Tx? get current => Zone.current[_current] as Tx?;
+
+  /// The PIN given on this run for [needed]'s kind (M68).
+  ///
+  /// Throws [needed] when none was: the run rolls back whole and, at the
+  /// outermost run, the approver is asked and the body run again with the
+  /// answer -- the same round M42's locks make. Whoever asks for it leaves
+  /// the audit row that names the approval, inside this transaction.
+  Approval approvedFor(ApprovalNeeded needed) {
+    final given = _approval(needed.kind);
+    if (given == null) throw needed;
+    return given;
+  }
 
   Future<void> _begin() async {
     final row = await _db
@@ -486,8 +518,14 @@ final class Tx {
     if (held != null) return held;
     final rows = await select(
       'SELECT setting_key, setting_value FROM settings '
-      'WHERE firm_id = ? AND setting_key IN (?, ?) AND deleted_at_utc IS NULL',
-      [actor.firmId, booksClosedThroughSetting, dataLockSetting],
+      'WHERE firm_id = ? AND setting_key IN (?, ?, ?) '
+      'AND deleted_at_utc IS NULL',
+      [
+        actor.firmId,
+        booksClosedThroughSetting,
+        dataLockSetting,
+        autoLockSetting,
+      ],
     );
     String? value(String key) => rows
         .where((r) => r.read<String>('setting_key') == key)
@@ -495,8 +533,41 @@ final class Tx {
         .firstOrNull;
     final through = value(booksClosedThroughSetting);
     return _locks = BookLocks(
-      closedThrough: through == null ? null : BusinessDate.tryParse(through),
+      // M68: days that lock themselves move the date on by themselves,
+      // worked out here on every write, so a phone left open past midnight
+      // is closed at midnight whether or not the kept date has moved yet.
+      closedThrough: laterClosing(
+        through == null ? null : BusinessDate.tryParse(through),
+        await _autoClosedThrough(value(autoLockSetting)),
+      ),
       dataLock: value(dataLockSetting) == '1',
+    );
+  }
+
+  /// M68: the last day the owner's rule for days that lock themselves has
+  /// closed, as of today.
+  Future<BusinessDate?> _autoClosedThrough(String? rule) async {
+    final lock = AutoLock.fromJson(rule);
+    if (!lock.isOn) return null;
+    BusinessDate? counted;
+    if (lock.mode == AutoLockMode.atDayClose) {
+      final row = await selectOne(
+        'SELECT MAX(at_utc) AS at FROM audit_log '
+        "WHERE firm_id = ? AND action_code = 'DAY_CLOSED'",
+        [actor.firmId],
+      );
+      final at = row?.readNullable<int>('at');
+      counted = at == null
+          ? null
+          : BusinessDate.fromUtc(
+              DateTime.fromMillisecondsSinceEpoch(at, isUtc: true),
+            );
+    }
+    // Today by the device's own clock, not the entry's date: a bill dated
+    // back to the 1st is judged by what is closed today, not on the 1st.
+    return lock.closedThroughOn(
+      BusinessDate.now(_hlc.clock),
+      lastDayClosed: counted,
     );
   }
 

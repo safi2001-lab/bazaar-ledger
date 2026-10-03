@@ -534,94 +534,9 @@ final class DriftCatalogueWriter implements CatalogueWriter {
       );
     }
 
-    return _runner.run(actor, (tx) async {
-      final item = await tx.selectOne(
-        'SELECT name, track_stock, avg_cost_milli_paisa FROM items '
-        'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
-        [draft.itemId, actor.firmId],
-      );
-      if (item == null) {
-        throw StateError('No item ${draft.itemId} in this shop.');
-      }
-      final itemName = item.read<String>('name');
-      if (item.read<int>('track_stock') != 1) {
-        throw StateError(
-          '$itemName does not carry stock, so there is nothing to correct.',
-        );
-      }
-
-      // Read inside the transaction, never from a figure the screen was
-      // holding. Two counters correcting the same item at once would
-      // otherwise both compute their difference from the same stale balance,
-      // and the second would undo the first.
-      final current = await tx.selectOne(
-        'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q '
-        'FROM stock_ledger '
-        'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
-        '  AND deleted_at_utc IS NULL',
-        [actor.firmId, draft.itemId, draft.locationCode],
-      );
-      final onHand = Qty.raw(current?.read<int>('q') ?? 0);
-
-      final delta =
-          draft.delta ??
-          Qty.raw(draft.countedQty!.inThousandths - onHand.inThousandths);
-      if (delta.isZero) {
-        // A stock take that agrees with the ledger is not a correction, and
-        // the schema refuses a zero movement anyway. Saying so is better than
-        // writing a row that means nothing.
-        throw StateError(
-          '$itemName already reads ${onHand.display}. Nothing to correct.',
-        );
-      }
-
-      final balanceAfter = onHand.inThousandths + delta.inThousandths;
-
-      // Valued at what the goods cost, not at what they would have sold for.
-      // A shop that loses a tin loses what it paid for the tin; the margin it
-      // did not make is not an expense, it is a sale that never happened.
-      final cost = Rate.raw(item.read<int>('avg_cost_milli_paisa'));
-      final moved = Qty.raw(delta.inThousandths.abs());
-      final value = cost.amountFor(moved);
-
-      final ledgerId = await tx.insert('stock_ledger', {
-        'item_id': draft.itemId,
-        'location_code': draft.locationCode,
-        // A recount that comes out short and a breakage are the same
-        // arithmetic and different facts. The ledger says which it was.
-        'txn_type': draft.isWriteOff ? 'wastage' : 'adjustment',
-        'qty_delta_thousandths': delta.inThousandths,
-        'rate_milli_paisa': cost.inMilliPaisa,
-        'value_delta_paisa': delta.isNegative ? -value.inPaisa : value.inPaisa,
-        'balance_after_thousandths': balanceAfter,
-        'occurred_at_utc': actor.epochMillis,
-        'occurred_on_local': actor.businessDate.value,
-        'reason': reason,
-      });
-
-      if (!value.isZero) {
-        await _postAdjustmentJournal(
-          tx,
-          actor,
-          itemId: draft.itemId,
-          itemName: itemName,
-          value: value,
-          isLoss: delta.isNegative,
-          reason: reason,
-        );
-      }
-
-      tx.audit(
-        action: 'STOCK_ADJUSTED',
-        entityTable: 'stock_ledger',
-        entityId: ledgerId,
-        summary:
-            '$itemName: ${onHand.display} to '
-            '${Qty.raw(balanceAfter).display} — $reason',
-        amountPaisa: value.inPaisa,
-      );
-      return ledgerId;
-    });
+    // M68: the body is [adjustStockOn], so a random stock check posts each
+    // difference through this same path inside the check's own commit.
+    return _runner.run(actor, (tx) => adjustStockOn(tx, draft));
   }
 
   /// Goods that left the shelf are an expense whether or not anyone noticed.
@@ -629,7 +544,7 @@ final class DriftCatalogueWriter implements CatalogueWriter {
   /// Without this the Inventory account still carries stock that is not
   /// there, the Trial Balance is quietly wrong, and the shop's profit is
   /// overstated by exactly the value of what it lost.
-  Future<void> _postAdjustmentJournal(
+  static Future<void> _postAdjustmentJournal(
     Tx tx,
     ActorContext actor, {
     required String itemId,
@@ -1033,4 +948,106 @@ final class DriftCatalogueWriter implements CatalogueWriter {
 
   static String? _blank(String? s) =>
       s == null || s.trim().isEmpty ? null : s.trim();
+}
+
+/// Corrects the shelf inside [tx]: the stock correction [DriftCatalogueWriter.
+/// adjustStock] makes, for a write that already has its transaction open
+/// (M68: a random stock check posting its differences in one commit with the
+/// check itself). The reason is required here as it is there.
+Future<String> adjustStockOn(Tx tx, StockAdjustmentDraft draft) async {
+  final actor = tx.actor;
+  final reason = draft.reason.trim();
+  if (reason.isEmpty) {
+    throw ArgumentError.value(
+      draft.reason,
+      'reason',
+      'a stock correction has to say why',
+    );
+  }
+  final item = await tx.selectOne(
+    'SELECT name, track_stock, avg_cost_milli_paisa FROM items '
+    'WHERE id = ? AND firm_id = ? AND deleted_at_utc IS NULL',
+    [draft.itemId, actor.firmId],
+  );
+  if (item == null) {
+    throw StateError('No item ${draft.itemId} in this shop.');
+  }
+  final itemName = item.read<String>('name');
+  if (item.read<int>('track_stock') != 1) {
+    throw StateError(
+      '$itemName does not carry stock, so there is nothing to correct.',
+    );
+  }
+
+  // Read inside the transaction, never from a figure the screen was
+  // holding. Two counters correcting the same item at once would
+  // otherwise both compute their difference from the same stale balance,
+  // and the second would undo the first.
+  final current = await tx.selectOne(
+    'SELECT COALESCE(SUM(qty_delta_thousandths), 0) AS q '
+    'FROM stock_ledger '
+    'WHERE firm_id = ? AND item_id = ? AND location_code = ? '
+    '  AND deleted_at_utc IS NULL',
+    [actor.firmId, draft.itemId, draft.locationCode],
+  );
+  final onHand = Qty.raw(current?.read<int>('q') ?? 0);
+
+  final delta =
+      draft.delta ??
+      Qty.raw(draft.countedQty!.inThousandths - onHand.inThousandths);
+  if (delta.isZero) {
+    // A stock take that agrees with the ledger is not a correction, and
+    // the schema refuses a zero movement anyway. Saying so is better than
+    // writing a row that means nothing.
+    throw StateError(
+      '$itemName already reads ${onHand.display}. Nothing to correct.',
+    );
+  }
+
+  final balanceAfter = onHand.inThousandths + delta.inThousandths;
+
+  // Valued at what the goods cost, not at what they would have sold for.
+  // A shop that loses a tin loses what it paid for the tin; the margin it
+  // did not make is not an expense, it is a sale that never happened.
+  final cost = Rate.raw(item.read<int>('avg_cost_milli_paisa'));
+  final moved = Qty.raw(delta.inThousandths.abs());
+  final value = cost.amountFor(moved);
+
+  final ledgerId = await tx.insert('stock_ledger', {
+    'item_id': draft.itemId,
+    'location_code': draft.locationCode,
+    // A recount that comes out short and a breakage are the same
+    // arithmetic and different facts. The ledger says which it was.
+    'txn_type': draft.isWriteOff ? 'wastage' : 'adjustment',
+    'qty_delta_thousandths': delta.inThousandths,
+    'rate_milli_paisa': cost.inMilliPaisa,
+    'value_delta_paisa': delta.isNegative ? -value.inPaisa : value.inPaisa,
+    'balance_after_thousandths': balanceAfter,
+    'occurred_at_utc': actor.epochMillis,
+    'occurred_on_local': actor.businessDate.value,
+    'reason': reason,
+  });
+
+  if (!value.isZero) {
+    await DriftCatalogueWriter._postAdjustmentJournal(
+      tx,
+      actor,
+      itemId: draft.itemId,
+      itemName: itemName,
+      value: value,
+      isLoss: delta.isNegative,
+      reason: reason,
+    );
+  }
+
+  tx.audit(
+    action: 'STOCK_ADJUSTED',
+    entityTable: 'stock_ledger',
+    entityId: ledgerId,
+    summary:
+        '$itemName: ${onHand.display} to '
+        '${Qty.raw(balanceAfter).display} — $reason',
+    amountPaisa: value.inPaisa,
+  );
+  return ledgerId;
 }

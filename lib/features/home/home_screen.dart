@@ -8,6 +8,9 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../accounting/accounts_screen.dart';
 import '../cheques/cheques_screen.dart';
+import '../control/cashier_queue_screen.dart'; // M68
+import '../control/control_home.dart'; // M68
+import '../control/stock_check_screen.dart'; // M68
 import '../day_close/day_close_screen.dart';
 import '../documents/quotations_screen.dart';
 import '../expenses/expenses_screen.dart';
@@ -92,6 +95,7 @@ class HomeScreen extends ConsumerWidget {
               const RecurringDueCard(), // M63: repeating bills due today
               const FbrOverdueLine(), // M59: FBR bills late under Rule 150XC
               const MonthlyBillsDueLine(), // M54: rent and bijli due (M47)
+              const ControlHomeLines(), // M68: the cashier's queue, the count
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.homeTitle),
               const SizedBox(height: BlTokens.space3),
@@ -231,6 +235,21 @@ class HomeScreen extends ConsumerWidget {
                       label: s.mobileSearchTitle,
                       icon: Icons.phone_android_outlined,
                       onTap: () => _open(context, const PhoneSearchScreen()),
+                    ),
+                  // M68: the cashier's queue in cashier mode, and the
+                  // random stock check for whoever works the counter.
+                  if (ref.watch(cashierCounterShownProvider) &&
+                      services.can(Permission.takePayments))
+                    _NavTile(
+                      label: s.cashierQueueTitle,
+                      icon: Icons.point_of_sale_outlined,
+                      onTap: () => _open(context, const CashierQueueScreen()),
+                    ),
+                  if (services.stockChecks.mayCount)
+                    _NavTile(
+                      label: s.stockCheckTitle,
+                      icon: Icons.fact_check_outlined,
+                      onTap: () => _open(context, const StockCheckScreen()),
                     ),
                 ],
               ),

@@ -6,6 +6,8 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../control/control_providers.dart' // M68
+    show creditBreachText, creditRuleTitle;
 import '../users/pin_field.dart';
 
 /// Puts the PIN prompt up whenever the books ask for one (M42).
@@ -102,6 +104,12 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
     final ask = widget.ask;
     final needed = ask.needed;
     final closed = needed.kind == ApprovalKind.closedBooks;
+    // M68: the owner's word (credit past a block, a stock check's
+    // differences) asks a reason as closed books do, and says what it is
+    // being asked for in the shop's words.
+    final owner = needed.kind == ApprovalKind.owner;
+    final reasoned = ask.needsReason;
+    final detail = needed.detail;
     final chosen = ask.people.where((m) => m.id == _who).firstOrNull;
     final problem = switch (ask.problem) {
       ApprovalProblem.wrongPin => s.approvalWrongPin,
@@ -118,7 +126,14 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
           Icon(Icons.lock_outline, color: t.warning),
           const SizedBox(width: BlTokens.space2),
           Expanded(
-            child: Text(closed ? s.approvalClosedTitle : s.approvalLockTitle),
+            child: Text(
+              owner
+                  ? s
+                        .approvalOwnerTitle // M68
+                  : closed
+                  ? s.approvalClosedTitle
+                  : s.approvalLockTitle,
+            ),
           ),
         ],
       ),
@@ -128,7 +143,10 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              closed
+              owner
+                  ? s
+                        .approvalOwnerBody // M68
+                  : closed
                   ? s.approvalClosedBody(
                       needed.closedThrough ?? '',
                       needed.dateLocal ?? '',
@@ -137,11 +155,27 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
               style: TextStyle(fontSize: 14, color: t.ink),
             ),
             const SizedBox(height: BlTokens.space2),
-            // What exactly, as the books put it.
-            Text(
-              needed.what,
-              style: TextStyle(fontSize: 13, color: t.inkMuted),
-            ),
+            // M68: the credit rules, or the stock check, in the shop's words.
+            if (detail is CreditVerdict)
+              for (final b in detail.blocking)
+                Text(
+                  '${creditRuleTitle(s, b.rule)}: ${creditBreachText(s, b)}',
+                  style: TextStyle(fontSize: 13, color: t.danger),
+                )
+            else if (detail is StockCheck)
+              Text(
+                s.approvalOwnerStock(
+                  shortDate(detail.date.value),
+                  detail.differing.length,
+                ),
+                style: TextStyle(fontSize: 13, color: t.inkMuted),
+              )
+            else
+              // What exactly, as the books put it.
+              Text(
+                needed.what,
+                style: TextStyle(fontSize: 13, color: t.inkMuted),
+              ),
             if (ask.people.length > 1) ...[
               const SizedBox(height: BlTokens.space3),
               Text(
@@ -182,11 +216,11 @@ class _ApprovalDialogState extends State<_ApprovalDialog> {
                 label: s.signInPin,
                 autofocus: true,
                 onSubmitted: (_) {
-                  if (!closed) _allow();
+                  if (!reasoned) _allow();
                 },
               ),
             ],
-            if (closed) ...[
+            if (reasoned) ...[
               const SizedBox(height: BlTokens.space2),
               TextFormField(
                 controller: _reason,

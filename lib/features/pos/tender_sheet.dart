@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../control/credit_at_counter.dart'; // M68
 import '../khata/entry_actions.dart' show modeLabel;
 import '../khata/goods_given.dart' show giveFromCounter; // M55
 import '../loyalty/loyalty_at_counter.dart'; // M66
@@ -61,22 +62,19 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
   bool _busy = false;
   String? _failure;
 
-  /// Set once the shopkeeper has been shown the limit and chosen to go past
-  /// it. Their shop, their call — but they get to make it knowingly, and it
-  /// is not remembered beyond this bill.
-  bool _creditLimitOverridden = false;
+  // M68: credit control (control/credit_at_counter.dart). The limit (M3)
+  // and the bounced cheque (M6) were asked about here one by one; every
+  // rule the shop keeps is now asked at once, and the sale path judges the
+  // bill again beneath the screen.
 
-  /// The limit and what this bill would take the customer to, while the
-  /// shopkeeper is being asked. Null the rest of the time.
-  ({Money limit, Money after})? _overLimit;
+  /// Set once the cashier has been shown the rules this bill breaks and
+  /// chosen to go on: past a warning, or to the owner past a block. Not
+  /// remembered beyond this bill.
+  bool _creditSeen = false;
 
-  /// Set once the shopkeeper has been told this customer's cheque bounced
-  /// and chosen to give credit anyway. Not remembered beyond this bill.
-  bool _bounceOverridden = false;
-
-  /// The bounced cheques and what is still owed, while the shopkeeper is
-  /// being asked. Null the rest of the time.
-  ({int count, Money owed})? _bounced;
+  /// The rules that bite, while the cashier is being asked. Null the rest
+  /// of the time.
+  CreditVerdict? _credit;
 
   /// A bill putting another right starts from the money the customer had
   /// already handed over for it (M36), in the way it came.
@@ -291,7 +289,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     setState(() {
       _busy = true;
       _failure = null;
-      _overLimit = null;
+      _credit = null; // M68
     });
 
     final s = AppStrings.of(context);
@@ -399,53 +397,28 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     final givesCredit = leavesBalance && owedHere > byAdvance;
     if (!mounted) return;
 
-    // A customer whose cheque bounced and who still owes is asked about
-    // before more credit goes out: udhaar, or another cheque, which is only
-    // credit with a date on it. Their shop, their call, but made knowingly.
-    if ((givesCredit || byCheque) && !_bounceOverridden) { // M54
-      final party = await ref
-          .read(appServicesProvider)
-          .queries
-          .partyById(firm.id, cart.partyId!);
-      if (party != null && party.hasUnsettledBounce) {
+    // M68: credit control (control/credit_at_counter.dart). A customer past
+    // the limit (M3), with a bounced cheque still owed (M6), with more bills
+    // open or one older than the shop allows, is asked about here, before
+    // the goods leave, against the books as they stand right now. What the
+    // order's advance covers is not credit (M54); only a bounce speaks to a
+    // cheque. The sale path judges it again beneath the screen.
+    if ((givesCredit || byCheque) && !_creditSeen) {
+      final verdict = await creditVerdictAtCounter(
+        ref,
+        partyId: cart.partyId!,
+        owed: givesCredit ? owedHere : Money.zero,
+        byCheque: byCheque,
+      );
+      if (verdict != null && !verdict.isClear) {
         if (mounted) {
           setState(() {
             _failure = null;
-            _bounced = (count: party.bouncedCheques, owed: party.balance);
+            _credit = verdict;
             _busy = false;
           });
         }
         return;
-      }
-    }
-
-    // A credit limit that blocks nothing is decoration. It was being set in
-    // the party editor, shown as a chip on two screens, and enforced nowhere:
-    // a shop could put a customer on Rs 50,000 and watch them reach Rs
-    // 200,000 without the app ever mentioning it.
-    //
-    // Checked here rather than at the cart, because this is the moment before
-    // the goods leave — and against the balance as it stands right now rather
-    // than the copy the picker handed over, which may be minutes old and is
-    // exactly the figure a second till has been changing.
-    if (givesCredit && !_creditLimitOverridden) { // M54: not what it covers
-      final party = await ref
-          .read(appServicesProvider)
-          .queries
-          .partyById(firm.id, cart.partyId!);
-      final limit = party?.creditLimit;
-      if (party != null && limit != null) {
-        final after = party.balance + preview.balance;
-        if (after > limit) {
-          if (mounted) {
-            setState(() {
-              _failure = null;
-              _overLimit = (limit: limit, after: after);
-              _busy = false;
-            });
-          }
-          return;
-        }
       }
     }
 
@@ -667,6 +640,17 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               ReceiptScreen(documentId: posted.documentId, docNo: posted.docNo),
         ),
       );
+    } on ApprovalNeeded catch (needed) {
+      // M68: a credit rule set to block, and the owner did not let it past;
+      // or a lock (M42) nobody answered, said as before.
+      if (mounted) {
+        setState(() {
+          _failure = needed.kind == ApprovalKind.owner
+              ? s.creditOwnerRefused
+              : '${s.billSaveFailed}\n\n$needed';
+          _busy = false;
+        });
+      }
     } on LoyaltyRefused catch (refused) {
       // M66: the points, refused in the bill's own commit, said in words.
       if (mounted) {
@@ -869,126 +853,23 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                 child: BlOfflineNote(message: s.tenderCashThresholdWarning),
               ),
 
-            // The bounce, and the way past it, where the limit's would be.
-            if (_bounced case final bounced?) ...[
+            // M68: the credit rules this bill breaks, and the way past them
+            // (control/credit_at_counter.dart). Not a dialog: a shopkeeper
+            // with a customer waiting sees the figures and the button where
+            // they were already looking.
+            if (_credit case final verdict? when cart.partyId != null) ...[
               const SizedBox(height: BlTokens.space3),
-              Container(
-                padding: const EdgeInsets.all(BlTokens.space3),
-                decoration: BoxDecoration(
-                  color: t.dangerSurface,
-                  borderRadius: BorderRadius.circular(BlTokens.radiusMd),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.report_gmailerrorred_outlined,
-                          size: 18,
-                          color: t.danger,
-                        ),
-                        const SizedBox(width: BlTokens.space2),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                s.tenderChequeBounced,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: t.danger,
-                                ),
-                              ),
-                              Text(
-                                s.tenderChequeBouncedDetail(
-                                  bounced.count,
-                                  bounced.owed.amountOnly,
-                                ),
-                                style: TextStyle(fontSize: 13, color: t.danger),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: BlTokens.space2),
-                    BlButton(
-                      label: s.tenderChequeBouncedAllow,
-                      kind: BlButtonKind.secondary,
-                      onPressed: () => setState(() {
-                        _bounceOverridden = true;
-                        _bounced = null;
-                      }),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-
-            // The limit, and the way past it. Not a dialog: a shopkeeper with
-            // a customer waiting should see the number and the button in the
-            // same place they were already looking.
-            if (_overLimit case final over?) ...[
-              const SizedBox(height: BlTokens.space3),
-              Container(
-                padding: const EdgeInsets.all(BlTokens.space3),
-                decoration: BoxDecoration(
-                  color: t.warningSurface,
-                  borderRadius: BorderRadius.circular(BlTokens.radiusMd),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(
-                          Icons.warning_amber_outlined,
-                          size: 18,
-                          color: t.warning,
-                        ),
-                        const SizedBox(width: BlTokens.space2),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                s.tenderOverLimit,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w600,
-                                  color: t.warning,
-                                ),
-                              ),
-                              Text(
-                                s.tenderOverLimitDetail(
-                                  over.limit.amountOnly,
-                                  over.after.amountOnly,
-                                ),
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: t.warning,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: BlTokens.space2),
-                    BlButton(
-                      label: s.tenderOverLimitAllow,
-                      kind: BlButtonKind.secondary,
-                      onPressed: () => setState(() {
-                        _creditLimitOverridden = true;
-                        _overLimit = null;
-                      }),
-                    ),
-                  ],
-                ),
+              CreditRulesCard(
+                verdict: verdict,
+                partyId: cart.partyId!,
+                onGoOn: () {
+                  setState(() {
+                    _creditSeen = true;
+                    _credit = null;
+                  });
+                  // Past a block the owner is asked as the bill is written.
+                  if (verdict.blocks) unawaited(_post());
+                },
               ),
             ],
 

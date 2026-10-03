@@ -28,6 +28,12 @@ export 'src/cheques/demand_notice.dart';
 // M55: goods given rate-later, and the recovery man's round.
 export 'src/collections/collection_sheet.dart';
 export 'src/collections/goods_given.dart';
+// M68: credit control, days that lock themselves, the random stock check
+// and cashier mode.
+export 'src/control/auto_lock.dart';
+export 'src/control/cashier_mode.dart';
+export 'src/control/credit_control.dart';
+export 'src/control/stock_check.dart';
 export 'src/corrections/opening_correction.dart';
 export 'src/corrections/payment_void.dart';
 export 'src/corrections/purchase_return_builder.dart';

@@ -11,6 +11,9 @@ import '../../design/components.dart';
 import '../../design/counted_qty_field.dart'; // M45
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../control/cashier_queue_screen.dart' // M68
+    show HoldForCashierSheet;
+import '../control/control_providers.dart' show isSalesmanProvider; // M68
 import '../items/quick_item_sheet.dart';
 import '../loyalty/loyalty_at_counter.dart'; // M66
 import '../mobile/phone_counter.dart'; // M50
@@ -1814,6 +1817,7 @@ class _TotalsBar extends ConsumerWidget {
     final t = context.bl;
     final cart = ref.watch(cartProvider);
     final preview = ref.watch(cartPreviewProvider);
+    final salesman = ref.watch(isSalesmanProvider).valueOrNull ?? false; // M68
 
     if (preview == null) return const SizedBox.shrink();
 
@@ -1866,14 +1870,19 @@ class _TotalsBar extends ConsumerWidget {
             const MarginLine(), // M66: for whoever may see costs
           ],
           action: BlButton(
-            label: '${s.posCharge} · ${s.posItemsInCart(cart.lines.length)}',
-            icon: Icons.payments_outlined,
+            // M68: in cashier mode a salesman's bill goes to the cashier
+            // (control/cashier_queue_screen.dart); the cashier takes money.
+            label:
+                '${salesman ? s.cashierSendToCashier : s.posCharge} · '
+                '${s.posItemsInCart(cart.lines.length)}',
+            icon: salesman ? Icons.send_outlined : Icons.payments_outlined,
             big: true,
             onPressed: () => showModalBottomSheet<void>(
               context: context,
               isScrollControlled: true,
               useSafeArea: true,
-              builder: (_) => const TenderSheet(),
+              builder: (_) =>
+                  salesman ? const HoldForCashierSheet() : const TenderSheet(),
             ),
           ),
         ),

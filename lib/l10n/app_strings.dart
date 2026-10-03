@@ -15640,6 +15640,564 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Purchase order ka design'**
   String get billDesignDocOrder;
+
+  /// No description provided for @controlSettingsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar, din band aur counter ke qaide'**
+  String get controlSettingsTitle;
+
+  /// No description provided for @creditRulesHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ke qaide'**
+  String get creditRulesHeader;
+
+  /// No description provided for @creditRulesIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jab gahak kisi qaide se aage jaye to payment sheet kya kare. Khabardar: bata deti hai, cashier aage barh sakta hai. Rok: udhaar nahi hota (cash phir bhi le sakte hain), jab tak malik PIN aur wajah na de.'**
+  String get creditRulesIntro;
+
+  /// No description provided for @creditModeOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Band'**
+  String get creditModeOff;
+
+  /// No description provided for @creditModeWarn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khabardar'**
+  String get creditModeWarn;
+
+  /// No description provided for @creditModeBlock.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rok'**
+  String get creditModeBlock;
+
+  /// No description provided for @creditModeShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ka qaida'**
+  String get creditModeShop;
+
+  /// No description provided for @creditLimitRule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ki hadd se ziyada'**
+  String get creditLimitRule;
+
+  /// No description provided for @creditBillsRule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar par ziyada se ziyada bill'**
+  String get creditBillsRule;
+
+  /// No description provided for @creditDaysRule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab se purana baqi bill, din'**
+  String get creditDaysRule;
+
+  /// No description provided for @creditBounceRule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheque bounce ke baad, jab tak ada na ho'**
+  String get creditBounceRule;
+
+  /// No description provided for @creditEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khali: yeh qaida nahi'**
+  String get creditEmptyHint;
+
+  /// No description provided for @creditSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar ke qaide save ho gaye'**
+  String get creditSaved;
+
+  /// No description provided for @creditOwnerOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh qaide sirf malik badal sakta hai.'**
+  String get creditOwnerOnly;
+
+  /// No description provided for @creditFiguresBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poore number likhein, ya khana khali chhor dein.'**
+  String get creditFiguresBad;
+
+  /// No description provided for @partyCreditShopRules.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ke qaide'**
+  String get partyCreditShopRules;
+
+  /// No description provided for @partyCreditOwnRules.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ke apne qaide'**
+  String get partyCreditOwnRules;
+
+  /// No description provided for @partyCreditTemp.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} {date} tak'**
+  String partyCreditTemp(String amount, String date);
+
+  /// No description provided for @partyCreditTempLapsed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Waqti hadd Rs {amount} {date} ke baad khatam'**
+  String partyCreditTempLapsed(String amount, String date);
+
+  /// No description provided for @partyCreditTempHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Waqti hadd'**
+  String get partyCreditTempHeader;
+
+  /// No description provided for @partyCreditTempHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chuni hui tareekh tak credit limit ki jagah, phir khud khatam ho jati hai.'**
+  String get partyCreditTempHint;
+
+  /// No description provided for @partyCreditTempAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Waqti hadd, Rs'**
+  String get partyCreditTempAmount;
+
+  /// No description provided for @partyCreditTempPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhri din: {date}'**
+  String partyCreditTempPick(String date);
+
+  /// No description provided for @partyCreditTempNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aakhri din chunein'**
+  String get partyCreditTempNone;
+
+  /// No description provided for @partyCreditTempClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hata dein'**
+  String get partyCreditTempClear;
+
+  /// No description provided for @partyCreditStanding.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} baqi, {bills} bill; sab se purana {days} din ka'**
+  String partyCreditStanding(String amount, int bills, int days);
+
+  /// No description provided for @partyCreditClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kisi bill par kuch baqi nahi'**
+  String get partyCreditClear;
+
+  /// No description provided for @partyCreditNoRule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is par nahi'**
+  String get partyCreditNoRule;
+
+  /// No description provided for @partyCreditOwn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Apna'**
+  String get partyCreditOwn;
+
+  /// No description provided for @partyCreditSaveFirst.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle gahak save karein; phir apne udhaar ke qaide.'**
+  String get partyCreditSaveFirst;
+
+  /// No description provided for @creditBlockedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ka udhaar band hai'**
+  String get creditBlockedTitle;
+
+  /// No description provided for @creditBlockedHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cash, card ya wallet phir bhi le sakte hain. Malik apne PIN aur wajah se yeh ek bill guzaar sakta hai.'**
+  String get creditBlockedHint;
+
+  /// No description provided for @creditOwnerAllow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik ki ijazat (PIN)'**
+  String get creditOwnerAllow;
+
+  /// No description provided for @creditRaiseToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ke liye hadd barha kar save karein'**
+  String get creditRaiseToday;
+
+  /// No description provided for @creditBillsLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is samait {count} bill udhaar par; hadd {most}'**
+  String creditBillsLine(int count, int most);
+
+  /// No description provided for @creditDaysLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din purana bill baqi; hadd {most} din'**
+  String creditDaysLine(int days, int most);
+
+  /// No description provided for @creditTempLimitLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Waqti hadd Rs {limit} ({date} tak) se ziyada; is bill se Rs {after}'**
+  String creditTempLimitLine(String limit, String date, String after);
+
+  /// No description provided for @creditOwnerRefused.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik ne ijazat nahi di: udhaar band hai. Paisay lein, ya bill udhaar se hata dein.'**
+  String get creditOwnerRefused;
+
+  /// No description provided for @approvalOwnerTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik ki ijazat'**
+  String get approvalOwnerTitle;
+
+  /// No description provided for @approvalOwnerBody.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh sirf malik apne PIN aur wajah se guzaar sakta hai.'**
+  String get approvalOwnerBody;
+
+  /// No description provided for @approvalOwnerStock.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ki ginti: {count} cheezein kitaab se mukhtalif. Farq kitaab mein daal dein?'**
+  String approvalOwnerStock(String date, int count);
+
+  /// No description provided for @autoLockHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din khud band hon'**
+  String get autoLockHeader;
+
+  /// No description provided for @autoLockIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitaab band hone ki tareekh roz khud aage barhti hai, taake malik ke PIN aur wajah ke baghair purani tareekh ki koi entry na ho.'**
+  String get autoLockIntro;
+
+  /// No description provided for @autoLockOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Band: malik khud kitaab band karta hai'**
+  String get autoLockOff;
+
+  /// No description provided for @autoLockOlder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khule dinon se purane din'**
+  String get autoLockOlder;
+
+  /// No description provided for @autoLockAtClose.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har din, galla ginne ke baad'**
+  String get autoLockAtClose;
+
+  /// No description provided for @autoLockDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne din khule rahein'**
+  String get autoLockDays;
+
+  /// No description provided for @autoLockNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak band'**
+  String autoLockNow(String date);
+
+  /// No description provided for @autoLockSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save ho gaya: din qaide ke mutabiq khud band honge'**
+  String get autoLockSaved;
+
+  /// No description provided for @stockCheckTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock ki ginti'**
+  String get stockCheckTitle;
+
+  /// No description provided for @stockCheckIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roz kuch cheezein ittefaqan chuni jati hain (tez bikne wali aur mehngi ziyada, ek cheez do din lagatar nahi), shelf par gin lein. Farq kitaab mein tab jata hai jab malik manzoor kare.'**
+  String get stockCheckIntro;
+
+  /// No description provided for @stockCheckSize.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har ginti mein cheezein'**
+  String get stockCheckSize;
+
+  /// No description provided for @stockCheckDaily.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roz khud ginti chunein'**
+  String get stockCheckDaily;
+
+  /// No description provided for @stockCheckPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi ginti ke liye cheezein chunein'**
+  String get stockCheckPick;
+
+  /// No description provided for @stockCheckNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi ginti khuli nahi. Nayi chunein.'**
+  String get stockCheckNone;
+
+  /// No description provided for @stockCheckOf.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ki ginti'**
+  String stockCheckOf(String date);
+
+  /// No description provided for @stockCheckShelf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shelf par'**
+  String get stockCheckShelf;
+
+  /// No description provided for @stockCheckBooks.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitaab: {qty}'**
+  String stockCheckBooks(String qty);
+
+  /// No description provided for @stockCheckDiff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Farq {qty}'**
+  String stockCheckDiff(String qty);
+
+  /// No description provided for @stockCheckDiffValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Farq {qty} (Rs {value})'**
+  String stockCheckDiffValue(String qty, String value);
+
+  /// No description provided for @stockCheckKeep.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ginti rakhein'**
+  String get stockCheckKeep;
+
+  /// No description provided for @stockCheckPost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Malik manzoor kare: farq kitaab mein'**
+  String get stockCheckPost;
+
+  /// No description provided for @stockCheckPosted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Farq kitaab mein daal diya'**
+  String get stockCheckPosted;
+
+  /// No description provided for @stockCheckDrop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh ginti chhor dein'**
+  String get stockCheckDrop;
+
+  /// No description provided for @stockCheckReasonLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah?'**
+  String get stockCheckReasonLabel;
+
+  /// No description provided for @stockCheckHistory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichli gintiyan'**
+  String get stockCheckHistory;
+
+  /// No description provided for @stockCheckShrinkage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine ka nuqsan'**
+  String get stockCheckShrinkage;
+
+  /// No description provided for @stockCheckShrinkLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'{month}: Rs {short} kam, Rs {over} ziyada, Rs {net} nuqsan ({checks} gintiyan)'**
+  String stockCheckShrinkLine(
+    String month,
+    String short,
+    String over,
+    String net,
+    int checks,
+  );
+
+  /// No description provided for @stockCheckStatusOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ginti jari'**
+  String get stockCheckStatusOpen;
+
+  /// No description provided for @stockCheckStatusCounted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gin li, malik ka intezar'**
+  String get stockCheckStatusCounted;
+
+  /// No description provided for @stockCheckStatusPosted.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitaab mein'**
+  String get stockCheckStatusPosted;
+
+  /// No description provided for @stockCheckStatusDropped.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chhor di'**
+  String get stockCheckStatusDropped;
+
+  /// No description provided for @stockCheckHomeLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ki ginti: {count} cheezein baqi'**
+  String stockCheckHomeLine(int count);
+
+  /// No description provided for @stockCheckHomeWaiting.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ki ginti ho gayi: malik ka intezar'**
+  String get stockCheckHomeWaiting;
+
+  /// No description provided for @stockCheckItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezein'**
+  String stockCheckItems(int count);
+
+  /// No description provided for @cashierModeHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier mode'**
+  String get cashierModeHeader;
+
+  /// No description provided for @cashierModeIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Salesman bill banata hai; cashier paisay le kar print karta hai. Salesman ka bill cashier ke paas intezar karta hai, aur paisay milne tak na stock hilta hai na kitaab.'**
+  String get cashierModeIntro;
+
+  /// No description provided for @cashierModeOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter cashier mode mein chalayein'**
+  String get cashierModeOn;
+
+  /// No description provided for @cashierModeSalesmen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Salesman: bill banate hain, paisay nahi lete'**
+  String get cashierModeSalesmen;
+
+  /// No description provided for @cashierModeNoStaff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle Staff mein apne PIN ke saath staff shamil karein.'**
+  String get cashierModeNoStaff;
+
+  /// No description provided for @cashierModeSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier mode save ho gaya'**
+  String get cashierModeSaved;
+
+  /// No description provided for @cashierSendToCashier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier ko bhejein'**
+  String get cashierSendToCashier;
+
+  /// No description provided for @cashierSent.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} cashier ko bhej diya'**
+  String cashierSent(String docNo);
+
+  /// No description provided for @cashierHoldTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier ke liye bill'**
+  String get cashierHoldTitle;
+
+  /// No description provided for @cashierHoldHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier paisay le kar bill print karega. Tab tak stock se kuch nahi nikalta.'**
+  String get cashierHoldHint;
+
+  /// No description provided for @cashierQueueTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier counter'**
+  String get cashierQueueTitle;
+
+  /// No description provided for @cashierQueueEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi bill intezar mein nahi'**
+  String get cashierQueueEmpty;
+
+  /// No description provided for @cashierMadeBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ne {time} par banaya'**
+  String cashierMadeBy(String name, String time);
+
+  /// No description provided for @cashierTakeMoney.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay le kar bill banayein'**
+  String get cashierTakeMoney;
+
+  /// No description provided for @cashierDrop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hata dein: gahak chala gaya'**
+  String get cashierDrop;
+
+  /// No description provided for @cashierHomeLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} bill cashier ke paas intezar mein'**
+  String cashierHomeLine(int count);
+
+  /// No description provided for @cashierSalesmanNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier mode: aap ke bill cashier ko jaate hain, paisay woh leta hai.'**
+  String get cashierSalesmanNote;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

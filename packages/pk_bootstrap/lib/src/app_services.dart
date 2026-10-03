@@ -22,7 +22,9 @@ import 'printing_services.dart';
 
 part 'audit_services.dart';
 part 'bill_design_services.dart';
+part 'cashier_services.dart'; // M68
 part 'collection_services.dart'; // M55
+part 'control_services.dart'; // M68
 part 'counter_tax_services.dart';
 part 'drive_backup_services.dart';
 part 'fbr_services.dart';
@@ -42,6 +44,7 @@ part 'scheme_services.dart'; // M43
 part 'shelf_services.dart';
 part 'shop_money_services.dart';
 part 'staff_book_services.dart'; // M65
+part 'stock_check_services.dart'; // M68
 part 'sync_services.dart';
 part 'udhaar_services.dart';
 
@@ -212,7 +215,12 @@ final class AppServices {
       // M59: a registered shop's big walk-in bill names its buyer.
       writer: _BuyerNameSales(
         _FbrSales(
-          _CeilingSales(_PlanSales(innermost, plans), this, redeem: redeem),
+          _CeilingSales(
+            // M68: credit control and cashier mode (control_services.dart).
+            _ControlSales(_PlanSales(innermost, plans), this),
+            this,
+            redeem: redeem,
+          ),
           this,
         ),
       ),
@@ -490,6 +498,13 @@ final class AppServices {
   /// Loyalty points, a customer's own prices and the margin at the counter
   /// (M66).
   late final LoyaltyServices loyalty = LoyaltyServices._(this);
+
+  // M68: credit control, days that lock themselves, the random stock check
+  // and cashier mode.
+  late final CreditServices credit = CreditServices._(this);
+  late final AutoLockServices autoLock = AutoLockServices._(this);
+  late final StockCheckServices stockChecks = StockCheckServices._(this);
+  late final CashierServices cashier = CashierServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone
@@ -964,6 +979,8 @@ final class AppServices {
         await services._resumeSession();
         await services._postMissingOpenings();
         await services._addMissingUnits();
+        // M68: days that lock themselves, moved on to today.
+        await services.autoLock.keep();
       }
     }
 

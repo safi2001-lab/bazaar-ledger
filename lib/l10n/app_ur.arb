@@ -5578,5 +5578,207 @@
   "billDesignSameAsBill": "Bill jaisa",
   "billDesignDocQuotation": "Quotation ka design",
   "billDesignDocChallan": "Delivery challan ka design",
-  "billDesignDocOrder": "Purchase order ka design"
+  "billDesignDocOrder": "Purchase order ka design",
+  "controlSettingsTitle": "Udhaar, din band aur counter ke qaide",
+  "creditRulesHeader": "Udhaar ke qaide",
+  "creditRulesIntro": "Jab gahak kisi qaide se aage jaye to payment sheet kya kare. Khabardar: bata deti hai, cashier aage barh sakta hai. Rok: udhaar nahi hota (cash phir bhi le sakte hain), jab tak malik PIN aur wajah na de.",
+  "creditModeOff": "Band",
+  "creditModeWarn": "Khabardar",
+  "creditModeBlock": "Rok",
+  "creditModeShop": "Dukaan ka qaida",
+  "creditLimitRule": "Udhaar ki hadd se ziyada",
+  "creditBillsRule": "Udhaar par ziyada se ziyada bill",
+  "creditDaysRule": "Sab se purana baqi bill, din",
+  "creditBounceRule": "Cheque bounce ke baad, jab tak ada na ho",
+  "creditEmptyHint": "Khali: yeh qaida nahi",
+  "creditSaved": "Udhaar ke qaide save ho gaye",
+  "creditOwnerOnly": "Yeh qaide sirf malik badal sakta hai.",
+  "creditFiguresBad": "Poore number likhein, ya khana khali chhor dein.",
+  "partyCreditShopRules": "Dukaan ke qaide",
+  "partyCreditOwnRules": "Is gahak ke apne qaide",
+  "partyCreditTemp": "Rs {amount} {date} tak",
+  "@partyCreditTemp": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "partyCreditTempLapsed": "Waqti hadd Rs {amount} {date} ke baad khatam",
+  "@partyCreditTempLapsed": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "partyCreditTempHeader": "Waqti hadd",
+  "partyCreditTempHint": "Chuni hui tareekh tak credit limit ki jagah, phir khud khatam ho jati hai.",
+  "partyCreditTempAmount": "Waqti hadd, Rs",
+  "partyCreditTempPick": "Aakhri din: {date}",
+  "@partyCreditTempPick": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "partyCreditTempNone": "Aakhri din chunein",
+  "partyCreditTempClear": "Hata dein",
+  "partyCreditStanding": "Rs {amount} baqi, {bills} bill; sab se purana {days} din ka",
+  "@partyCreditStanding": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "bills": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "partyCreditClear": "Kisi bill par kuch baqi nahi",
+  "partyCreditNoRule": "Is par nahi",
+  "partyCreditOwn": "Apna",
+  "partyCreditSaveFirst": "Pehle gahak save karein; phir apne udhaar ke qaide.",
+  "creditBlockedTitle": "Is gahak ka udhaar band hai",
+  "creditBlockedHint": "Cash, card ya wallet phir bhi le sakte hain. Malik apne PIN aur wajah se yeh ek bill guzaar sakta hai.",
+  "creditOwnerAllow": "Malik ki ijazat (PIN)",
+  "creditRaiseToday": "Aaj ke liye hadd barha kar save karein",
+  "creditBillsLine": "Is samait {count} bill udhaar par; hadd {most}",
+  "@creditBillsLine": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "most": {"type": "int"}
+    }
+  },
+  "creditDaysLine": "{days} din purana bill baqi; hadd {most} din",
+  "@creditDaysLine": {
+    "placeholders": {
+      "days": {"type": "int"},
+      "most": {"type": "int"}
+    }
+  },
+  "creditTempLimitLine": "Waqti hadd Rs {limit} ({date} tak) se ziyada; is bill se Rs {after}",
+  "@creditTempLimitLine": {
+    "placeholders": {
+      "limit": {"type": "String"},
+      "date": {"type": "String"},
+      "after": {"type": "String"}
+    }
+  },
+  "creditOwnerRefused": "Malik ne ijazat nahi di: udhaar band hai. Paisay lein, ya bill udhaar se hata dein.",
+  "approvalOwnerTitle": "Malik ki ijazat",
+  "approvalOwnerBody": "Yeh sirf malik apne PIN aur wajah se guzaar sakta hai.",
+  "approvalOwnerStock": "{date} ki ginti: {count} cheezein kitaab se mukhtalif. Farq kitaab mein daal dein?",
+  "@approvalOwnerStock": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "autoLockHeader": "Din khud band hon",
+  "autoLockIntro": "Kitaab band hone ki tareekh roz khud aage barhti hai, taake malik ke PIN aur wajah ke baghair purani tareekh ki koi entry na ho.",
+  "autoLockOff": "Band: malik khud kitaab band karta hai",
+  "autoLockOlder": "Khule dinon se purane din",
+  "autoLockAtClose": "Har din, galla ginne ke baad",
+  "autoLockDays": "Kitne din khule rahein",
+  "autoLockNow": "{date} tak band",
+  "@autoLockNow": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "autoLockSaved": "Save ho gaya: din qaide ke mutabiq khud band honge",
+  "stockCheckTitle": "Stock ki ginti",
+  "stockCheckIntro": "Roz kuch cheezein ittefaqan chuni jati hain (tez bikne wali aur mehngi ziyada, ek cheez do din lagatar nahi), shelf par gin lein. Farq kitaab mein tab jata hai jab malik manzoor kare.",
+  "stockCheckSize": "Har ginti mein cheezein",
+  "stockCheckDaily": "Roz khud ginti chunein",
+  "stockCheckPick": "Abhi ginti ke liye cheezein chunein",
+  "stockCheckNone": "Koi ginti khuli nahi. Nayi chunein.",
+  "stockCheckOf": "{date} ki ginti",
+  "@stockCheckOf": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "stockCheckShelf": "Shelf par",
+  "stockCheckBooks": "Kitaab: {qty}",
+  "@stockCheckBooks": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  },
+  "stockCheckDiff": "Farq {qty}",
+  "@stockCheckDiff": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  },
+  "stockCheckDiffValue": "Farq {qty} (Rs {value})",
+  "@stockCheckDiffValue": {
+    "placeholders": {
+      "qty": {"type": "String"},
+      "value": {"type": "String"}
+    }
+  },
+  "stockCheckKeep": "Ginti rakhein",
+  "stockCheckPost": "Malik manzoor kare: farq kitaab mein",
+  "stockCheckPosted": "Farq kitaab mein daal diya",
+  "stockCheckDrop": "Yeh ginti chhor dein",
+  "stockCheckReasonLabel": "Wajah?",
+  "stockCheckHistory": "Pichli gintiyan",
+  "stockCheckShrinkage": "Mahine ka nuqsan",
+  "stockCheckShrinkLine": "{month}: Rs {short} kam, Rs {over} ziyada, Rs {net} nuqsan ({checks} gintiyan)",
+  "@stockCheckShrinkLine": {
+    "placeholders": {
+      "month": {"type": "String"},
+      "short": {"type": "String"},
+      "over": {"type": "String"},
+      "net": {"type": "String"},
+      "checks": {"type": "int"}
+    }
+  },
+  "stockCheckStatusOpen": "Ginti jari",
+  "stockCheckStatusCounted": "Gin li, malik ka intezar",
+  "stockCheckStatusPosted": "Kitaab mein",
+  "stockCheckStatusDropped": "Chhor di",
+  "stockCheckHomeLine": "Aaj ki ginti: {count} cheezein baqi",
+  "@stockCheckHomeLine": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "stockCheckHomeWaiting": "Aaj ki ginti ho gayi: malik ka intezar",
+  "stockCheckItems": "{count} cheezein",
+  "@stockCheckItems": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "cashierModeHeader": "Cashier mode",
+  "cashierModeIntro": "Salesman bill banata hai; cashier paisay le kar print karta hai. Salesman ka bill cashier ke paas intezar karta hai, aur paisay milne tak na stock hilta hai na kitaab.",
+  "cashierModeOn": "Counter cashier mode mein chalayein",
+  "cashierModeSalesmen": "Salesman: bill banate hain, paisay nahi lete",
+  "cashierModeNoStaff": "Pehle Staff mein apne PIN ke saath staff shamil karein.",
+  "cashierModeSaved": "Cashier mode save ho gaya",
+  "cashierSendToCashier": "Cashier ko bhejein",
+  "cashierSent": "{docNo} cashier ko bhej diya",
+  "@cashierSent": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "cashierHoldTitle": "Cashier ke liye bill",
+  "cashierHoldHint": "Cashier paisay le kar bill print karega. Tab tak stock se kuch nahi nikalta.",
+  "cashierQueueTitle": "Cashier counter",
+  "cashierQueueEmpty": "Koi bill intezar mein nahi",
+  "cashierMadeBy": "{name} ne {time} par banaya",
+  "@cashierMadeBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+  "cashierTakeMoney": "Paisay le kar bill banayein",
+  "cashierDrop": "Hata dein: gahak chala gaya",
+  "cashierHomeLine": "{count} bill cashier ke paas intezar mein",
+  "@cashierHomeLine": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "cashierSalesmanNote": "Cashier mode: aap ke bill cashier ko jaate hain, paisay woh leta hai."
 }

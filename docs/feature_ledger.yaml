@@ -3677,6 +3677,126 @@ milestones:
       - lib/features/reports/column_chooser.dart
       - lib/features/reports/insight_filters.dart
 
+  - id: M68
+    title: Control the way a wholesaler runs it — credit rules, days that lock themselves, a shelf counted at random, and a cashier who only takes the money
+    # Opened and sealed 3 Oct 2026 at 6/6. Research s.4 and s.8: Marg's
+    # credit control (warning and hard limits by amount, by count of bills
+    # and by days, a temporary limit, no billing after a bounced cheque), its
+    # auto-freeze and random stock check and cashier mode; Zoho's credit
+    # limit to warn or restrict, with "raise limit and save". No schema
+    # change (v13 stands; M69 holds v14): every rule is a `settings` row, a
+    # held bill is the `proforma` document type v1 has carried unwritten.
+    # Every edit in another milestone's file is marked M68.
+    #
+    # Credit control. Five rules, each Warn or Block, each read off the
+    # books: the credit limit (M3, kept on the party row and its form), a
+    # temporary limit ("Rs 50,000 till Friday") that stands in for it until
+    # its day has passed and then lapses with nobody remembering, the most
+    # bills a customer may leave open, the oldest a bill may be and still be
+    # owed (by the bill's own date, as a shopkeeper counts), and a bounced
+    # cheque still owed (M6's own test: bounced and a balance). The shop's
+    # rules in Settings; a customer's own from the credit section of their
+    # editor, each "the shop's rule", their own, or none for them. A shop
+    # that sets nothing keeps the counter it had: the limit and a bounce
+    # each a warning, nothing on bills or days. Only udhaar answers to the
+    # rules -- cash, a card, a wallet are never refused -- and a cheque only
+    # to a bounce, which is credit with a date on it. What the order's
+    # advance covers is not credit (M54).
+    #
+    # Where it is kept: a gate on the sale path (_ControlSales, beside M22's
+    # ceiling) judges every bill inside its own transaction, reading the
+    # customer before the bill is written and again after, so the figure a
+    # second till has just changed is the figure judged and no screen --
+    # the payment sheet, a repeating bill, qist, a recovery round -- can go
+    # round it. A Warn passes and leaves CREDIT_WARNING_PASSED; a Block
+    # refuses with M42's ApprovalNeeded, of a new kind (ApprovalKind.owner:
+    # the owner's PIN and a reason), so the same approver in TxRunner puts
+    # the same prompt up and the write is run again with the answer; the
+    # bill then leaves CREDIT_RULE_OVERRIDDEN naming who and why, for that
+    # bill only. A gate is handed only the writer's own handle, so TxRunner
+    # now runs every body knowing its Tx (Tx.current) and a Tx answers
+    # approvedFor(needed): never a second way to write, only the run the
+    # caller is already inside. The payment sheet asks first
+    # (credit.atCounter, the same judgement on the books as they stand) and
+    # says which rule bites with its figures where M3's limit and M6's
+    # bounce used to be said one by one -- their tests unchanged -- with
+    # "Phir bhi udhaar dein" past a warning, "Malik ki ijazat (PIN)" past a
+    # block, and for the owner "raise the limit for today and save" (a
+    # temporary limit that lapses tonight).
+    #
+    # Days that lock themselves: "days older than N" or "each day once the
+    # drawer is counted" (M9's day close) move M42's closed-books date on by
+    # themselves. TxRunner works the date out on every write from the rule
+    # and the device's own clock -- a phone left open past midnight is
+    # closed at midnight -- and the kept date is moved on with a
+    # BOOKS_CLOSED row saying it moved by itself when the app opens and when
+    # the rule is set, so the closing screen and M42's list of entries that
+    # arrived from a counter afterwards both read it. Same refusal, same
+    # owner's PIN and reason to let one entry in. Decided: at day close the
+    # day counted closes the moment it is counted, so a bill rung after the
+    # count (which the count did not see) needs the owner, as a back-dated
+    # one does; and while the rule stands the owner cannot open by hand what
+    # it has closed (closeBooksThrough refuses in words).
+    #
+    # The random stock check: N items a day (on demand, or by itself on
+    # the first look each day), drawn by rank of what moved off the shelf in
+    # thirty days and what sits on it, both at cost -- the fastest mover ten
+    # times as likely as the slowest of ten, which can still be drawn --
+    # never an item named yesterday or earlier today, the same items for
+    # the same day on any phone (a seeded draw). Counting writes nothing to
+    # the books: each count is kept on the check (a settings row per check)
+    # against what the books said at that moment. The differences reach the
+    # books only on the owner's word -- the owner signed in, or the owner's
+    # PIN and a reason for anybody else -- each through M1's stock
+    # correction (adjustStockOn, its body now callable inside a transaction
+    # already open) with the reason "Random check", in one commit with the
+    # check marked posted: shelf by exactly what was found, valued at
+    # average cost, the loss to Stock Wastage. A sale between the count and
+    # the approval leaves both shelf and books, so the difference stands. A
+    # history of checks and a shrinkage figure per month (missing, found,
+    # net), the rupees only for whoever may see costs.
+    #
+    # Cashier mode: the owner turns it on and names the salesmen. A
+    # salesman's counter sends the bill to the cashier ("Cashier ko
+    # bhejein"); the sale path refuses a salesman's own sale beneath the
+    # screen. Decided, how stock and the books move: a held bill is a
+    # proforma, written like a quotation (M25) in its own PRO series --
+    # priced, numbered, and nothing else: no stock leaves, no journal, no
+    # khata, no sale number. The cashier takes it from the queue onto the
+    # counter as a quotation is taken, and the bill is made when the money
+    # is taken, through every check a bill passes, linked converted_from in
+    # its own commit, so the existing link refuses paying it twice and the
+    # stock and the books move then, once. A customer who walks away leaves
+    # nothing to undo -- no cancelled sale in the invoice series, no stock
+    # to put back -- and a walk-in never sits unpaid on a khata it does not
+    # have. The bill carries its salesman (salesperson_id) beside its writer
+    # (the cashier), and the paper says "Cashier: Bilal (bill: Ali)". A held
+    # bill is a database row committed before the salesman's counter
+    # clears, so a kill on either phone loses nothing, and it reaches the
+    # cashier's phone over the shop's wi-fi with the rest of the books.
+    # Setting one aside needs a reason, and Data Lock's PIN
+    # (HELD_BILL_DROPPED, as STOCK_CHECK_DROPPED, joins M42's guarded
+    # codes): the cashier who pockets the money and drops the bill is what
+    # the mode is for.
+    #
+    # Not built, and why: a salesman refused a payment against a khata (the
+    # queue is about bills; the receipt path keeps its own gate); a credit
+    # rule by bill count or days on a supplier's side; hourly edit windows
+    # per user (a closed day covers the shop's case, as M42 said); the
+    # receipt's own "made by" line in the bill designs (the paper's
+    # Cashier line carries both names, and M70 holds the layouts); a
+    # rule-by-rule credit report (the activity log lists every warning
+    # passed and every override).
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/control/**
+      - packages/pk_data/lib/src/read/drift_control_reads.dart
+      - packages/pk_data/lib/src/write/drift_held_bill_writer.dart
+      - packages/pk_bootstrap/lib/src/control_services.dart
+      - packages/pk_bootstrap/lib/src/cashier_services.dart
+      - packages/pk_bootstrap/lib/src/stock_check_services.dart
+      - lib/features/control/**
+
   - id: M70
     title: More bills to choose from, and the customer's receipt offered the moment money moves
     # Opened and sealed 3 Oct 2026 at 5/5. Vyapar's theme list is the first
@@ -9360,6 +9480,67 @@ features:
       - ratio analysis and ABC classes over a year of a wholesaler
       - the attention list, the whole shelf and every open bill
       - ageing in the shop's buckets, and the shelf at its sale price
+  - id: M68-CREDIT-01
+    milestone: M68
+    title: Credit control by amount, open bills, days and a bounced cheque, each Warn or Block, the shop's rules and a customer's own, judged beneath the screen in the bill's own transaction; cash never refused; the payment sheet says which rule bites
+    status: done
+    proof:
+      - credit control each rule bites past its line and not on it
+      - credit control cash answers to no rule; a cheque only to a bounce
+      - credit control rules are kept as JSON and read back; nonsense is the standard
+      - credit control over the limit set to warn, the bill goes through and the log says it went past a warning
+      - credit control over the limit set to block, udhaar is refused in words and nothing is written; cash is still taken
+      - credit control more open bills than the rule allows is refused, and fewer pass
+      - credit control a bill older than the days allowed stops new udhaar, and paying it lifts the stop
+      - credit control after a bounced cheque, udhaar and another cheque are refused until it is made good
+      - a credit rule set to block stops udhaar at the payment sheet, says which rule, and the owner lets one bill through with a reason
+  - id: M68-CREDIT-02
+    milestone: M68
+    title: The owner lets one bill past a block with their PIN and a reason through M42's approver, audited; a temporary limit lapses by itself; raise the limit for today; a customer's own rules set from their editor stand over the shop's
+    status: done
+    proof:
+      - credit control the owner lets one bill past with their PIN and a reason, and the log says who and why
+      - credit control a temporary limit stands till its day and lapses by itself
+      - credit control a customer's own rule stands over the shop's, and a temporary limit over the permanent one until its day has passed
+      - credit control a customer's own rules stand over the shop's, and only the owner sets them
+      - a customer's own credit rules are set from their editor, and the counter holds the next bill to them
+  - id: M68-LOCK-01
+    milestone: M68
+    title: Days that lock themselves — older than N days, or each day once the drawer is counted — move M42's closed-books date on by themselves, with the same refusal and the same owner's override
+    status: done
+    proof:
+      - days that lock themselves older than N days closes the day N+1 days back, and moves with the calendar
+      - days that lock themselves older than N days: the closing date moves on by itself each day, and the owner can still let one entry in
+      - days that lock themselves at day close: the day counted is closed from the moment it is counted
+      - days that lock themselves only the owner sets the rule, and days it has closed stay closed while it stands
+      - the owner sets the shop's credit rules, days that close by themselves, the random check and cashier mode in Settings
+  - id: M68-COUNT-01
+    milestone: M68
+    title: A random stock check of N items, weighted to fast movers and dear stock and never the same item two days running, counted against the books as they stood, posted as "Random check" adjustments on the owner's word, with a history and shrinkage by month
+    status: done
+    proof:
+      - the random stock check the draw is weighted to fast movers and dear stock, never names an item twice, and leaves out what it is told to
+      - the random stock check shrinkage is what was missing less what turned up, by the month it was posted
+      - the random stock check a check names N items, never one counted yesterday
+      - the random stock check counts are kept against the books as they stood, and the owner's approval posts the differences as Random check
+      - the random stock check a cashier posts a check only with the owner's PIN
+      - the random check: counted on the shelf, the difference shown with its value, and posted on the owner's word
+  - id: M68-CASHIER-01
+    milestone: M68
+    title: Cashier mode — a salesman's bill is held as a proforma that moves no stock and nothing in the books, survives a kill, and is paid once from the cashier's queue, the bill naming who made it and who took the money
+    status: done
+    proof:
+      - cashier mode only a named salesman of a shop in cashier mode is one
+      - cashier mode a salesman cannot post a sale; the bill goes to the cashier and moves nothing
+      - cashier mode a held bill survives a kill and is paid from the cashier's queue, once, naming who made it and who took the money
+      - cashier mode a held bill set aside needs a reason, and Data Lock's PIN
+      - a salesman sends the bill to the cashier, it waits without moving stock, and the cashier takes the money from the queue
+  - id: M68-SCREEN-01
+    milestone: M68
+    title: At 200% on a small phone the payment sheet's credit rules, a customer's rules, the control settings, the random check and the cashier's queue fit
+    status: done
+    proof:
+      - at 200% on a small phone the payment sheet's credit rules, a customer's rules, the control settings, the random check and the cashier's queue fit
   - id: M70-DESIGNS-01
     milestone: M70
     title: Four more PDF layouts beside M51's four — a landscape wholesale page carrying every s.23 particular for a registered seller, the ruled bill book, a serif page and a bare one — each a different page, the shop's Urdu name joined, the transporter's copy without money and a quotation never a tax invoice

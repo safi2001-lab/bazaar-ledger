@@ -5253,5 +5253,207 @@
   "billDesignSameAsBill": "As the bill",
   "billDesignDocQuotation": "Quotation design",
   "billDesignDocChallan": "Delivery challan design",
-  "billDesignDocOrder": "Purchase order design"
+  "billDesignDocOrder": "Purchase order design",
+  "controlSettingsTitle": "Credit, closing and counter control",
+  "creditRulesHeader": "Credit rules",
+  "creditRulesIntro": "What the payment sheet does when a customer goes past a rule. Warn: it says so and the cashier may go on. Block: udhaar is refused (cash is still taken) unless the owner gives their PIN and a reason.",
+  "creditModeOff": "Off",
+  "creditModeWarn": "Warn",
+  "creditModeBlock": "Block",
+  "creditModeShop": "Shop's rule",
+  "creditLimitRule": "Over the credit limit",
+  "creditBillsRule": "Most bills on udhaar",
+  "creditDaysRule": "Oldest unpaid bill, in days",
+  "creditBounceRule": "After a bounced cheque, until it is made good",
+  "creditEmptyHint": "Empty: no such rule",
+  "creditSaved": "Credit rules saved",
+  "creditOwnerOnly": "Only the owner changes these rules.",
+  "creditFiguresBad": "Write whole numbers, or leave the box empty.",
+  "partyCreditShopRules": "The shop's rules",
+  "partyCreditOwnRules": "Rules of their own",
+  "partyCreditTemp": "Rs {amount} till {date}",
+  "@partyCreditTemp": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "partyCreditTempLapsed": "Temporary limit Rs {amount} lapsed after {date}",
+  "@partyCreditTempLapsed": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "partyCreditTempHeader": "Temporary limit",
+  "partyCreditTempHint": "Stands in for the credit limit until the day you pick, then lapses by itself.",
+  "partyCreditTempAmount": "Temporary limit, Rs",
+  "partyCreditTempPick": "Last day: {date}",
+  "@partyCreditTempPick": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "partyCreditTempNone": "Pick the last day",
+  "partyCreditTempClear": "Take it off",
+  "partyCreditStanding": "Owes Rs {amount} on {bills} bill(s); the oldest is {days} day(s) old",
+  "@partyCreditStanding": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "bills": {"type": "int"},
+      "days": {"type": "int"}
+    }
+  },
+  "partyCreditClear": "Owes nothing on any bill",
+  "partyCreditNoRule": "None for them",
+  "partyCreditOwn": "Their own",
+  "partyCreditSaveFirst": "Save the customer first; then their own credit rules can be set.",
+  "creditBlockedTitle": "Udhaar is closed for this customer",
+  "creditBlockedHint": "Cash, a card or a wallet can still be taken. The owner may let this one bill through with their PIN and a reason.",
+  "creditOwnerAllow": "Owner lets it through (PIN)",
+  "creditRaiseToday": "Raise the limit for today and save",
+  "creditBillsLine": "{count} bills on udhaar with this one; the most is {most}",
+  "@creditBillsLine": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "most": {"type": "int"}
+    }
+  },
+  "creditDaysLine": "A bill {days} days old is unpaid; the most is {most} days",
+  "@creditDaysLine": {
+    "placeholders": {
+      "days": {"type": "int"},
+      "most": {"type": "int"}
+    }
+  },
+  "creditTempLimitLine": "Over the temporary limit of Rs {limit} (till {date}); this bill takes it to Rs {after}",
+  "@creditTempLimitLine": {
+    "placeholders": {
+      "limit": {"type": "String"},
+      "date": {"type": "String"},
+      "after": {"type": "String"}
+    }
+  },
+  "creditOwnerRefused": "The owner did not let it through: udhaar stays closed. Take the money, or take the bill off udhaar.",
+  "approvalOwnerTitle": "The owner's word",
+  "approvalOwnerBody": "Only the owner can let this through, with their PIN and a reason.",
+  "approvalOwnerStock": "Random check of {date}: {count} item(s) differ from the books. Post the differences?",
+  "@approvalOwnerStock": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "autoLockHeader": "Days that close by themselves",
+  "autoLockIntro": "Moves the date the books are closed up to forward every day, so nothing is back-dated without the owner's PIN and a reason.",
+  "autoLockOff": "Off: the owner closes the books by hand",
+  "autoLockOlder": "Days older than the days kept open",
+  "autoLockAtClose": "Each day, once the drawer is counted",
+  "autoLockDays": "Days kept open",
+  "autoLockNow": "Closed up to {date}",
+  "@autoLockNow": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "autoLockSaved": "Saved: days close by themselves as set",
+  "stockCheckTitle": "Random stock check",
+  "stockCheckIntro": "A few items a day, picked at random (fast movers and dear stock more often, never the same item two days running), counted on the shelf. The differences reach the books only when the owner approves them.",
+  "stockCheckSize": "Items to a check",
+  "stockCheckDaily": "Pick a check by itself each day",
+  "stockCheckPick": "Pick items to count now",
+  "stockCheckNone": "No check is open. Pick one to count.",
+  "stockCheckOf": "Check of {date}",
+  "@stockCheckOf": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "stockCheckShelf": "On the shelf",
+  "stockCheckBooks": "Books: {qty}",
+  "@stockCheckBooks": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  },
+  "stockCheckDiff": "Difference {qty}",
+  "@stockCheckDiff": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  },
+  "stockCheckDiffValue": "Difference {qty} (Rs {value})",
+  "@stockCheckDiffValue": {
+    "placeholders": {
+      "qty": {"type": "String"},
+      "value": {"type": "String"}
+    }
+  },
+  "stockCheckKeep": "Keep the count",
+  "stockCheckPost": "Owner approves: post the differences",
+  "stockCheckPosted": "The differences are in the books",
+  "stockCheckDrop": "Set this check aside",
+  "stockCheckReasonLabel": "Why?",
+  "stockCheckHistory": "Checks so far",
+  "stockCheckShrinkage": "Shrinkage by month",
+  "stockCheckShrinkLine": "{month}: Rs {short} missing, Rs {over} found, Rs {net} lost ({checks} checks)",
+  "@stockCheckShrinkLine": {
+    "placeholders": {
+      "month": {"type": "String"},
+      "short": {"type": "String"},
+      "over": {"type": "String"},
+      "net": {"type": "String"},
+      "checks": {"type": "int"}
+    }
+  },
+  "stockCheckStatusOpen": "Being counted",
+  "stockCheckStatusCounted": "Counted, waiting for the owner",
+  "stockCheckStatusPosted": "In the books",
+  "stockCheckStatusDropped": "Set aside",
+  "stockCheckHomeLine": "Today's count: {count} item(s) still to count",
+  "@stockCheckHomeLine": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "stockCheckHomeWaiting": "Today's count is done: waiting for the owner",
+  "stockCheckItems": "{count} item(s)",
+  "@stockCheckItems": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "cashierModeHeader": "Cashier mode",
+  "cashierModeIntro": "Salesmen make the bill; the cashier takes the money and prints it. A salesman's bill waits at the cashier and moves no stock and nothing in the books until it is paid.",
+  "cashierModeOn": "Run the counter in cashier mode",
+  "cashierModeSalesmen": "Salesmen: make bills, take no money",
+  "cashierModeNoStaff": "Add staff with their own PIN in Staff first.",
+  "cashierModeSaved": "Cashier mode saved",
+  "cashierSendToCashier": "Send to the cashier",
+  "cashierSent": "{docNo} sent to the cashier",
+  "@cashierSent": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "cashierHoldTitle": "Bill for the cashier",
+  "cashierHoldHint": "The cashier takes the money and prints the bill. Nothing leaves the stock until then.",
+  "cashierQueueTitle": "Cashier counter",
+  "cashierQueueEmpty": "No bills waiting",
+  "cashierMadeBy": "Made by {name} at {time}",
+  "@cashierMadeBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "time": {"type": "String"}
+    }
+  },
+  "cashierTakeMoney": "Take the money and bill it",
+  "cashierDrop": "Set aside: the customer left",
+  "cashierHomeLine": "{count} bill(s) waiting at the cashier",
+  "@cashierHomeLine": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "cashierSalesmanNote": "Cashier mode: your bills go to the cashier, who takes the money."
 }

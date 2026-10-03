@@ -2274,7 +2274,13 @@ final class DriftAppQueries implements AppQueries {
         )
         .get();
 
-    final cashier = await userName(doc.read<String>('created_by'));
+    var cashier = await userName(doc.read<String>('created_by'));
+    // M68: a bill a salesman made and the cashier was paid for names both:
+    // who took the money, and who made the bill.
+    final madeBy = doc.readNullable<String>('salesperson_id');
+    if (madeBy != null && madeBy != doc.read<String>('created_by')) {
+      cashier = '$cashier (bill: ${await userName(madeBy)})';
+    }
 
     // M59: the province's tax on the bill's services, one row per rate, so
     // the paper says "PRA 8% (card)" rather than lumping it in sales tax.

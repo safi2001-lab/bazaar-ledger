@@ -9200,4 +9200,339 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get billDesignDocOrder => 'Purchase order ka design';
+
+  @override
+  String get controlSettingsTitle => 'Udhaar, din band aur counter ke qaide';
+
+  @override
+  String get creditRulesHeader => 'Udhaar ke qaide';
+
+  @override
+  String get creditRulesIntro =>
+      'Jab gahak kisi qaide se aage jaye to payment sheet kya kare. Khabardar: bata deti hai, cashier aage barh sakta hai. Rok: udhaar nahi hota (cash phir bhi le sakte hain), jab tak malik PIN aur wajah na de.';
+
+  @override
+  String get creditModeOff => 'Band';
+
+  @override
+  String get creditModeWarn => 'Khabardar';
+
+  @override
+  String get creditModeBlock => 'Rok';
+
+  @override
+  String get creditModeShop => 'Dukaan ka qaida';
+
+  @override
+  String get creditLimitRule => 'Udhaar ki hadd se ziyada';
+
+  @override
+  String get creditBillsRule => 'Udhaar par ziyada se ziyada bill';
+
+  @override
+  String get creditDaysRule => 'Sab se purana baqi bill, din';
+
+  @override
+  String get creditBounceRule => 'Cheque bounce ke baad, jab tak ada na ho';
+
+  @override
+  String get creditEmptyHint => 'Khali: yeh qaida nahi';
+
+  @override
+  String get creditSaved => 'Udhaar ke qaide save ho gaye';
+
+  @override
+  String get creditOwnerOnly => 'Yeh qaide sirf malik badal sakta hai.';
+
+  @override
+  String get creditFiguresBad =>
+      'Poore number likhein, ya khana khali chhor dein.';
+
+  @override
+  String get partyCreditShopRules => 'Dukaan ke qaide';
+
+  @override
+  String get partyCreditOwnRules => 'Is gahak ke apne qaide';
+
+  @override
+  String partyCreditTemp(String amount, String date) {
+    return 'Rs $amount $date tak';
+  }
+
+  @override
+  String partyCreditTempLapsed(String amount, String date) {
+    return 'Waqti hadd Rs $amount $date ke baad khatam';
+  }
+
+  @override
+  String get partyCreditTempHeader => 'Waqti hadd';
+
+  @override
+  String get partyCreditTempHint =>
+      'Chuni hui tareekh tak credit limit ki jagah, phir khud khatam ho jati hai.';
+
+  @override
+  String get partyCreditTempAmount => 'Waqti hadd, Rs';
+
+  @override
+  String partyCreditTempPick(String date) {
+    return 'Aakhri din: $date';
+  }
+
+  @override
+  String get partyCreditTempNone => 'Aakhri din chunein';
+
+  @override
+  String get partyCreditTempClear => 'Hata dein';
+
+  @override
+  String partyCreditStanding(String amount, int bills, int days) {
+    return 'Rs $amount baqi, $bills bill; sab se purana $days din ka';
+  }
+
+  @override
+  String get partyCreditClear => 'Kisi bill par kuch baqi nahi';
+
+  @override
+  String get partyCreditNoRule => 'Is par nahi';
+
+  @override
+  String get partyCreditOwn => 'Apna';
+
+  @override
+  String get partyCreditSaveFirst =>
+      'Pehle gahak save karein; phir apne udhaar ke qaide.';
+
+  @override
+  String get creditBlockedTitle => 'Is gahak ka udhaar band hai';
+
+  @override
+  String get creditBlockedHint =>
+      'Cash, card ya wallet phir bhi le sakte hain. Malik apne PIN aur wajah se yeh ek bill guzaar sakta hai.';
+
+  @override
+  String get creditOwnerAllow => 'Malik ki ijazat (PIN)';
+
+  @override
+  String get creditRaiseToday => 'Aaj ke liye hadd barha kar save karein';
+
+  @override
+  String creditBillsLine(int count, int most) {
+    return 'Is samait $count bill udhaar par; hadd $most';
+  }
+
+  @override
+  String creditDaysLine(int days, int most) {
+    return '$days din purana bill baqi; hadd $most din';
+  }
+
+  @override
+  String creditTempLimitLine(String limit, String date, String after) {
+    return 'Waqti hadd Rs $limit ($date tak) se ziyada; is bill se Rs $after';
+  }
+
+  @override
+  String get creditOwnerRefused =>
+      'Malik ne ijazat nahi di: udhaar band hai. Paisay lein, ya bill udhaar se hata dein.';
+
+  @override
+  String get approvalOwnerTitle => 'Malik ki ijazat';
+
+  @override
+  String get approvalOwnerBody =>
+      'Yeh sirf malik apne PIN aur wajah se guzaar sakta hai.';
+
+  @override
+  String approvalOwnerStock(String date, int count) {
+    return '$date ki ginti: $count cheezein kitaab se mukhtalif. Farq kitaab mein daal dein?';
+  }
+
+  @override
+  String get autoLockHeader => 'Din khud band hon';
+
+  @override
+  String get autoLockIntro =>
+      'Kitaab band hone ki tareekh roz khud aage barhti hai, taake malik ke PIN aur wajah ke baghair purani tareekh ki koi entry na ho.';
+
+  @override
+  String get autoLockOff => 'Band: malik khud kitaab band karta hai';
+
+  @override
+  String get autoLockOlder => 'Khule dinon se purane din';
+
+  @override
+  String get autoLockAtClose => 'Har din, galla ginne ke baad';
+
+  @override
+  String get autoLockDays => 'Kitne din khule rahein';
+
+  @override
+  String autoLockNow(String date) {
+    return '$date tak band';
+  }
+
+  @override
+  String get autoLockSaved =>
+      'Save ho gaya: din qaide ke mutabiq khud band honge';
+
+  @override
+  String get stockCheckTitle => 'Stock ki ginti';
+
+  @override
+  String get stockCheckIntro =>
+      'Roz kuch cheezein ittefaqan chuni jati hain (tez bikne wali aur mehngi ziyada, ek cheez do din lagatar nahi), shelf par gin lein. Farq kitaab mein tab jata hai jab malik manzoor kare.';
+
+  @override
+  String get stockCheckSize => 'Har ginti mein cheezein';
+
+  @override
+  String get stockCheckDaily => 'Roz khud ginti chunein';
+
+  @override
+  String get stockCheckPick => 'Abhi ginti ke liye cheezein chunein';
+
+  @override
+  String get stockCheckNone => 'Koi ginti khuli nahi. Nayi chunein.';
+
+  @override
+  String stockCheckOf(String date) {
+    return '$date ki ginti';
+  }
+
+  @override
+  String get stockCheckShelf => 'Shelf par';
+
+  @override
+  String stockCheckBooks(String qty) {
+    return 'Kitaab: $qty';
+  }
+
+  @override
+  String stockCheckDiff(String qty) {
+    return 'Farq $qty';
+  }
+
+  @override
+  String stockCheckDiffValue(String qty, String value) {
+    return 'Farq $qty (Rs $value)';
+  }
+
+  @override
+  String get stockCheckKeep => 'Ginti rakhein';
+
+  @override
+  String get stockCheckPost => 'Malik manzoor kare: farq kitaab mein';
+
+  @override
+  String get stockCheckPosted => 'Farq kitaab mein daal diya';
+
+  @override
+  String get stockCheckDrop => 'Yeh ginti chhor dein';
+
+  @override
+  String get stockCheckReasonLabel => 'Wajah?';
+
+  @override
+  String get stockCheckHistory => 'Pichli gintiyan';
+
+  @override
+  String get stockCheckShrinkage => 'Mahine ka nuqsan';
+
+  @override
+  String stockCheckShrinkLine(
+    String month,
+    String short,
+    String over,
+    String net,
+    int checks,
+  ) {
+    return '$month: Rs $short kam, Rs $over ziyada, Rs $net nuqsan ($checks gintiyan)';
+  }
+
+  @override
+  String get stockCheckStatusOpen => 'Ginti jari';
+
+  @override
+  String get stockCheckStatusCounted => 'Gin li, malik ka intezar';
+
+  @override
+  String get stockCheckStatusPosted => 'Kitaab mein';
+
+  @override
+  String get stockCheckStatusDropped => 'Chhor di';
+
+  @override
+  String stockCheckHomeLine(int count) {
+    return 'Aaj ki ginti: $count cheezein baqi';
+  }
+
+  @override
+  String get stockCheckHomeWaiting => 'Aaj ki ginti ho gayi: malik ka intezar';
+
+  @override
+  String stockCheckItems(int count) {
+    return '$count cheezein';
+  }
+
+  @override
+  String get cashierModeHeader => 'Cashier mode';
+
+  @override
+  String get cashierModeIntro =>
+      'Salesman bill banata hai; cashier paisay le kar print karta hai. Salesman ka bill cashier ke paas intezar karta hai, aur paisay milne tak na stock hilta hai na kitaab.';
+
+  @override
+  String get cashierModeOn => 'Counter cashier mode mein chalayein';
+
+  @override
+  String get cashierModeSalesmen =>
+      'Salesman: bill banate hain, paisay nahi lete';
+
+  @override
+  String get cashierModeNoStaff =>
+      'Pehle Staff mein apne PIN ke saath staff shamil karein.';
+
+  @override
+  String get cashierModeSaved => 'Cashier mode save ho gaya';
+
+  @override
+  String get cashierSendToCashier => 'Cashier ko bhejein';
+
+  @override
+  String cashierSent(String docNo) {
+    return '$docNo cashier ko bhej diya';
+  }
+
+  @override
+  String get cashierHoldTitle => 'Cashier ke liye bill';
+
+  @override
+  String get cashierHoldHint =>
+      'Cashier paisay le kar bill print karega. Tab tak stock se kuch nahi nikalta.';
+
+  @override
+  String get cashierQueueTitle => 'Cashier counter';
+
+  @override
+  String get cashierQueueEmpty => 'Koi bill intezar mein nahi';
+
+  @override
+  String cashierMadeBy(String name, String time) {
+    return '$name ne $time par banaya';
+  }
+
+  @override
+  String get cashierTakeMoney => 'Paisay le kar bill banayein';
+
+  @override
+  String get cashierDrop => 'Hata dein: gahak chala gaya';
+
+  @override
+  String cashierHomeLine(int count) {
+    return '$count bill cashier ke paas intezar mein';
+  }
+
+  @override
+  String get cashierSalesmanNote =>
+      'Cashier mode: aap ke bill cashier ko jaate hain, paisay woh leta hai.';
 }

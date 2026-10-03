@@ -110,7 +110,11 @@ final class AuditServices {
         .firstOrNull;
     final through = value(booksClosedThroughSetting);
     return BookLocks(
-      closedThrough: through == null ? null : BusinessDate.tryParse(through),
+      // M68: and as far as days that lock themselves have reached.
+      closedThrough: laterClosing(
+        through == null ? null : BusinessDate.tryParse(through),
+        await _app.autoLock.closedThroughToday(),
+      ),
       dataLock: value(dataLockSetting) == '1',
     );
   }
@@ -139,6 +143,16 @@ final class AuditServices {
       throw const PermissionDenied(
         Permission.settings,
         'A day that has not come yet cannot be closed.',
+      );
+    }
+    // M68: days that lock themselves stay locked while the rule stands.
+    final auto = await _app.autoLock.closedThroughToday();
+    if (auto != null &&
+        (through == null || through.value.compareTo(auto.value) < 0)) {
+      throw PermissionDenied(
+        Permission.settings,
+        'Days up to ${auto.value} close by themselves. Change that rule '
+        'first to open them.',
       );
     }
     final actor = _app.actorNow();
@@ -294,7 +308,8 @@ final class AuditServices {
       final who = people.where((m) => m.id == answer.userId).firstOrNull;
       if (who == null) return null;
       final reason = answer.reason?.trim() ?? '';
-      if (needed.kind == ApprovalKind.closedBooks && reason.isEmpty) {
+      // M68: the owner's word (ApprovalKind.owner) carries a reason too.
+      if (needed.kind != ApprovalKind.dataLock && reason.isEmpty) {
         problem = ApprovalProblem.reasonNeeded;
         continue;
       }

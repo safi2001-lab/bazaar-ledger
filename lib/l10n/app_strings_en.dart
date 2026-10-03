@@ -9211,4 +9211,338 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get billDesignDocOrder => 'Purchase order design';
+
+  @override
+  String get controlSettingsTitle => 'Credit, closing and counter control';
+
+  @override
+  String get creditRulesHeader => 'Credit rules';
+
+  @override
+  String get creditRulesIntro =>
+      'What the payment sheet does when a customer goes past a rule. Warn: it says so and the cashier may go on. Block: udhaar is refused (cash is still taken) unless the owner gives their PIN and a reason.';
+
+  @override
+  String get creditModeOff => 'Off';
+
+  @override
+  String get creditModeWarn => 'Warn';
+
+  @override
+  String get creditModeBlock => 'Block';
+
+  @override
+  String get creditModeShop => 'Shop\'s rule';
+
+  @override
+  String get creditLimitRule => 'Over the credit limit';
+
+  @override
+  String get creditBillsRule => 'Most bills on udhaar';
+
+  @override
+  String get creditDaysRule => 'Oldest unpaid bill, in days';
+
+  @override
+  String get creditBounceRule =>
+      'After a bounced cheque, until it is made good';
+
+  @override
+  String get creditEmptyHint => 'Empty: no such rule';
+
+  @override
+  String get creditSaved => 'Credit rules saved';
+
+  @override
+  String get creditOwnerOnly => 'Only the owner changes these rules.';
+
+  @override
+  String get creditFiguresBad => 'Write whole numbers, or leave the box empty.';
+
+  @override
+  String get partyCreditShopRules => 'The shop\'s rules';
+
+  @override
+  String get partyCreditOwnRules => 'Rules of their own';
+
+  @override
+  String partyCreditTemp(String amount, String date) {
+    return 'Rs $amount till $date';
+  }
+
+  @override
+  String partyCreditTempLapsed(String amount, String date) {
+    return 'Temporary limit Rs $amount lapsed after $date';
+  }
+
+  @override
+  String get partyCreditTempHeader => 'Temporary limit';
+
+  @override
+  String get partyCreditTempHint =>
+      'Stands in for the credit limit until the day you pick, then lapses by itself.';
+
+  @override
+  String get partyCreditTempAmount => 'Temporary limit, Rs';
+
+  @override
+  String partyCreditTempPick(String date) {
+    return 'Last day: $date';
+  }
+
+  @override
+  String get partyCreditTempNone => 'Pick the last day';
+
+  @override
+  String get partyCreditTempClear => 'Take it off';
+
+  @override
+  String partyCreditStanding(String amount, int bills, int days) {
+    return 'Owes Rs $amount on $bills bill(s); the oldest is $days day(s) old';
+  }
+
+  @override
+  String get partyCreditClear => 'Owes nothing on any bill';
+
+  @override
+  String get partyCreditNoRule => 'None for them';
+
+  @override
+  String get partyCreditOwn => 'Their own';
+
+  @override
+  String get partyCreditSaveFirst =>
+      'Save the customer first; then their own credit rules can be set.';
+
+  @override
+  String get creditBlockedTitle => 'Udhaar is closed for this customer';
+
+  @override
+  String get creditBlockedHint =>
+      'Cash, a card or a wallet can still be taken. The owner may let this one bill through with their PIN and a reason.';
+
+  @override
+  String get creditOwnerAllow => 'Owner lets it through (PIN)';
+
+  @override
+  String get creditRaiseToday => 'Raise the limit for today and save';
+
+  @override
+  String creditBillsLine(int count, int most) {
+    return '$count bills on udhaar with this one; the most is $most';
+  }
+
+  @override
+  String creditDaysLine(int days, int most) {
+    return 'A bill $days days old is unpaid; the most is $most days';
+  }
+
+  @override
+  String creditTempLimitLine(String limit, String date, String after) {
+    return 'Over the temporary limit of Rs $limit (till $date); this bill takes it to Rs $after';
+  }
+
+  @override
+  String get creditOwnerRefused =>
+      'The owner did not let it through: udhaar stays closed. Take the money, or take the bill off udhaar.';
+
+  @override
+  String get approvalOwnerTitle => 'The owner\'s word';
+
+  @override
+  String get approvalOwnerBody =>
+      'Only the owner can let this through, with their PIN and a reason.';
+
+  @override
+  String approvalOwnerStock(String date, int count) {
+    return 'Random check of $date: $count item(s) differ from the books. Post the differences?';
+  }
+
+  @override
+  String get autoLockHeader => 'Days that close by themselves';
+
+  @override
+  String get autoLockIntro =>
+      'Moves the date the books are closed up to forward every day, so nothing is back-dated without the owner\'s PIN and a reason.';
+
+  @override
+  String get autoLockOff => 'Off: the owner closes the books by hand';
+
+  @override
+  String get autoLockOlder => 'Days older than the days kept open';
+
+  @override
+  String get autoLockAtClose => 'Each day, once the drawer is counted';
+
+  @override
+  String get autoLockDays => 'Days kept open';
+
+  @override
+  String autoLockNow(String date) {
+    return 'Closed up to $date';
+  }
+
+  @override
+  String get autoLockSaved => 'Saved: days close by themselves as set';
+
+  @override
+  String get stockCheckTitle => 'Random stock check';
+
+  @override
+  String get stockCheckIntro =>
+      'A few items a day, picked at random (fast movers and dear stock more often, never the same item two days running), counted on the shelf. The differences reach the books only when the owner approves them.';
+
+  @override
+  String get stockCheckSize => 'Items to a check';
+
+  @override
+  String get stockCheckDaily => 'Pick a check by itself each day';
+
+  @override
+  String get stockCheckPick => 'Pick items to count now';
+
+  @override
+  String get stockCheckNone => 'No check is open. Pick one to count.';
+
+  @override
+  String stockCheckOf(String date) {
+    return 'Check of $date';
+  }
+
+  @override
+  String get stockCheckShelf => 'On the shelf';
+
+  @override
+  String stockCheckBooks(String qty) {
+    return 'Books: $qty';
+  }
+
+  @override
+  String stockCheckDiff(String qty) {
+    return 'Difference $qty';
+  }
+
+  @override
+  String stockCheckDiffValue(String qty, String value) {
+    return 'Difference $qty (Rs $value)';
+  }
+
+  @override
+  String get stockCheckKeep => 'Keep the count';
+
+  @override
+  String get stockCheckPost => 'Owner approves: post the differences';
+
+  @override
+  String get stockCheckPosted => 'The differences are in the books';
+
+  @override
+  String get stockCheckDrop => 'Set this check aside';
+
+  @override
+  String get stockCheckReasonLabel => 'Why?';
+
+  @override
+  String get stockCheckHistory => 'Checks so far';
+
+  @override
+  String get stockCheckShrinkage => 'Shrinkage by month';
+
+  @override
+  String stockCheckShrinkLine(
+    String month,
+    String short,
+    String over,
+    String net,
+    int checks,
+  ) {
+    return '$month: Rs $short missing, Rs $over found, Rs $net lost ($checks checks)';
+  }
+
+  @override
+  String get stockCheckStatusOpen => 'Being counted';
+
+  @override
+  String get stockCheckStatusCounted => 'Counted, waiting for the owner';
+
+  @override
+  String get stockCheckStatusPosted => 'In the books';
+
+  @override
+  String get stockCheckStatusDropped => 'Set aside';
+
+  @override
+  String stockCheckHomeLine(int count) {
+    return 'Today\'s count: $count item(s) still to count';
+  }
+
+  @override
+  String get stockCheckHomeWaiting =>
+      'Today\'s count is done: waiting for the owner';
+
+  @override
+  String stockCheckItems(int count) {
+    return '$count item(s)';
+  }
+
+  @override
+  String get cashierModeHeader => 'Cashier mode';
+
+  @override
+  String get cashierModeIntro =>
+      'Salesmen make the bill; the cashier takes the money and prints it. A salesman\'s bill waits at the cashier and moves no stock and nothing in the books until it is paid.';
+
+  @override
+  String get cashierModeOn => 'Run the counter in cashier mode';
+
+  @override
+  String get cashierModeSalesmen => 'Salesmen: make bills, take no money';
+
+  @override
+  String get cashierModeNoStaff =>
+      'Add staff with their own PIN in Staff first.';
+
+  @override
+  String get cashierModeSaved => 'Cashier mode saved';
+
+  @override
+  String get cashierSendToCashier => 'Send to the cashier';
+
+  @override
+  String cashierSent(String docNo) {
+    return '$docNo sent to the cashier';
+  }
+
+  @override
+  String get cashierHoldTitle => 'Bill for the cashier';
+
+  @override
+  String get cashierHoldHint =>
+      'The cashier takes the money and prints the bill. Nothing leaves the stock until then.';
+
+  @override
+  String get cashierQueueTitle => 'Cashier counter';
+
+  @override
+  String get cashierQueueEmpty => 'No bills waiting';
+
+  @override
+  String cashierMadeBy(String name, String time) {
+    return 'Made by $name at $time';
+  }
+
+  @override
+  String get cashierTakeMoney => 'Take the money and bill it';
+
+  @override
+  String get cashierDrop => 'Set aside: the customer left';
+
+  @override
+  String cashierHomeLine(int count) {
+    return '$count bill(s) waiting at the cashier';
+  }
+
+  @override
+  String get cashierSalesmanNote =>
+      'Cashier mode: your bills go to the cashier, who takes the money.';
 }

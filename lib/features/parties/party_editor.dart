@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
+import '../control/party_credit_screen.dart'; // M68
 import '../khata/opening_balance_sheet.dart';
 import '../khata/reminder_queue_screen.dart' show reminderLanguageName;
 import '../loyalty/party_prices_screen.dart'; // M66
@@ -435,6 +436,12 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             style: TextStyle(fontSize: 12, color: t.inkMuted),
                           ),
                           const SizedBox(height: BlTokens.space4),
+                          // M68: what going over the limit does, the most
+                          // bills and days, a bounce, a temporary limit.
+                          if (widget.party case final p? when p.isCustomer) ...[
+                            PartyCreditTile(party: p),
+                            const SizedBox(height: BlTokens.space4),
+                          ],
                           // Which of an item's two prices they are sold at. A
                           // wholesaler's regular retailers pay the trade price and
                           // the counter used to charge them the shelf price.

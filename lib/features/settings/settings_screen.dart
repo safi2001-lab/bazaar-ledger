@@ -9,6 +9,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../audit/audit_screen.dart';
 import '../backup/backup_screen.dart';
+import '../control/control_settings_screen.dart'; // M68
 import '../firms/firms_screen.dart';
 import '../import/import_screen.dart';
 import '../items/shelf_rule.dart';
@@ -163,6 +164,19 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const BooksLockScreen(),
+                  ),
+                ),
+              ),
+            // M68: credit rules, days that close by themselves, the random
+            // stock check and cashier mode. Beside the closing of the books,
+            // whose date the second of them moves.
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.rule_outlined,
+                label: s.controlSettingsTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ControlSettingsScreen(),
                   ),
                 ),
               ),

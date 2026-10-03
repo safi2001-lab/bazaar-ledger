@@ -100,6 +100,11 @@ const undoingActions = <String>{
   'SALARY_CANCELLED',
   'SALARY_CORRECTED',
   'EMPLOYEE_HIDDEN',
+  // M68: a salesman's bill taken out of the cashier's queue unpaid (the
+  // cashier who pockets the money drops the bill), and a random stock check
+  // set aside with what it found.
+  'HELD_BILL_DROPPED',
+  'STOCK_CHECK_DROPPED',
   // The locks themselves: reopening closed books, or turning the PIN off,
   // is the first thing anybody who meant harm would do.
   booksReopenedAction,
@@ -134,6 +139,11 @@ enum ApprovalKind {
 
   /// Something Data Lock guards: a cancel, a write-off, a hidden customer.
   dataLock,
+
+  /// M68: the owner's word, with their PIN and a reason: udhaar past a
+  /// credit rule set to block, or a random stock check's differences
+  /// posted when somebody else is at the phone.
+  owner,
 }
 
 /// A write the books would not make without somebody's PIN.
@@ -147,12 +157,25 @@ final class ApprovalNeeded implements Exception {
     required String this.dateLocal,
     required this.what,
     required this.actorUserId,
-  }) : kind = ApprovalKind.closedBooks;
+  }) : kind = ApprovalKind.closedBooks,
+       detail = null;
 
   const ApprovalNeeded.dataLock({required this.what, required this.actorUserId})
     : kind = ApprovalKind.dataLock,
       closedThrough = null,
-      dateLocal = null;
+      dateLocal = null,
+      detail = null;
+
+  /// M68: something only the owner may let through. [detail] is what the
+  /// prompt shows in the shop's own words: a `CreditVerdict` for udhaar
+  /// past a block, a `StockCheck` for a check's differences.
+  const ApprovalNeeded.owner({
+    required this.what,
+    required this.actorUserId,
+    this.detail,
+  }) : kind = ApprovalKind.owner,
+       closedThrough = null,
+       dateLocal = null;
 
   final ApprovalKind kind;
 
@@ -169,6 +192,10 @@ final class ApprovalNeeded implements Exception {
   /// Who was doing it. Data Lock accepts their own PIN, or the owner's.
   final String actorUserId;
 
+  /// M68: for [ApprovalKind.owner], what is being let through, for the
+  /// prompt to say in the shop's language. Null for the other kinds.
+  final Object? detail;
+
   @override
   String toString() => switch (kind) {
     ApprovalKind.closedBooks =>
@@ -178,6 +205,10 @@ final class ApprovalNeeded implements Exception {
     ApprovalKind.dataLock =>
       'Data Lock is on, so this needs a PIN first: $what. Nothing was '
           'changed.',
+    // M68
+    ApprovalKind.owner =>
+      'Only the owner can let this through, with their PIN and a reason: '
+          '$what. Nothing was written.',
   };
 }
 
@@ -222,8 +253,8 @@ final class ApprovalAsk {
   /// rather than a sentence, so the prompt says it in the shop's language.
   final ApprovalProblem? problem;
 
-  /// Whether a reason must be given.
-  bool get needsReason => needed.kind == ApprovalKind.closedBooks;
+  /// Whether a reason must be given. M68: the owner's word always has one.
+  bool get needsReason => needed.kind != ApprovalKind.dataLock;
 }
 
 /// Why an answer to an [ApprovalAsk] was refused.
