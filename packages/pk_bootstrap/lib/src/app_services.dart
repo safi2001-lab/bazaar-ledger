@@ -29,6 +29,7 @@ part 'loan_services.dart';
 part 'order_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
+part 'scheme_services.dart'; // M43
 part 'shelf_services.dart';
 part 'shop_money_services.dart';
 part 'sync_services.dart';

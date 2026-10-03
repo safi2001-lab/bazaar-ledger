@@ -64,6 +64,12 @@ abstract final class CartDraft {
         'chequeBank': paid.chequeBank,
         'chequeDateUtcMillis': paid.chequeDateUtcMillis,
       },
+    // M43: what the cashier took off of the shop's schemes. Optional, and
+    // not a new version: a draft without them is a bill with every scheme
+    // on, which is what a build before M43 would make of it, and the
+    // cashier sees a bonus put back on the counter before the bill goes.
+    if (cart.bonusWaived.isNotEmpty) 'bonusWaived': cart.bonusWaived.toList(),
+    if (cart.slabWaived) 'slabWaived': true,
     'lines': [
       for (final line in cart.lines)
         {
@@ -162,6 +168,12 @@ abstract final class CartDraft {
         replacesId: root['replacesId'] as String?,
         replacesNo: root['replacesNo'] as String?,
         paidBefore: paidBefore,
+        // M43.
+        bonusWaived: {
+          for (final id in (root['bonusWaived'] as List<Object?>?) ?? const [])
+            if (id is String) id,
+        },
+        slabWaived: root['slabWaived'] == true,
       );
     } on Object {
       return null;

@@ -6216,4 +6216,195 @@ class AppStringsEn extends AppStrings {
   String reportFilterMinAmountValue(String amount) {
     return '$amount or more';
   }
+
+  @override
+  String bonusOnCounter(String what) {
+    return 'Bonus (free): $what';
+  }
+
+  @override
+  String get bonusTakeOff => 'Take the bonus off';
+
+  @override
+  String bonusTakenOff(String what) {
+    return 'Bonus taken off: $what';
+  }
+
+  @override
+  String get bonusPutBack => 'Put it back';
+
+  @override
+  String bonusSchemeHint(String label) {
+    return 'Scheme $label';
+  }
+
+  @override
+  String billSlabApplied(String percent, String from) {
+    return '$percent off the bill (Rs $from and up)';
+  }
+
+  @override
+  String get billSlabTakeOff => 'Take off';
+
+  @override
+  String billSlabTakenOff(String percent) {
+    return '$percent bill discount taken off';
+  }
+
+  @override
+  String billSlabNext(String short, String percent) {
+    return 'Rs $short more and the bill gets $percent off';
+  }
+
+  @override
+  String get schemesTitle => 'Schemes and slabs';
+
+  @override
+  String get schemesIntro =>
+      'Bonus (10+1), cheaper by quantity, and a discount on a big bill. The counter applies them by itself, and the cashier can take them off a bill.';
+
+  @override
+  String get schemesOwnerOnly => 'Only the owner changes schemes.';
+
+  @override
+  String get schemesItemsHeader => 'Item schemes';
+
+  @override
+  String get schemesNoItems => 'No item has a scheme yet.';
+
+  @override
+  String get schemesAddItem => 'Give an item a scheme';
+
+  @override
+  String schemeBonusLabel(String label) {
+    return 'Bonus $label';
+  }
+
+  @override
+  String schemeSlabsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count price slabs',
+      one: '1 price slab',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get billSlabsHeader => 'Discount on a big bill';
+
+  @override
+  String get billSlabFrom => 'Bill at least (Rs)';
+
+  @override
+  String get billSlabPercent => 'Discount %';
+
+  @override
+  String get schemeAddSlab => 'Another slab';
+
+  @override
+  String get schemeSaved => 'Scheme saved';
+
+  @override
+  String get schemeTakeOff => 'Take the scheme off';
+
+  @override
+  String itemSchemeTitle(String name) {
+    return 'Scheme: $name';
+  }
+
+  @override
+  String get itemSchemeEntry => 'Scheme (10+1) and prices by quantity';
+
+  @override
+  String get itemSchemeSaveFirst =>
+      'Save the item first, then give it a scheme.';
+
+  @override
+  String get bonusHeader => 'Bonus (free goods)';
+
+  @override
+  String bonusBuy(String unit) {
+    return 'Buy ($unit)';
+  }
+
+  @override
+  String bonusFree(String unit) {
+    return 'Get free ($unit)';
+  }
+
+  @override
+  String get bonusCountedIn => 'Counted in';
+
+  @override
+  String bonusFreeGoods(String name) {
+    return 'Free: $name';
+  }
+
+  @override
+  String get bonusSameItem => 'the same item';
+
+  @override
+  String get bonusOtherItem => 'Another item';
+
+  @override
+  String bonusExplain(String buy, String free) {
+    return 'On every $buy, $free free';
+  }
+
+  @override
+  String get slabsHeader => 'Price by quantity';
+
+  @override
+  String get slabHint =>
+      'A slab\'s rate is charged only where it is below the customer\'s own price.';
+
+  @override
+  String slabFrom(String unit) {
+    return 'From ($unit)';
+  }
+
+  @override
+  String slabRate(String unit) {
+    return 'Rate (per $unit)';
+  }
+
+  @override
+  String get schemeProblemFigures =>
+      'A figure here is not a number. Check the quantities and rates.';
+
+  @override
+  String get schemeProblemBonusEmpty =>
+      'A bonus needs both what is bought and what is free.';
+
+  @override
+  String get schemeProblemSlabEmpty =>
+      'Each slab needs a quantity and a rate above nothing.';
+
+  @override
+  String get schemeProblemSlabTwice =>
+      'Two slabs cannot start at the same figure.';
+
+  @override
+  String get schemeProblemOutOfOrder =>
+      'A bigger slab has to give a better price.';
+
+  @override
+  String get schemeProblemPercent =>
+      'The discount must be more than 0% and at most 50%.';
+
+  @override
+  String purchaseFree(String unit) {
+    return 'Free / bonus ($unit)';
+  }
+
+  @override
+  String purchaseFreeOnLine(String what) {
+    return '+ $what free';
+  }
+
+  @override
+  String get purchaseFreeWrong =>
+      'The free quantity is not a whole number of the item\'s unit.';
 }

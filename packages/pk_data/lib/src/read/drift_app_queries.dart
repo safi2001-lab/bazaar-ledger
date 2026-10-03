@@ -1727,6 +1727,9 @@ final class DriftAppQueries implements AppQueries {
           WHERE d.id = ? AND d.firm_id = ?
             AND d.doc_type IN ('quotation', 'delivery_challan')
             AND dl.item_id IS NOT NULL AND dl.deleted_at_utc IS NULL
+            -- M43: a bonus line is worked out again at the counter from the
+            -- shop's schemes, under the line that earns it.
+            AND dl.is_free_item = 0
           ORDER BY dl.line_no
           ''',
           variables: [Variable<String>(quotationId), Variable<String>(firmId)],

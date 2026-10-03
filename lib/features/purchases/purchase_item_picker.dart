@@ -49,6 +49,10 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   final _batch = TextEditingController();
   final _expiry = TextEditingController();
   final _serials = TextEditingController();
+
+  /// M43: what the supplier sent free on this line ("10+1"), in the same
+  /// unit as the quantity. Blank is none.
+  final _free = TextEditingController();
   String? _problem;
 
   Timer? _debounce;
@@ -77,6 +81,7 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     _batch.dispose();
     _expiry.dispose();
     _serials.dispose();
+    _free.dispose(); // M43
     super.dispose();
   }
 
@@ -196,6 +201,15 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
       );
       return;
     }
+    // M43: the supplier's bonus, counted as the paid goods are. It goes on
+    // the shelf with them and shares their cost (purchase_builder.dart).
+    final freeText = item.tracksSerial ? '' : _free.text.trim();
+    final freeQty = freeText.isEmpty ? Qty.zero : Qty.tryParse(freeText);
+    final freeBase = freeQty == null ? null : PackChoice.inBase(freeQty, _pack);
+    if (freeQty == null || freeQty.isNegative || freeBase == null) {
+      setState(() => _problem = s.purchaseFreeWrong);
+      return;
+    }
     final expiry = BusinessDate.tryParse(_expiry.text.trim());
     if (item.tracksBatch &&
         (_batch.text.trim().isEmpty ||
@@ -221,6 +235,8 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         batchNo: item.tracksBatch ? _batch.text.trim() : null,
         expiry: item.tracksBatch ? expiry : null,
         serials: serials,
+        freeQty: freeQty, // M43
+        freeBaseQty: freeBase,
       ),
     );
   }
@@ -368,6 +384,17 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                 ),
               ],
             ),
+            // M43: "10+1" — what came free with the line.
+            if (!chosen.tracksSerial) ...[
+              const SizedBox(height: BlTokens.space3),
+              BlField(
+                controller: _free,
+                label: s.purchaseFree(_pack?.unitCode ?? chosen.unitCode),
+                numeric: true,
+                decimals: 3,
+                onChanged: (_) => setState(() => _problem = null),
+              ),
+            ],
             if (chosen.tracksBatch) ...[
               const SizedBox(height: BlTokens.space3),
               Row(

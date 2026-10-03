@@ -755,7 +755,7 @@ final class _Bill {
       return pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          words(l.name + (l.isFreeItem ? '  (free)' : '')),
+          words(l.name + (l.isFreeItem ? '  (Bonus / muft)' : '')), // M43
           if (hs != null)
             pw.Text(
               'HS $hs',

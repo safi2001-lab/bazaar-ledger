@@ -5,6 +5,7 @@ import 'package:pk_domain/pk_domain.dart';
 
 import '../../app/providers.dart';
 import 'cart_draft.dart';
+import 'scheme_book.dart';
 
 /// One line as the counter has it so far.
 ///
@@ -243,6 +244,8 @@ final class Cart {
     this.paidBefore,
     this.copiedFromNo,
     this.copyNote,
+    this.bonusWaived = const {},
+    this.slabWaived = false,
   });
 
   final List<CartLine> lines;
@@ -279,6 +282,61 @@ final class Cart {
   final String? copiedFromNo;
   final String? copyNote;
 
+  // M43 -------------------------------------------------------------------
+  //
+  // The shop's schemes on this bill (schemes.dart). The bonus and the bill
+  // slab are never lines or figures the cart holds: they are worked out
+  // from the lines every time, so they cannot fall out of step with what
+  // was rung — ten soaps earn the free one, nine take it back off. All the
+  // cart keeps is what the cashier took off.
+
+  /// The items whose bonus the cashier took off this bill. Taking a bonus
+  /// off gives less away, so any cashier may.
+  final Set<String> bonusWaived;
+
+  /// Whether the cashier took the shop's bill-value discount off this bill.
+  final bool slabWaived;
+
+  /// The bill as it goes to the books: every line rung, the bonus each
+  /// item's scheme gives under the last line of that item, and the bill
+  /// discount — the one typed, or else the shop's slab for a bill this big.
+  ({List<SaleLineDraft> lines, Money billDiscount, BillSlab? slab}) forBooks(
+    UnitConverter? units,
+    SchemeBook book,
+  ) {
+    final rung = [for (final l in lines) ...l.toDrafts(units)];
+    final bonus = bonusOn(rung, book);
+    final out = <SaleLineDraft>[];
+    if (bonus.isEmpty) {
+      out.addAll(rung);
+    } else {
+      final last = <String, int>{
+        for (var i = 0; i < rung.length; i++) ?rung[i].itemId: i,
+      };
+      for (var i = 0; i < rung.length; i++) {
+        out.add(rung[i]);
+        for (final g in bonus) {
+          if (last[g.forItemId] == i) out.add(g.toLine());
+        }
+      }
+    }
+    if (billDiscount.isPositive || slabWaived) {
+      return (lines: out, billDiscount: billDiscount, slab: null);
+    }
+    final hit = book.billSlabFor(SchemeBook.billValueOf(rung));
+    return (
+      lines: out,
+      billDiscount: hit?.discount ?? billDiscount,
+      slab: hit?.slab,
+    );
+  }
+
+  /// The bonus [rung] earns, less what the cashier took off.
+  List<BonusGrant> bonusOn(List<SaleLineDraft> rung, SchemeBook book) => [
+    for (final g in book.bonusFor(SchemeBook.paidBaseOf(rung)))
+      if (!bonusWaived.contains(g.forItemId)) g,
+  ];
+
   bool get isEmpty => lines.isEmpty;
 
   Money get gross => Money.sum(lines.map((l) => l.gross));
@@ -299,6 +357,8 @@ final class Cart {
     int? partyDiscountBp,
     bool clearParty = false,
     bool clearCopyNote = false,
+    Set<String>? bonusWaived,
+    bool? slabWaived,
   }) => Cart(
     sourceId: sourceId,
     sourceNo: sourceNo,
@@ -314,6 +374,8 @@ final class Cart {
     billDiscount: billDiscount ?? this.billDiscount,
     priceTier: priceTier ?? this.priceTier,
     partyDiscountBp: partyDiscountBp ?? this.partyDiscountBp,
+    bonusWaived: bonusWaived ?? this.bonusWaived,
+    slabWaived: slabWaived ?? this.slabWaived,
   );
 }
 
@@ -348,6 +410,16 @@ class CartNotifier extends Notifier<Cart> {
     // not saved.
     listenSelf((_, next) => _save(next));
 
+    // M43: a scheme read or changed while lines are on the counter moves
+    // the lines still at the counter's own price to the new one.
+    ref.listen<AsyncValue<SchemeBook>>(schemeBookProvider, (was, now) {
+      final before = was?.valueOrNull ?? SchemeBook.empty;
+      final after = now.valueOrNull;
+      if (after != null && !identical(before, after)) {
+        _schemesChanged(before, after);
+      }
+    });
+
     return restored ?? const Cart();
   }
 
@@ -373,13 +445,15 @@ class CartNotifier extends Notifier<Cart> {
     final index = state.lines.indexWhere((l) => l.item.id == item.id);
     final lines = [...state.lines];
     if (index >= 0) {
-      lines[index] = lines[index].copyWith(qty: lines[index].qty + step);
+      final was = lines[index];
+      lines[index] = _repriced(was, was.copyWith(qty: was.qty + step)); // M43
     } else {
       lines.add(
         CartLine(
           item: item,
           qty: step,
-          rate: priceFor(item, state.priceTier),
+          // M43: the customer's price, or the item's slab for this many.
+          rate: schemesNow(ref).priceAt(item, state.priceTier, step),
           discountBp: state.partyDiscountBp,
         ),
       );
@@ -451,7 +525,7 @@ class CartNotifier extends Notifier<Cart> {
           l.item.id != itemId
               ? l
               : l.lotIds.isEmpty
-              ? l.copyWith(qty: qty)
+              ? _repriced(l, l.copyWith(qty: qty)) // M43
               // A line of scanned pieces only shrinks, dropping the last
               // scanned; more pieces are more scans.
               : () {
@@ -479,17 +553,20 @@ class CartNotifier extends Notifier<Cart> {
     if (index >= 0) {
       final line = lines[index];
       if (line.lotIds.contains(lotId)) return false;
-      lines[index] = line.copyWith(
-        qty: Qty.units(line.lotIds.length + 1),
-        lotIds: [...line.lotIds, lotId],
-        lotLabels: [...line.lotLabels, serial],
-      );
+      lines[index] = _repriced(
+        line,
+        line.copyWith(
+          qty: Qty.units(line.lotIds.length + 1),
+          lotIds: [...line.lotIds, lotId],
+          lotLabels: [...line.lotLabels, serial],
+        ),
+      ); // M43
     } else {
       lines.add(
         CartLine(
           item: item,
           qty: Qty.one,
-          rate: priceFor(item, state.priceTier),
+          rate: schemesNow(ref).priceAt(item, state.priceTier, Qty.one), // M43
           discountBp: state.partyDiscountBp,
           lotIds: [lotId],
           lotLabels: [serial],
@@ -574,16 +651,20 @@ class CartNotifier extends Notifier<Cart> {
           if (l.item.id != itemId)
             l
           else
-            l.copyWith(
-              unitId: unitId,
-              unitCode: unitCode,
-              rate: units.convertRate(
-                l.rate,
-                fromUnitId: l.sellingUnitId,
-                toUnitId: unitId,
-                itemId: itemId,
+            _repriced(
+              l,
+              l.copyWith(
+                unitId: unitId,
+                unitCode: unitCode,
+                rate: units.convertRate(
+                  l.rate,
+                  fromUnitId: l.sellingUnitId,
+                  toUnitId: unitId,
+                  itemId: itemId,
+                ),
               ),
-            ),
+              units: units,
+            ), // M43
       ],
     );
   }
@@ -631,21 +712,8 @@ class CartNotifier extends Notifier<Cart> {
     // A loose line (M37) is at the price the cashier typed, which is not on
     // any price list to move along.
     if (line.isLoose) return line;
-    Rate? priced(PriceTier t) {
-      final base = priceFor(line.item, t);
-      if (!line.isConverted) return base;
-      if (units == null) return null;
-      try {
-        return units.convertRate(
-          base,
-          fromUnitId: line.item.unitId,
-          toUnitId: line.sellingUnitId,
-          itemId: line.item.id,
-        );
-      } on Object {
-        return null;
-      }
-    }
+    // M43: the tier's price, or the item's slab where that is lower.
+    Rate? priced(PriceTier t) => _counterRate(line, tier: t, units: units);
 
     var out = line;
     final was = priced(state.priceTier);
@@ -659,6 +727,103 @@ class CartNotifier extends Notifier<Cart> {
     }
     return out;
   }
+
+  // M43 -------------------------------------------------------------------
+
+  /// What the counter charges for [line] as it stands, in the unit it is
+  /// sold in: the customer's tier price, or the item's quantity slab for
+  /// what the line takes off the shelf where that is lower. Null when the
+  /// price cannot be carried into the line's unit exactly.
+  Rate? _counterRate(
+    CartLine line, {
+    PriceTier? tier,
+    SchemeBook? book,
+    UnitConverter? units,
+  }) {
+    final converter = units ?? ref.read(unitConverterProvider).valueOrNull;
+    final Qty base;
+    if (!line.isConverted) {
+      base = line.qty;
+    } else {
+      if (converter == null) return null;
+      try {
+        base = converter.convert(
+          line.qty,
+          fromUnitId: line.sellingUnitId,
+          toUnitId: line.item.unitId,
+          itemId: line.item.id,
+        );
+      } on Object {
+        return null;
+      }
+    }
+    final perBase = (book ?? schemesNow(ref)).priceAt(
+      line.item,
+      tier ?? state.priceTier,
+      base,
+    );
+    if (!line.isConverted) return perBase;
+    try {
+      return converter!.convertRate(
+        perBase,
+        fromUnitId: line.item.unitId,
+        toUnitId: line.sellingUnitId,
+        itemId: line.item.id,
+      );
+    } on Object {
+      return null;
+    }
+  }
+
+  /// [after] is [before] with more or less of it, or in another unit. When
+  /// [before] was at the counter's own price, [after] moves to the
+  /// counter's price for what it now is — twelve pieces reach the dozen
+  /// slab, eleven go back above it. A price the cashier typed is left as
+  /// typed, as the customer's tier leaves it (setParty). An item with no
+  /// slab is never touched, so a shop without schemes rings exactly as it
+  /// did.
+  CartLine _repriced(CartLine before, CartLine after, {UnitConverter? units}) {
+    if (before.isLoose) return after;
+    if (!schemesNow(ref).slabs.containsKey(before.item.id)) return after;
+    final was = _counterRate(before, units: units);
+    if (was == null || before.rate != was) return after;
+    final now = _counterRate(after, units: units);
+    return now == null ? after : after.copyWith(rate: now);
+  }
+
+  void _schemesChanged(SchemeBook before, SchemeBook after) {
+    var moved = false;
+    final lines = [
+      for (final l in state.lines)
+        if (l.isLoose ||
+            (!before.slabs.containsKey(l.item.id) &&
+                !after.slabs.containsKey(l.item.id)))
+          l
+        else
+          () {
+            final was = _counterRate(l, book: before);
+            final now = _counterRate(l, book: after);
+            if (was == null || now == null || l.rate != was || now == was) {
+              return l;
+            }
+            moved = true;
+            return l.copyWith(rate: now);
+          }(),
+    ];
+    if (moved) state = state.copyWith(lines: lines);
+  }
+
+  /// Takes [itemId]'s bonus off this bill, or puts it back.
+  void setBonusWaived(String itemId, {required bool waived}) =>
+      state = state.copyWith(
+        bonusWaived: waived
+            ? {...state.bonusWaived, itemId}
+            : ({...state.bonusWaived}..remove(itemId)),
+      );
+
+  /// Takes the shop's bill-value discount off this bill, or puts it back.
+  void setSlabWaived({required bool waived}) =>
+      state = state.copyWith(slabWaived: waived);
 
   void clear() => state = const Cart();
 

@@ -494,6 +494,14 @@ class _LineTile extends StatelessWidget {
                   'x ${line.rate.amountOnly}',
                   style: TextStyle(fontSize: 13, color: t.inkMuted),
                 ),
+                // M43: the supplier's bonus on the line.
+                if (line.hasFree)
+                  Text(
+                    AppStrings.of(context).purchaseFreeOnLine(
+                      '${line.freeQty.display} ${line.unitCode}',
+                    ),
+                    style: TextStyle(fontSize: 13, color: t.accent),
+                  ),
                 if (rateDiffers(line.rate, ordered))
                   Text(
                     AppStrings.of(context).purchaseRateDiffers(

@@ -6214,4 +6214,186 @@ class AppStringsUr extends AppStrings {
   String reportFilterMinAmountValue(String amount) {
     return '$amount ya ziyada';
   }
+
+  @override
+  String bonusOnCounter(String what) {
+    return 'Bonus / muft: $what';
+  }
+
+  @override
+  String get bonusTakeOff => 'Bonus hatayein';
+
+  @override
+  String bonusTakenOff(String what) {
+    return 'Bonus hata diya: $what';
+  }
+
+  @override
+  String get bonusPutBack => 'Wapas lagayein';
+
+  @override
+  String bonusSchemeHint(String label) {
+    return 'Scheme $label';
+  }
+
+  @override
+  String billSlabApplied(String percent, String from) {
+    return 'Bill par $percent discount (Rs $from se upar)';
+  }
+
+  @override
+  String get billSlabTakeOff => 'Hatayein';
+
+  @override
+  String billSlabTakenOff(String percent) {
+    return '$percent bill discount hata diya';
+  }
+
+  @override
+  String billSlabNext(String short, String percent) {
+    return 'Rs $short ka aur saman lein to bill par $percent discount';
+  }
+
+  @override
+  String get schemesTitle => 'Scheme aur slab';
+
+  @override
+  String get schemesIntro =>
+      'Bonus (10+1), tadaad par sasta rate, aur bare bill par discount. Counter khud lagata hai, aur cashier bill se hata sakta hai.';
+
+  @override
+  String get schemesOwnerOnly => 'Scheme sirf malik badal sakta hai.';
+
+  @override
+  String get schemesItemsHeader => 'Maal ki scheme';
+
+  @override
+  String get schemesNoItems => 'Abhi kisi maal par scheme nahi.';
+
+  @override
+  String get schemesAddItem => 'Maal par scheme lagayein';
+
+  @override
+  String schemeBonusLabel(String label) {
+    return 'Bonus $label';
+  }
+
+  @override
+  String schemeSlabsLabel(int count) {
+    return '$count rate slab';
+  }
+
+  @override
+  String get billSlabsHeader => 'Bare bill par discount';
+
+  @override
+  String get billSlabFrom => 'Bill kam az kam (Rs)';
+
+  @override
+  String get billSlabPercent => 'Discount %';
+
+  @override
+  String get schemeAddSlab => 'Aur slab';
+
+  @override
+  String get schemeSaved => 'Scheme save ho gayi';
+
+  @override
+  String get schemeTakeOff => 'Scheme hatayein';
+
+  @override
+  String itemSchemeTitle(String name) {
+    return 'Scheme: $name';
+  }
+
+  @override
+  String get itemSchemeEntry => 'Scheme (10+1) aur tadaad par rate';
+
+  @override
+  String get itemSchemeSaveFirst =>
+      'Pehle maal save karein, phir scheme lagayein.';
+
+  @override
+  String get bonusHeader => 'Bonus (muft maal)';
+
+  @override
+  String bonusBuy(String unit) {
+    return 'Itne lein ($unit)';
+  }
+
+  @override
+  String bonusFree(String unit) {
+    return 'Itne muft ($unit)';
+  }
+
+  @override
+  String get bonusCountedIn => 'Ginti kis mein';
+
+  @override
+  String bonusFreeGoods(String name) {
+    return 'Muft: $name';
+  }
+
+  @override
+  String get bonusSameItem => 'yehi maal';
+
+  @override
+  String get bonusOtherItem => 'Doosra maal';
+
+  @override
+  String bonusExplain(String buy, String free) {
+    return 'Har $buy par $free muft';
+  }
+
+  @override
+  String get slabsHeader => 'Tadaad par rate';
+
+  @override
+  String get slabHint =>
+      'Slab ka rate sirf tab lagta hai jab gahak ki apni qeemat se kam ho.';
+
+  @override
+  String slabFrom(String unit) {
+    return 'Kam az kam ($unit)';
+  }
+
+  @override
+  String slabRate(String unit) {
+    return 'Rate (fi $unit)';
+  }
+
+  @override
+  String get schemeProblemFigures =>
+      'Koi raqam theek nahi likhi. Tadaad aur rate dobara dekhein.';
+
+  @override
+  String get schemeProblemBonusEmpty =>
+      'Bonus mein lene aur muft dono ki tadaad likhein.';
+
+  @override
+  String get schemeProblemSlabEmpty => 'Har slab ki tadaad aur rate likhein.';
+
+  @override
+  String get schemeProblemSlabTwice =>
+      'Do slab aik hi raqam se shuru nahi ho sakte.';
+
+  @override
+  String get schemeProblemOutOfOrder =>
+      'Bari slab ka rate ya discount behtar hona chahiye.';
+
+  @override
+  String get schemeProblemPercent => 'Discount 0% se zyada aur 50% tak ho.';
+
+  @override
+  String purchaseFree(String unit) {
+    return 'Muft / bonus ($unit)';
+  }
+
+  @override
+  String purchaseFreeOnLine(String what) {
+    return '+ $what muft';
+  }
+
+  @override
+  String get purchaseFreeWrong => 'Muft tadaad theek nahi likhi.';
 }

@@ -206,6 +206,8 @@ final class DriftOrderReads {
               AND d.doc_type IN ('purchase_bill', 'sale_invoice',
                                  'delivery_challan')
               AND dl.item_id IS NOT NULL
+              -- M43: a bonus that came with the goods is not goods ordered.
+              AND dl.is_free_item = 0
             GROUP BY link.from_document_id, dl.item_id
             ''',
                 variables: vars,
@@ -594,6 +596,8 @@ final class DriftOrderReads {
                 AND d2.doc_type = 'purchase_bill' AND d2.status = 'posted'
                 AND d2.deleted_at_utc IS NULL AND dl2.deleted_at_utc IS NULL
                 AND d2.party_id IS NOT NULL
+                -- M43: the supplier's bonus row has no rate to order at.
+                AND dl2.is_free_item = 0
               ORDER BY d2.doc_date_local DESC, d2.created_at_utc DESC,
                        dl2.line_no DESC
               LIMIT 1)

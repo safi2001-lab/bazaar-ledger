@@ -3364,5 +3364,140 @@
     "placeholders": {
       "amount": {"type": "String"}
     }
-  }
+  },
+  "bonusOnCounter": "Bonus (free): {what}",
+  "@bonusOnCounter": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "bonusTakeOff": "Take the bonus off",
+  "bonusTakenOff": "Bonus taken off: {what}",
+  "@bonusTakenOff": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "bonusPutBack": "Put it back",
+  "bonusSchemeHint": "Scheme {label}",
+  "@bonusSchemeHint": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "billSlabApplied": "{percent} off the bill (Rs {from} and up)",
+  "@billSlabApplied": {
+    "placeholders": {
+      "percent": {"type": "String"},
+      "from": {"type": "String"}
+    }
+  },
+  "billSlabTakeOff": "Take off",
+  "billSlabTakenOff": "{percent} bill discount taken off",
+  "@billSlabTakenOff": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "billSlabNext": "Rs {short} more and the bill gets {percent} off",
+  "@billSlabNext": {
+    "placeholders": {
+      "short": {"type": "String"},
+      "percent": {"type": "String"}
+    }
+  },
+  "schemesTitle": "Schemes and slabs",
+  "schemesIntro": "Bonus (10+1), cheaper by quantity, and a discount on a big bill. The counter applies them by itself, and the cashier can take them off a bill.",
+  "schemesOwnerOnly": "Only the owner changes schemes.",
+  "schemesItemsHeader": "Item schemes",
+  "schemesNoItems": "No item has a scheme yet.",
+  "schemesAddItem": "Give an item a scheme",
+  "schemeBonusLabel": "Bonus {label}",
+  "@schemeBonusLabel": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "schemeSlabsLabel": "{count, plural, =1{1 price slab} other{{count} price slabs}}",
+  "@schemeSlabsLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "billSlabsHeader": "Discount on a big bill",
+  "billSlabFrom": "Bill at least (Rs)",
+  "billSlabPercent": "Discount %",
+  "schemeAddSlab": "Another slab",
+  "schemeSaved": "Scheme saved",
+  "schemeTakeOff": "Take the scheme off",
+  "itemSchemeTitle": "Scheme: {name}",
+  "@itemSchemeTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "itemSchemeEntry": "Scheme (10+1) and prices by quantity",
+  "itemSchemeSaveFirst": "Save the item first, then give it a scheme.",
+  "bonusHeader": "Bonus (free goods)",
+  "bonusBuy": "Buy ({unit})",
+  "@bonusBuy": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "bonusFree": "Get free ({unit})",
+  "@bonusFree": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "bonusCountedIn": "Counted in",
+  "bonusFreeGoods": "Free: {name}",
+  "@bonusFreeGoods": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "bonusSameItem": "the same item",
+  "bonusOtherItem": "Another item",
+  "bonusExplain": "On every {buy}, {free} free",
+  "@bonusExplain": {
+    "placeholders": {
+      "buy": {"type": "String"},
+      "free": {"type": "String"}
+    }
+  },
+  "slabsHeader": "Price by quantity",
+  "slabHint": "A slab's rate is charged only where it is below the customer's own price.",
+  "slabFrom": "From ({unit})",
+  "@slabFrom": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "slabRate": "Rate (per {unit})",
+  "@slabRate": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "schemeProblemFigures": "A figure here is not a number. Check the quantities and rates.",
+  "schemeProblemBonusEmpty": "A bonus needs both what is bought and what is free.",
+  "schemeProblemSlabEmpty": "Each slab needs a quantity and a rate above nothing.",
+  "schemeProblemSlabTwice": "Two slabs cannot start at the same figure.",
+  "schemeProblemOutOfOrder": "A bigger slab has to give a better price.",
+  "schemeProblemPercent": "The discount must be more than 0% and at most 50%.",
+  "purchaseFree": "Free / bonus ({unit})",
+  "@purchaseFree": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "purchaseFreeOnLine": "+ {what} free",
+  "@purchaseFreeOnLine": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "purchaseFreeWrong": "The free quantity is not a whole number of the item's unit."
 }

@@ -12,6 +12,7 @@ import '../subscription/plans_screen.dart';
 import 'item_history_screen.dart';
 import 'item_packs_field.dart';
 import 'item_picture.dart';
+import 'item_scheme_screen.dart'; // M43
 import 'label_print_sheet.dart';
 import 'shelf_rule.dart';
 import 'stock_adjust_sheet.dart';
@@ -721,6 +722,27 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                                     setState(() => _packs = packs),
                               ),
                             ],
+                            // M43: its bonus and prices by quantity, kept
+                            // and saved on their own (item_scheme_screen.dart);
+                            // an item not yet saved has nothing to hang
+                            // them on.
+                            const SizedBox(height: BlTokens.space3),
+                            ListTile(
+                              contentPadding: EdgeInsets.zero,
+                              leading: const Icon(Icons.local_offer_outlined),
+                              title: Text(s.itemSchemeEntry),
+                              subtitle: _isEdit
+                                  ? null
+                                  : Text(s.itemSchemeSaveFirst),
+                              trailing: const Icon(Icons.chevron_right),
+                              enabled: _isEdit,
+                              onTap: () => Navigator.of(context).push<void>(
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ItemSchemeScreen(item: widget.item!),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                         if (_failure != null) ...[

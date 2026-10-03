@@ -24,6 +24,7 @@ import 'bill_design_screen.dart';
 import 'books_lock_screen.dart';
 import 'payment_details_screen.dart';
 import 'reminder_templates_screen.dart';
+import 'schemes_screen.dart'; // M43
 import 'shop_details_screen.dart';
 
 /// Language, theme, shop, how customers can pay, and whether the books are
@@ -215,6 +216,15 @@ class SettingsScreen extends ConsumerWidget {
                 MaterialPageRoute<void>(
                   builder: (_) => const ShelfRuleScreen(),
                 ),
+              ),
+            ),
+            // M43: bonus, quantity slabs and the big-bill discount. Everyone
+            // may read them; only the owner changes them.
+            _Row(
+              icon: Icons.local_offer_outlined,
+              label: s.schemesTitle,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SchemesScreen()),
               ),
             ),
             _Row(

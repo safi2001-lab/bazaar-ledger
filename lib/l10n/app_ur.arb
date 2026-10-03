@@ -3689,5 +3689,140 @@
     "placeholders": {
       "amount": {"type": "String"}
     }
-  }
+  },
+  "bonusOnCounter": "Bonus / muft: {what}",
+  "@bonusOnCounter": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "bonusTakeOff": "Bonus hatayein",
+  "bonusTakenOff": "Bonus hata diya: {what}",
+  "@bonusTakenOff": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "bonusPutBack": "Wapas lagayein",
+  "bonusSchemeHint": "Scheme {label}",
+  "@bonusSchemeHint": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "billSlabApplied": "Bill par {percent} discount (Rs {from} se upar)",
+  "@billSlabApplied": {
+    "placeholders": {
+      "percent": {"type": "String"},
+      "from": {"type": "String"}
+    }
+  },
+  "billSlabTakeOff": "Hatayein",
+  "billSlabTakenOff": "{percent} bill discount hata diya",
+  "@billSlabTakenOff": {
+    "placeholders": {
+      "percent": {"type": "String"}
+    }
+  },
+  "billSlabNext": "Rs {short} ka aur saman lein to bill par {percent} discount",
+  "@billSlabNext": {
+    "placeholders": {
+      "short": {"type": "String"},
+      "percent": {"type": "String"}
+    }
+  },
+  "schemesTitle": "Scheme aur slab",
+  "schemesIntro": "Bonus (10+1), tadaad par sasta rate, aur bare bill par discount. Counter khud lagata hai, aur cashier bill se hata sakta hai.",
+  "schemesOwnerOnly": "Scheme sirf malik badal sakta hai.",
+  "schemesItemsHeader": "Maal ki scheme",
+  "schemesNoItems": "Abhi kisi maal par scheme nahi.",
+  "schemesAddItem": "Maal par scheme lagayein",
+  "schemeBonusLabel": "Bonus {label}",
+  "@schemeBonusLabel": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "schemeSlabsLabel": "{count} rate slab",
+  "@schemeSlabsLabel": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "billSlabsHeader": "Bare bill par discount",
+  "billSlabFrom": "Bill kam az kam (Rs)",
+  "billSlabPercent": "Discount %",
+  "schemeAddSlab": "Aur slab",
+  "schemeSaved": "Scheme save ho gayi",
+  "schemeTakeOff": "Scheme hatayein",
+  "itemSchemeTitle": "Scheme: {name}",
+  "@itemSchemeTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "itemSchemeEntry": "Scheme (10+1) aur tadaad par rate",
+  "itemSchemeSaveFirst": "Pehle maal save karein, phir scheme lagayein.",
+  "bonusHeader": "Bonus (muft maal)",
+  "bonusBuy": "Itne lein ({unit})",
+  "@bonusBuy": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "bonusFree": "Itne muft ({unit})",
+  "@bonusFree": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "bonusCountedIn": "Ginti kis mein",
+  "bonusFreeGoods": "Muft: {name}",
+  "@bonusFreeGoods": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "bonusSameItem": "yehi maal",
+  "bonusOtherItem": "Doosra maal",
+  "bonusExplain": "Har {buy} par {free} muft",
+  "@bonusExplain": {
+    "placeholders": {
+      "buy": {"type": "String"},
+      "free": {"type": "String"}
+    }
+  },
+  "slabsHeader": "Tadaad par rate",
+  "slabHint": "Slab ka rate sirf tab lagta hai jab gahak ki apni qeemat se kam ho.",
+  "slabFrom": "Kam az kam ({unit})",
+  "@slabFrom": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "slabRate": "Rate (fi {unit})",
+  "@slabRate": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "schemeProblemFigures": "Koi raqam theek nahi likhi. Tadaad aur rate dobara dekhein.",
+  "schemeProblemBonusEmpty": "Bonus mein lene aur muft dono ki tadaad likhein.",
+  "schemeProblemSlabEmpty": "Har slab ki tadaad aur rate likhein.",
+  "schemeProblemSlabTwice": "Do slab aik hi raqam se shuru nahi ho sakte.",
+  "schemeProblemOutOfOrder": "Bari slab ka rate ya discount behtar hona chahiye.",
+  "schemeProblemPercent": "Discount 0% se zyada aur 50% tak ho.",
+  "purchaseFree": "Muft / bonus ({unit})",
+  "@purchaseFree": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "purchaseFreeOnLine": "+ {what} muft",
+  "@purchaseFreeOnLine": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "purchaseFreeWrong": "Muft tadaad theek nahi likhi."
 }

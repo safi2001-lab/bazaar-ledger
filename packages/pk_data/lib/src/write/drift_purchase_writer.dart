@@ -156,6 +156,8 @@ final class _DriftPurchaseWriteContext implements PurchaseWriteContext {
         'rate_milli_paisa': line.rate.inMilliPaisa,
         'line_total_paisa': line.lineTotal.inPaisa,
         'cost_paisa': line.landedCost.inPaisa,
+        // M43: the supplier's bonus, a row of its own beside the paid one.
+        'is_free_item': line.isFree ? 1 : 0,
       });
     }
 

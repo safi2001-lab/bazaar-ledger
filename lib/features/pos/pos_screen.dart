@@ -17,6 +17,8 @@ import '../scan/scan_screen.dart';
 import 'cart.dart';
 import 'loose_line_sheet.dart';
 import 'past_deals.dart';
+import 'scheme_book.dart'; // M43
+import 'schemes_at_counter.dart'; // M43
 import 'shelf_guard.dart';
 import 'tender_sheet.dart';
 
@@ -58,13 +60,18 @@ final cartPreviewProvider = Provider<CalculatedSale?>((ref) {
   final firm = ref.watch(firmProvider).valueOrNull;
   final units = ref.watch(unitConverterProvider).valueOrNull;
   if (firm == null || cart.isEmpty) return null;
+  // M43: the bonus and the bill slab the shop's schemes give.
+  final books = cart.forBooks(
+    units,
+    ref.watch(schemeBookProvider).valueOrNull ?? SchemeBook.empty,
+  );
 
   return AppServices.taxCalculator.calculate(
     SaleDraft(
-      lines: [for (final l in cart.lines) ...l.toDrafts(units)],
+      lines: books.lines,
       partyId: cart.partyId,
       partyName: cart.partyName,
-      billDiscount: cart.billDiscount,
+      billDiscount: books.billDiscount,
       roundToRupee: firm.roundInvoiceToRupee,
     ),
     ref.watch(buyerTaxProvider(cart.partyId)).valueOrNull ??
@@ -898,10 +905,18 @@ class _CartList extends ConsumerWidget {
           return _BillTo(name: cart.partyName!, onTap: onCustomerTapped);
         }
         final line = cart.lines[i - head];
-        return _CartLineTile(
-          key: ValueKey(line.item.id),
-          line: line,
-          partyId: cart.partyId,
+        // M43: the bonus the line earns, under it (schemes_at_counter.dart).
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _CartLineTile(
+              key: ValueKey(line.item.id),
+              line: line,
+              partyId: cart.partyId,
+            ),
+            if (!line.isLoose) CounterBonus(itemId: line.item.id),
+          ],
         );
       },
     );

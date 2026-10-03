@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import 'cart.dart';
+import 'scheme_book.dart'; // M43
 
 /// Never sold into thin air, at the counter (M53).
 ///
@@ -325,7 +326,8 @@ Future<bool> shelfAllowsBill(
   final units = ref.read(unitConverterProvider).valueOrNull;
   final List<SaleLineDraft> lines;
   try {
-    lines = [for (final l in cart.lines) ...l.toDrafts(units)];
+    // M43: the bonus leaves the shelf with the goods that earned it.
+    lines = cart.forBooks(units, schemesFor(ref)).lines;
   } on Object {
     // A unit that will not convert is the sale path's to refuse, in words.
     return true;

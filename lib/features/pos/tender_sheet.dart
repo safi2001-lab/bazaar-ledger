@@ -16,6 +16,8 @@ import '../sales/receipt_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'cart.dart';
 import 'pos_screen.dart';
+import 'scheme_book.dart'; // M43
+import 'schemes_at_counter.dart'; // M43
 import 'shelf_guard.dart';
 
 /// Taking the money.
@@ -174,11 +176,12 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     }
     try {
       final services = ref.read(appServicesProvider);
+      final books = cart.forBooks(units, schemesFor(ref)); // M43
       final draft = SaleDraft(
-        lines: [for (final l in cart.lines) ...l.toDrafts(units)],
+        lines: books.lines,
         partyId: cart.partyId,
         partyName: cart.partyName,
-        billDiscount: cart.billDiscount,
+        billDiscount: books.billDiscount,
         roundToRupee: firm.roundInvoiceToRupee,
         // A quotation on the counter sent on a challan stays tied to it
         // (M25), so it reads as done rather than still open.
@@ -448,17 +451,18 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
 
     try {
       final services = ref.read(appServicesProvider);
+      final books = cart.forBooks(units, schemesFor(ref)); // M43
       // A rider's phone sells from the van, not from the shop floor (M18).
       final location = await services.counterLocation();
       final posted = await services.postSale(
         services.actorNow(),
         SaleDraft(
           locationCode: location,
-          lines: [for (final l in cart.lines) ...l.toDrafts(units)],
+          lines: books.lines,
           partyId: cart.partyId,
           partyName: cart.partyName,
           tenders: tenders,
-          billDiscount: cart.billDiscount,
+          billDiscount: books.billDiscount,
           roundToRupee: firm.roundInvoiceToRupee,
           convertedFromId: cart.sourceId,
           alsoFromIds: cart.alsoSourceIds,
@@ -581,6 +585,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             ),
             const SizedBox(height: BlTokens.space3),
             _DueCard(due: due, change: change, short: short),
+            const BillSlabRow(), // M43: the shop's discount on a big bill.
             if (cart.paidBefore case final paid? when cart.replacesNo != null)
               _PaidBefore(
                 docNo: cart.replacesNo!,

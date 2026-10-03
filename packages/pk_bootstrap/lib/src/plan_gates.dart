@@ -344,10 +344,22 @@ final class _CeilingSaleContext implements SaleWriteContext {
           ))?.defaultDiscountBp ??
           0;
     }
+    // M43: the shop's own schemes are the owner's word, as a standing
+    // discount is. The bill slab's discount does not use up the cashier's
+    // own ceiling; free goods past what the schemes give are the owner's
+    // alone to hand over (scheme_services.dart).
+    final schemes = await _app._schemesOn(posting);
+    if (schemes.overGiven case final name? when role != Role.owner) {
+      throw PermissionDenied(
+        Permission.sell,
+        '$name is going out free beyond what the shop\'s schemes give. Ask '
+        'the owner to ring this one.',
+      );
+    }
     if (!discountAllowed(
       role: role,
       subtotal: doc.subtotal,
-      discount: discount,
+      discount: discount - schemes.slab,
       standingBp: standing,
     )) {
       final pct = role.maxDiscountBp / 100;

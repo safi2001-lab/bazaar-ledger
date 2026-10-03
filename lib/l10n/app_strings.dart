@@ -10753,6 +10753,288 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{amount} ya ziyada'**
   String reportFilterMinAmountValue(String amount);
+
+  /// No description provided for @bonusOnCounter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus / muft: {what}'**
+  String bonusOnCounter(String what);
+
+  /// No description provided for @bonusTakeOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus hatayein'**
+  String get bonusTakeOff;
+
+  /// No description provided for @bonusTakenOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus hata diya: {what}'**
+  String bonusTakenOff(String what);
+
+  /// No description provided for @bonusPutBack.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas lagayein'**
+  String get bonusPutBack;
+
+  /// No description provided for @bonusSchemeHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme {label}'**
+  String bonusSchemeHint(String label);
+
+  /// No description provided for @billSlabApplied.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill par {percent} discount (Rs {from} se upar)'**
+  String billSlabApplied(String percent, String from);
+
+  /// No description provided for @billSlabTakeOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hatayein'**
+  String get billSlabTakeOff;
+
+  /// No description provided for @billSlabTakenOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'{percent} bill discount hata diya'**
+  String billSlabTakenOff(String percent);
+
+  /// No description provided for @billSlabNext.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {short} ka aur saman lein to bill par {percent} discount'**
+  String billSlabNext(String short, String percent);
+
+  /// No description provided for @schemesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme aur slab'**
+  String get schemesTitle;
+
+  /// No description provided for @schemesIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus (10+1), tadaad par sasta rate, aur bare bill par discount. Counter khud lagata hai, aur cashier bill se hata sakta hai.'**
+  String get schemesIntro;
+
+  /// No description provided for @schemesOwnerOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme sirf malik badal sakta hai.'**
+  String get schemesOwnerOnly;
+
+  /// No description provided for @schemesItemsHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal ki scheme'**
+  String get schemesItemsHeader;
+
+  /// No description provided for @schemesNoItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi kisi maal par scheme nahi.'**
+  String get schemesNoItems;
+
+  /// No description provided for @schemesAddItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Maal par scheme lagayein'**
+  String get schemesAddItem;
+
+  /// No description provided for @schemeBonusLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus {label}'**
+  String schemeBonusLabel(String label);
+
+  /// No description provided for @schemeSlabsLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} rate slab'**
+  String schemeSlabsLabel(int count);
+
+  /// No description provided for @billSlabsHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bare bill par discount'**
+  String get billSlabsHeader;
+
+  /// No description provided for @billSlabFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill kam az kam (Rs)'**
+  String get billSlabFrom;
+
+  /// No description provided for @billSlabPercent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Discount %'**
+  String get billSlabPercent;
+
+  /// No description provided for @schemeAddSlab.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aur slab'**
+  String get schemeAddSlab;
+
+  /// No description provided for @schemeSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme save ho gayi'**
+  String get schemeSaved;
+
+  /// No description provided for @schemeTakeOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme hatayein'**
+  String get schemeTakeOff;
+
+  /// No description provided for @itemSchemeTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme: {name}'**
+  String itemSchemeTitle(String name);
+
+  /// No description provided for @itemSchemeEntry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Scheme (10+1) aur tadaad par rate'**
+  String get itemSchemeEntry;
+
+  /// No description provided for @itemSchemeSaveFirst.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pehle maal save karein, phir scheme lagayein.'**
+  String get itemSchemeSaveFirst;
+
+  /// No description provided for @bonusHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus (muft maal)'**
+  String get bonusHeader;
+
+  /// No description provided for @bonusBuy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itne lein ({unit})'**
+  String bonusBuy(String unit);
+
+  /// No description provided for @bonusFree.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itne muft ({unit})'**
+  String bonusFree(String unit);
+
+  /// No description provided for @bonusCountedIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ginti kis mein'**
+  String get bonusCountedIn;
+
+  /// No description provided for @bonusFreeGoods.
+  ///
+  /// In ur, this message translates to:
+  /// **'Muft: {name}'**
+  String bonusFreeGoods(String name);
+
+  /// No description provided for @bonusSameItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'yehi maal'**
+  String get bonusSameItem;
+
+  /// No description provided for @bonusOtherItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doosra maal'**
+  String get bonusOtherItem;
+
+  /// No description provided for @bonusExplain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har {buy} par {free} muft'**
+  String bonusExplain(String buy, String free);
+
+  /// No description provided for @slabsHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tadaad par rate'**
+  String get slabsHeader;
+
+  /// No description provided for @slabHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Slab ka rate sirf tab lagta hai jab gahak ki apni qeemat se kam ho.'**
+  String get slabHint;
+
+  /// No description provided for @slabFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam ({unit})'**
+  String slabFrom(String unit);
+
+  /// No description provided for @slabRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate (fi {unit})'**
+  String slabRate(String unit);
+
+  /// No description provided for @schemeProblemFigures.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi raqam theek nahi likhi. Tadaad aur rate dobara dekhein.'**
+  String get schemeProblemFigures;
+
+  /// No description provided for @schemeProblemBonusEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus mein lene aur muft dono ki tadaad likhein.'**
+  String get schemeProblemBonusEmpty;
+
+  /// No description provided for @schemeProblemSlabEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har slab ki tadaad aur rate likhein.'**
+  String get schemeProblemSlabEmpty;
+
+  /// No description provided for @schemeProblemSlabTwice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Do slab aik hi raqam se shuru nahi ho sakte.'**
+  String get schemeProblemSlabTwice;
+
+  /// No description provided for @schemeProblemOutOfOrder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bari slab ka rate ya discount behtar hona chahiye.'**
+  String get schemeProblemOutOfOrder;
+
+  /// No description provided for @schemeProblemPercent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Discount 0% se zyada aur 50% tak ho.'**
+  String get schemeProblemPercent;
+
+  /// No description provided for @purchaseFree.
+  ///
+  /// In ur, this message translates to:
+  /// **'Muft / bonus ({unit})'**
+  String purchaseFree(String unit);
+
+  /// No description provided for @purchaseFreeOnLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'+ {what} muft'**
+  String purchaseFreeOnLine(String what);
+
+  /// No description provided for @purchaseFreeWrong.
+  ///
+  /// In ur, this message translates to:
+  /// **'Muft tadaad theek nahi likhi.'**
+  String get purchaseFreeWrong;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

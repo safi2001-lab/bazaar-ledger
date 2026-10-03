@@ -130,7 +130,7 @@ final class ReceiptLayout {
             out.add('  $part');
           }
         }
-        if (line.isFreeItem) out.add('    (free)');
+        if (line.isFreeItem) out.add('    (Bonus / muft)'); // M43
       }
       rule('=');
       out.add(_centre('${d.itemCount} item(s)'));
@@ -186,7 +186,7 @@ final class ReceiptLayout {
         out.add(_row('    less discount', '-${line.discount.amountOnly}'));
       }
       if (line.isFreeItem) {
-        out.add('    (free)');
+        out.add('    (Bonus / muft)'); // M43
       }
     }
 

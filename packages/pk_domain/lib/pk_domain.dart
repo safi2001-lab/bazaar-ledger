@@ -80,6 +80,7 @@ export 'src/ports/udhaar.dart';
 export 'src/ports/vans.dart';
 export 'src/ports/void_writer.dart';
 export 'src/pricing/price_tier.dart';
+export 'src/pricing/schemes.dart';
 export 'src/receivables/aging.dart';
 export 'src/receivables/allowance.dart';
 export 'src/receivables/due_dates.dart';

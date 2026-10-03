@@ -2103,6 +2103,120 @@ milestones:
       - lib/features/reports/report_chart_view.dart
       - lib/features/reports/today_strip.dart
 
+  - id: M43
+    title: Bonus and slabs the way the trade runs, 10+1, cheaper by the carton, and a discount past Rs 5,000
+    # Opened and sealed 3 Oct 2026 at 1/1. Pakistan's wholesale and
+    # pharmacy trade runs on three things done today on a calculator beside
+    # the till: the distributor's "das pe aik muft", the board that says a
+    # dozen is Rs 46 and a carton Rs 44, and something off the big bill
+    # without being asked. Vyapar has a free-quantity column the cashier
+    # fills in by hand; Marg works all three out, on a desktop.
+    #
+    # Bonus: an item's scheme is "buy X, get Y free", of the same item or a
+    # named other one, counted in the item's own unit or one of its packs
+    # ("10+1 cartons" is 240 pieces and 24 more). Whole sets only -- nine
+    # earn nothing, ten one, nineteen one, twenty two -- which is what a
+    # salesman means and Marg calls Full; its Half and All modes are not
+    # offered. Every paid line of the item counts together, on what leaves
+    # the shelf, so a carton line counts 24. The counter works it out from
+    # the lines every time and keeps no bonus line of its own, so ten soaps
+    # earn the free one as the tenth is rung and nine take it back off;
+    # under the line it shows "Bonus / muft: Lux Soap 1 pcs" at Rs 0 with a
+    # cross, or "Scheme 10+1" while it earns none yet. Taking it off gives
+    # less away, so any cashier may, and puts it back with a tap; what was
+    # taken off survives the app being killed (two optional keys in the
+    # cart's draft, no new version: a draft without them is a bill with
+    # every scheme on, which is what a build before this makes of it).
+    #
+    # How bonus goods are booked: a line of its own, at no rate, marked
+    # free (`is_free_item`, which the schema has carried since v1 and the
+    # receipts now print as "(Bonus / muft)"), under the line that earned
+    # it. It leaves the shelf and is costed at post time like any line, and
+    # the books post that cost as they have posted every free line since
+    # M0: Cost of Goods Sold against Inventory. The customer paid for ten
+    # and took eleven, so the free soap's cost is a cost of that sale
+    # (IFRS 15 spreads the price over all eleven), and the item's and the
+    # bill's margins show what the scheme really cost. It takes no share of
+    # a bill discount and carries no discount of its own, so Discount Given
+    # and both discount reports are untouched by it; the Item-wise discount
+    # report now has a Bonus qty column (inside Qty sold), and lists an
+    # item given only as a bonus. A bonus-bearing bill taken back (M57)
+    # gives back only what was paid: the free soap comes back for nothing
+    # and at what it cost, the paid ones at their share of what was charged.
+    # Decided: no tax of its own on the free line -- it is on the same
+    # invoice as the goods that earned it; the owner's accountant should
+    # confirm that is how their registered shop reports a trade bonus.
+    #
+    # Quantity slabs: "12 and up Rs 46, 24 and up Rs 44", per the item's
+    # own unit. A slab sets the line's rate as the quantity crosses it, the
+    # way the board on the wall does, and only where it is LOWER than the
+    # customer's own price (retail, wholesale or VIP): a VIP on Rs 45 pays
+    # Rs 45 for a dozen and Rs 44 for a carton. Counted on what leaves the
+    # shelf, and carried into the line's unit exactly (M53's packs), so a
+    # carton rung as one carton is Rs 1,056. A price the cashier typed
+    # stands whatever the quantity, as a tier price does (setParty), and a
+    # shop with no slabs rings exactly as it did.
+    #
+    # Bill slabs: "Rs 5,000 and up 2%, Rs 20,000 and up 3%", shop-wide, on
+    # what the lines come to after their own discounts -- worked out the way
+    # the calculator works out what it splits a bill discount over -- and
+    # sent down M0's one bill-discount path, split across the lines to the
+    # paisa into Discount Given. The payment sheet says it before the money
+    # is taken ("Bill par 2% discount (Rs 5,000.00 se upar)") with a way to
+    # take it off, or how far the bill is from the first slab ("Rs 200.00 ka
+    # aur saman lein to bill par 2% discount"). A discount the cashier typed
+    # on the bill is the bill's, and no slab is added to it.
+    #
+    # Roles: schemes are the owner's word, set in Settings, so a cashier
+    # ringing them is applying it, as with a standing discount (M22): the
+    # bill slab's discount does not use up the cashier's own ceiling (more
+    # than the slab plus their 5% is still refused), and free goods past
+    # what the schemes give are refused for every role but the owner, in
+    # the sale path itself. Only whoever may change settings changes a
+    # scheme; everyone may read them.
+    #
+    # Schemes received on a delivery: the delivery line takes a "Muft /
+    # bonus" quantity in the line's unit. The free goods go on the shelf and
+    # into the average with the paid ones in one step, and share their
+    # money by quantity to the paisa -- ten cartons of 24 at Rs 9,240 and
+    # one free are 264 pieces at Rs 350 -- written as a row of their own
+    # beside the paid one, marked free, so the delivery reads like the
+    # supplier's paper and a return of the free carton credits nothing and
+    # takes its cost with it. What is owed to the supplier is what was
+    # billed. A purchase order counts only the paid goods as received, and
+    # the supplier's last rate is read off a paid row; a quotation or a
+    # challan put on the counter leaves its bonus rows behind, the counter
+    # working them out again from the schemes.
+    #
+    # Storage: no schema change. One `settings` row per item
+    # (`scheme.item.<id>`, JSON, integers only) and one for the shop
+    # (`scheme.bill_slabs`), written through TxRunner with an audit row and
+    # the sync outbox; one row per item so two counters changing different
+    # items apart both keep theirs, ids worked out from the item so the
+    # same item set twice apart is one row, and a scheme taken off kept as
+    # an empty one so it can always go back on. A scheme whose pack no
+    # longer converts, or whose free item is gone, is not given (and still
+    # listed in Settings to put right).
+    #
+    # Not built, and why: Marg's Half and All bonus modes; a bonus on an
+    # item kept by serial number (a free phone needs its serial chosen) or
+    # on a delivery line of serials; slabs per customer tier (one table per
+    # item, lower price wins); a free quantity on the delivery sheet of a
+    # purchase order's own line (M41's; the free goods are entered on the
+    # delivery's picker); the counter's shelf question counts the bonus with
+    # the goods, but a bill made from a challan must still match the
+    # challan, so a scheme changed between the two is refused there in the
+    # challan's words; a bill copied (M36) still notes its old bonus as left
+    # out although the counter gives it again.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/pricing/schemes.dart
+      - packages/pk_bootstrap/lib/src/scheme_services.dart
+      - lib/features/pos/scheme_book.dart
+      - lib/features/pos/schemes_at_counter.dart
+      - lib/features/items/item_scheme_screen.dart
+      - lib/features/settings/schemes_screen.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -6953,3 +7067,46 @@ features:
       - udhaar by due date draws a ring with every bucket named
       - at 200% on a small phone the hub with today's figures, and every kind of chart, fit
       - at 200% on a small phone and in English, in the dark
+  - id: M43-SCHEMES-01
+    milestone: M43
+    title: Bonus (10+1) under the line that earns it, prices that fall with the quantity, the shop's discount on a big bill, and a supplier's bonus flowing into cost
+    status: done
+    # The arithmetic is proved pure and property-style (whole sets, slabs,
+    # the bill slab split to the paisa, free goods sharing a delivery's
+    # cost); the books, the shelf, the roles, returns and the reports
+    # against a real database through the services; and the counter, the
+    # payment sheet, the item editor, Settings and the delivery by taps.
+    proof:
+      - bonus whole sets only: nine earn nothing, ten one, nineteen one, twenty two
+      - bonus every paid line of the item counts together; a free line, a loose line and another item earn nothing
+      - bonus counted on what leaves the shelf: a carton of 24 is 24 pieces
+      - bonus property: never more than whole sets of what was paid, and never less as more is bought
+      - bonus the free line is at no rate, marked free, carries no discount and costs what the goods cost
+      - bonus another item given free is that item, in its own unit
+      - quantity slabs the slab the quantity reaches: 11 at 50, a dozen at 46, a carton at 44
+      - quantity slabs only where it is lower than the customer's own price: a VIP on 45 pays 45 for a dozen and 44 for a carton
+      - quantity slabs an item with no slabs is priced exactly as before
+      - bill slabs the slab the bill reaches, on what the lines come to after their own discounts
+      - bill slabs property: the slab discount goes down the bill-discount path and the lines give back exactly it, to the paisa
+      - bill slabs labels and refusals
+      - keeping a scheme an item's scheme reads back as it was kept, integers only
+      - keeping a scheme a scheme that makes no sense is refused with what is wrong
+      - a scheme received on a delivery ten and one free put eleven on the shelf for the ten's money, the free one a row of its own, and the average falls
+      - a scheme received on a delivery property: whatever comes free, the shelf takes all of it at the bill's money and the entry balances
+      - bonus on a bill ten soaps earn one free: eleven leave the shelf, the free one is a line of its own at no price, costed into the cost of the sale, and the books balance
+      - bonus on a bill a bonus counted in cartons, and another item given free, are worked into the shelf's own terms
+      - bonus on a bill a cashier rings the shop's bonus, but free goods past what the schemes give are the owner's alone
+      - bonus on a bill a bonus-bearing bill taken back gives back only what was paid: the free soap comes back for nothing, at what it cost
+      - the shop's discount on a big bill it rides the bill-discount path into Discount Given, split over the lines to the paisa, and a cashier rings it past their own 5%
+      - keeping a scheme only the owner keeps one; it is a settings row of the item's own, audited, and an empty one takes it off
+      - a scheme received on a delivery ten cartons and one free put 264 pieces on the shelf for the ten's money, the free carton a row of its own, and the average falls
+      - reports the item-wise discount still ties to Discount Given and shows the bonus given beside it
+      - ten soaps rung put the free one under the line; the cashier takes it off and puts it back, and the bill carries it
+      - what the cashier took off survives the app being killed, and a draft from before schemes reads as every scheme on
+      - a bonus the cashier took off stays off on the bill
+      - a dozen reaches the slab price, eleven go back above it, and a carton is priced from the slab exactly
+      - a price the cashier typed stands whatever the quantity
+      - the payment sheet says the shop's discount on a big bill, takes it off on a tap, and the bill carries what was shown
+      - the owner gives an item a 10+1 and a dozen price from its editor, and Settings lists it beside the shop's bill slab
+      - a delivery's 10+1 is typed on the line, the average falls, and the free goods are a row of their own
+      - at 200% on a small phone the bonus under a line, the bill slab and the scheme screen fit

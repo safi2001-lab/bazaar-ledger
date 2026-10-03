@@ -682,12 +682,17 @@ ReportTable itemByParty(
 /// [period], line discounts and each line's share of a discount on the
 /// whole bill, as the bill itself apportioned it. The biggest giveaway
 /// first; an item only ever sold at its price is left out.
+///
+/// And what went out free under a scheme beside it (M43), in the item's
+/// own unit: an item given only as a bonus is listed too, with nothing off
+/// its price.
 ReportTable itemDiscount(ReportPeriod period, List<ItemTrade> trades) {
-  final rows = trades.where((t) => !t.discount.isZero).toList()
-    ..sort((a, b) {
-      final byDiscount = b.discount.compareTo(a.discount);
-      return byDiscount != 0 ? byDiscount : _byName(a.itemName, b.itemName);
-    });
+  final rows =
+      trades.where((t) => !t.discount.isZero || t.qtyBonus.isPositive).toList()
+        ..sort((a, b) {
+          final byDiscount = b.discount.compareTo(a.discount);
+          return byDiscount != 0 ? byDiscount : _byName(a.itemName, b.itemName);
+        });
   final gross = Money.sum(rows.map((t) => t.salesGross));
   final discount = Money.sum(rows.map((t) => t.discount));
   return ReportTable(
@@ -702,6 +707,7 @@ ReportTable itemDiscount(ReportPeriod period, List<ItemTrade> trades) {
       ReportColumn('Discount', CellKind.money),
       ReportColumn('Discount %', CellKind.percent),
       ReportColumn('After discount', CellKind.money),
+      ReportColumn('Bonus qty', CellKind.qty),
     ],
     rows: [
       for (final t in rows)
@@ -714,6 +720,7 @@ ReportTable itemDiscount(ReportPeriod period, List<ItemTrade> trades) {
             t.discount,
             shareBp(t.discount, t.salesGross),
             t.salesGross - t.discount,
+            t.isLoose ? null : t.qtyBonus,
           ],
           link: t.itemId == null
               ? null
@@ -727,6 +734,7 @@ ReportTable itemDiscount(ReportPeriod period, List<ItemTrade> trades) {
         discount,
         shareBp(discount, gross),
         gross - discount,
+        null,
       ], style: RowStyle.total),
     ],
     summary: [
@@ -741,7 +749,8 @@ const _discountIs =
     'Discount is each line\'s own and its share of a discount on the whole '
     'bill, the way the bill split it, which is the Discount Given account. '
     'Before discount is the lines at their rate. Items sold only at their '
-    'price are left out.';
+    'price are left out. Bonus qty went out free under a scheme, in the '
+    "item's own unit; it is inside Qty sold.";
 
 /// The low stock summary (M34): every item at or below the floor the shop
 /// set for it, the worst first, with who last supplied it and how much to

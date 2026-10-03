@@ -363,7 +363,10 @@ mixin _ItemStockQueries implements ItemStockReportSource {
                    AS purchases,
                  SUM(CASE WHEN d.doc_type = 'purchase_return'
                           THEN dl.line_total_paisa - dl.tax_paisa ELSE 0 END)
-                   AS purchase_returns
+                   AS purchase_returns,
+                 SUM(CASE WHEN d.doc_type = 'sale_invoice'
+                           AND dl.is_free_item = 1
+                          THEN dl.base_qty_thousandths ELSE 0 END) AS bonus
           FROM documents d
           JOIN document_lines dl ON dl.document_id = d.id
           LEFT JOIN items i ON i.id = dl.item_id
@@ -401,6 +404,8 @@ mixin _ItemStockQueries implements ItemStockReportSource {
           qtySentBack: Qty.raw(r.read<int>('sent_back')),
           purchases: Money.paisa(r.read<int>('purchases')),
           purchaseReturns: Money.paisa(r.read<int>('purchase_returns')),
+          // M43: given free under a scheme, inside qtySold.
+          qtyBonus: Qty.raw(r.read<int>('bonus')),
         ),
     ];
   }

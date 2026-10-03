@@ -213,6 +213,7 @@ final class ItemTrade {
     this.qtySentBack = Qty.zero,
     this.purchases = Money.zero,
     this.purchaseReturns = Money.zero,
+    this.qtyBonus = Qty.zero,
   });
 
   /// What every line with no item behind it is called, together: khula
@@ -261,6 +262,11 @@ final class ItemTrade {
   /// Deliveries before tax.
   final Money purchases;
   final Money purchaseReturns;
+
+  /// Given free under the shop's schemes (M43): part of [qtySold], since it
+  /// left the shelf on a bill, and at no price, so nothing of it is in the
+  /// sales or the discount.
+  final Qty qtyBonus;
 
   Qty get netQtySold => qtySold - qtyReturned;
   Money get netSales => sales - returns;

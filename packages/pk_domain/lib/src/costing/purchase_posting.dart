@@ -24,6 +24,7 @@ final class PurchaseLinePosting {
     required this.landedCost,
     required this.avgAfter,
     required this.balanceAfter,
+    this.isFree = false,
   });
 
   final int lineNo;
@@ -50,6 +51,10 @@ final class PurchaseLinePosting {
   /// The item's new average cost, and its new balance, after this line.
   final Rate avgAfter;
   final Qty balanceAfter;
+
+  /// Goods the supplier sent free on the line before it (M43): no rate, no
+  /// money, and their share of what the paid goods landed at.
+  final bool isFree;
 }
 
 /// Everything one purchase bill writes.

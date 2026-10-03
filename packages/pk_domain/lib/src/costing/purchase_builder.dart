@@ -29,10 +29,33 @@ final class PurchaseLineDraft {
     this.batchNo,
     this.expiry,
     this.serials = const [],
+    this.freeQty = Qty.zero,
+    this.freeBaseQty = Qty.zero,
   });
 
   final String itemId;
   final String itemName;
+
+  /// The supplier's bonus on this line (M43): "10+1" is ten billed and one
+  /// more that came free, in the same unit as [qty]. Zero on an ordinary
+  /// line.
+  ///
+  /// The free goods go on the shelf and into the average with the paid ones
+  /// and carry their cost: ten cartons at Rs 960 with one free is eleven
+  /// cartons for Rs 9,600, and each costs Rs 872.73. The line's money is
+  /// what the supplier billed and nothing else. Written as a line of its own
+  /// beside the paid one, marked free, so the delivery reads like the
+  /// supplier's paper and a return of the free carton credits nothing.
+  final Qty freeQty;
+
+  /// [freeQty] in the item's base unit.
+  final Qty freeBaseQty;
+
+  /// Whether the supplier sent anything free on this line.
+  bool get hasFree => freeBaseQty.isPositive;
+
+  /// Everything this line puts on the shelf, paid and free.
+  Qty get shelfQty => baseQty + freeBaseQty;
 
   /// The batch printed on the goods, for an item kept by batch.
   final String? batchNo;
@@ -105,9 +128,12 @@ List<LandedLine> landLines(
         final line = draft.lines[i];
         final landed = line.lineTotal + shares[i];
         final before = running[line.itemId] ?? CostPosition.zero;
+        // The free goods (M43) arrive with the paid ones, in one step, so
+        // the average falls by exactly what they bring and the paid goods'
+        // money is spread over both.
         final change = receiveStock(
           before: before,
-          qtyIn: line.baseQty,
+          qtyIn: line.shelfQty,
           landedCost: landed,
         );
         running[line.itemId] = change.after;
@@ -214,6 +240,11 @@ final class PurchaseBuilder {
     var shortfall = Money.zero;
     var inventoryDelta = Money.zero;
 
+    // Rows are numbered as they are written: a line the supplier sent
+    // something free on is two rows (M43), so the row number runs ahead of
+    // the line number from there on.
+    var rowNo = 0;
+
     for (var i = 0; i < draft.lines.length; i++) {
       final line = draft.lines[i];
       final LandedLine(:landed, :before, :change) = landedLines[i];
@@ -226,9 +257,38 @@ final class PurchaseBuilder {
       }
       inventoryDelta += change.after.value - before.value;
 
+      final serials = [
+        for (final s in line.serials)
+          if (s.trim().isNotEmpty) s.trim(),
+      ];
+      if (line.freeQty.isNegative || line.freeBaseQty.isNegative) {
+        throw StockRefused(
+          '${line.itemName}: free goods cannot be less than nothing.',
+        );
+      }
+      if (line.hasFree && serials.isNotEmpty) {
+        // A free phone is still a phone with its own number, and a line of
+        // serials names exactly the pieces it paid for.
+        throw StockRefused(
+          '${line.itemName} is kept by serial number. A piece that came '
+          'free needs its own serial on its own line.',
+        );
+      }
+
+      // The paid goods and the free ones share what the line landed at, by
+      // quantity, to the paisa: each carton of "10+1" costs an eleventh of
+      // the ten's money (M43). Without free goods the paid row takes it all.
+      final shares = line.hasFree
+          ? landed.allocate([
+              line.baseQty.inThousandths,
+              line.freeBaseQty.inThousandths,
+            ])
+          : [landed];
+      final paidNo = ++rowNo;
+
       lines.add(
         PurchaseLinePosting(
-          lineNo: i + 1,
+          lineNo: paidNo,
           itemId: line.itemId,
           itemName: line.itemName,
           qty: line.qty,
@@ -237,16 +297,12 @@ final class PurchaseBuilder {
           baseQty: line.baseQty,
           rate: line.rate,
           lineTotal: line.lineTotal,
-          landedCost: landed,
+          landedCost: shares.first,
           avgAfter: change.after.avg,
           balanceAfter: change.after.qty,
         ),
       );
 
-      final serials = [
-        for (final s in line.serials)
-          if (s.trim().isNotEmpty) s.trim(),
-      ];
       if (serials.isNotEmpty) {
         // One movement per piece, each in a lot of its own named by its
         // serial, so the counter can later say which one it sold.
@@ -274,28 +330,64 @@ final class PurchaseBuilder {
               valueDelta: values[k],
               occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
               occurredOnLocal: actor.businessDate.value,
-              lineNo: i + 1,
+              lineNo: paidNo,
               newLot: LotDraft(lotNo: serials[k], serial: serials[k]),
             ),
           );
         }
       } else {
         final batch = line.batchNo?.trim();
+        // The free goods go into the same batch as the paid ones: they came
+        // in the same cartons.
+        final lot = batch == null || batch.isEmpty
+            ? null
+            : LotDraft(lotNo: batch, batchNo: batch, expiry: line.expiry);
         movements.add(
           StockMovementPosting(
             itemId: line.itemId,
             txnType: 'purchase',
             qtyDelta: line.baseQty,
             rate: change.after.avg,
-            valueDelta: landed,
+            valueDelta: shares.first,
             occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
             occurredOnLocal: actor.businessDate.value,
-            lineNo: i + 1,
-            newLot: batch == null || batch.isEmpty
-                ? null
-                : LotDraft(lotNo: batch, batchNo: batch, expiry: line.expiry),
+            lineNo: paidNo,
+            newLot: lot,
           ),
         );
+        if (line.hasFree) {
+          final freeNo = ++rowNo;
+          lines.add(
+            PurchaseLinePosting(
+              lineNo: freeNo,
+              itemId: line.itemId,
+              itemName: line.itemName,
+              qty: line.freeQty,
+              unitId: line.unitId,
+              unitCode: line.unitCode,
+              baseQty: line.freeBaseQty,
+              rate: Rate.zero,
+              lineTotal: Money.zero,
+              landedCost: shares.last,
+              avgAfter: change.after.avg,
+              balanceAfter: change.after.qty,
+              isFree: true,
+            ),
+          );
+          movements.add(
+            StockMovementPosting(
+              itemId: line.itemId,
+              txnType: 'purchase',
+              qtyDelta: line.freeBaseQty,
+              rate: change.after.avg,
+              valueDelta: shares.last,
+              occurredAtUtcMillis: actor.startedAtUtc.millisecondsSinceEpoch,
+              occurredOnLocal: actor.businessDate.value,
+              lineNo: freeNo,
+              newLot: lot,
+            ),
+          );
+        }
       }
     }
 
