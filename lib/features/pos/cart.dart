@@ -617,6 +617,12 @@ class CartNotifier extends Notifier<Cart> {
     state = lines.isEmpty ? const Cart() : state.copyWith(lines: lines);
   }
 
+  // M45: the line as the cashier counted it ("2 ctn 5" on a carton line),
+  // remade in counted_line.dart: in pieces, its price carried there.
+  void setCounted(CartLine line) => state = state.copyWith(
+    lines: [for (final l in state.lines) l.item.id == line.item.id ? line : l],
+  );
+
   // M53: the line put back as it last stood within the shelf, or taken off
   // when it never did — what the counter does when the shelf says no
   // (shelf_guard.dart).

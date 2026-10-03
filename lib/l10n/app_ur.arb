@@ -3824,5 +3824,73 @@
       "what": {"type": "String"}
     }
   },
-  "purchaseFreeWrong": "Muft tadaad theek nahi likhi."
+  "purchaseFreeWrong": "Muft tadaad theek nahi likhi.",
+  "qtyCountedAs": "Yani {counted} ({figure})",
+  "@qtyCountedAs": {
+    "placeholders": {
+      "counted": {"type": "String"},
+      "figure": {"type": "String"}
+    }
+  },
+  "qtyNotUnderstood": "Samajh nahi aaya. Aise likhein: 2 ctn 5, ya sirf 53.",
+  "qtyNotWhole": "{unit} toot kar nahi bikta. Poora number likhein.",
+  "@qtyNotWhole": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyPriceNotEven": "Rs {rate} ka {pack} aik {unit} ke poore paise nahi banta. Pehle {unit} ki qeemat likhein.",
+  "@qtyPriceNotEven": {
+    "placeholders": {
+      "rate": {"type": "String"},
+      "pack": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepUp": "+1 {unit}",
+  "@qtyStepUp": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepDown": "−1 {unit}",
+  "@qtyStepDown": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepUpLabel": "Aik {unit} aur",
+  "@qtyStepUpLabel": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepDownLabel": "Aik {unit} kam",
+  "@qtyStepDownLabel": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyKeypadLetters": "Haroof se likhein (2 ctn 5)",
+  "qtyKeypadNumbers": "Sirf number",
+  "qtyPriceEach": "1 {unit} = Rs {price}",
+  "@qtyPriceEach": {
+    "placeholders": {
+      "unit": {"type": "String"},
+      "price": {"type": "String"}
+    }
+  },
+  "qtyPriceAbout": "1 {unit} ≈ Rs {price}",
+  "@qtyPriceAbout": {
+    "placeholders": {
+      "unit": {"type": "String"},
+      "price": {"type": "String"}
+    }
+  },
+  "posStockWords": "Stock: {qty}",
+  "@posStockWords": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  }
 }

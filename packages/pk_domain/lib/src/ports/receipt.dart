@@ -85,6 +85,7 @@ final class ReceiptLine {
     this.discount = Money.zero,
     this.isFreeItem = false,
     this.tax,
+    this.qtyWords,
   });
 
   final String name;
@@ -99,6 +100,16 @@ final class ReceiptLine {
   /// nobody read it, and the layouts that do not show tax never ask.
   final ReceiptLineTax? tax;
 
+  /// The quantity in the item's packs, when the line was not sold in them
+  /// (M45): "2 ctn 5 pc" beside "53 pcs". Null when the figure already says
+  /// it, and for a weight: "1.5 kg x 300.00" stays as M56 left it, plain
+  /// enough to multiply out, and a 58 mm roll is not lengthened to say "1 kg
+  /// 500 g" under it.
+  ///
+  /// Printed as well as the figure, never instead of it: the rate is per
+  /// [unitCode], and the customer checks the line by multiplying the two.
+  final String? qtyWords;
+
   /// The same line with its tax read in.
   ReceiptLine withTax(ReceiptLineTax? value) => ReceiptLine(
     name: name,
@@ -109,6 +120,7 @@ final class ReceiptLine {
     discount: discount,
     isFreeItem: isFreeItem,
     tax: value,
+    qtyWords: qtyWords,
   );
 }
 

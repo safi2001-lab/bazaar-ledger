@@ -6396,4 +6396,64 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get purchaseFreeWrong => 'Muft tadaad theek nahi likhi.';
+
+  @override
+  String qtyCountedAs(String counted, String figure) {
+    return 'Yani $counted ($figure)';
+  }
+
+  @override
+  String get qtyNotUnderstood =>
+      'Samajh nahi aaya. Aise likhein: 2 ctn 5, ya sirf 53.';
+
+  @override
+  String qtyNotWhole(String unit) {
+    return '$unit toot kar nahi bikta. Poora number likhein.';
+  }
+
+  @override
+  String qtyPriceNotEven(String rate, String pack, String unit) {
+    return 'Rs $rate ka $pack aik $unit ke poore paise nahi banta. Pehle $unit ki qeemat likhein.';
+  }
+
+  @override
+  String qtyStepUp(String unit) {
+    return '+1 $unit';
+  }
+
+  @override
+  String qtyStepDown(String unit) {
+    return '−1 $unit';
+  }
+
+  @override
+  String qtyStepUpLabel(String unit) {
+    return 'Aik $unit aur';
+  }
+
+  @override
+  String qtyStepDownLabel(String unit) {
+    return 'Aik $unit kam';
+  }
+
+  @override
+  String get qtyKeypadLetters => 'Haroof se likhein (2 ctn 5)';
+
+  @override
+  String get qtyKeypadNumbers => 'Sirf number';
+
+  @override
+  String qtyPriceEach(String unit, String price) {
+    return '1 $unit = Rs $price';
+  }
+
+  @override
+  String qtyPriceAbout(String unit, String price) {
+    return '1 $unit ≈ Rs $price';
+  }
+
+  @override
+  String posStockWords(String qty) {
+    return 'Stock: $qty';
+  }
 }

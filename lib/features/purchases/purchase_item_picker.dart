@@ -4,14 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart'; // M45
 import '../../app/providers.dart';
 import '../../design/add_offer.dart';
 import '../../design/components.dart';
+import '../../design/counted_qty_field.dart'; // M45
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/pack_choice.dart';
 import '../items/quick_item_sheet.dart';
 import '../pos/past_deals.dart';
+import 'counted_purchase.dart'; // M45
 
 /// Adding one line to a delivery: which item, how much, what it cost.
 ///
@@ -113,21 +116,47 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   /// the quantity, and follows the quantity from there, as the purchase
   /// rate's prefill does.
   void _usePrice(Rate rate) {
-    final qty = Qty.tryParse(_qty.text);
+    final base = _count(_qty.text)?.base; // M45
     setState(() {
       _followRate = rate;
       _costTyped = false;
       _cost.text = rate
           .amountFor(
             // M53: a carton of 24 costs 24 pieces' worth.
-            PackChoice.inBase(
-                  qty != null && qty.isPositive ? qty : Qty.one,
-                  _pack,
-                ) ??
-                Qty.one,
+            base != null && base.isPositive
+                ? base
+                : PackChoice.inBase(Qty.one, _pack) ?? Qty.one,
           )
           .amountOnly;
     });
+  }
+
+  // M45: the quantity box read in the item's own units, "10 ctn 5" as well
+  // as "10" (counted_purchase.dart).
+  PurchaseCount? _count(String typed) {
+    final item = _chosen;
+    if (item == null) return null;
+    final counting = ref
+        .read(countingBookProvider)
+        .entryLadder(
+          itemId: item.id,
+          baseUnitId: item.unitId,
+          baseUnitCode: item.unitCode,
+          baseDecimals: item.unitDecimals,
+        );
+    return purchaseCount(typed, counting, _pack);
+  }
+
+  /// [freeQty] counted in the chip's unit, said in the unit the paid line
+  /// was written in ([linePack], or the item's own unit when null); null
+  /// when it is no whole number of that unit (M43 with M45).
+  Qty? _freeInLineUnit(Qty freeQty, Qty freeBase, ItemPack? linePack) {
+    if (linePack?.unitId == _pack?.unitId) return freeQty;
+    if (linePack == null) return freeBase;
+    final scaled = freeBase.inThousandths * 1000;
+    final size = linePack.size.inThousandths;
+    if (size <= 0 || scaled % size != 0) return null;
+    return Qty.raw(scaled ~/ size);
   }
 
   /// The cost field is what the whole line cost, and the prefill is the
@@ -139,10 +168,9 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   /// when this mattered most.
   void _onQty(String value) {
     final rate = _followRate;
-    final qty = Qty.tryParse(value);
     setState(() {
       // M53: in the base unit, so a carton follows at 24 pieces' worth.
-      final base = qty == null ? null : PackChoice.inBase(qty, _pack);
+      final base = _count(value)?.base; // M45
       if (!_costTyped && rate != null && base != null && base.isPositive) {
         _cost.text = rate.amountFor(base).amountOnly;
       }
@@ -183,14 +211,14 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     if (item == null) return;
     final s = AppStrings.of(context);
     final serials = item.tracksSerial ? _serialList : const <String>[];
-    final qty = item.tracksSerial
-        ? Qty.units(serials.length)
-        : Qty.tryParse(_qty.text);
+    // M45: "10 ctn 5" is 245 pieces, billed by the piece; "10" with the
+    // carton chip on is ten cartons, as before.
+    final count = item.tracksSerial ? null : _count(_qty.text);
+    final pack = count?.pack;
+    final qty = item.tracksSerial ? Qty.units(serials.length) : count?.qty;
     final cost = Money.tryParse(_cost.text);
     // M53: what the shelf receives, a carton being 24 pieces.
-    final base = qty == null || item.tracksSerial
-        ? qty
-        : PackChoice.inBase(qty, _pack);
+    final base = item.tracksSerial ? qty : count?.base;
     if (qty == null ||
         base == null ||
         !qty.isPositive ||
@@ -206,7 +234,18 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     final freeText = item.tracksSerial ? '' : _free.text.trim();
     final freeQty = freeText.isEmpty ? Qty.zero : Qty.tryParse(freeText);
     final freeBase = freeQty == null ? null : PackChoice.inBase(freeQty, _pack);
-    if (freeQty == null || freeQty.isNegative || freeBase == null) {
+    // M43 with M45: the free box counts in the chip's unit, but "10 ctn 5"
+    // moves the paid line to pieces, and the free row is written in the
+    // line's own unit. So it is said again in that unit: a free carton on
+    // a line of pieces is 24 pieces. A free piece on a line of cartons is
+    // no whole number of cartons, and is refused rather than rounded.
+    final freeInLine = freeQty == null || freeBase == null
+        ? null
+        : _freeInLineUnit(freeQty, freeBase, count?.pack);
+    if (freeQty == null ||
+        freeQty.isNegative ||
+        freeBase == null ||
+        freeInLine == null) {
       setState(() => _problem = s.purchaseFreeWrong);
       return;
     }
@@ -227,15 +266,15 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         // are billed as ten cartons and put 240 pieces on the shelf, the
         // size coming from the item's own conversion, exactly.
         baseQty: base,
-        unitId: item.tracksSerial ? item.unitId : _pack?.unitId ?? item.unitId,
+        unitId: item.tracksSerial ? item.unitId : pack?.unitId ?? item.unitId,
         unitCode: item.tracksSerial
             ? item.unitCode
-            : _pack?.unitCode ?? item.unitCode,
+            : pack?.unitCode ?? item.unitCode,
         rate: Rate.fromPack(cost, qty),
         batchNo: item.tracksBatch ? _batch.text.trim() : null,
         expiry: item.tracksBatch ? expiry : null,
         serials: serials,
-        freeQty: freeQty, // M43
+        freeQty: freeInLine, // M43, in the line's own unit
         freeBaseQty: freeBase,
       ),
     );
@@ -362,13 +401,23 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
               ),
             const SizedBox(height: BlTokens.space3),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  child: BlField(
+                  // M45: "10 ctn 5" as well as "10", with a carton stepper.
+                  child: CountedQtyField(
                     controller: _qty,
                     label:
                         '${s.posQty} (${_pack?.unitCode ?? chosen.unitCode})',
-                    numeric: true,
+                    counting: ref
+                        .watch(countingBookProvider)
+                        .entryLadder(
+                          itemId: chosen.id,
+                          baseUnitId: chosen.unitId,
+                          baseUnitCode: chosen.unitCode,
+                          baseDecimals: chosen.unitDecimals,
+                        ),
+                    unitSize: _pack?.size ?? Qty.one,
                     autofocus: true,
                     onChanged: _onQty,
                   ),
@@ -395,6 +444,16 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                 onChanged: (_) => setState(() => _problem = null),
               ),
             ],
+            // M45: the carton calculator — what the line cost, per piece
+            // and per carton.
+            PackPriceHint(
+              counting: countingOf(ref, chosen),
+              rate: switch (Money.tryParse(_cost.text)) {
+                final cost? => Rate.perUnit(cost),
+                null => null,
+              },
+              per: _count(_qty.text)?.base,
+            ),
             if (chosen.tracksBatch) ...[
               const SizedBox(height: BlTokens.space3),
               Row(

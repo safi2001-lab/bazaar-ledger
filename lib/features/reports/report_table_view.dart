@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart'; // M45
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
@@ -13,15 +15,21 @@ import '../../l10n/app_strings.dart';
 /// [pageSize] are drawn and the rest are a tap away, while the total row
 /// stays at the foot whatever is showing: the export carries every row, and
 /// the total on screen is always the whole period's.
-class ReportTableView extends StatefulWidget {
+class ReportTableView extends ConsumerStatefulWidget {
   const ReportTableView({
     required this.table,
     this.canOpen,
     this.onOpen,
+    this.itemId, // M45
     super.key,
   });
 
   final ReportTable table;
+
+  /// M45: the one item every quantity in the table is of, where the report
+  /// is narrowed to one (an item's day-by-day detail), so its quantities
+  /// read in its packs too. A row's own item wins over it.
+  final String? itemId;
 
   /// Whether a row's link leads anywhere from here.
   final bool Function(ReportLink link)? canOpen;
@@ -30,10 +38,10 @@ class ReportTableView extends StatefulWidget {
   static const pageSize = 200;
 
   @override
-  State<ReportTableView> createState() => _ReportTableViewState();
+  ConsumerState<ReportTableView> createState() => _ReportTableViewState();
 }
 
-class _ReportTableViewState extends State<ReportTableView> {
+class _ReportTableViewState extends ConsumerState<ReportTableView> {
   int _visible = ReportTableView.pageSize;
   int? _sortColumn;
   bool _ascending = false;
@@ -69,6 +77,7 @@ class _ReportTableViewState extends State<ReportTableView> {
     final t = context.bl;
     final table = widget.table;
     final columns = table.columns;
+    final counting = ref.watch(countingBookProvider); // M45
     final sorted = _sortColumn == null
         ? table.rows
         : sortedRows(table, _sortColumn!, ascending: _ascending);
@@ -97,7 +106,9 @@ class _ReportTableViewState extends State<ReportTableView> {
           vertical: BlTokens.space1 + 2,
         ),
         child: Text(
-          reportCellText(value, columns[i].kind),
+          // M45: "2 ctn + 5 pcs" for an item kept in cartons.
+          _inPacks(counting, row, value, widget.itemId) ??
+              reportCellText(value, columns[i].kind),
           textAlign: numeric ? TextAlign.end : TextAlign.start,
           style: TextStyle(
             fontSize: 14,
@@ -213,6 +224,26 @@ class _ReportTableViewState extends State<ReportTableView> {
       ],
     );
   }
+}
+
+// M45: an item's quantity in its own packs — "2 ctn + 5 pcs" where the
+// sheet said 53 — for an item that has a pack and a figure that fills at
+// least one. Everything else reads exactly as before: the figure beside its
+// Unit column, which is also what every export carries.
+String? _inPacks(
+  CountingBook counting,
+  ReportRow row,
+  Object? value,
+  String? itemId,
+) {
+  if (value is! Qty) return null;
+  final link = row.link;
+  final id = link?.kind == ReportLinkKind.item ? link!.id : itemId;
+  if (id == null) return null;
+  final unit = counting.baseCodeOf(id);
+  if (unit == null) return null;
+  final ladder = counting.ladder(itemId: id, baseUnitCode: unit);
+  return ladder.countsInPacks(value) ? ladder.words(value) : null;
 }
 
 /// A cell as the screen writes it.

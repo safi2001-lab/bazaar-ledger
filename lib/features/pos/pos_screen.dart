@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart'; // M45
 import '../../app/providers.dart';
 import '../../design/add_offer.dart';
 import '../../design/components.dart';
+import '../../design/counted_qty_field.dart'; // M45
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
@@ -15,6 +17,7 @@ import '../parties/party_picker.dart';
 import '../sales/bill_again.dart';
 import '../scan/scan_screen.dart';
 import 'cart.dart';
+import 'counted_line.dart'; // M45
 import 'loose_line_sheet.dart';
 import 'past_deals.dart';
 import 'scheme_book.dart'; // M43
@@ -711,14 +714,14 @@ class _SearchResults extends ConsumerWidget {
   }
 }
 
-class _ResultRow extends StatelessWidget {
+class _ResultRow extends ConsumerWidget {
   const _ResultRow({super.key, required this.item, required this.onTap});
 
   final ItemSummary item;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
     final out = item.tracksStock && !item.stockOnHand.isPositive;
@@ -749,9 +752,9 @@ class _ResultRow extends StatelessWidget {
                     Text(
                       out
                           ? s.posNoStock
-                          : s.posStockLeft(
-                              item.stockOnHand.display,
-                              item.unitCode,
+                          // M45: "Stock: 2 ctn + 5 pcs".
+                          : s.posStockWords(
+                              countingOf(ref, item).words(item.stockOnHand),
                             ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
@@ -1187,15 +1190,9 @@ class _CartLineTile extends ConsumerWidget {
                           // against what is on the counter.
                           child: FittedBox(
                             fit: BoxFit.scaleDown,
-                            child: BlQty(
-                              line.qty,
-                              // A loose line typed as a bare amount has no
-                              // unit to print beside its quantity.
-                              unit: line.item.unitCode.isEmpty
-                                  ? null
-                                  : line.item.unitCode,
-                              size: 16,
-                            ),
+                            // M45: "2 ctn + 5 pcs", in the unit it is sold
+                            // in (counted_line.dart).
+                            child: CountedLineQty(line: line, size: 16),
                           ),
                         ),
                       ),
@@ -1561,6 +1558,9 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
     text: widget.line.discount.isZero ? '' : widget.line.discount.amountOnly,
   );
 
+  // M45: why the quantity typed could not be used, said under the box.
+  String? _qtyProblem;
+
   @override
   void dispose() {
     _qty.dispose();
@@ -1577,13 +1577,32 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
   void _apply({Rate? picked}) {
     final notifier = ref.read(cartProvider.notifier);
     final id = widget.line.item.id;
-    final qty = Qty.tryParse(_qty.text);
     final rate = picked ?? Rate.tryParse(_rate.text);
+    // M45: "2 ctn 5", "1 kg 250" or a figure, read in the item's own units
+    // (counted_line.dart); a count that is not a whole carton remakes the
+    // line in pieces, its price carried there.
+    final edit = countedEdit(
+      AppStrings.of(context),
+      _qty.text,
+      widget.line,
+      lineCounting(ref.read(countingBookProvider), widget.line, forEntry: true),
+      ref.read(unitConverterProvider).valueOrNull,
+      rate: rate,
+    );
+    if (edit.problem case final problem?) {
+      setState(() => _qtyProblem = problem);
+      return;
+    }
+    final qty = edit.qty;
     final discount = _discount.text.trim().isEmpty
         ? null
         : Money.tryParse(_discount.text);
 
-    if (rate != null) notifier.setRate(id, rate);
+    if (edit.line case final counted?) {
+      notifier.setCounted(counted);
+    } else if (rate != null) {
+      notifier.setRate(id, rate);
+    }
     // Only a discount the cashier touched is written back. The field shows a
     // percentage — the customer's standing 5% — as the rupees it comes to
     // at the old price, and writing that back froze it as rupees: an old,
@@ -1639,19 +1658,45 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
             _LastBought(line: line),
           ],
           const SizedBox(height: BlTokens.space4),
-          BlField(
+          // M45: takes "2 ctn 5" as well as "53", with a carton stepper.
+          CountedQtyField(
             controller: _qty,
             label: line.sellingUnitCode.isEmpty
                 ? s.posQty
                 : '${s.posQty} (${line.sellingUnitCode})',
-            numeric: true,
-            decimals: line.item.unitDecimals,
+            counting: lineCounting(
+              ref.watch(countingBookProvider),
+              line,
+              forEntry: true,
+            ),
+            unitSize: lineUnitSize(
+              line,
+              ref.watch(unitConverterProvider).valueOrNull,
+            ),
             autofocus: true,
+            problem: _qtyProblem,
+            onChanged: (_) {
+              if (_qtyProblem != null) setState(() => _qtyProblem = null);
+            },
           ),
           // A loose line has no item, so nothing else to be measured in.
           if (!line.isLoose) _UnitChoice(line: line),
           const SizedBox(height: BlTokens.space3),
-          BlField(controller: _rate, label: s.posRate, numeric: true),
+          BlField(
+            controller: _rate,
+            label: s.posRate,
+            numeric: true,
+            onChanged: (_) => setState(() {}), // M45: the calculator follows
+          ),
+          // M45: the carton calculator, "1 pcs = Rs 40.00".
+          PackPriceHint(
+            counting: lineCounting(ref.watch(countingBookProvider), line),
+            rate: Rate.tryParse(_rate.text),
+            per: lineUnitSize(
+              line,
+              ref.watch(unitConverterProvider).valueOrNull,
+            ),
+          ),
           const SizedBox(height: BlTokens.space3),
           BlField(
             controller: _discount,

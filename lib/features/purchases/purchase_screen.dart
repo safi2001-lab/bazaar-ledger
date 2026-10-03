@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_picker.dart';
+import 'counted_purchase.dart'; // M45
 import 'delivery_line_sheet.dart';
 import 'purchase_item_picker.dart';
 
@@ -502,6 +503,8 @@ class _LineTile extends StatelessWidget {
                     ),
                     style: TextStyle(fontSize: 13, color: t.accent),
                   ),
+                // M45: "Yani 10 ctn + 5 pcs (245 pcs)".
+                PurchaseLineCount(line: line),
                 if (rateDiffers(line.rate, ordered))
                   Text(
                     AppStrings.of(context).purchaseRateDiffers(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart';
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
@@ -49,6 +50,15 @@ class _StockAdjustSheetState extends ConsumerState<StockAdjustSheet> {
   bool _busy = false;
   Object? _failure;
 
+  /// What was counted, in the item's own unit (M45): "3 ctn 7" as the shelf
+  /// is stacked, as readily as "79". A figure alone is in the item's own
+  /// unit, which is what this box was always in.
+  Qty? _read(String? typed) => ref
+      .read(countingBookProvider)
+      .entryLadder(itemId: widget.itemId, baseUnitCode: widget.unitCode)
+      .read(typed ?? '')
+      ?.qty;
+
   @override
   void dispose() {
     _counted.dispose();
@@ -63,7 +73,7 @@ class _StockAdjustSheetState extends ConsumerState<StockAdjustSheet> {
     if (_busy) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
-    final typed = Qty.tryParse(_counted.text);
+    final typed = _read(_counted.text);
     if (typed == null) return;
 
     setState(() {
@@ -137,7 +147,13 @@ class _StockAdjustSheetState extends ConsumerState<StockAdjustSheet> {
             BlAmountRow(
               label: s.stockAdjustCurrent,
               labelStyle: TextStyle(fontSize: 14, color: t.inkMuted),
-              child: BlQty(widget.onHand, unit: widget.unitCode, size: 20),
+              child: BlQty(
+                widget.onHand,
+                unit: widget.unitCode,
+                size: 20,
+                // M45: "2 ctn + 5 pcs" on the shelf now.
+                counting: countingOfItem(ref, widget.itemId, widget.unitCode),
+              ),
             ),
             const SizedBox(height: BlTokens.space4),
 
@@ -182,7 +198,7 @@ class _StockAdjustSheetState extends ConsumerState<StockAdjustSheet> {
               ),
               autofocus: true,
               validator: (value) {
-                final qty = Qty.tryParse(value ?? '');
+                final qty = _read(value);
                 if (qty == null) return s.commonRequired;
                 if (qty.isNegative) return s.commonRequired;
                 if (!_isCount && qty.isZero) return s.commonRequired;

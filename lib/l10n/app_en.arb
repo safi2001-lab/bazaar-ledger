@@ -3499,5 +3499,73 @@
       "what": {"type": "String"}
     }
   },
-  "purchaseFreeWrong": "The free quantity is not a whole number of the item's unit."
+  "purchaseFreeWrong": "The free quantity is not a whole number of the item's unit.",
+  "qtyCountedAs": "That is {counted} ({figure})",
+  "@qtyCountedAs": {
+    "placeholders": {
+      "counted": {"type": "String"},
+      "figure": {"type": "String"}
+    }
+  },
+  "qtyNotUnderstood": "Not understood. Type it like 2 ctn 5, or just 53.",
+  "qtyNotWhole": "{unit} is not sold in parts. Type a whole number.",
+  "@qtyNotWhole": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyPriceNotEven": "Rs {rate} a {pack} is not a whole price per {unit}. Type the price per {unit} first.",
+  "@qtyPriceNotEven": {
+    "placeholders": {
+      "rate": {"type": "String"},
+      "pack": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepUp": "+1 {unit}",
+  "@qtyStepUp": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepDown": "−1 {unit}",
+  "@qtyStepDown": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepUpLabel": "One more {unit}",
+  "@qtyStepUpLabel": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyStepDownLabel": "One {unit} less",
+  "@qtyStepDownLabel": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "qtyKeypadLetters": "Type with letters (2 ctn 5)",
+  "qtyKeypadNumbers": "Numbers only",
+  "qtyPriceEach": "1 {unit} = Rs {price}",
+  "@qtyPriceEach": {
+    "placeholders": {
+      "unit": {"type": "String"},
+      "price": {"type": "String"}
+    }
+  },
+  "qtyPriceAbout": "1 {unit} ≈ Rs {price}",
+  "@qtyPriceAbout": {
+    "placeholders": {
+      "unit": {"type": "String"},
+      "price": {"type": "String"}
+    }
+  },
+  "posStockWords": "Stock: {qty}",
+  "@posStockWords": {
+    "placeholders": {
+      "qty": {"type": "String"}
+    }
+  }
 }

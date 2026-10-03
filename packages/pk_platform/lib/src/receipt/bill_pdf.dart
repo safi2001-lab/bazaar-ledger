@@ -771,6 +771,27 @@ final class _Bill {
 
     pw.Widget fig(String v) => pw.Text(v, style: figures);
 
+    // M45: the quantity cell, with the count in packs under the figure —
+    // "53 pcs" over "2 ctn 5 pc" — when the line was not sold in its pack.
+    pw.Widget qty(ReceiptLine l, String figure) {
+      final counted = l.qtyWords;
+      if (counted == null) return fig(figure);
+      return pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.end,
+        children: [
+          fig(figure),
+          pw.Text(
+            counted,
+            style: pw.TextStyle(
+              font: mono,
+              fontSize: size - 1.5,
+              color: PdfColors.grey700,
+            ),
+          ),
+        ],
+      );
+    }
+
     if (!money) {
       return pw.TableHelper.fromTextArray(
         headers: const ['#', 'Item', 'Qty', 'Unit'],
@@ -796,7 +817,7 @@ final class _Bill {
             [
               '${i + 1}',
               name(d.lines[i]),
-              fig(d.lines[i].qtyDisplay),
+              qty(d.lines[i], d.lines[i].qtyDisplay), // M45
               words(d.lines[i].unitCode),
             ],
         ],
@@ -856,7 +877,7 @@ final class _Bill {
             [
               '${i + 1}',
               name(l),
-              fig('${l.qtyDisplay} ${l.unitCode}'),
+              qty(l, '${l.qtyDisplay} ${l.unitCode}'), // M45
               fig(taxOf(l).valueExclTax.amountOnly),
               fig(taxOf(l).rateLabel),
               fig(taxOf(l).salesTax.amountOnly),
@@ -894,7 +915,10 @@ final class _Bill {
           [
             '${i + 1}',
             name(d.lines[i]),
-            fig('${d.lines[i].qtyDisplay} ${d.lines[i].unitCode}'),
+            qty(
+              d.lines[i],
+              '${d.lines[i].qtyDisplay} ${d.lines[i].unitCode}',
+            ), // M45
             fig(d.lines[i].rate.amountOnly),
             fig(d.lines[i].amount.amountOnly),
           ],

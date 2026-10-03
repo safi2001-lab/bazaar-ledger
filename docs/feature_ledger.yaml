@@ -2217,6 +2217,73 @@ milestones:
       - lib/features/items/item_scheme_screen.dart
       - lib/features/settings/schemes_screen.dart
 
+  - id: M45
+    title: 2 ctn + 5 pcs, 1 kg 500 g — quantities the way the shop counts them, everywhere
+    # Opened and sealed 3 Oct 2026 at 1/1. Vyapar's most-agreed-with review
+    # of September 2026, +403 people: a carton shown as "0.4756". A shop
+    # counts a shelf the way it is stacked, two cartons and five loose, and
+    # now so does every screen that shows an item's quantity: the bill being
+    # rung, the search at the counter, the item list, the shelf count, the
+    # item's history, low stock, a delivery's lines, and the stock reports.
+    # "2 ctn + 5 pcs", "1 bori + 12 kg 500 g", "3 doz + 4 pcs" on a line sold
+    # by the dozen; never a decimal of a pack. The packs are the item's own
+    # (M53), largest first, the split is integer division of thousandths,
+    # and the words add back to exactly what the shelf holds — proved for
+    # every count from nought to four hundred, by reading each one's words
+    # back. A line sold in a pack now says so: two cartons used to read "2
+    # pcs", the figure beside the item's own unit whatever the line was sold
+    # in.
+    #
+    # Typed the same way. The quantity box at the counter, on a delivery and
+    # at the shelf count reads "2 ctn 5", "2c 5p", "2 peti 5 adad", "۲ کارٹن
+    # ۵", "1 kg 250", "1 mann 5", in English, Roman Urdu or Urdu script, and
+    # says back what it understood before anything is saved: "Yani 2 ctn + 5
+    # pcs (53 pcs)". A figure alone means what it always meant. A word that
+    # names two units ("d": a dozen, a dabba or a dana) is refused rather
+    # than guessed, as is half a piece or a fraction of a pack that is not a
+    # whole piece. The number pad stays the keypad, letters a tap away; under
+    # the box a carton and a piece step up and down. On a carton line "3 ctn"
+    # stays three cartons, and "2 ctn 5" moves the line to pieces with the
+    # price carried exactly, Rs 960 a carton to Rs 40 a piece, through the
+    # converter (M1) — or refused in words where it does not come out even,
+    # as Rs 1,000 for 24 does not. 53 pieces of a 24-pack at Rs 960 a carton
+    # bill as exactly Rs 2,120.00, and the stock ledger moves 53,000
+    # thousandths. Under the price, the carton calculator: "1 ctn = Rs
+    # 960.00", "1 pcs = Rs 40.00", with "≈" where a price is only to the
+    # paisa. A delivery's cost is said per piece and per carton too.
+    #
+    # On paper, beside the figure and never instead of it, because the rate
+    # is per the line's unit and the customer multiplies the two: "53 pcs (2
+    # ctn 5 pc) x 40.00" on 80 mm, the count on a line of its own under the
+    # figure on 58 mm, wrapped and never clipped on 32, 42 and 48 columns;
+    # under the figure in the PDF's quantity cell in every design; and on
+    # the transporter's copy, which is what a driver counts off the lorry. A
+    # carton line counts in the carton it was sold at, worked out from the
+    # line itself, whatever the item's carton holds today. Weights stay "1.5
+    # kg x 300.00" on paper, as M56 decided; "1 kg 500 g" is the screen's.
+    #
+    # Decided: the shop's dozen and mann are understood when typed but are
+    # not shown on an item's stock unless a line is sold in them — forty
+    # shampoos are not "3 doz + 4 pcs" to the shop that stocks them. A
+    # stock report changes only where an item has a pack and a figure fills
+    # one, beside the Unit column it already had; its exports carry the
+    # figures, which a spreadsheet can add up. No schema change.
+    #
+    # Not built: "3 doz + 4 pcs" kept on a bill line after a piece is added
+    # to a line sold by the dozen (the line moves to pieces, exactly; the
+    # cart has nowhere to keep the dozen it was counted in without a new
+    # draft field); a reprint of a line sold by the piece counts in the
+    # item's carton as it is on the day of printing (a bill line keeps no
+    # pack of its own without a schema change); the delivery line opened
+    # from a purchase order (M41) still takes a figure in its own unit; the
+    # shelf guard's "Stock sirf 53 pcs hai" is not yet in packs.
+    state: sealed
+    owns:
+      - lib/app/counting.dart
+      - lib/design/counted_qty_field.dart
+      - lib/features/pos/counted_line.dart
+      - lib/features/purchases/counted_purchase.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7110,3 +7177,46 @@ features:
       - the owner gives an item a 10+1 and a dozen price from its editor, and Settings lists it beside the shop's bill slab
       - a delivery's 10+1 is typed on the line, the average falls, and the free goods are a row of their own
       - at 200% on a small phone the bonus under a line, the bill slab and the scheme screen fit
+  - id: M45-COUNTED-01
+    milestone: M45
+    title: Quantities read, typed and printed as the shop counts them — 2 ctn + 5 pcs, 1 kg 500 g — and never a decimal of a pack
+    status: done
+    # The formatter and the reader with no database; the paper on every
+    # roll and in the PDF; the bill read back for printing against a real
+    # database; and the counter, a delivery, the stock lists, the shelf
+    # count and the stock summary through the screens, at 200% too.
+    proof:
+      - two-unit quantities 53 pieces of a carton of 24 read 2 ctn + 5 pcs, and 2 ctn 5 reads back as exactly 53 pieces
+      - two-unit quantities shown as the largest whole pack and what is left, never a decimal of a pack
+      - two-unit quantities every quantity reads back from its own words exactly, and no part of it is a fraction of a pack
+      - two-unit quantities typed in English, Roman Urdu or Urdu, run together or spaced, the count is the same
+      - two-unit quantities kilos with grams, and the mann, are typed the way they are called
+      - two-unit quantities a figure on its own is in the unit the box is already in, as it always was
+      - two-unit quantities what cannot be read exactly is refused, never guessed
+      - two-unit quantities 2 ctn + 5 pcs is charged exactly: 53 pieces at the piece price the carton price carries to
+      - two-unit quantities the carton calculator: a carton price says the piece price, and a piece price the carton price
+      - two-unit quantities a shop's ladders come from its conversions: an item's own packs are shown, the shop's dozen only when a line is sold in it, and every exact unit is understood
+      - two-unit quantities on paper: in packs where the line is not, and nothing where the figure already says it
+      - two units on paper a line sold by the piece prints its cartons on 48 columns, and nothing runs past the edge
+      - two units on paper a line sold by the piece prints its cartons on 42 columns, and nothing runs past the edge
+      - two units on paper a line sold by the piece prints its cartons on 32 columns, and nothing runs past the edge
+      - two units on paper on 80 mm the cartons sit beside the figure, on one row with the amount
+      - two units on paper on 58 mm the cartons take a line of their own under the figure
+      - two units on paper a weight prints as it always did, plain enough to multiply out
+      - two units on paper a count too long for any row wraps onto lines of its own, never clipped
+      - two units on paper the transporter copy counts in cartons, and still carries no money
+      - two units on paper the PDF carries the cartons under the figure, in every design
+      - counted on paper a bill read for printing counts a line of pieces in its cartons, and leaves a carton line and a weight as they were sold
+      - counted on paper a delivery of loose pieces reads back in cartons too
+      - the counter shows fifty-three pieces of a carton-of-24 item as 2 ctn + 5 pcs, and two cartons as 2 ctn
+      - typing 2 ctn 5 at the counter puts exactly 53 pieces on the bill at the piece price, and the bill posts them
+      - on a carton line, 3 ctn stays three cartons and 2 ctn 5 moves to pieces at Rs 960 / 24, exactly
+      - a carton price that is no whole price a piece is refused in words, and the line is left as it was
+      - the stepper adds a carton and a piece, and the carton calculator says the piece price under a carton price and the carton price under a piece price
+      - a delivery typed 10 ctn 5 puts 245 pieces on the shelf at the piece price, and the delivery says it in cartons
+      - the item list, the shelf count, the item history and low stock read in cartons, and a shelf is counted as 1 ctn 7
+      - low stock reads in cartons
+      - the stock summary reads an item kept in cartons in cartons, and every other item as before
+      - at 200% on a small phone the counter line, its quantity box with the stepper and the carton calculator fit
+      - at 200% on a small phone the delivery picker, its quantity box with the stepper and the carton calculator fit
+      - at 200% on a small phone the item list and the shelf count fit

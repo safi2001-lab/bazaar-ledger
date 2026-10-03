@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart';
 import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
@@ -153,6 +154,8 @@ class _ItemHistoryScreenState extends ConsumerState<ItemHistoryScreen> {
       return BlEmpty(icon: Icons.history, title: s.historyNone);
     }
 
+    // M45: watched here, in the build, and handed to every row.
+    final counting = countingOfItem(ref, widget.itemId, widget.unitCode);
     return ListView.separated(
       controller: _scroll,
       padding: EdgeInsets.only(
@@ -167,17 +170,27 @@ class _ItemHistoryScreenState extends ConsumerState<ItemHistoryScreen> {
             child: Center(child: CircularProgressIndicator.adaptive()),
           );
         }
-        return _MovementRow(movement: _movements[i], unitCode: widget.unitCode);
+        return _MovementRow(
+          movement: _movements[i],
+          unitCode: widget.unitCode,
+          // M45: "-(2 ctn + 5 pcs)", in the item's own packs.
+          counting: counting,
+        );
       },
     );
   }
 }
 
 class _MovementRow extends StatelessWidget {
-  const _MovementRow({required this.movement, required this.unitCode});
+  const _MovementRow({
+    required this.movement,
+    required this.unitCode,
+    required this.counting,
+  });
 
   final StockMovement movement;
   final String unitCode;
+  final CountingLadder counting;
 
   @override
   Widget build(BuildContext context) {
@@ -253,11 +266,12 @@ class _MovementRow extends StatelessWidget {
                 movement.qtyDelta,
                 unit: unitCode,
                 colour: out ? t.moneyOut : t.money,
+                counting: counting,
               ),
               if (movement.balanceAfter case final Qty balance) ...[
                 const SizedBox(height: 2),
                 Text(
-                  s.historyBalance(quantityWords(balance, unitCode)),
+                  s.historyBalance(counting.words(balance)),
                   style: TextStyle(fontSize: 11, color: t.inkMuted),
                 ),
               ],

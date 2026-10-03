@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pk_domain/pk_domain.dart' show quantityWords;
+import 'package:pk_domain/pk_domain.dart' show CountingLadder, quantityWords;
 import 'package:pk_money/pk_money.dart';
 
 import '../l10n/app_strings.dart';
@@ -91,20 +91,37 @@ class BlMoney extends StatelessWidget {
 ///
 /// The previous build printed `quantity.toInt()` in the cart, so 0.750 kg of
 /// mutton showed the cashier a zero while the arithmetic underneath was right.
+///
+/// Given the item's [counting] (M45), [qty] is in the item's own unit and
+/// reads as the shop counts it: "2 ctn + 5 pcs", "1 bori + 12 kg". Never a
+/// decimal of a carton, which is the number Vyapar's most-agreed-with review
+/// of 2026 was about.
 class BlQty extends StatelessWidget {
-  const BlQty(this.qty, {super.key, this.unit, this.size = 15, this.colour});
+  const BlQty(
+    this.qty, {
+    super.key,
+    this.unit,
+    this.size = 15,
+    this.colour,
+    this.counting,
+  });
 
   final Qty qty;
   final String? unit;
   final double size;
   final Color? colour;
 
+  /// The item's packs and unit; when given, [unit] is not used.
+  final CountingLadder? counting;
+
   @override
   Widget build(BuildContext context) {
     // Kilos with grams in them read as kilos and grams, "1 kg 500 g", the
-    // way the shop says them (M56); everything else as the number and its
-    // unit.
-    final label = unit == null ? qty.display : quantityWords(qty, unit!);
+    // way the shop says them (M56); an item with packs in its packs, "2 ctn
+    // + 5 pcs" (M45); everything else as the number and its unit.
+    final label =
+        counting?.words(qty) ??
+        (unit == null ? qty.display : quantityWords(qty, unit!));
     return Semantics(
       label: label,
       excludeSemantics: true,

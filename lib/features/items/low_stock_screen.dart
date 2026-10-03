@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart';
 import '../../app/paged.dart';
 import '../../app/providers.dart';
 import '../../design/components.dart';
@@ -107,16 +108,19 @@ class LowStockScreen extends ConsumerWidget {
   }
 }
 
-class _LowStockRow extends StatelessWidget {
+class _LowStockRow extends ConsumerWidget {
   const _LowStockRow({required this.item});
 
   final ItemSummary item;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
     final onHand = item.stockOnHand;
+    // The shelf and its floor in the item's own packs (M45): "1 ctn + 4
+    // pcs" left of a floor of "2 ctn".
+    final counting = countingOf(ref, item);
     // Out of stock reads differently from nearly out, and a shopkeeper
     // scanning this list needs the difference at a glance rather than by
     // reading the numbers.
@@ -155,9 +159,7 @@ class _LowStockRow extends StatelessWidget {
                     const BelowNothingChip()
                   else
                     Text(
-                      s.stockLowFloor(
-                        quantityWords(item.minStock, item.unitCode),
-                      ),
+                      s.stockLowFloor(counting.words(item.minStock)),
                       style: TextStyle(fontSize: 12, color: t.inkMuted),
                     ),
                 ],
@@ -167,7 +169,12 @@ class _LowStockRow extends StatelessWidget {
             // The figure a shopkeeper is actually here for, in the tone that
             // says how bad it is: nothing left reads differently from
             // half a sack left.
-            BlQty(onHand, unit: item.unitCode, colour: colour),
+            BlQty(
+              onHand,
+              unit: item.unitCode,
+              colour: colour,
+              counting: counting,
+            ),
           ],
         ),
       ),

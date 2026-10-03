@@ -11035,6 +11035,84 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Muft tadaad theek nahi likhi.'**
   String get purchaseFreeWrong;
+
+  /// No description provided for @qtyCountedAs.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yani {counted} ({figure})'**
+  String qtyCountedAs(String counted, String figure);
+
+  /// No description provided for @qtyNotUnderstood.
+  ///
+  /// In ur, this message translates to:
+  /// **'Samajh nahi aaya. Aise likhein: 2 ctn 5, ya sirf 53.'**
+  String get qtyNotUnderstood;
+
+  /// No description provided for @qtyNotWhole.
+  ///
+  /// In ur, this message translates to:
+  /// **'{unit} toot kar nahi bikta. Poora number likhein.'**
+  String qtyNotWhole(String unit);
+
+  /// No description provided for @qtyPriceNotEven.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {rate} ka {pack} aik {unit} ke poore paise nahi banta. Pehle {unit} ki qeemat likhein.'**
+  String qtyPriceNotEven(String rate, String pack, String unit);
+
+  /// No description provided for @qtyStepUp.
+  ///
+  /// In ur, this message translates to:
+  /// **'+1 {unit}'**
+  String qtyStepUp(String unit);
+
+  /// No description provided for @qtyStepDown.
+  ///
+  /// In ur, this message translates to:
+  /// **'−1 {unit}'**
+  String qtyStepDown(String unit);
+
+  /// No description provided for @qtyStepUpLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aik {unit} aur'**
+  String qtyStepUpLabel(String unit);
+
+  /// No description provided for @qtyStepDownLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aik {unit} kam'**
+  String qtyStepDownLabel(String unit);
+
+  /// No description provided for @qtyKeypadLetters.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haroof se likhein (2 ctn 5)'**
+  String get qtyKeypadLetters;
+
+  /// No description provided for @qtyKeypadNumbers.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf number'**
+  String get qtyKeypadNumbers;
+
+  /// No description provided for @qtyPriceEach.
+  ///
+  /// In ur, this message translates to:
+  /// **'1 {unit} = Rs {price}'**
+  String qtyPriceEach(String unit, String price);
+
+  /// No description provided for @qtyPriceAbout.
+  ///
+  /// In ur, this message translates to:
+  /// **'1 {unit} ≈ Rs {price}'**
+  String qtyPriceAbout(String unit, String price);
+
+  /// No description provided for @posStockWords.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stock: {qty}'**
+  String posStockWords(String qty);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

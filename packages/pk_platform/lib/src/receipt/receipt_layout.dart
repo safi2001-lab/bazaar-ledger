@@ -122,13 +122,18 @@ final class ReceiptLayout {
         for (final part in _wrap(line.name, width)) {
           out.add(part);
         }
-        final qty = '${line.qtyDisplay} ${line.unitCode}'.trim();
+        final figure = '${line.qtyDisplay} ${line.unitCode}'.trim();
+        // In packs as well (M45): "53 pcs (2 ctn 5 pc)" is what a driver
+        // counts off the lorry, carton by carton.
+        final words = line.qtyWords;
+        final qty = words == null ? figure : '$figure ($words)';
         if (qty.length + 2 <= width) {
           out.add(_row('', qty));
         } else {
-          for (final part in _wrap(qty, width - 2)) {
+          for (final part in _wrap(figure, width - 2)) {
             out.add('  $part');
           }
+          if (words != null) _wordsLine(out, line);
         }
         if (line.isFreeItem) out.add('    (Bonus / muft)'); // M43
       }
@@ -162,7 +167,16 @@ final class ReceiptLayout {
       final room = width - amount.length - 1;
       final short = '  ${line.qtyDisplay} ${line.unitCode}';
       final full = '$short x ${line.rate.amountOnly}';
-      if (full.length <= room) {
+      // M45: the count in packs beside the figure, "53 pcs (2 ctn 5 pc) x
+      // 40.00", where the row has room for it. The figure stays first and
+      // the rate stays per its unit, so the line still multiplies out.
+      final words = line.qtyWords;
+      final counted = words == null
+          ? null
+          : '$short ($words) x ${line.rate.amountOnly}';
+      if (counted != null && counted.length <= room) {
+        out.add(_row(counted, amount));
+      } else if (full.length <= room) {
         out.add(_row(full, amount));
       } else if (short.length <= room) {
         out.add(_row(short, amount));
@@ -182,6 +196,7 @@ final class ReceiptLayout {
         }
         out.add(_row('', amount));
       }
+      if (counted != null && counted.length > room) _wordsLine(out, line);
       if (line.discount.isPositive) {
         out.add(_row('    less discount', '-${line.discount.amountOnly}'));
       }
@@ -291,6 +306,18 @@ final class ReceiptLayout {
     }
 
     return out;
+  }
+
+  /// A line's count in packs on a line of its own, under the figure, where
+  /// it would not sit beside it (M45): "(2 ctn 5 pc)" is what a customer
+  /// counts the cartons against, so it earns its line on a 58 mm roll.
+  /// Wrapped, never clipped, like every other word on the paper.
+  void _wordsLine(List<String> out, ReceiptLine line) {
+    final words = line.qtyWords;
+    if (words == null) return;
+    for (final part in _wrap('($words)', width - 4)) {
+      out.add('    $part');
+    }
   }
 
   /// `left` flush left, `right` flush right, padded to [width].

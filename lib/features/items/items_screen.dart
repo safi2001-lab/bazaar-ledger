@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
 
+import '../../app/counting.dart';
 import '../../app/paged.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
@@ -182,14 +183,14 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
   }
 }
 
-class _ItemRow extends StatelessWidget {
+class _ItemRow extends ConsumerWidget {
   const _ItemRow({super.key, required this.item, required this.onTap});
 
   final ItemSummary item;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
 
@@ -221,12 +222,13 @@ class _ItemRow extends StatelessWidget {
                         Flexible(
                           child: Text(
                             item.tracksStock
-                                // "1 kg 500 g in stock" (M56).
+                                // "1 kg 500 g in stock" (M56), "2 ctn + 5
+                                // pcs in stock" (M45).
                                 ? s.itemStockLeft(
-                                    quantityWords(
-                                      item.stockOnHand,
-                                      item.unitCode,
-                                    ),
+                                    countingOf(
+                                      ref,
+                                      item,
+                                    ).words(item.stockOnHand),
                                   )
                                 : item.unitCode,
                             maxLines: 1,

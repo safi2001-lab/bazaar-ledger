@@ -6407,4 +6407,64 @@ class AppStringsEn extends AppStrings {
   @override
   String get purchaseFreeWrong =>
       'The free quantity is not a whole number of the item\'s unit.';
+
+  @override
+  String qtyCountedAs(String counted, String figure) {
+    return 'That is $counted ($figure)';
+  }
+
+  @override
+  String get qtyNotUnderstood =>
+      'Not understood. Type it like 2 ctn 5, or just 53.';
+
+  @override
+  String qtyNotWhole(String unit) {
+    return '$unit is not sold in parts. Type a whole number.';
+  }
+
+  @override
+  String qtyPriceNotEven(String rate, String pack, String unit) {
+    return 'Rs $rate a $pack is not a whole price per $unit. Type the price per $unit first.';
+  }
+
+  @override
+  String qtyStepUp(String unit) {
+    return '+1 $unit';
+  }
+
+  @override
+  String qtyStepDown(String unit) {
+    return '−1 $unit';
+  }
+
+  @override
+  String qtyStepUpLabel(String unit) {
+    return 'One more $unit';
+  }
+
+  @override
+  String qtyStepDownLabel(String unit) {
+    return 'One $unit less';
+  }
+
+  @override
+  String get qtyKeypadLetters => 'Type with letters (2 ctn 5)';
+
+  @override
+  String get qtyKeypadNumbers => 'Numbers only';
+
+  @override
+  String qtyPriceEach(String unit, String price) {
+    return '1 $unit = Rs $price';
+  }
+
+  @override
+  String qtyPriceAbout(String unit, String price) {
+    return '1 $unit ≈ Rs $price';
+  }
+
+  @override
+  String posStockWords(String qty) {
+    return 'Stock: $qty';
+  }
 }

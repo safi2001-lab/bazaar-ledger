@@ -2154,6 +2154,9 @@ final class DriftAppQueries implements AppQueries {
           variables: [Variable<String>(documentId)],
         )
         .get();
+    // M45: each line's item, its unit and its packs, so the paper can say
+    // "2 ctn 5 pc" beside "53 pcs".
+    final counting = await _countingOnBill(documentId);
 
     final payments = await _db
         .customSelect(
@@ -2227,6 +2230,8 @@ final class DriftAppQueries implements AppQueries {
             amount: Money.paisa(l.read<int>('gross_paisa')),
             discount: Money.paisa(l.read<int>('discount_paisa')),
             isFreeItem: l.read<int>('is_free_item') == 1,
+            // M45: "2 ctn 5 pc" beside "53 pcs", where it says more.
+            qtyWords: counting.of(l),
           ),
       ],
       subtotal: Money.paisa(doc.read<int>('subtotal_paisa')),
@@ -2276,6 +2281,49 @@ final class DriftAppQueries implements AppQueries {
           'Shukriya! Phir tashreef laayen',
         if (madeWith?.call() ?? false) madeWithLine,
       ],
+    );
+  }
+
+  /// What the paper needs to count a bill's lines in packs (M45): each
+  /// line's item, the unit its shelf is counted in, and its packs as the
+  /// item has them now. Two reads for the whole bill, not two per line.
+  Future<_BillCounting> _countingOnBill(String documentId) async {
+    const onBill =
+        'SELECT item_id FROM document_lines WHERE document_id = ? '
+        'AND deleted_at_utc IS NULL AND item_id IS NOT NULL';
+    final bases = await _db
+        .customSelect(
+          'SELECT i.id, u.code FROM items i JOIN units u ON u.id = i.base_unit_id '
+          'WHERE i.id IN ($onBill)',
+          variables: [Variable<String>(documentId)],
+        )
+        .get();
+    final packs = await _db
+        .customSelect(
+          'SELECT uc.item_id, u.code, uc.from_unit_id, uc.factor_thousandths '
+          'FROM unit_conversions uc '
+          'JOIN items i ON i.id = uc.item_id AND i.base_unit_id = uc.to_unit_id '
+          'JOIN units u ON u.id = uc.from_unit_id '
+          'WHERE uc.deleted_at_utc IS NULL AND uc.item_id IN ($onBill)',
+          variables: [Variable<String>(documentId)],
+        )
+        .get();
+    return _BillCounting(
+      baseCodes: {
+        for (final r in bases) r.read<String>('id'): r.read<String>('code'),
+      },
+      packs: {
+        for (final r in packs)
+          r.read<String>('item_id'): [
+            for (final p in packs)
+              if (p.read<String>('item_id') == r.read<String>('item_id'))
+                ItemPack(
+                  unitId: p.read<String>('from_unit_id'),
+                  unitCode: p.read<String>('code'),
+                  size: Qty.raw(p.read<int>('factor_thousandths')),
+                ),
+          ],
+      },
     );
   }
 
@@ -3563,3 +3611,29 @@ String pastDealsSql({required bool forParty}) =>
 
 /// The line a free plan's bills end with.
 const madeWithLine = 'Bazaar Ledger app se banaya gaya';
+
+/// A bill's items as the paper counts them (M45): each one's own unit and
+/// its packs, read once for the whole bill.
+final class _BillCounting {
+  const _BillCounting({required this.baseCodes, required this.packs});
+
+  final Map<String, String> baseCodes;
+  final Map<String, List<ItemPack>> packs;
+
+  /// [line]'s quantity in its item's packs, "2 ctn 5 pc", or null where its
+  /// figure already says it. Packs only: a weight keeps "1.5 kg x rate" on
+  /// paper as M56 decided, the words being for the screen. A loose line
+  /// (M37) has no item and no packs; a line whose item is gone, likewise.
+  String? of(QueryRow line) {
+    final itemId = line.readNullable<String>('item_id');
+    final unitCode = line.read<String>('unit_code_snapshot');
+    final said = paperQuantity(
+      qty: Qty.raw(line.read<int>('qty_thousandths')),
+      unitCode: unitCode,
+      baseQty: Qty.raw(line.read<int>('base_qty_thousandths')),
+      baseCode: baseCodes[itemId] ?? unitCode,
+      packs: packs[itemId] ?? const [],
+    );
+    return said != null && said.inPacks ? said.words : null;
+  }
+}

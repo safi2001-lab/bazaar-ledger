@@ -449,6 +449,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           table: table,
                           canOpen: _canOpen,
                           onOpen: _open,
+                          itemId: _filters.itemId, // M45: its quantities in packs
                         ),
                     ],
                   );

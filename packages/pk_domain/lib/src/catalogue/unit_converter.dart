@@ -57,6 +57,11 @@ final class UnitConverter {
 
   final List<UnitEdge> _edges;
 
+  /// Every conversion held, the shop's and the items' own (M45): read once
+  /// to index each item's packs, so a list of twenty thousand items does
+  /// not scan every conversion for every row it shows.
+  List<UnitEdge> get edges => _edges;
+
   /// Converts [qty], expressed in [fromUnitId], into [toUnitId].
   ///
   /// [itemId] selects that item's own conversions where it has them — its
