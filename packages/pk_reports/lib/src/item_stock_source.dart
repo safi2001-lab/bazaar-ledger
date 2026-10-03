@@ -25,6 +25,8 @@ final class StockLine {
     required this.qty,
     required this.value,
     this.category,
+    this.taxBp = 0,
+    this.priceIncludesTax = false,
   });
 
   final String itemId;
@@ -36,6 +38,13 @@ final class StockLine {
 
   /// What it sells for now, per base unit.
   final Rate saleRate;
+
+  /// The item's own sales-tax rate, in basis points; nothing when it has
+  /// no tax rule (M67).
+  final int taxBp;
+
+  /// Whether [saleRate] already has the tax in it (M67).
+  final bool priceIncludesTax;
 
   /// The weighted-average cost the item carries now, per base unit: what a
   /// line with nothing on the shelf is shown at.
@@ -53,6 +62,32 @@ final class StockLine {
   Rate get unitCost => qty.isPositive
       ? Rate.fromPack(value, qty, mode: RoundingMode.halfUp)
       : averageCost;
+
+  /// The shelf valued as [valuation] says (M67): at cost the books' own
+  /// figure, with the item's tax added for cost with tax; at the sale
+  /// price, the stock times it, with the tax taken out of a price that
+  /// includes it, or put on one that does not.
+  Money valueAt(StockValuation valuation) {
+    Money withTax(Money m) => m + m.percentBp(taxBp);
+    Money withoutTax(Money m) => taxBp == 0
+        ? m
+        : Money.paisa(
+            divideRounded(
+              m.inPaisa * 10000,
+              10000 + taxBp,
+              RoundingMode.halfUp,
+            ),
+          );
+    final atPrice = saleRate.amountFor(qty);
+    return switch (valuation) {
+      StockValuation.cost => value,
+      StockValuation.costWithTax => withTax(value),
+      StockValuation.salePrice =>
+        priceIncludesTax ? withoutTax(atPrice) : atPrice,
+      StockValuation.salePriceWithTax =>
+        priceIncludesTax ? atPrice : withTax(atPrice),
+    };
+  }
 }
 
 /// How much of an item moved, and why, over some stretch of days (M34).

@@ -1,5 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
+import 'ageing_buckets.dart'; // M67
+import 'attention_reports.dart'; // M67
 import 'business_source.dart';
 import 'collections_reports.dart'; // M54
 import 'expense_source.dart';
@@ -327,7 +329,10 @@ abstract interface class ReportSource
         // M65
         StaffBookReportSource,
         // M66
-        LoyaltyReportSource {
+        LoyaltyReportSource,
+        // M67
+        AgeingReportSource,
+        AttentionReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

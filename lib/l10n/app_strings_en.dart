@@ -8901,4 +8901,166 @@ class AppStringsEn extends AppStrings {
   String partyPriceEach(String amount, String unit) {
     return 'Rs $amount a $unit';
   }
+
+  @override
+  String get reportRatioAnalysis => 'Ratio analysis';
+
+  @override
+  String get reportRatioAnalysisHint =>
+      'Profit %, stock turnover, debtors\' and creditors\' days, current ratio and cash against expenses, each against the period before';
+
+  @override
+  String get reportNeedsAttention => 'Needs attention';
+
+  @override
+  String get reportNeedsAttentionHint =>
+      'Everything odd today: stock or money below zero, late udhaar, cheques to bank, cancelled bills, sales below cost, expired batches, FBR';
+
+  @override
+  String get reportAbc => 'ABC classification';
+
+  @override
+  String get reportAbcHint =>
+      'Which few items bring in most of the sales: classes A, B and C, with their share';
+
+  @override
+  String get reportFilterValuation => 'Valued at';
+
+  @override
+  String get reportValuationCost => 'Cost (the books)';
+
+  @override
+  String get reportValuationCostTax => 'Cost with tax';
+
+  @override
+  String get reportValuationSale => 'Sale price';
+
+  @override
+  String get reportValuationSaleTax => 'Sale price with tax';
+
+  @override
+  String get reportFilterAbcBasis => 'Rank by';
+
+  @override
+  String get reportAbcBySales => 'Sales';
+
+  @override
+  String get reportAbcByProfit => 'Profit';
+
+  @override
+  String get reportFilterAbcBands => 'Class lines';
+
+  @override
+  String reportFilterAbcBandsValue(int a, int b) {
+    return 'A $a% · B $b%';
+  }
+
+  @override
+  String get reportAbcLineA => 'Class A ends at (% of the whole)';
+
+  @override
+  String get reportAbcLineB => 'Class B ends at (% of the whole)';
+
+  @override
+  String get reportAbcLinesWrong => 'A must be below B, both from 1 to 100';
+
+  @override
+  String get reportFilterLateDays => 'Udhaar late by';
+
+  @override
+  String get reportColumns => 'Columns';
+
+  @override
+  String get reportColumnsTitle => 'Show and arrange columns';
+
+  @override
+  String get reportColumnsHint =>
+      'Untick a column to hide it, and move it with the arrows. Kept for this report on this phone, and in a saved view.';
+
+  @override
+  String reportColumnUp(String name) {
+    return 'Move $name up';
+  }
+
+  @override
+  String reportColumnDown(String name) {
+    return 'Move $name down';
+  }
+
+  @override
+  String get reportColumnsReset => 'Show every column, in the report\'s order';
+
+  @override
+  String get reportColumnFilter => 'Filter a column';
+
+  @override
+  String get reportColumnFilterPick => 'Which column?';
+
+  @override
+  String get reportColumnContains => 'Contains';
+
+  @override
+  String get reportColumnAtLeast => 'At least';
+
+  @override
+  String get reportColumnAtMost => 'At most';
+
+  @override
+  String get reportColumnFilterValue => 'Value';
+
+  @override
+  String get reportColumnFilterApply => 'Apply';
+
+  @override
+  String get reportColumnFilterBad => 'Type a number';
+
+  @override
+  String reportColumnFilterContainsChip(String column, String text) {
+    return '$column: \"$text\"';
+  }
+
+  @override
+  String reportColumnFilterAtLeastChip(String column, String value) {
+    return '$column ≥ $value';
+  }
+
+  @override
+  String reportColumnFilterAtMostChip(String column, String value) {
+    return '$column ≤ $value';
+  }
+
+  @override
+  String reportAgeingBuckets(String label) {
+    return 'Buckets: $label days';
+  }
+
+  @override
+  String get reportAgeingTitle => 'Ageing buckets';
+
+  @override
+  String get reportAgeingHint =>
+      'Where each bucket ends, in days, e.g. 15, 30, 60. Udhaar by age, Owed to suppliers and Udhaar by due date use them, on this phone.';
+
+  @override
+  String get reportAgeingField => 'Days';
+
+  @override
+  String get reportAgeingBad =>
+      'Up to five numbers, each bigger than the one before';
+
+  @override
+  String get reportAgeingReset => 'Back to 30, 60, 90';
+
+  @override
+  String get reportChartThisPeriod => 'This period';
+
+  @override
+  String reportChartPeriodBefore(String amount) {
+    return 'Period before: $amount';
+  }
+
+  @override
+  String reportChartPickedBefore(String label, String amount, String before) {
+    return '$label: $amount · before $before';
+  }
 }

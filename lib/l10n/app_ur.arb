@@ -5426,5 +5426,102 @@
       "amount": {"type": "String"},
       "unit": {"type": "String"}
     }
+  },
+  "reportRatioAnalysis": "Nisbatain (ratio analysis)",
+  "reportRatioAnalysisHint": "Nafa %, maal kitni baar bika, udhaar aur dene ke din, current ratio, aur kharch ke muqable mein paisa — pichle arse ke saath",
+  "reportNeedsAttention": "Dhyan dein",
+  "reportNeedsAttentionHint": "Aaj ki har gadbad: minus stock ya paisa, purana udhaar, bank le jaane wale cheque, cancel bill, laagat se kam bikri, expire maal, FBR",
+  "reportAbc": "ABC darja-bandi",
+  "reportAbcHint": "Kaun si chand cheezen sab se zyada bikri laati hain: A, B aur C darje, unke hisse ke saath",
+  "reportFilterValuation": "Qeemat kis par",
+  "reportValuationCost": "Laagat par (khaata)",
+  "reportValuationCostTax": "Laagat + tax",
+  "reportValuationSale": "Bechne ki qeemat",
+  "reportValuationSaleTax": "Bechne ki qeemat + tax",
+  "reportFilterAbcBasis": "Darja kis se",
+  "reportAbcBySales": "Bikri",
+  "reportAbcByProfit": "Nafa",
+  "reportFilterAbcBands": "Darjon ki had",
+  "reportFilterAbcBandsValue": "A {a}% · B {b}%",
+  "@reportFilterAbcBandsValue": {
+    "placeholders": {
+      "a": {"type": "int"},
+      "b": {"type": "int"}
+    }
+  },
+  "reportAbcLineA": "A darja kahan khatam (kul ka %)",
+  "reportAbcLineB": "B darja kahan khatam (kul ka %)",
+  "reportAbcLinesWrong": "A, B se kam ho, dono 1 se 100 tak",
+  "reportFilterLateDays": "Udhaar kitne din late",
+  "reportColumns": "Columns",
+  "reportColumnsTitle": "Columns dikhayein aur tarteeb dein",
+  "reportColumnsHint": "Tick hata kar column chhupayein, teer se upar neeche karein. Is phone par is report ke liye yaad rahega, aur saved view mein bhi.",
+  "reportColumnUp": "{name} upar",
+  "@reportColumnUp": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "reportColumnDown": "{name} neeche",
+  "@reportColumnDown": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "reportColumnsReset": "Sab columns, asal tarteeb mein",
+  "reportColumnFilter": "Column par filter",
+  "reportColumnFilterPick": "Kaun sa column?",
+  "reportColumnContains": "Is mein ho",
+  "reportColumnAtLeast": "Kam se kam",
+  "reportColumnAtMost": "Zyada se zyada",
+  "reportColumnFilterValue": "Qeemat",
+  "reportColumnFilterApply": "Lagayein",
+  "reportColumnFilterBad": "Number likhein",
+  "reportColumnFilterContainsChip": "{column}: \"{text}\"",
+  "@reportColumnFilterContainsChip": {
+    "placeholders": {
+      "column": {"type": "String"},
+      "text": {"type": "String"}
+    }
+  },
+  "reportColumnFilterAtLeastChip": "{column} ≥ {value}",
+  "@reportColumnFilterAtLeastChip": {
+    "placeholders": {
+      "column": {"type": "String"},
+      "value": {"type": "String"}
+    }
+  },
+  "reportColumnFilterAtMostChip": "{column} ≤ {value}",
+  "@reportColumnFilterAtMostChip": {
+    "placeholders": {
+      "column": {"type": "String"},
+      "value": {"type": "String"}
+    }
+  },
+  "reportAgeingBuckets": "Hisse: {label} din",
+  "@reportAgeingBuckets": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "reportAgeingTitle": "Umar ke hisse",
+  "reportAgeingHint": "Har hissa kitne din par khatam ho, jaise 15, 30, 60. Udhaar kitna purana, suppliers ka baqaya aur adaigi ki tareekh wala udhaar inhi se banenge, is phone par.",
+  "reportAgeingField": "Din",
+  "reportAgeingBad": "Paanch tak number, har agla pichle se bara",
+  "reportAgeingReset": "Wapas 30, 60, 90",
+  "reportChartThisPeriod": "Yeh arsa",
+  "reportChartPeriodBefore": "Pichla arsa: {amount}",
+  "@reportChartPeriodBefore": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "reportChartPickedBefore": "{label}: {amount} · pehle {before}",
+  "@reportChartPickedBefore": {
+    "placeholders": {
+      "label": {"type": "String"},
+      "amount": {"type": "String"},
+      "before": {"type": "String"}
+    }
   }
 }

@@ -28,6 +28,7 @@ import 'package:pk_domain/pk_domain.dart';
 import 'filters.dart';
 import 'period.dart';
 import 'report_engine.dart';
+import 'table_arrangement.dart'; // M67
 
 /// One saved view of one report.
 final class SavedReportView {
@@ -41,6 +42,7 @@ final class SavedReportView {
     this.sortColumn,
     this.sortAscending = false,
     this.asChart = false,
+    this.arrangement = TableArrangement.none, // M67
   });
 
   /// Unique on this phone; never shown.
@@ -65,6 +67,10 @@ final class SavedReportView {
   /// Drawn as a chart rather than listed (M46).
   final bool asChart;
 
+  /// The table as the shop arranged it (M67): its columns shown, hidden
+  /// and moved, and the filters on them.
+  final TableArrangement arrangement;
+
   /// The days the view covers when the business date is [today].
   ReportPeriod periodOn(BusinessDate today) =>
       (preset == DatePreset.custom ? custom : null) ??
@@ -82,6 +88,7 @@ final class SavedReportView {
     sortColumn: sortColumn,
     sortAscending: sortAscending,
     asChart: asChart,
+    arrangement: arrangement,
   );
 
   Map<String, Object?> toJson() => {
@@ -97,6 +104,7 @@ final class SavedReportView {
     if (sortColumn != null) 'sort': sortColumn,
     if (sortAscending) 'ascending': true,
     if (asChart) 'chart': true,
+    if (!arrangement.isEmpty) 'table': arrangement.toJson(), // M67
   };
 
   /// Reads what [toJson] wrote, or null for anything that is not a view
@@ -136,6 +144,7 @@ final class SavedReportView {
       sortColumn: sort is String && sort.isNotEmpty ? sort : null,
       sortAscending: raw['ascending'] == true,
       asChart: raw['chart'] == true,
+      arrangement: TableArrangement.fromJson(raw['table']), // M67
     );
   }
 
@@ -150,7 +159,8 @@ final class SavedReportView {
       other.filters == filters &&
       other.sortColumn == sortColumn &&
       other.sortAscending == sortAscending &&
-      other.asChart == asChart;
+      other.asChart == asChart &&
+      other.arrangement == arrangement;
 
   @override
   int get hashCode => Object.hash(
@@ -163,6 +173,7 @@ final class SavedReportView {
     sortColumn,
     sortAscending,
     asChart,
+    arrangement,
   );
 
   @override
@@ -226,6 +237,12 @@ Map<String, Object?> reportFiltersToJson(ReportFilters filters) {
     'loanId': ?f.loanId,
     'loanName': ?f.loanName,
     'minAmountPaisa': ?f.minAmount?.inPaisa,
+    // M67
+    'valuation': ?f.valuation?.name,
+    'abcBasis': ?f.abcBasis?.name,
+    'abcA': ?f.abcA,
+    'abcB': ?f.abcB,
+    'lateDays': ?f.lateDays,
   };
 }
 
@@ -276,5 +293,15 @@ ReportFilters reportFiltersFromJson(Object? raw) {
     loanId: text('loanId'),
     loanName: text('loanName'),
     minAmount: minPaisa == null ? null : Money.paisa(minPaisa),
+    // M67
+    valuation: StockValuation.values
+        .where((v) => v.name == raw['valuation'])
+        .firstOrNull,
+    abcBasis: AbcBasis.values
+        .where((b) => b.name == raw['abcBasis'])
+        .firstOrNull,
+    abcA: whole('abcA'),
+    abcB: whole('abcB'),
+    lateDays: whole('lateDays'),
   );
 }

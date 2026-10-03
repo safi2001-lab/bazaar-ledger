@@ -16,6 +16,7 @@ import 'loyalty_reads.dart'; // M66
 part 'reports/business_queries.dart';
 part 'reports/collections_queries.dart'; // M54
 part 'reports/expense_queries.dart';
+part 'reports/insight_queries.dart'; // M67
 part 'reports/item_stock_queries.dart';
 part 'reports/loan_queries.dart';
 part 'reports/loyalty_queries.dart'; // M66
@@ -66,7 +67,9 @@ final class DriftReportSource
         // M65
         _StaffBookQueries,
         // M66
-        _LoyaltyQueries
+        _LoyaltyQueries,
+        // M67
+        _InsightQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 
@@ -888,6 +891,13 @@ final class DriftReportSource
       case ReportFilter.loan:
         return _loanChoices(firmId, term);
       case ReportFilter.minAmount:
+        return const [];
+      // M67: a valuation, a ranking, two shares and a number of days, all
+      // the screen's own.
+      case ReportFilter.valuation ||
+          ReportFilter.abcBasis ||
+          ReportFilter.abcBands ||
+          ReportFilter.lateDays:
         return const [];
     }
   }

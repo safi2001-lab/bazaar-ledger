@@ -92,6 +92,7 @@ class SavedViewsNotifier extends Notifier<List<SavedReportView>> {
             sortColumn: view.sortColumn,
             sortAscending: view.sortAscending,
             asChart: view.asChart,
+            arrangement: view.arrangement, // M67
           )
         : SavedReportView(
             id: same.id,
@@ -103,6 +104,7 @@ class SavedViewsNotifier extends Notifier<List<SavedReportView>> {
             sortColumn: view.sortColumn,
             sortAscending: view.sortAscending,
             asChart: view.asChart,
+            arrangement: view.arrangement, // M67
           );
     _keep([
       for (final v in state) v.id == kept.id ? kept : v,

@@ -8890,4 +8890,165 @@ class AppStringsUr extends AppStrings {
   String partyPriceEach(String amount, String unit) {
     return 'Rs $amount fi $unit';
   }
+
+  @override
+  String get reportRatioAnalysis => 'Nisbatain (ratio analysis)';
+
+  @override
+  String get reportRatioAnalysisHint =>
+      'Nafa %, maal kitni baar bika, udhaar aur dene ke din, current ratio, aur kharch ke muqable mein paisa — pichle arse ke saath';
+
+  @override
+  String get reportNeedsAttention => 'Dhyan dein';
+
+  @override
+  String get reportNeedsAttentionHint =>
+      'Aaj ki har gadbad: minus stock ya paisa, purana udhaar, bank le jaane wale cheque, cancel bill, laagat se kam bikri, expire maal, FBR';
+
+  @override
+  String get reportAbc => 'ABC darja-bandi';
+
+  @override
+  String get reportAbcHint =>
+      'Kaun si chand cheezen sab se zyada bikri laati hain: A, B aur C darje, unke hisse ke saath';
+
+  @override
+  String get reportFilterValuation => 'Qeemat kis par';
+
+  @override
+  String get reportValuationCost => 'Laagat par (khaata)';
+
+  @override
+  String get reportValuationCostTax => 'Laagat + tax';
+
+  @override
+  String get reportValuationSale => 'Bechne ki qeemat';
+
+  @override
+  String get reportValuationSaleTax => 'Bechne ki qeemat + tax';
+
+  @override
+  String get reportFilterAbcBasis => 'Darja kis se';
+
+  @override
+  String get reportAbcBySales => 'Bikri';
+
+  @override
+  String get reportAbcByProfit => 'Nafa';
+
+  @override
+  String get reportFilterAbcBands => 'Darjon ki had';
+
+  @override
+  String reportFilterAbcBandsValue(int a, int b) {
+    return 'A $a% · B $b%';
+  }
+
+  @override
+  String get reportAbcLineA => 'A darja kahan khatam (kul ka %)';
+
+  @override
+  String get reportAbcLineB => 'B darja kahan khatam (kul ka %)';
+
+  @override
+  String get reportAbcLinesWrong => 'A, B se kam ho, dono 1 se 100 tak';
+
+  @override
+  String get reportFilterLateDays => 'Udhaar kitne din late';
+
+  @override
+  String get reportColumns => 'Columns';
+
+  @override
+  String get reportColumnsTitle => 'Columns dikhayein aur tarteeb dein';
+
+  @override
+  String get reportColumnsHint =>
+      'Tick hata kar column chhupayein, teer se upar neeche karein. Is phone par is report ke liye yaad rahega, aur saved view mein bhi.';
+
+  @override
+  String reportColumnUp(String name) {
+    return '$name upar';
+  }
+
+  @override
+  String reportColumnDown(String name) {
+    return '$name neeche';
+  }
+
+  @override
+  String get reportColumnsReset => 'Sab columns, asal tarteeb mein';
+
+  @override
+  String get reportColumnFilter => 'Column par filter';
+
+  @override
+  String get reportColumnFilterPick => 'Kaun sa column?';
+
+  @override
+  String get reportColumnContains => 'Is mein ho';
+
+  @override
+  String get reportColumnAtLeast => 'Kam se kam';
+
+  @override
+  String get reportColumnAtMost => 'Zyada se zyada';
+
+  @override
+  String get reportColumnFilterValue => 'Qeemat';
+
+  @override
+  String get reportColumnFilterApply => 'Lagayein';
+
+  @override
+  String get reportColumnFilterBad => 'Number likhein';
+
+  @override
+  String reportColumnFilterContainsChip(String column, String text) {
+    return '$column: \"$text\"';
+  }
+
+  @override
+  String reportColumnFilterAtLeastChip(String column, String value) {
+    return '$column ≥ $value';
+  }
+
+  @override
+  String reportColumnFilterAtMostChip(String column, String value) {
+    return '$column ≤ $value';
+  }
+
+  @override
+  String reportAgeingBuckets(String label) {
+    return 'Hisse: $label din';
+  }
+
+  @override
+  String get reportAgeingTitle => 'Umar ke hisse';
+
+  @override
+  String get reportAgeingHint =>
+      'Har hissa kitne din par khatam ho, jaise 15, 30, 60. Udhaar kitna purana, suppliers ka baqaya aur adaigi ki tareekh wala udhaar inhi se banenge, is phone par.';
+
+  @override
+  String get reportAgeingField => 'Din';
+
+  @override
+  String get reportAgeingBad => 'Paanch tak number, har agla pichle se bara';
+
+  @override
+  String get reportAgeingReset => 'Wapas 30, 60, 90';
+
+  @override
+  String get reportChartThisPeriod => 'Yeh arsa';
+
+  @override
+  String reportChartPeriodBefore(String amount) {
+    return 'Pichla arsa: $amount';
+  }
+
+  @override
+  String reportChartPickedBefore(String label, String amount, String before) {
+    return '$label: $amount · pehle $before';
+  }
 }

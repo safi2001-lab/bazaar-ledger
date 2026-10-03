@@ -45,7 +45,8 @@ final class ChartSpec {
     this.everyDay = false,
   }) : form = ChartForm.trend,
        top = 0,
-       parts = const [];
+       parts = const [],
+       buckets = false;
 
   /// The [top] largest of [value] by [label], and the rest summed.
   const ChartSpec.ranked({
@@ -54,14 +55,16 @@ final class ChartSpec {
     this.top = 10,
   }) : form = ChartForm.ranked,
        everyDay = false,
-       parts = const [];
+       parts = const [],
+       buckets = false;
 
   /// [value] by [label] as slices of a ring, in the table's order, at most
   /// [top] of them before the rest are summed.
   const ChartSpec.ring({required this.label, required this.value, this.top = 6})
     : form = ChartForm.ring,
       everyDay = false,
-      parts = const [];
+      parts = const [],
+      buckets = false;
 
   /// The total row's own [parts] columns as slices of a ring, every one of
   /// them kept even when it is nothing: the ageing buckets, where a missing
@@ -71,7 +74,20 @@ final class ChartSpec {
       label = '',
       value = '',
       top = 0,
-      everyDay = false;
+      everyDay = false,
+      buckets = false;
+
+  /// The total row's bucket columns as a ring, whatever buckets the table
+  /// was built with (M67): an ageing report's, whose buckets the shop sets,
+  /// so the ring follows them rather than naming the default five.
+  const ChartSpec.ringOfBuckets()
+    : form = ChartForm.ring,
+      label = '',
+      value = '',
+      top = 0,
+      everyDay = false,
+      parts = const [],
+      buckets = true;
 
   final ChartForm form;
 
@@ -83,6 +99,9 @@ final class ChartSpec {
   final bool everyDay;
   final int top;
   final List<String> parts;
+
+  /// Whether the ring's parts are the table's own bucket columns (M67).
+  final bool buckets;
 }
 
 /// One column, bar or slice.
@@ -119,6 +138,8 @@ final class ReportChart {
     required this.total,
     this.leftOut = 0,
     this.ordered = false,
+    this.previous = const [],
+    this.previousTotal,
   });
 
   final ChartForm form;
@@ -151,11 +172,70 @@ final class ReportChart {
 
   /// Whether there is nothing to draw.
   bool get isEmpty => points.every((p) => p.value.isZero);
+
+  // M67: the period before, drawn lighter behind this one.
+
+  /// The same trend for the period before, point for point: the first day
+  /// of last month under the first day of this one, the same hour under
+  /// the same hour; null where the period before has no such point. Empty
+  /// when nothing is compared.
+  final List<Money?> previous;
+
+  /// What the period before came to, when it is compared.
+  final Money? previousTotal;
+
+  /// Whether the period before is drawn with it.
+  bool get comparesPrevious => previous.isNotEmpty;
+
+  /// The highest point of either period, so both are drawn to one scale.
+  Money get peakWithPrevious =>
+      [peak, for (final m in previous) ?m].reduce((a, b) => a > b ? a : b);
+
+  /// The lowest point of either period.
+  Money get lowWithPrevious =>
+      [low, for (final m in previous) ?m].reduce((a, b) => a < b ? a : b);
+}
+
+/// [now], a trend, with [before] — the same report's trend for the period
+/// before — laid point for point under it (M67), so the screen can draw
+/// last month as a second, lighter series.
+///
+/// Days are matched by their place in the period, the first with the first,
+/// because the 1st of October and the 1st of September are what a
+/// shopkeeper compares; anything else (an hour of the day) by its label.
+/// A ranked chart or a ring is returned as it was: a top ten and a ring
+/// have no "same point" in another period to stand beside.
+ReportChart compareWithPrevious(ReportChart now, ReportChart? before) {
+  if (before == null || now.form != ChartForm.trend || now.points.isEmpty) {
+    return now;
+  }
+  final byDay = now.points.every((p) => BusinessDate.tryParse(p.label) != null);
+  final theirs = {for (final p in before.points) p.label: p.value};
+  return ReportChart(
+    form: now.form,
+    valueTitle: now.valueTitle,
+    points: now.points,
+    total: now.total,
+    leftOut: now.leftOut,
+    ordered: now.ordered,
+    previous: [
+      for (var i = 0; i < now.points.length; i++)
+        byDay
+            ? (i < before.points.length ? before.points[i].value : null)
+            : theirs[now.points[i].label],
+    ],
+    previousTotal: before.total,
+  );
 }
 
 /// [table] drawn as [spec] says, or null when the table does not have the
 /// columns it names (a cost column struck for a cashier).
 ReportChart? chartOf(ReportTable table, ChartSpec spec) {
+  // M67: an ageing report's ring is of the buckets it was built with.
+  if (spec.buckets) {
+    if (table.bucketColumns.isEmpty) return null;
+    return _ringOfTotal(table, ChartSpec.ringOfTotal(table.bucketColumns));
+  }
   if (spec.parts.isNotEmpty) return _ringOfTotal(table, spec);
   final at = table.columns.indexWhere((c) => c.title == spec.label);
   final of = table.columns.indexWhere(

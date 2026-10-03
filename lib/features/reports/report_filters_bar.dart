@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../parties/party_picker.dart';
+import 'insight_filters.dart'; // M67
 import 'stock_filters.dart';
 
 /// The filters a report accepts, as chips under its period (M33).
@@ -171,6 +172,13 @@ class ReportFiltersBar extends StatelessWidget {
           ReportFilter.slowBelow ||
           ReportFilter.serial:
         final picked = await pickStockFilter(context, f, filters);
+        if (picked != null) onChanged(picked);
+      // M67: a valuation, a ranking, the class lines and the days late.
+      case ReportFilter.valuation ||
+          ReportFilter.abcBasis ||
+          ReportFilter.abcBands ||
+          ReportFilter.lateDays:
+        final picked = await pickInsightFilter(context, f, filters);
         if (picked != null) onChanged(picked);
     }
   }
@@ -338,6 +346,11 @@ String reportFilterName(AppStrings s, ReportFilter f) => switch (f) {
   ReportFilter.expenseHead => s.reportFilterHead,
   ReportFilter.loan => s.reportFilterLoan,
   ReportFilter.minAmount => s.reportFilterMinAmount,
+  // M67
+  ReportFilter.valuation ||
+  ReportFilter.abcBasis ||
+  ReportFilter.abcBands ||
+  ReportFilter.lateDays => insightFilterName(s, f),
 };
 
 /// What [f] is set to in [filters], in words, or null when it is not set.
@@ -389,6 +402,11 @@ String? filterValueLabel(AppStrings s, ReportFilter f, ReportFilters filters) =>
         final Money m => s.reportFilterMinAmountValue(m.toString()),
         null => null,
       },
+      // M67
+      ReportFilter.valuation ||
+      ReportFilter.abcBasis ||
+      ReportFilter.abcBands ||
+      ReportFilter.lateDays => insightFilterValue(s, f, filters),
     };
 
 String transactionTypeLabel(AppStrings s, String type) => switch (type) {

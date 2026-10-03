@@ -70,6 +70,20 @@ enum ReportLinkKind {
 
   /// A loan the shop has taken, whose statement it opens (M58).
   loan,
+
+  // M67: what the attention list and the ratios point at.
+
+  /// A money account (the drawer, a bank, a wallet), whose statement it
+  /// opens.
+  account,
+
+  /// Another report, by its `ReportKind` name: a ratio opens the report its
+  /// figures came from.
+  report,
+
+  /// A screen of the app's own, by name: [ReportLink.cheques] or
+  /// [ReportLink.fbr].
+  screen,
 }
 
 /// The thing behind a row, so the screen can open it. The report says what
@@ -94,6 +108,32 @@ final class ReportLink {
   const ReportLink.item(this.id, {required this.label, this.unitCode})
     : kind = ReportLinkKind.item,
       docType = null;
+
+  // M67
+
+  /// A money account: its statement says where its money went.
+  const ReportLink.account(this.id, {required this.label})
+    : kind = ReportLinkKind.account,
+      docType = null,
+      unitCode = null;
+
+  /// Another report, by its `ReportKind` name.
+  const ReportLink.report(this.id, {required this.label})
+    : kind = ReportLinkKind.report,
+      docType = null,
+      unitCode = null;
+
+  /// A screen of the app's own, by one of the names below.
+  const ReportLink.screen(this.id, {required this.label})
+    : kind = ReportLinkKind.screen,
+      docType = null,
+      unitCode = null;
+
+  /// The cheques the shop is holding (M6).
+  static const cheques = 'cheques';
+
+  /// The bills waiting for FBR (M19, M59).
+  static const fbr = 'fbr';
 
   final ReportLinkKind kind;
   final String id;
@@ -157,6 +197,7 @@ final class ReportTable {
     this.notes = const [],
     this.summary = const [],
     this.filters = const [],
+    this.bucketColumns = const [], // M67
   }) {
     for (final row in rows) {
       if (row.cells.length != columns.length) {
@@ -202,6 +243,11 @@ final class ReportTable {
   /// a filtered total read as the whole shop's is a wrong answer.
   final List<String> filters;
 
+  /// The columns that are buckets of one whole, in their order (M67): an
+  /// ageing report's, whose buckets the shop sets, so the ring drawn of it
+  /// follows whatever buckets it was built with. Empty for any other.
+  final List<String> bucketColumns;
+
   /// The rows styled as the grand total, usually one.
   Iterable<ReportRow> get totals =>
       rows.where((r) => r.style == RowStyle.total);
@@ -218,6 +264,7 @@ final class ReportTable {
           notes: notes,
           summary: summary,
           filters: [...filters, ...described],
+          bucketColumns: bucketColumns,
         );
 
   /// The same table without its cost columns (M33), for a role that may not
@@ -250,6 +297,7 @@ final class ReportTable {
       notes: notes,
       summary: figures,
       filters: filters,
+      bucketColumns: bucketColumns,
     );
   }
 

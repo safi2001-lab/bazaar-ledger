@@ -83,6 +83,63 @@ enum ReportFilter {
   /// Only what came to this much or more: the changes worth an owner's
   /// evening, not every five-rupee slip.
   minAmount,
+
+  // M67: the reports an accountant and an owner reach for next.
+
+  /// How the shelf is valued: at cost as the books carry it, or at the
+  /// price it sells for, with or without the tax (myBillBook's four ways).
+  valuation,
+
+  /// What the ABC classes rank items by: what they sold for, or what they
+  /// made over their cost.
+  abcBasis,
+
+  /// Where class A ends and where class B ends, as shares of the whole.
+  abcBands,
+
+  /// How many days past its due date udhaar must be to need attention.
+  lateDays,
+}
+
+/// How a stock list values the shelf (M67), the four ways myBillBook
+/// offers: at cost or at the sale price, each with or without the sales
+/// tax. Only [cost] is what the books carry; the rest are what the shelf
+/// would come to at another price, and a report valued so says it.
+enum StockValuation {
+  /// What the books carry the stock at: every movement's value through
+  /// Inventory. The default, and the only one that ties to the books.
+  cost,
+
+  /// That cost with the item's sales-tax rate on top.
+  costWithTax,
+
+  /// Each item's sale price, before tax.
+  salePrice,
+
+  /// Each item's sale price, tax included.
+  salePriceWithTax;
+
+  /// Whether this is a valuation at what the goods cost, which a role that
+  /// may not see costs is never offered and never shown.
+  bool get isCost => this == cost || this == costWithTax;
+
+  /// How the report and its export say it.
+  String get label => switch (this) {
+    cost => 'Valued at cost, as the books carry it',
+    costWithTax => 'Valued at cost with sales tax',
+    salePrice => 'Valued at sale price before tax',
+    salePriceWithTax => 'Valued at sale price with tax',
+  };
+}
+
+/// What an ABC classification ranks items by (M67).
+enum AbcBasis {
+  /// What each item sold for, net of returns, before tax.
+  sales,
+
+  /// What each item made over what it cost: a role that may not see costs
+  /// is refused it.
+  margin,
 }
 
 /// How much of a bill has been paid.
@@ -261,6 +318,12 @@ final class ReportFilters {
     this.loanId,
     this.loanName,
     this.minAmount,
+    // M67
+    this.valuation,
+    this.abcBasis,
+    this.abcA,
+    this.abcB,
+    this.lateDays,
   });
 
   /// Nothing narrowed.
@@ -328,6 +391,22 @@ final class ReportFilters {
   /// Only rows of this much or more (M58).
   final Money? minAmount;
 
+  // M67
+
+  /// How a stock list values the shelf; null is at cost, as the books do.
+  final StockValuation? valuation;
+
+  /// What the ABC classes rank by; null is by sales.
+  final AbcBasis? abcBasis;
+
+  /// The share of the whole, in whole per cent, at which class A ends and
+  /// class B ends; null is the report's own (80 and 95).
+  final int? abcA;
+  final int? abcB;
+
+  /// Days past due from which udhaar needs attention; null is thirty.
+  final int? lateDays;
+
   /// The party group a party without one is counted under.
   static const ungrouped = 'Ungrouped';
 
@@ -356,7 +435,13 @@ final class ReportFilters {
       accountId == null &&
       expenseHeadId == null &&
       loanId == null &&
-      minAmount == null;
+      minAmount == null &&
+      // M67
+      valuation == null &&
+      abcBasis == null &&
+      abcA == null &&
+      abcB == null &&
+      lateDays == null;
 
   /// Whether [filter] is set.
   bool has(ReportFilter filter) => switch (filter) {
@@ -381,6 +466,11 @@ final class ReportFilters {
     ReportFilter.expenseHead => expenseHeadId != null,
     ReportFilter.loan => loanId != null,
     ReportFilter.minAmount => minAmount != null,
+    // M67
+    ReportFilter.valuation => valuation != null,
+    ReportFilter.abcBasis => abcBasis != null,
+    ReportFilter.abcBands => abcA != null || abcB != null,
+    ReportFilter.lateDays => lateDays != null,
   };
 
   /// Only the filters in [accepted]: a report never narrows by something it
@@ -429,6 +519,12 @@ final class ReportFilters {
     loanId: accepted.contains(ReportFilter.loan) ? loanId : null,
     loanName: accepted.contains(ReportFilter.loan) ? loanName : null,
     minAmount: accepted.contains(ReportFilter.minAmount) ? minAmount : null,
+    // M67
+    valuation: accepted.contains(ReportFilter.valuation) ? valuation : null,
+    abcBasis: accepted.contains(ReportFilter.abcBasis) ? abcBasis : null,
+    abcA: accepted.contains(ReportFilter.abcBands) ? abcA : null,
+    abcB: accepted.contains(ReportFilter.abcBands) ? abcB : null,
+    lateDays: accepted.contains(ReportFilter.lateDays) ? lateDays : null,
   );
 
   /// A copy with [filter] cleared.
@@ -466,6 +562,12 @@ final class ReportFilters {
     String? loanId,
     String? loanName,
     Money? minAmount,
+    // M67
+    StockValuation? valuation,
+    AbcBasis? abcBasis,
+    int? abcA,
+    int? abcB,
+    int? lateDays,
   }) => ReportFilters(
     partyId: partyId ?? this.partyId,
     partyName: partyName ?? this.partyName,
@@ -495,6 +597,12 @@ final class ReportFilters {
     loanId: loanId ?? this.loanId,
     loanName: loanName ?? this.loanName,
     minAmount: minAmount ?? this.minAmount,
+    // M67
+    valuation: valuation ?? this.valuation,
+    abcBasis: abcBasis ?? this.abcBasis,
+    abcA: abcA ?? this.abcA,
+    abcB: abcB ?? this.abcB,
+    lateDays: lateDays ?? this.lateDays,
   );
 
   /// The filters in words, one line each, for the head of an export.
@@ -526,6 +634,13 @@ final class ReportFilters {
     if (expenseHeadId != null) 'Head: ${expenseHeadName ?? expenseHeadId}',
     if (loanId != null) 'Loan: ${loanName ?? loanId}',
     if (minAmount != null) 'Rs ${minAmount!.amountOnly} or more',
+    // M67: a valuation and a ranking are not narrowing, but an export must
+    // still say how its figures were reached.
+    if (valuation case final v? when v != StockValuation.cost) v.label,
+    if (abcBasis == AbcBasis.margin) 'Ranked by profit',
+    if (abcA != null || abcB != null)
+      'Class A to ${abcA ?? AbcDefaults.a}%, B to ${abcB ?? AbcDefaults.b}%',
+    if (lateDays != null) 'Udhaar $lateDays days or more past due',
   ];
 
   @override
@@ -551,7 +666,13 @@ final class ReportFilters {
       other.accountId == accountId &&
       other.expenseHeadId == expenseHeadId &&
       other.loanId == loanId &&
-      other.minAmount == minAmount;
+      other.minAmount == minAmount &&
+      // M67
+      other.valuation == valuation &&
+      other.abcBasis == abcBasis &&
+      other.abcA == abcA &&
+      other.abcB == abcB &&
+      other.lateDays == lateDays;
 
   @override
   int get hashCode => Object.hashAll([
@@ -576,8 +697,26 @@ final class ReportFilters {
     expenseHeadId,
     loanId,
     minAmount,
+    // M67
+    valuation,
+    abcBasis,
+    abcA,
+    abcB,
+    lateDays,
   ]);
 }
+
+/// The bands an ABC classification draws until the shop chooses its own
+/// (M67): class A is the items that make up the first 80% of the whole,
+/// class B the next 15%, class C the last 5%.
+abstract final class AbcDefaults {
+  static const a = 80;
+  static const b = 95;
+}
+
+/// How many days past due udhaar must be before the attention list names
+/// it, until the shop chooses (M67): a month late is a month late.
+const attentionLateDays = 30;
 
 /// A place goods are kept, as a report writes it (M34): the shop floor by
 /// name, anything else by the name it was given.

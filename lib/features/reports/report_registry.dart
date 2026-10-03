@@ -234,6 +234,15 @@ final _transactionReports = [
     icon: Icons.balance_outlined,
     plan: PlanFeature.accountingReports,
   ),
+  // M67: beside the statements it is read off, on the same plan.
+  ReportEntry(
+    kind: ReportKind.ratioAnalysis,
+    group: ReportGroup.transaction,
+    name: (s) => s.reportRatioAnalysis,
+    hint: (s) => s.reportRatioAnalysisHint,
+    icon: Icons.analytics_outlined,
+    plan: PlanFeature.accountingReports,
+  ),
 ];
 
 /// The party reports, then the ageing the market's apps keep elsewhere.
@@ -298,6 +307,8 @@ final _partyReports = [
     name: (s) => s.reportReceivables,
     hint: (s) => s.reportReceivablesHint,
     icon: Icons.hourglass_bottom_outlined,
+    // M67: the shop's own buckets, drawn as a ring of them.
+    chart: const ChartSpec.ringOfBuckets(),
   ),
   ReportEntry(
     kind: ReportKind.payables,
@@ -305,6 +316,7 @@ final _partyReports = [
     name: (s) => s.reportPayables,
     hint: (s) => s.reportPayablesHint,
     icon: Icons.local_shipping_outlined,
+    chart: const ChartSpec.ringOfBuckets(), // M67
   ),
   // M58: the udhaar pack's (M38, M44), beside the bill-age one.
   ReportEntry(
@@ -314,7 +326,8 @@ final _partyReports = [
     hint: (s) => s.reportReceivablesByDueHint,
     icon: Icons.event_note_outlined,
     filters: const {ReportFilter.partyGroup},
-    chart: const ChartSpec.ringOfTotal(dueBucketColumns),
+    // M67: the ring follows the buckets the shop set.
+    chart: const ChartSpec.ringOfBuckets(),
   ),
   // M54: the week ahead, beside the late — what falls due (M38, M50) and
   // what was promised (M38), per customer.
@@ -363,6 +376,7 @@ const _stockFilters = {
   ReportFilter.location,
   ReportFilter.inStockOnly,
   ReportFilter.asOf,
+  ReportFilter.valuation, // M67
 };
 
 const _tradeFilters = {ReportFilter.item, ReportFilter.itemCategory};
@@ -448,7 +462,11 @@ final _itemStockReports = [
     name: (s) => s.reportStockByCategory,
     hint: (s) => s.reportStockByCategoryHint,
     icon: Icons.view_module_outlined,
-    filters: const {ReportFilter.location, ReportFilter.asOf},
+    filters: const {
+      ReportFilter.location,
+      ReportFilter.asOf,
+      ReportFilter.valuation, // M67
+    },
   ),
   ReportEntry(
     kind: ReportKind.itemBatches,
@@ -519,6 +537,22 @@ final _itemStockReports = [
     icon: Icons.hourglass_empty,
     filters: const {ReportFilter.itemCategory, ReportFilter.asOf},
   ),
+  // M67: Zoho's ABC classes, beside the fast and slow stock; the ring is
+  // the three classes' sales.
+  ReportEntry(
+    kind: ReportKind.abcClassification,
+    group: ReportGroup.itemStock,
+    name: (s) => s.reportAbc,
+    hint: (s) => s.reportAbcHint,
+    icon: Icons.sort_by_alpha,
+    filters: const {
+      ReportFilter.itemCategory,
+      ReportFilter.abcBasis,
+      ReportFilter.abcBands,
+    },
+    defaultPreset: DatePreset.thisFiscalYear,
+    chart: const ChartSpec.ring(label: 'Class', value: 'Sales'),
+  ),
   ReportEntry(
     kind: ReportKind.salesByItem,
     group: ReportGroup.itemStock,
@@ -547,6 +581,16 @@ final _itemStockReports = [
 /// discounts, the staff and the hours, and how customers pay. Everything
 /// after the bank and the discounts is beyond what the market's apps have.
 final _businessStatusReports = [
+  // M67: Dhyan dein, everything odd today, before the day's figures.
+  ReportEntry(
+    kind: ReportKind.needsAttention,
+    group: ReportGroup.businessStatus,
+    name: (s) => s.reportNeedsAttention,
+    hint: (s) => s.reportNeedsAttentionHint,
+    icon: Icons.notification_important_outlined,
+    filters: const {ReportFilter.lateDays},
+    defaultPreset: DatePreset.today,
+  ),
   ReportEntry(
     kind: ReportKind.dailySummary,
     group: ReportGroup.businessStatus,

@@ -79,11 +79,16 @@ class _ReportTableViewState extends ConsumerState<ReportTableView> {
     super.didUpdateWidget(old);
     if (!identical(old.table, widget.table)) {
       _visible = ReportTableView.pageSize;
-      if (_sortColumn != null &&
-          (_sortColumn! >= widget.table.columns.length ||
-              !widget.table.isSortable)) {
-        _sortColumn = null;
-      }
+      // M67: the column sorted by is found again by its title, because the
+      // shop may have moved it or hidden one before it.
+      final title =
+          _sortColumn == null || _sortColumn! >= old.table.columns.length
+          ? null
+          : old.table.columns[_sortColumn!].title;
+      final at = title == null
+          ? -1
+          : widget.table.columns.indexWhere((c) => c.title == title);
+      _sortColumn = at >= 0 && widget.table.isSortable ? at : null;
     }
   }
 

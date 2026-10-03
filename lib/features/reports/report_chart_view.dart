@@ -11,6 +11,11 @@ import '../../l10n/app_strings.dart';
 /// or a ring, from a [ReportChart] that pk_reports read off the finished
 /// table.
 ///
+/// Since M67 a trend carries the period before as a second series, drawn
+/// as a lighter line over this period's columns (or under its line), day
+/// for day, with both totals named under it in words; the top ten and the
+/// ring are as they were, having no "same point" in another period.
+///
 /// Drawn here with Flutter's own canvas: no chart package, because every
 /// kilobyte of an APK is a kilobyte a shop on a 2 GB phone pays for, and the
 /// three forms a shop reads are a few rectangles and arcs. The marks are
@@ -150,15 +155,24 @@ class _Trend extends StatelessWidget {
       if (points[i].value > points[highest].value) highest = i;
     }
     final shown = picked ?? highest;
+    // M67: the same point in the period before, when it is drawn.
+    final before = chart.comparesPrevious ? chart.previous[shown] : null;
     final caption = picked == null
         ? s.reportChartHighest(
             chartLabel(s, points[shown]),
             points[shown].value.toString(),
           )
+        : before != null
+        ? s.reportChartPickedBefore(
+            chartLabel(s, points[shown]),
+            points[shown].value.toString(),
+            before.toString(),
+          )
         : s.reportChartPicked(
             chartLabel(s, points[shown]),
             points[shown].value.toString(),
           );
+    final lighter = t.chartSeries.first.withValues(alpha: 0.4);
     // A tick under the first, the middle and the last point: enough to say
     // where the row of columns starts and ends at any text size.
     final ticks = <int>{
@@ -170,7 +184,11 @@ class _Trend extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(chart.peak.toString(), style: muted),
+        Text(
+          (chart.comparesPrevious ? chart.peakWithPrevious : chart.peak)
+              .toString(),
+          style: muted,
+        ),
         const SizedBox(height: BlTokens.space1),
         LayoutBuilder(
           builder: (context, box) => GestureDetector(
@@ -190,6 +208,9 @@ class _Trend extends StatelessWidget {
                 baseline: t.lineStrong,
                 pickedInk: t.ink,
                 surface: t.surface,
+                // M67
+                previous: [for (final m in chart.previous) m?.inPaisa],
+                previousInk: lighter,
               ),
             ),
           ),
@@ -221,7 +242,67 @@ class _Trend extends StatelessWidget {
             fontFeatures: BlTokens.tabular,
           ),
         ),
+        // M67: which series is which, each with its total, in words.
+        if (chart.comparesPrevious) ...[
+          const SizedBox(height: BlTokens.space2),
+          _Key(
+            swatch: t.chartSeries.first,
+            text: '${s.reportChartThisPeriod}: ${chart.total}',
+          ),
+          _Key(
+            swatch: lighter,
+            line: true,
+            text: s.reportChartPeriodBefore(
+              (chart.previousTotal ?? Money.zero).toString(),
+            ),
+          ),
+        ],
       ],
+    );
+  }
+}
+
+/// One line of a chart's key (M67): a swatch, a square for this period's
+/// columns or a bar of line for the period before, and its words.
+class _Key extends StatelessWidget {
+  const _Key({required this.swatch, required this.text, this.line = false});
+
+  final Color swatch;
+  final String text;
+  final bool line;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.bl;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 2),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.only(top: line ? 7 : 3),
+            child: Container(
+              width: 14,
+              height: line ? 3 : 12,
+              decoration: BoxDecoration(
+                color: swatch,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(width: BlTokens.space2),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 13,
+                color: t.inkMuted,
+                fontFeatures: BlTokens.tabular,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -235,10 +316,16 @@ class _TrendPainter extends CustomPainter {
     required this.baseline,
     required this.pickedInk,
     required this.surface,
+    this.previous = const [],
+    this.previousInk,
   });
 
   /// In paisa: pixels are worked out from whole numbers here, never money.
   final List<int> values;
+
+  /// M67: the period before, point for point; null where it has none.
+  final List<int?> previous;
+  final Color? previousInk;
   final int? picked;
   final bool asLine;
   final Color mark;
@@ -249,8 +336,9 @@ class _TrendPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (values.isEmpty) return;
-    final top = math.max(0, values.reduce(math.max));
-    final bottom = math.min(0, values.reduce(math.min));
+    final both = [...values, for (final v in previous) ?v];
+    final top = math.max(0, both.reduce(math.max));
+    final bottom = math.min(0, both.reduce(math.min));
     final span = (top - bottom) == 0 ? 1 : top - bottom;
     double y(int v) => size.height * (top - v) / span;
     final zero = y(0);
@@ -264,7 +352,39 @@ class _TrendPainter extends CustomPainter {
         ..strokeWidth = 1,
     );
 
+    // M67: the period before as a lighter line through each slot's middle,
+    // a dot on every point it has: under this period's line, over its
+    // columns, so neither hides the other.
+    void drawPrevious() {
+      final ink = previousInk;
+      if (ink == null || previous.isEmpty) return;
+      final paint = Paint()
+        ..color = ink
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..strokeJoin = StrokeJoin.round;
+      final path = Path();
+      var open = false;
+      for (var i = 0; i < previous.length && i < values.length; i++) {
+        final v = previous[i];
+        if (v == null) {
+          open = false;
+          continue;
+        }
+        final p = Offset(slot * (i + 0.5), y(v));
+        if (open) {
+          path.lineTo(p.dx, p.dy);
+        } else {
+          path.moveTo(p.dx, p.dy);
+          open = true;
+        }
+        canvas.drawCircle(p, 2.5, Paint()..color = ink);
+      }
+      canvas.drawPath(path, paint);
+    }
+
     if (asLine) {
+      drawPrevious();
       final path = Path();
       for (var i = 0; i < values.length; i++) {
         final p = Offset(slot * (i + 0.5), y(values[i]));
@@ -326,6 +446,7 @@ class _TrendPainter extends CustomPainter {
         );
       }
     }
+    drawPrevious();
   }
 
   @override
@@ -334,7 +455,17 @@ class _TrendPainter extends CustomPainter {
       old.asLine != asLine ||
       old.mark != mark ||
       old.baseline != baseline ||
-      !_same(old.values, values);
+      old.previousInk != previousInk ||
+      !_same(old.values, values) ||
+      !_sameOrNull(old.previous, previous);
+}
+
+bool _sameOrNull(List<int?> a, List<int?> b) {
+  if (a.length != b.length) return false;
+  for (var i = 0; i < a.length; i++) {
+    if (a[i] != b[i]) return false;
+  }
+  return true;
 }
 
 /// A day or an hour on its own is a column, not a wall.

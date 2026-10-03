@@ -4,6 +4,7 @@ import 'builders.dart';
 import 'business_reports.dart';
 import 'collections_reports.dart'; // M54
 import 'filters.dart';
+import 'insight_reports.dart'; // M67
 import 'item_stock_reports.dart';
 import 'loyalty_reports.dart'; // M66
 import 'mobile_reports.dart'; // M50
@@ -260,6 +261,18 @@ enum ReportKind {
 
   /// Each customer's loyalty points: earned, redeemed, expired, held.
   loyaltyPoints,
+  // M67: in `insight_reports.dart`.
+
+  /// Gross and net profit, stock turnover, debtors' and creditors' days,
+  /// the current ratio and cash against expenses, each against the period
+  /// before.
+  ratioAnalysis,
+
+  /// Everything odd today, in one list: Dhyan dein; as of today.
+  needsAttention,
+
+  /// Items in classes A, B and C by what they sold for or made.
+  abcClassification,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -290,7 +303,8 @@ final class ReportEngine {
       kind == ReportKind.qistInstalments || // M50
       collectionsReportKinds.contains(kind) || // M54
       kind == ReportKind.staffAdvances || // M65
-      loyaltyReportKinds.contains(kind); // M66
+      loyaltyReportKinds.contains(kind) || // M66
+      insightReportsAsOfToday.contains(kind); // M67
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -310,6 +324,8 @@ final class ReportEngine {
     ReportKind.itemProfitAndLoss ||
     ReportKind.categoryProfitAndLoss ||
     ReportKind.stockAgeing => true,
+    // M67: every ratio but two divides a profit or a stock at cost.
+    ReportKind.ratioAnalysis => true,
     _ => false,
   };
 
@@ -320,12 +336,16 @@ final class ReportEngine {
 
   /// Builds [kind] for [period], narrowed by [filters]. The table says what
   /// it was narrowed by, so no export of it can be mistaken for the whole.
+  ///
+  /// [options] are the shop's own settings a report is run with (M67): the
+  /// ageing buckets it chose, and the moment it is run.
   Future<ReportTable> run(
     ReportKind kind, {
     required String firmId,
     required ReportPeriod period,
     required BusinessDate today,
     ReportFilters filters = ReportFilters.none,
+    ReportOptions options = ReportOptions.standard, // M67
   }) async {
     if (!canSeeCosts && showsCost(kind)) {
       throw const PermissionDenied(
@@ -333,7 +353,7 @@ final class ReportEngine {
         'This report shows what the goods cost, which this role does not see.',
       );
     }
-    final table = await _build(kind, firmId, period, today, filters);
+    final table = await _build(kind, firmId, period, today, filters, options);
     final seen = canSeeCosts ? table : table.withoutCostColumns();
     return seen.withFilters(filters.describe());
   }
@@ -369,12 +389,41 @@ final class ReportEngine {
     return before.summary;
   }
 
+  /// [kind] for the period before [period] (M67), whole: its headline
+  /// figures for the tiles and its rows for a chart drawn against this
+  /// period's. Null for a report that is as of today or one person's
+  /// account, which have no period before, and for the ratio analysis,
+  /// which already sets each ratio beside the period before's.
+  Future<ReportTable?> previousTable(
+    ReportKind kind, {
+    required String firmId,
+    required ReportPeriod period,
+    required BusinessDate today,
+    ReportFilters filters = ReportFilters.none,
+    ReportOptions options = ReportOptions.standard,
+  }) async {
+    if (isAsOfToday(kind) ||
+        kind == ReportKind.partyStatement ||
+        kind == ReportKind.ratioAnalysis) {
+      return null;
+    }
+    return run(
+      kind,
+      firmId: firmId,
+      period: period.previous,
+      today: today,
+      filters: filters,
+      options: options,
+    );
+  }
+
   Future<ReportTable> _build(
     ReportKind kind,
     String firmId,
     ReportPeriod period,
     BusinessDate today,
     ReportFilters filters,
+    ReportOptions options,
   ) async => switch (kind) {
     ReportKind.profitAndLoss => profitAndLoss(
       period,
@@ -397,10 +446,6 @@ final class ReportEngine {
       period,
       await source.dailySales(firmId, period),
     ),
-    ReportKind.receivables => receivablesByAge(
-      today,
-      await source.receivables(firmId, today),
-    ),
     ReportKind.trialBalance => trialBalance(
       today,
       await source.accountBalances(firmId, today),
@@ -412,10 +457,6 @@ final class ReportEngine {
     ReportKind.expiry => expiryReport(
       today,
       await source.batchesWithExpiry(firmId),
-    ),
-    ReportKind.payables => payablesByAge(
-      today,
-      await source.payables(firmId, today),
     ),
     ReportKind.salesByItem => salesByItem(
       period,
@@ -568,9 +609,7 @@ final class ReportEngine {
       filters: filters,
     ),
     // M58: money owed both ways.
-    ReportKind.loanStatement ||
-    ReportKind.receivablesByDueDate ||
-    ReportKind.badDebts => buildMoneyOwedReport(
+    ReportKind.loanStatement || ReportKind.badDebts => buildMoneyOwedReport(
       kind,
       source: source,
       firmId: firmId,
@@ -622,6 +661,23 @@ final class ReportEngine {
       firmId: firmId,
       today: today,
       filters: filters,
+    ),
+    // M67: its own three, and the three ageing reports (M8's two and M58's
+    // by due date) in the buckets the shop sets.
+    ReportKind.ratioAnalysis ||
+    ReportKind.needsAttention ||
+    ReportKind.abcClassification ||
+    ReportKind.receivables ||
+    ReportKind.payables ||
+    ReportKind.receivablesByDueDate => buildInsightReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      period: period,
+      today: today,
+      filters: filters,
+      options: options,
+      canSeeCosts: canSeeCosts,
     ),
   };
 }

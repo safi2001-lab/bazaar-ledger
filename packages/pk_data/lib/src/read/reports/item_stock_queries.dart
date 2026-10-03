@@ -91,7 +91,15 @@ mixin _ItemStockQueries implements ItemStockReportSource {
           '''
           SELECT i.id, i.name, u.code AS unit_code, i.category,
                  i.sale_rate_milli_paisa, i.avg_cost_milli_paisa,
-                 COALESCE(st.q, 0) AS qty, COALESCE(st.v, 0) AS value
+                 COALESCE(st.q, 0) AS qty, COALESCE(st.v, 0) AS value,
+                 -- M67: the item's own tax, for the shelf valued at its
+                 -- price with the tax or without it.
+                 i.price_includes_tax,
+                 COALESCE((
+                   SELECT tr.rate_bp FROM tax_rules tr
+                   WHERE tr.id = i.tax_rule_id
+                     AND tr.tax_kind IN ('sales_tax', 'provincial_st')
+                 ), 0) AS tax_bp
           FROM items i
           JOIN units u ON u.id = i.base_unit_id
           LEFT JOIN (
@@ -112,7 +120,7 @@ mixin _ItemStockQueries implements ItemStockReportSource {
             $category
           ''',
           variables: q.variables,
-          readsFrom: {_db.items, _db.units, _db.stockLedger},
+          readsFrom: {_db.items, _db.units, _db.stockLedger, _db.taxRules},
         )
         .get();
     return [
@@ -126,6 +134,9 @@ mixin _ItemStockQueries implements ItemStockReportSource {
           averageCost: Rate.raw(r.read<int>('avg_cost_milli_paisa')),
           qty: Qty.raw(r.read<int>('qty')),
           value: Money.paisa(r.read<int>('value')),
+          // M67
+          taxBp: r.read<int>('tax_bp'),
+          priceIncludesTax: r.read<int>('price_includes_tax') == 1,
         ),
     ];
   }

@@ -3534,6 +3534,149 @@ milestones:
       - packages/pk_bootstrap/lib/src/loyalty_services.dart
       - lib/features/loyalty/**
 
+  - id: M67
+    title: The reports an accountant and an owner reach for next — ratios, the day's exceptions, ABC classes, the shop's own ageing, the shelf valued four ways, and a table the shop arranges
+    # Opened and sealed 3 Oct 2026 at 8/8. Research s.1.10, s.1.12 and s.8:
+    # Tally's ratio analysis and its exception reports behind Ctrl+J, Zoho's
+    # configurable ageing, ABC classes and column chooser, myBillBook's four
+    # ways to value stock. No schema change; every edit in another
+    # milestone's file is marked M67.
+    #
+    # Ratio analysis (Transactions, beside the statements, on the books'
+    # plan and closed to a role that may not see costs): gross and net
+    # profit as a share of net sales, stock turnover (the cost of goods sold
+    # over the trading account's opening and closing stock halved) and the
+    # days of stock it stands for, debtors' days (udhaar on the last day
+    # against the period's net sales), creditors' days, the current ratio
+    # (every asset but fixed assets against everything owed) and the cash
+    # against a month's expenses. Each sits beside the period before, with
+    # the change in its own terms ("+5.00 points", "-4 days"), better or
+    # worse where one way plainly is, and the two figures it was worked out
+    # from, so a shopkeeper can check the division. Nothing is derived
+    # afresh: every input is read off the finished Profit and Loss of the
+    # period and Balance Sheet on its last day (or today, for a period not
+    # over), built by their own builders over their own reads, and cash is
+    # the Cash flow's closing money; a test ties each input to its line.
+    # Ratios are whole numbers (basis points, days, hundredths), and one
+    # with nothing to divide by is a dash. A tap on a ratio opens the report
+    # it came from; debtors' days opens How customers pay, Tally's ledger
+    # payment performance.
+    #
+    # Dhyan dein, the attention list (first in Business status): one list
+    # of everything odd today, the worst kind first, each row a tap from the
+    # screen that puts it right. An item below nothing on the shelf, and
+    # apart from it an item set to refuse a sale past its shelf that went
+    # below anyway (M53: two counters apart sold the last one each); the
+    # drawer, a bank or a wallet below nothing (its statement); udhaar past
+    # its due date by the days the shop chooses, thirty unless it does (the
+    # chase list's own rows, M38 and M50); a cheque in hand that can be
+    # banked and has not been, and one six months past its date that the
+    # bank will refuse (the cheques screen, M6); a bill cancelled today with
+    # who and why (M31's audit row); a line sold today below what it cost,
+    # a scheme's free line aside, never read for a role that may not see
+    # costs; a batch past its expiry still on the shelf (M11); and a bill
+    # made offline still not with FBR a day after FBR could be reached, by
+    # M59's own rule over the queue's own settings rows (the FBR screen).
+    #
+    # ABC classification (Items and stock): items ranked by what they sold
+    # for over the period (Item-wise profit's own rows, khula maal one of
+    # them) or, for a role that may see costs, by what they made; class A
+    # while the share above an item is under the A line, B under the B line,
+    # C after, the lines the shop's own (80% and 95% until it moves them),
+    # narrowed by category; how many items and what share of the whole each
+    # class holds, as tiles and in words, and a ring of the three. The
+    # classes' sales are Item-wise profit's and Sales by item's to the
+    # paisa, and a test says so.
+    #
+    # Ageing in the shop's buckets: Udhaar by age, Owed to suppliers and
+    # Udhaar by due date cut their money where the shop says ("15, 30, 60"
+    # is 0-15, 16-30, 31-60 and over 60; on the due-date report 1-15 days
+    # late and on), each bound a bound value in the same SQL, so the
+    # standard buckets give the very tables the reports gave before (a test
+    # sets the two side by side, cell for cell) and no bucket moves a total.
+    # The ring of Udhaar by due date follows the buckets (ReportTable
+    # carries its bucket columns, ChartSpec.ringOfBuckets draws them), and
+    # the two bill-age reports have a ring of their own now. A customer's
+    # row on Udhaar by age opens their statement.
+    #
+    # The shelf valued four ways (myBillBook): the Stock summary and Stock
+    # by category value the shelf at cost as the books carry it, at cost
+    # with the item's tax, or at the sale price before tax or with it (the
+    # item's own rate, taken out of a price that includes it). Only at cost
+    # is the value set beside Inventory, and a note says the other three are
+    # what the shelf would fetch, not what the books hold; a value at a
+    # price is not a cost, so it is shown to whoever may read the report,
+    # and the cost choices are not offered to a role that may not see costs.
+    #
+    # A table the shop arranges: on every report a column chooser in the
+    # app bar shows, hides and moves columns (by title, as M61's sort, so a
+    # report gaining a column shows it after the arranged ones), remembered
+    # for the report on this phone beside M33's shelf and kept in M61's
+    # saved views; and a filter on any column, words a text column contains
+    # or a figure a money, quantity, count or share column is at least or
+    # at most, typed as the column shows it. Arranging moves and drops whole
+    # rows and columns of the builder's finished table (arrangeTable in
+    # pk_reports) and adds nothing up but one row: "Shown rows (12 of 40)",
+    # what the rows left come to in the columns the builder itself totals,
+    # never a share, beside the builder's Total, which stays the whole
+    # report's. A statement with headings takes no column filter. What is on
+    # screen is what goes out: the PDF, Excel, CSV and the till roll carry
+    # the arranged table, and the head of each file says what the columns
+    # were filtered by.
+    #
+    # The period before on a trend (M46): Sales by day, the Sale report by
+    # day and Hourly sales draw last period as a lighter line over this
+    # period's columns, day for day by its place in the period and hour for
+    # hour by its label, both totals named in words under it; a tapped
+    # column says its figure and the period before's. The ranked bars and
+    # the rings are as they were: they have no "same point" in another
+    # period.
+    #
+    # Measured on M62's three-year wholesaler, best of three, M62's host
+    # budgets: ABC over a year about 0.8 s; the ratio analysis over a year
+    # and the year before (two years of every account, two balance sheets)
+    # about 1.7 s; the attention list about 0.5-1 s, most of it the whole
+    # stock ledger summed (no index carries the quantity, and none may be
+    # added); the shelf at its sale price about 0.6 s; the ageing reports
+    # in five buckets 0.1-0.2 s.
+    #
+    # Decided: the ageing buckets are kept on the phone with M33's shelf,
+    # not in the books: a setting in the books is written through a service
+    # in pk_bootstrap, outside the reports, and how a person reads ageing is
+    # theirs as the favourites are. The money accounts below nothing are
+    # read as the books stand, every line on them by its index, rather than
+    # joined to each entry for a date: the list is of today, and the join
+    # tripled the read on the three-year book.
+    #
+    # Found on the way: none of the roles the app ships may read the
+    # reports without seeing costs (cashier has no reports, manager and
+    # accountant see costs), so every cost-hiding path here, as M33's and
+    # M34's, is reachable only by a role still to come; each is proved at
+    # the engine.
+    #
+    # Not built, and why: the attention count on the hub's Today strip (the
+    # list sums the whole shelf, half a second to a second on the three-year
+    # book and five times that on a phone, ahead of whatever report is
+    # tapped next; the list is first in Business status instead); Zoho's
+    # ageing by count of bills and ABC by quantity or by bills; the M8 Stock
+    # value report valued four ways (it stays the owner's check of the shelf
+    # at average cost against the books); a chart drawn from the arranged
+    # table (a chart reads the builder's, so a hidden bucket never leaves a
+    # ring short); a date range as a column filter (a date column is words,
+    # and "contains 2026-09" finds a month); cheques the shop wrote falling
+    # due, on the attention list (the cheques screen lists them).
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/table_arrangement.dart
+      - packages/pk_reports/lib/src/ageing_buckets.dart
+      - packages/pk_reports/lib/src/ratio_reports.dart
+      - packages/pk_reports/lib/src/attention_reports.dart
+      - packages/pk_reports/lib/src/abc_reports.dart
+      - packages/pk_reports/lib/src/insight_reports.dart
+      - packages/pk_data/lib/src/read/reports/insight_queries.dart
+      - lib/features/reports/column_chooser.dart
+      - lib/features/reports/insight_filters.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -9039,3 +9182,81 @@ features:
       - a cashier uses a customer's points on the payment sheet as a discount past their own 5%, sees no profit anywhere, and the bill says what was used and earned
       - the margin at the counter costs are read only by whoever may see them, and the owner can turn the figure off
       - a margin reads as a shopkeeper says it
+  - id: M67-RATIOS-01
+    milestone: M67
+    title: Ratio analysis — gross and net profit %, stock turnover and days of stock, debtors' and creditors' days, the current ratio and cash against a month's expenses — each beside the period before, every input a line of the Profit and Loss or the Balance Sheet
+    status: done
+    proof:
+      - ratio analysis every input is a line of the Profit and Loss or the Balance Sheet
+      - ratio analysis each ratio is worked out in whole numbers, beside the period before, better or worse
+      - ratio analysis a ratio with nothing to divide by is a dash, and the days are those passed
+      - ratio analysis every input ties to the Profit and Loss and the Balance Sheet of the period
+  - id: M67-ATTENTION-01
+    milestone: M67
+    title: Dhyan dein — one list of everything odd today, the worst first, each a tap from its screen — stock and money below zero, a blocked item oversold, late udhaar, cheques to bank and gone stale, today's cancellations and sales below cost, expired batches, FBR bills past 24 hours
+    status: done
+    proof:
+      - needs attention everything odd today is one list, the worst kind first, each a tap from its screen
+      - needs attention a cheque is named when it can be banked and when it has gone stale, never once at the bank and in date
+      - needs attention nothing odd today says so
+      - needs attention everything odd today is listed, each from the read its own screen makes
+  - id: M67-ABC-01
+    milestone: M67
+    title: ABC classification by sales or profit, the class lines the shop's own, narrowed by category, each class's items and share, the classes adding up to Item-wise profit's sales
+    status: done
+    proof:
+      - ABC classification the few that make most of the sales are A, and the classes add up to the sales
+      - ABC classification the lines are the shop's to move
+      - ABC classification ranked by profit a loss is C; and a role that may not see costs is refused the ranking before anything is read
+      - ABC classification the classes' sales add up to Item-wise profit's and Sales by item's, and narrow by category
+  - id: M67-AGEING-01
+    milestone: M67
+    title: Udhaar by age, Owed to suppliers and Udhaar by due date in the buckets the shop sets, the standard ones giving the very tables as before, and the ring following the buckets
+    status: done
+    proof:
+      - ageing in the shop's buckets the standard buckets give the very table Udhaar by age gave, and Owed to suppliers likewise
+      - ageing in the shop's buckets the due-date report in the standard buckets is M58's, and its ring names the same five
+      - ageing in the shop's buckets buckets the shop sets cut the money where it says, the totals do not move, and the ring follows them
+      - ageing in the shop's buckets buckets are read as typed, and nonsense is refused
+      - ageing in the shop's buckets the standard buckets read what the old reads read, and other buckets move money between columns, never the total
+      - the ageing buckets the shop sets cut Udhaar by age and by due date, and the ring follows them
+  - id: M67-VALUATION-01
+    milestone: M67
+    title: The stock summary valued four ways — at cost as the books carry it, cost with tax, sale price before and with tax — only at cost set beside Inventory, the cost choices never offered to a role that may not see costs
+    status: done
+    proof:
+      - the shelf valued four ways at cost it is the books' value; at the sale price, with the tax or without
+      - the shelf valued four ways only at cost is it set beside Inventory, and a cashier sees a value at a price but never at cost
+      - stock valued four ways at cost the shelf is Inventory in the books; at a price it is the stock times the price, the tax in or out
+      - the shelf is valued at its sale price on a tap, and says the books are at cost
+  - id: M67-TABLE-01
+    milestone: M67
+    title: A table the shop arranges — columns shown, hidden and moved, remembered for the report on the phone and kept in saved views; a filter on any column with what the shown rows come to beside the builder's Total; every export and the till roll carrying it
+    status: done
+    proof:
+      - a table the shop arranges columns are hidden and moved by title, and every row follows
+      - a table the shop arranges a column filter keeps whole rows, adds what they come to as Shown rows, and leaves the Total the builder's
+      - a table the shop arranges figures filter at least and at most in the column's own unit, a hidden label column moves the count to the head of the export
+      - a table the shop arranges a statement with headings takes no column filter, only its columns arranged
+      - a table the shop arranges two columns of one title are told apart, and an arrangement is written down and read back
+      - a saved view keeps how its table was arranged and the choices M67 adds
+      - the columns a shop hides and moves stay so for the report on this phone, and every export carries them
+      - a column filter keeps the rows that match, adds up what they come to, leaves the total alone, and the export says so
+      - a saved view keeps the table as the shop arranged it
+      - at 200% on a small phone the ratios, Dhyan dein, ABC, the chooser, a column filter and the buckets all fit
+  - id: M67-TREND-01
+    milestone: M67
+    title: A trend chart draws the period before as a second, lighter series, day for day or hour for hour, with both totals in words; bars and rings unchanged
+    status: done
+    proof:
+      - the period before on a trend a day is set beside the same day of the period before, an hour beside the same hour
+      - the period before on a trend a ranking and a ring are not compared, nor is nothing
+      - a trend is drawn over the period before, each with its total
+  - id: M67-SCALE-01
+    milestone: M67
+    title: On M62's three-year wholesaler the ratios and ABC over a year, the attention list, the ageing in five buckets and the shelf at its price each inside M62's host budgets
+    status: done
+    proof:
+      - ratio analysis and ABC classes over a year of a wholesaler
+      - the attention list, the whole shelf and every open bill
+      - ageing in the shop's buckets, and the shelf at its sale price

@@ -15100,6 +15100,282 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Rs {amount} fi {unit}'**
   String partyPriceEach(String amount, String unit);
+
+  /// No description provided for @reportRatioAnalysis.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nisbatain (ratio analysis)'**
+  String get reportRatioAnalysis;
+
+  /// No description provided for @reportRatioAnalysisHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nafa %, maal kitni baar bika, udhaar aur dene ke din, current ratio, aur kharch ke muqable mein paisa — pichle arse ke saath'**
+  String get reportRatioAnalysisHint;
+
+  /// No description provided for @reportNeedsAttention.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dhyan dein'**
+  String get reportNeedsAttention;
+
+  /// No description provided for @reportNeedsAttentionHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ki har gadbad: minus stock ya paisa, purana udhaar, bank le jaane wale cheque, cancel bill, laagat se kam bikri, expire maal, FBR'**
+  String get reportNeedsAttentionHint;
+
+  /// No description provided for @reportAbc.
+  ///
+  /// In ur, this message translates to:
+  /// **'ABC darja-bandi'**
+  String get reportAbc;
+
+  /// No description provided for @reportAbcHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaun si chand cheezen sab se zyada bikri laati hain: A, B aur C darje, unke hisse ke saath'**
+  String get reportAbcHint;
+
+  /// No description provided for @reportFilterValuation.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat kis par'**
+  String get reportFilterValuation;
+
+  /// No description provided for @reportValuationCost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Laagat par (khaata)'**
+  String get reportValuationCost;
+
+  /// No description provided for @reportValuationCostTax.
+  ///
+  /// In ur, this message translates to:
+  /// **'Laagat + tax'**
+  String get reportValuationCostTax;
+
+  /// No description provided for @reportValuationSale.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne ki qeemat'**
+  String get reportValuationSale;
+
+  /// No description provided for @reportValuationSaleTax.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bechne ki qeemat + tax'**
+  String get reportValuationSaleTax;
+
+  /// No description provided for @reportFilterAbcBasis.
+  ///
+  /// In ur, this message translates to:
+  /// **'Darja kis se'**
+  String get reportFilterAbcBasis;
+
+  /// No description provided for @reportAbcBySales.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bikri'**
+  String get reportAbcBySales;
+
+  /// No description provided for @reportAbcByProfit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nafa'**
+  String get reportAbcByProfit;
+
+  /// No description provided for @reportFilterAbcBands.
+  ///
+  /// In ur, this message translates to:
+  /// **'Darjon ki had'**
+  String get reportFilterAbcBands;
+
+  /// No description provided for @reportFilterAbcBandsValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'A {a}% · B {b}%'**
+  String reportFilterAbcBandsValue(int a, int b);
+
+  /// No description provided for @reportAbcLineA.
+  ///
+  /// In ur, this message translates to:
+  /// **'A darja kahan khatam (kul ka %)'**
+  String get reportAbcLineA;
+
+  /// No description provided for @reportAbcLineB.
+  ///
+  /// In ur, this message translates to:
+  /// **'B darja kahan khatam (kul ka %)'**
+  String get reportAbcLineB;
+
+  /// No description provided for @reportAbcLinesWrong.
+  ///
+  /// In ur, this message translates to:
+  /// **'A, B se kam ho, dono 1 se 100 tak'**
+  String get reportAbcLinesWrong;
+
+  /// No description provided for @reportFilterLateDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar kitne din late'**
+  String get reportFilterLateDays;
+
+  /// No description provided for @reportColumns.
+  ///
+  /// In ur, this message translates to:
+  /// **'Columns'**
+  String get reportColumns;
+
+  /// No description provided for @reportColumnsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Columns dikhayein aur tarteeb dein'**
+  String get reportColumnsTitle;
+
+  /// No description provided for @reportColumnsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tick hata kar column chhupayein, teer se upar neeche karein. Is phone par is report ke liye yaad rahega, aur saved view mein bhi.'**
+  String get reportColumnsHint;
+
+  /// No description provided for @reportColumnUp.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} upar'**
+  String reportColumnUp(String name);
+
+  /// No description provided for @reportColumnDown.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} neeche'**
+  String reportColumnDown(String name);
+
+  /// No description provided for @reportColumnsReset.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab columns, asal tarteeb mein'**
+  String get reportColumnsReset;
+
+  /// No description provided for @reportColumnFilter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Column par filter'**
+  String get reportColumnFilter;
+
+  /// No description provided for @reportColumnFilterPick.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaun sa column?'**
+  String get reportColumnFilterPick;
+
+  /// No description provided for @reportColumnContains.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mein ho'**
+  String get reportColumnContains;
+
+  /// No description provided for @reportColumnAtLeast.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam se kam'**
+  String get reportColumnAtLeast;
+
+  /// No description provided for @reportColumnAtMost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Zyada se zyada'**
+  String get reportColumnAtMost;
+
+  /// No description provided for @reportColumnFilterValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat'**
+  String get reportColumnFilterValue;
+
+  /// No description provided for @reportColumnFilterApply.
+  ///
+  /// In ur, this message translates to:
+  /// **'Lagayein'**
+  String get reportColumnFilterApply;
+
+  /// No description provided for @reportColumnFilterBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'Number likhein'**
+  String get reportColumnFilterBad;
+
+  /// No description provided for @reportColumnFilterContainsChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'{column}: \"{text}\"'**
+  String reportColumnFilterContainsChip(String column, String text);
+
+  /// No description provided for @reportColumnFilterAtLeastChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'{column} ≥ {value}'**
+  String reportColumnFilterAtLeastChip(String column, String value);
+
+  /// No description provided for @reportColumnFilterAtMostChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'{column} ≤ {value}'**
+  String reportColumnFilterAtMostChip(String column, String value);
+
+  /// No description provided for @reportAgeingBuckets.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hisse: {label} din'**
+  String reportAgeingBuckets(String label);
+
+  /// No description provided for @reportAgeingTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Umar ke hisse'**
+  String get reportAgeingTitle;
+
+  /// No description provided for @reportAgeingHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har hissa kitne din par khatam ho, jaise 15, 30, 60. Udhaar kitna purana, suppliers ka baqaya aur adaigi ki tareekh wala udhaar inhi se banenge, is phone par.'**
+  String get reportAgeingHint;
+
+  /// No description provided for @reportAgeingField.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din'**
+  String get reportAgeingField;
+
+  /// No description provided for @reportAgeingBad.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paanch tak number, har agla pichle se bara'**
+  String get reportAgeingBad;
+
+  /// No description provided for @reportAgeingReset.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas 30, 60, 90'**
+  String get reportAgeingReset;
+
+  /// No description provided for @reportChartThisPeriod.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh arsa'**
+  String get reportChartThisPeriod;
+
+  /// No description provided for @reportChartPeriodBefore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichla arsa: {amount}'**
+  String reportChartPeriodBefore(String amount);
+
+  /// No description provided for @reportChartPickedBefore.
+  ///
+  /// In ur, this message translates to:
+  /// **'{label}: {amount} · pehle {before}'**
+  String reportChartPickedBefore(String label, String amount, String before);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

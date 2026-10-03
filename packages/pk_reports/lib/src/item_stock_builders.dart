@@ -81,27 +81,37 @@ String _againstBooks(Money stock, Money books) => stock == books
 /// [inBooks] is Inventory in the books on the same day, given when the
 /// report is not narrowed: the whole shelf, valued as the books value it,
 /// is that figure to the paisa, and the report says so.
+///
+/// Since M67 the shelf can be valued four ways, as myBillBook values it
+/// ([StockValuation]): at cost as the books carry it (the default), at cost
+/// with the item's tax, or at the sale price, before tax or with it. Only
+/// at cost is the Value a figure the books hold, and only then is it set
+/// beside Inventory; valued at a price, it is what the shelf would fetch,
+/// and the note says so. A value at a price is not a cost, so a role that
+/// may not see costs, which is never offered the cost valuations, sees it.
 ReportTable stockSummary(
   BusinessDate asOf,
   List<StockLine> lines, {
   Money? inBooks,
+  StockValuation valuation = StockValuation.cost, // M67
 }) {
   final rows = lines.toList()..sort((a, b) => _byName(a.itemName, b.itemName));
   final qty = Qty.sum(rows.map((l) => l.qty));
-  final value = Money.sum(rows.map((l) => l.value));
+  final value = Money.sum(rows.map((l) => l.valueAt(valuation)));
   final short = rows.where((l) => l.qty.isNegative).length;
+  final books = valuation == StockValuation.cost ? inBooks : null;
   return ReportTable(
     id: 'stock_summary',
     title: 'Stock summary',
     period: ReportPeriod.day(asOf),
-    columns: const [
-      ReportColumn('Item', CellKind.text),
-      ReportColumn('Category', CellKind.text),
-      ReportColumn('Unit', CellKind.text),
-      ReportColumn('Sale price', CellKind.money),
-      ReportColumn('Cost', CellKind.money, isCost: true),
-      ReportColumn('Stock', CellKind.qty),
-      ReportColumn('Value', CellKind.money, isCost: true),
+    columns: [
+      const ReportColumn('Item', CellKind.text),
+      const ReportColumn('Category', CellKind.text),
+      const ReportColumn('Unit', CellKind.text),
+      const ReportColumn('Sale price', CellKind.money),
+      const ReportColumn('Cost', CellKind.money, isCost: true),
+      const ReportColumn('Stock', CellKind.qty),
+      ReportColumn('Value', CellKind.money, isCost: valuation.isCost),
     ],
     rows: [
       for (final l in rows)
@@ -112,7 +122,7 @@ ReportTable stockSummary(
           _each(l.saleRate),
           _each(l.unitCost),
           l.qty,
-          l.value,
+          l.valueAt(valuation),
         ], link: _item(l.itemId, l.itemName, l.unitCode)),
       ReportRow([
         'Total',
@@ -126,22 +136,42 @@ ReportTable stockSummary(
     ],
     summary: [
       ReportFigure.count('Items', rows.length),
-      ReportFigure('Stock value', value, isCost: true),
-      if (inBooks != null)
-        ReportFigure('Inventory in the books', inBooks, isCost: true),
+      ReportFigure('Stock value', value, isCost: valuation.isCost),
+      if (books != null)
+        ReportFigure('Inventory in the books', books, isCost: true),
     ],
     notes: [
-      _atBookValue,
-      if (inBooks != null) _againstBooks(value, inBooks),
+      if (valuation == StockValuation.cost)
+        _atBookValue
+      else
+        _valuedOtherwise(valuation),
+      if (books != null) _againstBooks(value, books),
       if (short > 0) _belowNothing(short),
       _baseUnits,
     ],
   );
 }
 
+// M67: a shelf valued at anything but the books' cost says what it is.
+String _valuedOtherwise(StockValuation v) {
+  final how = v == StockValuation.costWithTax
+      ? "The books' value with the item's own sales-tax rate added; the "
+            'books keep no input tax apart, so this is the cost a registered '
+            'supplier would bill.'
+      : "Each item's sale price now times the stock, the tax taken out of a "
+            "price that includes it or put on one that does not, at the item's "
+            'own rate.';
+  return '${v.label}. $how Only the value at cost is Inventory in the books.';
+}
+
 /// The stock summary by item category (M34): how many items, how much and
-/// what it is worth, a category at a time.
-ReportTable stockSummaryByCategory(BusinessDate asOf, List<StockLine> lines) {
+/// what it is worth, a category at a time, valued as the stock summary
+/// values it (M67).
+ReportTable stockSummaryByCategory(
+  BusinessDate asOf,
+  List<StockLine> lines, {
+  StockValuation valuation = StockValuation.cost, // M67
+}) {
   final groups = <String, ({int items, Qty qty, Money value})>{};
   for (final l in lines) {
     final name = _categoryOf(l.category);
@@ -149,7 +179,7 @@ ReportTable stockSummaryByCategory(BusinessDate asOf, List<StockLine> lines) {
     groups[name] = (
       items: (was?.items ?? 0) + 1,
       qty: (was?.qty ?? Qty.zero) + l.qty,
-      value: (was?.value ?? Money.zero) + l.value,
+      value: (was?.value ?? Money.zero) + l.valueAt(valuation),
     );
   }
   final names = groups.keys.toList()..sort(_byName);
@@ -158,11 +188,11 @@ ReportTable stockSummaryByCategory(BusinessDate asOf, List<StockLine> lines) {
     id: 'stock_summary_by_category',
     title: 'Stock summary by item category',
     period: ReportPeriod.day(asOf),
-    columns: const [
-      ReportColumn('Category', CellKind.text),
-      ReportColumn('Items', CellKind.count),
-      ReportColumn('Stock', CellKind.qty),
-      ReportColumn('Value', CellKind.money, isCost: true),
+    columns: [
+      const ReportColumn('Category', CellKind.text),
+      const ReportColumn('Items', CellKind.count),
+      const ReportColumn('Stock', CellKind.qty),
+      ReportColumn('Value', CellKind.money, isCost: valuation.isCost),
     ],
     rows: [
       for (final n in names)
@@ -174,8 +204,14 @@ ReportTable stockSummaryByCategory(BusinessDate asOf, List<StockLine> lines) {
         value,
       ], style: RowStyle.total),
     ],
-    summary: [ReportFigure('Stock value', value, isCost: true)],
-    notes: const [_atBookValue, _baseUnits],
+    summary: [ReportFigure('Stock value', value, isCost: valuation.isCost)],
+    notes: [
+      if (valuation == StockValuation.cost)
+        _atBookValue
+      else
+        _valuedOtherwise(valuation),
+      _baseUnits,
+    ],
   );
 }
 

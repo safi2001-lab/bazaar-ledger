@@ -8,10 +8,14 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../cheques/cheques_screen.dart'; // M67
 import '../items/item_history_screen.dart';
 import '../parties/party_picker.dart';
 import '../printing/printing_providers.dart';
 import '../sales/receipt_screen.dart';
+import '../subscription/plans_screen.dart'; // M67
+import '../tax/fbr_screen.dart'; // M67
+import 'column_chooser.dart'; // M67
 import 'report_chart_view.dart';
 import 'report_export.dart';
 import 'report_filters_bar.dart';
@@ -24,6 +28,8 @@ typedef _Request = ({
   ReportKind kind,
   ReportPeriod period,
   ReportFilters filters,
+  // M67: the shop's own settings it is run with.
+  ReportOptions options,
 });
 
 final _reportProvider = FutureProvider.autoDispose
@@ -38,26 +44,36 @@ final _reportProvider = FutureProvider.autoDispose
         period: request.period,
         today: BusinessDate.now(services.clock),
         filters: request.filters,
+        options: request.options,
       );
     });
 
-/// The same report's headline figures for the period before, read only
-/// once the report itself is on screen, so the comparison never holds the
-/// figures up.
+/// The same report for the period before, read only once the report itself
+/// is on screen, so the comparison never holds the figures up: its headline
+/// figures beside this period's, and since M67 its trend drawn lighter
+/// behind this period's.
 final _previousProvider = FutureProvider.autoDispose
-    .family<List<ReportFigure>, _Request>((ref, request) async {
+    .family<ReportTable?, _Request>((ref, request) async {
       ref.watch(refreshTickProvider);
       final services = ref.watch(appServicesProvider);
       final firm = await ref.watch(firmProvider.future);
-      if (firm == null) return const [];
-      return services.reports.previousSummary(
+      if (firm == null) return null;
+      return services.reports.previousTable(
         request.kind,
         firmId: firm.id,
         period: request.period,
         today: BusinessDate.now(services.clock),
         filters: request.filters,
+        options: request.options,
       );
     });
+
+/// The reports that age money, which the shop's buckets cut (M67).
+const _ageingKinds = {
+  ReportKind.receivables,
+  ReportKind.payables,
+  ReportKind.receivablesByDueDate,
+};
 
 /// One report: the period, the filters it takes, the headline figures, the
 /// table, and the files it goes out as (M8, rebuilt in M33).
@@ -69,6 +85,12 @@ final _previousProvider = FutureProvider.autoDispose
 /// Since M61 everything the shop chose here — the period, the filters, the
 /// sort, table or chart — can be kept under a name as a view, from the
 /// bookmark at the top, and a view opens this screen just so.
+///
+/// Since M67 the table is the shop's to arrange: columns shown, hidden and
+/// moved (remembered for the report on this phone), a filter on any column
+/// with what the rows left showing come to, and on the ageing reports the
+/// buckets the money is cut into. What is on screen is what every export
+/// carries; the totals are still the builder's.
 class ReportScreen extends ConsumerStatefulWidget {
   const ReportScreen({
     required this.kind,
@@ -114,6 +136,58 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   /// The view this screen is showing, once one is opened or saved.
   late SavedReportView? _view = widget.view;
 
+  /// M67: the table as the shop arranged it: a view's, or the columns this
+  /// phone remembers for the report.
+  late TableArrangement _arrangement =
+      widget.view?.arrangement ??
+      ref.read(reportShelfProvider).columnsFor(widget.kind);
+
+  /// M67: the moment the screen opened, for what turns on the hour (an FBR
+  /// bill's 24 hours) rather than the day.
+  late final DateTime _openedAt = ref.read(appServicesProvider).clock.nowUtc();
+
+  /// M67: the arranged table, kept until the table or the arrangement
+  /// changes, so a rebuild does not hand the table view a new table and
+  /// lose its place.
+  ReportTable? _builtFrom;
+  TableArrangement? _builtWith;
+  ReportTable? _arranged;
+
+  ReportTable _arrange(ReportTable table) {
+    if (!identical(table, _builtFrom) || _arrangement != _builtWith) {
+      _builtFrom = table;
+      _builtWith = _arrangement;
+      _arranged = arrangeTable(table, _arrangement);
+    }
+    return _arranged!;
+  }
+
+  void _arrangeAs(TableArrangement next) {
+    final columnsChanged = next.columnsOnly != _arrangement.columnsOnly;
+    setState(() => _arrangement = next);
+    if (columnsChanged && widget.view == null) {
+      ref.read(reportShelfProvider.notifier).rememberColumns(widget.kind, next);
+    }
+  }
+
+  Future<void> _chooseColumns(ReportTable built) async {
+    final next = await chooseColumns(context, built, _arrangement);
+    if (next != null && mounted) _arrangeAs(next);
+  }
+
+  Future<void> _filterAColumn(ReportTable built) async {
+    final next = await filterAColumn(context, built, _arrangement);
+    if (next != null && mounted) _arrangeAs(next);
+  }
+
+  /// M67: what the report is run with beyond its period and filters.
+  ReportOptions _options(ReportShelf shelf) => ReportOptions(
+    ageing: _ageingKinds.contains(widget.kind)
+        ? shelf.ageing
+        : AgeingBuckets.standard,
+    nowUtc: widget.kind == ReportKind.needsAttention ? _openedAt : null,
+  );
+
   @override
   void initState() {
     super.initState();
@@ -155,6 +229,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         sortColumn: _sortColumn,
         sortAscending: _sortAscending,
         asChart: _asChart,
+        arrangement: _arrangement, // M67
       ),
     );
     if (kept != null && mounted) setState(() => _view = kept);
@@ -205,7 +280,12 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     final messenger = ScaffoldMessenger.of(context);
     try {
       final firm = await ref.read(firmProvider.future);
-      await shareReport(table, format, shopName: firm?.name ?? '');
+      // M67: through the sharer, so a test can read what would have gone.
+      await ref.read(reportSharerProvider)(
+        table,
+        format,
+        shopName: firm?.name ?? '',
+      );
     } on Object catch (error) {
       messenger.showSnackBar(SnackBar(content: Text('$error')));
     } finally {
@@ -296,9 +376,41 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
       widget.kind != ReportKind.partyStatement || link.id != _filters.partyId,
     ReportLinkKind.item => true,
     ReportLinkKind.loan => _filters.loanId != link.id,
+    // M67: a money account's statement, another report this person may
+    // open, the cheques and the FBR queue.
+    ReportLinkKind.account => true,
+    ReportLinkKind.report => switch (_reportOf(link)) {
+      final kind? =>
+        kind != widget.kind &&
+            (!reportEntry(kind).showsCost ||
+                ref.read(appServicesProvider).can(Permission.seeCosts)),
+      null => false,
+    },
+    ReportLinkKind.screen =>
+      link.id == ReportLink.cheques || link.id == ReportLink.fbr,
   };
 
+  static ReportKind? _reportOf(ReportLink link) =>
+      ReportKind.values.where((k) => k.name == link.id).firstOrNull;
+
   void _open(ReportLink link) {
+    // M67: another report opens through its own plan, as from the hub.
+    if (link.kind == ReportLinkKind.report) {
+      final kind = _reportOf(link);
+      if (kind == null) return;
+      final plan = reportEntry(kind).plan;
+      Widget screen() => ReportScreen(kind: kind);
+      if (plan != null) {
+        unawaited(openWithPlan(context, ref, plan, screen));
+      } else {
+        unawaited(
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute<void>(builder: (_) => screen())),
+        );
+      }
+      return;
+    }
     final Widget screen = switch (link.kind) {
       ReportLinkKind.document => ReceiptScreen(
         documentId: link.id,
@@ -317,6 +429,17 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         kind: ReportKind.loanStatement,
         filters: ReportFilters(loanId: link.id, loanName: link.label),
       ),
+      // M67
+      ReportLinkKind.account => ReportScreen(
+        kind: ReportKind.bankStatement,
+        filters: ReportFilters(accountId: link.id, accountName: link.label),
+      ),
+      ReportLinkKind.screen =>
+        link.id == ReportLink.fbr ? const FbrScreen() : const ChequesScreen(),
+      // Opened above, through its own plan; never reached.
+      ReportLinkKind.report => ReportScreen(
+        kind: _reportOf(link) ?? widget.kind,
+      ),
     };
     unawaited(
       Navigator.of(
@@ -331,12 +454,21 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     final t = context.bl;
     final today = BusinessDate.now(ref.watch(appServicesProvider).clock);
     final period = _period(today);
-    final request = (kind: widget.kind, period: period, filters: _filters);
+    final shelf = ref.watch(reportShelfProvider);
+    final request = (
+      kind: widget.kind,
+      period: period,
+      filters: _filters,
+      options: _options(shelf), // M67
+    );
     final report = ref.watch(_reportProvider(request));
     final needsParty =
         widget.kind == ReportKind.partyStatement && _filters.partyId == null;
 
-    final table = needsParty ? null : report.valueOrNull;
+    // M67: what is shown is what goes out: the table as the shop arranged
+    // it, its columns and its column filters.
+    final built = needsParty ? null : report.valueOrNull;
+    final table = built == null ? null : _arrange(built);
     final busy = _sharing != null || _printing;
 
     return Scaffold(
@@ -346,6 +478,21 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         // the head of the page, where large text has room to wrap.
         title: Text(_view?.name ?? _entry.name(s)),
         actions: [
+          // M67: the columns shown and their order, and a filter on any of
+          // them, once there is a table to arrange.
+          if (built != null) ...[
+            BlIconButton(
+              icon: Icons.view_column_outlined,
+              label: s.reportColumns,
+              onPressed: () => unawaited(_chooseColumns(built)),
+            ),
+            if (built.isSortable)
+              BlIconButton(
+                icon: Icons.filter_alt_outlined,
+                label: s.reportColumnFilter,
+                onPressed: () => unawaited(_filterAColumn(built)),
+              ),
+          ],
           // M61: keep this report the way it is on screen, by name.
           BlIconButton(
             icon: _view == null ? Icons.bookmark_add_outlined : Icons.bookmark,
@@ -487,11 +634,23 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                   retryLabel: s.actionRetry,
                   onRetry: () => ref.invalidate(_reportProvider),
                 ),
-                data: (table) {
+                data: (built) {
                   // M46: a report that declares a chart, and whose table
-                  // still has the columns it names, can be drawn.
+                  // still has the columns it names, can be drawn: off the
+                  // builder's own table, never the arranged one.
                   final spec = _entry.chart;
-                  final chart = spec == null ? null : chartOf(table, spec);
+                  var chart = spec == null ? null : chartOf(built, spec);
+                  // M67: a trend drawn over last period's, lighter.
+                  if (chart != null && chart.form == ChartForm.trend) {
+                    final before = ref
+                        .watch(_previousProvider(request))
+                        .valueOrNull;
+                    chart = compareWithPrevious(
+                      chart,
+                      before == null ? null : chartOf(before, spec!),
+                    );
+                  }
+                  final table = _arrange(built);
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -527,7 +686,20 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           canOpen: _canOpen,
                           onOpen: _open,
                         )
-                      else
+                      else ...[
+                        // M67: the columns, a filter on any of them, and
+                        // the buckets an ageing report is cut into.
+                        ReportTableTools(
+                          table: built,
+                          arrangement: _arrangement,
+                          onArranged: _arrangeAs,
+                          ageing: _ageingKinds.contains(widget.kind)
+                              ? shelf.ageing
+                              : null,
+                          onAgeing: (b) => ref
+                              .read(reportShelfProvider.notifier)
+                              .setAgeing(b),
+                        ),
                         ReportTableView(
                           table: table,
                           canOpen: _canOpen,
@@ -542,6 +714,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                             _sortAscending = ascending;
                           },
                         ),
+                      ],
                     ],
                   );
                 },
@@ -567,7 +740,7 @@ class _SummaryTiles extends ConsumerWidget {
     final t = context.bl;
     final before = {
       for (final f
-          in ref.watch(_previousProvider(request)).valueOrNull ??
+          in ref.watch(_previousProvider(request)).valueOrNull?.summary ??
               const <ReportFigure>[])
         f.label: f,
     };

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 import 'package:share_plus/share_plus.dart';
@@ -53,3 +54,15 @@ Future<void> shareReport(
     ),
   );
 }
+
+/// How a report screen sends a table out (M67): [shareReport], unless a
+/// test stands in for the share sheet to read what would have gone, so a
+/// test can hold an export to the columns and rows the shop arranged.
+typedef ReportSharer =
+    Future<void> Function(
+      ReportTable table,
+      ReportFormat format, {
+      required String shopName,
+    });
+
+final reportSharerProvider = Provider<ReportSharer>((ref) => shareReport);

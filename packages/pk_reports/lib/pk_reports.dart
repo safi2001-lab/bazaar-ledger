@@ -6,6 +6,9 @@ library;
 
 import 'src/report_source.dart';
 
+export 'src/abc_reports.dart'; // M67
+export 'src/ageing_buckets.dart'; // M67
+export 'src/attention_reports.dart'; // M67
 export 'src/builders.dart';
 export 'src/business_builders.dart';
 export 'src/business_reports.dart';
@@ -14,6 +17,7 @@ export 'src/collections_reports.dart'; // M54
 export 'src/expense_builders.dart';
 export 'src/expense_source.dart';
 export 'src/filters.dart';
+export 'src/insight_reports.dart'; // M67
 export 'src/item_stock_builders.dart';
 export 'src/item_stock_source.dart';
 export 'src/loan_reports.dart';
@@ -27,6 +31,7 @@ export 'src/party_builders.dart';
 export 'src/party_source.dart';
 export 'src/period.dart';
 export 'src/pharmacy_reports.dart';
+export 'src/ratio_reports.dart'; // M67
 export 'src/report_chart.dart';
 export 'src/report_engine.dart';
 export 'src/report_source.dart';
@@ -35,6 +40,7 @@ export 'src/saved_view.dart';
 export 'src/staff_book_reports.dart'; // M65
 export 'src/staff_builders.dart';
 export 'src/staff_source.dart';
+export 'src/table_arrangement.dart'; // M67
 export 'src/tax_builders.dart';
 export 'src/tax_source.dart';
 export 'src/transaction_builders.dart';

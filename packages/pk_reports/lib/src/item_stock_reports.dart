@@ -36,10 +36,12 @@ Future<ReportTable> buildItemStockReport(
       asOf,
       await source.stockLines(firmId, asOf, filters: filters),
       inBooks: whole ? await source.inventoryAsOf(firmId, asOf) : null,
+      valuation: filters.valuation ?? StockValuation.cost, // M67
     ),
     ReportKind.stockSummaryByCategory => stockSummaryByCategory(
       asOf,
       await source.stockLines(firmId, asOf, filters: filters),
+      valuation: filters.valuation ?? StockValuation.cost, // M67
     ),
     ReportKind.stockDetail => stockDetail(
       period,
