@@ -4944,5 +4944,162 @@
   "reportSalaryRegister": "Salary register",
   "reportSalaryRegisterHint": "Every slip: wages, cuts, advance taken back, paid",
   "reportStaffAdvances": "Advances outstanding",
-  "reportStaffAdvancesHint": "What each employee still owes of his advances"
+  "reportStaffAdvancesHint": "What each employee still owes of his advances",
+  "settingsLoyalty": "Loyalty points and profit",
+  "loyaltyTitle": "Loyalty points",
+  "loyaltyIntro": "A customer earns points on every bill — only on what they paid, on udhaar only once it is paid — and spends them as a discount on a later bill.",
+  "loyaltyOn": "Give points",
+  "loyaltyEarnPoints": "Points",
+  "loyaltyEarnPer": "For every Rs",
+  "loyaltyRedeemPoints": "These many points",
+  "loyaltyRedeemValue": "Are worth Rs",
+  "loyaltyExpiry": "Expire after months (0 = never)",
+  "loyaltyCap": "Most of a bill paid in points (%)",
+  "loyaltyRuleNow": "{earn} points per Rs {per} · {pts} points = Rs {worth} · {back} given back",
+  "@loyaltyRuleNow": {
+    "placeholders": {
+      "earn": {"type": "String"},
+      "per": {"type": "String"},
+      "pts": {"type": "String"},
+      "worth": {"type": "String"},
+      "back": {"type": "String"}
+    }
+  },
+  "loyaltyRuleOff": "Points are not being given.",
+  "loyaltySaved": "Loyalty rule saved — from the next bill",
+  "loyaltyOwnerOnly": "Only the owner changes the loyalty rule.",
+  "loyaltyBooksNote": "Points are a promise kept beside the khata. When they are used they are booked as a discount on that bill.",
+  "loyaltyProblemFigures": "Write every figure, above nothing.",
+  "loyaltyProblemTooGenerous": "Those points give back more than half of what earned them — check the figures.",
+  "loyaltyProblemCap": "A share of a bill from 1% to 100%.",
+  "loyaltyProblemExpiry": "Months from 0 to 120.",
+  "loyaltyProblemNotEnough": "The customer does not have that many points.",
+  "loyaltyProblemOverCap": "That much of this bill cannot be paid in points.",
+  "loyaltyProblemOff": "Points are switched off.",
+  "loyaltyProblemNoCustomer": "Points are used on their own customer's bill.",
+  "loyaltyProblemMismatch": "The points' worth has changed — take them off and use them again.",
+  "loyaltyHeld": "Loyalty: {points} points (Rs {worth})",
+  "@loyaltyHeld": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "worth": {"type": "String"}
+    }
+  },
+  "loyaltyUse": "Use points",
+  "loyaltyHowMany": "How many points",
+  "loyaltyAtMost": "At most {max} on this bill",
+  "@loyaltyAtMost": {
+    "placeholders": {
+      "max": {"type": "String"}
+    }
+  },
+  "loyaltyApply": "Apply points",
+  "loyaltyApplied": "{points} points used: Rs {worth} off",
+  "@loyaltyApplied": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "worth": {"type": "String"}
+    }
+  },
+  "loyaltyTakeOff": "Take the points off",
+  "loyaltyWillEarn": "This bill earns {points} points",
+  "@loyaltyWillEarn": {
+    "placeholders": {
+      "points": {"type": "String"}
+    }
+  },
+  "loyaltyWillEarnWhenPaid": "This bill earns {points} points once it is paid",
+  "@loyaltyWillEarnWhenPaid": {
+    "placeholders": {
+      "points": {"type": "String"}
+    }
+  },
+  "khataPoints": "Loyalty points: {points} (Rs {worth})",
+  "@khataPoints": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "worth": {"type": "String"}
+    }
+  },
+  "khataPointsExpiring": "{points} points expire on {date}",
+  "@khataPointsExpiring": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "khataPointsSummary": "Earned {earned} · used {redeemed} · expired {expired}",
+  "@khataPointsSummary": {
+    "placeholders": {
+      "earned": {"type": "String"},
+      "redeemed": {"type": "String"},
+      "expired": {"type": "String"}
+    }
+  },
+  "partyPricesTitle": "Customer's own prices",
+  "partyPricesCount": "Own prices: {count} items",
+  "@partyPricesCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "partyPricesNone": "No own prices yet",
+  "partyPricesIntro": "The rate agreed with this customer, item by item. The counter charges it before their wholesale or VIP price and any slab; a price the cashier types still comes first, and their standing discount is not taken off it again.",
+  "partyPricesAdd": "Give an item a price",
+  "partyPriceRate": "Rate (per {unit})",
+  "@partyPriceRate": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "partyPriceRemove": "Take the price off",
+  "partyPriceSaved": "Price kept",
+  "partyPricesOwnerOnly": "Only the owner, a manager or the munshi sets a customer's prices.",
+  "lineOwnRate": "{name}'s price",
+  "@lineOwnRate": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "lineKeepRate": "Keep this price for this customer",
+  "lineRateKept": "Price kept for {name}",
+  "@lineRateKept": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "lineRateNotCarried": "This price does not carry into the item's own unit exactly",
+  "marginBill": "Profit Rs {amount} ({pct})",
+  "@marginBill": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "pct": {"type": "String"}
+    }
+  },
+  "marginBelowCost": "Below cost",
+  "marginLine": "Profit on this item Rs {amount} ({pct})",
+  "@marginLine": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "pct": {"type": "String"}
+    }
+  },
+  "marginLineLoss": "Below cost: a loss of Rs {amount}",
+  "@marginLineLoss": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "marginHeader": "Profit while billing",
+  "marginSwitch": "Show the bill's profit at the counter",
+  "marginSwitchHint": "Only the owner, a manager and the munshi ever see it; a cashier never does.",
+  "reportLoyalty": "Loyalty points",
+  "reportLoyaltyHint": "Each customer's points: earned, used, expired and held",
+  "partyPriceEach": "Rs {amount} a {unit}",
+  "@partyPriceEach": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  }
 }

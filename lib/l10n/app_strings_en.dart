@@ -8672,4 +8672,233 @@ class AppStringsEn extends AppStrings {
   @override
   String get reportStaffAdvancesHint =>
       'What each employee still owes of his advances';
+
+  @override
+  String get settingsLoyalty => 'Loyalty points and profit';
+
+  @override
+  String get loyaltyTitle => 'Loyalty points';
+
+  @override
+  String get loyaltyIntro =>
+      'A customer earns points on every bill — only on what they paid, on udhaar only once it is paid — and spends them as a discount on a later bill.';
+
+  @override
+  String get loyaltyOn => 'Give points';
+
+  @override
+  String get loyaltyEarnPoints => 'Points';
+
+  @override
+  String get loyaltyEarnPer => 'For every Rs';
+
+  @override
+  String get loyaltyRedeemPoints => 'These many points';
+
+  @override
+  String get loyaltyRedeemValue => 'Are worth Rs';
+
+  @override
+  String get loyaltyExpiry => 'Expire after months (0 = never)';
+
+  @override
+  String get loyaltyCap => 'Most of a bill paid in points (%)';
+
+  @override
+  String loyaltyRuleNow(
+    String earn,
+    String per,
+    String pts,
+    String worth,
+    String back,
+  ) {
+    return '$earn points per Rs $per · $pts points = Rs $worth · $back given back';
+  }
+
+  @override
+  String get loyaltyRuleOff => 'Points are not being given.';
+
+  @override
+  String get loyaltySaved => 'Loyalty rule saved — from the next bill';
+
+  @override
+  String get loyaltyOwnerOnly => 'Only the owner changes the loyalty rule.';
+
+  @override
+  String get loyaltyBooksNote =>
+      'Points are a promise kept beside the khata. When they are used they are booked as a discount on that bill.';
+
+  @override
+  String get loyaltyProblemFigures => 'Write every figure, above nothing.';
+
+  @override
+  String get loyaltyProblemTooGenerous =>
+      'Those points give back more than half of what earned them — check the figures.';
+
+  @override
+  String get loyaltyProblemCap => 'A share of a bill from 1% to 100%.';
+
+  @override
+  String get loyaltyProblemExpiry => 'Months from 0 to 120.';
+
+  @override
+  String get loyaltyProblemNotEnough =>
+      'The customer does not have that many points.';
+
+  @override
+  String get loyaltyProblemOverCap =>
+      'That much of this bill cannot be paid in points.';
+
+  @override
+  String get loyaltyProblemOff => 'Points are switched off.';
+
+  @override
+  String get loyaltyProblemNoCustomer =>
+      'Points are used on their own customer\'s bill.';
+
+  @override
+  String get loyaltyProblemMismatch =>
+      'The points\' worth has changed — take them off and use them again.';
+
+  @override
+  String loyaltyHeld(String points, String worth) {
+    return 'Loyalty: $points points (Rs $worth)';
+  }
+
+  @override
+  String get loyaltyUse => 'Use points';
+
+  @override
+  String get loyaltyHowMany => 'How many points';
+
+  @override
+  String loyaltyAtMost(String max) {
+    return 'At most $max on this bill';
+  }
+
+  @override
+  String get loyaltyApply => 'Apply points';
+
+  @override
+  String loyaltyApplied(String points, String worth) {
+    return '$points points used: Rs $worth off';
+  }
+
+  @override
+  String get loyaltyTakeOff => 'Take the points off';
+
+  @override
+  String loyaltyWillEarn(String points) {
+    return 'This bill earns $points points';
+  }
+
+  @override
+  String loyaltyWillEarnWhenPaid(String points) {
+    return 'This bill earns $points points once it is paid';
+  }
+
+  @override
+  String khataPoints(String points, String worth) {
+    return 'Loyalty points: $points (Rs $worth)';
+  }
+
+  @override
+  String khataPointsExpiring(String points, String date) {
+    return '$points points expire on $date';
+  }
+
+  @override
+  String khataPointsSummary(String earned, String redeemed, String expired) {
+    return 'Earned $earned · used $redeemed · expired $expired';
+  }
+
+  @override
+  String get partyPricesTitle => 'Customer\'s own prices';
+
+  @override
+  String partyPricesCount(int count) {
+    return 'Own prices: $count items';
+  }
+
+  @override
+  String get partyPricesNone => 'No own prices yet';
+
+  @override
+  String get partyPricesIntro =>
+      'The rate agreed with this customer, item by item. The counter charges it before their wholesale or VIP price and any slab; a price the cashier types still comes first, and their standing discount is not taken off it again.';
+
+  @override
+  String get partyPricesAdd => 'Give an item a price';
+
+  @override
+  String partyPriceRate(String unit) {
+    return 'Rate (per $unit)';
+  }
+
+  @override
+  String get partyPriceRemove => 'Take the price off';
+
+  @override
+  String get partyPriceSaved => 'Price kept';
+
+  @override
+  String get partyPricesOwnerOnly =>
+      'Only the owner, a manager or the munshi sets a customer\'s prices.';
+
+  @override
+  String lineOwnRate(String name) {
+    return '$name\'s price';
+  }
+
+  @override
+  String get lineKeepRate => 'Keep this price for this customer';
+
+  @override
+  String lineRateKept(String name) {
+    return 'Price kept for $name';
+  }
+
+  @override
+  String get lineRateNotCarried =>
+      'This price does not carry into the item\'s own unit exactly';
+
+  @override
+  String marginBill(String amount, String pct) {
+    return 'Profit Rs $amount ($pct)';
+  }
+
+  @override
+  String get marginBelowCost => 'Below cost';
+
+  @override
+  String marginLine(String amount, String pct) {
+    return 'Profit on this item Rs $amount ($pct)';
+  }
+
+  @override
+  String marginLineLoss(String amount) {
+    return 'Below cost: a loss of Rs $amount';
+  }
+
+  @override
+  String get marginHeader => 'Profit while billing';
+
+  @override
+  String get marginSwitch => 'Show the bill\'s profit at the counter';
+
+  @override
+  String get marginSwitchHint =>
+      'Only the owner, a manager and the munshi ever see it; a cashier never does.';
+
+  @override
+  String get reportLoyalty => 'Loyalty points';
+
+  @override
+  String get reportLoyaltyHint =>
+      'Each customer\'s points: earned, used, expired and held';
+
+  @override
+  String partyPriceEach(String amount, String unit) {
+    return 'Rs $amount a $unit';
+  }
 }

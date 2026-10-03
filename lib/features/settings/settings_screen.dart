@@ -12,6 +12,7 @@ import '../backup/backup_screen.dart';
 import '../firms/firms_screen.dart';
 import '../import/import_screen.dart';
 import '../items/shelf_rule.dart';
+import '../loyalty/loyalty_settings_screen.dart'; // M66
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
 import '../scale/scale_screen.dart';
@@ -237,6 +238,17 @@ class SettingsScreen extends ConsumerWidget {
               label: s.schemesTitle,
               onTap: () => Navigator.of(context).push(
                 MaterialPageRoute<void>(builder: (_) => const SchemesScreen()),
+              ),
+            ),
+            // M66: loyalty points, and the profit at the counter. Everyone
+            // may read the rule; only the owner changes it.
+            _Row(
+              icon: Icons.stars_outlined,
+              label: s.settingsLoyalty,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const LoyaltySettingsScreen(),
+                ),
               ),
             ),
             _Row(

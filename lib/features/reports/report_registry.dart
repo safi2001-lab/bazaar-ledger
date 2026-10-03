@@ -326,6 +326,17 @@ final _partyReports = [
     icon: Icons.event_available_outlined,
     filters: const {ReportFilter.party, ReportFilter.partyGroup},
   ),
+  // M66: each customer's loyalty points — earned, used, lapsed, held —
+  // and what the points used took off (Vyapar's "Total Loyalty Points
+  // Rewarded" and "Total Discount Redeemed").
+  ReportEntry(
+    kind: ReportKind.loyaltyPoints,
+    group: ReportGroup.party,
+    name: (s) => s.reportLoyalty,
+    hint: (s) => s.reportLoyaltyHint,
+    icon: Icons.stars_outlined,
+    filters: const {ReportFilter.party, ReportFilter.partyGroup},
+  ),
   ReportEntry(
     kind: ReportKind.badDebts,
     group: ReportGroup.party,

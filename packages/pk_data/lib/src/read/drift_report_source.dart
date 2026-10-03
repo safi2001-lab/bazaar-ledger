@@ -11,12 +11,14 @@ import 'drift_mobile_reads.dart'; // M50
 import 'drift_order_reads.dart';
 import 'drift_staff_book_reads.dart'; // M65
 import 'drift_udhaar_queries.dart';
+import 'loyalty_reads.dart'; // M66
 
 part 'reports/business_queries.dart';
 part 'reports/collections_queries.dart'; // M54
 part 'reports/expense_queries.dart';
 part 'reports/item_stock_queries.dart';
 part 'reports/loan_queries.dart';
+part 'reports/loyalty_queries.dart'; // M66
 part 'reports/mobile_queries.dart'; // M50
 part 'reports/order_queries.dart';
 part 'reports/party_queries.dart';
@@ -62,7 +64,9 @@ final class DriftReportSource
         // M54
         _CollectionsQueries,
         // M65
-        _StaffBookQueries
+        _StaffBookQueries,
+        // M66
+        _LoyaltyQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 

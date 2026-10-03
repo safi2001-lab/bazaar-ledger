@@ -18,6 +18,7 @@ import '../write/drift_purchase_return_writer.dart'
 import '../write/drift_return_writer.dart' show soldLineFrom, soldLinesSql;
 import '../write/drift_van_writer.dart' show vanCashSql, vanStockSql;
 import 'drift_mobile_reads.dart' show phonesOnPaper; // M50
+import 'loyalty_reads.dart' show loyaltyOnPaper; // M66
 import 'spelling_search.dart';
 
 /// Every read the app performs, as indexed SQL.
@@ -2411,7 +2412,14 @@ final class DriftAppQueries implements AppQueries {
     );
     // M50: a phone's IMEIs, warranty and PTA under its line, and a qist
     // bill's instalments at its foot (drift_mobile_reads.dart).
-    return phonesOnPaper(_db, documentId, paper);
+    // M66: and the customer's points, above the shop's own footer
+    // (loyalty_reads.dart).
+    return loyaltyOnPaper(
+      _db,
+      firmId,
+      documentId,
+      await phonesOnPaper(_db, documentId, paper),
+    );
   }
 
   /// What the paper needs to count a bill's lines in packs (M45): each

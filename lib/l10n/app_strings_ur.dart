@@ -8662,4 +8662,232 @@ class AppStringsUr extends AppStrings {
   @override
   String get reportStaffAdvancesHint =>
       'Har mulazim ki kitni peshgi abhi baqi hai';
+
+  @override
+  String get settingsLoyalty => 'Loyalty points aur munafa';
+
+  @override
+  String get loyaltyTitle => 'Loyalty points';
+
+  @override
+  String get loyaltyIntro =>
+      'Gahak har bill par points kamata hai — sirf jo ada kiya us par, udhaar par tab jab ada ho — aur agle bill par discount ke taur par istemal karta hai.';
+
+  @override
+  String get loyaltyOn => 'Points dein';
+
+  @override
+  String get loyaltyEarnPoints => 'Points';
+
+  @override
+  String get loyaltyEarnPer => 'Har itne Rs par';
+
+  @override
+  String get loyaltyRedeemPoints => 'Itne points';
+
+  @override
+  String get loyaltyRedeemValue => 'Itne Rs ke barabar';
+
+  @override
+  String get loyaltyExpiry => 'Itne mahine baad khatam (0 = kabhi nahi)';
+
+  @override
+  String get loyaltyCap => 'Bill ka zyada se zyada % points se';
+
+  @override
+  String loyaltyRuleNow(
+    String earn,
+    String per,
+    String pts,
+    String worth,
+    String back,
+  ) {
+    return 'Rs $per par $earn points · $pts points = Rs $worth · $back wapas';
+  }
+
+  @override
+  String get loyaltyRuleOff => 'Abhi points nahi diye ja rahe.';
+
+  @override
+  String get loyaltySaved => 'Loyalty ka qaida save — agle bill se';
+
+  @override
+  String get loyaltyOwnerOnly =>
+      'Loyalty ka qaida sirf maalik badal sakta hai.';
+
+  @override
+  String get loyaltyBooksNote =>
+      'Points khata ke saath ek wada hain. Istemal hone par us bill par discount ban kar kitab mein jate hain.';
+
+  @override
+  String get loyaltyProblemFigures => 'Har figure likhein, sifar se zyada.';
+
+  @override
+  String get loyaltyProblemTooGenerous =>
+      'Ye points kamaye gaye paison ka aadhe se zyada wapas dete hain — figures check karein.';
+
+  @override
+  String get loyaltyProblemCap => 'Bill ka hissa 1% se 100% tak.';
+
+  @override
+  String get loyaltyProblemExpiry => 'Mahine 0 se 120 tak.';
+
+  @override
+  String get loyaltyProblemNotEnough => 'Gahak ke paas itne points nahi.';
+
+  @override
+  String get loyaltyProblemOverCap => 'Is bill ka itna hissa points se nahi.';
+
+  @override
+  String get loyaltyProblemOff => 'Points band hain.';
+
+  @override
+  String get loyaltyProblemNoCustomer =>
+      'Points sirf apne gahak ke bill par lagte hain.';
+
+  @override
+  String get loyaltyProblemMismatch =>
+      'Points ki qeemat badal gayi — hata kar dobara lagayein.';
+
+  @override
+  String loyaltyHeld(String points, String worth) {
+    return 'Loyalty: $points points (Rs $worth)';
+  }
+
+  @override
+  String get loyaltyUse => 'Points istemal karein';
+
+  @override
+  String get loyaltyHowMany => 'Kitne points';
+
+  @override
+  String loyaltyAtMost(String max) {
+    return 'Is bill par zyada se zyada $max';
+  }
+
+  @override
+  String get loyaltyApply => 'Points lagayein';
+
+  @override
+  String loyaltyApplied(String points, String worth) {
+    return '$points points istemal: Rs $worth kam';
+  }
+
+  @override
+  String get loyaltyTakeOff => 'Points hatayein';
+
+  @override
+  String loyaltyWillEarn(String points) {
+    return 'Is bill par $points points milenge';
+  }
+
+  @override
+  String loyaltyWillEarnWhenPaid(String points) {
+    return 'Is bill par $points points milenge jab ada hoga';
+  }
+
+  @override
+  String khataPoints(String points, String worth) {
+    return 'Loyalty points: $points (Rs $worth)';
+  }
+
+  @override
+  String khataPointsExpiring(String points, String date) {
+    return '$points points $date ko khatam honge';
+  }
+
+  @override
+  String khataPointsSummary(String earned, String redeemed, String expired) {
+    return 'Mile $earned · istemal $redeemed · khatam $expired';
+  }
+
+  @override
+  String get partyPricesTitle => 'Gahak ke apne rate';
+
+  @override
+  String partyPricesCount(int count) {
+    return 'Apne rate: $count cheezen';
+  }
+
+  @override
+  String get partyPricesNone => 'Abhi koi apna rate nahi';
+
+  @override
+  String get partyPricesIntro =>
+      'Is gahak ke saath har cheez ka tay shuda rate. Counter par yehi lagta hai — thok, VIP aur slab se pehle; cashier ka likha rate is se bhi pehle, aur is par unka mustaqil discount dobara nahi katta.';
+
+  @override
+  String get partyPricesAdd => 'Cheez ka rate rakhein';
+
+  @override
+  String partyPriceRate(String unit) {
+    return 'Rate (fi $unit)';
+  }
+
+  @override
+  String get partyPriceRemove => 'Rate hatayein';
+
+  @override
+  String get partyPriceSaved => 'Rate rakh diya';
+
+  @override
+  String get partyPricesOwnerOnly =>
+      'Gahak ka rate sirf maalik, manager ya munshi rakh sakte hain.';
+
+  @override
+  String lineOwnRate(String name) {
+    return '$name ka rate';
+  }
+
+  @override
+  String get lineKeepRate => 'Is gahak ke liye yehi rate rakhein';
+
+  @override
+  String lineRateKept(String name) {
+    return '$name ke liye rate rakh diya';
+  }
+
+  @override
+  String get lineRateNotCarried =>
+      'Ye rate cheez ki apni unit mein theek nahi baithta';
+
+  @override
+  String marginBill(String amount, String pct) {
+    return 'Munafa Rs $amount ($pct)';
+  }
+
+  @override
+  String get marginBelowCost => 'Qeemat se kam';
+
+  @override
+  String marginLine(String amount, String pct) {
+    return 'Is cheez par munafa Rs $amount ($pct)';
+  }
+
+  @override
+  String marginLineLoss(String amount) {
+    return 'Qeemat se kam: Rs $amount ka nuqsan';
+  }
+
+  @override
+  String get marginHeader => 'Bill banate waqt munafa';
+
+  @override
+  String get marginSwitch => 'Counter par bill ka munafa dikhayein';
+
+  @override
+  String get marginSwitchHint =>
+      'Sirf maalik, manager aur munshi ko nazar aata hai; cashier ko kabhi nahi.';
+
+  @override
+  String get reportLoyalty => 'Loyalty points';
+
+  @override
+  String get reportLoyaltyHint =>
+      'Har gahak ke points: mile, istemal, khatam aur baqi';
+
+  @override
+  String partyPriceEach(String amount, String unit) {
+    return 'Rs $amount fi $unit';
+  }
 }

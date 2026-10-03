@@ -28,6 +28,7 @@ part 'drive_backup_services.dart';
 part 'fbr_services.dart';
 part 'import_services.dart';
 part 'loan_services.dart';
+part 'loyalty_services.dart'; // M66
 part 'mobile_services.dart'; // M50
 part 'order_services.dart';
 part 'pharmacy_services.dart';
@@ -198,13 +199,21 @@ final class AppServices {
 
   /// The sale path with [innermost] writing it, every check above it the
   /// same. M63: a repeating bill's writer moves its template on in the
-  /// sale's own commit (recurring_services.dart).
-  PostSaleUseCase _postSaleThrough(SaleWriter innermost) {
+  /// sale's own commit (recurring_services.dart). M66: a bill spending a
+  /// customer's points ([redeem]) has them checked and kept in its own
+  /// commit (loyalty_services.dart), and the discount ceiling excuses them.
+  PostSaleUseCase _postSaleThrough(
+    SaleWriter innermost, {
+    LoyaltyRedemption? redeem, // M66
+  }) {
     require(Permission.sell);
     return PostSaleUseCase(
       // M59: a registered shop's big walk-in bill names its buyer.
       writer: _BuyerNameSales(
-        _FbrSales(_CeilingSales(_PlanSales(innermost, plans), this), this),
+        _FbrSales(
+          _CeilingSales(_PlanSales(innermost, plans), this, redeem: redeem),
+          this,
+        ),
       ),
       calculator: taxCalculator,
       // M53: a blocked item is refused beneath every screen.
@@ -476,6 +485,10 @@ final class AppServices {
   /// The staff book: the shop's people, the day's register, advances and
   /// each month's wages (M65).
   late final StaffBookServices staffBook = StaffBookServices._(this);
+
+  /// Loyalty points, a customer's own prices and the margin at the counter
+  /// (M66).
+  late final LoyaltyServices loyalty = LoyaltyServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

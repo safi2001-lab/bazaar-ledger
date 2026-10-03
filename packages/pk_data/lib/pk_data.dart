@@ -23,6 +23,7 @@ export 'src/read/drift_shelf_reads.dart';
 export 'src/read/drift_shop_money_reads.dart';
 export 'src/read/drift_staff_book_reads.dart' show DriftStaffBookReads; // M65
 export 'src/read/drift_udhaar_queries.dart';
+export 'src/read/loyalty_reads.dart'; // M66
 export 'src/sync/admit.dart';
 export 'src/sync/drift_sync_store.dart';
 export 'src/write/document_series.dart';

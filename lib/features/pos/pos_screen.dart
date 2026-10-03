@@ -12,6 +12,7 @@ import '../../design/counted_qty_field.dart'; // M45
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
+import '../loyalty/loyalty_at_counter.dart'; // M66
 import '../mobile/phone_counter.dart'; // M50
 import '../mobile/pta.dart'; // M50
 import '../orders/shortage_screen.dart';
@@ -959,6 +960,7 @@ class _CartList extends ConsumerWidget {
               line: line,
               partyId: cart.partyId,
             ),
+            if (!line.isLoose) LineNotes(line: line), // M66
             if (!line.isLoose) CounterBonus(itemId: line.item.id),
           ],
         );
@@ -1774,6 +1776,17 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
               ),
             ],
           ),
+          // M66: the line's profit for whoever may see it, and its price
+          // kept as the customer's own (loyalty_at_counter.dart). Under the
+          // buttons, so the editor's own row never moves down for them.
+          if (!line.isLoose) ...[
+            LineMarginNote(line: line),
+            KeepRateButton(
+              line: line,
+              rate: () => Rate.tryParse(_rate.text),
+              onKept: _apply,
+            ),
+          ],
         ],
       ),
     );
@@ -1850,6 +1863,7 @@ class _TotalsBar extends ConsumerWidget {
                 semanticPrefix: s.posTotal,
               ),
             ),
+            const MarginLine(), // M66: for whoever may see costs
           ],
           action: BlButton(
             label: '${s.posCharge} · ${s.posItemsInCart(cart.lines.length)}',

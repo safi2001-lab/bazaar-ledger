@@ -169,7 +169,12 @@ class _QistSheetState extends ConsumerState<QistSheet> {
         return;
       }
       final name = _guarantor.text.trim();
-      final posted = await services.postSale(
+      // M66: the customer's points chosen on the payment sheet are spent
+      // in the bill's own commit, as on any bill.
+      final sale = services.loyalty.postSaleFor(
+        redeem: cart.pointsOff.isPositive ? cart.loyalty : null,
+      );
+      final posted = await sale(
         services.actorNow(),
         SaleDraft(
           locationCode: location,

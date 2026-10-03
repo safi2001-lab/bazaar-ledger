@@ -5,6 +5,7 @@ import 'business_reports.dart';
 import 'collections_reports.dart'; // M54
 import 'filters.dart';
 import 'item_stock_reports.dart';
+import 'loyalty_reports.dart'; // M66
 import 'mobile_reports.dart'; // M50
 import 'money_owed_reports.dart';
 import 'order_reports.dart';
@@ -255,6 +256,10 @@ enum ReportKind {
 
   /// What each man still owes of his advances; as of today.
   staffAdvances,
+  // M66: in `loyalty_reports.dart`.
+
+  /// Each customer's loyalty points: earned, redeemed, expired, held.
+  loyaltyPoints,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -284,7 +289,8 @@ final class ReportEngine {
       moneyOwedReportsAsOfToday.contains(kind) ||
       kind == ReportKind.qistInstalments || // M50
       collectionsReportKinds.contains(kind) || // M54
-      kind == ReportKind.staffAdvances; // M65
+      kind == ReportKind.staffAdvances || // M65
+      loyaltyReportKinds.contains(kind); // M66
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -606,6 +612,14 @@ final class ReportEngine {
       source: source,
       firmId: firmId,
       period: period,
+      today: today,
+      filters: filters,
+    ),
+    // M66
+    ReportKind.loyaltyPoints => buildLoyaltyReport(
+      kind,
+      source: source,
+      firmId: firmId,
       today: today,
       filters: filters,
     ),

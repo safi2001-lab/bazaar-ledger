@@ -104,6 +104,14 @@ abstract final class CartDraft {
             'tracksStock': f.tracksStock,
           },
       ],
+    // M66: the customer's own prices and the points chosen for this bill.
+    // Optional, not a new version: a build before M66 reads the lines at
+    // the prices they stand at, and the points are chosen again.
+    if (cart.partyPrices case final own? when !own.isEmpty)
+      'partyPrices': {
+        for (final e in own.rates.entries) e.key: e.value.inMilliPaisa,
+      },
+    if (cart.loyalty case final points?) 'loyalty': points.toMap(),
     'lines': [
       for (final line in cart.lines)
         {
@@ -218,10 +226,26 @@ abstract final class CartDraft {
         slabWaived: root['slabWaived'] == true,
         recurring: RecurringMark.fromJson(root['recurring']), // M63
         sentBonus: _sentBonus(root['sentBonus']), // M54
+        partyPrices: _partyPrices(root['partyId'], root['partyPrices']),
+        loyalty: LoyaltyRedemption.fromMap(root['loyalty']), // M66
       );
     } on Object {
       return null;
     }
+  }
+
+  /// M66: the customer's own prices as the draft keeps them; none for
+  /// anything it cannot read, which is a bill priced by tier and slab.
+  static PartyPrices? _partyPrices(Object? partyId, Object? raw) {
+    if (partyId is! String || raw is! Map<String, Object?>) return null;
+    return PartyPrices(
+      partyId: partyId,
+      rates: {
+        for (final e in raw.entries)
+          if (e.value case final int milli when milli > 0)
+            e.key: Rate.raw(milli),
+      },
+    );
   }
 
   /// M54: a challan's bonus as the draft keeps it; null when it keeps none.

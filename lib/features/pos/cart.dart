@@ -282,7 +282,46 @@ final class Cart {
     this.slabWaived = false,
     this.recurring, // M63
     this.sentBonus, // M54
+    this.partyPrices, // M66
+    this.loyalty, // M66
   });
+
+  // M66 -------------------------------------------------------------------
+
+  /// The named customer's own prices (party_prices.dart), read when they
+  /// were picked; null for a walk-in, or while they are being read. The
+  /// counter prices a line from it before their tier and the item's slabs.
+  final PartyPrices? partyPrices;
+
+  /// The customer's points used on this bill, chosen on the payment sheet:
+  /// part of the bill's discount ([forBooks]), checked against their points
+  /// and kept in the bill's own commit. A different customer takes it off.
+  final LoyaltyRedemption? loyalty;
+
+  /// [line]'s customer's own price carried into the unit it is sold in, or
+  /// null when they have none for it, or it does not carry exactly.
+  Rate? ownRateFor(CartLine line, UnitConverter? units) {
+    if (line.isLoose) return null;
+    final own = partyPrices?.rateFor(line.item.id);
+    if (own == null || !line.isConverted) return own;
+    if (units == null) return null;
+    try {
+      return units.convertRate(
+        own,
+        fromUnitId: line.item.unitId,
+        toUnitId: line.sellingUnitId,
+        itemId: line.item.id,
+      );
+    } on Object {
+      return null;
+    }
+  }
+
+  /// Whether [line] is at its customer's own price: "Haji Sahib ka rate".
+  bool atOwnRate(CartLine line, UnitConverter? units) {
+    final own = ownRateFor(line, units);
+    return own != null && own == line.rate;
+  }
 
   /// M54: the bonus the challans on the counter sent with their goods, as
   /// they sent it — null for every other bill.
@@ -363,10 +402,15 @@ final class Cart {
   /// The bill as it goes to the books: every line rung, the bonus each
   /// item's scheme gives under the last line of that item, and the bill
   /// discount — the one typed, or else the shop's slab for a bill this big.
+  ///
+  /// M66: with [points], the customer's points chosen on the payment sheet
+  /// are added to the bill discount. A quotation or a challan kept from the
+  /// payment sheet is not given them: points are spent on a bill.
   ({List<SaleLineDraft> lines, Money billDiscount, BillSlab? slab}) forBooks(
     UnitConverter? units,
-    SchemeBook book,
-  ) {
+    SchemeBook book, {
+    bool points = true, // M66
+  }) {
     final rung = [for (final l in lines) ...l.toDrafts(units)];
     // M54: a bill made from challans gives the bonus they sent, as sent.
     final bonus = sentBonus == null
@@ -398,16 +442,24 @@ final class Cart {
         }
       }
     }
+    // M66: the customer's points, on top of whatever else came off.
+    final spent = points ? pointsOff : Money.zero;
     if (billDiscount.isPositive || slabWaived) {
-      return (lines: out, billDiscount: billDiscount, slab: null);
+      return (lines: out, billDiscount: billDiscount + spent, slab: null);
     }
     final hit = book.billSlabFor(SchemeBook.billValueOf(rung));
     return (
       lines: out,
-      billDiscount: hit?.discount ?? billDiscount,
+      billDiscount: (hit?.discount ?? billDiscount) + spent,
       slab: hit?.slab,
     );
   }
+
+  /// M66: what the points chosen take off, for this bill's customer only.
+  Money get pointsOff => switch (loyalty) {
+    final l? when partyId != null && l.partyId == partyId => l.value,
+    _ => Money.zero,
+  };
 
   /// The bonus [rung] earns, less what the cashier took off.
   List<BonusGrant> bonusOn(List<SaleLineDraft> rung, SchemeBook book) => [
@@ -437,6 +489,9 @@ final class Cart {
     bool clearCopyNote = false,
     Set<String>? bonusWaived,
     bool? slabWaived,
+    PartyPrices? partyPrices, // M66
+    LoyaltyRedemption? loyalty,
+    bool clearLoyalty = false,
   }) => Cart(
     sourceId: sourceId,
     sourceNo: sourceNo,
@@ -459,6 +514,17 @@ final class Cart {
         ? null
         : recurring, // M63
     sentBonus: sentBonus, // M54
+    // M66: a customer's prices and points are theirs alone; another
+    // customer, or none, takes both off the bill.
+    partyPrices: clearParty || (partyId != null && partyId != this.partyId)
+        ? partyPrices
+        : partyPrices ?? this.partyPrices,
+    loyalty:
+        clearLoyalty ||
+            clearParty ||
+            (partyId != null && partyId != this.partyId)
+        ? loyalty
+        : loyalty ?? this.loyalty,
   );
 }
 
@@ -509,6 +575,12 @@ class CartNotifier extends Notifier<Cart> {
       }
     });
 
+    // M66: a bill brought back with a customer on it reads their own prices
+    // again, for the lines rung from now; the lines already rung keep theirs.
+    if (restored?.partyId case final id?) {
+      unawaited(Future<void>(() => _readOwnPrices(id, reprice: false)));
+    }
+
     return restored ?? const Cart();
   }
 
@@ -537,16 +609,22 @@ class CartNotifier extends Notifier<Cart> {
       final was = lines[index];
       lines[index] = _repriced(was, was.copyWith(qty: was.qty + step)); // M43
     } else {
+      // M43: the customer's price, or the item's slab for this many. M66:
+      // their own price before either, with no standing discount on it.
+      final priced = _priceOf(item, step);
       lines.add(
         CartLine(
           item: item,
           qty: step,
-          // M43: the customer's price, or the item's slab for this many.
-          rate: schemesNow(ref).priceAt(item, state.priceTier, step),
-          discountBp: state.partyDiscountBp,
+          rate: priced.rate,
+          discountBp: priced.source == PriceSource.party
+              ? 0
+              : state.partyDiscountBp,
         ),
       );
-      lines.last = _offMrp(lines.last); // M49
+      if (priced.source != PriceSource.party) {
+        lines.last = _offMrp(lines.last); // M49
+      }
     }
     state = state.copyWith(lines: lines);
   }
@@ -670,17 +748,22 @@ class CartNotifier extends Notifier<Cart> {
         ),
       ); // M43
     } else {
+      final priced = _priceOf(item, Qty.one); // M43, M66
       lines.add(
         CartLine(
           item: item,
           qty: Qty.one,
-          rate: schemesNow(ref).priceAt(item, state.priceTier, Qty.one), // M43
-          discountBp: state.partyDiscountBp,
+          rate: priced.rate,
+          discountBp: priced.source == PriceSource.party
+              ? 0
+              : state.partyDiscountBp,
           lotIds: [lotId],
           lotLabels: [serial],
         ),
       );
-      lines.last = _offMrp(lines.last); // M49
+      if (priced.source != PriceSource.party) {
+        lines.last = _offMrp(lines.last); // M49
+      }
     }
     state = state.copyWith(lines: lines);
     return true;
@@ -802,7 +885,13 @@ class CartNotifier extends Notifier<Cart> {
   void setParty(PartySummary? party, {UnitConverter? units}) {
     final tier = party?.priceTier ?? PriceTier.retail;
     final bp = party?.defaultDiscountBp ?? 0;
-    final lines = [for (final l in state.lines) _follow(l, tier, bp, units)];
+    // M66: the same customer keeps their own prices; another's are read
+    // below, and the lines move to them once they are.
+    final same = party != null && party.id == state.partyId;
+    final own = same ? state.partyPrices : null;
+    final lines = [
+      for (final l in state.lines) _follow(l, tier, bp, units, own),
+    ];
     state = party == null
         ? state.copyWith(
             lines: lines,
@@ -817,6 +906,9 @@ class CartNotifier extends Notifier<Cart> {
             priceTier: tier,
             partyDiscountBp: bp,
           );
+    if (party != null && !same) {
+      unawaited(_readOwnPrices(party.id, units: units)); // M66
+    }
   }
 
   CartLine _follow(
@@ -824,25 +916,109 @@ class CartNotifier extends Notifier<Cart> {
     PriceTier tier,
     int discountBp,
     UnitConverter? units,
+    PartyPrices? own, // M66
   ) {
     // A loose line (M37) is at the price the cashier typed, which is not on
     // any price list to move along.
     if (line.isLoose) return line;
-    // M43: the tier's price, or the item's slab where that is lower.
-    Rate? priced(PriceTier t) => _counterRate(line, tier: t, units: units);
+    // M43: the tier's price, or the item's slab where that is lower. M66:
+    // the customer's own price before both, as it stands before and after.
+    final was = _counterRate(
+      line,
+      tier: state.priceTier,
+      units: units,
+      own: state.partyPrices,
+    );
+    final now = _counterRate(line, tier: tier, units: units, own: own);
 
     var out = line;
-    final was = priced(state.priceTier);
-    final now = priced(tier);
-    if (was != null && now != null && line.rate == was) {
-      out = out.copyWith(rate: now);
-    }
-    if (line.explicitDiscount == null &&
-        line.discountBp == state.partyDiscountBp) {
-      out = out.copyWith(discountBp: discountBp);
+    final moves = was != null && now != null && line.rate == was;
+    if (moves) out = out.copyWith(rate: now);
+    // M66: a line at its customer's own price carries no standing discount,
+    // so the discount that follows is the one the line's price wants.
+    final wasOwn = state.partyPrices?.rateFor(line.item.id) != null && moves;
+    final nowOwn = own?.rateFor(line.item.id) != null && moves;
+    final standingWas = wasOwn ? 0 : state.partyDiscountBp;
+    if (line.explicitDiscount == null && line.discountBp == standingWas) {
+      out = out.copyWith(discountBp: nowOwn ? 0 : discountBp);
     }
     return out;
   }
+
+  // M66 -------------------------------------------------------------------
+
+  /// What a new line of [item], [baseQty] of it, is priced at, and why.
+  ({Rate rate, PriceSource source}) _priceOf(ItemSummary item, Qty baseQty) =>
+      counterPrice(
+        item,
+        tier: state.priceTier,
+        baseQty: baseQty,
+        book: schemesNow(ref),
+        own: state.partyPrices,
+      );
+
+  /// Reads [partyId]'s own prices and, while they are still the bill's
+  /// customer, moves each line still at the counter's price to them. With
+  /// [reprice] false (a quotation or a bill read back, whose prices stand)
+  /// only the next lines rung take them.
+  Future<void> _readOwnPrices(
+    String partyId, {
+    UnitConverter? units,
+    bool reprice = true,
+  }) async {
+    final PartyPrices prices;
+    try {
+      prices = await ref.read(appServicesProvider).loyalty.pricesOf(partyId);
+    } on Object {
+      // Not read is no own prices: the tier and the slabs price the bill,
+      // as they did before M66.
+      return;
+    }
+    if (state.partyId != partyId) return;
+    if (!reprice) {
+      state = state.copyWith(partyPrices: prices);
+      return;
+    }
+    ownPricesChanged(prices, units: units);
+  }
+
+  /// The customer's own prices are now [prices]: read, or one set from the
+  /// counter. Each line still at the counter's price moves to the new one,
+  /// its standing discount following (none on their own price).
+  void ownPricesChanged(PartyPrices prices, {UnitConverter? units}) {
+    if (state.partyId != prices.partyId) return;
+    final before = state.partyPrices;
+    final lines = [
+      for (final l in state.lines)
+        if (l.isLoose)
+          l
+        else
+          () {
+            final was = _counterRate(l, units: units, own: before);
+            final now = _counterRate(l, units: units, own: prices);
+            if (was == null || now == null || l.rate != was || now == was) {
+              return l;
+            }
+            final wasOwn = before?.rateFor(l.item.id) != null;
+            final nowOwn = prices.rateFor(l.item.id) != null;
+            var out = l.copyWith(rate: now);
+            if (l.explicitDiscount == null) {
+              if (!wasOwn && nowOwn && l.discountBp == state.partyDiscountBp) {
+                out = out.copyWith(discountBp: 0);
+              } else if (wasOwn && !nowOwn && l.discountBp == 0) {
+                out = out.copyWith(discountBp: state.partyDiscountBp);
+              }
+            }
+            return out;
+          }(),
+    ];
+    state = state.copyWith(lines: lines, partyPrices: prices);
+  }
+
+  /// The customer's points used on this bill, or none.
+  void setLoyalty(LoyaltyRedemption? redeem) => state = redeem == null
+      ? state.copyWith(clearLoyalty: true)
+      : state.copyWith(loyalty: redeem);
 
   // M43 -------------------------------------------------------------------
 
@@ -855,6 +1031,7 @@ class CartNotifier extends Notifier<Cart> {
     PriceTier? tier,
     SchemeBook? book,
     UnitConverter? units,
+    PartyPrices? own, // M66: the customer's own prices, when they have any
   }) {
     final converter = units ?? ref.read(unitConverterProvider).valueOrNull;
     final Qty base;
@@ -873,11 +1050,13 @@ class CartNotifier extends Notifier<Cart> {
         return null;
       }
     }
-    final perBase = (book ?? schemesNow(ref)).priceAt(
+    final perBase = counterPrice(
       line.item,
-      tier ?? state.priceTier,
-      base,
-    );
+      tier: tier ?? state.priceTier,
+      baseQty: base,
+      book: book ?? schemesNow(ref),
+      own: own, // M66
+    ).rate;
     if (!line.isConverted) return perBase;
     try {
       return converter!.convertRate(
@@ -901,9 +1080,10 @@ class CartNotifier extends Notifier<Cart> {
   CartLine _repriced(CartLine before, CartLine after, {UnitConverter? units}) {
     if (before.isLoose) return after;
     if (!schemesNow(ref).slabs.containsKey(before.item.id)) return after;
-    final was = _counterRate(before, units: units);
+    final own = state.partyPrices; // M66
+    final was = _counterRate(before, units: units, own: own);
     if (was == null || before.rate != was) return after;
-    final now = _counterRate(after, units: units);
+    final now = _counterRate(after, units: units, own: own);
     return now == null ? after : after.copyWith(rate: now);
   }
 
@@ -917,8 +1097,12 @@ class CartNotifier extends Notifier<Cart> {
           l
         else
           () {
-            final was = _counterRate(l, book: before);
-            final now = _counterRate(l, book: after);
+            final was = _counterRate(
+              l,
+              book: before,
+              own: state.partyPrices, // M66
+            );
+            final now = _counterRate(l, book: after, own: state.partyPrices);
             if (was == null || now == null || l.rate != was || now == was) {
               return l;
             }
@@ -983,6 +1167,10 @@ class CartNotifier extends Notifier<Cart> {
       // bonus the counter works out from the shop's schemes as for any bill.
       sentBonus: quotation.isChallan ? (sentBonus ?? const []) : null,
     );
+    // M66: the quoted prices stand; a line added takes their own price.
+    if (quotation.partyId case final id?) {
+      unawaited(_readOwnPrices(id, reprice: false));
+    }
   }
 
   /// Puts a bill read back on the counter as a new bill (M36): its lines,
@@ -1018,6 +1206,8 @@ class CartNotifier extends Notifier<Cart> {
       copyNote: copyNote,
       recurring: party == null ? null : recurring, // M63
     );
+    // M66: the bill's prices stand; a line added takes their own price.
+    if (party != null) unawaited(_readOwnPrices(party.id, reprice: false));
   }
 
   /// Waves away the note about where the bill was copied from (M36).

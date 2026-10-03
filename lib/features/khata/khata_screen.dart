@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../attachments/attachment_strip.dart'; // M60
+import '../loyalty/on_the_khata.dart'; // M66
 import '../mobile/qist_plans_screen.dart'; // M50
 import '../parties/party_editor.dart';
 import '../recurring/repeat_entry.dart'; // M63
@@ -191,6 +192,9 @@ class KhataScreen extends ConsumerWidget {
       GoodsGivenCard(party: current),
       const SizedBox(height: BlTokens.space4),
       QistPlansCard(partyId: current.id), // M50: phones on qist
+      // M66: their loyalty points, and their own prices.
+      PointsOnKhata(partyId: current.id),
+      OwnPricesOnKhata(party: current),
       Row(
         children: [
           Expanded(

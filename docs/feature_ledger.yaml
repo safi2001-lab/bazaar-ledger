@@ -3423,6 +3423,117 @@ milestones:
       - packages/pk_reports/lib/src/staff_book_reports.dart
       - packages/pk_bootstrap/lib/src/staff_book_services.dart
 
+  - id: M66
+    title: Points that bring a customer back, a price list of their own, and the profit on the bill while it is being made
+    # Opened and sealed 3 Oct 2026 at 7/7. Three things Vyapar sells as
+    # premium settings (loyalty points, party-wise item rate, "show profit
+    # while making sale invoice") and Marg keeps on Ctrl+F7, each worked
+    # out by the counter from the books, on a real database. No schema
+    # change (v12 stands; M65 holds v13): everything is a `settings` row,
+    # as M43's schemes are. Every edit in another milestone's file is
+    # marked M66.
+    #
+    # Loyalty points. The owner's rule in Settings: N points per Rs X,
+    # P points worth Rs Y off a later bill, the most of a bill points may
+    # pay, and an optional life in months. Decided: points are earned on
+    # what is PAID, never on what is owed -- a bill's points are worked out
+    # on the smaller of the cleared money that came in against it and what
+    # the customer kept of it, per bill in whole steps. A bill on udhaar
+    # earns nothing at the counter, earns as its udhaar is paid, and in
+    # full the day it is settled; a cheque earns when it clears; a
+    # settlement discount or a write-off (an adjustment) is not money. So
+    # a point never rewards an unpaid bill. Named customers only. Nothing
+    # earned is stored: it is read off the bills, their allocations, their
+    # returns and their status every time (loyalty_reads.dart), so it
+    # cannot disagree with the khata -- a bounced cheque stops earning, a
+    # payment taken back (M31) takes its points, a cancelled bill earns
+    # nothing and gives back what it spent, a return takes back the points
+    # on what came back and gives back the points spent on it in the same
+    # share of the goods, and two counters agree without telling each other
+    # anything. Every change of rule is kept as a version from the moment
+    # it is saved: a bill earns by the version in force when it was posted,
+    # so a change moves no point already earned, and switching off keeps
+    # the morning's. Points are used oldest first; what expires is what
+    # nobody used, by its bill's version.
+    #
+    # The books, decided: points outstanding are a memo balance beside the
+    # khata, not a liability. IFRS 15 would defer part of each sale until
+    # the points are used or lapse; that needs an estimate of how many never
+    # will, which a kiryana cannot make, and puts a moving liability on the
+    # balance sheet the owner's accountant would have to unpick. Vyapar
+    # keeps them as a balance; so does this. A redemption is a discount on
+    # the bill that uses the points, down M0's one bill-discount path into
+    # Discount Given, on the day it is given, and the books balance every
+    # day. The Loyalty report says what is outstanding, in points and at
+    # today's rate, for the owner to see what is promised.
+    #
+    # At the counter the payment sheet says what a named customer holds
+    # ("Loyalty: 300 points (Rs 150.00)"), offers "Points istemal karein"
+    # up to the smaller of that and the shop's share of this bill, and says
+    # what the bill will earn. The points spent are written in the bill's
+    # own commit (a settings row per bill, `loyalty.redeemed.<id>`), checked
+    # there against the rule of that moment, the points' worth, the share
+    # and the customer's points as the books stand inside the transaction;
+    # anything wrong refuses the bill whole, in words. The discount ceiling
+    # (M22) excuses exactly those points -- the owner's rate and share, as a
+    # bill slab is the owner's word -- so a cashier may use a customer's
+    # points past their own 5%, and a discount they type is still theirs.
+    # A quotation or a challan spends no points; a bill on qist (M50) and a
+    # repeating bill (M63) may. The bill's paper -- till roll, PDF, picture,
+    # reprint -- says "120 points istemal hue (Rs 60.00)" and "Is bill par
+    # 9 points mile - Kul 189 points" (ASCII: a Latin code page prints a
+    # middle dot as a question mark), the total as it stood when the bill
+    # was made. The khata shows the points, what was earned, used and
+    # lapsed, and the next to expire; the Loyalty report in the Party group
+    # lists every customer with Vyapar's two figures as tiles.
+    #
+    # A customer's own prices: "Haji Sahib: Atta 50kg Rs 4,800". Set from
+    # their khata or details (a list to add to, change and take off), or
+    # from the counter line ("Is gahak ke liye yehi rate rakhein"), by
+    # whoever may see costs, on the plan the other price lists need. One
+    # settings row per customer. The order the counter prices a line in,
+    # decided once (party_prices.dart): a price the cashier typed (or a
+    # past deal picked, M37); the customer's own price, which wins over a
+    # lower slab because it is the rate agreed with them, and takes no
+    # standing discount on top; the item's slab where lower than (4); their
+    # tier's price (M15); the item's price. A bonus (M43) is given on such
+    # a line as on any; a bill slab is worked out on what the lines come
+    # to; the last-price hint stays a hint. The line says "Haji Sahib ka
+    # rate". The customer's list is read when they are picked and the lines
+    # still at the counter's price move to it; a quotation or a bill read
+    # back keeps its prices and only new lines take it. Kept in the cart's
+    # draft as an optional key, as are the points chosen (no new version).
+    #
+    # The profit while billing: for whoever may see costs (M9's seeCosts),
+    # "Munafa Rs 1,240.00 (12.5%)" under the counter's total and on the
+    # payment sheet, by the books' own rule (what the goods sell for before
+    # tax, after every discount, less their average cost; a free line costs
+    # what it costs); per item in the line's editor; "Qeemat se kam" in red
+    # under a line, and on the bill's line, when an item sells below cost.
+    # A cashier's counter never reads a cost: the switch is read first and
+    # costs only after (counterCosts is refused to them below the screen).
+    # The owner turns it off in Settings for every counter.
+    #
+    # Not built, and why: points as deferred revenue (decided above); a
+    # plan gate on loyalty (it would need a new PlanFeature in M21's table);
+    # points earned on a partial payment dated by the payment rather than
+    # the bill (a bill's points expire by its own day); sending a customer
+    # their points by SMS or WhatsApp (M70's receipts); a customer's own
+    # price per unit other than the item's own (it is carried into the
+    # line's unit exactly, or not given); the margin per line on the
+    # counter's row itself rather than in its editor (the row has no room
+    # at 200% on a small phone).
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/pricing/loyalty.dart
+      - packages/pk_domain/lib/src/pricing/party_prices.dart
+      - packages/pk_domain/lib/src/pricing/margin.dart
+      - packages/pk_data/lib/src/read/loyalty_reads.dart
+      - packages/pk_data/lib/src/read/reports/loyalty_queries.dart
+      - packages/pk_reports/lib/src/loyalty_reports.dart
+      - packages/pk_bootstrap/lib/src/loyalty_services.dart
+      - lib/features/loyalty/**
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -8863,3 +8974,68 @@ features:
       - the day register is marked a tap a man, and everyone else present with one more
       - a month of wages is worked out from the register, the advance comes off it, the slip goes out as a PDF, and a cancelled slip puts the books back
       - at 200% on a small phone the staff book, the register, a man page and his wages fit
+  - id: M66-EARN-01
+    milestone: M66
+    title: Loyalty points are earned on what is paid, never on what is owed - a cash bill at once, a bill on udhaar as its udhaar comes in, a walk-in never - and the khata and the bill say so
+    status: done
+    proof:
+      - loyalty points are earned on what is paid: a cash bill at once, a bill on udhaar only as its udhaar comes in
+      - loyalty points a walk-in earns nothing, and a shop that gives no points prints none
+      - points are earned on what is paid a cash bill earns in whole steps; udhaar earns nothing until it is paid, part of it as part is paid
+      - the owner sets the shop's points in Settings, a bill earns them on what was paid, and the khata and the Loyalty report show them
+  - id: M66-REDEEM-01
+    milestone: M66
+    title: Points are spent on the payment sheet as a bill discount into Discount Given, by a cashier past their own 5% because the rate and share are the owner's, checked in the bill's own commit and refused past the customer's points, past the shop's share or at the wrong worth
+    status: done
+    proof:
+      - loyalty points are spent as a bill discount by a cashier, past their own 5%, into Discount Given, and the paper says so
+      - loyalty points are refused, and nothing written, past the customer's points, past half the bill, or at the wrong worth
+      - a cashier uses a customer's points on the payment sheet as a discount past their own 5%, sees no profit anywhere, and the bill says what was used and earned
+      - using points a hundred points are Rs 50, and no more than half the bill
+      - at 200% on a small phone the own price and the profit on the counter and the points on the payment sheet fit
+  - id: M66-RETURN-01
+    milestone: M66
+    title: A return takes back the points on what came back and gives back the points spent on it in the same share; a cancelled bill earns nothing and gives back all it spent
+    status: done
+    proof:
+      - loyalty points a return takes back the points on what came back and gives back the points spent on it; a cancelled bill does both in full
+      - points are earned on what is paid a return takes back the points on what came back, and the points spent on it in the same share; a cancelled bill earns and spends nothing
+  - id: M66-RULE-01
+    milestone: M66
+    title: The owner's rule is kept as versions from the moment it is saved - a change moves no point already earned, switching off keeps the morning's, points used oldest first and what nobody used expires by its bill's version - and a rule that gives the till away is refused
+    status: done
+    # Decided: points outstanding are a memo balance beside the khata, not
+    # deferred revenue; see the M66 block.
+    proof:
+      - loyalty points switched off, a bill earns nothing from then on and keeps every point earned, the morning's included; points cannot be used
+      - points are earned on what is paid a bill before the scheme began, or while it is off, earns nothing; a change of rate changes no point already earned
+      - a customer's standing earned less spent is what they hold, spent oldest first
+      - a customer's standing points nobody used expire after their months, and the next to go is said
+      - a customer's standing points spent that nobody held are made good from the next earned
+      - using points a rule that gives the till away is refused before it is kept
+  - id: M66-REPORT-01
+    milestone: M66
+    title: A Loyalty report in the Party group - earned, redeemed, discount given, expired, outstanding and its worth today per customer, Vyapar's points rewarded and discount redeemed as tiles
+    status: done
+    proof:
+      - the owner sets the shop's points in Settings, a bill earns them on what was paid, and the khata and the Loyalty report show them
+  - id: M66-PARTYPRICE-01
+    milestone: M66
+    title: A customer's own price per item, set from their details or the counter line and listed on their khata, wins over their tier and a lower slab, loses to a price typed, takes no standing discount, and says "Haji Sahib ka rate" on the line
+    status: done
+    proof:
+      - a customer's own price, set from their details, wins over their wholesale price and a lower slab, loses to a price typed, and one is kept from the counter line
+      - a customer's own price wins over the tier and the slab
+      - a customer's own price without one: the slab where lower, else the tier, else the item
+      - a customer's own price is kept as integers and read back
+      - a customer's own prices are kept one row per customer, taken off by setting nothing, and set only by whoever may see costs
+      - at 200% on a small phone the points and own prices on the khata, the price list and the loyalty settings fit
+  - id: M66-MARGIN-01
+    milestone: M66
+    title: The bill's profit at the counter and on the payment sheet, per item in its editor and "Qeemat se kam" in red below cost, for whoever may see costs only - a cashier's counter never reads a cost - and an owner's switch to turn it off
+    status: done
+    proof:
+      - the owner sees the bill's profit at the counter and on the payment sheet, a line below cost in red, and turns it off in Settings
+      - a cashier uses a customer's points on the payment sheet as a discount past their own 5%, sees no profit anywhere, and the bill says what was used and earned
+      - the margin at the counter costs are read only by whoever may see them, and the owner can turn the figure off
+      - a margin reads as a shopkeeper says it

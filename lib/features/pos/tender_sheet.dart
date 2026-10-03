@@ -11,6 +11,8 @@ import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
 import '../khata/entry_actions.dart' show modeLabel;
 import '../khata/goods_given.dart' show giveFromCounter; // M55
+import '../loyalty/loyalty_at_counter.dart'; // M66
+import '../loyalty/loyalty_providers.dart' show loyaltyProblemText; // M66
 import '../mobile/qist_sheet.dart'; // M50
 import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
@@ -208,7 +210,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     }
     try {
       final services = ref.read(appServicesProvider);
-      final books = cart.forBooks(units, schemesFor(ref)); // M43
+      // M43; M66: a quotation or a challan spends no points.
+      final books = cart.forBooks(units, schemesFor(ref), points: false);
       final draft = SaleDraft(
         lines: books.lines,
         partyId: cart.partyId,
@@ -593,7 +596,12 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       // A rider's phone sells from the van, not from the shop floor (M18).
       final location = await services.counterLocation();
       // M63: a repeating bill moves its template on in the same commit.
-      final posted = await services.recurring.postSaleFor(cart.recurring)(
+      // M66: and the customer's points are spent in it (loyalty_services).
+      final sale = services.loyalty.postSaleFor(
+        recurring: cart.recurring,
+        redeem: cart.pointsOff.isPositive ? cart.loyalty : null,
+      );
+      final posted = await sale(
         services.actorNow(),
         SaleDraft(
           locationCode: location,
@@ -657,6 +665,15 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
               ReceiptScreen(documentId: posted.documentId, docNo: posted.docNo),
         ),
       );
+    } on LoyaltyRefused catch (refused) {
+      // M66: the points, refused in the bill's own commit, said in words.
+      if (mounted) {
+        setState(() {
+          _failure =
+              '${s.billSaveFailed}\n\n${loyaltyProblemText(s, refused.problem)}';
+          _busy = false;
+        });
+      }
     } on Object catch (error) {
       // Nothing was written: the whole posting is one transaction, so a
       // failure here leaves the books exactly as they were. The message says
@@ -734,6 +751,10 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
             _DueCard(due: due, change: change, short: short),
             const BillSlabRow(), // M43: the shop's discount on a big bill.
             ServiceTaxNote(sale: preview), // M59: "PRA 8% (card)"
+            // M66: the customer's points, and the profit for whoever may
+            // see it (loyalty_at_counter.dart).
+            LoyaltyRow(onUdhaar: _onUdhaar),
+            MarginLine(mode: _onUdhaar ? null : _mode),
             if (cart.paidBefore case final paid? when cart.replacesNo != null)
               _PaidBefore(
                 docNo: cart.replacesNo!,

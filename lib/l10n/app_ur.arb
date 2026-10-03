@@ -5269,5 +5269,162 @@
   "reportSalaryRegister": "Tankhwah register",
   "reportSalaryRegisterHint": "Har slip: tankhwah, katoti, peshgi kati, di gayi",
   "reportStaffAdvances": "Baqi peshgi",
-  "reportStaffAdvancesHint": "Har mulazim ki kitni peshgi abhi baqi hai"
+  "reportStaffAdvancesHint": "Har mulazim ki kitni peshgi abhi baqi hai",
+  "settingsLoyalty": "Loyalty points aur munafa",
+  "loyaltyTitle": "Loyalty points",
+  "loyaltyIntro": "Gahak har bill par points kamata hai — sirf jo ada kiya us par, udhaar par tab jab ada ho — aur agle bill par discount ke taur par istemal karta hai.",
+  "loyaltyOn": "Points dein",
+  "loyaltyEarnPoints": "Points",
+  "loyaltyEarnPer": "Har itne Rs par",
+  "loyaltyRedeemPoints": "Itne points",
+  "loyaltyRedeemValue": "Itne Rs ke barabar",
+  "loyaltyExpiry": "Itne mahine baad khatam (0 = kabhi nahi)",
+  "loyaltyCap": "Bill ka zyada se zyada % points se",
+  "loyaltyRuleNow": "Rs {per} par {earn} points · {pts} points = Rs {worth} · {back} wapas",
+  "@loyaltyRuleNow": {
+    "placeholders": {
+      "earn": {"type": "String"},
+      "per": {"type": "String"},
+      "pts": {"type": "String"},
+      "worth": {"type": "String"},
+      "back": {"type": "String"}
+    }
+  },
+  "loyaltyRuleOff": "Abhi points nahi diye ja rahe.",
+  "loyaltySaved": "Loyalty ka qaida save — agle bill se",
+  "loyaltyOwnerOnly": "Loyalty ka qaida sirf maalik badal sakta hai.",
+  "loyaltyBooksNote": "Points khata ke saath ek wada hain. Istemal hone par us bill par discount ban kar kitab mein jate hain.",
+  "loyaltyProblemFigures": "Har figure likhein, sifar se zyada.",
+  "loyaltyProblemTooGenerous": "Ye points kamaye gaye paison ka aadhe se zyada wapas dete hain — figures check karein.",
+  "loyaltyProblemCap": "Bill ka hissa 1% se 100% tak.",
+  "loyaltyProblemExpiry": "Mahine 0 se 120 tak.",
+  "loyaltyProblemNotEnough": "Gahak ke paas itne points nahi.",
+  "loyaltyProblemOverCap": "Is bill ka itna hissa points se nahi.",
+  "loyaltyProblemOff": "Points band hain.",
+  "loyaltyProblemNoCustomer": "Points sirf apne gahak ke bill par lagte hain.",
+  "loyaltyProblemMismatch": "Points ki qeemat badal gayi — hata kar dobara lagayein.",
+  "loyaltyHeld": "Loyalty: {points} points (Rs {worth})",
+  "@loyaltyHeld": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "worth": {"type": "String"}
+    }
+  },
+  "loyaltyUse": "Points istemal karein",
+  "loyaltyHowMany": "Kitne points",
+  "loyaltyAtMost": "Is bill par zyada se zyada {max}",
+  "@loyaltyAtMost": {
+    "placeholders": {
+      "max": {"type": "String"}
+    }
+  },
+  "loyaltyApply": "Points lagayein",
+  "loyaltyApplied": "{points} points istemal: Rs {worth} kam",
+  "@loyaltyApplied": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "worth": {"type": "String"}
+    }
+  },
+  "loyaltyTakeOff": "Points hatayein",
+  "loyaltyWillEarn": "Is bill par {points} points milenge",
+  "@loyaltyWillEarn": {
+    "placeholders": {
+      "points": {"type": "String"}
+    }
+  },
+  "loyaltyWillEarnWhenPaid": "Is bill par {points} points milenge jab ada hoga",
+  "@loyaltyWillEarnWhenPaid": {
+    "placeholders": {
+      "points": {"type": "String"}
+    }
+  },
+  "khataPoints": "Loyalty points: {points} (Rs {worth})",
+  "@khataPoints": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "worth": {"type": "String"}
+    }
+  },
+  "khataPointsExpiring": "{points} points {date} ko khatam honge",
+  "@khataPointsExpiring": {
+    "placeholders": {
+      "points": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "khataPointsSummary": "Mile {earned} · istemal {redeemed} · khatam {expired}",
+  "@khataPointsSummary": {
+    "placeholders": {
+      "earned": {"type": "String"},
+      "redeemed": {"type": "String"},
+      "expired": {"type": "String"}
+    }
+  },
+  "partyPricesTitle": "Gahak ke apne rate",
+  "partyPricesCount": "Apne rate: {count} cheezen",
+  "@partyPricesCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "partyPricesNone": "Abhi koi apna rate nahi",
+  "partyPricesIntro": "Is gahak ke saath har cheez ka tay shuda rate. Counter par yehi lagta hai — thok, VIP aur slab se pehle; cashier ka likha rate is se bhi pehle, aur is par unka mustaqil discount dobara nahi katta.",
+  "partyPricesAdd": "Cheez ka rate rakhein",
+  "partyPriceRate": "Rate (fi {unit})",
+  "@partyPriceRate": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "partyPriceRemove": "Rate hatayein",
+  "partyPriceSaved": "Rate rakh diya",
+  "partyPricesOwnerOnly": "Gahak ka rate sirf maalik, manager ya munshi rakh sakte hain.",
+  "lineOwnRate": "{name} ka rate",
+  "@lineOwnRate": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "lineKeepRate": "Is gahak ke liye yehi rate rakhein",
+  "lineRateKept": "{name} ke liye rate rakh diya",
+  "@lineRateKept": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "lineRateNotCarried": "Ye rate cheez ki apni unit mein theek nahi baithta",
+  "marginBill": "Munafa Rs {amount} ({pct})",
+  "@marginBill": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "pct": {"type": "String"}
+    }
+  },
+  "marginBelowCost": "Qeemat se kam",
+  "marginLine": "Is cheez par munafa Rs {amount} ({pct})",
+  "@marginLine": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "pct": {"type": "String"}
+    }
+  },
+  "marginLineLoss": "Qeemat se kam: Rs {amount} ka nuqsan",
+  "@marginLineLoss": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "marginHeader": "Bill banate waqt munafa",
+  "marginSwitch": "Counter par bill ka munafa dikhayein",
+  "marginSwitchHint": "Sirf maalik, manager aur munshi ko nazar aata hai; cashier ko kabhi nahi.",
+  "reportLoyalty": "Loyalty points",
+  "reportLoyaltyHint": "Har gahak ke points: mile, istemal, khatam aur baqi",
+  "partyPriceEach": "Rs {amount} fi {unit}",
+  "@partyPriceEach": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "unit": {"type": "String"}
+    }
+  }
 }

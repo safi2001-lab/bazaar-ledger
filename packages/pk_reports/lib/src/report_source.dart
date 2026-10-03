@@ -6,6 +6,7 @@ import 'expense_source.dart';
 import 'filters.dart';
 import 'item_stock_source.dart';
 import 'loan_reports.dart';
+import 'loyalty_reports.dart'; // M66
 import 'mobile_reports.dart'; // M50
 import 'order_source.dart';
 import 'party_source.dart';
@@ -324,7 +325,9 @@ abstract interface class ReportSource
         // M54
         CollectionsReportSource,
         // M65
-        StaffBookReportSource {
+        StaffBookReportSource,
+        // M66
+        LoyaltyReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

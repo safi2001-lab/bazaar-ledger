@@ -288,23 +288,31 @@ final class _PlanSaleContext implements SaleWriteContext {
 /// refused (M22). Each role has carried its ceiling since M9; until now
 /// nothing read it, and a cashier could knock any amount off a bill.
 final class _CeilingSales implements SaleWriter {
-  _CeilingSales(this._inner, this._app);
+  _CeilingSales(this._inner, this._app, {this.redeem}); // M66
 
   final SaleWriter _inner;
   final AppServices _app;
+
+  /// M66: the customer's points this bill spends, checked and kept beneath
+  /// this gate in the same commit (loyalty_services.dart).
+  final LoyaltyRedemption? redeem;
 
   @override
   Future<T> inTransaction<T>(
     ActorContext actor,
     Future<T> Function(SaleWriteContext write) body,
-  ) => _inner.inTransaction(actor, (w) => body(_CeilingSaleContext(w, _app)));
+  ) => _inner.inTransaction(
+    actor,
+    (w) => body(_CeilingSaleContext(w, _app, redeem)), // M66
+  );
 }
 
 final class _CeilingSaleContext implements SaleWriteContext {
-  _CeilingSaleContext(this._inner, this._app);
+  _CeilingSaleContext(this._inner, this._app, [this._redeem]); // M66
 
   final SaleWriteContext _inner;
   final AppServices _app;
+  final LoyaltyRedemption? _redeem; // M66
 
   @override
   ActorContext get actor => _inner.actor;
@@ -371,10 +379,21 @@ final class _CeilingSaleContext implements SaleWriteContext {
     if (pharmacy.isPharmacy && pharmacy.offMrpBp > standing) {
       standing = pharmacy.offMrpBp;
     }
+    // M66: a customer's points are spent at the owner's rate, within the
+    // owner's share of a bill, as a slab is the owner's word: the discount
+    // they make is not the cashier's to have given. Only the points on this
+    // bill, of this bill's customer, inside its discount, and only because
+    // the writer beneath checks them against the customer's points and
+    // keeps them in this same commit, refusing the whole bill otherwise.
+    final points = switch (_redeem) {
+      final r? when r.partyId == doc.partyId && r.value <= doc.billDiscount =>
+        r.value,
+      _ => Money.zero,
+    };
     if (!discountAllowed(
       role: role,
       subtotal: doc.subtotal,
-      discount: discount - schemes.slab,
+      discount: discount - schemes.slab - points, // M66
       standingBp: standing,
     )) {
       final pct = role.maxDiscountBp / 100;

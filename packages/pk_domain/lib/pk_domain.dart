@@ -92,7 +92,10 @@ export 'src/ports/udhaar.dart';
 export 'src/ports/vans.dart';
 export 'src/ports/void_writer.dart';
 // M49: the one check for a printed retail price.
+export 'src/pricing/loyalty.dart'; // M66
+export 'src/pricing/margin.dart'; // M66
 export 'src/pricing/mrp.dart';
+export 'src/pricing/party_prices.dart'; // M66
 export 'src/pricing/price_tier.dart';
 export 'src/pricing/schemes.dart';
 export 'src/receivables/aging.dart';

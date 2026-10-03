@@ -14740,6 +14740,366 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Har mulazim ki kitni peshgi abhi baqi hai'**
   String get reportStaffAdvancesHint;
+
+  /// No description provided for @settingsLoyalty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty points aur munafa'**
+  String get settingsLoyalty;
+
+  /// No description provided for @loyaltyTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty points'**
+  String get loyaltyTitle;
+
+  /// No description provided for @loyaltyIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak har bill par points kamata hai — sirf jo ada kiya us par, udhaar par tab jab ada ho — aur agle bill par discount ke taur par istemal karta hai.'**
+  String get loyaltyIntro;
+
+  /// No description provided for @loyaltyOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points dein'**
+  String get loyaltyOn;
+
+  /// No description provided for @loyaltyEarnPoints.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points'**
+  String get loyaltyEarnPoints;
+
+  /// No description provided for @loyaltyEarnPer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har itne Rs par'**
+  String get loyaltyEarnPer;
+
+  /// No description provided for @loyaltyRedeemPoints.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itne points'**
+  String get loyaltyRedeemPoints;
+
+  /// No description provided for @loyaltyRedeemValue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itne Rs ke barabar'**
+  String get loyaltyRedeemValue;
+
+  /// No description provided for @loyaltyExpiry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itne mahine baad khatam (0 = kabhi nahi)'**
+  String get loyaltyExpiry;
+
+  /// No description provided for @loyaltyCap.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ka zyada se zyada % points se'**
+  String get loyaltyCap;
+
+  /// No description provided for @loyaltyRuleNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {per} par {earn} points · {pts} points = Rs {worth} · {back} wapas'**
+  String loyaltyRuleNow(
+    String earn,
+    String per,
+    String pts,
+    String worth,
+    String back,
+  );
+
+  /// No description provided for @loyaltyRuleOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi points nahi diye ja rahe.'**
+  String get loyaltyRuleOff;
+
+  /// No description provided for @loyaltySaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty ka qaida save — agle bill se'**
+  String get loyaltySaved;
+
+  /// No description provided for @loyaltyOwnerOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty ka qaida sirf maalik badal sakta hai.'**
+  String get loyaltyOwnerOnly;
+
+  /// No description provided for @loyaltyBooksNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points khata ke saath ek wada hain. Istemal hone par us bill par discount ban kar kitab mein jate hain.'**
+  String get loyaltyBooksNote;
+
+  /// No description provided for @loyaltyProblemFigures.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har figure likhein, sifar se zyada.'**
+  String get loyaltyProblemFigures;
+
+  /// No description provided for @loyaltyProblemTooGenerous.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ye points kamaye gaye paison ka aadhe se zyada wapas dete hain — figures check karein.'**
+  String get loyaltyProblemTooGenerous;
+
+  /// No description provided for @loyaltyProblemCap.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ka hissa 1% se 100% tak.'**
+  String get loyaltyProblemCap;
+
+  /// No description provided for @loyaltyProblemExpiry.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine 0 se 120 tak.'**
+  String get loyaltyProblemExpiry;
+
+  /// No description provided for @loyaltyProblemNotEnough.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ke paas itne points nahi.'**
+  String get loyaltyProblemNotEnough;
+
+  /// No description provided for @loyaltyProblemOverCap.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill ka itna hissa points se nahi.'**
+  String get loyaltyProblemOverCap;
+
+  /// No description provided for @loyaltyProblemOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points band hain.'**
+  String get loyaltyProblemOff;
+
+  /// No description provided for @loyaltyProblemNoCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points sirf apne gahak ke bill par lagte hain.'**
+  String get loyaltyProblemNoCustomer;
+
+  /// No description provided for @loyaltyProblemMismatch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points ki qeemat badal gayi — hata kar dobara lagayein.'**
+  String get loyaltyProblemMismatch;
+
+  /// No description provided for @loyaltyHeld.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty: {points} points (Rs {worth})'**
+  String loyaltyHeld(String points, String worth);
+
+  /// No description provided for @loyaltyUse.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points istemal karein'**
+  String get loyaltyUse;
+
+  /// No description provided for @loyaltyHowMany.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne points'**
+  String get loyaltyHowMany;
+
+  /// No description provided for @loyaltyAtMost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill par zyada se zyada {max}'**
+  String loyaltyAtMost(String max);
+
+  /// No description provided for @loyaltyApply.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points lagayein'**
+  String get loyaltyApply;
+
+  /// No description provided for @loyaltyApplied.
+  ///
+  /// In ur, this message translates to:
+  /// **'{points} points istemal: Rs {worth} kam'**
+  String loyaltyApplied(String points, String worth);
+
+  /// No description provided for @loyaltyTakeOff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Points hatayein'**
+  String get loyaltyTakeOff;
+
+  /// No description provided for @loyaltyWillEarn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill par {points} points milenge'**
+  String loyaltyWillEarn(String points);
+
+  /// No description provided for @loyaltyWillEarnWhenPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is bill par {points} points milenge jab ada hoga'**
+  String loyaltyWillEarnWhenPaid(String points);
+
+  /// No description provided for @khataPoints.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty points: {points} (Rs {worth})'**
+  String khataPoints(String points, String worth);
+
+  /// No description provided for @khataPointsExpiring.
+  ///
+  /// In ur, this message translates to:
+  /// **'{points} points {date} ko khatam honge'**
+  String khataPointsExpiring(String points, String date);
+
+  /// No description provided for @khataPointsSummary.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mile {earned} · istemal {redeemed} · khatam {expired}'**
+  String khataPointsSummary(String earned, String redeemed, String expired);
+
+  /// No description provided for @partyPricesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ke apne rate'**
+  String get partyPricesTitle;
+
+  /// No description provided for @partyPricesCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Apne rate: {count} cheezen'**
+  String partyPricesCount(int count);
+
+  /// No description provided for @partyPricesNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi apna rate nahi'**
+  String get partyPricesNone;
+
+  /// No description provided for @partyPricesIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ke saath har cheez ka tay shuda rate. Counter par yehi lagta hai — thok, VIP aur slab se pehle; cashier ka likha rate is se bhi pehle, aur is par unka mustaqil discount dobara nahi katta.'**
+  String get partyPricesIntro;
+
+  /// No description provided for @partyPricesAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez ka rate rakhein'**
+  String get partyPricesAdd;
+
+  /// No description provided for @partyPriceRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate (fi {unit})'**
+  String partyPriceRate(String unit);
+
+  /// No description provided for @partyPriceRemove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate hatayein'**
+  String get partyPriceRemove;
+
+  /// No description provided for @partyPriceSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate rakh diya'**
+  String get partyPriceSaved;
+
+  /// No description provided for @partyPricesOwnerOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ka rate sirf maalik, manager ya munshi rakh sakte hain.'**
+  String get partyPricesOwnerOnly;
+
+  /// No description provided for @lineOwnRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka rate'**
+  String lineOwnRate(String name);
+
+  /// No description provided for @lineKeepRate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ke liye yehi rate rakhein'**
+  String get lineKeepRate;
+
+  /// No description provided for @lineRateKept.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ke liye rate rakh diya'**
+  String lineRateKept(String name);
+
+  /// No description provided for @lineRateNotCarried.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ye rate cheez ki apni unit mein theek nahi baithta'**
+  String get lineRateNotCarried;
+
+  /// No description provided for @marginBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Munafa Rs {amount} ({pct})'**
+  String marginBill(String amount, String pct);
+
+  /// No description provided for @marginBelowCost.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat se kam'**
+  String get marginBelowCost;
+
+  /// No description provided for @marginLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is cheez par munafa Rs {amount} ({pct})'**
+  String marginLine(String amount, String pct);
+
+  /// No description provided for @marginLineLoss.
+  ///
+  /// In ur, this message translates to:
+  /// **'Qeemat se kam: Rs {amount} ka nuqsan'**
+  String marginLineLoss(String amount);
+
+  /// No description provided for @marginHeader.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill banate waqt munafa'**
+  String get marginHeader;
+
+  /// No description provided for @marginSwitch.
+  ///
+  /// In ur, this message translates to:
+  /// **'Counter par bill ka munafa dikhayein'**
+  String get marginSwitch;
+
+  /// No description provided for @marginSwitchHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf maalik, manager aur munshi ko nazar aata hai; cashier ko kabhi nahi.'**
+  String get marginSwitchHint;
+
+  /// No description provided for @reportLoyalty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Loyalty points'**
+  String get reportLoyalty;
+
+  /// No description provided for @reportLoyaltyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har gahak ke points: mile, istemal, khatam aur baqi'**
+  String get reportLoyaltyHint;
+
+  /// No description provided for @partyPriceEach.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} fi {unit}'**
+  String partyPriceEach(String amount, String unit);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

@@ -12,6 +12,7 @@ import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
 import '../khata/opening_balance_sheet.dart';
 import '../khata/reminder_queue_screen.dart' show reminderLanguageName;
+import '../loyalty/party_prices_screen.dart'; // M66
 import '../subscription/plans_screen.dart';
 import 'party_groups.dart';
 import 'quick_party_sheet.dart' show creditDaysFrom;
@@ -472,6 +473,21 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                                 ),
                             ],
                           ),
+                          // M66: the rate agreed with them, item by item,
+                          // which the counter charges before their tier.
+                          if (widget.party case final p? when p.isCustomer)
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: TextButton.icon(
+                                onPressed: () => Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                    builder: (_) => PartyPricesScreen(party: p),
+                                  ),
+                                ),
+                                icon: const Icon(Icons.sell_outlined, size: 18),
+                                label: Text(s.partyPricesTitle),
+                              ),
+                            ),
                           const SizedBox(height: BlTokens.space4),
                           BlField(
                             controller: _discount,

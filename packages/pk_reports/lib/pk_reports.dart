@@ -17,6 +17,7 @@ export 'src/filters.dart';
 export 'src/item_stock_builders.dart';
 export 'src/item_stock_source.dart';
 export 'src/loan_reports.dart';
+export 'src/loyalty_reports.dart'; // M66
 export 'src/mobile_reports.dart'; // M50
 export 'src/money_owed_reports.dart';
 export 'src/order_builders.dart';
