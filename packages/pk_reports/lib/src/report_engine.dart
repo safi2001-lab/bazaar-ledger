@@ -2,6 +2,7 @@ import 'package:pk_domain/pk_domain.dart';
 
 import 'builders.dart';
 import 'business_reports.dart';
+import 'collections_reports.dart'; // M54
 import 'filters.dart';
 import 'item_stock_reports.dart';
 import 'mobile_reports.dart'; // M50
@@ -239,6 +240,10 @@ enum ReportKind {
 
   /// Every phone sold on qist: paid, still to pay, overdue; as of today.
   qistInstalments,
+  // M54: in `collections_reports.dart`.
+
+  /// What each customer should pay this week: falling due and promised.
+  expectedCollections,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -266,7 +271,8 @@ final class ReportEngine {
       businessReportsAsOfToday.contains(kind) ||
       // M58
       moneyOwedReportsAsOfToday.contains(kind) ||
-      kind == ReportKind.qistInstalments; // M50
+      kind == ReportKind.qistInstalments || // M50
+      collectionsReportKinds.contains(kind); // M54
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -569,6 +575,14 @@ final class ReportEngine {
       source: source,
       firmId: firmId,
       period: period,
+      today: today,
+      filters: filters,
+    ),
+    // M54
+    ReportKind.expectedCollections => buildCollectionsReport(
+      kind,
+      source: source,
+      firmId: firmId,
       today: today,
       filters: filters,
     ),

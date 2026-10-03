@@ -356,6 +356,12 @@ final class DriftAttachments implements AttachmentStore {
                                         WHERE p.id = a.owner_id)
                    WHEN 'items' THEN (SELECT i.name FROM items i
                                       WHERE i.id = a.owner_id)
+                   -- M54: a loan's entry and a batch.
+                   WHEN 'journal_entries' THEN (SELECT j.entry_no
+                                                FROM journal_entries j
+                                                WHERE j.id = a.owner_id)
+                   WHEN 'stock_lots' THEN (SELECT l.lot_no FROM stock_lots l
+                                           WHERE l.id = a.owner_id)
                  END AS owner_label
           FROM attachments a
           JOIN audit_log l
@@ -568,6 +574,8 @@ final class DriftAttachments implements AttachmentStore {
       'documents' => 'doc_no',
       'payments' => 'payment_no',
       'parties' || 'items' => 'name',
+      'journal_entries' => 'entry_no', // M54: a loan's entry
+      'stock_lots' => 'lot_no', // M54: a batch
       _ => null,
     };
     if (column == null) return '';
@@ -585,6 +593,8 @@ final class DriftAttachments implements AttachmentStore {
     'payments' => 'payment ${label ?? ''}',
     'parties' => 'the khata of ${label ?? ''}',
     'items' => 'item ${label ?? ''}',
+    'journal_entries' => 'entry ${label ?? ''}', // M54
+    'stock_lots' => 'batch ${label ?? ''}', // M54
     _ => 'the shop',
   };
 }

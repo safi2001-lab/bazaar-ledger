@@ -16,7 +16,10 @@ import '../mobile/phone_lines.dart'; // M50
 /// cartons — and the rate is per that unit, so it is set beside the rate
 /// the order quoted and a difference is seen at the door. A batch and its
 /// expiry are asked for an item kept by batch, and serial numbers for one
-/// kept by serial, exactly as when the line is added by hand.
+/// kept by serial, exactly as when the line is added by hand — and, since
+/// M54, the price printed on the batch, as the delivery picker asks it
+/// (M49): a chemist's purchase order comes in batch by batch, and DRAP
+/// prices each batch on its own strip.
 Future<PurchaseLineDraft?> showDeliveryLineSheet(
   BuildContext context, {
   required PurchaseLineDraft line,
@@ -45,6 +48,10 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
   late final _expiry = TextEditingController(
     text: widget.line.expiry?.value ?? '',
   );
+  // M54: the batch's printed price, starting at the line's or the item's.
+  late final _mrp = TextEditingController(
+    text: widget.line.mrp?.amountOnly ?? '',
+  );
   late final _serials = TextEditingController(
     // M50: a line of phones shows each as "IMEI 1 / IMEI 2".
     text: widget.line.phones.isEmpty
@@ -54,7 +61,21 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
   String? _problem;
 
   @override
+  void initState() {
+    super.initState();
+    // M54: the item's own printed price, once it is read, where the line
+    // brought none and nothing has been typed.
+    ref.read(_itemProvider(widget.line.itemId).future).then((item) {
+      final mrp = item?.mrp;
+      if (mounted && mrp != null && _mrp.text.isEmpty) {
+        _mrp.text = mrp.amountOnly;
+      }
+    }, onError: (Object _) {});
+  }
+
+  @override
   void dispose() {
+    _mrp.dispose(); // M54
     _qty.dispose();
     _rate.dispose();
     _batch.dispose();
@@ -122,6 +143,8 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
         expiry: item?.tracksBatch ?? false ? expiry : null,
         serials: phones.isEmpty ? serials : const [],
         phones: phones, // M50
+        // M54: kept on the batch, as the picker keeps it (M49).
+        mrp: item?.tracksBatch ?? false ? Money.tryParse(_mrp.text) : null,
       ),
     );
   }
@@ -213,6 +236,13 @@ class _DeliveryLineSheetState extends ConsumerState<_DeliveryLineSheet> {
                   ),
                 ),
               ],
+            ),
+            // M54: the price printed on this batch.
+            const SizedBox(height: BlTokens.space3),
+            BlField(
+              controller: _mrp,
+              label: s.pharmacyBatchMrp(item!.unitCode),
+              numeric: true,
             ),
           ],
           if (item?.tracksSerial ?? false) ...[

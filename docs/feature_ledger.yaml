@@ -3133,6 +3133,154 @@ milestones:
       - packages/pk_bootstrap/lib/src/mobile_services.dart
       - lib/features/mobile/**
 
+  - id: M54
+    title: The polish round — the small things each milestone said it left, put right where the shopkeeper meets them
+    # Opened and sealed 3 Oct 2026 at 12/12. Twelve gaps the milestones
+    # wrote down under "Not built" as they sealed, each closed with a test
+    # through the screen a shopkeeper uses or the service beneath it, on a
+    # real database. No schema change (v12 stands); every edit in another
+    # milestone's file is marked M54.
+    #
+    # 1. A customer's order (M41) on the counter goes out on a challan. The
+    # cart now knows what paper it holds (Cart.sourceType, kept in the
+    # draft), and the payment sheet offers "Challan banayein" for a sale
+    # order alone: a quotation billed is the bill, and a challan's goods
+    # have gone. The challan is linked to the order, the order reads done,
+    # and the bill made from the challan takes the order's advance.
+    #
+    # 2. The credit limit counts the order's advance. The payment sheet
+    # asks the order writer's own reads (advanceForBill, shared with
+    # withHeldAdvances through a reader a screen or a transaction can hand
+    # it) what the bill will take of the advance held for its order. The
+    # part it pays is not credit, so a bill the advance covers is asked
+    # neither about the limit nor about a bounced cheque, as a cash bill is
+    # not; a customer at their limit is billed what they paid for in
+    # advance. A bill leaving more owed is asked as before, and lands where
+    # it always said. Found while proving it: the khata's balance already
+    # nets every advance, so the figure the sheet shows was right all along;
+    # what was wrong was asking at all when nothing was given on credit.
+    #
+    # 3. A bill rung again (M36) with a bonus on it (M43) no longer names
+    # its free line as "left out": the counter works the bonus out again
+    # from the lines, so the copy's soaps bring their free soap back under
+    # the line by themselves. Only a free line the shop's schemes no longer
+    # give of that item on those lines is named.
+    #
+    # 4. Packs at the counter (M45). The shelf's question speaks in the
+    # item's packs, through M45's ladder: "Stock sirf 2 ctn + 5 pcs hai —
+    # phir bhi bechein?", and the bill's figure the same way; an item with
+    # no pack reads as before. A line rung by the dozen that a piece is
+    # added to moves to pieces exactly, as M45 made it, and now keeps the
+    # dozen it was counted in on the screen (CartLine.countedInUnitId), so
+    # it reads "3 doz + 4 pcs", stepped on to "3 doz + 5 pcs"; the books get
+    # the pieces. A unit the cashier picks clears it. The cart's draft is
+    # v6 for it, for the paper's kind and for item 5's bonus, and every
+    # older draft is still read.
+    #
+    # 5. A challan billed after its scheme changed (M43) is billed exactly
+    # as sent. The bill made from challans carries the free lines they sent
+    # (a new read, challanBonusLines) instead of working the bonus out from
+    # today's schemes, so a 10+1 sent on Monday and a 12+1 by Saturday no
+    # longer refuse the bill in the challan's words. The counter shows them
+    # under the line, "Bonus / muft (challan par gaya)", with no cross:
+    # those goods are at the customer's. The discount gate (plan_gates)
+    # lets a cashier bill them — free goods up to what the challan sent are
+    # not past the schemes — and still refuses one free soap more than went.
+    # The challan's prices stand as they always did; a bill-value slab is
+    # still the bill's to settle, because a price may be argued at billing
+    # and the goods may not.
+    #
+    # 6. Expected collections, today and the next six days (M35 x M38 x
+    # M50), in the Party group of the hub: per customer what falls due by
+    # M38's due dates and M50's qist instalments (the chase list's own rows,
+    # owedRowsSql), what they promised for a day in the week less what has
+    # come since (M38's promises, the chase list's own read), the larger of
+    # the two as Expected — never both added, since a promise is nearly
+    # always about the bills falling due — and what was already late beside
+    # it; the earliest day first, with totals, narrowed by customer or
+    # group. A customer in credit overall is left out, and nobody is
+    # expected to pay more than they owe.
+    #
+    # 7. Monthly bills on Home (M47): one line beside the udhaar card, the
+    # repeating bills and FBR's — "Mahana bill: 2 baqi, Rs 49,000.00 —
+    # Haji Sahib ka kiraya, LESCO bill" — opening the Expenses screen where
+    # each has its Pay now. Nothing when none is due, nothing for a role
+    # that keeps no expense book, and nothing is ever paid from it. Home
+    # keeps its own read of the bills due, so the Expenses screen still
+    # reads its own afresh when opened (M47's screen test found the shared
+    # one stale).
+    #
+    # 8. A bill sent from its send sheet (M30) is written on its history
+    # (M42): an audit row on the paper, SHARED_WHATSAPP, SHARED_PDF or
+    # SHARED_PICTURE, in a transaction of its own that moves no row of the
+    # books, so a bill in closed books or under Data Lock is sent and
+    # recorded like any other, by whoever may send it. The history reads
+    # "WhatsApp par bheja" with who and when. A WhatsApp with no number goes
+    # as a PDF and is written as one. Decided, keeping M30's rule: DUPLICATE
+    # is for paper — the second printed sheet of a bill whose first is in
+    # someone's hand. A bill shared before is not marked on its next share,
+    # because a PDF sent again is usually sent because the first never
+    # arrived, and DUPLICATE would tell the customer they hold a copy of
+    # something they never got. A bill printed before is still marked.
+    #
+    # 9. The pharmacy (M49). A Schedule medicine sent on a challan asks for
+    # the prescription at the challan, in the bill's own sheet, and the
+    # register's row is written against the challan's lines — the register
+    # is read off the stock that left, and it left on the challan — and the
+    # bill made from that challan carries the same prescription without
+    # asking again. A challan that carries none (goods given rate later from
+    # the khata, M55) writes none, as before, and its bill asks. A purchase
+    # order's delivery sheet (M41) asks each batch its printed price,
+    # starting at the item's, as the delivery picker does. The importer
+    # (M52) reads a Generic, Salt or Formula column as the item's salt: on a
+    # new item, and on an item brought up to date only where it has none,
+    # its strength, maker and Schedule kept.
+    #
+    # 10. Vyapar's "Base Unit / Secondary Unit / Conversion Rate" becomes
+    # the item's pack (M53) when the second unit is one of the shop's packs
+    # (carton, box, packet, strip, sack, as the market writes them) and the
+    # conversion is a whole number over one: "1 carton = 24 pcs" on an item
+    # counted in pieces, a sack of 25 kg on one counted in kilos. The
+    # preview says it ("1 cheezen pack ke saath aayengi: 1 carton = 24
+    # pcs"); anything else comes in by its first unit, as M52 brought it,
+    # and the preview says that, as it did.
+    #
+    # 11. M60's photographs on the three pages it left: a cheque's own page
+    # on the cheques screen carries the strip itself (M6; the same
+    # photographs its khata payment page shows), and each entry of a loan
+    # (M48) and each batch on the item's stock places (M11) carries M60's
+    # photos button, which opens the strip — a statement and a list of
+    # batches are lists, and a strip under every line pushed the next off
+    # the screen (M48's own screen test said so). A photograph may now hang
+    # off a journal entry or a batch (entryPhotoOwners), and the recycle bin
+    # names them by the entry's and the batch's number. No schema change:
+    # owner_table was always a loose back-reference.
+    #
+    # 12. A cheque on the recovery round (M55). The round's Paid line can be
+    # a cheque — its number, bank and the day it can be banked, in the
+    # khata's own cheque fields — and becomes a cheque receipt through the
+    # receipt use case's own body, in the round's one save: waiting in
+    # Cheques in Hand, its bounce followed on the cheques screen, counted
+    # in what came and not in the cash the man hands over. A cheque with no
+    # number is refused and nothing of the round is written.
+    #
+    # Not built, and why: a Vyapar sheet whose first unit is itself the
+    # pack ("1 BOX = 10 PCS" with the box first) still comes in by the box,
+    # as M52 brought it — its stock and every price would have to be
+    # divided down to the piece, and a price that does not divide is not
+    # guessed; a repeating bill's template (M63) still names a free line
+    # as left out when it is made, though the counter gives the bonus again
+    # (its template is the domain's, and has no schemes to ask); a bill-value
+    # slab on a bill made from a challan is the bill's to settle, not the
+    # challan's; goods given rate later from the khata (M55) are not asked
+    # for a prescription at the challan, and their bill asks as before; the
+    # importer brings a medicine's salt and no strength, maker or Schedule.
+    state: sealed
+    owns:
+      - lib/features/expenses/monthly_bills_line.dart
+      - packages/pk_reports/lib/src/collections_reports.dart
+      - packages/pk_data/lib/src/read/reports/collections_queries.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -8437,3 +8585,88 @@ features:
       - a phone PTA called non-compliant is said at the counter before it goes on the bill
       - a phone sold on qist at the counter shows its schedule before it is saved, and the plan is written with the bill
       - at 200% on a small phone a phone's story, the used phone form and the qist sheet fit
+  - id: M54-ORDERCHALLAN-01
+    milestone: M54
+    title: A customer's order on the counter goes out on a challan from the payment sheet, and the bill made from that challan takes the order's advance
+    status: done
+    proof:
+      - a customer's order at the counter goes out on a challan from the payment sheet, and the bill made from the challan takes its advance
+  - id: M54-ADVANCELIMIT-01
+    milestone: M54
+    title: The credit limit counts a sale order's advance against the bill it pays — a customer at their limit is billed what the advance covers, and asked about anything past it
+    status: done
+    # Found: the khata's balance already nets the advance, so the figure was
+    # right; the sheet asked about a bill that gave no credit at all.
+    proof:
+      - a customer's order at the counter a customer at their credit limit is billed what their order's advance covers, and asked about anything past it
+  - id: M54-COPYBONUS-01
+    milestone: M54
+    title: A bill rung again no longer lists its old bonus as left out — the counter gives it again — and names a free line only when the scheme gives it no longer
+    status: done
+    proof:
+      - a bill rung again with a bonus on it brings its free soap back under the line, and does not call it left out
+      - a bill rung again with a bonus on it names the free line when the scheme gives it no longer
+  - id: M54-PACKS-01
+    milestone: M54
+    title: The stock warning speaks in packs ("Stock sirf 2 ctn + 5 pcs hai"), and a line rung by the dozen keeps reading in dozens once a piece is added, the cart's draft v6 and every older draft still read
+    status: done
+    proof:
+      - the counter counts in packs the stock warning says the shelf and the bill in cartons
+      - the counter counts in packs a line rung by the dozen still reads in dozens once a piece is added, and the bill takes the pieces exactly
+  - id: M54-CHALLANBONUS-01
+    milestone: M54
+    title: A challan billed after its item's scheme changed is billed exactly as sent — its free lines and prices stand — by a cashier too, and never with more given free than went
+    status: done
+    proof:
+      - a challan billed after its scheme changed is billed as it was sent, its free soap and all
+      - a challan billed after its scheme changed (M43) is billed as it was sent, by a cashier too, and never with more given free than the challan gave
+  - id: M54-EXPECTED-01
+    milestone: M54
+    title: Expected collections for the next seven days in the reports hub — per customer what falls due (due dates and qist instalments) and what was promised, the earliest first, with totals
+    status: done
+    proof:
+      - expected collections this week (M35 x M38 x M50) lists what falls due, the qist instalments and the promises of the next seven days, each customer once, with totals
+  - id: M54-HOMEBILLS-01
+    milestone: M54
+    title: One line on Home for the monthly bills whose day has come, opening the Expenses screen where each is paid
+    status: done
+    proof:
+      - the monthly bills whose day has come are one line on Home, and it opens the Expenses screen with each to pay
+      - no line on Home when no monthly bill is due
+  - id: M54-SHARED-01
+    milestone: M54
+    title: A bill sent on WhatsApp, as a PDF or as a picture is written on its history with how, who and when — closed books and Data Lock notwithstanding — and a share never makes a DUPLICATE
+    status: done
+    # Decided: DUPLICATE stays M30's paper mark; a share is not a second
+    # printed sheet.
+    proof:
+      - a bill sent from its send sheet (M42 x M30) is written on its history with how, who and when — in closed books and under Data Lock too, and by a cashier
+      - a bill sent from its row is written on its history, and a bill shared before is not sent as a duplicate
+  - id: M54-PHARMACY-01
+    milestone: M54
+    title: A Schedule medicine on a challan asks for its prescription there and is registered on the challan's lines, its bill carrying it; a purchase order's delivery asks each batch its MRP; a Generic column imports as the salt
+    status: done
+    proof:
+      - a Schedule medicine sent on a challan asks for the prescription there, and the bill made from it carries it
+      - a purchase order's delivery asks each batch its printed price, as the delivery picker does
+      - a Vyapar item list's second unit comes in as the item's pack, and a Generic column as the salt
+  - id: M54-VYAPARPACK-01
+    milestone: M54
+    title: Vyapar's second unit and whole conversion import as the item's pack (1 carton = 24 pcs, a sack of 25 kg), said on the preview; anything else comes in by its first unit, as before, and is said
+    status: done
+    proof:
+      - a Vyapar item list's second unit comes in as the item's pack, and a Generic column as the salt
+  - id: M54-PHOTOS-01
+    milestone: M54
+    title: Photographs on a loan's entries, a cheque's own page and a batch, kept small and named in the recycle bin
+    status: done
+    proof:
+      - the paper behind a loan entry and a batch (M60) is photographed onto the entry and the batch, kept small, and named by them in the recycle bin when taken off
+      - a loan's entries, a cheque's own page and a batch each carry the strip of photographs
+  - id: M54-ROUNDCHEQUE-01
+    milestone: M54
+    title: A cheque taken on the recovery round becomes a cheque receipt in the round's one save — Cheques in Hand, not cash to hand over — and one with no number writes nothing
+    status: done
+    proof:
+      - a cheque handed over on the recovery round (M55 x M6) becomes a cheque receipt on the khata in the round's one save, waits in Cheques in Hand, and is no cash to hand over
+      - the recovery man's cheque is written on his round's line, and becomes a cheque receipt with the rest of the round

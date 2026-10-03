@@ -348,7 +348,16 @@ final class _CeilingSaleContext implements SaleWriteContext {
     // discount is. The bill slab's discount does not use up the cashier's
     // own ceiling; free goods past what the schemes give are the owner's
     // alone to hand over (scheme_services.dart).
-    final schemes = await _app._schemesOn(posting);
+    // M54: a bill made from challans gives free what they already sent free
+    // — the goods left with the challan — and nothing past it.
+    final sentFree = <String, Qty>{};
+    for (final id in [?posting.convertedFromId, ...posting.alsoFromIds]) {
+      for (final f in await _app.queries.challanBonusLines(actor.firmId, id)) {
+        final item = f.itemId!;
+        sentFree[item] = (sentFree[item] ?? Qty.zero) + f.baseQty;
+      }
+    }
+    final schemes = await _app._schemesOn(posting, sentFree: sentFree);
     if (schemes.overGiven case final name? when role != Role.owner) {
       throw PermissionDenied(
         Permission.sell,

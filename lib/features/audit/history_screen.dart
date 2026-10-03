@@ -219,6 +219,9 @@ class _EventCard extends StatelessWidget {
   }
 
   static IconData _icon(HistoryEvent e) => switch (e.kind) {
+    // M54: sent from the send sheet (SharedVia).
+    _ when e.actionCode.startsWith(sharedActionPrefix) =>
+      Icons.share_outlined,
     HistoryKind.created => Icons.add_circle_outline,
     HistoryKind.printed =>
       e.actionCode == 'PRINTED' ? Icons.print_outlined : Icons.print_disabled,
@@ -245,6 +248,11 @@ class _EventCard extends StatelessWidget {
     'CONVERTED_TO' => s.trailBecame,
     'RETURN_OF' => s.trailReturnOf,
     'RETURNED_AGAINST' => s.trailReturned,
+    // M54: "Shared on WhatsApp", with who and when beneath.
+    _ when SharedVia.ofAction(e.actionCode) != null => _shared(
+      s,
+      SharedVia.ofAction(e.actionCode)!,
+    ),
     _ => switch (e.kind) {
       HistoryKind.created => s.trailMade,
       HistoryKind.printed => s.trailPrinted,
@@ -256,6 +264,13 @@ class _EventCard extends StatelessWidget {
       HistoryKind.approved => s.trailApproved,
       HistoryKind.other => e.summary ?? e.actionCode,
     },
+  };
+
+  /// M54: how a paper left the phone, in the shop's language.
+  static String _shared(AppStrings s, SharedVia via) => switch (via) {
+    SharedVia.whatsapp => s.trailSharedWhatsApp,
+    SharedVia.pdf => s.trailSharedPdf,
+    SharedVia.picture => s.trailSharedPicture,
   };
 
   static String _field(AppStrings s, String key) => switch (key) {

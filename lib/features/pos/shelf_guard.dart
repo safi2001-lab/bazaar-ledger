@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
+import '../../app/counting.dart'; // M54
 import '../../app/providers.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
@@ -234,7 +235,7 @@ Future<bool> askToSellShort(
         title: Text(s.shelfWarnTitle),
         content: _ShortList(
           shorts: shorts,
-          headline: (short) => s.shelfWarnAsk(short.onHandWords),
+          headline: s.shelfWarnAsk, // M54: in packs, below
         ),
         actions: [
           TextButton(
@@ -263,7 +264,7 @@ Future<void> showShelfRefusal(BuildContext context, List<ShelfShort> shorts) =>
           title: Text(s.shelfBlockedTitle),
           content: _ShortList(
             shorts: shorts,
-            headline: (short) => s.shelfBlocked(short.onHandWords),
+            headline: s.shelfBlocked, // M54: in packs, below
           ),
           actions: [
             FilledButton(
@@ -275,26 +276,39 @@ Future<void> showShelfRefusal(BuildContext context, List<ShelfShort> shorts) =>
       },
     );
 
-class _ShortList extends StatelessWidget {
+/// M54: the shelf and the bill said in the item's packs (M45's ladder) —
+/// "Stock sirf 2 ctn + 5 pcs hai" — as every other screen counts the item,
+/// rather than "53 pcs", which is the figure M53 had to say it in. An item
+/// with no pack reads exactly as before: "600 kg", "2 pcs".
+class _ShortList extends ConsumerWidget {
   const _ShortList({required this.shorts, required this.headline});
 
   final List<ShelfShort> shorts;
-  final String Function(ShelfShort) headline;
+
+  /// The sentence, given what is on the shelf in words.
+  final String Function(String onHand) headline;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    final book = ref.watch(countingBookProvider);
+    String words(ShelfShort short, Qty qty) => book
+        .ladder(itemId: short.itemId, baseUnitCode: short.shelf.unitCode)
+        .words(qty);
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           for (final short in shorts) ...[
-            Text(headline(short), style: TextStyle(fontSize: 15, color: t.ink)),
+            Text(
+              headline(words(short, short.shelf.onHand)),
+              style: TextStyle(fontSize: 15, color: t.ink),
+            ),
             const SizedBox(height: BlTokens.space1),
             Text(
-              s.shelfOnBill(short.shelf.itemName, short.wantedWords),
+              s.shelfOnBill(short.shelf.itemName, words(short, short.wanted)),
               style: TextStyle(fontSize: 13, color: t.inkMuted),
             ),
             const SizedBox(height: BlTokens.space3),

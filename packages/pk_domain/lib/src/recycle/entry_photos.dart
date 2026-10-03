@@ -44,7 +44,18 @@ enum EntryPhotoKind {
 /// The rows a photograph can hang off, as `attachments.owner_table` holds
 /// them. Anything else is refused: a photograph pointing at a table nothing
 /// reads would be one nobody ever sees again.
-const entryPhotoOwners = {'documents', 'payments', 'parties'};
+///
+/// M54 added the two pages M60 left: a loan's entries (`journal_entries`,
+/// the bank's sanction letter or the repayment slip, M48) and a batch
+/// (`stock_lots`, the supplier's batch certificate or the recall notice,
+/// M11). No schema change: `owner_table` was always a loose back-reference.
+const entryPhotoOwners = {
+  'documents',
+  'payments',
+  'parties',
+  'journal_entries', // M54
+  'stock_lots', // M54
+};
 
 /// One photograph on an entry, as the entry's page shows it.
 final class EntryPhoto {

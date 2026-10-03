@@ -14,8 +14,9 @@ import '../pos/cart.dart';
 /// Through the cart's own `loadQuotation`, which is the counter's one way
 /// in for a document a bill is made from; an order is one more such
 /// document, and nothing about the cart had to change for it. The write
-/// path also sends an order out on a challan; the payment sheet offers no
-/// challan while a document is on the counter, which is its own call.
+/// path also sends an order out on a challan, and since M54 the payment
+/// sheet offers it for an order (the cart now knows what paper it holds,
+/// `Cart.sourceType`); the bill made from that challan takes the advance.
 ///
 /// Returns why it could not, in words, or null when the counter has it.
 Future<String?> takeSaleOrderToCounter(

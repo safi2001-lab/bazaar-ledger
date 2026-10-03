@@ -42,6 +42,33 @@ final class AuditServices {
     return _reads.historyOf(_firmId, record);
   }
 
+  /// M54: [documentId] left the phone [via] its send sheet — written on its
+  /// history as an audit row, with who and when, in a transaction of its
+  /// own. Open to whoever may send it: a cashier who sends a bill on
+  /// WhatsApp is the one the owner will want to ask about it.
+  ///
+  /// Nothing else is written: no row of the books moves, so a bill in
+  /// closed books (M42) is shared and recorded like any other, and Data
+  /// Lock never asks for a PIN to send one.
+  Future<void> recordShared(String documentId, SharedVia via) async {
+    final firmId = _firmId;
+    await _app._runner.run(_app.actorNow(), (tx) async {
+      final doc = await tx.selectOne(
+        'SELECT doc_no FROM documents WHERE id = ? AND firm_id = ? '
+        'AND deleted_at_utc IS NULL',
+        [documentId, firmId],
+      );
+      if (doc == null) return;
+      tx.audit(
+        action: via.action,
+        entityTable: 'documents',
+        entityId: documentId,
+        summary: '${doc.read<String>('doc_no')}: ${via.words}',
+        after: {'via': via.name},
+      );
+    });
+  }
+
   // ---------------------------------------------------------------------
   // The locks
   // ---------------------------------------------------------------------

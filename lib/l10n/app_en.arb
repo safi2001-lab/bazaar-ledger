@@ -4582,5 +4582,38 @@
   "reportUsedPhones": "Used phones bought",
   "reportUsedPhonesHint": "Every used phone bought, with the seller CNIC and IMEI",
   "reportQistInstalments": "Instalments",
-  "reportQistInstalmentsHint": "Every phone on qist: paid, still to pay, overdue"
+  "reportQistInstalmentsHint": "Every phone on qist: paid, still to pay, overdue",
+  "bonusSentOnChallan": "Bonus (free, went on the challan): {what}",
+  "@bonusSentOnChallan": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "reportExpectedCollections": "Expected collections",
+  "reportExpectedCollectionsHint": "Next 7 days: whose bills and instalments fall due, and who promised to pay when",
+  "homeMonthlyBillsDue": "Monthly bills: {count} due, Rs {amount} — {names}",
+  "@homeMonthlyBillsDue": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"},
+      "names": {"type": "String"}
+    }
+  },
+  "trailSharedWhatsApp": "Shared on WhatsApp",
+  "trailSharedPdf": "Shared as a PDF",
+  "trailSharedPicture": "Shared as a picture",
+  "importFieldGeneric": "Generic / salt",
+  "importSecondUnitPack": "{count} items come in with their pack: {pack}",
+  "@importSecondUnitPack": {
+    "placeholders": {
+      "count": {"type": "String"},
+      "pack": {"type": "String"}
+    }
+  },
+  "sheetChequeNoMissing": "{name}: write the cheque's number",
+  "@sheetChequeNoMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  }
 }

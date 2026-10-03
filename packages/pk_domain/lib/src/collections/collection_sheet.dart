@@ -130,7 +130,14 @@ final class SheetResult {
     this.note,
     this.paymentNo,
     this.promiseId,
+    this.chequeNo, // M54
+    this.chequeBank,
   });
+
+  /// M54: the cheque the money came as, when it came as one: its number and
+  /// bank, as the receipt keeps them.
+  final String? chequeNo;
+  final String? chequeBank;
 
   final CollectionOutcome outcome;
 
@@ -167,6 +174,8 @@ final class SheetResult {
     note: note,
     paymentNo: paymentNo ?? this.paymentNo,
     promiseId: promiseId ?? this.promiseId,
+    chequeNo: chequeNo, // M54
+    chequeBank: chequeBank,
   );
 
   Map<String, Object?> toJson() => {
@@ -178,6 +187,9 @@ final class SheetResult {
     'note': (note ?? '').trim().isEmpty ? null : note!.trim(),
     'payment_no': paymentNo,
     'promise_id': promiseId,
+    // M54: optional, so a sheet kept before reads as it did.
+    'cheque_no': ?chequeNo,
+    'cheque_bank': ?chequeBank,
   };
 
   static SheetResult? fromJson(Object? json) {
@@ -194,6 +206,8 @@ final class SheetResult {
       note: json['note'] as String?,
       paymentNo: json['payment_no'] as String?,
       promiseId: json['promise_id'] as String?,
+      chequeNo: json['cheque_no'] as String?, // M54
+      chequeBank: json['cheque_bank'] as String?,
     );
   }
 }
@@ -457,7 +471,18 @@ final class SheetMark {
     this.mode = 'cash',
     this.paymentAccountId,
     this.note,
+    this.chequeNo, // M54
+    this.chequeBank,
+    this.chequeDateUtcMillis,
   });
+
+  /// M54: a cheque the man was handed on the round — its number, its bank
+  /// and the day it can be banked — taken as the khata's own Receive takes
+  /// one (M6): into Cheques in Hand, waiting to be banked, its bounce
+  /// followed on the cheques screen.
+  final String? chequeNo;
+  final String? chequeBank;
+  final int? chequeDateUtcMillis;
 
   final CollectionOutcome outcome;
 
@@ -486,12 +511,11 @@ final class SheetMark {
         if (paymentAccountId == null) {
           return '${line.partyName}: pick how the money came.';
         }
-        // A cheque has a number, a bank and a day it can be banked, and is
-        // taken on the khata's own Receive, where those are written; a
-        // round's line has room for none of them.
-        if (mode == 'cheque') {
-          return '${line.partyName}: take a cheque on their khata, where '
-              'its number and bank are written.';
+        // A cheque has a number, a bank and a day it can be banked (M54:
+        // the round's line now has room for them, as the khata's Receive
+        // has); without its number it cannot be followed to the bank.
+        if (mode == 'cheque' && (chequeNo ?? '').trim().isEmpty) {
+          return "${line.partyName}: write the cheque's number.";
         }
       case CollectionOutcome.promise:
         final day = BusinessDate.tryParse(promisedFor ?? '');
@@ -520,5 +544,15 @@ final class SheetMark {
     mode: outcome.tookMoney ? mode : null,
     paymentAccountId: outcome.tookMoney ? paymentAccountId : null,
     note: note,
+    // M54
+    chequeNo: outcome.tookMoney && mode == 'cheque' ? chequeNo?.trim() : null,
+    chequeBank: outcome.tookMoney && mode == 'cheque'
+        ? _blankToNull(chequeBank)
+        : null,
   );
+
+  static String? _blankToNull(String? text) {
+    final t = text?.trim() ?? '';
+    return t.isEmpty ? null : t;
+  }
 }

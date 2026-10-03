@@ -313,6 +313,16 @@ final _partyReports = [
     filters: const {ReportFilter.partyGroup},
     chart: const ChartSpec.ringOfTotal(dueBucketColumns),
   ),
+  // M54: the week ahead, beside the late — what falls due (M38, M50) and
+  // what was promised (M38), per customer.
+  ReportEntry(
+    kind: ReportKind.expectedCollections,
+    group: ReportGroup.party,
+    name: (s) => s.reportExpectedCollections,
+    hint: (s) => s.reportExpectedCollectionsHint,
+    icon: Icons.event_available_outlined,
+    filters: const {ReportFilter.party, ReportFilter.partyGroup},
+  ),
   ReportEntry(
     kind: ReportKind.badDebts,
     group: ReportGroup.party,

@@ -379,6 +379,7 @@ class _ImportScreenState extends ConsumerState<ImportScreen> {
     ImportField.description => s.importFieldDescription,
     ImportField.hsCode => s.importFieldHsCode,
     ImportField.itemType => s.importFieldItemType,
+    ImportField.genericName => s.importFieldGeneric, // M54
     ImportField.hsn => s.importFieldHsn,
     ImportField.tax => s.importFieldTax,
     ImportField.phone => s.importFieldPhone,
@@ -697,6 +698,16 @@ class _ImportScreenState extends ConsumerState<ImportScreen> {
                       child: Text(
                         s.importSecondUnit('$n', unit),
                         style: TextStyle(fontSize: 13, color: t.warning),
+                      ),
+                    ),
+                  // M54: Vyapar's second unit, kept as the item's pack.
+                  for (final MapEntry(key: pack, value: n)
+                      in review.packs.entries)
+                    Padding(
+                      padding: const EdgeInsets.only(top: BlTokens.space2),
+                      child: Text(
+                        s.importSecondUnitPack('$n', pack),
+                        style: TextStyle(fontSize: 13, color: t.ink),
                       ),
                     ),
                 ],

@@ -34,13 +34,24 @@ abstract final class CartDraft {
   /// such a draft as an ordinary bill and post it unlinked, with the payment
   /// sheet starting at nothing — the customer's money forgotten — so it is
   /// not one it may read either.
-  static const version = 5;
+  ///
+  /// v6 (M54) keeps, beside a line, the unit it was counted in on the
+  /// screen when it was rung by the dozen and then moved to pieces
+  /// (`countedIn`), what the paper on the counter is (`sourceType`), and
+  /// the bonus a challan on it sent (`sentBonus`). The first two are words
+  /// on the screen. The third is the bill: a v5 build reading it would work
+  /// the challan's bonus out again from today's schemes, and a scheme
+  /// changed since would have the bill refused at the till for not being
+  /// what the challan sent — so a v6 draft is not one it may read. Every
+  /// older shape is still read here: a v5 draft is a v6 one counted in no
+  /// dozen, holding no paper of known kind, and carrying no challan bonus.
+  static const version = 6;
 
   /// A v2 draft is a v3 one with no price tier: every v2 cart was priced
   /// retail, so it is read as exactly that rather than thrown away. A v3
   /// draft is a v4 one with no loose lines, and a v4 one a v5 one putting
   /// nothing right.
-  static const _readable = {2, 3, 4, 5};
+  static const _readable = {2, 3, 4, 5, 6};
 
   static String encode(Cart cart) => jsonEncode({
     'v': version,
@@ -51,6 +62,9 @@ abstract final class CartDraft {
     'partyDiscountBp': cart.partyDiscountBp,
     'sourceId': cart.sourceId,
     'sourceNo': cart.sourceNo,
+    // M54: what the paper on the counter is, so a sale order brought back
+    // after the app was killed may still go out on a challan.
+    'sourceType': ?cart.sourceType,
     'alsoSourceIds': cart.alsoSourceIds,
     // A bill being put right (M36), and the money already taken for it.
     if (cart.replacesId != null) 'replacesId': cart.replacesId,
@@ -73,6 +87,23 @@ abstract final class CartDraft {
     // M63: the repeating bill this is. Optional, not a new version: a build
     // before M63 posts it as an ordinary bill and the template stays due.
     if (cart.recurring case final r?) 'recurring': r.toJson(),
+    // M54: the bonus the challans on the counter sent, billed as it went.
+    // Absent for every other bill, whose bonus is worked out at the counter.
+    if (cart.sentBonus case final sent?)
+      'sentBonus': [
+        for (final f in sent)
+          {
+            'itemId': f.itemId,
+            'name': f.itemName,
+            'code': f.itemCode,
+            'hsCode': f.hsCode,
+            'qtyThousandths': f.qty.inThousandths,
+            'baseThousandths': f.baseQty.inThousandths,
+            'unitId': f.unitId,
+            'unitCode': f.unitCode,
+            'tracksStock': f.tracksStock,
+          },
+      ],
     'lines': [
       for (final line in cart.lines)
         {
@@ -106,6 +137,8 @@ abstract final class CartDraft {
           // a fortieth of the goods.
           'sellingUnitId': line.unitId,
           'sellingUnitCode': line.unitCode,
+          // M54: the dozen a line moved to pieces is still counted in.
+          'countedIn': ?line.countedInUnitId,
           // M59: how the line is taxed. Optional keys, so a v5 draft
           // written before them reads as goods with no MRP, as it was.
           if (line.item.mrp case final mrp?) 'mrpPaisa': mrp.inPaisa,
@@ -168,6 +201,7 @@ abstract final class CartDraft {
         partyDiscountBp: partyDiscountBp,
         sourceId: root['sourceId'] as String?,
         sourceNo: root['sourceNo'] as String?,
+        sourceType: root['sourceType'] as String?, // M54
         alsoSourceIds: [
           for (final id
               in (root['alsoSourceIds'] as List<Object?>?) ?? const [])
@@ -183,10 +217,36 @@ abstract final class CartDraft {
         },
         slabWaived: root['slabWaived'] == true,
         recurring: RecurringMark.fromJson(root['recurring']), // M63
+        sentBonus: _sentBonus(root['sentBonus']), // M54
       );
     } on Object {
       return null;
     }
+  }
+
+  /// M54: a challan's bonus as the draft keeps it; null when it keeps none.
+  /// A malformed entry throws, and the draft is not read (see [decode]).
+  static List<SaleLineDraft>? _sentBonus(Object? raw) {
+    if (raw == null) return null;
+    return [
+      for (final f in raw as List<Object?>)
+        if (f case final Map<String, Object?> m)
+          SaleLineDraft(
+            itemId: m['itemId']! as String,
+            itemName: m['name']! as String,
+            itemCode: m['code'] as String?,
+            hsCode: m['hsCode'] as String?,
+            qty: Qty.raw(m['qtyThousandths']! as int),
+            baseQty: Qty.raw(m['baseThousandths']! as int),
+            unitId: m['unitId'] as String?,
+            unitCode: m['unitCode']! as String,
+            rate: Rate.zero,
+            isFreeItem: true,
+            tracksStock: m['tracksStock'] != false,
+          )
+        else
+          throw const FormatException('sentBonus'),
+    ];
   }
 
   static CartLine? _line(Map<String, Object?> raw) {
@@ -208,6 +268,7 @@ abstract final class CartDraft {
     final sellingUnitId = raw['sellingUnitId'];
     final sellingUnitCode = raw['sellingUnitCode'];
     final loose = raw['loose'] ?? false;
+    final countedIn = raw['countedIn']; // M54
 
     if (itemId is! String ||
         name is! String ||
@@ -226,6 +287,7 @@ abstract final class CartDraft {
         (explicit != null && explicit is! int) ||
         (sellingUnitId != null && sellingUnitId is! String) ||
         (sellingUnitCode != null && sellingUnitCode is! String) ||
+        (countedIn != null && countedIn is! String) ||
         loose is! bool) {
       return null;
     }
@@ -272,6 +334,7 @@ abstract final class CartDraft {
           if (l is String) l,
       ],
       isLoose: loose,
+      countedInUnitId: countedIn as String?, // M54
     );
   }
 }

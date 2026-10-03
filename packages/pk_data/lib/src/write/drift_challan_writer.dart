@@ -2,6 +2,7 @@ import 'package:pk_domain/pk_domain.dart';
 
 import 'document_rows.dart';
 import 'drift_order_writer.dart';
+import 'drift_pharmacy_writer.dart' show keepScheduleRegister; // M54
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -85,6 +86,20 @@ final class _Context implements ChallanWriteContext {
     );
     if (posting.journal case final entry?) {
       await insertJournal(_tx, id, entry);
+    }
+    // M54: a Schedule medicine sent on a challan is registered here, against
+    // the prescription asked for at the counter, because the register is
+    // read off the stock that left (M49) and it left on the challan. A
+    // challan that carries none — goods given rate later from the khata
+    // (M55) — writes none, as before, and its bill asks.
+    if (posting.prescription case final rx?) {
+      await keepScheduleRegister(
+        _tx,
+        documentId: id,
+        lineIdByNo: lineIdByNo,
+        lines: posting.lines,
+        prescription: rx,
+      );
     }
     if (posting.fromQuotationId case final quotationId?) {
       final source = await _tx.selectOne(

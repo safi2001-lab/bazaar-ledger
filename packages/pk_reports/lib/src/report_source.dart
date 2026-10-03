@@ -1,6 +1,7 @@
 import 'package:pk_domain/pk_domain.dart';
 
 import 'business_source.dart';
+import 'collections_reports.dart'; // M54
 import 'expense_source.dart';
 import 'filters.dart';
 import 'item_stock_source.dart';
@@ -318,7 +319,9 @@ abstract interface class ReportSource
         // M49
         PharmacyReportSource,
         // M50
-        MobileReportSource {
+        MobileReportSource,
+        // M54
+        CollectionsReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

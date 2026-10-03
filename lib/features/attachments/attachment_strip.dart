@@ -38,6 +38,16 @@ final class AttachmentOwner {
   const AttachmentOwner.party(String id)
     : this._('parties', id, EntryPhotoKind.papers);
 
+  /// M54: one entry of a loan (M48) — the bank's sanction letter with the
+  /// money received, the repayment slip with an instalment.
+  const AttachmentOwner.loanEntry(String journalEntryId)
+    : this._('journal_entries', journalEntryId, EntryPhotoKind.receipt);
+
+  /// M54: a batch (M11) — the supplier's batch certificate, a recall
+  /// notice, the strip that shows the printed price.
+  const AttachmentOwner.batch(String lotId)
+    : this._('stock_lots', lotId, EntryPhotoKind.receipt);
+
   final String table;
   final String id;
   final EntryPhotoKind kind;

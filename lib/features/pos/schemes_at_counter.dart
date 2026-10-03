@@ -41,6 +41,13 @@ class CounterBonus extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // M54: a bill made from challans gives the bonus they sent, which is
+    // shown as it went — under its own item's line, or the last line for a
+    // free item the bill has no paid line of — with no cross, because those
+    // goods are already at the customer's.
+    final sent = ref.watch(cartProvider.select((c) => c.sentBonus));
+    if (sent != null) return _SentBonus(itemId: itemId, sent: sent);
+
     final book = ref.watch(schemeBookProvider).valueOrNull;
     final offer = book?.bonuses[itemId];
     if (book == null || offer == null) return const SizedBox.shrink();
@@ -126,6 +133,69 @@ class CounterBonus extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// M54: the free lines a challan sent, under [itemId]'s line on a bill made
+/// from it.
+class _SentBonus extends ConsumerWidget {
+  const _SentBonus({required this.itemId, required this.sent});
+
+  final String itemId;
+  final List<SaleLineDraft> sent;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lines = ref.watch(cartProvider.select((c) => c.lines));
+    final paid = {for (final l in lines) l.item.id};
+    final last = lines.isEmpty ? null : lines.last.item.id;
+    final here = [
+      for (final f in sent)
+        if (f.itemId == itemId || (!paid.contains(f.itemId) && itemId == last))
+          f,
+    ];
+    if (here.isEmpty) return const SizedBox.shrink();
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final f in here)
+          Container(
+            margin: const EdgeInsets.only(
+              left: BlTokens.space3,
+              bottom: BlTokens.space2,
+            ),
+            padding: const EdgeInsets.all(BlTokens.space2),
+            decoration: BoxDecoration(
+              color: t.surfaceRaised,
+              border: Border.all(color: t.line),
+              borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.card_giftcard, size: 18, color: t.accent),
+                const SizedBox(width: BlTokens.space2),
+                Expanded(
+                  child: Text(
+                    s.bonusSentOnChallan(
+                      '${f.itemName} ${f.qty.display} ${f.unitCode}',
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: t.ink,
+                    ),
+                  ),
+                ),
+                BlMoney(Money.zero, size: 14),
+              ],
+            ),
+          ),
+      ],
     );
   }
 }

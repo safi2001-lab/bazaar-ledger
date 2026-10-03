@@ -11,6 +11,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M54
 import '../printing/pdf_font.dart';
 
 /// Cheques the shop is holding, soonest due first.
@@ -607,6 +608,13 @@ class _ChequeActionsState extends ConsumerState<_ChequeActions> {
             Text(
               '${cheque.chequeNo} · ${cheque.amount.amountOnly}',
               style: TextStyle(fontSize: 14, color: t.inkMuted),
+            ),
+            // M54: the cheque's own photographs, front and back and the
+            // deposit slip, on its own page (M60's strip; the khata's
+            // payment page has always shown the same ones).
+            AttachmentStrip(
+              owner: AttachmentOwner.payment(cheque.paymentId, cheque: true),
+              compact: true,
             ),
             const SizedBox(height: BlTokens.space4),
             if (_step == _Step.choose) ...[

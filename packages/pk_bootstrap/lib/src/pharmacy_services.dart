@@ -277,6 +277,14 @@ final class PharmacyServices {
     );
   }
 
+  /// M54: the prescription [documentId] was registered against — the
+  /// challan on the counter, whose bill carries it rather than asking again.
+  Future<Prescription?> prescriptionOn(String documentId) async {
+    final id = _app._identity;
+    if (id == null) return null;
+    return _reads.prescriptionOn(id.firmId, documentId);
+  }
+
   /// The photograph of [documentId]'s prescription, when one was taken.
   Future<ImageAttachment?> prescriptionPhoto(String documentId) async {
     final id = _app._identity;

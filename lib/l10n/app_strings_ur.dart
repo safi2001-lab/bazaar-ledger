@@ -8105,4 +8105,43 @@ class AppStringsUr extends AppStrings {
   @override
   String get reportQistInstalmentsHint =>
       'Har qist wala phone: ada, baqi, der wali';
+
+  @override
+  String bonusSentOnChallan(String what) {
+    return 'Bonus / muft (challan par gaya): $what';
+  }
+
+  @override
+  String get reportExpectedCollections => 'Is hafte ki wasooli';
+
+  @override
+  String get reportExpectedCollectionsHint =>
+      'Agle 7 din: kis ka bill ya qist due hai, kis ne kab dene ka wada kiya';
+
+  @override
+  String homeMonthlyBillsDue(int count, String amount, String names) {
+    return 'Mahana bill: $count baqi, Rs $amount — $names';
+  }
+
+  @override
+  String get trailSharedWhatsApp => 'WhatsApp par bheja';
+
+  @override
+  String get trailSharedPdf => 'PDF bheji';
+
+  @override
+  String get trailSharedPicture => 'Tasveer bheji';
+
+  @override
+  String get importFieldGeneric => 'Generic / salt';
+
+  @override
+  String importSecondUnitPack(String count, String pack) {
+    return '$count cheezen pack ke saath aayengi: $pack';
+  }
+
+  @override
+  String sheetChequeNoMissing(String name) {
+    return '$name: cheque ka number likhein';
+  }
 }

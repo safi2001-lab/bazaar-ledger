@@ -10,6 +10,7 @@ export 'src/builders.dart';
 export 'src/business_builders.dart';
 export 'src/business_reports.dart';
 export 'src/business_source.dart';
+export 'src/collections_reports.dart'; // M54
 export 'src/expense_builders.dart';
 export 'src/expense_source.dart';
 export 'src/filters.dart';

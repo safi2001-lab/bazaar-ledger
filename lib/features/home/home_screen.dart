@@ -11,6 +11,7 @@ import '../cheques/cheques_screen.dart';
 import '../day_close/day_close_screen.dart';
 import '../documents/quotations_screen.dart';
 import '../expenses/expenses_screen.dart';
+import '../expenses/monthly_bills_line.dart'; // M54
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../khata/udhaar_due_card.dart';
@@ -85,6 +86,7 @@ class HomeScreen extends ConsumerWidget {
               const UdhaarDueCard(),
               const RecurringDueCard(), // M63: repeating bills due today
               const FbrOverdueLine(), // M59: FBR bills late under Rule 150XC
+              const MonthlyBillsDueLine(), // M54: rent and bijli due (M47)
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.homeTitle),
               const SizedBox(height: BlTokens.space3),

@@ -184,6 +184,28 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       if (mounted) setState(() => _busy = false);
       return;
     }
+    // M54: and a Schedule medicine leaves on it only with its prescription,
+    // asked here in the bill's own sheet (M49) and registered against the
+    // challan's lines; the bill made from it carries the same paper.
+    CounterRx? rx;
+    if (challan) {
+      final preview = ref.read(cartPreviewByProvider(null));
+      if (preview == null || !mounted) {
+        if (mounted) setState(() => _busy = false);
+        return;
+      }
+      rx = await pharmacyAllowsBill(
+        context,
+        ref,
+        preview,
+        onAsk: () => setState(() => _busy = false),
+      );
+      if (rx == null || !mounted) {
+        if (mounted) setState(() => _busy = false);
+        return;
+      }
+      if (!_busy) setState(() => _busy = true);
+    }
     try {
       final services = ref.read(appServicesProvider);
       final books = cart.forBooks(units, schemesFor(ref)); // M43
@@ -194,12 +216,15 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
         billDiscount: books.billDiscount,
         roundToRupee: firm.roundInvoiceToRupee,
         // A quotation on the counter sent on a challan stays tied to it
-        // (M25), so it reads as done rather than still open.
+        // (M25), so it reads as done rather than still open; a sale order
+        // likewise (M54), and its advance waits for the challan's bill.
         convertedFromId: challan ? cart.sourceId : null,
+        prescription: rx?.prescription, // M54
       );
       final String message;
       if (challan) {
         final saved = await services.issueChallan(services.actorNow(), draft);
+        unawaited(keepPrescriptionPhoto(services, saved.id, rx)); // M54
         message = s.challanSaved(saved.docNo);
       } else {
         final saved = await services.saveQuotation(services.actorNow(), draft);
@@ -216,6 +241,25 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           _failure = '$error';
         });
       }
+    }
+  }
+
+  /// M54: what the advance held for the customer's order pays of [owed] on
+  /// this bill — the order on the counter, or the challan made from one.
+  /// Nothing when the bill is made from no order; and nothing, rather than
+  /// a failure, when it cannot be read: the limit is then asked about the
+  /// whole bill, as it was before M54.
+  Future<Money> _orderAdvance(Cart cart, Money owed) async {
+    final partyId = cart.partyId;
+    final sources = [?cart.sourceId, ...cart.alsoSourceIds];
+    if (partyId == null || sources.isEmpty) return Money.zero;
+    try {
+      return await ref
+          .read(appServicesProvider)
+          .orders
+          .advanceOnBill(partyId: partyId, sourceIds: sources, owed: owed);
+    } on Object {
+      return Money.zero;
     }
   }
 
@@ -333,10 +377,28 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       return;
     }
 
+    // M54: what the advance on the customer's order (M41) pays of what this
+    // bill leaves owed, read by the very reads the bill will take it with.
+    // The part it pays is not credit: the money is already in the drawer,
+    // held for exactly these goods. So a bill the advance covers is asked
+    // neither about a bounced cheque nor about the limit, as a bill paid in
+    // cash is not, and a customer at their limit can still be billed what
+    // they paid for in advance. A bill that leaves more owed than that is
+    // asked as before, and lands where it always said: their khata, with
+    // the advance spent, plus the bill.
+    final owedHere = _onUdhaar || _tenderedAmount.isZero
+        ? preview.balance
+        : preview.total - _tenderedAmount;
+    final byAdvance = leavesBalance
+        ? await _orderAdvance(cart, owedHere)
+        : Money.zero;
+    final givesCredit = leavesBalance && owedHere > byAdvance;
+    if (!mounted) return;
+
     // A customer whose cheque bounced and who still owes is asked about
     // before more credit goes out: udhaar, or another cheque, which is only
     // credit with a date on it. Their shop, their call, but made knowingly.
-    if ((leavesBalance || byCheque) && !_bounceOverridden) {
+    if ((givesCredit || byCheque) && !_bounceOverridden) { // M54
       final party = await ref
           .read(appServicesProvider)
           .queries
@@ -362,7 +424,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     // the goods leave — and against the balance as it stands right now rather
     // than the copy the picker handed over, which may be minutes old and is
     // exactly the figure a second till has been changing.
-    if (leavesBalance && !_creditLimitOverridden) {
+    if (givesCredit && !_creditLimitOverridden) { // M54: not what it covers
       final party = await ref
           .read(appServicesProvider)
           .queries
@@ -394,11 +456,22 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
     // M49: the DRAP price, and a Schedule medicine's prescription
     // (pharmacy_gate.dart); the sale path refuses both again.
     if (!mounted) return;
+    // M54: a bill made from a challan carries the prescription the challan
+    // was registered against, and the cashier is not asked a second time.
+    final sentWith = cart.sourceType == 'delivery_challan'
+        ? await ref
+              .read(appServicesProvider)
+              .pharmacy
+              .prescriptionOn(cart.sourceId!)
+              .then((p) => p, onError: (Object _) => null)
+        : null;
+    if (!mounted) return;
     final rx = await pharmacyAllowsBill(
       context,
       ref,
       preview,
       onAsk: () => setState(() => _busy = false),
+      given: sentWith,
     );
     if (rx == null || !mounted) {
       if (mounted) setState(() => _busy = false);
@@ -964,6 +1037,20 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
                 icon: Icons.scale_outlined,
                 kind: BlButtonKind.secondary,
                 onPressed: _busy ? null : () => unawaited(_rateLater()),
+              ),
+            ]
+            // M54: a customer's order (M41) may go out ahead of its bill on
+            // a challan, linked to the order, and the bill made from that
+            // challan takes the order's advance (withHeldAdvances). The one
+            // loaded paper that may: a quotation billed is the bill, and a
+            // challan's goods have already gone.
+            else if (cart.fromSaleOrder && cart.replacesId == null) ...[
+              const SizedBox(height: BlTokens.space2),
+              BlButton(
+                label: s.challanMake,
+                icon: Icons.assignment_turned_in_outlined,
+                kind: BlButtonKind.secondary,
+                onPressed: _busy ? null : () => unawaited(_keep(challan: true)),
               ),
             ],
           ],

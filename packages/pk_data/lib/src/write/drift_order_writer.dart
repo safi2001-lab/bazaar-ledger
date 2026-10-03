@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:drift/drift.dart' show QueryRow;
 import 'package:pk_domain/pk_domain.dart';
 
 import 'document_rows.dart';
@@ -311,35 +312,95 @@ Future<SalePosting> withHeldAdvances(Tx tx, SalePosting posting) async {
   // one holding, so what the first takes comes off what the second may.
   var used = Money.zero;
   for (final sourceId in sources) {
-    final order = await tx.selectOne(
-      '''
-      SELECT so.id, so.doc_no FROM documents so
-      WHERE so.firm_id = ?1 AND so.doc_type = 'sale_order'
-        AND so.status = 'posted' AND so.deleted_at_utc IS NULL
-        AND so.party_id = ?3
-        AND (so.id = ?2 OR so.id IN (
-          SELECT link.from_document_id FROM doc_links link
-          WHERE link.to_document_id = ?2
-            AND link.link_type = 'converted_from'
-            AND link.deleted_at_utc IS NULL))
-      LIMIT 1
-      ''',
-      [tx.actor.firmId, sourceId, partyId],
+    final order = await orderBehind(
+      tx.selectOne,
+      firmId: tx.actor.firmId,
+      sourceId: sourceId,
+      partyId: partyId,
     );
     if (order == null) continue;
     final (:left, :holding) = await advanceOn(
       tx,
-      orderId: order.read<String>('id'),
+      orderId: order.id,
       partyId: partyId,
     );
     final room = holding - used;
     final take = left > room ? room : left;
     if (!take.isPositive) continue;
     final before = out.document.paid;
-    out = withOrderAdvance(out, take, orderNo: order.read<String>('doc_no'));
+    out = withOrderAdvance(out, take, orderNo: order.docNo);
     used += out.document.paid - before;
   }
   return out;
+}
+
+/// M54: one row read, from inside a transaction ([Tx.selectOne]) or from the
+/// database as a screen reads it, so the counter asks what a bill will take
+/// of an order's advance by the very reads the bill takes it with.
+typedef OneRow = Future<QueryRow?> Function(String sql, [List<Object?> args]);
+
+/// The sale order a bill made from [sourceId] draws its advance on: the
+/// order itself, or the order the challan [sourceId] was made from (M41).
+/// Null when [sourceId] is neither, or the order is no longer [partyId]'s.
+Future<({String id, String docNo})?> orderBehind(
+  OneRow one, {
+  required String firmId,
+  required String sourceId,
+  required String partyId,
+}) async {
+  final order = await one(
+    '''
+    SELECT so.id, so.doc_no FROM documents so
+    WHERE so.firm_id = ?1 AND so.doc_type = 'sale_order'
+      AND so.status = 'posted' AND so.deleted_at_utc IS NULL
+      AND so.party_id = ?3
+      AND (so.id = ?2 OR so.id IN (
+        SELECT link.from_document_id FROM doc_links link
+        WHERE link.to_document_id = ?2
+          AND link.link_type = 'converted_from'
+          AND link.deleted_at_utc IS NULL))
+    LIMIT 1
+    ''',
+    [firmId, sourceId, partyId],
+  );
+  if (order == null) return null;
+  return (id: order.read<String>('id'), docNo: order.read<String>('doc_no'));
+}
+
+/// M54: what a bill to [partyId] made from [sourceIds], leaving [owed] on
+/// the khata, will take of the advances held for their orders — the sum
+/// [withHeldAdvances] takes, read before the bill is written so the
+/// counter's credit limit can count it. Never more than [owed], nor than
+/// the shop holds for the customer.
+Future<Money> advanceForBill(
+  OneRow one, {
+  required String firmId,
+  required String partyId,
+  required List<String> sourceIds,
+  required Money owed,
+}) async {
+  var used = Money.zero;
+  for (final sourceId in sourceIds) {
+    final room = owed - used;
+    if (!room.isPositive) break;
+    final order = await orderBehind(
+      one,
+      firmId: firmId,
+      sourceId: sourceId,
+      partyId: partyId,
+    );
+    if (order == null) continue;
+    final (:left, :holding) = await advanceHeld(
+      one,
+      orderId: order.id,
+      partyId: partyId,
+    );
+    var take = left;
+    if (holding - used < take) take = holding - used;
+    if (room < take) take = room;
+    if (take.isPositive) used += take;
+  }
+  return used;
 }
 
 /// What is left of the advance paid on sale order [orderId] — the receipts
@@ -350,8 +411,15 @@ Future<({Money left, Money holding})> advanceOn(
   Tx tx, {
   required String orderId,
   required String partyId,
+}) => advanceHeld(tx.selectOne, orderId: orderId, partyId: partyId);
+
+/// [advanceOn] through any reader (M54): the transaction's, or a screen's.
+Future<({Money left, Money holding})> advanceHeld(
+  OneRow one, {
+  required String orderId,
+  required String partyId,
 }) async {
-  final row = await tx.selectOne(
+  final row = await one(
     '''
     SELECT
       COALESCE((

@@ -1813,6 +1813,50 @@ final class DriftAppQueries implements AppQueries {
     ];
   }
 
+  // M54: the bonus a challan sent, billed as it went (see the port).
+  @override
+  Future<List<SaleLineDraft>> challanBonusLines(
+    String firmId,
+    String challanId,
+  ) async {
+    final rows = await _db
+        .customSelect(
+          '''
+          SELECT dl.item_id, dl.item_name_snapshot, dl.item_code_snapshot,
+                 dl.hs_code_snapshot, dl.qty_thousandths,
+                 dl.base_qty_thousandths, dl.unit_id, dl.unit_code_snapshot,
+                 COALESCE(i.track_stock, 1) AS tracks
+          FROM document_lines dl
+          JOIN documents d ON d.id = dl.document_id
+          LEFT JOIN items i ON i.id = dl.item_id
+          WHERE d.id = ? AND d.firm_id = ?
+            AND d.doc_type = 'delivery_challan'
+            AND dl.item_id IS NOT NULL AND dl.deleted_at_utc IS NULL
+            AND dl.is_free_item = 1
+          ORDER BY dl.line_no
+          ''',
+          variables: [Variable<String>(challanId), Variable<String>(firmId)],
+          readsFrom: {_db.documentLines, _db.documents, _db.items},
+        )
+        .get();
+    return [
+      for (final r in rows)
+        SaleLineDraft(
+          itemId: r.read<String>('item_id'),
+          itemName: r.read<String>('item_name_snapshot'),
+          itemCode: r.readNullable<String>('item_code_snapshot'),
+          hsCode: r.readNullable<String>('hs_code_snapshot'),
+          qty: Qty.raw(r.read<int>('qty_thousandths')),
+          baseQty: Qty.raw(r.read<int>('base_qty_thousandths')),
+          unitId: r.readNullable<String>('unit_id'),
+          unitCode: r.read<String>('unit_code_snapshot'),
+          rate: Rate.zero,
+          isFreeItem: true,
+          tracksStock: r.read<int>('tracks') == 1,
+        ),
+    ];
+  }
+
   @override
   Future<PartyDraft?> partyDraft(String firmId, String partyId) async {
     final r = await _db

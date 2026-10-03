@@ -13825,6 +13825,66 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Har qist wala phone: ada, baqi, der wali'**
   String get reportQistInstalmentsHint;
+
+  /// No description provided for @bonusSentOnChallan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus / muft (challan par gaya): {what}'**
+  String bonusSentOnChallan(String what);
+
+  /// No description provided for @reportExpectedCollections.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is hafte ki wasooli'**
+  String get reportExpectedCollections;
+
+  /// No description provided for @reportExpectedCollectionsHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agle 7 din: kis ka bill ya qist due hai, kis ne kab dene ka wada kiya'**
+  String get reportExpectedCollectionsHint;
+
+  /// No description provided for @homeMonthlyBillsDue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana bill: {count} baqi, Rs {amount} — {names}'**
+  String homeMonthlyBillsDue(int count, String amount, String names);
+
+  /// No description provided for @trailSharedWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp par bheja'**
+  String get trailSharedWhatsApp;
+
+  /// No description provided for @trailSharedPdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'PDF bheji'**
+  String get trailSharedPdf;
+
+  /// No description provided for @trailSharedPicture.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer bheji'**
+  String get trailSharedPicture;
+
+  /// No description provided for @importFieldGeneric.
+  ///
+  /// In ur, this message translates to:
+  /// **'Generic / salt'**
+  String get importFieldGeneric;
+
+  /// No description provided for @importSecondUnitPack.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} cheezen pack ke saath aayengi: {pack}'**
+  String importSecondUnitPack(String count, String pack);
+
+  /// No description provided for @sheetChequeNoMissing.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: cheque ka number likhein'**
+  String sheetChequeNoMissing(String name);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

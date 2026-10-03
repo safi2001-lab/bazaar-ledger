@@ -44,11 +44,16 @@ const CounterRx _nothingAsked = (
 /// so the screen can stop showing its Save as working: the question is
 /// modal, and a spinner behind it while somebody types a doctor's name
 /// reads as the bill being stuck.
+///
+/// [given] is a prescription already taken for these goods — the challan's
+/// (M54), when the bill is made from one — which a complete one answers
+/// without asking the cashier again.
 Future<CounterRx?> pharmacyAllowsBill(
   BuildContext context,
   WidgetRef ref,
   CalculatedSale preview, {
   VoidCallback? onAsk,
+  Prescription? given, // M54
 }) async {
   final services = ref.read(appServicesProvider);
   final charged = <String, ({String name, Qty qty, Money charged})>{};
@@ -103,6 +108,10 @@ Future<CounterRx?> pharmacyAllowsBill(
       if (m.schedule != null) m.itemName,
   ];
   if (scheduled.isEmpty) return _nothingAsked;
+  // M54: asked at the challan already; the bill carries the same paper.
+  if (given != null && given.gaps.isEmpty) {
+    return (prescription: given, photo: null, photoName: null);
+  }
   if (!context.mounted) return null;
   onAsk?.call();
   return showModalBottomSheet<CounterRx>(

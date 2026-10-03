@@ -153,6 +153,14 @@ final class CollectionSheetUseCase {
                 'Wasooli ${sheet.sheetNo} · ${sheet.collector}',
                 if ((mark.note ?? '').trim().isNotEmpty) mark.note!.trim(),
               ].join(' · '),
+              // M54: a cheque handed to the man is the khata's cheque (M6):
+              // its number, bank and day go on the receipt, which waits in
+              // Cheques in Hand to be banked, on this same transaction.
+              chequeNo: mark.mode == 'cheque' ? result.chequeNo : null,
+              chequeBank: mark.mode == 'cheque' ? result.chequeBank : null,
+              chequeDateUtcMillis: mark.mode == 'cheque'
+                  ? mark.chequeDateUtcMillis
+                  : null,
             ),
           );
           receipts.add(taken);

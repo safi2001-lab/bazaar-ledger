@@ -5,7 +5,8 @@ import 'package:pk_domain/pk_domain.dart';
 import 'package:pk_reports/pk_reports.dart';
 
 import '../db/app_database.dart';
-import '../write/drift_order_writer.dart' show shortageKeyPrefix;
+import '../write/drift_order_writer.dart'
+    show advanceForBill, shortageKeyPrefix; // M54
 import 'drift_report_source.dart';
 
 /// Reading orders, the shortage list and what to order (M41).
@@ -66,6 +67,34 @@ final class DriftOrderReads {
         if (!standingOnly || v.row.status.isStanding) v.row,
     ];
   }
+
+  /// M54: what a bill to [partyId] made from [sourceIds] (a sale order, or a
+  /// challan made from one), leaving [owed] on the khata, will take of the
+  /// advances held for their orders — by the bill's own reads
+  /// (`advanceForBill` in the order writer), before it is written.
+  Future<Money> advanceOnBill(
+    String firmId, {
+    required String partyId,
+    required List<String> sourceIds,
+    required Money owed,
+  }) => advanceForBill(
+    (sql, [args = const []]) => _db
+        .customSelect(
+          sql,
+          variables: [
+            for (final a in args)
+              if (a is int)
+                Variable<int>(a)
+              else
+                Variable<String>(a as String?),
+          ],
+        )
+        .getSingleOrNull(),
+    firmId: firmId,
+    partyId: partyId,
+    sourceIds: sourceIds,
+    owed: owed,
+  );
 
   /// One order, opened, or null when it is not one of this shop's.
   Future<OrderView?> order(String firmId, String orderId) async {

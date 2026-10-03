@@ -300,9 +300,14 @@ extension SchemeServices on AppServices {
   /// (plan_gates.dart): the bill slab's discount, which the owner gave and
   /// a cashier may ring, and any free goods past what the schemes give,
   /// which only the owner may hand over.
+  ///
+  /// [sentFree] is what challans this bill is made from sent free (M54):
+  /// that much of each item was handed over already, under the schemes of
+  /// that day, and the bill only puts it on paper.
   Future<({Money slab, String? overGiven})> _schemesOn(
-    SalePosting posting,
-  ) async {
+    SalePosting posting, {
+    Map<String, Qty> sentFree = const {},
+  }) async {
     final hasFree = posting.lines.any((l) => l.isFreeItem);
     if (!hasFree && !posting.document.billDiscount.isPositive) {
       return (slab: Money.zero, overGiven: null);
@@ -328,7 +333,9 @@ extension SchemeServices on AppServices {
     }
     final allowed = book.freeAllowed(paid);
     for (final MapEntry(key: id, value: (name, qty)) in free.entries) {
-      if (qty > (allowed[id] ?? Qty.zero)) {
+      final schemes = allowed[id] ?? Qty.zero;
+      final sent = sentFree[id] ?? Qty.zero; // M54
+      if (qty > (sent > schemes ? sent : schemes)) {
         return (slab: slab, overGiven: name);
       }
     }

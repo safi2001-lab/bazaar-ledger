@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M54
 import '../pharmacy/batch_hold_sheet.dart';
 
 typedef _Where = ({
@@ -169,45 +170,65 @@ class _StockPlacesScreenState extends ConsumerState<StockPlacesScreen> {
                               holdReason: lot.holdReason,
                             )
                           : null,
-                      child: Row(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  lot.lotNo,
-                                  style: TextStyle(fontSize: 15, color: t.ink),
-                                ),
-                                if (lot.holdReason case final reason?)
-                                  Text(
-                                    s.pharmacyHeld(reason),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: t.danger,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      lot.lotNo,
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: t.ink,
+                                      ),
                                     ),
-                                  ),
-                              ],
-                            ),
+                                    if (lot.holdReason case final reason?)
+                                      Text(
+                                        s.pharmacyHeld(reason),
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: t.danger,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              if (lot.expiry case final expiry?)
+                                BlChip(
+                                  expiry.value,
+                                  tone:
+                                      expiry.value.compareTo(
+                                            BusinessDate.now(
+                                              ref
+                                                  .read(appServicesProvider)
+                                                  .clock,
+                                            ).value,
+                                          ) <
+                                          0
+                                      ? BlChipTone.bad
+                                      : BlChipTone.neutral,
+                                ),
+                              const SizedBox(width: BlTokens.space2),
+                              Text(
+                                lot.qty.display,
+                                style: TextStyle(fontSize: 15, color: t.ink),
+                              ),
+                            ],
                           ),
-                          if (lot.expiry case final expiry?)
-                            BlChip(
-                              expiry.value,
-                              tone:
-                                  expiry.value.compareTo(
-                                        BusinessDate.now(
-                                          ref.read(appServicesProvider).clock,
-                                        ).value,
-                                      ) <
-                                      0
-                                  ? BlChipTone.bad
-                                  : BlChipTone.neutral,
+                          // M54: the batch's papers — the supplier's batch
+                          // certificate, a recall notice — through M60's
+                          // button, which opens its strip.
+                          if (item.tracksBatch)
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: EntryPhotosButton(
+                                owner: AttachmentOwner.batch(lot.lotId),
+                              ),
                             ),
-                          const SizedBox(width: BlTokens.space2),
-                          Text(
-                            lot.qty.display,
-                            style: TextStyle(fontSize: 15, color: t.ink),
-                          ),
                         ],
                       ),
                     ),

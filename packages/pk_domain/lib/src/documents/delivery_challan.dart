@@ -16,6 +16,7 @@ library;
 import 'package:pk_money/pk_money.dart';
 
 import '../identity/actor_context.dart';
+import '../pharmacy/medicine.dart'; // M54
 import '../sales/sale_calculator.dart';
 import '../sales/sale_draft.dart';
 import '../sales/sale_posting.dart';
@@ -40,7 +41,14 @@ final class ChallanPosting {
     required this.journal,
     required this.auditSummary,
     this.fromQuotationId,
+    this.prescription, // M54
   });
+
+  /// M54: who a Schedule medicine on it was prescribed for, and by whom,
+  /// asked at the challan as at a bill (M49). The goods leave on the
+  /// challan, so this is where the register's line is; the bill made from
+  /// it carries the same prescription.
+  final Prescription? prescription;
 
   final DocumentPosting document;
   final List<DocumentLinePosting> lines;
@@ -148,6 +156,7 @@ final class DeliveryChallanBuilder {
         : '${calculated.lines.length} items';
     return ChallanPosting(
       fromQuotationId: draft.convertedFromId,
+      prescription: draft.prescription, // M54
       document: DocumentPosting(
         docType: 'delivery_challan',
         docNo: number.formatted,

@@ -265,9 +265,23 @@ class _QuotationActionsState extends ConsumerState<_QuotationActions> {
       final party = q.partyId == null
           ? null
           : await services.queries.partyById(firm.id, q.partyId!);
+      // M54: what a challan sent free is billed as it went, whatever the
+      // shop's schemes say today.
+      final bonus = q.isChallan
+          ? [
+              for (final doc in [q, ...also])
+                ...await services.queries.challanBonusLines(firm.id, doc.id),
+            ]
+          : null;
       ref
           .read(cartProvider.notifier)
-          .loadQuotation(q, lines, party: party, alsoFrom: also);
+          .loadQuotation(
+            q,
+            lines,
+            party: party,
+            alsoFrom: also,
+            sentBonus: bonus, // M54
+          );
       navigator.pop();
       unawaited(
         navigator.push(

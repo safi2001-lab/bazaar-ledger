@@ -34,6 +34,7 @@ import 'receipt_file_name.dart';
 final class OutgoingDocument {
   const OutgoingDocument({
     required this.receipt,
+    this.documentId, // M54
     this.recipient,
     this.design = const BillDesign(),
     this.sendsGoods = false,
@@ -41,6 +42,10 @@ final class OutgoingDocument {
   });
 
   final ReceiptData receipt;
+
+  /// M54: the paper this is, so its history can say it was sent. Null only
+  /// for a document built without one, which is then sent and not written.
+  final String? documentId;
 
   /// Null for a walk-in, who has nobody to send it to.
   final DocumentRecipient? recipient;
@@ -93,9 +98,18 @@ final class OutgoingDocument {
       documentId,
     )).any((job) => job.status == PrintJobStatus.printed);
     return OutgoingDocument(
+      documentId: documentId, // M54
       // Marked as what it is now, on what leaves: a bill cancelled since is
       // sent saying so, and one whose original already went to paper is
       // sent as the duplicate it is — unless somebody chose the sheet.
+      //
+      // M54 kept that rule when shares began to be written down: DUPLICATE
+      // is about paper, the second printed sheet of a bill whose first is
+      // already in someone's hand. A PDF or a picture sent again is the
+      // same bill sent again — often because the first message never
+      // arrived — and stamping it DUPLICATE would tell the customer they
+      // hold a copy of something they never got. So a bill shared before
+      // is not marked; a bill printed before still is, on every share.
       receipt: bill.receipt.copyWith(
         isCancelled: status == 'void',
         isReprint: copy == null && printed,
@@ -122,8 +136,30 @@ enum WhatsAppOutcome {
   noNumber,
 }
 
+/// M54: [doc] left the phone [via] its send sheet, written on its history.
+/// After the share sheet or the chat has opened, and never in its way: a
+/// bill that went out and could not be written down still went out.
+Future<void> _sent(
+  AppServices services,
+  OutgoingDocument doc,
+  SharedVia via,
+) async {
+  final id = doc.documentId;
+  if (id == null) return;
+  try {
+    await services.audit.recordShared(id, via);
+  } on Object {
+    // Said nowhere: the customer has the bill, which is what was asked.
+  }
+}
+
 /// The PDF of [doc], in the shop's own design, with its message beside it.
 Future<void> sharePdf(AppServices services, OutgoingDocument doc) async {
+  await _sharePdf(services, doc);
+  await _sent(services, doc, SharedVia.pdf); // M54
+}
+
+Future<void> _sharePdf(AppServices services, OutgoingDocument doc) async {
   final file = await _write(
     receiptFileName(doc.receipt.docNo),
     await services.receipts.toPdf(
@@ -159,6 +195,7 @@ Future<void> sharePicture(AppServices services, OutgoingDocument doc) async {
       text: doc.message,
     ),
   );
+  await _sent(services, doc, SharedVia.picture); // M54
 }
 
 /// [doc] to its customer on WhatsApp.
@@ -185,6 +222,7 @@ Future<WhatsAppOutcome> sendOnWhatsApp(
   // names com.whatsapp and com.whatsapp.w4b for the khata's reminder.
   if (await canLaunchUrl(uri) &&
       await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+    await _sent(services, doc, SharedVia.whatsapp); // M54
     return WhatsAppOutcome.chat;
   }
   await sharePdf(services, doc);

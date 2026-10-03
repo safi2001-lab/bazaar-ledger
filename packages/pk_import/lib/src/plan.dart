@@ -198,6 +198,7 @@ final class ItemRow {
     this.description,
     this.hsCode,
     this.tracksStock = true,
+    this.genericName, // M54
   });
 
   final String name;
@@ -227,6 +228,9 @@ final class ItemRow {
 
   /// False for a service, which has no stock to count.
   final bool tracksStock;
+
+  /// M54: a medicine's salt (M49), from a Generic, Salt or Formula column.
+  final String? genericName;
 }
 
 /// A customer or supplier from a sheet.
@@ -534,6 +538,7 @@ ImportPlan<ItemRow> planItems(
         description: _optional(row, col[ImportField.description]),
         hsCode: _optional(row, col[ImportField.hsCode]),
         tracksStock: !service,
+        genericName: _optional(row, col[ImportField.genericName]), // M54
       ),
     ));
   }

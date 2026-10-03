@@ -8115,4 +8115,43 @@ class AppStringsEn extends AppStrings {
   @override
   String get reportQistInstalmentsHint =>
       'Every phone on qist: paid, still to pay, overdue';
+
+  @override
+  String bonusSentOnChallan(String what) {
+    return 'Bonus (free, went on the challan): $what';
+  }
+
+  @override
+  String get reportExpectedCollections => 'Expected collections';
+
+  @override
+  String get reportExpectedCollectionsHint =>
+      'Next 7 days: whose bills and instalments fall due, and who promised to pay when';
+
+  @override
+  String homeMonthlyBillsDue(int count, String amount, String names) {
+    return 'Monthly bills: $count due, Rs $amount — $names';
+  }
+
+  @override
+  String get trailSharedWhatsApp => 'Shared on WhatsApp';
+
+  @override
+  String get trailSharedPdf => 'Shared as a PDF';
+
+  @override
+  String get trailSharedPicture => 'Shared as a picture';
+
+  @override
+  String get importFieldGeneric => 'Generic / salt';
+
+  @override
+  String importSecondUnitPack(String count, String pack) {
+    return '$count items come in with their pack: $pack';
+  }
+
+  @override
+  String sheetChequeNoMissing(String name) {
+    return '$name: write the cheque\'s number';
+  }
 }

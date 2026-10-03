@@ -132,6 +132,26 @@ final class OrderServices {
     );
   }
 
+  /// M54: what a bill to [partyId] made from [sourceIds] — a sale order on
+  /// the counter, or a challan made from one — will take of the advance
+  /// held for the order, of the [owed] it would otherwise leave on the
+  /// khata. Read by the payment sheet, so a customer at their credit limit
+  /// can still be billed what their advance covers; the bill takes exactly
+  /// this, by the same reads, when it is written.
+  Future<Money> advanceOnBill({
+    required String partyId,
+    required List<String> sourceIds,
+    required Money owed,
+  }) async {
+    if (sourceIds.isEmpty || !owed.isPositive) return Money.zero;
+    return _reads.advanceOnBill(
+      _firmId,
+      partyId: partyId,
+      sourceIds: sourceIds,
+      owed: owed,
+    );
+  }
+
   /// The words purchase order [orderId] travels in on WhatsApp: what is
   /// still to come of it, at the rates it was placed at.
   Future<String?> purchaseOrderText(String orderId) async {

@@ -4907,5 +4907,38 @@
   "reportUsedPhones": "Khareede gaye purane phone",
   "reportUsedPhonesHint": "Har purana phone, bechne wale ke CNIC aur IMEI ke saath",
   "reportQistInstalments": "Qistein",
-  "reportQistInstalmentsHint": "Har qist wala phone: ada, baqi, der wali"
+  "reportQistInstalmentsHint": "Har qist wala phone: ada, baqi, der wali",
+  "bonusSentOnChallan": "Bonus / muft (challan par gaya): {what}",
+  "@bonusSentOnChallan": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "reportExpectedCollections": "Is hafte ki wasooli",
+  "reportExpectedCollectionsHint": "Agle 7 din: kis ka bill ya qist due hai, kis ne kab dene ka wada kiya",
+  "homeMonthlyBillsDue": "Mahana bill: {count} baqi, Rs {amount} — {names}",
+  "@homeMonthlyBillsDue": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "amount": {"type": "String"},
+      "names": {"type": "String"}
+    }
+  },
+  "trailSharedWhatsApp": "WhatsApp par bheja",
+  "trailSharedPdf": "PDF bheji",
+  "trailSharedPicture": "Tasveer bheji",
+  "importFieldGeneric": "Generic / salt",
+  "importSecondUnitPack": "{count} cheezen pack ke saath aayengi: {pack}",
+  "@importSecondUnitPack": {
+    "placeholders": {
+      "count": {"type": "String"},
+      "pack": {"type": "String"}
+    }
+  },
+  "sheetChequeNoMissing": "{name}: cheque ka number likhein",
+  "@sheetChequeNoMissing": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  }
 }

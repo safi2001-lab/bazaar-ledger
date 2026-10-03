@@ -12,6 +12,7 @@ import 'drift_order_reads.dart';
 import 'drift_udhaar_queries.dart';
 
 part 'reports/business_queries.dart';
+part 'reports/collections_queries.dart'; // M54
 part 'reports/expense_queries.dart';
 part 'reports/item_stock_queries.dart';
 part 'reports/loan_queries.dart';
@@ -55,7 +56,9 @@ final class DriftReportSource
         // M49
         _PharmacyQueries,
         // M50
-        _MobileQueries
+        _MobileQueries,
+        // M54
+        _CollectionsQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 

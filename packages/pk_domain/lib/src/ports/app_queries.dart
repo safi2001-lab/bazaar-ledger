@@ -16,6 +16,7 @@ import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
 import '../sales/bill_copy.dart';
 import '../sales/past_deal.dart';
+import '../sales/sale_draft.dart'; // M54
 import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
 import '../time/clock.dart';
@@ -711,6 +712,16 @@ abstract interface class AppQueries {
   /// A quotation's or a challan's lines, as written, for making the bill
   /// from it.
   Future<List<QuotedLine>> quotedLines(String firmId, String quotationId);
+
+  /// M54: the free lines a delivery challan sent — the bonus its schemes
+  /// gave on the day (M43) — as the bill made from it carries them: the
+  /// same goods, at no rate, marked free. [quotedLines] leaves them out, so
+  /// a quotation's bonus is worked out again at the counter; a challan's
+  /// goods have gone, and are billed as they went.
+  Future<List<SaleLineDraft>> challanBonusLines(
+    String firmId,
+    String challanId,
+  );
 
   /// Everything the party editor can change about one party, as it stands,
   /// so an edit writes back what it did not show instead of blanking it.

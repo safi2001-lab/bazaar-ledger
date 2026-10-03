@@ -46,7 +46,11 @@ CountingLadder lineCounting(
   final item = line.item;
   final itemId = line.isLoose ? null : item.id;
   final baseUnitId = item.unitId.isEmpty ? null : item.unitId;
-  final countedIn = line.isConverted ? line.sellingUnitId : null;
+  // M54: a line moved to pieces from the dozen it was rung in still counts
+  // in that dozen on the screen.
+  final countedIn = line.isConverted
+      ? line.sellingUnitId
+      : line.countedInUnitId;
   return forEntry
       ? book.entryLadder(
           itemId: itemId,
@@ -172,6 +176,9 @@ CountedEdit countedEdit(
         ),
         unitId: line.item.unitId,
         unitCode: line.item.unitCode,
+        // M54: and still counted in the unit it was rung in, "3 doz + 4
+        // pcs", rather than read out as forty pieces.
+        countedInUnitId: line.sellingUnitId,
       ),
     );
   } on UnitConversionException {

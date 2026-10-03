@@ -85,6 +85,10 @@ enum ImportField {
   hsCode,
   itemType,
 
+  /// M54: a medicine's salt, from a column headed Generic, Salt or Formula
+  /// (M49's generic name), as a chemist's list from Marg or Vyapar has it.
+  genericName,
+
   /// India's HSN/SAC. Read so it can be named and left out: Pakistan's
   /// tariff line is the PCT code, which agrees with HSN only to six digits,
   /// and an FBR invoice carrying an Indian eight-digit code is wrong.
@@ -133,6 +137,7 @@ enum ImportField {
     description,
     hsCode,
     itemType,
+    genericName, // M54
     hsn,
     tax,
   ];
@@ -275,6 +280,16 @@ const Map<ImportField, List<String>> _aliases = {
   ImportField.description: ['description', 'details', 'tafseel'],
   ImportField.hsCode: ['hscode', 'pctcode', 'pct', 'hs'],
   ImportField.itemType: ['itemtype', 'producttype', 'type'],
+  // M54: the salt of a medicine.
+  ImportField.genericName: [
+    'genericname',
+    'generic',
+    'salt',
+    'saltname',
+    'formula',
+    'formulaname',
+    'composition',
+  ],
   ImportField.hsn: ['hsn', 'hsnsac', 'hsncode', 'hsnsaccode', 'sac'],
   ImportField.tax: [
     'taxrate',

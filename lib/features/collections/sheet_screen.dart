@@ -9,6 +9,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../cheques/cheque_fields.dart'; // M54
 import '../printing/printing_providers.dart';
 import '../reports/report_export.dart';
 import 'sheet_paper.dart';
@@ -28,9 +29,16 @@ final class _Mark {
   String? promisedFor;
   String? accountId;
 
+  // M54: a cheque handed to the man, as the khata's Receive takes one.
+  final chequeNo = TextEditingController();
+  final chequeBank = TextEditingController();
+  BusinessDate? chequeDue;
+
   void dispose() {
     amount.dispose();
     note.dispose();
+    chequeNo.dispose(); // M54
+    chequeBank.dispose();
   }
 }
 
@@ -81,22 +89,32 @@ class _SheetScreenState extends ConsumerState<SheetScreen> {
     List<PaymentAccountSummary> accounts,
   ) {
     final byId = {for (final a in accounts) a.id: a};
+    final today = BusinessDate(ref.read(appServicesProvider).udhaar.today);
     return {
       for (final line in sheet.lines)
         if (_marks[line.lineNo] case final m? when m.outcome != null)
-          line.lineNo: SheetMark(
-            outcome: m.outcome!,
-            amount: switch (m.outcome!) {
-              CollectionOutcome.paid => line.due,
-              _ => _money(m.amount.text),
-            },
-            promisedFor: m.promisedFor,
-            paymentAccountId: m.accountId ?? _cashAccount(accounts),
-            mode:
+          line.lineNo: () {
+            final mode =
                 byId[m.accountId ?? _cashAccount(accounts)]?.modeLabel ??
-                'cash',
-            note: m.note.text.trim().isEmpty ? null : m.note.text.trim(),
-          ),
+                'cash';
+            final cheque = mode == 'cheque'; // M54
+            return SheetMark(
+              outcome: m.outcome!,
+              amount: switch (m.outcome!) {
+                CollectionOutcome.paid => line.due,
+                _ => _money(m.amount.text),
+              },
+              promisedFor: m.promisedFor,
+              paymentAccountId: m.accountId ?? _cashAccount(accounts),
+              mode: mode,
+              note: m.note.text.trim().isEmpty ? null : m.note.text.trim(),
+              chequeNo: cheque ? m.chequeNo.text.trim() : null,
+              chequeBank: cheque ? m.chequeBank.text.trim() : null,
+              chequeDateUtcMillis: cheque
+                  ? chequeDueUtcMillis(m.chequeDue ?? today)
+                  : null,
+            );
+          }(),
     };
   }
 
@@ -124,6 +142,11 @@ class _SheetScreenState extends ConsumerState<SheetScreen> {
             CollectionOutcome.promise => s.sheetPromiseDayMissing(
               line.partyName,
             ),
+            // M54: a cheque without its number.
+            _ when mark.mode == 'cheque' &&
+                    (mark.chequeNo ?? '').isEmpty &&
+                    (mark.amountFor(line)?.isPositive ?? false) =>
+              s.sheetChequeNoMissing(line.partyName),
             _ => s.sheetAmountMissing(line.partyName),
           },
         );
@@ -248,9 +271,9 @@ class _SheetScreenState extends ConsumerState<SheetScreen> {
       for (final a
           in ref.watch(paymentAccountsProvider).valueOrNull ??
               const <PaymentAccountSummary>[])
-        // A cheque is taken on the khata, where its number and bank are
-        // written; a hidden allowance account is never money that came.
-        if (a.modeLabel != 'cheque' && a.modeLabel != 'adjustment') a,
+        // M54: a cheque too, its number, bank and day written on the line.
+        // A hidden allowance account is never money that came.
+        if (a.modeLabel != 'adjustment') a,
     ];
     final found = ref.watch(collectionSheetProvider(widget.sheetId));
     final sheet = found.valueOrNull;
@@ -681,6 +704,24 @@ class _LineCard extends ConsumerWidget {
                     : null,
               ),
           ],
+        ),
+      ],
+      // M54: a cheque, as the khata's Receive asks for one (cheque_fields).
+      if (outcome != null &&
+          outcome.tookMoney &&
+          accounts
+                  .where((a) => a.id == (mark.accountId ?? cashAccount))
+                  .firstOrNull
+                  ?.modeLabel ==
+              'cheque') ...[
+        const SizedBox(height: BlTokens.space2),
+        ChequeFields(
+          number: mark.chequeNo,
+          bank: mark.chequeBank,
+          today: BusinessDate(today),
+          due: mark.chequeDue ?? BusinessDate(today),
+          onDueChanged: (d) => set(() => mark.chequeDue = d),
+          onChanged: onChanged,
         ),
       ],
       if (outcome != null) ...[

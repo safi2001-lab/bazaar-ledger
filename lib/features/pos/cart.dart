@@ -26,7 +26,17 @@ final class CartLine {
     this.lotIds = const [],
     this.lotLabels = const [],
     this.isLoose = false,
+    this.countedInUnitId, // M54
   });
+
+  /// M54: the unit this line was counted in on the screen when it was sold
+  /// in it and then moved to the item's own unit — a line sold by the dozen
+  /// that a piece was added to. Three dozen and four is forty pieces at the
+  /// piece price, exactly (M45), and still reads "3 doz + 4 pcs" to the
+  /// cashier who rang it by the dozen. On the screen only: the books get
+  /// the forty pieces. Null for every other line; a unit the cashier picks
+  /// for the line clears it.
+  final String? countedInUnitId;
 
   /// A loose line (M37): something sold by what the cashier calls it and
   /// what it comes to, with no item in the catalogue behind it.
@@ -121,6 +131,8 @@ final class CartLine {
     String? unitCode,
     List<String>? lotIds,
     List<String>? lotLabels,
+    String? countedInUnitId, // M54
+    bool clearCountedIn = false,
   }) => CartLine(
     item: item,
     qty: qty ?? this.qty,
@@ -134,6 +146,9 @@ final class CartLine {
     lotIds: lotIds ?? this.lotIds,
     lotLabels: lotLabels ?? this.lotLabels,
     isLoose: isLoose,
+    countedInUnitId: clearCountedIn
+        ? null
+        : countedInUnitId ?? this.countedInUnitId, // M54
   );
 
   /// The line as the write path wants it: one line per serial number when
@@ -230,11 +245,19 @@ final class CartLine {
       other.rate == rate &&
       other.discountBp == discountBp &&
       other.explicitDiscount == explicitDiscount &&
-      other.unitId == unitId;
+      other.unitId == unitId &&
+      other.countedInUnitId == countedInUnitId; // M54
 
   @override
-  int get hashCode =>
-      Object.hash(item.id, qty, rate, discountBp, explicitDiscount, unitId);
+  int get hashCode => Object.hash(
+    item.id,
+    qty,
+    rate,
+    discountBp,
+    explicitDiscount,
+    unitId,
+    countedInUnitId, // M54
+  );
 }
 
 /// The bill in progress.
@@ -248,6 +271,7 @@ final class Cart {
     this.partyDiscountBp = 0,
     this.sourceId,
     this.sourceNo,
+    this.sourceType, // M54
     this.alsoSourceIds = const [],
     this.replacesId,
     this.replacesNo,
@@ -257,7 +281,20 @@ final class Cart {
     this.bonusWaived = const {},
     this.slabWaived = false,
     this.recurring, // M63
+    this.sentBonus, // M54
   });
+
+  /// M54: the bonus the challans on the counter sent with their goods, as
+  /// they sent it — null for every other bill.
+  ///
+  /// A challan's goods have gone, free ones included, and the bill made
+  /// from it must be for exactly what went (M25), so the shop's schemes are
+  /// not worked out again for it: a scheme changed between the challan and
+  /// the bill used to give a different bonus here, and the bill was refused
+  /// in the challan's words. Now the challan's free lines stand, as its
+  /// paid lines and their prices do; the cashier sees them under the lines
+  /// and cannot take them off, because they are already at the customer's.
+  final List<SaleLineDraft>? sentBonus;
 
   /// M63: the repeating bill this one is, and the day it is for. The sale
   /// moves the template on in its own commit (recurring_services.dart). A
@@ -278,6 +315,16 @@ final class Cart {
   /// The quotation this bill is being made from, and its number.
   final String? sourceId;
   final String? sourceNo;
+
+  /// M54: what [sourceId] is — `quotation`, `delivery_challan` or
+  /// `sale_order` — so the payment sheet can offer what that paper may
+  /// become. Null for a bill made from nothing, and for a draft written
+  /// before M54, which the sheet reads as it read every loaded paper then.
+  final String? sourceType;
+
+  /// M54: a sale order (M41) on the counter. It may be billed, or sent
+  /// ahead of the bill on a challan that takes its advance with it.
+  bool get fromSaleOrder => sourceType == 'sale_order';
 
   /// More challans billed on this one bill with [sourceId] (M25).
   final List<String> alsoSourceIds;
@@ -321,9 +368,24 @@ final class Cart {
     SchemeBook book,
   ) {
     final rung = [for (final l in lines) ...l.toDrafts(units)];
-    final bonus = bonusOn(rung, book);
+    // M54: a bill made from challans gives the bonus they sent, as sent.
+    final bonus = sentBonus == null
+        ? bonusOn(rung, book)
+        : const <BonusGrant>[];
     final out = <SaleLineDraft>[];
-    if (bonus.isEmpty) {
+    if (sentBonus case final sent?) {
+      final last = <String, int>{
+        for (var i = 0; i < rung.length; i++) ?rung[i].itemId: i,
+      };
+      for (var i = 0; i < rung.length; i++) {
+        out.add(rung[i]);
+        for (final f in sent) {
+          if (last[f.itemId] == i) out.add(f);
+        }
+      }
+      // A free item none of the bill's paid lines are of, at the foot.
+      out.addAll(sent.where((f) => !last.containsKey(f.itemId)));
+    } else if (bonus.isEmpty) {
       out.addAll(rung);
     } else {
       final last = <String, int>{
@@ -378,6 +440,7 @@ final class Cart {
   }) => Cart(
     sourceId: sourceId,
     sourceNo: sourceNo,
+    sourceType: sourceType, // M54
     alsoSourceIds: alsoSourceIds,
     replacesId: replacesId,
     replacesNo: replacesNo,
@@ -395,6 +458,7 @@ final class Cart {
     recurring: clearParty || (partyId != null && partyId != this.partyId)
         ? null
         : recurring, // M63
+    sentBonus: sentBonus, // M54
   );
 }
 
@@ -437,7 +501,10 @@ class CartNotifier extends Notifier<Cart> {
     ref.listen<AsyncValue<SchemeBook>>(schemeBookProvider, (was, now) {
       final before = was?.valueOrNull ?? SchemeBook.empty;
       final after = now.valueOrNull;
-      if (after != null && !identical(before, after)) {
+      // M54: not on a bill made from challans, whose prices are as sent.
+      if (after != null &&
+          !identical(before, after) &&
+          state.sentBonus == null) {
         _schemesChanged(before, after);
       }
     });
@@ -704,6 +771,7 @@ class CartNotifier extends Notifier<Cart> {
               l.copyWith(
                 unitId: unitId,
                 unitCode: unitCode,
+                clearCountedIn: true, // M54: the unit picked is the count
                 rate: units.convertRate(
                   l.rate,
                   fromUnitId: l.sellingUnitId,
@@ -884,6 +952,7 @@ class CartNotifier extends Notifier<Cart> {
     List<(ItemSummary, QuotedLine)> lines, {
     PartySummary? party,
     List<QuotationRow> alsoFrom = const [],
+    List<SaleLineDraft>? sentBonus, // M54
   }) {
     state = Cart(
       lines: [
@@ -908,7 +977,11 @@ class CartNotifier extends Notifier<Cart> {
       partyDiscountBp: party?.defaultDiscountBp ?? 0,
       sourceId: quotation.id,
       sourceNo: [quotation.docNo, for (final q in alsoFrom) q.docNo].join(', '),
+      sourceType: quotation.docType, // M54
       alsoSourceIds: [for (final q in alsoFrom) q.id],
+      // M54: a challan's bonus as it went; none for any other paper, whose
+      // bonus the counter works out from the shop's schemes as for any bill.
+      sentBonus: quotation.isChallan ? (sentBonus ?? const []) : null,
     );
   }
 

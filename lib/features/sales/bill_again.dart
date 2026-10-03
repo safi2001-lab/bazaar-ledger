@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../pos/cart.dart';
 import '../pos/pos_screen.dart';
+import '../pos/scheme_book.dart'; // M54
 
 /// A bill rung again without typing it twice (M36).
 ///
@@ -86,6 +87,7 @@ Future<CounterCopy> counterCopyOf(
   required CopyRates rates,
   bool piecesBack = false,
   UnitConverter? units,
+  SchemeBook book = SchemeBook.empty, // M54
 }) async {
   final party = copy.partyId == null
       ? null
@@ -103,13 +105,15 @@ Future<CounterCopy> counterCopyOf(
 
   final lines = <CartLine>[];
   final leftOut = <({String name, CopyLeftOut why})>[];
+  // M54: the bill's free lines, judged once the paid ones are on.
+  final free = <({int at, BillCopyLine line})>[];
   var looseKey = 0;
 
   for (var i = 0; i < copy.lines.length; i++) {
     final l = copy.lines[i];
     final discount = billed?.lines[i];
     if (l.isFree) {
-      leftOut.add((name: l.name, why: CopyLeftOut.free));
+      free.add((at: leftOut.length, line: l));
       continue;
     }
 
@@ -226,6 +230,26 @@ Future<CounterCopy> counterCopyOf(
     } else {
       leftOut.add((name: l.name, why: CopyLeftOut.twice));
     }
+  }
+
+  // M54 x M43: a free line is the bonus a scheme gave, and the counter
+  // works bonuses out again from the lines rung (Cart.forBooks) -- so the
+  // copy's soaps bring their free soap back by themselves, under the line,
+  // and the cashier is not told it was left behind. Only a free line the
+  // shop's schemes no longer give of that item on these lines is named:
+  // that one really did not come.
+  final given = <String>{};
+  try {
+    final rung = [for (final l in lines) ...l.toDrafts(units)];
+    for (final g in book.bonusFor(SchemeBook.paidBaseOf(rung))) {
+      given.add(g.offer.freeItemId);
+    }
+  } on Object {
+    // A unit that will not convert gives no bonus on the counter either.
+  }
+  for (final (:at, :line) in free.reversed) {
+    if (line.itemId != null && given.contains(line.itemId)) continue;
+    leftOut.insert(at, (name: line.name, why: CopyLeftOut.free));
   }
 
   return CounterCopy(
@@ -351,6 +375,11 @@ Future<bool> billAgain(
       .read(unitConverterProvider.future)
       .then<UnitConverter?>((u) => u, onError: (Object _) => null);
 
+  // M54: asked for while the question is up, as the units are.
+  final schemesRead = ref
+      .read(schemeBookProvider.future)
+      .then((b) => b, onError: (Object _) => SchemeBook.empty);
+
   final rates = await askCopyRates(context, docNo: docNo);
   if (rates == null) return false;
 
@@ -366,6 +395,9 @@ Future<bool> billAgain(
       copy,
       rates: rates,
       units: units,
+      // M54: the shop's schemes, so a bonus the counter gives again is not
+      // named as left behind.
+      book: await schemesRead,
     );
     if (built.lines.isEmpty) {
       messenger.showSnackBar(

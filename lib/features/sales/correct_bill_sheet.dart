@@ -11,6 +11,7 @@ import '../../l10n/app_strings.dart';
 import '../khata/entry_actions.dart' show EntryNote, EntryProblem, modeLabel;
 import '../pos/cart.dart';
 import '../pos/pos_screen.dart';
+import '../pos/scheme_book.dart'; // M54
 import 'bill_again.dart';
 import 'bill_reasons.dart';
 
@@ -115,6 +116,10 @@ class _CorrectBillSheetState extends ConsumerState<_CorrectBillSheet> {
     final unitsFuture = ref
         .read(unitConverterProvider.future)
         .then<UnitConverter?>((u) => u, onError: (Object _) => null);
+    // M54: the shop's schemes, asked for while this sheet is still here.
+    final schemesRead = ref
+        .read(schemeBookProvider.future)
+        .then((b) => b, onError: (Object _) => SchemeBook.empty);
     try {
       final firm = await firmFuture;
       if (firm == null) throw StateError(s.commonNothingSaved);
@@ -135,6 +140,8 @@ class _CorrectBillSheetState extends ConsumerState<_CorrectBillSheet> {
         // bill sells them again.
         piecesBack: true,
         units: units,
+        // M54: a bonus the counter gives again is not named as left out.
+        book: await schemesRead,
       );
       if (built.lines.isEmpty) {
         throw StateError(

@@ -46,6 +46,41 @@ final class RecordRef {
   int get hashCode => Object.hash(table, id);
 }
 
+/// M54: how a paper left the phone from its send sheet (M30), as its
+/// history says it: "Shared on WhatsApp · Asif · 3 Oct".
+///
+/// Written as an audit row on the paper the moment it leaves, so the owner
+/// asking "did the customer ever get this bill?" reads who sent it, how and
+/// when. Kept apart from a print: a share is never the second paper copy
+/// that M30's DUPLICATE mark is about.
+enum SharedVia {
+  whatsapp,
+  pdf,
+  picture;
+
+  /// The audit row's action code: `SHARED_WHATSAPP`, `SHARED_PDF`,
+  /// `SHARED_PICTURE`.
+  String get action => '$sharedActionPrefix${name.toUpperCase()}';
+
+  /// What the audit row says, in the log's English.
+  String get words => switch (this) {
+    SharedVia.whatsapp => 'Shared on WhatsApp',
+    SharedVia.pdf => 'Shared as a PDF',
+    SharedVia.picture => 'Shared as a picture',
+  };
+
+  /// The way [action] names, or null for any other code.
+  static SharedVia? ofAction(String action) {
+    for (final v in values) {
+      if (v.action == action) return v;
+    }
+    return null;
+  }
+}
+
+/// Every [SharedVia] action starts with this.
+const sharedActionPrefix = 'SHARED_';
+
 /// What kind of thing happened, so a screen can mark it.
 enum HistoryKind {
   /// Made: a bill posted, a customer added.

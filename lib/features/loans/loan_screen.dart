@@ -11,6 +11,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M54
 import '../printing/pdf_font.dart';
 import 'repay_loan_screen.dart';
 
@@ -412,22 +413,32 @@ class _Line extends StatelessWidget {
               ],
             ),
           ],
-          if (line.reversed || onCancel != null) ...[
-            const SizedBox(height: BlTokens.space1),
-            Row(
-              children: [
-                if (line.reversed)
-                  BlChip(s.loanCancelled, tone: BlChipTone.bad),
-                const Spacer(),
-                if (onCancel != null)
-                  BlIconButton(
-                    icon: Icons.undo,
-                    label: s.loanCancelEntry,
-                    onPressed: onCancel,
+          const SizedBox(height: BlTokens.space1),
+          Row(
+            children: [
+              // M54: the paper behind this entry — the sanction letter, the
+              // repayment slip — through M60's button, which opens its
+              // strip: a statement is a list of entries, and a strip under
+              // each would push the next one off the screen.
+              Flexible(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  alignment: AlignmentDirectional.centerStart,
+                  child: EntryPhotosButton(
+                    owner: AttachmentOwner.loanEntry(line.entryId),
                   ),
-              ],
-            ),
-          ],
+                ),
+              ),
+              if (line.reversed) BlChip(s.loanCancelled, tone: BlChipTone.bad),
+              const Spacer(),
+              if (onCancel != null)
+                BlIconButton(
+                  icon: Icons.undo,
+                  label: s.loanCancelEntry,
+                  onPressed: onCancel,
+                ),
+            ],
+          ),
         ],
       ),
     );

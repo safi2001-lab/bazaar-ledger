@@ -18,6 +18,32 @@ final class DriftPharmacyReads implements PharmacyReader {
 
   final AppDatabase _db;
 
+  /// M54: the prescription [documentId]'s Schedule lines were registered
+  /// against — a challan's, for the bill made from it — or null.
+  Future<Prescription?> prescriptionOn(String firmId, String documentId) async {
+    final r = await _db
+        .customSelect(
+          '''
+          SELECT patient_name, patient_address, prescriber_name,
+                 prescriber_reg_no, prescription_ref
+          FROM prescriptions
+          WHERE firm_id = ? AND document_id = ? AND deleted_at_utc IS NULL
+          ORDER BY created_at_utc LIMIT 1
+          ''',
+          variables: [Variable<String>(firmId), Variable<String>(documentId)],
+          readsFrom: {_db.prescriptions},
+        )
+        .getSingleOrNull();
+    if (r == null) return null;
+    return Prescription(
+      patientName: r.read<String>('patient_name'),
+      patientAddress: r.readNullable<String>('patient_address'),
+      prescriberName: r.read<String>('prescriber_name'),
+      prescriberRegNo: r.read<String>('prescriber_reg_no'),
+      reference: r.readNullable<String>('prescription_ref'),
+    );
+  }
+
   @override
   Future<PharmacyRules> rulesFor(String firmId) async {
     final row = await _db

@@ -197,19 +197,19 @@ time, on the latest master (schema is v8 today).
 - [x] M61 · DONE: provincial service tax in the tax rate report, party tax, HS-code sales, Annex-C, the sales tax summary and returns
 - [ ] Owner/accountant to confirm: free bonus lines carry no sales tax; service lines on an FBR-reporting shop go to FBR at 0%; whether PRAL accepts a Rs 0 line
 
-### Polish round — small gaps the milestones reported (queued after M50)
-- [ ] M41: "Challan banayein" for a sale order loaded on the counter (one condition in the payment sheet)
-- [ ] M41: the credit-limit check counts a sale order's advance against the bill it pays
-- [ ] M36 × M43: a copied bill no longer lists its old bonus as "left out" (the counter gives it again)
-- [ ] M45: the stock warning in packs ("Stock sirf 2 ctn + 5 pcs hai"); a dozen line remembers its dozen when a piece is added
-- [ ] M43: a challan billed after its item's scheme changed is billed as sent, not refused
-- [ ] M35: "Expected collections this week" (now that bills have due dates, M38)
-- [ ] M47: one line on Home for monthly bills due
-- [ ] M42: sharing a bill (WhatsApp / PDF / picture) recorded in its history
-- [ ] M49: Schedule items on a delivery challan asked for the prescription; batch MRP on the PO receive sheet; importer maps a "Generic" column
-- [ ] M52: Vyapar's second unit and conversion imported as the item's pack (M53 made packs possible)
-- [ ] M60: photos on loan entries, a cheque's own page and batches
-- [ ] M55: cheques taken on a recovery round
+### Polish round — small gaps the milestones reported — DONE by M54 (12/12)
+- [x] M41: "Challan banayein" for a sale order loaded on the counter (one condition in the payment sheet) — M54
+- [x] M41: the credit-limit check counts a sale order's advance against the bill it pays — M54 (the khata already netted the advance; a bill the advance covers is no longer asked)
+- [x] M36 × M43: a copied bill no longer lists its old bonus as "left out" (the counter gives it again) — M54
+- [x] M45: the stock warning in packs ("Stock sirf 2 ctn + 5 pcs hai"); a dozen line remembers its dozen when a piece is added — M54 (cart draft v6, older drafts read)
+- [x] M43: a challan billed after its item's scheme changed is billed as sent, not refused — M54
+- [x] M35: "Expected collections this week" (now that bills have due dates, M38) — M54, Party group, next 7 days with qist instalments and promises
+- [x] M47: one line on Home for monthly bills due — M54
+- [x] M42: sharing a bill (WhatsApp / PDF / picture) recorded in its history — M54 (DUPLICATE stays a paper mark, as M30 decided)
+- [x] M49: Schedule items on a delivery challan asked for the prescription; batch MRP on the PO receive sheet; importer maps a "Generic" column — M54
+- [x] M52: Vyapar's second unit and conversion imported as the item's pack (M53 made packs possible) — M54 (when the second unit is a pack and the conversion whole; a sheet whose first unit is the pack comes in as before)
+- [x] M60: photos on loan entries, a cheque's own page and batches — M54
+- [x] M55: cheques taken on a recovery round — M54
 
 ## Finish line for each wave
 

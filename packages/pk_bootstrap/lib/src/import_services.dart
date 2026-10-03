@@ -64,6 +64,7 @@ final class ImportReview {
     this.matches = const [],
     this.unknownUnits = const {},
     this.secondaryUnits = const {},
+    this.packs = const {},
   });
 
   /// Rows the shop already has, by line.
@@ -77,7 +78,21 @@ final class ImportReview {
   /// Second units the shop cannot keep for an item ("1 BOX = 10 pcs"), and
   /// how many rows carry each. The item comes in by its first unit only.
   final Map<String, int> secondaryUnits;
+
+  /// M54: second units that come in as the item's pack (M53), "1 carton =
+  /// 24 pcs", and how many rows carry each.
+  final Map<String, int> packs;
 }
+
+/// M54: what a sheet calls the shop's packs (M53's `packUnitCodes`), the
+/// way Vyapar and the market write them. Compared squashed.
+const _packWords = {
+  'carton': {'carton', 'cartons', 'ctn', 'ctns', 'cartoon', 'peti'},
+  'dabba': {'dabba', 'dabbe', 'box', 'boxes', 'bx'},
+  'packet': {'packet', 'packets', 'pkt', 'pkts', 'pack', 'packs', 'pck'},
+  'strip': {'strip', 'strips', 'patta', 'patte'},
+  'bori': {'bori', 'boriyan', 'bag', 'bags', 'sack', 'sacks', 'katta'},
+};
 
 /// Every item the shop has, found by what a sheet can name it by.
 final class _ItemIndex {
@@ -221,6 +236,36 @@ final class ImportServices {
         .firstOrNull;
   }
 
+  /// M54: Vyapar's "Base Unit / Secondary Unit / Conversion Rate" as the
+  /// item's pack (M53): a second unit that is one of the shop's packs —
+  /// a carton, a box, a packet, a strip, a sack — and a whole conversion
+  /// over one, "1 carton = 24 pcs", on an item counted in pieces (a sack in
+  /// kilos). Null for anything else, which comes in by its first unit as
+  /// M52 brought it, and the preview says so: a conversion that is not
+  /// whole, or a first unit that is itself the pack (its stock and prices
+  /// would have to be divided down to the piece, which is not guessed).
+  static ({String id, String code, Qty size})? _packOf(
+    ItemRow row,
+    List<({String id, String code, String name, int decimals})> units,
+  ) {
+    final second = row.secondaryUnit;
+    final n = row.conversion;
+    if (second == null || n == null || !n.isWhole || n <= Qty.one) {
+      return null;
+    }
+    final word = _squash(second);
+    final code = _packWords.entries
+        .where((e) => e.key == word || e.value.contains(word))
+        .map((e) => e.key)
+        .firstOrNull;
+    if (code == null) return null;
+    final base = row.unit == null ? 'pcs' : _unitFor(units, row.unit!)?.code;
+    if (base != (code == 'bori' ? 'kg' : 'pcs')) return null;
+    final pack = units.where((u) => u.code == code).firstOrNull;
+    if (pack == null) return null;
+    return (id: pack.id, code: code, size: n);
+  }
+
   /// What a sheet of items would touch, for the preview.
   Future<ImportReview> reviewItems(ImportPlan<ItemRow> plan) async {
     final firm = (await _app.queries.currentFirm())!;
@@ -230,6 +275,7 @@ final class ImportServices {
     final matches = <ImportMatch>[];
     final unknown = <String, int>{};
     final second = <String, int>{};
+    final packs = <String, int>{}; // M54
     for (final (line, row) in plan.rows) {
       if (index.find(row) case (final item, final by)) {
         matches.add(
@@ -246,7 +292,12 @@ final class ImportServices {
       if (row.unit != null && base == null) {
         unknown.update(row.unit!, (n) => n + 1, ifAbsent: () => 1);
       }
-      if (row.secondaryUnit case final s?) {
+      // M54: a pack, said as one.
+      if (_packOf(row, units) case final pack?) {
+        final key =
+            '1 ${pack.code} = ${_plain(pack.size)} ${row.unit ?? 'pcs'}';
+        packs.update(key, (c) => c + 1, ifAbsent: () => 1);
+      } else if (row.secondaryUnit case final s?) {
         final other = _unitFor(units, s);
         // A second unit the shop already converts to the first, for every
         // item (grams of a kilo item, pieces of a dozen), is kept already.
@@ -270,6 +321,7 @@ final class ImportServices {
       matches: matches,
       unknownUnits: unknown,
       secondaryUnits: second,
+      packs: packs, // M54
     );
   }
 
@@ -331,10 +383,24 @@ final class ImportServices {
           // shop imports a list twice. A code or barcode only where the
           // shop has none: the counter scans the ones it has. The shelf is
           // left as counted, whatever the sheet says is on it.
+          // M54: the salt where the item has none; anything else it is as a
+          // medicine (strength, maker, Schedule) kept as it is.
+          final had = item.medicine;
+          final salt = (had?.genericName ?? '').trim().isEmpty
+              ? row.genericName
+              : null;
           await _app.catalogue.updateItem(
             _app.actorNow(),
             item.id,
             ItemDraft(
+              medicine: salt == null
+                  ? null
+                  : MedicineDetails(
+                      genericName: salt,
+                      strength: had?.strength,
+                      manufacturer: had?.manufacturer,
+                      schedule: had?.schedule,
+                    ),
               name: item.name,
               baseUnitId: item.unitId,
               saleRate: _rate(row.salePrice),
@@ -363,9 +429,18 @@ final class ImportServices {
           through.add(line);
           continue;
         }
+        final pack = _packOf(row, units); // M54
         await _app.catalogue.addItem(
           _app.actorNow(),
           ItemDraft(
+            // M54: Vyapar's second unit as its pack; its salt, for a
+            // medicine.
+            packs: pack == null
+                ? null
+                : [ItemPack(unitId: pack.id, size: pack.size)],
+            medicine: row.genericName == null
+                ? null
+                : MedicineDetails(genericName: row.genericName),
             name: row.name,
             baseUnitId: unit.id,
             saleRate: _rate(row.salePrice),
