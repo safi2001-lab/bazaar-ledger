@@ -6951,4 +6951,210 @@ class AppStringsEn extends AppStrings {
   String sheetCounts(int paid, int promised, int notPaid, int notReached) {
     return 'Paid: $paid · Promised: $promised · Not paid: $notPaid · Not reached: $notReached';
   }
+
+  @override
+  String pharmacyBatchMrp(String unit) {
+    return 'MRP per $unit';
+  }
+
+  @override
+  String get pharmacyMedicineTitle => 'As a medicine';
+
+  @override
+  String get pharmacyGeneric => 'Generic (salt) name';
+
+  @override
+  String get pharmacyGenericHint => 'e.g. Paracetamol';
+
+  @override
+  String get pharmacyStrength => 'Strength';
+
+  @override
+  String get pharmacyManufacturer => 'Manufacturer';
+
+  @override
+  String get pharmacySchedule => 'Schedule (controlled drug)';
+
+  @override
+  String get pharmacyScheduleNone => 'Not a Schedule drug';
+
+  @override
+  String get pharmacyScheduleB => 'Schedule B';
+
+  @override
+  String get pharmacyScheduleD => 'Schedule D';
+
+  @override
+  String get pharmacyScheduleOther => 'Other register drug';
+
+  @override
+  String get pharmacyScheduleNote =>
+      'Sold only on a doctor\'s prescription; every sale goes in the Schedule register.';
+
+  @override
+  String pharmacySubstitutes(String label) {
+    return 'Same salt: $label';
+  }
+
+  @override
+  String get pharmacyNoSubstitutes =>
+      'No other medicine with this salt and strength.';
+
+  @override
+  String pharmacyOffMrp(String mrp) {
+    return '% off MRP (Rs $mrp)';
+  }
+
+  @override
+  String get pharmacyOffMrpApply => 'Apply';
+
+  @override
+  String get pharmacyCannotSellTitle => 'This cannot be sold';
+
+  @override
+  String get pharmacyMrpBlockedTitle => 'Above the DRAP price';
+
+  @override
+  String pharmacyMrpBlocked(String item, String charged, String ceiling) {
+    return '$item: Rs $charged charged, its MRP allows Rs $ceiling. A medicine cannot be sold above its MRP.';
+  }
+
+  @override
+  String get pharmacyRxTitle => 'Prescription';
+
+  @override
+  String pharmacyRxFor(String names) {
+    return 'Schedule medicine: $names. Sold only on a registered doctor\'s prescription.';
+  }
+
+  @override
+  String get pharmacyRxPatient => 'Patient\'s name';
+
+  @override
+  String get pharmacyRxPatientAddress => 'Patient\'s address';
+
+  @override
+  String get pharmacyRxDoctor => 'Doctor\'s name';
+
+  @override
+  String get pharmacyRxRegNo => 'Doctor\'s PM&DC reg. no.';
+
+  @override
+  String get pharmacyRxRef => 'Prescription no. or reference';
+
+  @override
+  String get pharmacyRxPhoto => 'Photo of the prescription';
+
+  @override
+  String get pharmacyRxPhotoTaken => 'Photo added';
+
+  @override
+  String get pharmacyRxSave => 'Continue';
+
+  @override
+  String pharmacyHoldTitle(String batch) {
+    return 'Batch $batch';
+  }
+
+  @override
+  String pharmacyHeld(String reason) {
+    return 'On hold: $reason';
+  }
+
+  @override
+  String get pharmacyHoldReason => 'Why is it on hold?';
+
+  @override
+  String get pharmacyHoldReasonHint => 'DRAP recall, damaged carton…';
+
+  @override
+  String get pharmacyHold => 'Put on hold';
+
+  @override
+  String get pharmacyRelease => 'Back on sale';
+
+  @override
+  String get pharmacyHoldDone => 'Batch put on hold';
+
+  @override
+  String get pharmacyReleaseDone => 'Batch back on sale';
+
+  @override
+  String get pharmacyNearExpiryTitle => 'Near expiry, by supplier';
+
+  @override
+  String pharmacyNearExpiryDays(int days) {
+    return '$days days';
+  }
+
+  @override
+  String get pharmacyNearExpiryAll => 'All batches';
+
+  @override
+  String get pharmacyNearExpiryEmpty => 'No batch expires in this time.';
+
+  @override
+  String get pharmacyNoSupplier => 'From no supplier';
+
+  @override
+  String get pharmacyExpired => 'Expired';
+
+  @override
+  String pharmacyReturnPicked(int count) {
+    return 'Return $count to supplier';
+  }
+
+  @override
+  String get pharmacyReturnReason => 'Reason';
+
+  @override
+  String get pharmacyReturnReasonDefault => 'Expired or near expiry';
+
+  @override
+  String pharmacyReturnConfirm(String supplier, String value) {
+    return 'Send these back to $supplier? Worth Rs $value at cost.';
+  }
+
+  @override
+  String get pharmacyReturnSend => 'Send back';
+
+  @override
+  String pharmacyReturnDone(String nos) {
+    return 'Returned: $nos';
+  }
+
+  @override
+  String pharmacyReturnCredited(String amount) {
+    return 'Rs $amount off what we owe them';
+  }
+
+  @override
+  String pharmacyReturnRefunded(String amount) {
+    return 'Rs $amount back in cash';
+  }
+
+  @override
+  String get pharmacyReturnNote => 'Share the return note';
+
+  @override
+  String get pharmacyShopOffMrp => '% off MRP on every medicine';
+
+  @override
+  String get pharmacyShopOffMrpNote =>
+      'Every medicine with a printed price goes on the bill at its MRP less this. Selling above the MRP is refused.';
+
+  @override
+  String pharmacyBatchHeldScan(String batch, String reason) {
+    return 'Batch $batch is on hold: $reason. Do not sell it.';
+  }
+
+  @override
+  String get reportGroupPharmacy => 'Pharmacy';
+
+  @override
+  String get reportScheduleRegister => 'Schedule B/D register';
+
+  @override
+  String get reportScheduleRegisterHint =>
+      'Every controlled medicine in and out, with its prescription';
 }

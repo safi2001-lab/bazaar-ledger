@@ -4169,5 +4169,137 @@
       "notPaid": {"type": "int"},
       "notReached": {"type": "int"}
     }
-  }
+  },
+  "pharmacyBatchMrp": "MRP fi {unit}",
+  "@pharmacyBatchMrp": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "pharmacyMedicineTitle": "Dawai ki tafseel",
+  "pharmacyGeneric": "Generic naam (salt)",
+  "pharmacyGenericHint": "Jaise Paracetamol",
+  "pharmacyStrength": "Strength (taqat)",
+  "pharmacyManufacturer": "Banane wali company",
+  "pharmacySchedule": "Schedule (control wali dawai)",
+  "pharmacyScheduleNone": "Schedule nahi",
+  "pharmacyScheduleB": "Schedule B",
+  "pharmacyScheduleD": "Schedule D",
+  "pharmacyScheduleOther": "Register wali aur dawai",
+  "pharmacyScheduleNote": "Sirf doctor ke nuskhe par bikti hai; har sale Schedule register mein likhi jati hai.",
+  "pharmacySubstitutes": "Isi salt ki dawaiyan: {label}",
+  "@pharmacySubstitutes": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "pharmacyNoSubstitutes": "Is salt aur strength ki koi aur dawai nahi.",
+  "pharmacyOffMrp": "MRP (Rs {mrp}) se % kam",
+  "@pharmacyOffMrp": {
+    "placeholders": {
+      "mrp": {"type": "String"}
+    }
+  },
+  "pharmacyOffMrpApply": "Lagayein",
+  "pharmacyCannotSellTitle": "Yeh nahi bik sakti",
+  "pharmacyMrpBlockedTitle": "DRAP qeemat se zyada",
+  "pharmacyMrpBlocked": "{item}: Rs {charged} lag rahe hain, MRP sirf Rs {ceiling} ki ijazat deti hai. Dawai MRP se mehngi nahi bik sakti.",
+  "@pharmacyMrpBlocked": {
+    "placeholders": {
+      "item": {"type": "String"},
+      "charged": {"type": "String"},
+      "ceiling": {"type": "String"}
+    }
+  },
+  "pharmacyRxTitle": "Doctor ka nuskha",
+  "pharmacyRxFor": "Schedule dawai: {names}. Sirf registered doctor ke nuskhe par bikti hai.",
+  "@pharmacyRxFor": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "pharmacyRxPatient": "Mareez ka naam",
+  "pharmacyRxPatientAddress": "Mareez ka pata",
+  "pharmacyRxDoctor": "Doctor ka naam",
+  "pharmacyRxRegNo": "Doctor ka PM&DC registration no.",
+  "pharmacyRxRef": "Nuskha no. ya hawala",
+  "pharmacyRxPhoto": "Nuskhe ki tasveer",
+  "pharmacyRxPhotoTaken": "Tasveer lag gayi",
+  "pharmacyRxSave": "Aage barhein",
+  "pharmacyHoldTitle": "Batch {batch}",
+  "@pharmacyHoldTitle": {
+    "placeholders": {
+      "batch": {"type": "String"}
+    }
+  },
+  "pharmacyHeld": "Roka hua: {reason}",
+  "@pharmacyHeld": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "pharmacyHoldReason": "Kyun roka?",
+  "pharmacyHoldReasonHint": "DRAP recall, kharab carton…",
+  "pharmacyHold": "Rok dein",
+  "pharmacyRelease": "Dobara bechein",
+  "pharmacyHoldDone": "Batch rok diya",
+  "pharmacyReleaseDone": "Batch dobara bikne laga",
+  "pharmacyNearExpiryTitle": "Expiry qareeb — supplier war",
+  "pharmacyNearExpiryDays": "{days} din",
+  "@pharmacyNearExpiryDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pharmacyNearExpiryAll": "Saare batch",
+  "pharmacyNearExpiryEmpty": "Is muddat mein koi batch expire nahi ho raha.",
+  "pharmacyNoSupplier": "Kisi supplier se nahi",
+  "pharmacyExpired": "Expire ho chuka",
+  "pharmacyReturnPicked": "{count} batch supplier ko wapas",
+  "@pharmacyReturnPicked": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pharmacyReturnReason": "Wajah",
+  "pharmacyReturnReasonDefault": "Expiry ki wajah se wapsi",
+  "pharmacyReturnConfirm": "Yeh {supplier} ko wapas bhejein? Laagat Rs {value}.",
+  "@pharmacyReturnConfirm": {
+    "placeholders": {
+      "supplier": {"type": "String"},
+      "value": {"type": "String"}
+    }
+  },
+  "pharmacyReturnSend": "Wapas bhejein",
+  "pharmacyReturnDone": "Wapsi ho gayi: {nos}",
+  "@pharmacyReturnDone": {
+    "placeholders": {
+      "nos": {"type": "String"}
+    }
+  },
+  "pharmacyReturnCredited": "Un ke khate se Rs {amount} kam",
+  "@pharmacyReturnCredited": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "pharmacyReturnRefunded": "Rs {amount} naqd wapas",
+  "@pharmacyReturnRefunded": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "pharmacyReturnNote": "Wapsi ki parchi bhejein",
+  "pharmacyShopOffMrp": "Har dawai par MRP se % kam",
+  "pharmacyShopOffMrpNote": "Har chhapi qeemat wali dawai bill par MRP se itni kam lagegi. MRP se zyada par bechna mana hai.",
+  "pharmacyBatchHeldScan": "Batch {batch} roka hua hai: {reason}. Yeh na bechein.",
+  "@pharmacyBatchHeldScan": {
+    "placeholders": {
+      "batch": {"type": "String"},
+      "reason": {"type": "String"}
+    }
+  },
+  "reportGroupPharmacy": "Pharmacy",
+  "reportScheduleRegister": "Schedule B/D register",
+  "reportScheduleRegisterHint": "Har control wali dawai ki aamad o kharch, nuskhe ke saath"
 }

@@ -6944,4 +6944,211 @@ class AppStringsUr extends AppStrings {
   String sheetCounts(int paid, int promised, int notPaid, int notReached) {
     return 'Diye: $paid · Wade: $promised · Nahi diye: $notPaid · Nahi gaye: $notReached';
   }
+
+  @override
+  String pharmacyBatchMrp(String unit) {
+    return 'MRP fi $unit';
+  }
+
+  @override
+  String get pharmacyMedicineTitle => 'Dawai ki tafseel';
+
+  @override
+  String get pharmacyGeneric => 'Generic naam (salt)';
+
+  @override
+  String get pharmacyGenericHint => 'Jaise Paracetamol';
+
+  @override
+  String get pharmacyStrength => 'Strength (taqat)';
+
+  @override
+  String get pharmacyManufacturer => 'Banane wali company';
+
+  @override
+  String get pharmacySchedule => 'Schedule (control wali dawai)';
+
+  @override
+  String get pharmacyScheduleNone => 'Schedule nahi';
+
+  @override
+  String get pharmacyScheduleB => 'Schedule B';
+
+  @override
+  String get pharmacyScheduleD => 'Schedule D';
+
+  @override
+  String get pharmacyScheduleOther => 'Register wali aur dawai';
+
+  @override
+  String get pharmacyScheduleNote =>
+      'Sirf doctor ke nuskhe par bikti hai; har sale Schedule register mein likhi jati hai.';
+
+  @override
+  String pharmacySubstitutes(String label) {
+    return 'Isi salt ki dawaiyan: $label';
+  }
+
+  @override
+  String get pharmacyNoSubstitutes =>
+      'Is salt aur strength ki koi aur dawai nahi.';
+
+  @override
+  String pharmacyOffMrp(String mrp) {
+    return 'MRP (Rs $mrp) se % kam';
+  }
+
+  @override
+  String get pharmacyOffMrpApply => 'Lagayein';
+
+  @override
+  String get pharmacyCannotSellTitle => 'Yeh nahi bik sakti';
+
+  @override
+  String get pharmacyMrpBlockedTitle => 'DRAP qeemat se zyada';
+
+  @override
+  String pharmacyMrpBlocked(String item, String charged, String ceiling) {
+    return '$item: Rs $charged lag rahe hain, MRP sirf Rs $ceiling ki ijazat deti hai. Dawai MRP se mehngi nahi bik sakti.';
+  }
+
+  @override
+  String get pharmacyRxTitle => 'Doctor ka nuskha';
+
+  @override
+  String pharmacyRxFor(String names) {
+    return 'Schedule dawai: $names. Sirf registered doctor ke nuskhe par bikti hai.';
+  }
+
+  @override
+  String get pharmacyRxPatient => 'Mareez ka naam';
+
+  @override
+  String get pharmacyRxPatientAddress => 'Mareez ka pata';
+
+  @override
+  String get pharmacyRxDoctor => 'Doctor ka naam';
+
+  @override
+  String get pharmacyRxRegNo => 'Doctor ka PM&DC registration no.';
+
+  @override
+  String get pharmacyRxRef => 'Nuskha no. ya hawala';
+
+  @override
+  String get pharmacyRxPhoto => 'Nuskhe ki tasveer';
+
+  @override
+  String get pharmacyRxPhotoTaken => 'Tasveer lag gayi';
+
+  @override
+  String get pharmacyRxSave => 'Aage barhein';
+
+  @override
+  String pharmacyHoldTitle(String batch) {
+    return 'Batch $batch';
+  }
+
+  @override
+  String pharmacyHeld(String reason) {
+    return 'Roka hua: $reason';
+  }
+
+  @override
+  String get pharmacyHoldReason => 'Kyun roka?';
+
+  @override
+  String get pharmacyHoldReasonHint => 'DRAP recall, kharab carton…';
+
+  @override
+  String get pharmacyHold => 'Rok dein';
+
+  @override
+  String get pharmacyRelease => 'Dobara bechein';
+
+  @override
+  String get pharmacyHoldDone => 'Batch rok diya';
+
+  @override
+  String get pharmacyReleaseDone => 'Batch dobara bikne laga';
+
+  @override
+  String get pharmacyNearExpiryTitle => 'Expiry qareeb — supplier war';
+
+  @override
+  String pharmacyNearExpiryDays(int days) {
+    return '$days din';
+  }
+
+  @override
+  String get pharmacyNearExpiryAll => 'Saare batch';
+
+  @override
+  String get pharmacyNearExpiryEmpty =>
+      'Is muddat mein koi batch expire nahi ho raha.';
+
+  @override
+  String get pharmacyNoSupplier => 'Kisi supplier se nahi';
+
+  @override
+  String get pharmacyExpired => 'Expire ho chuka';
+
+  @override
+  String pharmacyReturnPicked(int count) {
+    return '$count batch supplier ko wapas';
+  }
+
+  @override
+  String get pharmacyReturnReason => 'Wajah';
+
+  @override
+  String get pharmacyReturnReasonDefault => 'Expiry ki wajah se wapsi';
+
+  @override
+  String pharmacyReturnConfirm(String supplier, String value) {
+    return 'Yeh $supplier ko wapas bhejein? Laagat Rs $value.';
+  }
+
+  @override
+  String get pharmacyReturnSend => 'Wapas bhejein';
+
+  @override
+  String pharmacyReturnDone(String nos) {
+    return 'Wapsi ho gayi: $nos';
+  }
+
+  @override
+  String pharmacyReturnCredited(String amount) {
+    return 'Un ke khate se Rs $amount kam';
+  }
+
+  @override
+  String pharmacyReturnRefunded(String amount) {
+    return 'Rs $amount naqd wapas';
+  }
+
+  @override
+  String get pharmacyReturnNote => 'Wapsi ki parchi bhejein';
+
+  @override
+  String get pharmacyShopOffMrp => 'Har dawai par MRP se % kam';
+
+  @override
+  String get pharmacyShopOffMrpNote =>
+      'Har chhapi qeemat wali dawai bill par MRP se itni kam lagegi. MRP se zyada par bechna mana hai.';
+
+  @override
+  String pharmacyBatchHeldScan(String batch, String reason) {
+    return 'Batch $batch roka hua hai: $reason. Yeh na bechein.';
+  }
+
+  @override
+  String get reportGroupPharmacy => 'Pharmacy';
+
+  @override
+  String get reportScheduleRegister => 'Schedule B/D register';
+
+  @override
+  String get reportScheduleRegisterHint =>
+      'Har control wali dawai ki aamad o kharch, nuskhe ke saath';
 }

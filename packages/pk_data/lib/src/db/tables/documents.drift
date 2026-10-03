@@ -281,3 +281,61 @@ CREATE UNIQUE INDEX idx_doclinks_pair
   ON doc_links (from_document_id, to_document_id, link_type);
 CREATE INDEX idx_doclinks_to ON doc_links (to_document_id);
 CREATE INDEX idx_doclinks_firm ON doc_links (firm_id, link_type);
+
+-- Bazaar Ledger — schema v11 (M49): the pharmacy pack.
+--
+-- The Punjab Drug Sale Rules 2007 let a chemist sell a Schedule B or D drug
+-- only on a registered practitioner's prescription, and make him write every
+-- such sale in a register an inspector may ask for: the date, a serial, who
+-- prescribed it and for whom, the drug and its maker, the batch, how much
+-- went, and how much came in and is left. Everything on that list is in the
+-- books already — the bill, its lines, the batch each strip left from, every
+-- delivery and the running balance — except the two people. This table is
+-- the two people.
+--
+-- One row per Schedule line of a bill, keyed by the line, so the register
+-- reads each line against its own prescription and a line can never have
+-- two. The class is copied from the item as it was sold: an item the shop
+-- later stops treating as Schedule keeps every sale it already registered,
+-- which is the point of a register.
+--
+-- Its rows are PrescriptionRow in Dart, so the name Prescription stays the
+-- domain's: who it was for and who prescribed it, as the counter asks.
+--
+-- A photograph of the paper prescription, when one is taken, is an
+-- attachments row with owner_table 'prescriptions' and owner_id the bill's
+-- document id: one picture per bill, however many Schedule lines it has.
+CREATE TABLE prescriptions (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  document_id TEXT NOT NULL REFERENCES documents(id) DEFERRABLE INITIALLY DEFERRED,
+  document_line_id TEXT NOT NULL REFERENCES document_lines(id) DEFERRABLE INITIALLY DEFERRED,
+  item_id TEXT NOT NULL REFERENCES items(id) DEFERRABLE INITIALLY DEFERRED,
+  schedule_class TEXT NOT NULL CHECK (schedule_class IN ('B', 'D', 'other')),
+
+  -- Never blank: a Schedule sale without these is the sale the rules forbid,
+  -- and a UI rule protects only the UI. An import or a LAN merge reaches the
+  -- table too.
+  patient_name TEXT NOT NULL CHECK (length(trim(patient_name)) > 0),
+  patient_address TEXT,
+  prescriber_name TEXT NOT NULL CHECK (length(trim(prescriber_name)) > 0),
+  -- The PM&DC registration number on the doctor's pad.
+  prescriber_reg_no TEXT NOT NULL CHECK (length(trim(prescriber_reg_no)) > 0),
+  -- Whatever the shop files the paper under: the slip's own number, a date
+  -- and a doctor's initials. The original is kept, as the rules require.
+  prescription_ref TEXT
+) STRICT AS PrescriptionRow;
+
+CREATE UNIQUE INDEX idx_prescriptions_line ON prescriptions (document_line_id);
+CREATE INDEX idx_prescriptions_doc ON prescriptions (document_id);
+CREATE INDEX idx_prescriptions_firm_item ON prescriptions (firm_id, item_id);
+CREATE INDEX idx_prescriptions_item ON prescriptions (item_id);

@@ -20105,6 +20105,61 @@ class Items extends Table with TableInfo<Items, Item> {
     $customConstraints:
         'CHECK (negative_stock IN (\'allow\', \'warn\', \'block\'))',
   );
+  static const VerificationMeta _genericNameMeta = const VerificationMeta(
+    'genericName',
+  );
+  late final GeneratedColumn<String> genericName = GeneratedColumn<String>(
+    'generic_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _strengthMeta = const VerificationMeta(
+    'strength',
+  );
+  late final GeneratedColumn<String> strength = GeneratedColumn<String>(
+    'strength',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _genericSearchMeta = const VerificationMeta(
+    'genericSearch',
+  );
+  late final GeneratedColumn<String> genericSearch = GeneratedColumn<String>(
+    'generic_search',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _manufacturerMeta = const VerificationMeta(
+    'manufacturer',
+  );
+  late final GeneratedColumn<String> manufacturer = GeneratedColumn<String>(
+    'manufacturer',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _scheduleClassMeta = const VerificationMeta(
+    'scheduleClass',
+  );
+  late final GeneratedColumn<String> scheduleClass = GeneratedColumn<String>(
+    'schedule_class',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: 'CHECK (schedule_class IN (\'B\', \'D\', \'other\'))',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -20146,6 +20201,11 @@ class Items extends Table with TableInfo<Items, Item> {
     isActive,
     vipRateMilliPaisa,
     negativeStock,
+    genericName,
+    strength,
+    genericSearch,
+    manufacturer,
+    scheduleClass,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -20475,6 +20535,48 @@ class Items extends Table with TableInfo<Items, Item> {
         ),
       );
     }
+    if (data.containsKey('generic_name')) {
+      context.handle(
+        _genericNameMeta,
+        genericName.isAcceptableOrUnknown(
+          data['generic_name']!,
+          _genericNameMeta,
+        ),
+      );
+    }
+    if (data.containsKey('strength')) {
+      context.handle(
+        _strengthMeta,
+        strength.isAcceptableOrUnknown(data['strength']!, _strengthMeta),
+      );
+    }
+    if (data.containsKey('generic_search')) {
+      context.handle(
+        _genericSearchMeta,
+        genericSearch.isAcceptableOrUnknown(
+          data['generic_search']!,
+          _genericSearchMeta,
+        ),
+      );
+    }
+    if (data.containsKey('manufacturer')) {
+      context.handle(
+        _manufacturerMeta,
+        manufacturer.isAcceptableOrUnknown(
+          data['manufacturer']!,
+          _manufacturerMeta,
+        ),
+      );
+    }
+    if (data.containsKey('schedule_class')) {
+      context.handle(
+        _scheduleClassMeta,
+        scheduleClass.isAcceptableOrUnknown(
+          data['schedule_class']!,
+          _scheduleClassMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -20640,6 +20742,26 @@ class Items extends Table with TableInfo<Items, Item> {
         DriftSqlType.string,
         data['${effectivePrefix}negative_stock'],
       ),
+      genericName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}generic_name'],
+      ),
+      strength: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}strength'],
+      ),
+      genericSearch: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}generic_search'],
+      ),
+      manufacturer: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}manufacturer'],
+      ),
+      scheduleClass: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}schedule_class'],
+      ),
     );
   }
 
@@ -20720,6 +20842,30 @@ class Item extends DataClass implements Insertable<Item> {
   /// the other counters with the item it belongs to. Added in v10, last
   /// because SQLite adds a column at the end.
   final String? negativeStock;
+
+  /// The pharmacy pack (M49), added in v11, last because SQLite adds a column
+  /// at the end. Empty on every item that is not a medicine, which is every
+  /// item of every shop that is not a pharmacy.
+  ///
+  /// What the medicine is, as opposed to what the box calls it: Panadol is
+  /// paracetamol 500 mg, and so is Calpol and the hospital's own strip. A
+  /// customer asks for one by either name, and when the shelf has none of the
+  /// brand, the chemist sells another with the same salt and strength.
+  final String? genericName;
+  final String? strength;
+
+  /// Derived, like name_search: the spelling key of the salt and strength
+  /// together (M56's nameSearchColumn), so "paracetamol", "parasitamol" and
+  /// "paracetamol 500" all find Panadol. Two items with the same key are
+  /// substitutes for each other. Worked out from the two columns above on
+  /// every device that holds them, never typed.
+  final String? genericSearch;
+  final String? manufacturer;
+
+  /// A controlled drug (Punjab Drug Sale Rules 2007): Schedule B or D, or
+  /// another the shop keeps a register for. Sold only on a registered
+  /// practitioner's prescription, and every sale is written in the register.
+  final String? scheduleClass;
   const Item({
     required this.id,
     required this.firmId,
@@ -20760,6 +20906,11 @@ class Item extends DataClass implements Insertable<Item> {
     required this.isActive,
     this.vipRateMilliPaisa,
     this.negativeStock,
+    this.genericName,
+    this.strength,
+    this.genericSearch,
+    this.manufacturer,
+    this.scheduleClass,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -20833,6 +20984,21 @@ class Item extends DataClass implements Insertable<Item> {
     if (!nullToAbsent || negativeStock != null) {
       map['negative_stock'] = Variable<String>(negativeStock);
     }
+    if (!nullToAbsent || genericName != null) {
+      map['generic_name'] = Variable<String>(genericName);
+    }
+    if (!nullToAbsent || strength != null) {
+      map['strength'] = Variable<String>(strength);
+    }
+    if (!nullToAbsent || genericSearch != null) {
+      map['generic_search'] = Variable<String>(genericSearch);
+    }
+    if (!nullToAbsent || manufacturer != null) {
+      map['manufacturer'] = Variable<String>(manufacturer);
+    }
+    if (!nullToAbsent || scheduleClass != null) {
+      map['schedule_class'] = Variable<String>(scheduleClass);
+    }
     return map;
   }
 
@@ -20903,6 +21069,21 @@ class Item extends DataClass implements Insertable<Item> {
       negativeStock: negativeStock == null && nullToAbsent
           ? const Value.absent()
           : Value(negativeStock),
+      genericName: genericName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(genericName),
+      strength: strength == null && nullToAbsent
+          ? const Value.absent()
+          : Value(strength),
+      genericSearch: genericSearch == null && nullToAbsent
+          ? const Value.absent()
+          : Value(genericSearch),
+      manufacturer: manufacturer == null && nullToAbsent
+          ? const Value.absent()
+          : Value(manufacturer),
+      scheduleClass: scheduleClass == null && nullToAbsent
+          ? const Value.absent()
+          : Value(scheduleClass),
     );
   }
 
@@ -20969,6 +21150,11 @@ class Item extends DataClass implements Insertable<Item> {
         json['vip_rate_milli_paisa'],
       ),
       negativeStock: serializer.fromJson<String?>(json['negative_stock']),
+      genericName: serializer.fromJson<String?>(json['generic_name']),
+      strength: serializer.fromJson<String?>(json['strength']),
+      genericSearch: serializer.fromJson<String?>(json['generic_search']),
+      manufacturer: serializer.fromJson<String?>(json['manufacturer']),
+      scheduleClass: serializer.fromJson<String?>(json['schedule_class']),
     );
   }
   @override
@@ -21022,6 +21208,11 @@ class Item extends DataClass implements Insertable<Item> {
       'is_active': serializer.toJson<int>(isActive),
       'vip_rate_milli_paisa': serializer.toJson<int?>(vipRateMilliPaisa),
       'negative_stock': serializer.toJson<String?>(negativeStock),
+      'generic_name': serializer.toJson<String?>(genericName),
+      'strength': serializer.toJson<String?>(strength),
+      'generic_search': serializer.toJson<String?>(genericSearch),
+      'manufacturer': serializer.toJson<String?>(manufacturer),
+      'schedule_class': serializer.toJson<String?>(scheduleClass),
     };
   }
 
@@ -21065,6 +21256,11 @@ class Item extends DataClass implements Insertable<Item> {
     int? isActive,
     Value<int?> vipRateMilliPaisa = const Value.absent(),
     Value<String?> negativeStock = const Value.absent(),
+    Value<String?> genericName = const Value.absent(),
+    Value<String?> strength = const Value.absent(),
+    Value<String?> genericSearch = const Value.absent(),
+    Value<String?> manufacturer = const Value.absent(),
+    Value<String?> scheduleClass = const Value.absent(),
   }) => Item(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
@@ -21119,6 +21315,15 @@ class Item extends DataClass implements Insertable<Item> {
     negativeStock: negativeStock.present
         ? negativeStock.value
         : this.negativeStock,
+    genericName: genericName.present ? genericName.value : this.genericName,
+    strength: strength.present ? strength.value : this.strength,
+    genericSearch: genericSearch.present
+        ? genericSearch.value
+        : this.genericSearch,
+    manufacturer: manufacturer.present ? manufacturer.value : this.manufacturer,
+    scheduleClass: scheduleClass.present
+        ? scheduleClass.value
+        : this.scheduleClass,
   );
   Item copyWithCompanion(ItemsCompanion data) {
     return Item(
@@ -21209,6 +21414,19 @@ class Item extends DataClass implements Insertable<Item> {
       negativeStock: data.negativeStock.present
           ? data.negativeStock.value
           : this.negativeStock,
+      genericName: data.genericName.present
+          ? data.genericName.value
+          : this.genericName,
+      strength: data.strength.present ? data.strength.value : this.strength,
+      genericSearch: data.genericSearch.present
+          ? data.genericSearch.value
+          : this.genericSearch,
+      manufacturer: data.manufacturer.present
+          ? data.manufacturer.value
+          : this.manufacturer,
+      scheduleClass: data.scheduleClass.present
+          ? data.scheduleClass.value
+          : this.scheduleClass,
     );
   }
 
@@ -21253,7 +21471,12 @@ class Item extends DataClass implements Insertable<Item> {
           ..write('imageAttachmentId: $imageAttachmentId, ')
           ..write('isActive: $isActive, ')
           ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
-          ..write('negativeStock: $negativeStock')
+          ..write('negativeStock: $negativeStock, ')
+          ..write('genericName: $genericName, ')
+          ..write('strength: $strength, ')
+          ..write('genericSearch: $genericSearch, ')
+          ..write('manufacturer: $manufacturer, ')
+          ..write('scheduleClass: $scheduleClass')
           ..write(')'))
         .toString();
   }
@@ -21299,6 +21522,11 @@ class Item extends DataClass implements Insertable<Item> {
     isActive,
     vipRateMilliPaisa,
     negativeStock,
+    genericName,
+    strength,
+    genericSearch,
+    manufacturer,
+    scheduleClass,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -21342,7 +21570,12 @@ class Item extends DataClass implements Insertable<Item> {
           other.imageAttachmentId == this.imageAttachmentId &&
           other.isActive == this.isActive &&
           other.vipRateMilliPaisa == this.vipRateMilliPaisa &&
-          other.negativeStock == this.negativeStock);
+          other.negativeStock == this.negativeStock &&
+          other.genericName == this.genericName &&
+          other.strength == this.strength &&
+          other.genericSearch == this.genericSearch &&
+          other.manufacturer == this.manufacturer &&
+          other.scheduleClass == this.scheduleClass);
 }
 
 class ItemsCompanion extends UpdateCompanion<Item> {
@@ -21385,6 +21618,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
   final Value<int> isActive;
   final Value<int?> vipRateMilliPaisa;
   final Value<String?> negativeStock;
+  final Value<String?> genericName;
+  final Value<String?> strength;
+  final Value<String?> genericSearch;
+  final Value<String?> manufacturer;
+  final Value<String?> scheduleClass;
   final Value<int> rowid;
   const ItemsCompanion({
     this.id = const Value.absent(),
@@ -21426,6 +21664,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.isActive = const Value.absent(),
     this.vipRateMilliPaisa = const Value.absent(),
     this.negativeStock = const Value.absent(),
+    this.genericName = const Value.absent(),
+    this.strength = const Value.absent(),
+    this.genericSearch = const Value.absent(),
+    this.manufacturer = const Value.absent(),
+    this.scheduleClass = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ItemsCompanion.insert({
@@ -21468,6 +21711,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     this.isActive = const Value.absent(),
     this.vipRateMilliPaisa = const Value.absent(),
     this.negativeStock = const Value.absent(),
+    this.genericName = const Value.absent(),
+    this.strength = const Value.absent(),
+    this.genericSearch = const Value.absent(),
+    this.manufacturer = const Value.absent(),
+    this.scheduleClass = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -21520,6 +21768,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Expression<int>? isActive,
     Expression<int>? vipRateMilliPaisa,
     Expression<String>? negativeStock,
+    Expression<String>? genericName,
+    Expression<String>? strength,
+    Expression<String>? genericSearch,
+    Expression<String>? manufacturer,
+    Expression<String>? scheduleClass,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -21569,6 +21822,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
       if (isActive != null) 'is_active': isActive,
       if (vipRateMilliPaisa != null) 'vip_rate_milli_paisa': vipRateMilliPaisa,
       if (negativeStock != null) 'negative_stock': negativeStock,
+      if (genericName != null) 'generic_name': genericName,
+      if (strength != null) 'strength': strength,
+      if (genericSearch != null) 'generic_search': genericSearch,
+      if (manufacturer != null) 'manufacturer': manufacturer,
+      if (scheduleClass != null) 'schedule_class': scheduleClass,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -21613,6 +21871,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     Value<int>? isActive,
     Value<int?>? vipRateMilliPaisa,
     Value<String?>? negativeStock,
+    Value<String?>? genericName,
+    Value<String?>? strength,
+    Value<String?>? genericSearch,
+    Value<String?>? manufacturer,
+    Value<String?>? scheduleClass,
     Value<int>? rowid,
   }) {
     return ItemsCompanion(
@@ -21660,6 +21923,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
       isActive: isActive ?? this.isActive,
       vipRateMilliPaisa: vipRateMilliPaisa ?? this.vipRateMilliPaisa,
       negativeStock: negativeStock ?? this.negativeStock,
+      genericName: genericName ?? this.genericName,
+      strength: strength ?? this.strength,
+      genericSearch: genericSearch ?? this.genericSearch,
+      manufacturer: manufacturer ?? this.manufacturer,
+      scheduleClass: scheduleClass ?? this.scheduleClass,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -21794,6 +22062,21 @@ class ItemsCompanion extends UpdateCompanion<Item> {
     if (negativeStock.present) {
       map['negative_stock'] = Variable<String>(negativeStock.value);
     }
+    if (genericName.present) {
+      map['generic_name'] = Variable<String>(genericName.value);
+    }
+    if (strength.present) {
+      map['strength'] = Variable<String>(strength.value);
+    }
+    if (genericSearch.present) {
+      map['generic_search'] = Variable<String>(genericSearch.value);
+    }
+    if (manufacturer.present) {
+      map['manufacturer'] = Variable<String>(manufacturer.value);
+    }
+    if (scheduleClass.present) {
+      map['schedule_class'] = Variable<String>(scheduleClass.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -21842,6 +22125,11 @@ class ItemsCompanion extends UpdateCompanion<Item> {
           ..write('isActive: $isActive, ')
           ..write('vipRateMilliPaisa: $vipRateMilliPaisa, ')
           ..write('negativeStock: $negativeStock, ')
+          ..write('genericName: $genericName, ')
+          ..write('strength: $strength, ')
+          ..write('genericSearch: $genericSearch, ')
+          ..write('manufacturer: $manufacturer, ')
+          ..write('scheduleClass: $scheduleClass, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -29404,6 +29692,18 @@ class StockLots extends Table with TableInfo<StockLots, StockLot> {
     requiredDuringInsert: false,
     $customConstraints: 'REFERENCES parties(id)DEFERRABLE INITIALLY DEFERRED',
   );
+  static const VerificationMeta _holdReasonMeta = const VerificationMeta(
+    'holdReason',
+  );
+  late final GeneratedColumn<String> holdReason = GeneratedColumn<String>(
+    'hold_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints:
+        'CHECK (hold_reason IS NULL OR length(trim(hold_reason)) > 0)',
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -29427,6 +29727,7 @@ class StockLots extends Table with TableInfo<StockLots, StockLot> {
     serial,
     receivedAtUtc,
     supplierPartyId,
+    holdReason,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -29610,6 +29911,12 @@ class StockLots extends Table with TableInfo<StockLots, StockLot> {
         ),
       );
     }
+    if (data.containsKey('hold_reason')) {
+      context.handle(
+        _holdReasonMeta,
+        holdReason.isAcceptableOrUnknown(data['hold_reason']!, _holdReasonMeta),
+      );
+    }
     return context;
   }
 
@@ -29703,6 +30010,10 @@ class StockLots extends Table with TableInfo<StockLots, StockLot> {
         DriftSqlType.string,
         data['${effectivePrefix}supplier_party_id'],
       ),
+      holdReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hold_reason'],
+      ),
     );
   }
 
@@ -29749,6 +30060,13 @@ class StockLot extends DataClass implements Insertable<StockLot> {
   final String? serial;
   final int? receivedAtUtc;
   final String? supplierPartyId;
+
+  /// Why this batch may not be sold, while it may not (M49): a DRAP recall,
+  /// a carton that came in wet, a batch the distributor rang about. Empty is
+  /// a batch the counter sells. First-expiry-first-out passes a held batch
+  /// by, and a scan or a pick of it is refused with these words. Added in
+  /// v11, last because SQLite adds a column at the end.
+  final String? holdReason;
   const StockLot({
     required this.id,
     required this.firmId,
@@ -29771,6 +30089,7 @@ class StockLot extends DataClass implements Insertable<StockLot> {
     this.serial,
     this.receivedAtUtc,
     this.supplierPartyId,
+    this.holdReason,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -29814,6 +30133,9 @@ class StockLot extends DataClass implements Insertable<StockLot> {
     if (!nullToAbsent || supplierPartyId != null) {
       map['supplier_party_id'] = Variable<String>(supplierPartyId);
     }
+    if (!nullToAbsent || holdReason != null) {
+      map['hold_reason'] = Variable<String>(holdReason);
+    }
     return map;
   }
 
@@ -29856,6 +30178,9 @@ class StockLot extends DataClass implements Insertable<StockLot> {
       supplierPartyId: supplierPartyId == null && nullToAbsent
           ? const Value.absent()
           : Value(supplierPartyId),
+      holdReason: holdReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(holdReason),
     );
   }
 
@@ -29886,6 +30211,7 @@ class StockLot extends DataClass implements Insertable<StockLot> {
       serial: serializer.fromJson<String?>(json['serial']),
       receivedAtUtc: serializer.fromJson<int?>(json['received_at_utc']),
       supplierPartyId: serializer.fromJson<String?>(json['supplier_party_id']),
+      holdReason: serializer.fromJson<String?>(json['hold_reason']),
     );
   }
   @override
@@ -29913,6 +30239,7 @@ class StockLot extends DataClass implements Insertable<StockLot> {
       'serial': serializer.toJson<String?>(serial),
       'received_at_utc': serializer.toJson<int?>(receivedAtUtc),
       'supplier_party_id': serializer.toJson<String?>(supplierPartyId),
+      'hold_reason': serializer.toJson<String?>(holdReason),
     };
   }
 
@@ -29938,6 +30265,7 @@ class StockLot extends DataClass implements Insertable<StockLot> {
     Value<String?> serial = const Value.absent(),
     Value<int?> receivedAtUtc = const Value.absent(),
     Value<String?> supplierPartyId = const Value.absent(),
+    Value<String?> holdReason = const Value.absent(),
   }) => StockLot(
     id: id ?? this.id,
     firmId: firmId ?? this.firmId,
@@ -29966,6 +30294,7 @@ class StockLot extends DataClass implements Insertable<StockLot> {
     supplierPartyId: supplierPartyId.present
         ? supplierPartyId.value
         : this.supplierPartyId,
+    holdReason: holdReason.present ? holdReason.value : this.holdReason,
   );
   StockLot copyWithCompanion(StockLotsCompanion data) {
     return StockLot(
@@ -30008,6 +30337,9 @@ class StockLot extends DataClass implements Insertable<StockLot> {
       supplierPartyId: data.supplierPartyId.present
           ? data.supplierPartyId.value
           : this.supplierPartyId,
+      holdReason: data.holdReason.present
+          ? data.holdReason.value
+          : this.holdReason,
     );
   }
 
@@ -30034,7 +30366,8 @@ class StockLot extends DataClass implements Insertable<StockLot> {
           ..write('gtin: $gtin, ')
           ..write('serial: $serial, ')
           ..write('receivedAtUtc: $receivedAtUtc, ')
-          ..write('supplierPartyId: $supplierPartyId')
+          ..write('supplierPartyId: $supplierPartyId, ')
+          ..write('holdReason: $holdReason')
           ..write(')'))
         .toString();
   }
@@ -30062,6 +30395,7 @@ class StockLot extends DataClass implements Insertable<StockLot> {
     serial,
     receivedAtUtc,
     supplierPartyId,
+    holdReason,
   ]);
   @override
   bool operator ==(Object other) =>
@@ -30087,7 +30421,8 @@ class StockLot extends DataClass implements Insertable<StockLot> {
           other.gtin == this.gtin &&
           other.serial == this.serial &&
           other.receivedAtUtc == this.receivedAtUtc &&
-          other.supplierPartyId == this.supplierPartyId);
+          other.supplierPartyId == this.supplierPartyId &&
+          other.holdReason == this.holdReason);
 }
 
 class StockLotsCompanion extends UpdateCompanion<StockLot> {
@@ -30112,6 +30447,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
   final Value<String?> serial;
   final Value<int?> receivedAtUtc;
   final Value<String?> supplierPartyId;
+  final Value<String?> holdReason;
   final Value<int> rowid;
   const StockLotsCompanion({
     this.id = const Value.absent(),
@@ -30135,6 +30471,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
     this.serial = const Value.absent(),
     this.receivedAtUtc = const Value.absent(),
     this.supplierPartyId = const Value.absent(),
+    this.holdReason = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   StockLotsCompanion.insert({
@@ -30159,6 +30496,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
     this.serial = const Value.absent(),
     this.receivedAtUtc = const Value.absent(),
     this.supplierPartyId = const Value.absent(),
+    this.holdReason = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        firmId = Value(firmId),
@@ -30192,6 +30530,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
     Expression<String>? serial,
     Expression<int>? receivedAtUtc,
     Expression<String>? supplierPartyId,
+    Expression<String>? holdReason,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -30216,6 +30555,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
       if (serial != null) 'serial': serial,
       if (receivedAtUtc != null) 'received_at_utc': receivedAtUtc,
       if (supplierPartyId != null) 'supplier_party_id': supplierPartyId,
+      if (holdReason != null) 'hold_reason': holdReason,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -30242,6 +30582,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
     Value<String?>? serial,
     Value<int?>? receivedAtUtc,
     Value<String?>? supplierPartyId,
+    Value<String?>? holdReason,
     Value<int>? rowid,
   }) {
     return StockLotsCompanion(
@@ -30266,6 +30607,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
       serial: serial ?? this.serial,
       receivedAtUtc: receivedAtUtc ?? this.receivedAtUtc,
       supplierPartyId: supplierPartyId ?? this.supplierPartyId,
+      holdReason: holdReason ?? this.holdReason,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -30336,6 +30678,9 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
     if (supplierPartyId.present) {
       map['supplier_party_id'] = Variable<String>(supplierPartyId.value);
     }
+    if (holdReason.present) {
+      map['hold_reason'] = Variable<String>(holdReason.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -30366,6 +30711,7 @@ class StockLotsCompanion extends UpdateCompanion<StockLot> {
           ..write('serial: $serial, ')
           ..write('receivedAtUtc: $receivedAtUtc, ')
           ..write('supplierPartyId: $supplierPartyId, ')
+          ..write('holdReason: $holdReason, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -36433,6 +36779,1122 @@ class DocLinksCompanion extends UpdateCompanion<DocLink> {
   }
 }
 
+class Prescriptions extends Table
+    with TableInfo<Prescriptions, PrescriptionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Prescriptions(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
+  );
+  static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
+  late final GeneratedColumn<String> firmId = GeneratedColumn<String>(
+    'firm_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES firms(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _createdAtUtcMeta = const VerificationMeta(
+    'createdAtUtc',
+  );
+  late final GeneratedColumn<int> createdAtUtc = GeneratedColumn<int>(
+    'created_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _updatedAtUtcMeta = const VerificationMeta(
+    'updatedAtUtc',
+  );
+  late final GeneratedColumn<int> updatedAtUtc = GeneratedColumn<int>(
+    'updated_at_utc',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _createdByMeta = const VerificationMeta(
+    'createdBy',
+  );
+  late final GeneratedColumn<String> createdBy = GeneratedColumn<String>(
+    'created_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _updatedByMeta = const VerificationMeta(
+    'updatedBy',
+  );
+  late final GeneratedColumn<String> updatedBy = GeneratedColumn<String>(
+    'updated_by',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES users(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _deletedAtUtcMeta = const VerificationMeta(
+    'deletedAtUtc',
+  );
+  late final GeneratedColumn<int> deletedAtUtc = GeneratedColumn<int>(
+    'deleted_at_utc',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _originDeviceIdMeta = const VerificationMeta(
+    'originDeviceId',
+  );
+  late final GeneratedColumn<String> originDeviceId = GeneratedColumn<String>(
+    'origin_device_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES devices(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _hlcMeta = const VerificationMeta('hlc');
+  late final GeneratedColumn<String> hlc = GeneratedColumn<String>(
+    'hlc',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _revMeta = const VerificationMeta('rev');
+  late final GeneratedColumn<int> rev = GeneratedColumn<int>(
+    'rev',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    $customConstraints: 'NOT NULL DEFAULT 1',
+    defaultValue: const CustomExpression('1'),
+  );
+  static const VerificationMeta _documentIdMeta = const VerificationMeta(
+    'documentId',
+  );
+  late final GeneratedColumn<String> documentId = GeneratedColumn<String>(
+    'document_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES documents(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _documentLineIdMeta = const VerificationMeta(
+    'documentLineId',
+  );
+  late final GeneratedColumn<String> documentLineId = GeneratedColumn<String>(
+    'document_line_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES document_lines(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL REFERENCES items(id)DEFERRABLE INITIALLY DEFERRED',
+  );
+  static const VerificationMeta _scheduleClassMeta = const VerificationMeta(
+    'scheduleClass',
+  );
+  late final GeneratedColumn<String> scheduleClass = GeneratedColumn<String>(
+    'schedule_class',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints:
+        'NOT NULL CHECK (schedule_class IN (\'B\', \'D\', \'other\'))',
+  );
+  static const VerificationMeta _patientNameMeta = const VerificationMeta(
+    'patientName',
+  );
+  late final GeneratedColumn<String> patientName = GeneratedColumn<String>(
+    'patient_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (length(trim(patient_name)) > 0)',
+  );
+  static const VerificationMeta _patientAddressMeta = const VerificationMeta(
+    'patientAddress',
+  );
+  late final GeneratedColumn<String> patientAddress = GeneratedColumn<String>(
+    'patient_address',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  static const VerificationMeta _prescriberNameMeta = const VerificationMeta(
+    'prescriberName',
+  );
+  late final GeneratedColumn<String> prescriberName = GeneratedColumn<String>(
+    'prescriber_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (length(trim(prescriber_name)) > 0)',
+  );
+  static const VerificationMeta _prescriberRegNoMeta = const VerificationMeta(
+    'prescriberRegNo',
+  );
+  late final GeneratedColumn<String> prescriberRegNo = GeneratedColumn<String>(
+    'prescriber_reg_no',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL CHECK (length(trim(prescriber_reg_no)) > 0)',
+  );
+  static const VerificationMeta _prescriptionRefMeta = const VerificationMeta(
+    'prescriptionRef',
+  );
+  late final GeneratedColumn<String> prescriptionRef = GeneratedColumn<String>(
+    'prescription_ref',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    $customConstraints: '',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    documentId,
+    documentLineId,
+    itemId,
+    scheduleClass,
+    patientName,
+    patientAddress,
+    prescriberName,
+    prescriberRegNo,
+    prescriptionRef,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'prescriptions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PrescriptionRow> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('firm_id')) {
+      context.handle(
+        _firmIdMeta,
+        firmId.isAcceptableOrUnknown(data['firm_id']!, _firmIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_firmIdMeta);
+    }
+    if (data.containsKey('created_at_utc')) {
+      context.handle(
+        _createdAtUtcMeta,
+        createdAtUtc.isAcceptableOrUnknown(
+          data['created_at_utc']!,
+          _createdAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtUtcMeta);
+    }
+    if (data.containsKey('updated_at_utc')) {
+      context.handle(
+        _updatedAtUtcMeta,
+        updatedAtUtc.isAcceptableOrUnknown(
+          data['updated_at_utc']!,
+          _updatedAtUtcMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtUtcMeta);
+    }
+    if (data.containsKey('created_by')) {
+      context.handle(
+        _createdByMeta,
+        createdBy.isAcceptableOrUnknown(data['created_by']!, _createdByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdByMeta);
+    }
+    if (data.containsKey('updated_by')) {
+      context.handle(
+        _updatedByMeta,
+        updatedBy.isAcceptableOrUnknown(data['updated_by']!, _updatedByMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedByMeta);
+    }
+    if (data.containsKey('deleted_at_utc')) {
+      context.handle(
+        _deletedAtUtcMeta,
+        deletedAtUtc.isAcceptableOrUnknown(
+          data['deleted_at_utc']!,
+          _deletedAtUtcMeta,
+        ),
+      );
+    }
+    if (data.containsKey('origin_device_id')) {
+      context.handle(
+        _originDeviceIdMeta,
+        originDeviceId.isAcceptableOrUnknown(
+          data['origin_device_id']!,
+          _originDeviceIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_originDeviceIdMeta);
+    }
+    if (data.containsKey('hlc')) {
+      context.handle(
+        _hlcMeta,
+        hlc.isAcceptableOrUnknown(data['hlc']!, _hlcMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_hlcMeta);
+    }
+    if (data.containsKey('rev')) {
+      context.handle(
+        _revMeta,
+        rev.isAcceptableOrUnknown(data['rev']!, _revMeta),
+      );
+    }
+    if (data.containsKey('document_id')) {
+      context.handle(
+        _documentIdMeta,
+        documentId.isAcceptableOrUnknown(data['document_id']!, _documentIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_documentIdMeta);
+    }
+    if (data.containsKey('document_line_id')) {
+      context.handle(
+        _documentLineIdMeta,
+        documentLineId.isAcceptableOrUnknown(
+          data['document_line_id']!,
+          _documentLineIdMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_documentLineIdMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('schedule_class')) {
+      context.handle(
+        _scheduleClassMeta,
+        scheduleClass.isAcceptableOrUnknown(
+          data['schedule_class']!,
+          _scheduleClassMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_scheduleClassMeta);
+    }
+    if (data.containsKey('patient_name')) {
+      context.handle(
+        _patientNameMeta,
+        patientName.isAcceptableOrUnknown(
+          data['patient_name']!,
+          _patientNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_patientNameMeta);
+    }
+    if (data.containsKey('patient_address')) {
+      context.handle(
+        _patientAddressMeta,
+        patientAddress.isAcceptableOrUnknown(
+          data['patient_address']!,
+          _patientAddressMeta,
+        ),
+      );
+    }
+    if (data.containsKey('prescriber_name')) {
+      context.handle(
+        _prescriberNameMeta,
+        prescriberName.isAcceptableOrUnknown(
+          data['prescriber_name']!,
+          _prescriberNameMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_prescriberNameMeta);
+    }
+    if (data.containsKey('prescriber_reg_no')) {
+      context.handle(
+        _prescriberRegNoMeta,
+        prescriberRegNo.isAcceptableOrUnknown(
+          data['prescriber_reg_no']!,
+          _prescriberRegNoMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_prescriberRegNoMeta);
+    }
+    if (data.containsKey('prescription_ref')) {
+      context.handle(
+        _prescriptionRefMeta,
+        prescriptionRef.isAcceptableOrUnknown(
+          data['prescription_ref']!,
+          _prescriptionRefMeta,
+        ),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PrescriptionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PrescriptionRow(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      firmId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}firm_id'],
+      )!,
+      createdAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}created_at_utc'],
+      )!,
+      updatedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}updated_at_utc'],
+      )!,
+      createdBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}created_by'],
+      )!,
+      updatedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}updated_by'],
+      )!,
+      deletedAtUtc: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}deleted_at_utc'],
+      ),
+      originDeviceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}origin_device_id'],
+      )!,
+      hlc: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}hlc'],
+      )!,
+      rev: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}rev'],
+      )!,
+      documentId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_id'],
+      )!,
+      documentLineId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}document_line_id'],
+      )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      scheduleClass: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}schedule_class'],
+      )!,
+      patientName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}patient_name'],
+      )!,
+      patientAddress: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}patient_address'],
+      ),
+      prescriberName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}prescriber_name'],
+      )!,
+      prescriberRegNo: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}prescriber_reg_no'],
+      )!,
+      prescriptionRef: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}prescription_ref'],
+      ),
+    );
+  }
+
+  @override
+  Prescriptions createAlias(String alias) {
+    return Prescriptions(attachedDatabase, alias);
+  }
+
+  @override
+  bool get isStrict => true;
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class PrescriptionRow extends DataClass implements Insertable<PrescriptionRow> {
+  final String id;
+  final String firmId;
+  final int createdAtUtc;
+  final int updatedAtUtc;
+  final String createdBy;
+  final String updatedBy;
+  final int? deletedAtUtc;
+  final String originDeviceId;
+  final String hlc;
+  final int rev;
+  final String documentId;
+  final String documentLineId;
+  final String itemId;
+  final String scheduleClass;
+
+  /// Never blank: a Schedule sale without these is the sale the rules forbid,
+  /// and a UI rule protects only the UI. An import or a LAN merge reaches the
+  /// table too.
+  final String patientName;
+  final String? patientAddress;
+  final String prescriberName;
+
+  /// The PM&DC registration number on the doctor's pad.
+  final String prescriberRegNo;
+
+  /// Whatever the shop files the paper under: the slip's own number, a date
+  /// and a doctor's initials. The original is kept, as the rules require.
+  final String? prescriptionRef;
+  const PrescriptionRow({
+    required this.id,
+    required this.firmId,
+    required this.createdAtUtc,
+    required this.updatedAtUtc,
+    required this.createdBy,
+    required this.updatedBy,
+    this.deletedAtUtc,
+    required this.originDeviceId,
+    required this.hlc,
+    required this.rev,
+    required this.documentId,
+    required this.documentLineId,
+    required this.itemId,
+    required this.scheduleClass,
+    required this.patientName,
+    this.patientAddress,
+    required this.prescriberName,
+    required this.prescriberRegNo,
+    this.prescriptionRef,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['firm_id'] = Variable<String>(firmId);
+    map['created_at_utc'] = Variable<int>(createdAtUtc);
+    map['updated_at_utc'] = Variable<int>(updatedAtUtc);
+    map['created_by'] = Variable<String>(createdBy);
+    map['updated_by'] = Variable<String>(updatedBy);
+    if (!nullToAbsent || deletedAtUtc != null) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc);
+    }
+    map['origin_device_id'] = Variable<String>(originDeviceId);
+    map['hlc'] = Variable<String>(hlc);
+    map['rev'] = Variable<int>(rev);
+    map['document_id'] = Variable<String>(documentId);
+    map['document_line_id'] = Variable<String>(documentLineId);
+    map['item_id'] = Variable<String>(itemId);
+    map['schedule_class'] = Variable<String>(scheduleClass);
+    map['patient_name'] = Variable<String>(patientName);
+    if (!nullToAbsent || patientAddress != null) {
+      map['patient_address'] = Variable<String>(patientAddress);
+    }
+    map['prescriber_name'] = Variable<String>(prescriberName);
+    map['prescriber_reg_no'] = Variable<String>(prescriberRegNo);
+    if (!nullToAbsent || prescriptionRef != null) {
+      map['prescription_ref'] = Variable<String>(prescriptionRef);
+    }
+    return map;
+  }
+
+  PrescriptionsCompanion toCompanion(bool nullToAbsent) {
+    return PrescriptionsCompanion(
+      id: Value(id),
+      firmId: Value(firmId),
+      createdAtUtc: Value(createdAtUtc),
+      updatedAtUtc: Value(updatedAtUtc),
+      createdBy: Value(createdBy),
+      updatedBy: Value(updatedBy),
+      deletedAtUtc: deletedAtUtc == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deletedAtUtc),
+      originDeviceId: Value(originDeviceId),
+      hlc: Value(hlc),
+      rev: Value(rev),
+      documentId: Value(documentId),
+      documentLineId: Value(documentLineId),
+      itemId: Value(itemId),
+      scheduleClass: Value(scheduleClass),
+      patientName: Value(patientName),
+      patientAddress: patientAddress == null && nullToAbsent
+          ? const Value.absent()
+          : Value(patientAddress),
+      prescriberName: Value(prescriberName),
+      prescriberRegNo: Value(prescriberRegNo),
+      prescriptionRef: prescriptionRef == null && nullToAbsent
+          ? const Value.absent()
+          : Value(prescriptionRef),
+    );
+  }
+
+  factory PrescriptionRow.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PrescriptionRow(
+      id: serializer.fromJson<String>(json['id']),
+      firmId: serializer.fromJson<String>(json['firm_id']),
+      createdAtUtc: serializer.fromJson<int>(json['created_at_utc']),
+      updatedAtUtc: serializer.fromJson<int>(json['updated_at_utc']),
+      createdBy: serializer.fromJson<String>(json['created_by']),
+      updatedBy: serializer.fromJson<String>(json['updated_by']),
+      deletedAtUtc: serializer.fromJson<int?>(json['deleted_at_utc']),
+      originDeviceId: serializer.fromJson<String>(json['origin_device_id']),
+      hlc: serializer.fromJson<String>(json['hlc']),
+      rev: serializer.fromJson<int>(json['rev']),
+      documentId: serializer.fromJson<String>(json['document_id']),
+      documentLineId: serializer.fromJson<String>(json['document_line_id']),
+      itemId: serializer.fromJson<String>(json['item_id']),
+      scheduleClass: serializer.fromJson<String>(json['schedule_class']),
+      patientName: serializer.fromJson<String>(json['patient_name']),
+      patientAddress: serializer.fromJson<String?>(json['patient_address']),
+      prescriberName: serializer.fromJson<String>(json['prescriber_name']),
+      prescriberRegNo: serializer.fromJson<String>(json['prescriber_reg_no']),
+      prescriptionRef: serializer.fromJson<String?>(json['prescription_ref']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'firm_id': serializer.toJson<String>(firmId),
+      'created_at_utc': serializer.toJson<int>(createdAtUtc),
+      'updated_at_utc': serializer.toJson<int>(updatedAtUtc),
+      'created_by': serializer.toJson<String>(createdBy),
+      'updated_by': serializer.toJson<String>(updatedBy),
+      'deleted_at_utc': serializer.toJson<int?>(deletedAtUtc),
+      'origin_device_id': serializer.toJson<String>(originDeviceId),
+      'hlc': serializer.toJson<String>(hlc),
+      'rev': serializer.toJson<int>(rev),
+      'document_id': serializer.toJson<String>(documentId),
+      'document_line_id': serializer.toJson<String>(documentLineId),
+      'item_id': serializer.toJson<String>(itemId),
+      'schedule_class': serializer.toJson<String>(scheduleClass),
+      'patient_name': serializer.toJson<String>(patientName),
+      'patient_address': serializer.toJson<String?>(patientAddress),
+      'prescriber_name': serializer.toJson<String>(prescriberName),
+      'prescriber_reg_no': serializer.toJson<String>(prescriberRegNo),
+      'prescription_ref': serializer.toJson<String?>(prescriptionRef),
+    };
+  }
+
+  PrescriptionRow copyWith({
+    String? id,
+    String? firmId,
+    int? createdAtUtc,
+    int? updatedAtUtc,
+    String? createdBy,
+    String? updatedBy,
+    Value<int?> deletedAtUtc = const Value.absent(),
+    String? originDeviceId,
+    String? hlc,
+    int? rev,
+    String? documentId,
+    String? documentLineId,
+    String? itemId,
+    String? scheduleClass,
+    String? patientName,
+    Value<String?> patientAddress = const Value.absent(),
+    String? prescriberName,
+    String? prescriberRegNo,
+    Value<String?> prescriptionRef = const Value.absent(),
+  }) => PrescriptionRow(
+    id: id ?? this.id,
+    firmId: firmId ?? this.firmId,
+    createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+    updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+    createdBy: createdBy ?? this.createdBy,
+    updatedBy: updatedBy ?? this.updatedBy,
+    deletedAtUtc: deletedAtUtc.present ? deletedAtUtc.value : this.deletedAtUtc,
+    originDeviceId: originDeviceId ?? this.originDeviceId,
+    hlc: hlc ?? this.hlc,
+    rev: rev ?? this.rev,
+    documentId: documentId ?? this.documentId,
+    documentLineId: documentLineId ?? this.documentLineId,
+    itemId: itemId ?? this.itemId,
+    scheduleClass: scheduleClass ?? this.scheduleClass,
+    patientName: patientName ?? this.patientName,
+    patientAddress: patientAddress.present
+        ? patientAddress.value
+        : this.patientAddress,
+    prescriberName: prescriberName ?? this.prescriberName,
+    prescriberRegNo: prescriberRegNo ?? this.prescriberRegNo,
+    prescriptionRef: prescriptionRef.present
+        ? prescriptionRef.value
+        : this.prescriptionRef,
+  );
+  PrescriptionRow copyWithCompanion(PrescriptionsCompanion data) {
+    return PrescriptionRow(
+      id: data.id.present ? data.id.value : this.id,
+      firmId: data.firmId.present ? data.firmId.value : this.firmId,
+      createdAtUtc: data.createdAtUtc.present
+          ? data.createdAtUtc.value
+          : this.createdAtUtc,
+      updatedAtUtc: data.updatedAtUtc.present
+          ? data.updatedAtUtc.value
+          : this.updatedAtUtc,
+      createdBy: data.createdBy.present ? data.createdBy.value : this.createdBy,
+      updatedBy: data.updatedBy.present ? data.updatedBy.value : this.updatedBy,
+      deletedAtUtc: data.deletedAtUtc.present
+          ? data.deletedAtUtc.value
+          : this.deletedAtUtc,
+      originDeviceId: data.originDeviceId.present
+          ? data.originDeviceId.value
+          : this.originDeviceId,
+      hlc: data.hlc.present ? data.hlc.value : this.hlc,
+      rev: data.rev.present ? data.rev.value : this.rev,
+      documentId: data.documentId.present
+          ? data.documentId.value
+          : this.documentId,
+      documentLineId: data.documentLineId.present
+          ? data.documentLineId.value
+          : this.documentLineId,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      scheduleClass: data.scheduleClass.present
+          ? data.scheduleClass.value
+          : this.scheduleClass,
+      patientName: data.patientName.present
+          ? data.patientName.value
+          : this.patientName,
+      patientAddress: data.patientAddress.present
+          ? data.patientAddress.value
+          : this.patientAddress,
+      prescriberName: data.prescriberName.present
+          ? data.prescriberName.value
+          : this.prescriberName,
+      prescriberRegNo: data.prescriberRegNo.present
+          ? data.prescriberRegNo.value
+          : this.prescriberRegNo,
+      prescriptionRef: data.prescriptionRef.present
+          ? data.prescriptionRef.value
+          : this.prescriptionRef,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PrescriptionRow(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('documentId: $documentId, ')
+          ..write('documentLineId: $documentLineId, ')
+          ..write('itemId: $itemId, ')
+          ..write('scheduleClass: $scheduleClass, ')
+          ..write('patientName: $patientName, ')
+          ..write('patientAddress: $patientAddress, ')
+          ..write('prescriberName: $prescriberName, ')
+          ..write('prescriberRegNo: $prescriberRegNo, ')
+          ..write('prescriptionRef: $prescriptionRef')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    firmId,
+    createdAtUtc,
+    updatedAtUtc,
+    createdBy,
+    updatedBy,
+    deletedAtUtc,
+    originDeviceId,
+    hlc,
+    rev,
+    documentId,
+    documentLineId,
+    itemId,
+    scheduleClass,
+    patientName,
+    patientAddress,
+    prescriberName,
+    prescriberRegNo,
+    prescriptionRef,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PrescriptionRow &&
+          other.id == this.id &&
+          other.firmId == this.firmId &&
+          other.createdAtUtc == this.createdAtUtc &&
+          other.updatedAtUtc == this.updatedAtUtc &&
+          other.createdBy == this.createdBy &&
+          other.updatedBy == this.updatedBy &&
+          other.deletedAtUtc == this.deletedAtUtc &&
+          other.originDeviceId == this.originDeviceId &&
+          other.hlc == this.hlc &&
+          other.rev == this.rev &&
+          other.documentId == this.documentId &&
+          other.documentLineId == this.documentLineId &&
+          other.itemId == this.itemId &&
+          other.scheduleClass == this.scheduleClass &&
+          other.patientName == this.patientName &&
+          other.patientAddress == this.patientAddress &&
+          other.prescriberName == this.prescriberName &&
+          other.prescriberRegNo == this.prescriberRegNo &&
+          other.prescriptionRef == this.prescriptionRef);
+}
+
+class PrescriptionsCompanion extends UpdateCompanion<PrescriptionRow> {
+  final Value<String> id;
+  final Value<String> firmId;
+  final Value<int> createdAtUtc;
+  final Value<int> updatedAtUtc;
+  final Value<String> createdBy;
+  final Value<String> updatedBy;
+  final Value<int?> deletedAtUtc;
+  final Value<String> originDeviceId;
+  final Value<String> hlc;
+  final Value<int> rev;
+  final Value<String> documentId;
+  final Value<String> documentLineId;
+  final Value<String> itemId;
+  final Value<String> scheduleClass;
+  final Value<String> patientName;
+  final Value<String?> patientAddress;
+  final Value<String> prescriberName;
+  final Value<String> prescriberRegNo;
+  final Value<String?> prescriptionRef;
+  final Value<int> rowid;
+  const PrescriptionsCompanion({
+    this.id = const Value.absent(),
+    this.firmId = const Value.absent(),
+    this.createdAtUtc = const Value.absent(),
+    this.updatedAtUtc = const Value.absent(),
+    this.createdBy = const Value.absent(),
+    this.updatedBy = const Value.absent(),
+    this.deletedAtUtc = const Value.absent(),
+    this.originDeviceId = const Value.absent(),
+    this.hlc = const Value.absent(),
+    this.rev = const Value.absent(),
+    this.documentId = const Value.absent(),
+    this.documentLineId = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.scheduleClass = const Value.absent(),
+    this.patientName = const Value.absent(),
+    this.patientAddress = const Value.absent(),
+    this.prescriberName = const Value.absent(),
+    this.prescriberRegNo = const Value.absent(),
+    this.prescriptionRef = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PrescriptionsCompanion.insert({
+    required String id,
+    required String firmId,
+    required int createdAtUtc,
+    required int updatedAtUtc,
+    required String createdBy,
+    required String updatedBy,
+    this.deletedAtUtc = const Value.absent(),
+    required String originDeviceId,
+    required String hlc,
+    this.rev = const Value.absent(),
+    required String documentId,
+    required String documentLineId,
+    required String itemId,
+    required String scheduleClass,
+    required String patientName,
+    this.patientAddress = const Value.absent(),
+    required String prescriberName,
+    required String prescriberRegNo,
+    this.prescriptionRef = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       firmId = Value(firmId),
+       createdAtUtc = Value(createdAtUtc),
+       updatedAtUtc = Value(updatedAtUtc),
+       createdBy = Value(createdBy),
+       updatedBy = Value(updatedBy),
+       originDeviceId = Value(originDeviceId),
+       hlc = Value(hlc),
+       documentId = Value(documentId),
+       documentLineId = Value(documentLineId),
+       itemId = Value(itemId),
+       scheduleClass = Value(scheduleClass),
+       patientName = Value(patientName),
+       prescriberName = Value(prescriberName),
+       prescriberRegNo = Value(prescriberRegNo);
+  static Insertable<PrescriptionRow> custom({
+    Expression<String>? id,
+    Expression<String>? firmId,
+    Expression<int>? createdAtUtc,
+    Expression<int>? updatedAtUtc,
+    Expression<String>? createdBy,
+    Expression<String>? updatedBy,
+    Expression<int>? deletedAtUtc,
+    Expression<String>? originDeviceId,
+    Expression<String>? hlc,
+    Expression<int>? rev,
+    Expression<String>? documentId,
+    Expression<String>? documentLineId,
+    Expression<String>? itemId,
+    Expression<String>? scheduleClass,
+    Expression<String>? patientName,
+    Expression<String>? patientAddress,
+    Expression<String>? prescriberName,
+    Expression<String>? prescriberRegNo,
+    Expression<String>? prescriptionRef,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (firmId != null) 'firm_id': firmId,
+      if (createdAtUtc != null) 'created_at_utc': createdAtUtc,
+      if (updatedAtUtc != null) 'updated_at_utc': updatedAtUtc,
+      if (createdBy != null) 'created_by': createdBy,
+      if (updatedBy != null) 'updated_by': updatedBy,
+      if (deletedAtUtc != null) 'deleted_at_utc': deletedAtUtc,
+      if (originDeviceId != null) 'origin_device_id': originDeviceId,
+      if (hlc != null) 'hlc': hlc,
+      if (rev != null) 'rev': rev,
+      if (documentId != null) 'document_id': documentId,
+      if (documentLineId != null) 'document_line_id': documentLineId,
+      if (itemId != null) 'item_id': itemId,
+      if (scheduleClass != null) 'schedule_class': scheduleClass,
+      if (patientName != null) 'patient_name': patientName,
+      if (patientAddress != null) 'patient_address': patientAddress,
+      if (prescriberName != null) 'prescriber_name': prescriberName,
+      if (prescriberRegNo != null) 'prescriber_reg_no': prescriberRegNo,
+      if (prescriptionRef != null) 'prescription_ref': prescriptionRef,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PrescriptionsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? firmId,
+    Value<int>? createdAtUtc,
+    Value<int>? updatedAtUtc,
+    Value<String>? createdBy,
+    Value<String>? updatedBy,
+    Value<int?>? deletedAtUtc,
+    Value<String>? originDeviceId,
+    Value<String>? hlc,
+    Value<int>? rev,
+    Value<String>? documentId,
+    Value<String>? documentLineId,
+    Value<String>? itemId,
+    Value<String>? scheduleClass,
+    Value<String>? patientName,
+    Value<String?>? patientAddress,
+    Value<String>? prescriberName,
+    Value<String>? prescriberRegNo,
+    Value<String?>? prescriptionRef,
+    Value<int>? rowid,
+  }) {
+    return PrescriptionsCompanion(
+      id: id ?? this.id,
+      firmId: firmId ?? this.firmId,
+      createdAtUtc: createdAtUtc ?? this.createdAtUtc,
+      updatedAtUtc: updatedAtUtc ?? this.updatedAtUtc,
+      createdBy: createdBy ?? this.createdBy,
+      updatedBy: updatedBy ?? this.updatedBy,
+      deletedAtUtc: deletedAtUtc ?? this.deletedAtUtc,
+      originDeviceId: originDeviceId ?? this.originDeviceId,
+      hlc: hlc ?? this.hlc,
+      rev: rev ?? this.rev,
+      documentId: documentId ?? this.documentId,
+      documentLineId: documentLineId ?? this.documentLineId,
+      itemId: itemId ?? this.itemId,
+      scheduleClass: scheduleClass ?? this.scheduleClass,
+      patientName: patientName ?? this.patientName,
+      patientAddress: patientAddress ?? this.patientAddress,
+      prescriberName: prescriberName ?? this.prescriberName,
+      prescriberRegNo: prescriberRegNo ?? this.prescriberRegNo,
+      prescriptionRef: prescriptionRef ?? this.prescriptionRef,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (firmId.present) {
+      map['firm_id'] = Variable<String>(firmId.value);
+    }
+    if (createdAtUtc.present) {
+      map['created_at_utc'] = Variable<int>(createdAtUtc.value);
+    }
+    if (updatedAtUtc.present) {
+      map['updated_at_utc'] = Variable<int>(updatedAtUtc.value);
+    }
+    if (createdBy.present) {
+      map['created_by'] = Variable<String>(createdBy.value);
+    }
+    if (updatedBy.present) {
+      map['updated_by'] = Variable<String>(updatedBy.value);
+    }
+    if (deletedAtUtc.present) {
+      map['deleted_at_utc'] = Variable<int>(deletedAtUtc.value);
+    }
+    if (originDeviceId.present) {
+      map['origin_device_id'] = Variable<String>(originDeviceId.value);
+    }
+    if (hlc.present) {
+      map['hlc'] = Variable<String>(hlc.value);
+    }
+    if (rev.present) {
+      map['rev'] = Variable<int>(rev.value);
+    }
+    if (documentId.present) {
+      map['document_id'] = Variable<String>(documentId.value);
+    }
+    if (documentLineId.present) {
+      map['document_line_id'] = Variable<String>(documentLineId.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (scheduleClass.present) {
+      map['schedule_class'] = Variable<String>(scheduleClass.value);
+    }
+    if (patientName.present) {
+      map['patient_name'] = Variable<String>(patientName.value);
+    }
+    if (patientAddress.present) {
+      map['patient_address'] = Variable<String>(patientAddress.value);
+    }
+    if (prescriberName.present) {
+      map['prescriber_name'] = Variable<String>(prescriberName.value);
+    }
+    if (prescriberRegNo.present) {
+      map['prescriber_reg_no'] = Variable<String>(prescriberRegNo.value);
+    }
+    if (prescriptionRef.present) {
+      map['prescription_ref'] = Variable<String>(prescriptionRef.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PrescriptionsCompanion(')
+          ..write('id: $id, ')
+          ..write('firmId: $firmId, ')
+          ..write('createdAtUtc: $createdAtUtc, ')
+          ..write('updatedAtUtc: $updatedAtUtc, ')
+          ..write('createdBy: $createdBy, ')
+          ..write('updatedBy: $updatedBy, ')
+          ..write('deletedAtUtc: $deletedAtUtc, ')
+          ..write('originDeviceId: $originDeviceId, ')
+          ..write('hlc: $hlc, ')
+          ..write('rev: $rev, ')
+          ..write('documentId: $documentId, ')
+          ..write('documentLineId: $documentLineId, ')
+          ..write('itemId: $itemId, ')
+          ..write('scheduleClass: $scheduleClass, ')
+          ..write('patientName: $patientName, ')
+          ..write('patientAddress: $patientAddress, ')
+          ..write('prescriberName: $prescriberName, ')
+          ..write('prescriberRegNo: $prescriberRegNo, ')
+          ..write('prescriptionRef: $prescriptionRef, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class UnitConversions extends Table
     with TableInfo<UnitConversions, UnitConversion> {
   @override
@@ -39441,6 +40903,23 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'idx_doclinks_firm',
     'CREATE INDEX idx_doclinks_firm ON doc_links (firm_id, link_type)',
   );
+  late final Prescriptions prescriptions = Prescriptions(this);
+  late final Index idxPrescriptionsLine = Index(
+    'idx_prescriptions_line',
+    'CREATE UNIQUE INDEX idx_prescriptions_line ON prescriptions (document_line_id)',
+  );
+  late final Index idxPrescriptionsDoc = Index(
+    'idx_prescriptions_doc',
+    'CREATE INDEX idx_prescriptions_doc ON prescriptions (document_id)',
+  );
+  late final Index idxPrescriptionsFirmItem = Index(
+    'idx_prescriptions_firm_item',
+    'CREATE INDEX idx_prescriptions_firm_item ON prescriptions (firm_id, item_id)',
+  );
+  late final Index idxPrescriptionsItem = Index(
+    'idx_prescriptions_item',
+    'CREATE INDEX idx_prescriptions_item ON prescriptions (item_id)',
+  );
   late final Index idxUnitsCode = Index(
     'idx_units_code',
     'CREATE UNIQUE INDEX idx_units_code ON units (firm_id, code)',
@@ -39473,6 +40952,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index idxItemsFirmName = Index(
     'idx_items_firm_name',
     'CREATE INDEX idx_items_firm_name ON items (firm_id, name_search)',
+  );
+  late final Index idxItemsGeneric = Index(
+    'idx_items_generic',
+    'CREATE INDEX idx_items_generic ON items (firm_id, generic_search) WHERE generic_search IS NOT NULL',
   );
   late final Index idxItemsCode = Index(
     'idx_items_code',
@@ -39666,6 +41149,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxDoclinksPair,
     idxDoclinksTo,
     idxDoclinksFirm,
+    prescriptions,
+    idxPrescriptionsLine,
+    idxPrescriptionsDoc,
+    idxPrescriptionsFirmItem,
+    idxPrescriptionsItem,
     idxUnitsCode,
     unitConversions,
     idxUconvFirmwide,
@@ -39675,6 +41163,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     idxUconvToUnit,
     idxUconvItem,
     idxItemsFirmName,
+    idxItemsGeneric,
     idxItemsCode,
     idxItemsBarcode,
     idxItemsCategory,
@@ -40283,6 +41772,24 @@ final class $FirmsReferences
     ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_docLinksRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<Prescriptions, List<PrescriptionRow>>
+  _prescriptionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.prescriptions,
+    aliasName: 'firms__id__prescriptions__firm_id',
+  );
+
+  $PrescriptionsProcessedTableManager get prescriptionsRefs {
+    final manager = $PrescriptionsTableManager(
+      $_db,
+      $_db.prescriptions,
+    ).filter((f) => f.firmId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_prescriptionsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -41188,6 +42695,31 @@ class $FirmsFilterComposer extends Composer<_$AppDatabase, Firms> {
           }) => $DocLinksFilterComposer(
             $db: $db,
             $table: $db.docLinks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> prescriptionsRefs(
+    Expression<bool> Function($PrescriptionsFilterComposer f) f,
+  ) {
+    final $PrescriptionsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsFilterComposer(
+            $db: $db,
+            $table: $db.prescriptions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -42259,6 +43791,31 @@ class $FirmsAnnotationComposer extends Composer<_$AppDatabase, Firms> {
     return f(composer);
   }
 
+  Expression<T> prescriptionsRefs<T extends Object>(
+    Expression<T> Function($PrescriptionsAnnotationComposer a) f,
+  ) {
+    final $PrescriptionsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.firmId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsAnnotationComposer(
+            $db: $db,
+            $table: $db.prescriptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> unitConversionsRefs<T extends Object>(
     Expression<T> Function($UnitConversionsAnnotationComposer a) f,
   ) {
@@ -42376,6 +43933,7 @@ class $FirmsTableManager
             bool paymentAllocationsRefs,
             bool documentLineTaxesRefs,
             bool docLinksRefs,
+            bool prescriptionsRefs,
             bool unitConversionsRefs,
             bool settingsRefs,
             bool numberingSequencesRefs,
@@ -42573,6 +44131,7 @@ class $FirmsTableManager
                 paymentAllocationsRefs = false,
                 documentLineTaxesRefs = false,
                 docLinksRefs = false,
+                prescriptionsRefs = false,
                 unitConversionsRefs = false,
                 settingsRefs = false,
                 numberingSequencesRefs = false,
@@ -42607,6 +44166,7 @@ class $FirmsTableManager
                     if (paymentAllocationsRefs) db.paymentAllocations,
                     if (documentLineTaxesRefs) db.documentLineTaxes,
                     if (docLinksRefs) db.docLinks,
+                    if (prescriptionsRefs) db.prescriptions,
                     if (unitConversionsRefs) db.unitConversions,
                     if (settingsRefs) db.settings,
                     if (numberingSequencesRefs) db.numberingSequences,
@@ -42995,6 +44555,19 @@ class $FirmsTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (prescriptionsRefs)
+                        await $_getPrefetchedData<Firm, Firms, PrescriptionRow>(
+                          currentTable: table,
+                          referencedTable: $FirmsReferences
+                              ._prescriptionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $FirmsReferences(db, table, p0).prescriptionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.firmId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (unitConversionsRefs)
                         await $_getPrefetchedData<Firm, Firms, UnitConversion>(
                           currentTable: table,
@@ -43093,6 +44666,7 @@ typedef $FirmsProcessedTableManager =
         bool paymentAllocationsRefs,
         bool documentLineTaxesRefs,
         bool docLinksRefs,
+        bool prescriptionsRefs,
         bool unitConversionsRefs,
         bool settingsRefs,
         bool numberingSequencesRefs,
@@ -43672,6 +45246,24 @@ final class $DevicesReferences
     ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_docLinksRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<Prescriptions, List<PrescriptionRow>>
+  _prescriptionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.prescriptions,
+    aliasName: 'devices__id__prescriptions__origin_device_id',
+  );
+
+  $PrescriptionsProcessedTableManager get prescriptionsRefs {
+    final manager = $PrescriptionsTableManager(
+      $_db,
+      $_db.prescriptions,
+    ).filter((f) => f.originDeviceId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_prescriptionsRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -44502,6 +46094,31 @@ class $DevicesFilterComposer extends Composer<_$AppDatabase, Devices> {
           }) => $DocLinksFilterComposer(
             $db: $db,
             $table: $db.docLinks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> prescriptionsRefs(
+    Expression<bool> Function($PrescriptionsFilterComposer f) f,
+  ) {
+    final $PrescriptionsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsFilterComposer(
+            $db: $db,
+            $table: $db.prescriptions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -45479,6 +47096,31 @@ class $DevicesAnnotationComposer extends Composer<_$AppDatabase, Devices> {
     return f(composer);
   }
 
+  Expression<T> prescriptionsRefs<T extends Object>(
+    Expression<T> Function($PrescriptionsAnnotationComposer a) f,
+  ) {
+    final $PrescriptionsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.originDeviceId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsAnnotationComposer(
+            $db: $db,
+            $table: $db.prescriptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> unitConversionsRefs<T extends Object>(
     Expression<T> Function($UnitConversionsAnnotationComposer a) f,
   ) {
@@ -45572,6 +47214,7 @@ class $DevicesTableManager
             bool paymentAllocationsRefs,
             bool documentLineTaxesRefs,
             bool docLinksRefs,
+            bool prescriptionsRefs,
             bool unitConversionsRefs,
             bool settingsRefs,
           })
@@ -45717,6 +47360,7 @@ class $DevicesTableManager
                 paymentAllocationsRefs = false,
                 documentLineTaxesRefs = false,
                 docLinksRefs = false,
+                prescriptionsRefs = false,
                 unitConversionsRefs = false,
                 settingsRefs = false,
               }) {
@@ -45749,6 +47393,7 @@ class $DevicesTableManager
                     if (paymentAllocationsRefs) db.paymentAllocations,
                     if (documentLineTaxesRefs) db.documentLineTaxes,
                     if (docLinksRefs) db.docLinks,
+                    if (prescriptionsRefs) db.prescriptions,
                     if (unitConversionsRefs) db.unitConversions,
                     if (settingsRefs) db.settings,
                   ],
@@ -46200,6 +47845,26 @@ class $DevicesTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (prescriptionsRefs)
+                        await $_getPrefetchedData<
+                          Device,
+                          Devices,
+                          PrescriptionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $DevicesReferences
+                              ._prescriptionsRefsTable(db),
+                          managerFromTypedResult: (p0) => $DevicesReferences(
+                            db,
+                            table,
+                            p0,
+                          ).prescriptionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.originDeviceId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (unitConversionsRefs)
                         await $_getPrefetchedData<
                           Device,
@@ -46282,6 +47947,7 @@ typedef $DevicesProcessedTableManager =
         bool paymentAllocationsRefs,
         bool documentLineTaxesRefs,
         bool docLinksRefs,
+        bool prescriptionsRefs,
         bool unitConversionsRefs,
         bool settingsRefs,
       })
@@ -50012,6 +51678,24 @@ final class $DocumentsReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<Prescriptions, List<PrescriptionRow>>
+  _prescriptionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.prescriptions,
+    aliasName: 'documents__id__prescriptions__document_id',
+  );
+
+  $PrescriptionsProcessedTableManager get prescriptionsRefs {
+    final manager = $PrescriptionsTableManager(
+      $_db,
+      $_db.prescriptions,
+    ).filter((f) => f.documentId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_prescriptionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
@@ -50607,6 +52291,31 @@ class $DocumentsFilterComposer extends Composer<_$AppDatabase, Documents> {
           }) => $DocumentLineTaxesFilterComposer(
             $db: $db,
             $table: $db.documentLineTaxes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> prescriptionsRefs(
+    Expression<bool> Function($PrescriptionsFilterComposer f) f,
+  ) {
+    final $PrescriptionsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsFilterComposer(
+            $db: $db,
+            $table: $db.prescriptions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -51631,6 +53340,31 @@ class $DocumentsAnnotationComposer extends Composer<_$AppDatabase, Documents> {
     );
     return f(composer);
   }
+
+  Expression<T> prescriptionsRefs<T extends Object>(
+    Expression<T> Function($PrescriptionsAnnotationComposer a) f,
+  ) {
+    final $PrescriptionsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.documentId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsAnnotationComposer(
+            $db: $db,
+            $table: $db.prescriptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $DocumentsTableManager
@@ -51661,6 +53395,7 @@ class $DocumentsTableManager
             bool stockLedgerRefs,
             bool paymentAllocationsRefs,
             bool documentLineTaxesRefs,
+            bool prescriptionsRefs,
           })
         > {
   $DocumentsTableManager(_$AppDatabase db, Documents table)
@@ -51950,6 +53685,7 @@ class $DocumentsTableManager
                 stockLedgerRefs = false,
                 paymentAllocationsRefs = false,
                 documentLineTaxesRefs = false,
+                prescriptionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -51960,6 +53696,7 @@ class $DocumentsTableManager
                     if (stockLedgerRefs) db.stockLedger,
                     if (paymentAllocationsRefs) db.paymentAllocations,
                     if (documentLineTaxesRefs) db.documentLineTaxes,
+                    if (prescriptionsRefs) db.prescriptions,
                   ],
                   addJoins:
                       <
@@ -52203,6 +53940,26 @@ class $DocumentsTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (prescriptionsRefs)
+                        await $_getPrefetchedData<
+                          Document,
+                          Documents,
+                          PrescriptionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $DocumentsReferences
+                              ._prescriptionsRefsTable(db),
+                          managerFromTypedResult: (p0) => $DocumentsReferences(
+                            db,
+                            table,
+                            p0,
+                          ).prescriptionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.documentId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -52238,6 +53995,7 @@ typedef $DocumentsProcessedTableManager =
         bool stockLedgerRefs,
         bool paymentAllocationsRefs,
         bool documentLineTaxesRefs,
+        bool prescriptionsRefs,
       })
     >;
 typedef $AttachmentsCreateCompanionBuilder =
@@ -61892,6 +63650,11 @@ typedef $ItemsCreateCompanionBuilder =
       Value<int> isActive,
       Value<int?> vipRateMilliPaisa,
       Value<String?> negativeStock,
+      Value<String?> genericName,
+      Value<String?> strength,
+      Value<String?> genericSearch,
+      Value<String?> manufacturer,
+      Value<String?> scheduleClass,
       Value<int> rowid,
     });
 typedef $ItemsUpdateCompanionBuilder =
@@ -61935,6 +63698,11 @@ typedef $ItemsUpdateCompanionBuilder =
       Value<int> isActive,
       Value<int?> vipRateMilliPaisa,
       Value<String?> negativeStock,
+      Value<String?> genericName,
+      Value<String?> strength,
+      Value<String?> genericSearch,
+      Value<String?> manufacturer,
+      Value<String?> scheduleClass,
       Value<int> rowid,
     });
 
@@ -62207,6 +63975,24 @@ final class $ItemsReferences
     );
   }
 
+  static MultiTypedResultKey<Prescriptions, List<PrescriptionRow>>
+  _prescriptionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.prescriptions,
+    aliasName: 'items__id__prescriptions__item_id',
+  );
+
+  $PrescriptionsProcessedTableManager get prescriptionsRefs {
+    final manager = $PrescriptionsTableManager(
+      $_db,
+      $_db.prescriptions,
+    ).filter((f) => f.itemId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_prescriptionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
   static MultiTypedResultKey<UnitConversions, List<UnitConversion>>
   _unitConversionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.unitConversions,
@@ -62388,6 +64174,31 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
 
   ColumnFilters<String> get negativeStock => $composableBuilder(
     column: $table.negativeStock,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get genericName => $composableBuilder(
+    column: $table.genericName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get strength => $composableBuilder(
+    column: $table.strength,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get genericSearch => $composableBuilder(
+    column: $table.genericSearch,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get manufacturer => $composableBuilder(
+    column: $table.manufacturer,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scheduleClass => $composableBuilder(
+    column: $table.scheduleClass,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -62750,6 +64561,31 @@ class $ItemsFilterComposer extends Composer<_$AppDatabase, Items> {
     return f(composer);
   }
 
+  Expression<bool> prescriptionsRefs(
+    Expression<bool> Function($PrescriptionsFilterComposer f) f,
+  ) {
+    final $PrescriptionsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsFilterComposer(
+            $db: $db,
+            $table: $db.prescriptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<bool> unitConversionsRefs(
     Expression<bool> Function($UnitConversionsFilterComposer f) f,
   ) {
@@ -62936,6 +64772,31 @@ class $ItemsOrderingComposer extends Composer<_$AppDatabase, Items> {
 
   ColumnOrderings<String> get negativeStock => $composableBuilder(
     column: $table.negativeStock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get genericName => $composableBuilder(
+    column: $table.genericName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get strength => $composableBuilder(
+    column: $table.strength,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get genericSearch => $composableBuilder(
+    column: $table.genericSearch,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get manufacturer => $composableBuilder(
+    column: $table.manufacturer,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scheduleClass => $composableBuilder(
+    column: $table.scheduleClass,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -63262,6 +65123,29 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
 
   GeneratedColumn<String> get negativeStock => $composableBuilder(
     column: $table.negativeStock,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get genericName => $composableBuilder(
+    column: $table.genericName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get strength =>
+      $composableBuilder(column: $table.strength, builder: (column) => column);
+
+  GeneratedColumn<String> get genericSearch => $composableBuilder(
+    column: $table.genericSearch,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get manufacturer => $composableBuilder(
+    column: $table.manufacturer,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get scheduleClass => $composableBuilder(
+    column: $table.scheduleClass,
     builder: (column) => column,
   );
 
@@ -63624,6 +65508,31 @@ class $ItemsAnnotationComposer extends Composer<_$AppDatabase, Items> {
     return f(composer);
   }
 
+  Expression<T> prescriptionsRefs<T extends Object>(
+    Expression<T> Function($PrescriptionsAnnotationComposer a) f,
+  ) {
+    final $PrescriptionsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.itemId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsAnnotationComposer(
+            $db: $db,
+            $table: $db.prescriptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
   Expression<T> unitConversionsRefs<T extends Object>(
     Expression<T> Function($UnitConversionsAnnotationComposer a) f,
   ) {
@@ -63679,6 +65588,7 @@ class $ItemsTableManager
             bool stockLotsRefs,
             bool documentLinesRefs,
             bool stockLedgerRefs,
+            bool prescriptionsRefs,
             bool unitConversionsRefs,
           })
         > {
@@ -63734,6 +65644,11 @@ class $ItemsTableManager
                 Value<int> isActive = const Value.absent(),
                 Value<int?> vipRateMilliPaisa = const Value.absent(),
                 Value<String?> negativeStock = const Value.absent(),
+                Value<String?> genericName = const Value.absent(),
+                Value<String?> strength = const Value.absent(),
+                Value<String?> genericSearch = const Value.absent(),
+                Value<String?> manufacturer = const Value.absent(),
+                Value<String?> scheduleClass = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion(
                 id: id,
@@ -63775,6 +65690,11 @@ class $ItemsTableManager
                 isActive: isActive,
                 vipRateMilliPaisa: vipRateMilliPaisa,
                 negativeStock: negativeStock,
+                genericName: genericName,
+                strength: strength,
+                genericSearch: genericSearch,
+                manufacturer: manufacturer,
+                scheduleClass: scheduleClass,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -63818,6 +65738,11 @@ class $ItemsTableManager
                 Value<int> isActive = const Value.absent(),
                 Value<int?> vipRateMilliPaisa = const Value.absent(),
                 Value<String?> negativeStock = const Value.absent(),
+                Value<String?> genericName = const Value.absent(),
+                Value<String?> strength = const Value.absent(),
+                Value<String?> genericSearch = const Value.absent(),
+                Value<String?> manufacturer = const Value.absent(),
+                Value<String?> scheduleClass = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ItemsCompanion.insert(
                 id: id,
@@ -63859,6 +65784,11 @@ class $ItemsTableManager
                 isActive: isActive,
                 vipRateMilliPaisa: vipRateMilliPaisa,
                 negativeStock: negativeStock,
+                genericName: genericName,
+                strength: strength,
+                genericSearch: genericSearch,
+                manufacturer: manufacturer,
+                scheduleClass: scheduleClass,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -63886,6 +65816,7 @@ class $ItemsTableManager
                 stockLotsRefs = false,
                 documentLinesRefs = false,
                 stockLedgerRefs = false,
+                prescriptionsRefs = false,
                 unitConversionsRefs = false,
               }) {
                 return PrefetchHooks(
@@ -63898,6 +65829,7 @@ class $ItemsTableManager
                     if (stockLotsRefs) db.stockLots,
                     if (documentLinesRefs) db.documentLines,
                     if (stockLedgerRefs) db.stockLedger,
+                    if (prescriptionsRefs) db.prescriptions,
                     if (unitConversionsRefs) db.unitConversions,
                   ],
                   addJoins:
@@ -64117,6 +66049,19 @@ class $ItemsTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (prescriptionsRefs)
+                        await $_getPrefetchedData<Item, Items, PrescriptionRow>(
+                          currentTable: table,
+                          referencedTable: $ItemsReferences
+                              ._prescriptionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $ItemsReferences(db, table, p0).prescriptionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.itemId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                       if (unitConversionsRefs)
                         await $_getPrefetchedData<Item, Items, UnitConversion>(
                           currentTable: table,
@@ -64169,6 +66114,7 @@ typedef $ItemsProcessedTableManager =
         bool stockLotsRefs,
         bool documentLinesRefs,
         bool stockLedgerRefs,
+        bool prescriptionsRefs,
         bool unitConversionsRefs,
       })
     >;
@@ -71313,6 +73259,7 @@ typedef $StockLotsCreateCompanionBuilder =
       Value<String?> serial,
       Value<int?> receivedAtUtc,
       Value<String?> supplierPartyId,
+      Value<String?> holdReason,
       Value<int> rowid,
     });
 typedef $StockLotsUpdateCompanionBuilder =
@@ -71338,6 +73285,7 @@ typedef $StockLotsUpdateCompanionBuilder =
       Value<String?> serial,
       Value<int?> receivedAtUtc,
       Value<String?> supplierPartyId,
+      Value<String?> holdReason,
       Value<int> rowid,
     });
 
@@ -71564,6 +73512,11 @@ class $StockLotsFilterComposer extends Composer<_$AppDatabase, StockLots> {
 
   ColumnFilters<int> get receivedAtUtc => $composableBuilder(
     column: $table.receivedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get holdReason => $composableBuilder(
+    column: $table.holdReason,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -71839,6 +73792,11 @@ class $StockLotsOrderingComposer extends Composer<_$AppDatabase, StockLots> {
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get holdReason => $composableBuilder(
+    column: $table.holdReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $FirmsOrderingComposer get firmId {
     final $FirmsOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -72042,6 +74000,11 @@ class $StockLotsAnnotationComposer extends Composer<_$AppDatabase, StockLots> {
 
   GeneratedColumn<int> get receivedAtUtc => $composableBuilder(
     column: $table.receivedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get holdReason => $composableBuilder(
+    column: $table.holdReason,
     builder: (column) => column,
   );
 
@@ -72292,6 +74255,7 @@ class $StockLotsTableManager
                 Value<String?> serial = const Value.absent(),
                 Value<int?> receivedAtUtc = const Value.absent(),
                 Value<String?> supplierPartyId = const Value.absent(),
+                Value<String?> holdReason = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => StockLotsCompanion(
                 id: id,
@@ -72315,6 +74279,7 @@ class $StockLotsTableManager
                 serial: serial,
                 receivedAtUtc: receivedAtUtc,
                 supplierPartyId: supplierPartyId,
+                holdReason: holdReason,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -72340,6 +74305,7 @@ class $StockLotsTableManager
                 Value<String?> serial = const Value.absent(),
                 Value<int?> receivedAtUtc = const Value.absent(),
                 Value<String?> supplierPartyId = const Value.absent(),
+                Value<String?> holdReason = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => StockLotsCompanion.insert(
                 id: id,
@@ -72363,6 +74329,7 @@ class $StockLotsTableManager
                 serial: serial,
                 receivedAtUtc: receivedAtUtc,
                 supplierPartyId: supplierPartyId,
+                holdReason: holdReason,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -72811,6 +74778,24 @@ final class $DocumentLinesReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<Prescriptions, List<PrescriptionRow>>
+  _prescriptionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.prescriptions,
+    aliasName: 'document_lines__id__prescriptions__document_line_id',
+  );
+
+  $PrescriptionsProcessedTableManager get prescriptionsRefs {
+    final manager = $PrescriptionsTableManager(
+      $_db,
+      $_db.prescriptions,
+    ).filter((f) => f.documentLineId.id.sqlEquals($_itemColumn<String>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_prescriptionsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $DocumentLinesFilterComposer
@@ -73167,6 +75152,31 @@ class $DocumentLinesFilterComposer
           }) => $DocumentLineTaxesFilterComposer(
             $db: $db,
             $table: $db.documentLineTaxes,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> prescriptionsRefs(
+    Expression<bool> Function($PrescriptionsFilterComposer f) f,
+  ) {
+    final $PrescriptionsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.documentLineId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsFilterComposer(
+            $db: $db,
+            $table: $db.prescriptions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -73839,6 +75849,31 @@ class $DocumentLinesAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> prescriptionsRefs<T extends Object>(
+    Expression<T> Function($PrescriptionsAnnotationComposer a) f,
+  ) {
+    final $PrescriptionsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.prescriptions,
+      getReferencedColumn: (t) => t.documentLineId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $PrescriptionsAnnotationComposer(
+            $db: $db,
+            $table: $db.prescriptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $DocumentLinesTableManager
@@ -73865,6 +75900,7 @@ class $DocumentLinesTableManager
             bool lotId,
             bool stockLedgerRefs,
             bool documentLineTaxesRefs,
+            bool prescriptionsRefs,
           })
         > {
   $DocumentLinesTableManager(_$AppDatabase db, DocumentLines table)
@@ -74038,12 +76074,14 @@ class $DocumentLinesTableManager
                 lotId = false,
                 stockLedgerRefs = false,
                 documentLineTaxesRefs = false,
+                prescriptionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
                     if (stockLedgerRefs) db.stockLedger,
                     if (documentLineTaxesRefs) db.documentLineTaxes,
+                    if (prescriptionsRefs) db.prescriptions,
                   ],
                   addJoins:
                       <
@@ -74212,6 +76250,27 @@ class $DocumentLinesTableManager
                               ),
                           typedResults: items,
                         ),
+                      if (prescriptionsRefs)
+                        await $_getPrefetchedData<
+                          DocumentLine,
+                          DocumentLines,
+                          PrescriptionRow
+                        >(
+                          currentTable: table,
+                          referencedTable: $DocumentLinesReferences
+                              ._prescriptionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $DocumentLinesReferences(
+                                db,
+                                table,
+                                p0,
+                              ).prescriptionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.documentLineId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
                     ];
                   },
                 );
@@ -74243,6 +76302,7 @@ typedef $DocumentLinesProcessedTableManager =
         bool lotId,
         bool stockLedgerRefs,
         bool documentLineTaxesRefs,
+        bool prescriptionsRefs,
       })
     >;
 typedef $StockLedgerCreateCompanionBuilder =
@@ -78694,6 +80754,1149 @@ typedef $DocLinksProcessedTableManager =
         bool toDocumentId,
       })
     >;
+typedef $PrescriptionsCreateCompanionBuilder =
+    PrescriptionsCompanion Function({
+      required String id,
+      required String firmId,
+      required int createdAtUtc,
+      required int updatedAtUtc,
+      required String createdBy,
+      required String updatedBy,
+      Value<int?> deletedAtUtc,
+      required String originDeviceId,
+      required String hlc,
+      Value<int> rev,
+      required String documentId,
+      required String documentLineId,
+      required String itemId,
+      required String scheduleClass,
+      required String patientName,
+      Value<String?> patientAddress,
+      required String prescriberName,
+      required String prescriberRegNo,
+      Value<String?> prescriptionRef,
+      Value<int> rowid,
+    });
+typedef $PrescriptionsUpdateCompanionBuilder =
+    PrescriptionsCompanion Function({
+      Value<String> id,
+      Value<String> firmId,
+      Value<int> createdAtUtc,
+      Value<int> updatedAtUtc,
+      Value<String> createdBy,
+      Value<String> updatedBy,
+      Value<int?> deletedAtUtc,
+      Value<String> originDeviceId,
+      Value<String> hlc,
+      Value<int> rev,
+      Value<String> documentId,
+      Value<String> documentLineId,
+      Value<String> itemId,
+      Value<String> scheduleClass,
+      Value<String> patientName,
+      Value<String?> patientAddress,
+      Value<String> prescriberName,
+      Value<String> prescriberRegNo,
+      Value<String?> prescriptionRef,
+      Value<int> rowid,
+    });
+
+final class $PrescriptionsReferences
+    extends BaseReferences<_$AppDatabase, Prescriptions, PrescriptionRow> {
+  $PrescriptionsReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static Firms _firmIdTable(_$AppDatabase db) =>
+      db.firms.createAlias('prescriptions__firm_id__firms__id');
+
+  $FirmsProcessedTableManager get firmId {
+    final $_column = $_itemColumn<String>('firm_id')!;
+
+    final manager = $FirmsTableManager(
+      $_db,
+      $_db.firms,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_firmIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _createdByTable(_$AppDatabase db) =>
+      db.users.createAlias('prescriptions__created_by__users__id');
+
+  $UsersProcessedTableManager get createdBy {
+    final $_column = $_itemColumn<String>('created_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_createdByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Users _updatedByTable(_$AppDatabase db) =>
+      db.users.createAlias('prescriptions__updated_by__users__id');
+
+  $UsersProcessedTableManager get updatedBy {
+    final $_column = $_itemColumn<String>('updated_by')!;
+
+    final manager = $UsersTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_updatedByTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Devices _originDeviceIdTable(_$AppDatabase db) =>
+      db.devices.createAlias('prescriptions__origin_device_id__devices__id');
+
+  $DevicesProcessedTableManager get originDeviceId {
+    final $_column = $_itemColumn<String>('origin_device_id')!;
+
+    final manager = $DevicesTableManager(
+      $_db,
+      $_db.devices,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_originDeviceIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Documents _documentIdTable(_$AppDatabase db) =>
+      db.documents.createAlias('prescriptions__document_id__documents__id');
+
+  $DocumentsProcessedTableManager get documentId {
+    final $_column = $_itemColumn<String>('document_id')!;
+
+    final manager = $DocumentsTableManager(
+      $_db,
+      $_db.documents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_documentIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static DocumentLines _documentLineIdTable(_$AppDatabase db) => db
+      .documentLines
+      .createAlias('prescriptions__document_line_id__document_lines__id');
+
+  $DocumentLinesProcessedTableManager get documentLineId {
+    final $_column = $_itemColumn<String>('document_line_id')!;
+
+    final manager = $DocumentLinesTableManager(
+      $_db,
+      $_db.documentLines,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_documentLineIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static Items _itemIdTable(_$AppDatabase db) =>
+      db.items.createAlias('prescriptions__item_id__items__id');
+
+  $ItemsProcessedTableManager get itemId {
+    final $_column = $_itemColumn<String>('item_id')!;
+
+    final manager = $ItemsTableManager(
+      $_db,
+      $_db.items,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_itemIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $PrescriptionsFilterComposer
+    extends Composer<_$AppDatabase, Prescriptions> {
+  $PrescriptionsFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get scheduleClass => $composableBuilder(
+    column: $table.scheduleClass,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get patientName => $composableBuilder(
+    column: $table.patientName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get patientAddress => $composableBuilder(
+    column: $table.patientAddress,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get prescriberName => $composableBuilder(
+    column: $table.prescriberName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get prescriberRegNo => $composableBuilder(
+    column: $table.prescriberRegNo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get prescriptionRef => $composableBuilder(
+    column: $table.prescriptionRef,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $FirmsFilterComposer get firmId {
+    final $FirmsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsFilterComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get createdBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersFilterComposer get updatedBy {
+    final $UsersFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesFilterComposer get originDeviceId {
+    final $DevicesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesFilterComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsFilterComposer get documentId {
+    final $DocumentsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsFilterComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentLinesFilterComposer get documentLineId {
+    final $DocumentLinesFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentLineId,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesFilterComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsFilterComposer get itemId {
+    final $ItemsFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsFilterComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $PrescriptionsOrderingComposer
+    extends Composer<_$AppDatabase, Prescriptions> {
+  $PrescriptionsOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get hlc => $composableBuilder(
+    column: $table.hlc,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get rev => $composableBuilder(
+    column: $table.rev,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get scheduleClass => $composableBuilder(
+    column: $table.scheduleClass,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get patientName => $composableBuilder(
+    column: $table.patientName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get patientAddress => $composableBuilder(
+    column: $table.patientAddress,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get prescriberName => $composableBuilder(
+    column: $table.prescriberName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get prescriberRegNo => $composableBuilder(
+    column: $table.prescriberRegNo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get prescriptionRef => $composableBuilder(
+    column: $table.prescriptionRef,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $FirmsOrderingComposer get firmId {
+    final $FirmsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsOrderingComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get createdBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersOrderingComposer get updatedBy {
+    final $UsersOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesOrderingComposer get originDeviceId {
+    final $DevicesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesOrderingComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsOrderingComposer get documentId {
+    final $DocumentsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsOrderingComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentLinesOrderingComposer get documentLineId {
+    final $DocumentLinesOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentLineId,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesOrderingComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsOrderingComposer get itemId {
+    final $ItemsOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsOrderingComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $PrescriptionsAnnotationComposer
+    extends Composer<_$AppDatabase, Prescriptions> {
+  $PrescriptionsAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get createdAtUtc => $composableBuilder(
+    column: $table.createdAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get updatedAtUtc => $composableBuilder(
+    column: $table.updatedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get deletedAtUtc => $composableBuilder(
+    column: $table.deletedAtUtc,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get hlc =>
+      $composableBuilder(column: $table.hlc, builder: (column) => column);
+
+  GeneratedColumn<int> get rev =>
+      $composableBuilder(column: $table.rev, builder: (column) => column);
+
+  GeneratedColumn<String> get scheduleClass => $composableBuilder(
+    column: $table.scheduleClass,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get patientName => $composableBuilder(
+    column: $table.patientName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get patientAddress => $composableBuilder(
+    column: $table.patientAddress,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get prescriberName => $composableBuilder(
+    column: $table.prescriberName,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get prescriberRegNo => $composableBuilder(
+    column: $table.prescriberRegNo,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get prescriptionRef => $composableBuilder(
+    column: $table.prescriptionRef,
+    builder: (column) => column,
+  );
+
+  $FirmsAnnotationComposer get firmId {
+    final $FirmsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.firmId,
+      referencedTable: $db.firms,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $FirmsAnnotationComposer(
+            $db: $db,
+            $table: $db.firms,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get createdBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.createdBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $UsersAnnotationComposer get updatedBy {
+    final $UsersAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.updatedBy,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $UsersAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DevicesAnnotationComposer get originDeviceId {
+    final $DevicesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.originDeviceId,
+      referencedTable: $db.devices,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DevicesAnnotationComposer(
+            $db: $db,
+            $table: $db.devices,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentsAnnotationComposer get documentId {
+    final $DocumentsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentId,
+      referencedTable: $db.documents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentsAnnotationComposer(
+            $db: $db,
+            $table: $db.documents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $DocumentLinesAnnotationComposer get documentLineId {
+    final $DocumentLinesAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.documentLineId,
+      referencedTable: $db.documentLines,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $DocumentLinesAnnotationComposer(
+            $db: $db,
+            $table: $db.documentLines,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $ItemsAnnotationComposer get itemId {
+    final $ItemsAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.itemId,
+      referencedTable: $db.items,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $ItemsAnnotationComposer(
+            $db: $db,
+            $table: $db.items,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $PrescriptionsTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          Prescriptions,
+          PrescriptionRow,
+          $PrescriptionsFilterComposer,
+          $PrescriptionsOrderingComposer,
+          $PrescriptionsAnnotationComposer,
+          $PrescriptionsCreateCompanionBuilder,
+          $PrescriptionsUpdateCompanionBuilder,
+          (PrescriptionRow, $PrescriptionsReferences),
+          PrescriptionRow,
+          PrefetchHooks Function({
+            bool firmId,
+            bool createdBy,
+            bool updatedBy,
+            bool originDeviceId,
+            bool documentId,
+            bool documentLineId,
+            bool itemId,
+          })
+        > {
+  $PrescriptionsTableManager(_$AppDatabase db, Prescriptions table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $PrescriptionsFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $PrescriptionsOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $PrescriptionsAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> firmId = const Value.absent(),
+                Value<int> createdAtUtc = const Value.absent(),
+                Value<int> updatedAtUtc = const Value.absent(),
+                Value<String> createdBy = const Value.absent(),
+                Value<String> updatedBy = const Value.absent(),
+                Value<int?> deletedAtUtc = const Value.absent(),
+                Value<String> originDeviceId = const Value.absent(),
+                Value<String> hlc = const Value.absent(),
+                Value<int> rev = const Value.absent(),
+                Value<String> documentId = const Value.absent(),
+                Value<String> documentLineId = const Value.absent(),
+                Value<String> itemId = const Value.absent(),
+                Value<String> scheduleClass = const Value.absent(),
+                Value<String> patientName = const Value.absent(),
+                Value<String?> patientAddress = const Value.absent(),
+                Value<String> prescriberName = const Value.absent(),
+                Value<String> prescriberRegNo = const Value.absent(),
+                Value<String?> prescriptionRef = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PrescriptionsCompanion(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                documentId: documentId,
+                documentLineId: documentLineId,
+                itemId: itemId,
+                scheduleClass: scheduleClass,
+                patientName: patientName,
+                patientAddress: patientAddress,
+                prescriberName: prescriberName,
+                prescriberRegNo: prescriberRegNo,
+                prescriptionRef: prescriptionRef,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String firmId,
+                required int createdAtUtc,
+                required int updatedAtUtc,
+                required String createdBy,
+                required String updatedBy,
+                Value<int?> deletedAtUtc = const Value.absent(),
+                required String originDeviceId,
+                required String hlc,
+                Value<int> rev = const Value.absent(),
+                required String documentId,
+                required String documentLineId,
+                required String itemId,
+                required String scheduleClass,
+                required String patientName,
+                Value<String?> patientAddress = const Value.absent(),
+                required String prescriberName,
+                required String prescriberRegNo,
+                Value<String?> prescriptionRef = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PrescriptionsCompanion.insert(
+                id: id,
+                firmId: firmId,
+                createdAtUtc: createdAtUtc,
+                updatedAtUtc: updatedAtUtc,
+                createdBy: createdBy,
+                updatedBy: updatedBy,
+                deletedAtUtc: deletedAtUtc,
+                originDeviceId: originDeviceId,
+                hlc: hlc,
+                rev: rev,
+                documentId: documentId,
+                documentLineId: documentLineId,
+                itemId: itemId,
+                scheduleClass: scheduleClass,
+                patientName: patientName,
+                patientAddress: patientAddress,
+                prescriberName: prescriberName,
+                prescriberRegNo: prescriberRegNo,
+                prescriptionRef: prescriptionRef,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<Prescriptions, PrescriptionRow>(table),
+                  $PrescriptionsReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                firmId = false,
+                createdBy = false,
+                updatedBy = false,
+                originDeviceId = false,
+                documentId = false,
+                documentLineId = false,
+                itemId = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (firmId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.firmId,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._firmIdTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._firmIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (createdBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.createdBy,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._createdByTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._createdByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (updatedBy) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.updatedBy,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._updatedByTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._updatedByTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (originDeviceId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.originDeviceId,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._originDeviceIdTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._originDeviceIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (documentId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.documentId,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._documentIdTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._documentIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (documentLineId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.documentLineId,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._documentLineIdTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._documentLineIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+                        if (itemId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.itemId,
+                                    referencedTable: $PrescriptionsReferences
+                                        ._itemIdTable(db),
+                                    referencedColumn: $PrescriptionsReferences
+                                        ._itemIdTable(db)
+                                        .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $PrescriptionsProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      Prescriptions,
+      PrescriptionRow,
+      $PrescriptionsFilterComposer,
+      $PrescriptionsOrderingComposer,
+      $PrescriptionsAnnotationComposer,
+      $PrescriptionsCreateCompanionBuilder,
+      $PrescriptionsUpdateCompanionBuilder,
+      (PrescriptionRow, $PrescriptionsReferences),
+      PrescriptionRow,
+      PrefetchHooks Function({
+        bool firmId,
+        bool createdBy,
+        bool updatedBy,
+        bool originDeviceId,
+        bool documentId,
+        bool documentLineId,
+        bool itemId,
+      })
+    >;
 typedef $UnitConversionsCreateCompanionBuilder =
     UnitConversionsCompanion Function({
       required String id,
@@ -81481,6 +84684,8 @@ class $AppDatabaseManager {
       $DocumentLineTaxesTableManager(_db, _db.documentLineTaxes);
   $DocLinksTableManager get docLinks =>
       $DocLinksTableManager(_db, _db.docLinks);
+  $PrescriptionsTableManager get prescriptions =>
+      $PrescriptionsTableManager(_db, _db.prescriptions);
   $UnitConversionsTableManager get unitConversions =>
       $UnitConversionsTableManager(_db, _db.unitConversions);
   $SettingsTableManager get settings =>

@@ -1,5 +1,6 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../pharmacy/medicine.dart';
 import '../stock/lots.dart';
 import '../tax/tax_charge.dart';
 
@@ -332,10 +333,15 @@ final class SalePosting {
     this.convertedFromId,
     this.alsoFromIds = const [],
     this.replacesId,
+    this.prescription,
   });
 
   final DocumentPosting document;
   final List<DocumentLinePosting> lines;
+
+  /// The prescription the bill's Schedule lines are registered against
+  /// (M49).
+  final Prescription? prescription;
 
   /// The document this bill was made from, linked `converted_from`.
   final String? convertedFromId;
@@ -350,21 +356,37 @@ final class SalePosting {
   final JournalEntryPosting journal;
   final String auditSummary;
 
-  /// The same sale with its document, entry or summary replaced: a sale
-  /// order's advance taken into the bill made from it (M41).
+  /// The same sale with any of its parts replaced, and every part not named
+  /// carried as it was: a sale order's advance taken into the bill made from
+  /// it (M41).
+  ///
+  /// It used to rebuild the posting from a list of the fields it meant to
+  /// keep, and the list had missed one: a bill putting another right (M36)
+  /// that was also made from a sale order lost its `revises` link to the
+  /// bill it replaced on the way through. Every field is a parameter now,
+  /// so a field added later is one the compiler shows here.
   SalePosting copyWith({
     DocumentPosting? document,
+    List<DocumentLinePosting>? lines,
+    List<PaymentPosting>? payments,
+    List<StockMovementPosting>? stockMovements,
     JournalEntryPosting? journal,
     String? auditSummary,
+    String? convertedFromId,
+    List<String>? alsoFromIds,
+    String? replacesId,
+    Prescription? prescription,
   }) => SalePosting(
     document: document ?? this.document,
-    lines: lines,
-    payments: payments,
-    stockMovements: stockMovements,
+    lines: lines ?? this.lines,
+    payments: payments ?? this.payments,
+    stockMovements: stockMovements ?? this.stockMovements,
     journal: journal ?? this.journal,
     auditSummary: auditSummary ?? this.auditSummary,
-    convertedFromId: convertedFromId,
-    alsoFromIds: alsoFromIds,
+    convertedFromId: convertedFromId ?? this.convertedFromId,
+    alsoFromIds: alsoFromIds ?? this.alsoFromIds,
+    replacesId: replacesId ?? this.replacesId,
+    prescription: prescription ?? this.prescription,
   );
 
   /// Asserts the entry balances, before anyone tries to write it.

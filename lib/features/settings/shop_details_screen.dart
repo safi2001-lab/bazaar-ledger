@@ -5,6 +5,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../pharmacy/pharmacy_shop_fields.dart';
 
 /// The shop's own details, as they appear on a bill.
 class ShopDetailsScreen extends ConsumerStatefulWidget {
@@ -25,6 +26,11 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
 
   bool _loaded = false;
   bool _registered = false;
+
+  /// M49: what kind of shop, and a pharmacy's discount off the MRP
+  /// (pharmacy_shop_fields.dart).
+  String _kind = 'general';
+  final _offMrp = TextEditingController();
   bool _busy = false;
   String? _failure;
 
@@ -36,6 +42,7 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
     _phone.dispose();
     _ntn.dispose();
     _strn.dispose();
+    _offMrp.dispose(); // M49
     super.dispose();
   }
 
@@ -66,7 +73,10 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
         'ntn': _text(_ntn),
         'strn': _text(_strn),
         'is_sales_tax_registered': _registered ? 1 : 0,
+        'business_kind': _kind, // M49
       });
+      // M49: a pharmacy's standing discount off the MRP.
+      await savePharmacyShopFields(ref, kind: _kind, offMrp: _offMrp);
       container.invalidate(firmProvider);
       container.bumpRefresh();
       if (!mounted) return;
@@ -122,6 +132,10 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
               _ntn.text = profile.ntn ?? '';
               _strn.text = profile.strn ?? '';
               _registered = profile.isSalesTaxRegistered;
+              _kind = profile.businessKind; // M49
+              loadOffMrpText(ref).then((text) {
+                if (mounted && _offMrp.text.isEmpty) _offMrp.text = text;
+              });
             }
 
             return SingleChildScrollView(
@@ -178,6 +192,12 @@ class _ShopDetailsScreenState extends ConsumerState<ShopDetailsScreen> {
                               ),
                             ),
                           ],
+                        ),
+                        // M49: the kind of shop; a pharmacy's own fields.
+                        PharmacyShopFields(
+                          kind: _kind,
+                          offMrp: _offMrp,
+                          onKind: (kind) => setState(() => _kind = kind),
                         ),
                         const SizedBox(height: BlTokens.space5),
 

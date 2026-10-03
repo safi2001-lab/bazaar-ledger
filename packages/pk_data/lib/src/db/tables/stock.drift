@@ -47,7 +47,14 @@ CREATE TABLE stock_lots (
   serial TEXT,
 
   received_at_utc INTEGER,
-  supplier_party_id TEXT REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED
+  supplier_party_id TEXT REFERENCES parties(id) DEFERRABLE INITIALLY DEFERRED,
+
+  -- Why this batch may not be sold, while it may not (M49): a DRAP recall,
+  -- a carton that came in wet, a batch the distributor rang about. Empty is
+  -- a batch the counter sells. First-expiry-first-out passes a held batch
+  -- by, and a scan or a pick of it is refused with these words. Added in
+  -- v11, last because SQLite adds a column at the end.
+  hold_reason TEXT CHECK (hold_reason IS NULL OR length(trim(hold_reason)) > 0)
 ) STRICT;
 
 CREATE UNIQUE INDEX idx_lots_no ON stock_lots (firm_id, item_id, lot_no);

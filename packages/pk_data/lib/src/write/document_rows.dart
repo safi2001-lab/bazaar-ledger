@@ -170,7 +170,7 @@ Future<void> insertStockMovements(
   for (final movement in movements) {
     var lotId = movement.lotId;
     if (movement.newLot case final lot?) {
-      lotId = await _lotFor(tx, movement, lot);
+      lotId = await _lotFor(tx, movement, lot, documentId: documentId);
     }
 
     if (takeFromLots && movement.qtyDelta.isNegative && lotId == null) {
@@ -217,7 +217,7 @@ Future<void> insertStockMovements(
 
     if (takeFromLots && movement.qtyDelta.isNegative && lotId != null) {
       final left = await tx.selectOne(
-        'SELECT l.lot_no, l.expiry_date_local, '
+        'SELECT l.lot_no, l.expiry_date_local, l.hold_reason, '
         '       COALESCE(SUM(s.qty_delta_thousandths), 0) AS qty '
         'FROM stock_lots l LEFT JOIN stock_ledger s '
         '  ON s.lot_id = l.id AND s.deleted_at_utc IS NULL '
@@ -236,6 +236,13 @@ Future<void> insertStockMovements(
         throw StockRefused(
           'Batch ${left.read<String>('lot_no')} expired on $expiry and '
           'cannot be sold.',
+        );
+      }
+      // M49: a batch on hold is refused by name, in the words it was held
+      // with, however it was picked.
+      if (left.readNullable<String>('hold_reason') case final reason?) {
+        throw StockRefused(
+          heldBatchRefusal(left.read<String>('lot_no'), reason),
         );
       }
     }
@@ -288,11 +295,16 @@ Future<void> insertStockRow(
 }
 
 /// The lot [lot] names for this item, created the first time it arrives.
+///
+/// A batch that arrives on a delivery remembers who it came from and the
+/// price printed on it (M49): the near-expiry list groups batches by their
+/// supplier, and the DRAP price binds batch by batch.
 Future<String> _lotFor(
   Tx tx,
   StockMovementPosting movement,
-  LotDraft lot,
-) async {
+  LotDraft lot, {
+  String? documentId,
+}) async {
   final existing = await tx.selectOne(
     'SELECT id FROM stock_lots WHERE firm_id = ? AND item_id = ? AND lot_no = ?',
     [tx.actor.firmId, movement.itemId, lot.lotNo],
@@ -306,6 +318,12 @@ Future<String> _lotFor(
     }
     return existing.read<String>('id');
   }
+  final supplier = documentId == null || movement.txnType != 'purchase'
+      ? null
+      : await tx.selectOne(
+          'SELECT party_id FROM documents WHERE id = ?',
+          [documentId],
+        );
   return tx.insert('stock_lots', {
     'item_id': movement.itemId,
     'lot_no': lot.lotNo,
@@ -314,6 +332,9 @@ Future<String> _lotFor(
     'serial': lot.serial,
     'cost_milli_paisa': movement.rate.inMilliPaisa,
     'received_at_utc': movement.occurredAtUtcMillis,
+    // M49
+    'mrp_paisa': lot.mrp?.inPaisa,
+    'supplier_party_id': supplier?.readNullable<String>('party_id'),
   });
 }
 
@@ -324,7 +345,7 @@ Future<List<LotBalance>> lotBalancesAt(
   String location,
 ) async {
   final rows = await tx.select(
-    'SELECT l.id, l.lot_no, l.expiry_date_local, '
+    'SELECT l.id, l.lot_no, l.expiry_date_local, l.hold_reason, l.mrp_paisa, '
     '       SUM(s.qty_delta_thousandths) AS qty '
     'FROM stock_lots l JOIN stock_ledger s ON s.lot_id = l.id '
     'WHERE l.item_id = ? AND s.location_code = ? '
@@ -340,6 +361,12 @@ Future<List<LotBalance>> lotBalancesAt(
         qty: Qty.raw(r.read<int>('qty')),
         expiry: switch (r.readNullable<String>('expiry_date_local')) {
           final String d => BusinessDate(d),
+          null => null,
+        },
+        // M49: first-expiry-first-out passes a held batch by.
+        holdReason: r.readNullable<String>('hold_reason'),
+        mrp: switch (r.readNullable<int>('mrp_paisa')) {
+          final int p => Money.paisa(p),
           null => null,
         },
       ),

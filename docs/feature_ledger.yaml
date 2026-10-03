@@ -2605,6 +2605,113 @@ milestones:
       - lib/features/khata/give_goods_sheet.dart
       - lib/features/khata/price_goods_sheet.dart
 
+  - id: M49
+    title: The pharmacy pack — the salt, the DRAP price, expiry back to the supplier, and the Schedule register
+    # Opened and sealed 3 Oct 2026 at 1/1. A chemist's counter, from Marg,
+    # HysabOne and the Punjab Drug Sale Rules 2007. Pharmacy is a kind of
+    # shop: "Medical store" in the shop's details (first run asked once and
+    # nothing could change it since) turns on what is a pharmacy's alone —
+    # the DRAP price enforced, the medicine fields in the item editor, the
+    # near-expiry list — and what belongs to a medicine wherever it is sold
+    # stays per item.
+    #
+    # The salt. An item carries its generic name and strength, its maker and
+    # its Schedule class. The counter and the items list find it by brand or
+    # by salt, however the salt is spelt — a second searched column keyed by
+    # M56's own spelling key and ranked with the name, so "paracitamol 500"
+    # finds Panadol — and an item's page lists its substitutes, the medicines
+    # with the same salt and strength ("500 mg" and "500mg" are one), the
+    # ones on the shelf first, with their stock and price.
+    #
+    # The DRAP price. Above the printed price is refused for a pharmacy;
+    # below is always allowed. Any other shop keeps M59's rule: warned, on
+    # the line, for Third Schedule goods, and never stopped. One check for
+    # the whole product, shared with M59 when the two met on the integration
+    # line: pk_domain/src/pricing/mrp.dart holds the printed price multiplied
+    # out (retailValueOf, M59's, which its Third Schedule tax base reads too)
+    # and THE comparison (isAboveRetail), which M59's note under the line
+    # (sellsAboveMrp) and the pharmacy's refusal both go through. A line is
+    # above when what the customer pays for it is more than the printed
+    # price of that many. It binds batch by batch: a delivery now keeps the
+    # price printed on each batch, and the ceiling is the sum of each part
+    # first-expiry-first-out will take, at its batch's price or the item's.
+    # Refused beneath every screen in the sale's own transaction
+    # (PostSaleUseCase's pharmacy reader, as M53's shelf), and said first at
+    # the counter. "% off MRP":
+    # on one line from its editor (the price becomes the MRP and the
+    # discount the percentage, so the bill reads as a chemist's does), and
+    # as the shop's standing "10% off on all medicines", set by the owner in
+    # the shop's details, put on every new line of an item with a printed
+    # price, and counted as the owner's standing discount by the cashier's
+    # ceiling (M22), not the cashier's own.
+    #
+    # Held batches. A recalled or damaged batch is put on hold with a reason
+    # by whoever may move stock (the purchases permission); first-expiry-
+    # first-out passes it by, a sale that could only be made from it is
+    # refused in the hold's words, a pack of it scanned at the counter (its
+    # GS1 code) is refused with the reason, and it is let go the same way.
+    #
+    # Near expiry, back to the supplier. The batches on the shop floor that
+    # expire within 30, 60, 90 or 180 days (or have), or are held, under the
+    # supplier each came from — the party on the delivery that brought it,
+    # which a new batch now remembers. Ticked and sent back: a return against
+    # each delivery the batches came in on, through M5's own path, every
+    # strip out of its own batch (a return to a supplier can now name the
+    # batch), all of one supplier's returns in one transaction. What they
+    # credit comes off what the shop owes on each delivery; for a delivery
+    # already paid M5's rule stands — the books keep no account of money a
+    # supplier owes the shop — so the rest is written as handed back in
+    # cash, and the screen says so. An "Expiry return note" (item, batch,
+    # expiry, quantity, MRP, value, and a line to sign) goes out as a PDF
+    # through the reports' own exporter.
+    #
+    # The Schedule register. A Schedule B or D medicine (or another the shop
+    # keeps the register for) is sold only with the patient, the prescriber
+    # and the prescriber's PM&DC number, and a prescription reference and
+    # the patient's address when given; a photograph of the paper is kept
+    # beside the bill in the attachments store. Without them the counter
+    # asks, and the sale path refuses. The register (Reports, Pharmacy) is
+    # one page per medicine in the Rules' own columns — serial, date, paper,
+    # patient, prescriber, drug, manufacturer, batch, quantity sold and
+    # purchased, the running balance and a blank for the signature — read
+    # off the stock ledger, so it cannot disagree with the shelf, and goes
+    # out as PDF or Excel.
+    #
+    # Schema v11. items gains generic_name, strength, generic_search (the
+    # derived key, re-derived on arrival from another counter and by
+    # respellNames), manufacturer and schedule_class; stock_lots gains
+    # hold_reason; a new table, prescriptions, one row per Schedule line of
+    # a bill, keyed by the line, with the class copied as it was sold. Every
+    # column is added in place and is empty on every existing row; no row is
+    # touched. The rows travel to the other counters in the changes they
+    # already make; the table carries no date of its own (its bill does),
+    # so the closed books are held by the bill's.
+    #
+    # Found on the way and fixed: SalePosting.copyWith (M41) rebuilt the
+    # posting from a list of fields and had missed replacesId, so a bill
+    # putting a cancelled one right (M36) that was also made from a sale
+    # order with an advance lost its revises link; every field is carried
+    # now, and a test says so.
+    #
+    # Not built: Schedule items on a delivery challan are not asked (the
+    # bill made from it is); a credit to a supplier beyond what is owed on
+    # the delivery the batch came on is cash, not spread over his other
+    # bills; a batch in a godown or on a van is not on the near-expiry list
+    # (returns leave from the shop floor); the M52 importer does not map a
+    # Generic column; a batch's MRP is asked on the delivery picker and not
+    # on a purchase order's receiving sheet (M41's), where the item's own
+    # stands.
+    state: sealed
+    owns:
+      - packages/pk_domain/lib/src/pharmacy/**
+      - packages/pk_domain/lib/src/pricing/mrp.dart
+      - packages/pk_data/lib/src/read/drift_pharmacy_reads.dart
+      - packages/pk_data/lib/src/read/reports/pharmacy_queries.dart
+      - packages/pk_data/lib/src/write/drift_pharmacy_writer.dart
+      - packages/pk_reports/lib/src/pharmacy_reports.dart
+      - packages/pk_bootstrap/lib/src/pharmacy_services.dart
+      - lib/features/pharmacy/**
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7677,3 +7784,42 @@ features:
       - the sheet goes out as a PDF and as a WhatsApp message
       - the sheet fits a 58mm and an 80mm receipt roll
       - at 200% on a small phone a sheet being marked fits
+  - id: M49-PHARMACY-01
+    milestone: M49
+    title: A pharmacy finds a medicine by its salt, sells at or below the DRAP price, holds a batch, sends expired stock back to its supplier, and keeps the Schedule register
+    status: done
+    # Proved against a real database, through the services and over a real
+    # socket between two phones, and through the screens; the schema change
+    # by migrating a v10 shop.
+    proof:
+      - the printed retail price a line is above its MRP only when what the customer pays for it is more than the printed price allows; below is always allowed
+      - the printed retail price the counter's warning and the pharmacy's refusal are one check, on one printed price
+      - the printed retail price a pharmacy is refused, any other shop is warned
+      - a sale posting copied carries every part it was not told to change
+      - a sale posting copied a bill putting another right, made from a sale order with an advance, keeps the bill it replaces
+      - a sale posting copied replaces what it is told to
+      - a batch on hold is passed by first-expiry-first-out, and refused in its own words when nothing else will do
+      - the salt two medicines of one salt and strength share one key, however the strength is written; another strength does not
+      - a Schedule sale needs the patient, the prescriber and the registration number
+      - near expiry is listed under the supplier each batch came from, soonest first, and the batches from nobody last
+      - the pharmacy pack a medicine is found by its brand or by its salt, however the salt is spelt
+      - the pharmacy pack the medicines with the same salt and strength are its substitutes, with their stock and price
+      - the pharmacy pack a batch remembers the supplier it came from and the price printed on it
+      - the pharmacy pack a batch on hold is passed by first-expiry-first-out, refused by name, and sold again once let go
+      - the pharmacy pack above the printed price is refused for a pharmacy, batch by batch, and let through for any other shop; below is always allowed
+      - the pharmacy pack a Schedule medicine cannot be sold without patient and prescriber, and nothing of the bill is written
+      - the pharmacy pack a Schedule sale is in the register with its prescription, batch and running balance
+      - the pharmacy pack expired stock goes back to the supplier it came from, out of its own batch and off what the shop owes, in one transaction
+      - the pharmacy pack a shop standing discount off the MRP is kept, and only as a percentage
+      - v10 to v11 — the pharmacy pack an item and its batch come through as they were, neither a medicine nor held, and the register is there to be written
+      - the pharmacy pack an expiry return per supplier credits the supplier and empties the batch
+      - the pharmacy pack a batch from another supplier cannot ride on the return, and nothing is written
+      - the pharmacy pack the medicine, its held batch and its register reach the other counter
+      - the pharmacy pack only the owner sets the shop's discount off the MRP; a cashier sells at it, and may not hold a batch
+      - a medicine is found at the counter by its salt, and its substitutes are on its page
+      - a pharmacy is refused a medicine above its printed price at the counter, and nothing is written
+      - a Schedule medicine asks for the prescription, and the bill is saved with it in the register
+      - a pack from a batch on hold is refused at the scan, with the reason
+      - near expiry by supplier: the batches are ticked and go back to the supplier
+      - the shop says it is a pharmacy in its details, with its discount off the MRP, and the counter rings it
+      - at 200% on a small phone the prescription and the near-expiry list fit

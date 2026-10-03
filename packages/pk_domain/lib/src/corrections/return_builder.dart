@@ -388,9 +388,18 @@ final class ReturnShare {
 
 /// How much of one line is coming back.
 final class ReturnLineDraft {
-  const ReturnLineDraft({required this.documentLineId, required this.qty});
+  const ReturnLineDraft({
+    required this.documentLineId,
+    required this.qty,
+    this.lotId,
+  });
 
   final String documentLineId;
+
+  /// The batch it goes back out of, on a return to a supplier (M49): an
+  /// expired batch sent back leaves that batch, not whichever the shelf
+  /// would sell next. Null leaves the batches as they are.
+  final String? lotId;
 
   /// In the unit the line was sold in — a maund line comes back in maunds
   /// (M57). On a delivery, in the unit it was billed in.

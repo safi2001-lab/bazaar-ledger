@@ -1,5 +1,7 @@
 import 'package:pk_money/pk_money.dart';
 
+import '../pharmacy/medicine.dart';
+
 /// One line as the counter entered it, before any calculation.
 ///
 /// ## A line with no item (M37)
@@ -188,11 +190,17 @@ final class SaleDraft {
     this.alsoFromIds = const [],
     this.locationCode = 'MAIN',
     this.replacesId,
+    this.prescription,
   });
 
   /// Where the goods leave from (M18): the shop floor, or a van a rider is
   /// selling from.
   final String locationCode;
+
+  /// Who the bill's Schedule medicines are for and who prescribed them
+  /// (M49). Required when the bill carries one; written to the register
+  /// against each of their lines.
+  final Prescription? prescription;
 
   final List<SaleLineDraft> lines;
 
@@ -251,5 +259,6 @@ final class SaleDraft {
     alsoFromIds: alsoFromIds,
     locationCode: locationCode,
     replacesId: replacesId,
+    prescription: prescription,
   );
 }

@@ -58,9 +58,24 @@ final class DriftSyncStore implements SyncPeer {
   static const _respelled = {'items', 'parties'};
 
   static Map<String, Object?> _respell(String table, Map<String, Object?> row) {
+    if (!_respelled.contains(table)) return row;
     final name = row['name'];
-    if (!_respelled.contains(table) || name is! String) return row;
-    return {...row, 'name_search': nameSearchColumn(name)};
+    var out = name is String
+        ? {...row, 'name_search': nameSearchColumn(name)}
+        : row;
+    // M49: a medicine's salt key is derived the same way, from the salt and
+    // strength the change carries — the catalogue writer always sends the
+    // two together.
+    if (table == 'items' && row.containsKey('generic_name')) {
+      out = {
+        ...out,
+        'generic_search': genericSearchColumn(
+          row['generic_name'] as String?,
+          row['strength'] as String?,
+        ),
+      };
+    }
+    return out;
   }
 
   @override

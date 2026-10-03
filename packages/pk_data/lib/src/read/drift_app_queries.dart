@@ -92,6 +92,8 @@ final class DriftAppQueries implements AppQueries {
         row.readNullable<String>('bank_account_title'),
       ),
       bankIban: _blankToNull(row.readNullable<String>('bank_iban')),
+      // M49: a pharmacy shows its own screens and is held to the DRAP price.
+      businessKind: row.read<String>('business_kind'),
     );
   }
 
@@ -191,21 +193,29 @@ final class DriftAppQueries implements AppQueries {
       column: 'i.name_search',
       exactColumns: const ['i.code', 'i.barcode'],
     );
+    // M49: a medicine is found by its salt as well as its brand, ranked the
+    // same way on its own key, and placed by whichever of the two matched
+    // better. An item with no salt has no key, and the second test is over
+    // at its first NULL.
+    final generic = SpellingSearch(typed, column: 'i.generic_search');
+    final rank = 'MIN(${search.rank}, ${generic.rank})';
+    final rankVariables = [...search.rankVariables, ...generic.rankVariables];
     final rows = await _db
         .customSelect(
           '''
           WITH hits AS (
-            SELECT i.id AS id, ${search.rank} AS rnk
+            SELECT i.id AS id, $rank AS rnk
             FROM items i
             WHERE i.firm_id = ?
               -- The name first: it is near the front of the row, and on a
               -- row it rules out, the flags at the back are never read.
-              AND ${search.where}
+              AND (${search.where}
+                   OR (i.generic_search IS NOT NULL AND ${generic.where}))
               AND i.is_active = 1
               AND i.deleted_at_utc IS NULL
           ),
           after_row AS (
-            SELECT ${search.rank} AS rnk FROM items i WHERE i.id = ?
+            SELECT $rank AS rnk FROM items i WHERE i.id = ?
           ),
           page AS (
             SELECT h.id, h.rnk FROM hits h
@@ -227,10 +237,11 @@ final class DriftAppQueries implements AppQueries {
           ORDER BY page.rnk, page.id
           ''',
           variables: [
-            ...search.rankVariables,
+            ...rankVariables,
             Variable<String>(firmId),
             ...search.whereVariables,
-            ...search.rankVariables,
+            ...generic.whereVariables,
+            ...rankVariables,
             Variable<String>(afterId),
             Variable<String>(afterId),
             Variable<String>(afterId),
@@ -1519,7 +1530,7 @@ final class DriftAppQueries implements AppQueries {
 
   static const _lotSelect = '''
     SELECT l.id, l.item_id, i.name AS item_name, l.lot_no, l.serial,
-           l.expiry_date_local, l.cost_milli_paisa,
+           l.expiry_date_local, l.cost_milli_paisa, l.hold_reason, l.mrp_paisa,
            SUM(s.qty_delta_thousandths) AS q
     FROM stock_lots l
     JOIN items i ON i.id = l.item_id
@@ -1538,6 +1549,9 @@ final class DriftAppQueries implements AppQueries {
       final String d => BusinessDate(d),
       null => null,
     },
+    // M49: a batch on hold says why, and a batch's own printed price.
+    holdReason: r.readNullable<String>('hold_reason'),
+    mrp: _moneyOrNull(r, 'mrp_paisa'),
   );
 
   @override
@@ -3182,7 +3196,22 @@ final class DriftAppQueries implements AppQueries {
     // carry them reads goods.
     isThirdSchedule: r.data['is_third_schedule'] == 1,
     isService: r.data['item_type'] == 'service',
+    // M49: what it is as a medicine, from the same `i.*`.
+    medicine: _medicineFrom(r),
   );
+
+  /// An item's medicine columns (M49), or null when it has none.
+  static MedicineDetails? _medicineFrom(QueryRow r) {
+    final details = MedicineDetails(
+      genericName: r.readNullable<String>('generic_name'),
+      strength: r.readNullable<String>('strength'),
+      manufacturer: r.readNullable<String>('manufacturer'),
+      schedule: ScheduleClass.fromCode(
+        r.readNullable<String>('schedule_class'),
+      ),
+    );
+    return details.isEmpty ? null : details;
+  }
 
   /// Null stays null rather than becoming zero.
   ///

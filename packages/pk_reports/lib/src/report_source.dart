@@ -8,6 +8,7 @@ import 'loan_reports.dart';
 import 'order_source.dart';
 import 'party_source.dart';
 import 'period.dart';
+import 'pharmacy_reports.dart';
 import 'staff_source.dart';
 import 'tax_source.dart';
 import 'transaction_source.dart';
@@ -304,7 +305,9 @@ abstract interface class ReportSource
         OrderReportSource,
         // M58
         LoanReportSource,
-        UdhaarReportSource {
+        UdhaarReportSource,
+        // M49
+        PharmacyReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

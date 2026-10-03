@@ -29,6 +29,15 @@ final class DriftPurchaseReturnWriter implements PurchaseReturnWriter {
   );
 }
 
+/// The handle a return to a supplier is written through, on a transaction
+/// already open (M49): several returns — an expiry return to one supplier
+/// across the deliveries its batches came in on — then go into the books
+/// together or not at all.
+PurchaseReturnWriteContext purchaseReturnContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _DriftPurchaseReturnWriteContext(tx, sequences);
+
 /// What earlier returns already sent back of one delivery line, through
 /// `doc_links`, in the base unit. The same subquery the read side uses, so
 /// the screen cannot offer a quantity this refuses.
@@ -210,6 +219,8 @@ final class _DriftPurchaseReturnWriteContext
       await _tx.insert('stock_ledger', {
         'item_id': movement.itemId,
         'location_code': movement.locationCode,
+        // M49: an expired batch sent back leaves that batch.
+        'lot_id': movement.lotId,
         'document_id': documentId,
         'document_line_id': lineIdByNo[movement.lineNo],
         'txn_type': movement.txnType,

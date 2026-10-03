@@ -25,6 +25,7 @@ final class PostSaleUseCase {
     this.calculator = const SaleCalculator(),
     this.builder = const SalePostingBuilder(),
     this.shelf,
+    this.pharmacy,
   });
 
   final SaleWriter writer;
@@ -35,6 +36,12 @@ final class PostSaleUseCase {
   /// selling below nothing is refused here, beneath every screen (M53).
   /// Null checks nothing, as before M53.
   final ShelfReader? shelf;
+
+  /// Reads what the pharmacy rules need (M49): a Schedule medicine is
+  /// refused without a complete prescription, and a pharmacy is refused a
+  /// medicine above its printed price, here beneath every screen. Null
+  /// checks neither, as before M49.
+  final PharmacyReader? pharmacy;
 
   Future<PostedSale> call(ActorContext actor, SaleDraft draft) {
     return writer.inTransaction(actor, (write) async {
@@ -114,6 +121,18 @@ final class PostSaleUseCase {
         ledgerAccountByPaymentAccount: ledgerAccounts,
         delivered: delivered,
       );
+
+      // M49: the DRAP price and the Schedule register, on the lines exactly
+      // as they will be written.
+      if (pharmacy case final reader?) {
+        await refuseUnlawfulMedicineSale(
+          reader,
+          actor,
+          lines: posting.lines,
+          prescription: draft.prescription,
+          locationCode: draft.locationCode,
+        );
+      }
 
       return write.apply(posting);
     });

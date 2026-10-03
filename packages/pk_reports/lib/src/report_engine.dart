@@ -8,6 +8,7 @@ import 'money_owed_reports.dart';
 import 'order_reports.dart';
 import 'party_builders.dart';
 import 'period.dart';
+import 'pharmacy_reports.dart';
 import 'report_source.dart';
 import 'report_table.dart';
 import 'transaction_builders.dart';
@@ -226,6 +227,10 @@ enum ReportKind {
 
   /// Udhaar written off or let go to settle, with who and why.
   badDebts,
+  // M49: the pharmacy pack, in `pharmacy_reports.dart`.
+
+  /// Every movement of every Schedule medicine, with its prescription.
+  scheduleRegister,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -538,6 +543,14 @@ final class ReportEngine {
       firmId: firmId,
       period: period,
       today: today,
+      filters: filters,
+    ),
+    // M49
+    ReportKind.scheduleRegister => buildPharmacyReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      period: period,
       filters: filters,
     ),
   };

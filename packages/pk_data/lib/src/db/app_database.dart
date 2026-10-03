@@ -41,7 +41,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 10;
+  static const currentSchemaVersion = 11;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -193,6 +193,39 @@ class AppDatabase extends _$AppDatabase {
               schema.idxUconvPeritem,
             ]) {
               await migrator.drop(index);
+              await migrator.create(index);
+            }
+          },
+          // v10 → v11 (M49): the pharmacy pack. items gains what a medicine
+          // is — its salt, strength, maker and Schedule class, and the
+          // spelling key of the salt it is found and substituted by — and
+          // stock_lots why a batch may not be sold; every column is added in
+          // place and is empty on every existing row, so no item becomes a
+          // medicine and no batch is held by the upgrade. The register's
+          // prescriptions are a new table with its indexes. No row is
+          // touched, and nothing is rebuilt.
+          from10To11: (migrator, schema) async {
+            for (final column in [
+              schema.items.genericName,
+              schema.items.strength,
+              schema.items.genericSearch,
+              schema.items.manufacturer,
+              schema.items.scheduleClass,
+            ]) {
+              await migrator.addColumn(schema.items, column);
+            }
+            await migrator.create(schema.idxItemsGeneric);
+            await migrator.addColumn(
+              schema.stockLots,
+              schema.stockLots.holdReason,
+            );
+            await migrator.createTable(schema.prescriptions);
+            for (final index in [
+              schema.idxPrescriptionsLine,
+              schema.idxPrescriptionsDoc,
+              schema.idxPrescriptionsFirmItem,
+              schema.idxPrescriptionsItem,
+            ]) {
               await migrator.create(index);
             }
           },
@@ -452,6 +485,30 @@ class AppDatabase extends _$AppDatabase {
         await customStatement(sql, [key, r.read<String>('id')]);
         written++;
       }
+    }
+    // M49: a medicine's salt is found the same way, and keyed the same way
+    // again. Only from v11 on: an older database has no such column, and
+    // this runs on its way up to v9, long before it does.
+    final medicineColumns = await customSelect(
+      "SELECT 1 FROM pragma_table_info('items') WHERE name = 'generic_search'",
+    ).get();
+    if (medicineColumns.isEmpty) return written;
+    final medicines = await customSelect(
+      'SELECT id, generic_name, strength, generic_search FROM items '
+      'WHERE generic_name IS NOT NULL OR generic_search IS NOT NULL',
+    ).get();
+    for (final r in medicines) {
+      final key = genericSearchColumn(
+        r.readNullable<String>('generic_name'),
+        r.readNullable<String>('strength'),
+      );
+      if (key == r.readNullable<String>('generic_search')) continue;
+      await customStatement(
+        'UPDATE items -- arch_check: allow no_raw_dml — derived search key\n'
+        'SET generic_search = ? WHERE id = ?',
+        [key, r.read<String>('id')],
+      );
+      written++;
     }
     return written;
   }

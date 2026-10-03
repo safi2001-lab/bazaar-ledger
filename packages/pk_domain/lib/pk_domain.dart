@@ -52,6 +52,9 @@ export 'src/entitlement/staff.dart';
 export 'src/identity/actor_context.dart';
 export 'src/identity/ulid.dart';
 export 'src/manufacturing/assembly.dart';
+// M49: the pharmacy pack.
+export 'src/pharmacy/medicine.dart';
+export 'src/pharmacy/pharmacy.dart';
 export 'src/ports/app_queries.dart';
 export 'src/ports/attachments.dart';
 export 'src/ports/catalogue_writer.dart';
@@ -83,6 +86,8 @@ export 'src/ports/settlement_writer.dart';
 export 'src/ports/udhaar.dart';
 export 'src/ports/vans.dart';
 export 'src/ports/void_writer.dart';
+// M49: the one check for a printed retail price.
+export 'src/pricing/mrp.dart';
 export 'src/pricing/price_tier.dart';
 export 'src/pricing/schemes.dart';
 export 'src/receivables/aging.dart';

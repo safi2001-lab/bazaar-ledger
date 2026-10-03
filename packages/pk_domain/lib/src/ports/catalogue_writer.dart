@@ -4,6 +4,7 @@ import '../catalogue/packs.dart';
 import '../catalogue/shelf.dart';
 import '../catalogue/spelling.dart';
 import '../identity/actor_context.dart';
+import '../pharmacy/medicine.dart';
 import '../pricing/price_tier.dart';
 import 'party_groups.dart';
 
@@ -33,6 +34,7 @@ final class ItemDraft {
     this.packs,
     this.isThirdSchedule,
     this.isService,
+    this.medicine,
   });
 
   /// Sold on its printed retail price (M59). Null leaves it as it is, so a
@@ -44,6 +46,14 @@ final class ItemDraft {
   final bool? isService;
 
   final String name;
+
+  /// What it is as a medicine (M49): its salt and strength, maker and
+  /// Schedule class.
+  ///
+  /// Null leaves the item's as they are, so a form that knows nothing of
+  /// medicines — the quick-add sheet, the importer — never wipes them. An
+  /// empty [MedicineDetails] makes it not a medicine.
+  final MedicineDetails? medicine;
   final String? code;
   final String? barcode;
   final String? category;

@@ -8,6 +8,7 @@ import 'package:test/test.dart';
 
 import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
+import 'generated/schema_v10.dart' as v10;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
@@ -610,6 +611,132 @@ void main() {
     );
   });
 
+  group('v10 to v11 — the pharmacy pack', () {
+    test('an item and its batch come through as they were, neither a medicine '
+        'nor held, and the register is there to be written', () async {
+      // A shop on v10 with a medicine it already sells by batch: Panadol,
+      // and a batch of it that came in from a distributor, with its
+      // printed price and its supplier already in the columns v1 kept.
+      final schema = await verifier.schemaAt(10);
+      final old = v10.DatabaseAtV10(schema.newConnection());
+      const firmId = 'FIRM0000000000000000000001';
+      const userId = 'USER0000000000000000000001';
+      const deviceId = 'DEV00000000000000000000001';
+      const itemId = 'ITM00000000000000000000001';
+      const lotId = 'LOT00000000000000000000001';
+      await old.customStatement('PRAGMA foreign_keys = OFF');
+      await old.customStatement(
+        'INSERT INTO items (id, firm_id, created_at_utc, updated_at_utc, '
+        'created_by, updated_by, origin_device_id, hlc, rev, name, '
+        'name_search, base_unit_id, sale_rate_milli_paisa, mrp_paisa, '
+        'track_batch, negative_stock) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 5, ?, ?, ?, ?, ?, 1, ?)',
+        [
+          itemId,
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'a-0000-$deviceId',
+          'Panadol 500mg',
+          nameSearchColumn('Panadol 500mg'),
+          'UNIT0000000000000000000001',
+          4000000,
+          4000,
+          'warn',
+        ],
+      );
+      await old.customStatement(
+        'INSERT INTO stock_lots (id, firm_id, created_at_utc, '
+        'updated_at_utc, created_by, updated_by, origin_device_id, hlc, '
+        'rev, item_id, lot_no, batch_no, expiry_date_local, mrp_paisa, '
+        'cost_milli_paisa, supplier_party_id) '
+        'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          lotId,
+          firmId,
+          userId,
+          userId,
+          deviceId,
+          'b-0000-$deviceId',
+          itemId,
+          'B42',
+          'B42',
+          '2027-06-30',
+          3800,
+          3000000,
+          'PTY00000000000000000000001',
+        ],
+      );
+      await old.close();
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 11);
+
+      final item = await db
+          .customSelect(
+            'SELECT name, rev, hlc, mrp_paisa, negative_stock, generic_name, '
+            'strength, generic_search, manufacturer, schedule_class '
+            'FROM items',
+          )
+          .getSingle();
+      expect(item.data['name'], 'Panadol 500mg');
+      expect(item.data['rev'], 5);
+      expect(item.data['hlc'], 'a-0000-$deviceId');
+      expect(item.data['mrp_paisa'], 4000);
+      expect(item.data['negative_stock'], 'warn');
+      for (final column in [
+        'generic_name',
+        'strength',
+        'generic_search',
+        'manufacturer',
+        'schedule_class',
+      ]) {
+        expect(
+          item.data[column],
+          isNull,
+          reason: 'no item becomes a medicine by an upgrade',
+        );
+      }
+      final lot = await db
+          .customSelect(
+            'SELECT lot_no, expiry_date_local, mrp_paisa, supplier_party_id, '
+            'hold_reason FROM stock_lots',
+          )
+          .getSingle();
+      expect(lot.data['lot_no'], 'B42');
+      expect(lot.data['expiry_date_local'], '2027-06-30');
+      expect(lot.data['mrp_paisa'], 3800);
+      expect(lot.data['supplier_party_id'], 'PTY00000000000000000000001');
+      expect(lot.data['hold_reason'], isNull, reason: 'no batch is held');
+
+      // The new columns hold what they are for, and refuse what they are
+      // not.
+      await db.customStatement(
+        "UPDATE items SET generic_name = 'Paracetamol', strength = '500 mg', "
+        "schedule_class = 'B'",
+      );
+      await expectLater(
+        db.customStatement("UPDATE items SET schedule_class = 'X'"),
+        throwsA(anything),
+        reason: 'a schedule the rules do not name is refused',
+      );
+      await expectLater(
+        db.customStatement("UPDATE stock_lots SET hold_reason = '  '"),
+        throwsA(anything),
+        reason: 'a hold has to say why',
+      );
+      final tables = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'table' "
+            "AND name = 'prescriptions'",
+          )
+          .get();
+      expect(tables, hasLength(1));
+    });
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -638,4 +765,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 10;
+const _currentVersion = 11;

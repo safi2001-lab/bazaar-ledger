@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../pharmacy/batch_hold_sheet.dart';
 
 typedef _Where = ({
   Map<String, Qty> places,
@@ -153,12 +154,40 @@ class _StockPlacesScreenState extends ConsumerState<StockPlacesScreen> {
                   Padding(
                     padding: const EdgeInsets.only(bottom: BlTokens.space1),
                     child: BlCard(
+                      // M49: a batch is put on hold, or let go, from here.
+                      onTap:
+                          item.tracksBatch &&
+                              ref
+                                  .read(appServicesProvider)
+                                  .pharmacy
+                                  .canMoveBatches
+                          ? () => showBatchHoldSheet(
+                              context,
+                              lotId: lot.lotId,
+                              lotNo: lot.lotNo,
+                              itemName: item.name,
+                              holdReason: lot.holdReason,
+                            )
+                          : null,
                       child: Row(
                         children: [
                           Expanded(
-                            child: Text(
-                              lot.lotNo,
-                              style: TextStyle(fontSize: 15, color: t.ink),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  lot.lotNo,
+                                  style: TextStyle(fontSize: 15, color: t.ink),
+                                ),
+                                if (lot.holdReason case final reason?)
+                                  Text(
+                                    s.pharmacyHeld(reason),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: t.danger,
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
                           if (lot.expiry case final expiry?)

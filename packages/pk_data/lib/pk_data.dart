@@ -14,6 +14,7 @@ export 'src/read/drift_collection_queries.dart' // M55
     show DriftCollectionQueries;
 export 'src/read/drift_loan_reads.dart';
 export 'src/read/drift_order_reads.dart';
+export 'src/read/drift_pharmacy_reads.dart';
 export 'src/read/drift_record_history.dart';
 export 'src/read/drift_report_source.dart';
 export 'src/read/drift_shelf_reads.dart';
@@ -38,6 +39,7 @@ export 'src/write/drift_manufacturing_writer.dart'
     show DriftManufacturingWriter;
 export 'src/write/drift_order_writer.dart' show DriftOrderWriter;
 export 'src/write/drift_payment_writer.dart' show DriftPaymentWriter;
+export 'src/write/drift_pharmacy_writer.dart' show DriftPharmacyWriter;
 export 'src/write/drift_printer_settings.dart';
 export 'src/write/drift_purchase_return_writer.dart'
     show DriftPurchaseReturnWriter;

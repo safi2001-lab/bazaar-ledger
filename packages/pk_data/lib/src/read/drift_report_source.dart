@@ -16,6 +16,7 @@ part 'reports/item_stock_queries.dart';
 part 'reports/loan_queries.dart';
 part 'reports/order_queries.dart';
 part 'reports/party_queries.dart';
+part 'reports/pharmacy_queries.dart';
 part 'reports/sql_filters.dart';
 part 'reports/staff_queries.dart';
 part 'reports/tax_queries.dart';
@@ -48,7 +49,9 @@ final class DriftReportSource
         _OrderQueries,
         // M58
         _LoanQueries,
-        _UdhaarReportQueries
+        _UdhaarReportQueries,
+        // M49
+        _PharmacyQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 

@@ -29,6 +29,7 @@ part 'fbr_services.dart';
 part 'import_services.dart';
 part 'loan_services.dart';
 part 'order_services.dart';
+part 'pharmacy_services.dart';
 part 'photo_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
@@ -205,6 +206,8 @@ final class AppServices {
       calculator: taxCalculator,
       // M53: a blocked item is refused beneath every screen.
       shelf: DriftShelfReader(database),
+      // M49: the DRAP price and the Schedule register, likewise.
+      pharmacy: DriftPharmacyReads(database),
     );
   }
 
@@ -451,6 +454,10 @@ final class AppServices {
 
   /// What the shop has hidden, and bringing it back (M60).
   late final RecycleServices recycle = RecycleServices._(this);
+  /// The pharmacy pack: the DRAP price, substitutes, held batches, the
+  /// near-expiry list and its return to the supplier, and the prescription
+  /// photograph (M49).
+  late final PharmacyServices pharmacy = PharmacyServices._(this);
 
   /// Goods given rate-later, and the recovery man's round (M55).
   late final CollectionServices collections = CollectionServices._(this);

@@ -20,41 +20,15 @@
 ///  * the line shows "MRP Rs X", so the cashier and the customer can both
 ///    see what the pack says.
 ///
-/// Shared with M49's `pricing/mrp.dart` (the pharmacy's DRAP price, where
-/// selling above is refused) once both are merged: the two checks are the
-/// same arithmetic and should become one function.
+/// The printed price multiplied out ([retailValueOf]) and the above-MRP
+/// check ([sellsAboveMrp]) live in `pricing/mrp.dart`, shared with M49's
+/// pharmacy, where selling above the DRAP price is refused: one function
+/// answers the question for both (`isAboveRetail`).
 library;
 
 import 'package:pk_money/pk_money.dart';
 
-/// The printed retail price of the goods on one line: what one pack's MRP
-/// comes to over everything that left the shelf.
-///
-/// [baseQty] is in the item's own unit, which is the unit its MRP is printed
-/// for, so a carton of 24 sold as one carton is 24 times the pack's price.
-/// Null when the item has no MRP, which is every loose line and most items in
-/// a kiryana that never typed one.
-Money? retailValueOf({required Money? mrp, required Qty baseQty}) {
-  if (mrp == null || !mrp.isPositive || !baseQty.isPositive) return null;
-  // The rate arithmetic rounds the paisa once, half up, as a line does.
-  return Rate.perUnit(mrp).amountFor(baseQty);
-}
-
-/// Whether a line is being sold above the printed price on its pack.
-///
-/// [lineValue] is what the line comes to after its own discount: a cashier
-/// who types Rs 130 for a Rs 120 pack and then gives Rs 10 off has sold at
-/// the printed price. A bill discount spread across the lines is not
-/// counted — it is not on the line the cashier is looking at — and it can
-/// only bring a line down, never up.
-bool sellsAboveMrp({
-  required Money? mrp,
-  required Qty baseQty,
-  required Money lineValue,
-}) {
-  final retail = retailValueOf(mrp: mrp, baseQty: baseQty);
-  return retail != null && lineValue > retail;
-}
+import '../pricing/mrp.dart';
 
 /// The tax inside a price that includes it, rounded half up to the paisa:
 /// `price × rate / (1 + rate)`. Rs 118 at 18% has Rs 18 inside it.

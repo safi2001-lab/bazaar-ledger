@@ -11887,6 +11887,354 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Diye: {paid} · Wade: {promised} · Nahi diye: {notPaid} · Nahi gaye: {notReached}'**
   String sheetCounts(int paid, int promised, int notPaid, int notReached);
+
+  /// No description provided for @pharmacyBatchMrp.
+  ///
+  /// In ur, this message translates to:
+  /// **'MRP fi {unit}'**
+  String pharmacyBatchMrp(String unit);
+
+  /// No description provided for @pharmacyMedicineTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dawai ki tafseel'**
+  String get pharmacyMedicineTitle;
+
+  /// No description provided for @pharmacyGeneric.
+  ///
+  /// In ur, this message translates to:
+  /// **'Generic naam (salt)'**
+  String get pharmacyGeneric;
+
+  /// No description provided for @pharmacyGenericHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jaise Paracetamol'**
+  String get pharmacyGenericHint;
+
+  /// No description provided for @pharmacyStrength.
+  ///
+  /// In ur, this message translates to:
+  /// **'Strength (taqat)'**
+  String get pharmacyStrength;
+
+  /// No description provided for @pharmacyManufacturer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Banane wali company'**
+  String get pharmacyManufacturer;
+
+  /// No description provided for @pharmacySchedule.
+  ///
+  /// In ur, this message translates to:
+  /// **'Schedule (control wali dawai)'**
+  String get pharmacySchedule;
+
+  /// No description provided for @pharmacyScheduleNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Schedule nahi'**
+  String get pharmacyScheduleNone;
+
+  /// No description provided for @pharmacyScheduleB.
+  ///
+  /// In ur, this message translates to:
+  /// **'Schedule B'**
+  String get pharmacyScheduleB;
+
+  /// No description provided for @pharmacyScheduleD.
+  ///
+  /// In ur, this message translates to:
+  /// **'Schedule D'**
+  String get pharmacyScheduleD;
+
+  /// No description provided for @pharmacyScheduleOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Register wali aur dawai'**
+  String get pharmacyScheduleOther;
+
+  /// No description provided for @pharmacyScheduleNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf doctor ke nuskhe par bikti hai; har sale Schedule register mein likhi jati hai.'**
+  String get pharmacyScheduleNote;
+
+  /// No description provided for @pharmacySubstitutes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Isi salt ki dawaiyan: {label}'**
+  String pharmacySubstitutes(String label);
+
+  /// No description provided for @pharmacyNoSubstitutes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is salt aur strength ki koi aur dawai nahi.'**
+  String get pharmacyNoSubstitutes;
+
+  /// No description provided for @pharmacyOffMrp.
+  ///
+  /// In ur, this message translates to:
+  /// **'MRP (Rs {mrp}) se % kam'**
+  String pharmacyOffMrp(String mrp);
+
+  /// No description provided for @pharmacyOffMrpApply.
+  ///
+  /// In ur, this message translates to:
+  /// **'Lagayein'**
+  String get pharmacyOffMrpApply;
+
+  /// No description provided for @pharmacyCannotSellTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh nahi bik sakti'**
+  String get pharmacyCannotSellTitle;
+
+  /// No description provided for @pharmacyMrpBlockedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'DRAP qeemat se zyada'**
+  String get pharmacyMrpBlockedTitle;
+
+  /// No description provided for @pharmacyMrpBlocked.
+  ///
+  /// In ur, this message translates to:
+  /// **'{item}: Rs {charged} lag rahe hain, MRP sirf Rs {ceiling} ki ijazat deti hai. Dawai MRP se mehngi nahi bik sakti.'**
+  String pharmacyMrpBlocked(String item, String charged, String ceiling);
+
+  /// No description provided for @pharmacyRxTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doctor ka nuskha'**
+  String get pharmacyRxTitle;
+
+  /// No description provided for @pharmacyRxFor.
+  ///
+  /// In ur, this message translates to:
+  /// **'Schedule dawai: {names}. Sirf registered doctor ke nuskhe par bikti hai.'**
+  String pharmacyRxFor(String names);
+
+  /// No description provided for @pharmacyRxPatient.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mareez ka naam'**
+  String get pharmacyRxPatient;
+
+  /// No description provided for @pharmacyRxPatientAddress.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mareez ka pata'**
+  String get pharmacyRxPatientAddress;
+
+  /// No description provided for @pharmacyRxDoctor.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doctor ka naam'**
+  String get pharmacyRxDoctor;
+
+  /// No description provided for @pharmacyRxRegNo.
+  ///
+  /// In ur, this message translates to:
+  /// **'Doctor ka PM&DC registration no.'**
+  String get pharmacyRxRegNo;
+
+  /// No description provided for @pharmacyRxRef.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nuskha no. ya hawala'**
+  String get pharmacyRxRef;
+
+  /// No description provided for @pharmacyRxPhoto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nuskhe ki tasveer'**
+  String get pharmacyRxPhoto;
+
+  /// No description provided for @pharmacyRxPhotoTaken.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer lag gayi'**
+  String get pharmacyRxPhotoTaken;
+
+  /// No description provided for @pharmacyRxSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aage barhein'**
+  String get pharmacyRxSave;
+
+  /// No description provided for @pharmacyHoldTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch {batch}'**
+  String pharmacyHoldTitle(String batch);
+
+  /// No description provided for @pharmacyHeld.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roka hua: {reason}'**
+  String pharmacyHeld(String reason);
+
+  /// No description provided for @pharmacyHoldReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kyun roka?'**
+  String get pharmacyHoldReason;
+
+  /// No description provided for @pharmacyHoldReasonHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'DRAP recall, kharab carton…'**
+  String get pharmacyHoldReasonHint;
+
+  /// No description provided for @pharmacyHold.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rok dein'**
+  String get pharmacyHold;
+
+  /// No description provided for @pharmacyRelease.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dobara bechein'**
+  String get pharmacyRelease;
+
+  /// No description provided for @pharmacyHoldDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch rok diya'**
+  String get pharmacyHoldDone;
+
+  /// No description provided for @pharmacyReleaseDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch dobara bikne laga'**
+  String get pharmacyReleaseDone;
+
+  /// No description provided for @pharmacyNearExpiryTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Expiry qareeb — supplier war'**
+  String get pharmacyNearExpiryTitle;
+
+  /// No description provided for @pharmacyNearExpiryDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din'**
+  String pharmacyNearExpiryDays(int days);
+
+  /// No description provided for @pharmacyNearExpiryAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Saare batch'**
+  String get pharmacyNearExpiryAll;
+
+  /// No description provided for @pharmacyNearExpiryEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is muddat mein koi batch expire nahi ho raha.'**
+  String get pharmacyNearExpiryEmpty;
+
+  /// No description provided for @pharmacyNoSupplier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kisi supplier se nahi'**
+  String get pharmacyNoSupplier;
+
+  /// No description provided for @pharmacyExpired.
+  ///
+  /// In ur, this message translates to:
+  /// **'Expire ho chuka'**
+  String get pharmacyExpired;
+
+  /// No description provided for @pharmacyReturnPicked.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} batch supplier ko wapas'**
+  String pharmacyReturnPicked(int count);
+
+  /// No description provided for @pharmacyReturnReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wajah'**
+  String get pharmacyReturnReason;
+
+  /// No description provided for @pharmacyReturnReasonDefault.
+  ///
+  /// In ur, this message translates to:
+  /// **'Expiry ki wajah se wapsi'**
+  String get pharmacyReturnReasonDefault;
+
+  /// No description provided for @pharmacyReturnConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh {supplier} ko wapas bhejein? Laagat Rs {value}.'**
+  String pharmacyReturnConfirm(String supplier, String value);
+
+  /// No description provided for @pharmacyReturnSend.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapas bhejein'**
+  String get pharmacyReturnSend;
+
+  /// No description provided for @pharmacyReturnDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi ho gayi: {nos}'**
+  String pharmacyReturnDone(String nos);
+
+  /// No description provided for @pharmacyReturnCredited.
+  ///
+  /// In ur, this message translates to:
+  /// **'Un ke khate se Rs {amount} kam'**
+  String pharmacyReturnCredited(String amount);
+
+  /// No description provided for @pharmacyReturnRefunded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} naqd wapas'**
+  String pharmacyReturnRefunded(String amount);
+
+  /// No description provided for @pharmacyReturnNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Wapsi ki parchi bhejein'**
+  String get pharmacyReturnNote;
+
+  /// No description provided for @pharmacyShopOffMrp.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har dawai par MRP se % kam'**
+  String get pharmacyShopOffMrp;
+
+  /// No description provided for @pharmacyShopOffMrpNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har chhapi qeemat wali dawai bill par MRP se itni kam lagegi. MRP se zyada par bechna mana hai.'**
+  String get pharmacyShopOffMrpNote;
+
+  /// No description provided for @pharmacyBatchHeldScan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Batch {batch} roka hua hai: {reason}. Yeh na bechein.'**
+  String pharmacyBatchHeldScan(String batch, String reason);
+
+  /// No description provided for @reportGroupPharmacy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pharmacy'**
+  String get reportGroupPharmacy;
+
+  /// No description provided for @reportScheduleRegister.
+  ///
+  /// In ur, this message translates to:
+  /// **'Schedule B/D register'**
+  String get reportScheduleRegister;
+
+  /// No description provided for @reportScheduleRegisterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har control wali dawai ki aamad o kharch, nuskhe ke saath'**
+  String get reportScheduleRegisterHint;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

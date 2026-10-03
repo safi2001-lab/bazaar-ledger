@@ -48,6 +48,8 @@ enum ReportGroup {
   expense,
   orders,
   loans,
+  // M49
+  pharmacy,
 }
 
 /// A group's heading, as the shop reads it.
@@ -60,6 +62,7 @@ String reportGroupName(AppStrings s, ReportGroup group) => switch (group) {
   ReportGroup.expense => s.reportGroupExpense,
   ReportGroup.orders => s.reportGroupOrders,
   ReportGroup.loans => s.reportGroupLoans,
+  ReportGroup.pharmacy => s.reportGroupPharmacy, // M49
 };
 
 /// One report in the hub.
@@ -794,6 +797,18 @@ final _loanReports = [
   ),
 ];
 
+/// M49: the pharmacy's register, for the inspector.
+final _pharmacyReports = [
+  ReportEntry(
+    kind: ReportKind.scheduleRegister,
+    group: ReportGroup.pharmacy,
+    name: (s) => s.reportScheduleRegister,
+    hint: (s) => s.reportScheduleRegisterHint,
+    icon: Icons.medication_outlined,
+    filters: const {ReportFilter.item},
+  ),
+];
+
 /// Every report, group by group, in the order the hub lists them.
 final List<ReportEntry> reportRegistry = List.unmodifiable([
   ..._transactionReports,
@@ -804,6 +819,7 @@ final List<ReportEntry> reportRegistry = List.unmodifiable([
   ..._expenseReports,
   ..._orderReports,
   ..._loanReports,
+  ..._pharmacyReports, // M49
 ]);
 
 final Map<ReportKind, ReportEntry> _byKind = {

@@ -314,6 +314,7 @@ final class SalePostingBuilder {
       convertedFromId: draft.convertedFromId,
       alsoFromIds: draft.alsoFromIds,
       replacesId: draft.replacesId,
+      prescription: draft.prescription,
       payments: payments,
       stockMovements: stock,
       journal: JournalEntryPosting(

@@ -11,6 +11,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../manufacturing/recipes_screen.dart';
 import '../orders/shortage_screen.dart';
+import '../pharmacy/near_expiry_screen.dart';
 import '../subscription/plans_screen.dart';
 import 'item_editor.dart';
 import 'shelf_rule.dart';
@@ -72,6 +73,8 @@ class _ItemsScreenState extends ConsumerState<ItemsScreen> {
         actions: [
           // "*": asked for and not on the shelf (M41).
           const ShortageButton(),
+          // M49: a pharmacy's batches near expiry, by supplier.
+          const NearExpiryButton(),
           // What the shop makes from what it has (M17).
           BlIconButton(
             icon: Icons.blender_outlined,

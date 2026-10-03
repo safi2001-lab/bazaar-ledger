@@ -13,6 +13,7 @@ import '../khata/entry_actions.dart' show modeLabel;
 import '../khata/goods_given.dart' show giveFromCounter; // M55
 import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
+import '../pharmacy/pharmacy_gate.dart';
 import '../sales/receipt_screen.dart';
 import '../subscription/plans_screen.dart';
 import '../tax/counter_tax.dart'; // M59
@@ -389,6 +390,21 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       return;
     }
 
+    // M49: the DRAP price, and a Schedule medicine's prescription
+    // (pharmacy_gate.dart); the sale path refuses both again.
+    if (!mounted) return;
+    final rx = await pharmacyAllowsBill(
+      context,
+      ref,
+      preview,
+      onAsk: () => setState(() => _busy = false),
+    );
+    if (rx == null || !mounted) {
+      if (mounted) setState(() => _busy = false);
+      return;
+    }
+    if (!_busy) setState(() => _busy = true);
+
     // Held rather than reached for through `ref` after the write. A sheet that
     // is dismissed mid-post disposes its ConsumerState, and `ref.read` on a
     // disposed state throws — which the catch below would swallow, leaving a
@@ -521,8 +537,11 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
           // The cancelled bill this one puts right (M36), linked as the
           // sale posts.
           replacesId: cart.replacesId,
+          prescription: rx.prescription, // M49
         ),
       );
+      // M49: the paper prescription's photograph, beside the bill.
+      unawaited(keepPrescriptionPhoto(services, posted.documentId, rx));
 
       // Through the captured handles, not through `ref`: this runs whether or
       // not the sheet is still on screen, because the sale is committed and

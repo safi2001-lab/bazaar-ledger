@@ -756,7 +756,23 @@ final class DriftCatalogueWriter implements CatalogueWriter {
     if (d.isThirdSchedule case final third?) 'is_third_schedule': third ? 1 : 0,
     if (d.isService case final service?)
       'item_type': service ? 'service' : 'goods',
+    // M49: what it is as a medicine, only when the form said; a form that
+    // knows nothing of medicines leaves them as they are.
+    if (d.medicine case final m?) ...medicineColumns(m),
   };
+
+  /// The item columns [details] is stored in (M49), the salt's search key
+  /// worked out beside them so the two can never disagree. Blank is empty.
+  static Map<String, Object?> medicineColumns(MedicineDetails details) {
+    final m = details.tidied;
+    return {
+      'generic_name': m.genericName,
+      'strength': m.strength,
+      'generic_search': m.searchKey,
+      'manufacturer': m.manufacturer,
+      'schedule_class': m.schedule?.code,
+    };
+  }
 
   /// Makes [itemId]'s packs exactly [packs] (M53): each one its own
   /// conversion from the pack's unit into the item's [baseUnitId], at the

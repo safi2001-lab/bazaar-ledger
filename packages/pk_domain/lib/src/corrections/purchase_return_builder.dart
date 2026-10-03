@@ -353,6 +353,8 @@ final class PurchaseReturnBuilder {
         StockMovementPosting(
           itemId: bought.itemId,
           txnType: 'purchase_return',
+          // M49: out of the batch named, when one is.
+          lotId: wanted.lotId,
           qtyDelta: Qty.raw(-baseQty.inThousandths),
           rate: change.after.avg,
           valueDelta: Money.paisa(-(before.value - change.after.value).inPaisa),

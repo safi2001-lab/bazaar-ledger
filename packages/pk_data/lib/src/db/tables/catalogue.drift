@@ -149,10 +149,35 @@ CREATE TABLE items (
   -- every item does; a column rather than a settings row so it travels to
   -- the other counters with the item it belongs to. Added in v10, last
   -- because SQLite adds a column at the end.
-  negative_stock TEXT CHECK (negative_stock IN ('allow', 'warn', 'block'))
+  negative_stock TEXT CHECK (negative_stock IN ('allow', 'warn', 'block')),
+
+  -- The pharmacy pack (M49), added in v11, last because SQLite adds a column
+  -- at the end. Empty on every item that is not a medicine, which is every
+  -- item of every shop that is not a pharmacy.
+  --
+  -- What the medicine is, as opposed to what the box calls it: Panadol is
+  -- paracetamol 500 mg, and so is Calpol and the hospital's own strip. A
+  -- customer asks for one by either name, and when the shelf has none of the
+  -- brand, the chemist sells another with the same salt and strength.
+  generic_name TEXT,
+  strength TEXT,
+  -- Derived, like name_search: the spelling key of the salt and strength
+  -- together (M56's nameSearchColumn), so "paracetamol", "parasitamol" and
+  -- "paracetamol 500" all find Panadol. Two items with the same key are
+  -- substitutes for each other. Worked out from the two columns above on
+  -- every device that holds them, never typed.
+  generic_search TEXT,
+  manufacturer TEXT,
+  -- A controlled drug (Punjab Drug Sale Rules 2007): Schedule B or D, or
+  -- another the shop keeps a register for. Sold only on a registered
+  -- practitioner's prescription, and every sale is written in the register.
+  schedule_class TEXT CHECK (schedule_class IN ('B', 'D', 'other'))
 ) STRICT;
 
 CREATE INDEX idx_items_firm_name ON items (firm_id, name_search);
+-- Substitutes are found by the key alone; only medicines have one.
+CREATE INDEX idx_items_generic
+  ON items (firm_id, generic_search) WHERE generic_search IS NOT NULL;
 CREATE UNIQUE INDEX idx_items_code ON items (firm_id, code) WHERE code IS NOT NULL;
 CREATE UNIQUE INDEX idx_items_barcode ON items (firm_id, barcode) WHERE barcode IS NOT NULL;
 CREATE INDEX idx_items_category ON items (firm_id, category);

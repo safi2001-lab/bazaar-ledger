@@ -8,6 +8,8 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../audit/history_screen.dart';
 import '../batches/stock_places_screen.dart';
+import '../pharmacy/medicine_fields.dart';
+import '../pharmacy/substitutes_card.dart';
 import '../scan/scan_screen.dart';
 import '../subscription/plans_screen.dart';
 import '../tax/item_tax_fields.dart'; // M59
@@ -107,6 +109,10 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
   /// carton (M53).
   List<ItemPack>? _packs;
 
+  /// M49: what it is as a medicine, as edited here; null while untouched,
+  /// and then not sent (pharmacy/medicine_fields.dart).
+  MedicineDetails? _medicine;
+
   bool _busy = false;
   String? _failure;
 
@@ -199,6 +205,7 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
         packs: _packs,
         isThirdSchedule: _thirdSchedule, // M59
         isService: _service,
+        medicine: _medicine, // M49
       );
 
       final actor = services.actorNow();
@@ -639,6 +646,14 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
                             ),
                           ],
                         ),
+
+                        // M49: a pharmacy's salt, strength, maker and
+                        // schedule, and the medicines with the same salt.
+                        MedicineFields(
+                          initial: widget.item?.medicine,
+                          onChanged: (m) => _medicine = m,
+                        ),
+                        if (_isEdit) SubstitutesCard(item: widget.item!),
 
                         // Folded away, because most of a kiryana catalogue
                         // needs none of it. A wholesaler needs the trade

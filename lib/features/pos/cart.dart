@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pk_domain/pk_domain.dart';
 
 import '../../app/providers.dart';
+import '../pharmacy/pharmacy_counter.dart';
+import '../pharmacy/pharmacy_providers.dart';
 import 'cart_draft.dart';
 import 'scheme_book.dart';
 
@@ -417,6 +419,9 @@ class CartNotifier extends Notifier<Cart> {
     // them, and the ninth that someone adds later would be the one that is
     // not saved.
     listenSelf((_, next) => _save(next));
+    // M49: a pharmacy's standing "% off MRP", loaded before the first line
+    // goes on, so the first line is priced like the rest.
+    ref.listen(pharmacyRulesProvider, (_, _) {});
 
     // M43: a scheme read or changed while lines are on the counter moves
     // the lines still at the counter's own price to the new one.
@@ -465,8 +470,27 @@ class CartNotifier extends Notifier<Cart> {
           discountBp: state.partyDiscountBp,
         ),
       );
+      lines.last = _offMrp(lines.last); // M49
     }
     state = state.copyWith(lines: lines);
+  }
+
+  // M49: a new line of an item with a printed price, at the shop's "% off
+  // MRP" when it is a pharmacy that has one (pharmacy_counter.dart).
+  CartLine _offMrp(CartLine line) =>
+      offMrpDefault(line, ref.read(pharmacyRulesProvider).valueOrNull);
+
+  // M49: "% off MRP" typed on one line: a percentage, not an amount.
+  void setDiscountBp(String itemId, int bp) {
+    state = state.copyWith(
+      lines: [
+        for (final l in state.lines)
+          if (l.item.id == itemId)
+            l.copyWith(discountBp: bp, clearExplicitDiscount: true)
+          else
+            l,
+      ],
+    );
   }
 
   /// Puts a loose line on the bill (M37): [name] at [rate], [qty] of it.
@@ -580,6 +604,7 @@ class CartNotifier extends Notifier<Cart> {
           lotLabels: [serial],
         ),
       );
+      lines.last = _offMrp(lines.last); // M49
     }
     state = state.copyWith(lines: lines);
     return true;

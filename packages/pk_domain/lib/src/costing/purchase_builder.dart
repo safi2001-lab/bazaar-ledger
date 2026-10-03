@@ -31,6 +31,7 @@ final class PurchaseLineDraft {
     this.serials = const [],
     this.freeQty = Qty.zero,
     this.freeBaseQty = Qty.zero,
+    this.mrp,
   });
 
   final String itemId;
@@ -56,6 +57,10 @@ final class PurchaseLineDraft {
 
   /// Everything this line puts on the shelf, paid and free.
   Qty get shelfQty => baseQty + freeBaseQty;
+
+  /// The retail price printed on the batch, per base unit (M49). Kept on
+  /// the batch, because DRAP fixes it batch by batch.
+  final Money? mrp;
 
   /// The batch printed on the goods, for an item kept by batch.
   final String? batchNo;
@@ -341,7 +346,13 @@ final class PurchaseBuilder {
         // in the same cartons.
         final lot = batch == null || batch.isEmpty
             ? null
-            : LotDraft(lotNo: batch, batchNo: batch, expiry: line.expiry);
+            : LotDraft(
+                lotNo: batch,
+                batchNo: batch,
+                expiry: line.expiry,
+                // M49: the price printed on the batch.
+                mrp: line.mrp,
+              );
         movements.add(
           StockMovementPosting(
             itemId: line.itemId,

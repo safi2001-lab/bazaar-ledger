@@ -356,6 +356,12 @@ final class _CeilingSaleContext implements SaleWriteContext {
         'the owner to ring this one.',
       );
     }
+    // M49: a pharmacy's "10% off on all medicines" is the owner's standing
+    // discount, set in the shop's details, not the cashier's to have given.
+    final pharmacy = await _app.pharmacy.rules();
+    if (pharmacy.isPharmacy && pharmacy.offMrpBp > standing) {
+      standing = pharmacy.offMrpBp;
+    }
     if (!discountAllowed(
       role: role,
       subtotal: doc.subtotal,

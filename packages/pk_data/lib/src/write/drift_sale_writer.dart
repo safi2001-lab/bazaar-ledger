@@ -3,6 +3,7 @@ import 'package:pk_domain/pk_domain.dart';
 import '../db/app_database.dart';
 import 'document_rows.dart';
 import 'drift_order_writer.dart';
+import 'drift_pharmacy_writer.dart';
 import 'sequence_allocator.dart';
 import 'tx_runner.dart';
 
@@ -152,6 +153,15 @@ final class _DriftSaleWriteContext implements SaleWriteContext {
       _tx,
       doc,
       posting.lines,
+    );
+    // M49: each Schedule line in the register, against the bill's
+    // prescription.
+    await keepScheduleRegister(
+      _tx,
+      documentId: documentId,
+      lineIdByNo: lineIdByNo,
+      lines: posting.lines,
+      prescription: posting.prescription,
     );
 
     // A bill made from a quotation says so, once. Billing the same

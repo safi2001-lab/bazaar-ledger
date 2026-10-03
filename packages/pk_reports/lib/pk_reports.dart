@@ -23,6 +23,7 @@ export 'src/order_source.dart';
 export 'src/party_builders.dart';
 export 'src/party_source.dart';
 export 'src/period.dart';
+export 'src/pharmacy_reports.dart';
 export 'src/report_chart.dart';
 export 'src/report_engine.dart';
 export 'src/report_source.dart';

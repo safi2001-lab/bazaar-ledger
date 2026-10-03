@@ -3844,5 +3844,137 @@
       "notPaid": {"type": "int"},
       "notReached": {"type": "int"}
     }
-  }
+  },
+  "pharmacyBatchMrp": "MRP per {unit}",
+  "@pharmacyBatchMrp": {
+    "placeholders": {
+      "unit": {"type": "String"}
+    }
+  },
+  "pharmacyMedicineTitle": "As a medicine",
+  "pharmacyGeneric": "Generic (salt) name",
+  "pharmacyGenericHint": "e.g. Paracetamol",
+  "pharmacyStrength": "Strength",
+  "pharmacyManufacturer": "Manufacturer",
+  "pharmacySchedule": "Schedule (controlled drug)",
+  "pharmacyScheduleNone": "Not a Schedule drug",
+  "pharmacyScheduleB": "Schedule B",
+  "pharmacyScheduleD": "Schedule D",
+  "pharmacyScheduleOther": "Other register drug",
+  "pharmacyScheduleNote": "Sold only on a doctor's prescription; every sale goes in the Schedule register.",
+  "pharmacySubstitutes": "Same salt: {label}",
+  "@pharmacySubstitutes": {
+    "placeholders": {
+      "label": {"type": "String"}
+    }
+  },
+  "pharmacyNoSubstitutes": "No other medicine with this salt and strength.",
+  "pharmacyOffMrp": "% off MRP (Rs {mrp})",
+  "@pharmacyOffMrp": {
+    "placeholders": {
+      "mrp": {"type": "String"}
+    }
+  },
+  "pharmacyOffMrpApply": "Apply",
+  "pharmacyCannotSellTitle": "This cannot be sold",
+  "pharmacyMrpBlockedTitle": "Above the DRAP price",
+  "pharmacyMrpBlocked": "{item}: Rs {charged} charged, its MRP allows Rs {ceiling}. A medicine cannot be sold above its MRP.",
+  "@pharmacyMrpBlocked": {
+    "placeholders": {
+      "item": {"type": "String"},
+      "charged": {"type": "String"},
+      "ceiling": {"type": "String"}
+    }
+  },
+  "pharmacyRxTitle": "Prescription",
+  "pharmacyRxFor": "Schedule medicine: {names}. Sold only on a registered doctor's prescription.",
+  "@pharmacyRxFor": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "pharmacyRxPatient": "Patient's name",
+  "pharmacyRxPatientAddress": "Patient's address",
+  "pharmacyRxDoctor": "Doctor's name",
+  "pharmacyRxRegNo": "Doctor's PM&DC reg. no.",
+  "pharmacyRxRef": "Prescription no. or reference",
+  "pharmacyRxPhoto": "Photo of the prescription",
+  "pharmacyRxPhotoTaken": "Photo added",
+  "pharmacyRxSave": "Continue",
+  "pharmacyHoldTitle": "Batch {batch}",
+  "@pharmacyHoldTitle": {
+    "placeholders": {
+      "batch": {"type": "String"}
+    }
+  },
+  "pharmacyHeld": "On hold: {reason}",
+  "@pharmacyHeld": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "pharmacyHoldReason": "Why is it on hold?",
+  "pharmacyHoldReasonHint": "DRAP recall, damaged carton…",
+  "pharmacyHold": "Put on hold",
+  "pharmacyRelease": "Back on sale",
+  "pharmacyHoldDone": "Batch put on hold",
+  "pharmacyReleaseDone": "Batch back on sale",
+  "pharmacyNearExpiryTitle": "Near expiry, by supplier",
+  "pharmacyNearExpiryDays": "{days} days",
+  "@pharmacyNearExpiryDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "pharmacyNearExpiryAll": "All batches",
+  "pharmacyNearExpiryEmpty": "No batch expires in this time.",
+  "pharmacyNoSupplier": "From no supplier",
+  "pharmacyExpired": "Expired",
+  "pharmacyReturnPicked": "Return {count} to supplier",
+  "@pharmacyReturnPicked": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "pharmacyReturnReason": "Reason",
+  "pharmacyReturnReasonDefault": "Expired or near expiry",
+  "pharmacyReturnConfirm": "Send these back to {supplier}? Worth Rs {value} at cost.",
+  "@pharmacyReturnConfirm": {
+    "placeholders": {
+      "supplier": {"type": "String"},
+      "value": {"type": "String"}
+    }
+  },
+  "pharmacyReturnSend": "Send back",
+  "pharmacyReturnDone": "Returned: {nos}",
+  "@pharmacyReturnDone": {
+    "placeholders": {
+      "nos": {"type": "String"}
+    }
+  },
+  "pharmacyReturnCredited": "Rs {amount} off what we owe them",
+  "@pharmacyReturnCredited": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "pharmacyReturnRefunded": "Rs {amount} back in cash",
+  "@pharmacyReturnRefunded": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "pharmacyReturnNote": "Share the return note",
+  "pharmacyShopOffMrp": "% off MRP on every medicine",
+  "pharmacyShopOffMrpNote": "Every medicine with a printed price goes on the bill at its MRP less this. Selling above the MRP is refused.",
+  "pharmacyBatchHeldScan": "Batch {batch} is on hold: {reason}. Do not sell it.",
+  "@pharmacyBatchHeldScan": {
+    "placeholders": {
+      "batch": {"type": "String"},
+      "reason": {"type": "String"}
+    }
+  },
+  "reportGroupPharmacy": "Pharmacy",
+  "reportScheduleRegister": "Schedule B/D register",
+  "reportScheduleRegisterHint": "Every controlled medicine in and out, with its prescription"
 }

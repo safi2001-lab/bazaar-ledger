@@ -335,7 +335,44 @@ const _tablesByVersion = <int, List<String>>{
   9: _tablesV7,
   // v10 (M53) added a column and remade two indexes, and no table.
   10: _tablesV7,
+  11: _tablesV11,
 };
+
+/// v11 (M49): the Schedule register's prescriptions.
+const _tablesV11 = <String>[
+  'accounts',
+  'assemblies',
+  'attachments',
+  'audit_log',
+  'bom_lines',
+  'boms',
+  'change_log',
+  'devices',
+  'doc_links',
+  'document_line_taxes',
+  'document_lines',
+  'documents',
+  'firms',
+  'items',
+  'journal_entries',
+  'journal_lines',
+  'numbering_sequences',
+  'parties',
+  'payment_accounts',
+  'payment_allocations',
+  'payments',
+  'prescriptions',
+  'print_jobs',
+  'settings',
+  'stock_ledger',
+  'stock_lots',
+  'tax_rules',
+  'unit_conversions',
+  'units',
+  'users',
+  'van_settlements',
+  'vans',
+];
 
 /// v7 (M18): vans and their daily settlements.
 const _tablesV7 = <String>[..._tablesV6, 'van_settlements', 'vans'];

@@ -14,6 +14,7 @@ import '../../l10n/app_strings.dart';
 import '../items/quick_item_sheet.dart';
 import '../orders/shortage_screen.dart';
 import '../parties/party_picker.dart';
+import '../pharmacy/pharmacy_counter.dart';
 import '../sales/bill_again.dart';
 import '../scan/scan_screen.dart';
 import '../tax/counter_tax.dart'; // M59
@@ -225,6 +226,20 @@ class _PosScreenState extends ConsumerState<PosScreen> {
           );
           _clearSearch();
           return;
+        }
+        // M49: a pack from a batch on hold is refused in the hold's words.
+        if (scanned != null) {
+          final held = await heldPackReason(ref, scanned, gs1.batch);
+          if (held != null) {
+            if (!mounted) return;
+            messenger.showSnackBar(
+              SnackBar(
+                content: Text(s.pharmacyBatchHeldScan(gs1.batch!, held)),
+              ),
+            );
+            _clearSearch();
+            return;
+          }
         }
       }
     }
@@ -1717,6 +1732,8 @@ class _LineEditorState extends ConsumerState<_LineEditor> {
             label: s.posLineDiscount,
             numeric: true,
           ),
+          // M49: "% off MRP" on this line (pharmacy_counter.dart).
+          OffMrpField(line: line),
           const SizedBox(height: BlTokens.space4),
           Row(
             children: [

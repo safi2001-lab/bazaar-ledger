@@ -9,6 +9,7 @@ import '../corrections/return_builder.dart';
 import '../costing/moving_average.dart';
 import '../documents/quotation.dart';
 import '../entitlement/activity.dart';
+import '../pharmacy/medicine.dart';
 import '../pricing/price_tier.dart';
 import '../receivables/aging.dart';
 import '../receivables/fifo_allocator.dart';
@@ -44,10 +45,19 @@ final class FirmProfile {
     this.bankName,
     this.bankAccountTitle,
     this.bankIban,
+    this.businessKind = 'general',
   });
 
   final String id;
   final String name;
+
+  /// What the shop is, as it said at first run or in its details since:
+  /// 'kiryana', 'pharmacy', 'wholesale' and the rest.
+  final String businessKind;
+
+  /// A chemist (M49): the DRAP price is enforced, and the pharmacy's own
+  /// screens and fields are shown.
+  bool get isPharmacy => businessKind == 'pharmacy';
   final String? city;
   final String? addressLine1;
   final String? phone;
@@ -104,6 +114,7 @@ final class ItemSummary {
     this.negativeStock,
     this.isThirdSchedule = false,
     this.isService = false,
+    this.medicine,
   });
 
   /// Sold on the retail price printed on its pack (M59): taxed on [mrp], and
@@ -116,6 +127,10 @@ final class ItemSummary {
 
   final String id;
   final String name;
+
+  /// What it is as a medicine (M49): its salt and strength, maker and
+  /// Schedule class. Null for an item that is not one.
+  final MedicineDetails? medicine;
   final String? code;
   final String? barcode;
   final String? category;

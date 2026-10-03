@@ -56,6 +56,9 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
   /// M43: what the supplier sent free on this line ("10+1"), in the same
   /// unit as the quantity. Blank is none.
   final _free = TextEditingController();
+
+  /// M49: the retail price printed on the batch, per the item's own unit.
+  final _mrp = TextEditingController();
   String? _problem;
 
   Timer? _debounce;
@@ -85,6 +88,7 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
     _expiry.dispose();
     _serials.dispose();
     _free.dispose(); // M43
+    _mrp.dispose(); // M49
     super.dispose();
   }
 
@@ -109,6 +113,8 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
       _costTyped = false;
       _followRate = item.purchaseRate;
       _pack = null; // M53
+      // M49: the batch's printed price starts at the item's own.
+      _mrp.text = item.mrp?.amountOnly ?? '';
     });
   }
 
@@ -276,6 +282,8 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
         serials: serials,
         freeQty: freeInLine, // M43, in the line's own unit
         freeBaseQty: freeBase,
+        // M49: kept on the batch, which DRAP prices batch by batch.
+        mrp: item.tracksBatch ? Money.tryParse(_mrp.text) : null,
       ),
     );
   }
@@ -475,6 +483,13 @@ class _PickerState extends ConsumerState<_PurchaseItemPicker> {
                     ),
                   ),
                 ],
+              ),
+              // M49: the price printed on this batch.
+              const SizedBox(height: BlTokens.space3),
+              BlField(
+                controller: _mrp,
+                label: s.pharmacyBatchMrp(chosen.unitCode),
+                numeric: true,
               ),
             ],
             if (chosen.tracksSerial) ...[
