@@ -125,11 +125,11 @@ time, on the latest master (schema is v8 today).
 - [x] M36 · DONE (adfcfef) Duplicate a bill / repeat last order for a party / "correct and reissue" (cancel + prefilled copy, linked both ways); cancel reason codes; Original/Duplicate copy labels; previous balance printed on the bill
 - [x] M37 · Last rates and khula maal — DONE (80b28aa): customer named first from the counter; "Pichhli dafa Rs X · date" beside every line; tap for the last 5 deals, one tap uses the price (exact unit conversion, never applied silently); supplier's last 5 prices on purchases; cost shown only to roles that may see it; khula maal line (no item, no stock, refused on FBR-reporting shops and on quotations/challans); fixed a standing-discount bug that made bills refuse
 - [x] M57 · DONE (a6a2dea) Returns give back exactly what was charged: line discount and bill-discount share respected; quantity in the unit it was sold in (a maund line was over-refunding 40×) — found by M37
-- [ ] M43 · (in progress) Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
-- [ ] M45 · (in progress) Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
+- [x] M43 · DONE (0adfc85) Schemes: buy X get Y (10+1 bonus), quantity-slab prices, bill-value discount slabs; scheme received on purchases flows into cost
+- [x] M45 · DONE (c262b6d, a1adfa3) Two-unit quantities everywhere ("2 ctn + 5 pcs", "1 kg 500 g") on bills, stock and reports, and entered that way
 - [x] M51 · DONE (baf5795) Transporter copy without prices (bilty/delivery); Original/Duplicate/Triplicate labels; invoice themes for A4/A5 (logo, colours, layouts)
 - [x] M53 · DONE (3f12774, schema v10) Negative stock policy per item (allow / warn / block); app font-size setting
-- [ ] Recurring bills (weekly/monthly for fixed customers), made on the phone when due
+- [ ] M63 · (in progress) Recurring bills (weekly/monthly for fixed customers), made on the phone when due
 - [x] (M51) Shop's static payment QR (Raast/JazzCash/Easypaisa image), IBAN and wallet on bills and reminders
 
 ### Udhaar and money
@@ -149,27 +149,27 @@ time, on the latest master (schema is v8 today).
 
 ### Trust and control
 - [x] M42 · DONE (a1d31f4, d1676e6) Per-record history (who changed what, when); period lock date after day close with owner override and reason; Data Lock PIN for edits and deletes
-- [ ] M60 · (in progress) Recycle bin for masters with 30-day restore (check what M5 already does)
+- [x] M60 · DONE (d74fb03) Recycle bin for masters with 30-day restore (check what M5 already does)
 
 ### Expenses
 - [x] M47 · DONE (a2592e7) "Shop vs ghar" (owner's drawings) tag on expenses; other income entries and reports; recurring rent/bijli reminders
 
 ### Reports polish
 - [x] M46 · DONE with M58 (55fa8d2) Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
-- [ ] Saved report views ("my Monday udhaar list")
+- [ ] M61 · (in progress) Saved report views ("my Monday udhaar list")
 
 ### Getting shops to switch
 - [x] M52 · Moving off Vyapar/Khatabook — DONE (ee47eba): "Where is this file from?" with auto-detection; balances on the right side; Indian GST/HSN never carried; units matched; duplicates skipped or updated by choice; old .xls read with no new dependency; preview in Urdu/English; large files off the main thread
   - Not verified: Vyapar's exact export headings (no public sample) — by-hand column mapping is the backstop; supplier opening balances still go in as purchase bills
 
 ### Pakistan specifics (from the research appendix §1–2)
-- [ ] M59 · (in progress) Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
-- [ ] M59 · (in progress) Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
-- [ ] M59 · (in progress) FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
-- [ ] M59 · (in progress) Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
+- [x] M59 · DONE (96d3e8e) Third Schedule goods: warn when a price goes above the printed retail price (MRP); show tax as MRP × 18/118
+- [x] M59 · DONE (96d3e8e) Buyer's name required on a single bill over Rs 100,000 (FBR); warn at the counter
+- [x] M59 · DONE (96d3e8e) FBR DI bills made while offline are marked "issued in offline mode" and sent within 24 hours of the connection coming back (Rule 150XC)
+- [x] M59 · DONE (96d3e8e) Provincial sales tax on services (PRA 16% / 8% by card or QR; SRB 15% / 8%) for repair shops, salons, restaurants — rate after the tender is chosen
 - [x] M56 · DONE (88ead47) Search that forgives Roman Urdu spellings (atta/aata, cheeni/chini) and Urdu script
 - [x] M56 · DONE Units shops use: maund (40 kg), seer, dozen, carton/dabba, strip/tablet; kilos with grams; app text-size setting
-- [ ] M60 · (in progress) Photo of a paper parchi attached to an entry (check what attachments already do)
+- [x] M60 · DONE Photo of a paper parchi attached to an entry (check what attachments already do)
 - [ ] (in M49) Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
 ### Checks on things we may already do (test, fix if wrong)
@@ -188,6 +188,13 @@ time, on the latest master (schema is v8 today).
 - [x] Receipt preview grows with the app text size — wrap it in `MediaQuery.withNoTextScaling` (lib/features/sales)
 - [x] `recentExpenses` reads the head as required and would throw on a shop's own head (no caller now)
 - [ ] Owner to confirm: seer = 1 kg (40 kg maund) rather than 933 g; separate permissions for quick-add and khula maal lines
+
+### Found while merging this round
+- [x] M60 found that any picture (item photo, logo, QR) broke LAN sync for that counter since M2/M51 — fixed: pictures stay on their phone and in its backups; everything else syncs
+- [x] M43 × M45: a supplier's free carton on a delivery typed "10 ctn 5" was written as "1 pcs" — fixed in the merge (a1adfa3)
+- [x] M59 found Third Schedule goods sold below MRP were under-taxed (Rs 15.25 instead of Rs 18 on a Rs 118 pack) — fixed
+- [ ] M61 (in progress): provincial service tax in the tax rate report, party tax, HS-code sales, Annex-C, the sales tax summary and returns
+- [ ] Owner/accountant to confirm: free bonus lines carry no sales tax; service lines on an FBR-reporting shop go to FBR at 0%; whether PRAL accepts a Rs 0 line
 
 ## Finish line for each wave
 
