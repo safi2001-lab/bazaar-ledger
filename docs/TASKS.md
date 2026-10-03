@@ -157,7 +157,7 @@ time, on the latest master (schema is v8 today).
 
 ### Reports polish
 - [x] M46 · DONE with M58 (55fa8d2) Charts: sales trend, top 10 items/customers, receivable ageing pie, "vs last period" — drawn on the phone
-- [ ] M61 · (in progress) Saved report views ("my Monday udhaar list")
+- [x] M61 · DONE (53ce11f) Saved report views ("my Monday udhaar list")
 
 ### Getting shops to switch
 - [x] M52 · Moving off Vyapar/Khatabook — DONE (ee47eba): "Where is this file from?" with auto-detection; balances on the right side; Indian GST/HSN never carried; units matched; duplicates skipped or updated by choice; old .xls read with no new dependency; preview in Urdu/English; large files off the main thread
@@ -194,7 +194,7 @@ time, on the latest master (schema is v8 today).
 - [x] M60 found that any picture (item photo, logo, QR) broke LAN sync for that counter since M2/M51 — fixed: pictures stay on their phone and in its backups; everything else syncs
 - [x] M43 × M45: a supplier's free carton on a delivery typed "10 ctn 5" was written as "1 pcs" — fixed in the merge (a1adfa3)
 - [x] M59 found Third Schedule goods sold below MRP were under-taxed (Rs 15.25 instead of Rs 18 on a Rs 118 pack) — fixed
-- [ ] M61 (in progress): provincial service tax in the tax rate report, party tax, HS-code sales, Annex-C, the sales tax summary and returns
+- [x] M61 · DONE: provincial service tax in the tax rate report, party tax, HS-code sales, Annex-C, the sales tax summary and returns
 - [ ] Owner/accountant to confirm: free bonus lines carry no sales tax; service lines on an FBR-reporting shop go to FBR at 0%; whether PRAL accepts a Rs 0 line
 
 ## Finish line for each wave
