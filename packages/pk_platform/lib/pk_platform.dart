@@ -13,6 +13,7 @@ export 'src/cheques/demand_notice_pdf.dart';
 
 export 'src/fbr/fbr_client.dart';
 export 'src/media/image_shrinker.dart';
+export 'src/media/paper_photo.dart';
 export 'src/printing/print_queue.dart';
 export 'src/printing/tcp_printer.dart';
 export 'src/receipt/bill_pdf.dart';

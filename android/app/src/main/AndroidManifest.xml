@@ -50,7 +50,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <!--
-      The camera, for scanning a barcode off a packet.
+      The camera, for scanning a barcode off a packet; and, since M60, for
+      photographing a supplier's parchi onto the entry it belongs to, which
+      asks for this same permission at the same moment and nothing more.
 
       A runtime permission, not a Play RESTRICTED one: camera needs no
       declaration form, only an honest listing and a privacy policy. It is

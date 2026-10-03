@@ -853,6 +853,16 @@ final class Tx {
     }
   }
 
+  /// Appends the outbox entry for one write.
+  ///
+  /// A picture's bytes stay out of it (M60). `jsonEncode` writes a
+  /// `Uint8List` as a list of numbers, three or four characters for every
+  /// byte, so each photograph was being kept a second time in the outbox at
+  /// four times its size — a parchi of 190 KB became 900 KB of the backup —
+  /// and no other device could take the row in anyway: a list arrives where
+  /// a blob belongs, SQLite refuses it, and the whole merge rolled back with
+  /// it. Pictures stay on the phone they were taken on (the sync store says
+  /// so); the entry still says one was written, by whom and when.
   Future<void> _recordChange({
     required String table,
     required String entityId,
@@ -861,6 +871,10 @@ final class Tx {
     required String hlc,
     required int rev,
   }) async {
+    final outbound = {
+      for (final e in payload.entries)
+        if (e.value is! Uint8List) e.key: e.value,
+    };
     _seq++;
     await _db.customStatement(
       '''
@@ -885,7 +899,7 @@ final class Tx {
         table,
         entityId,
         op,
-        jsonEncode(payload),
+        jsonEncode(outbound),
         hlc,
         rev,
         actor.epochMillis,

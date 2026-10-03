@@ -11305,6 +11305,150 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'FBR: {count} offline bill der se. Abhi bhejein.'**
   String homeFbrOverdue(int count);
+
+  /// No description provided for @photoStripTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaghaz ki tasveerein'**
+  String get photoStripTitle;
+
+  /// No description provided for @photoAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer lein'**
+  String get photoAdd;
+
+  /// No description provided for @photoFromCamera.
+  ///
+  /// In ur, this message translates to:
+  /// **'Camera se tasveer khainchein'**
+  String get photoFromCamera;
+
+  /// No description provided for @photoFromGallery.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gallery se chunein'**
+  String get photoFromGallery;
+
+  /// No description provided for @photoOpen.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer {number} kholein'**
+  String photoOpen(int number);
+
+  /// No description provided for @photoAddedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ne lagayi · {when}'**
+  String photoAddedBy(String name, String when);
+
+  /// No description provided for @photoFromEarlier.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh tasveer pichhli entry par lagi thi, jise is entry ne theek kiya'**
+  String get photoFromEarlier;
+
+  /// No description provided for @photoRemoveConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh tasveer hata dein? Yeh \'Hatayi hui cheezein\' mein rahegi aur wahan se wapas laayi ja sakti hai.'**
+  String get photoRemoveConfirm;
+
+  /// No description provided for @photoRemoved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveer hata di. \'Hatayi hui cheezein\' se wapas la sakte hain.'**
+  String get photoRemoved;
+
+  /// No description provided for @photoFull.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is entry par {max} tasveerein lag chuki hain. Nayi lagane se pehle ek hatayein.'**
+  String photoFull(int max);
+
+  /// No description provided for @photoPapersNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh tasveerein (jaise CNIC ki copy) sirf isi phone par rehti hain. Kisi doosre phone ya server par nahi jaatin; backup mein sirf aap ke password se band ho kar jaati hain.'**
+  String get photoPapersNote;
+
+  /// No description provided for @photoCameraRefused.
+  ///
+  /// In ur, this message translates to:
+  /// **'Camera nahi khul saka. Gallery se chun lein.'**
+  String get photoCameraRefused;
+
+  /// No description provided for @photosButton.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveerein'**
+  String get photosButton;
+
+  /// No description provided for @recycleKeptNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yahan se kuch khud nahi mitta. Har cheez jab chahein ek tap se wapas aa sakti hai, kyunke purana hisaab un ke baghair poora nahi.'**
+  String get recycleKeptNote;
+
+  /// No description provided for @recycleHiddenBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{who} ne hataya · {when}'**
+  String recycleHiddenBy(String who, String when);
+
+  /// No description provided for @recyclePhotos.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tasveerein'**
+  String get recyclePhotos;
+
+  /// No description provided for @recyclePhotoFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'{what} ki tasveer'**
+  String recyclePhotoFrom(String what);
+
+  /// No description provided for @recyclePhotoOfShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dukaan ka logo ya QR'**
+  String get recyclePhotoOfShop;
+
+  /// No description provided for @vanPutAway.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaari hatayein'**
+  String get vanPutAway;
+
+  /// No description provided for @vanPutAwayConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh gaari list se hat jaye gi. Is ki bikri aur hisaab jaisa tha waisa rahega, aur \'Hatayi hui cheezein\' se wapas aa sakti hai.'**
+  String get vanPutAwayConfirm;
+
+  /// No description provided for @vanPutAwayDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gaari hata di gayi'**
+  String get vanPutAwayDone;
+
+  /// No description provided for @recipePutAway.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recipe hatayein'**
+  String get recipePutAway;
+
+  /// No description provided for @recipePutAwayConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh recipe list se hat jaye gi. Pehle banaya hua maal aur hisaab waise hi rahega, aur \'Hatayi hui cheezein\' se wapas aa sakti hai.'**
+  String get recipePutAwayConfirm;
+
+  /// No description provided for @recipePutAwayDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recipe hata di gayi'**
+  String get recipePutAwayDone;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

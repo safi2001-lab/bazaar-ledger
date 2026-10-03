@@ -6580,4 +6580,94 @@ class AppStringsEn extends AppStrings {
   String homeFbrOverdue(int count) {
     return 'FBR: $count offline bills overdue. Send them now.';
   }
+
+  @override
+  String get photoStripTitle => 'Photos of the paper';
+
+  @override
+  String get photoAdd => 'Add a photo';
+
+  @override
+  String get photoFromCamera => 'Take a photo with the camera';
+
+  @override
+  String get photoFromGallery => 'Pick from the gallery';
+
+  @override
+  String photoOpen(int number) {
+    return 'Open photo $number';
+  }
+
+  @override
+  String photoAddedBy(String name, String when) {
+    return 'Added by $name · $when';
+  }
+
+  @override
+  String get photoFromEarlier =>
+      'This photo is on the earlier entry this one corrected';
+
+  @override
+  String get photoRemoveConfirm =>
+      'Take this photo off? It waits in \'Hidden\' and can be brought back from there.';
+
+  @override
+  String get photoRemoved =>
+      'Photo taken off. It can be brought back from \'Hidden\'.';
+
+  @override
+  String photoFull(int max) {
+    return 'This entry already has $max photos. Take one off before adding another.';
+  }
+
+  @override
+  String get photoPapersNote =>
+      'These photos (a CNIC copy, say) stay on this phone only. They never go to another phone or any server; a backup carries them locked with your password.';
+
+  @override
+  String get photoCameraRefused =>
+      'The camera could not open. Pick from the gallery instead.';
+
+  @override
+  String get photosButton => 'Photos';
+
+  @override
+  String get recycleKeptNote =>
+      'Nothing here is ever emptied. Everything comes back with one tap whenever you want, because the old books are not whole without it.';
+
+  @override
+  String recycleHiddenBy(String who, String when) {
+    return 'Hidden by $who · $when';
+  }
+
+  @override
+  String get recyclePhotos => 'Photos';
+
+  @override
+  String recyclePhotoFrom(String what) {
+    return 'Photo from $what';
+  }
+
+  @override
+  String get recyclePhotoOfShop => 'The shop\'s logo or QR';
+
+  @override
+  String get vanPutAway => 'Put the van away';
+
+  @override
+  String get vanPutAwayConfirm =>
+      'This van leaves the list. Its sales and settlements stay exactly as they were, and it can come back from \'Hidden\'.';
+
+  @override
+  String get vanPutAwayDone => 'Van put away';
+
+  @override
+  String get recipePutAway => 'Put the recipe away';
+
+  @override
+  String get recipePutAwayConfirm =>
+      'This recipe leaves the list. What was made with it, and the books, stay as they were, and it can come back from \'Hidden\'.';
+
+  @override
+  String get recipePutAwayDone => 'Recipe put away';
 }

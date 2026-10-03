@@ -49,6 +49,11 @@ own wi-fi**, and nowhere else:
   the books (M23).
 - What travels is the outbox every write already keeps: the rows of the
   shop's books, staff PIN hashes included, so staff sign in at any counter.
+- **Except pictures (M60).** An item's photograph, the shop's logo and QR,
+  and the photographs of paper put on entries — a supplier's bill, a
+  deposit slip, a cheque, a customer's CNIC copy — stay on the phone they
+  were taken on, and go only into that phone's own encrypted backups. The
+  activity log saying one was added does travel; the picture does not.
 - While it hosts, the master broadcasts on the wi-fi every two seconds that
   it is there: its port and the shop's name, nothing else, so a joining
   counter can find it without typing an address. A broadcast does not

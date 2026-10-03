@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../recycle/put_away.dart'; // M60
 
 final _vansProvider = FutureProvider.autoDispose<List<VanView>>((ref) async {
   ref.watch(refreshTickProvider);
@@ -176,7 +177,7 @@ class VanScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(van.name)),
+      appBar: AppBar(title: Text(van.name), actions: [PutVanAwayButton(van: van)]), // M60
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.all(BlTokens.space4),

@@ -11,6 +11,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
 import '../printing/pdf_font.dart';
 import '../sales/receipt_screen.dart';
@@ -179,6 +180,7 @@ class _Body extends ConsumerWidget {
             record: RecordRef.payment(payment.id),
             label: payment.paymentNo,
           ),
+          AttachmentStrip(owner: AttachmentOwner.payment(payment.id, cheque: payment.chequeNo != null)), // M60
           // Its history: the entry it corrected, or the one that corrected
           // it, each a tap away, so a receipt edited twice can be followed
           // back to the first one keyed in.

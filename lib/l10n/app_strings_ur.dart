@@ -6572,4 +6572,94 @@ class AppStringsUr extends AppStrings {
   String homeFbrOverdue(int count) {
     return 'FBR: $count offline bill der se. Abhi bhejein.';
   }
+
+  @override
+  String get photoStripTitle => 'Kaghaz ki tasveerein';
+
+  @override
+  String get photoAdd => 'Tasveer lein';
+
+  @override
+  String get photoFromCamera => 'Camera se tasveer khainchein';
+
+  @override
+  String get photoFromGallery => 'Gallery se chunein';
+
+  @override
+  String photoOpen(int number) {
+    return 'Tasveer $number kholein';
+  }
+
+  @override
+  String photoAddedBy(String name, String when) {
+    return '$name ne lagayi · $when';
+  }
+
+  @override
+  String get photoFromEarlier =>
+      'Yeh tasveer pichhli entry par lagi thi, jise is entry ne theek kiya';
+
+  @override
+  String get photoRemoveConfirm =>
+      'Yeh tasveer hata dein? Yeh \'Hatayi hui cheezein\' mein rahegi aur wahan se wapas laayi ja sakti hai.';
+
+  @override
+  String get photoRemoved =>
+      'Tasveer hata di. \'Hatayi hui cheezein\' se wapas la sakte hain.';
+
+  @override
+  String photoFull(int max) {
+    return 'Is entry par $max tasveerein lag chuki hain. Nayi lagane se pehle ek hatayein.';
+  }
+
+  @override
+  String get photoPapersNote =>
+      'Yeh tasveerein (jaise CNIC ki copy) sirf isi phone par rehti hain. Kisi doosre phone ya server par nahi jaatin; backup mein sirf aap ke password se band ho kar jaati hain.';
+
+  @override
+  String get photoCameraRefused =>
+      'Camera nahi khul saka. Gallery se chun lein.';
+
+  @override
+  String get photosButton => 'Tasveerein';
+
+  @override
+  String get recycleKeptNote =>
+      'Yahan se kuch khud nahi mitta. Har cheez jab chahein ek tap se wapas aa sakti hai, kyunke purana hisaab un ke baghair poora nahi.';
+
+  @override
+  String recycleHiddenBy(String who, String when) {
+    return '$who ne hataya · $when';
+  }
+
+  @override
+  String get recyclePhotos => 'Tasveerein';
+
+  @override
+  String recyclePhotoFrom(String what) {
+    return '$what ki tasveer';
+  }
+
+  @override
+  String get recyclePhotoOfShop => 'Dukaan ka logo ya QR';
+
+  @override
+  String get vanPutAway => 'Gaari hatayein';
+
+  @override
+  String get vanPutAwayConfirm =>
+      'Yeh gaari list se hat jaye gi. Is ki bikri aur hisaab jaisa tha waisa rahega, aur \'Hatayi hui cheezein\' se wapas aa sakti hai.';
+
+  @override
+  String get vanPutAwayDone => 'Gaari hata di gayi';
+
+  @override
+  String get recipePutAway => 'Recipe hatayein';
+
+  @override
+  String get recipePutAwayConfirm =>
+      'Yeh recipe list se hat jaye gi. Pehle banaya hua maal aur hisaab waise hi rahega, aur \'Hatayi hui cheezein\' se wapas aa sakti hai.';
+
+  @override
+  String get recipePutAwayDone => 'Recipe hata di gayi';
 }

@@ -8,6 +8,8 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/when.dart';
+import '../expenses/shop_money_providers.dart';
 
 /// What the shop has hidden, and a way to bring it back.
 ///
@@ -17,6 +19,22 @@ import '../../l10n/app_strings.dart';
 /// item, or stopped stocking one and started again, could only enter it a
 /// second time: a duplicate with none of its history, and a stock count
 /// split across two rows.
+///
+/// ## Everything, since M60
+///
+/// M5 brought back items and customers. The shop has since learned to hide
+/// expense heads and heads of income (M47), switch staff off (M9), and now
+/// to put away a van (M18) or a recipe (M17) and to take a photograph off
+/// an entry. All of it is here, each with when it went in and who put it
+/// there — read from the activity log the act itself wrote — and each back
+/// with one tap, through the service that always held it, under the
+/// permission that always guarded it. A section the person at the phone may
+/// not bring back from is not shown to them at all.
+///
+/// Nothing is ever emptied. Thirty days, as Business Khata keeps, is a
+/// clock that one day takes back a customer whose bills still point at
+/// them; the books need the rows for six years, so the bin keeps them for
+/// as long as the books do, and says so.
 final archivedItemsProvider = FutureProvider.autoDispose<List<ItemSummary>>((
   ref,
 ) async {
@@ -37,6 +55,68 @@ final archivedPartiesProvider = FutureProvider.autoDispose<List<PartySummary>>((
   return services.queries.archivedParties(firm.id);
 });
 
+/// One section's rows, or none when the person at the phone may not bring
+/// them back — the bin is never a way round a permission.
+AutoDisposeFutureProvider<List<T>> _hidden<T>(
+  bool Function(AppServices services) may,
+  Future<List<T>> Function(AppServices services) read,
+) => FutureProvider.autoDispose<List<T>>((ref) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null || !may(services)) return const [];
+  return read(services);
+});
+
+final _expenseHeadsProvider = _hidden<ExpenseHead>(
+  (s) => s.can(Permission.journal) && s.can(Permission.expenses),
+  (s) async => [
+    for (final h in await s.shopMoney.expenseHeads())
+      if (h.hidden) h,
+  ],
+);
+
+final _incomeHeadsProvider = _hidden<IncomeHead>(
+  (s) => s.can(Permission.journal) && s.can(Permission.expenses),
+  (s) async => [
+    for (final h in await s.shopMoney.incomeHeads())
+      if (h.hidden) h,
+  ],
+);
+
+final _staffProvider = _hidden<StaffMember>(
+  (s) => s.can(Permission.manageUsers),
+  (s) => s.recycle.switchedOffStaff(),
+);
+
+final _vansProvider = _hidden<HiddenVan>(
+  (s) => s.recycle.mayPutVansAway,
+  (s) => s.recycle.hiddenVans(),
+);
+
+final _recipesProvider = _hidden<HiddenRecipe>(
+  (s) => s.recycle.mayPutRecipesAway,
+  (s) => s.recycle.hiddenRecipes(),
+);
+
+final _photosProvider = _hidden<RemovedPhoto>(
+  (s) => true,
+  (s) async => [
+    for (final p in await s.photos.removed())
+      if (s.photos.mayRestore(p)) p,
+  ],
+);
+
+final _marksProvider = FutureProvider.autoDispose<Map<String, HiddenMark>>((
+  ref,
+) async {
+  ref.watch(refreshTickProvider);
+  final services = ref.watch(appServicesProvider);
+  final firm = await ref.watch(firmProvider.future);
+  if (firm == null) return const {};
+  return services.recycle.marks();
+});
+
 class RecycleScreen extends ConsumerWidget {
   const RecycleScreen({super.key});
 
@@ -46,9 +126,37 @@ class RecycleScreen extends ConsumerWidget {
     final t = context.bl;
     final items = ref.watch(archivedItemsProvider);
     final parties = ref.watch(archivedPartiesProvider);
+    final heads = ref.watch(_expenseHeadsProvider);
+    final incomes = ref.watch(_incomeHeadsProvider);
+    final staff = ref.watch(_staffProvider);
+    final vans = ref.watch(_vansProvider);
+    final recipes = ref.watch(_recipesProvider);
+    final photos = ref.watch(_photosProvider);
+    final marks = ref.watch(_marksProvider).valueOrNull ?? const {};
 
-    final everything = [...?items.valueOrNull, ...?parties.valueOrNull];
-    final loaded = items.hasValue && parties.hasValue;
+    final sections = [items, parties, heads, incomes, staff, vans, recipes];
+    final loaded = sections.every((a) => a.hasValue) && photos.hasValue;
+    final empty =
+        loaded &&
+        sections.every((a) => a.requireValue.isEmpty) &&
+        photos.requireValue.isEmpty;
+
+    HiddenMark? mark(String table, String id) => marks['$table/$id'];
+
+    List<Widget> section<T>(
+      String title,
+      AsyncValue<List<T>> rows,
+      Widget Function(T row) build,
+    ) {
+      final list = rows.valueOrNull ?? const [];
+      if (list.isEmpty) return const [];
+      return [
+        BlSectionHeader(title),
+        const SizedBox(height: BlTokens.space2),
+        for (final row in list) build(row),
+        const SizedBox(height: BlTokens.space4),
+      ];
+    }
 
     return Scaffold(
       backgroundColor: t.paper,
@@ -59,32 +167,119 @@ class RecycleScreen extends ConsumerWidget {
           children: [
             if (!loaded)
               const BlSkeletonList(rows: 3)
-            else if (everything.isEmpty)
+            else if (empty)
               BlEmpty(icon: Icons.inventory_2_outlined, title: s.recycleEmpty)
             else ...[
-              if (items.requireValue.isNotEmpty) ...[
-                BlSectionHeader(s.recycleItems),
-                const SizedBox(height: BlTokens.space2),
-                for (final item in items.requireValue)
-                  _HiddenRow(
-                    name: item.name,
-                    detail: item.saleRate.amountOnly,
-                    restore: (actor, services) =>
-                        services.catalogue.restoreItem(actor, item.id),
+              ...section(
+                s.recycleItems,
+                items,
+                (item) => _HiddenRow(
+                  name: item.name,
+                  detail: item.saleRate.amountOnly,
+                  mark: mark('items', item.id),
+                  restore: (services) => services.catalogue.restoreItem(
+                    services.actorNow(),
+                    item.id,
                   ),
-                const SizedBox(height: BlTokens.space4),
-              ],
-              if (parties.requireValue.isNotEmpty) ...[
-                BlSectionHeader(s.recycleParties),
-                const SizedBox(height: BlTokens.space2),
-                for (final party in parties.requireValue)
-                  _HiddenRow(
-                    name: party.name,
-                    detail: party.phone,
-                    restore: (actor, services) =>
-                        services.catalogue.restoreParty(actor, party.id),
+                ),
+              ),
+              ...section(
+                s.recycleParties,
+                parties,
+                (party) => _HiddenRow(
+                  name: party.name,
+                  detail: party.phone,
+                  mark: mark('parties', party.id),
+                  restore: (services) => services.catalogue.restoreParty(
+                    services.actorNow(),
+                    party.id,
                   ),
-              ],
+                ),
+              ),
+              ...section(
+                s.headsExpense,
+                heads,
+                (head) => _HiddenRow(
+                  name: expenseHeadName(s, head),
+                  mark: mark('accounts', head.accountId),
+                  restore: (services) => services.shopMoney
+                      .setExpenseHeadHidden(head.accountId, false),
+                ),
+              ),
+              ...section(
+                s.headsIncome,
+                incomes,
+                (head) => _HiddenRow(
+                  name: incomeHeadName(s, head),
+                  mark: mark('settings', head.key),
+                  restore: (services) =>
+                      services.shopMoney.setIncomeHeadHidden(head.key, false),
+                ),
+              ),
+              ...section(
+                s.usersTitle,
+                staff,
+                (member) => _HiddenRow(
+                  name: member.name,
+                  mark: mark('users', member.id),
+                  restore: (services) =>
+                      services.setStaffActive(member.id, active: true),
+                ),
+              ),
+              ...section(
+                s.vansTitle,
+                vans,
+                (van) => _HiddenRow(
+                  name: van.name,
+                  detail: van.locationCode,
+                  mark: mark('vans', van.id),
+                  restore: (services) => services.recycle.restoreVan(van.id),
+                ),
+              ),
+              ...section(
+                s.recipesTitle,
+                recipes,
+                (recipe) => _HiddenRow(
+                  name: recipe.name,
+                  detail: recipe.outputName,
+                  mark: mark('boms', recipe.id),
+                  restore: (services) =>
+                      services.recycle.restoreRecipe(recipe.id),
+                ),
+              ),
+              ...section(
+                s.recyclePhotos,
+                photos,
+                (photo) => _HiddenRow(
+                  key: ValueKey('removed-photo-${photo.id}'),
+                  name: photo.ownerLabel.isEmpty
+                      ? s.recyclePhotoOfShop
+                      : s.recyclePhotoFrom(photo.ownerLabel),
+                  mark: HiddenMark(
+                    atUtc: photo.removedAtUtc,
+                    by: photo.removedBy,
+                  ),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(BlTokens.radiusSm),
+                    child: Image.memory(
+                      photo.bytes,
+                      width: 48,
+                      height: 48,
+                      fit: BoxFit.cover,
+                      cacheWidth: 144,
+                      excludeFromSemantics: true,
+                    ),
+                  ),
+                  restore: (services) => services.photos.restore(photo),
+                ),
+              ),
+            ],
+            if (loaded) ...[
+              const SizedBox(height: BlTokens.space2),
+              Text(
+                s.recycleKeptNote,
+                style: TextStyle(fontSize: 12, color: t.inkMuted),
+              ),
             ],
           ],
         ),
@@ -95,14 +290,24 @@ class RecycleScreen extends ConsumerWidget {
 
 class _HiddenRow extends ConsumerStatefulWidget {
   const _HiddenRow({
+    super.key,
     required this.name,
-    required this.detail,
     required this.restore,
+    this.detail,
+    this.mark,
+    this.leading,
   });
 
   final String name;
   final String? detail;
-  final Future<void> Function(ActorContext actor, AppServices services) restore;
+
+  /// When it went into the bin and who put it there, when the activity log
+  /// knows. Something hidden before M42 kept field-level history may have
+  /// no row naming it; it is still brought back the same way.
+  final HiddenMark? mark;
+
+  final Widget? leading;
+  final Future<void> Function(AppServices services) restore;
 
   @override
   ConsumerState<_HiddenRow> createState() => _HiddenRowState();
@@ -119,14 +324,21 @@ class _HiddenRowState extends ConsumerState<_HiddenRow> {
     final container = ProviderScope.containerOf(context, listen: false);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await widget.restore(services.actorNow(), services);
+      await widget.restore(services);
       container.bumpRefresh();
       messenger.showSnackBar(
         SnackBar(content: Text(s.recycleRestored(widget.name))),
       );
     } on Object catch (error) {
       messenger.showSnackBar(
-        SnackBar(content: Text('${s.commonSomethingWentWrong}: $error')),
+        SnackBar(
+          content: Text(switch (error) {
+            PhotoRefused(:final reason) => reason,
+            PermissionDenied(:final reason) => reason,
+            HeadRefused(:final reason) => reason,
+            _ => '${s.commonSomethingWentWrong}: $error',
+          }),
+        ),
       );
       if (mounted) setState(() => _busy = false);
     }
@@ -136,18 +348,23 @@ class _HiddenRowState extends ConsumerState<_HiddenRow> {
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
+    final mark = widget.mark;
     return Padding(
       padding: const EdgeInsets.only(bottom: BlTokens.space2),
       child: BlCard(
         child: Row(
           children: [
+            if (widget.leading case final leading?) ...[
+              leading,
+              const SizedBox(width: BlTokens.space3),
+            ],
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     widget.name,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 15,
@@ -155,10 +372,19 @@ class _HiddenRowState extends ConsumerState<_HiddenRow> {
                       color: t.ink,
                     ),
                   ),
-                  if (widget.detail != null)
+                  if (widget.detail case final detail?
+                      when detail.trim().isNotEmpty)
                     Text(
-                      widget.detail!,
+                      detail,
                       style: TextStyle(fontSize: 13, color: t.inkMuted),
+                    ),
+                  if (mark != null)
+                    Text(
+                      s.recycleHiddenBy(
+                        mark.by,
+                        shopTime(mark.atUtc.millisecondsSinceEpoch),
+                      ),
+                      style: TextStyle(fontSize: 12, color: t.inkMuted),
                     ),
                 ],
               ),

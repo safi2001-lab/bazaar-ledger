@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M60
 import '../parties/party_editor.dart';
 import '../sales/receipt_screen.dart';
 import 'charge_sheet.dart';
@@ -632,6 +633,7 @@ Future<void> _openCharge(
             : s.entryNotAllowed,
       ),
       actions: [
+        EntryPhotosButton(owner: AttachmentOwner.document(charge.id)), // M60
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(s.actionClose),

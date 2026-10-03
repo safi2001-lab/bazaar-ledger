@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
 import '../khata/entry_actions.dart';
 import '../khata/khata_providers.dart';
@@ -139,6 +140,7 @@ class _Body extends ConsumerWidget {
             record: RecordRef.document(expense.id),
             label: expense.docNo,
           ),
+          AttachmentStrip(owner: AttachmentOwner.document(expense.id)), // M60
           if (expense.paidBy.isNotEmpty) ...[
             const SizedBox(height: BlTokens.space3),
             EntryNote(s.entryPaidBy(expense.paidBy.join(', '))),

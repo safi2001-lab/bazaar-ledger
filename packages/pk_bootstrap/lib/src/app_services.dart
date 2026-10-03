@@ -28,8 +28,10 @@ part 'fbr_services.dart';
 part 'import_services.dart';
 part 'loan_services.dart';
 part 'order_services.dart';
+part 'photo_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
+part 'recycle_services.dart';
 part 'scheme_services.dart'; // M43
 part 'shelf_services.dart';
 part 'shop_money_services.dart';
@@ -442,6 +444,12 @@ final class AppServices {
   /// Purchase orders, sale orders, the shortage list and what to order
   /// (M41).
   late final OrderServices orders = OrderServices._(this);
+
+  /// Photographs of the paper behind an entry (M60).
+  late final EntryPhotoServices photos = EntryPhotoServices._(this);
+
+  /// What the shop has hidden, and bringing it back (M60).
+  late final RecycleServices recycle = RecycleServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

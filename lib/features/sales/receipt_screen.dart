@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
 import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
@@ -195,6 +196,7 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
             return Column(
               children: [
                 _BillLinksLine(documentId: documentId),
+                AttachmentStrip.overPaper(owner: AttachmentOwner.document(documentId)), // M60
                 // A cancelled bill is shown marked, as it is sent marked
                 // (M30); the thermal paper of it still prints as it did.
                 Expanded(

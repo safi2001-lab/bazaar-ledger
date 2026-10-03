@@ -354,6 +354,13 @@ final class DriftAppQueries implements AppQueries {
           JOIN items i ON i.id = b.output_item_id
           JOIN units u ON u.id = i.base_unit_id
           WHERE b.firm_id = ? AND b.deleted_at_utc IS NULL
+            -- Not one the shop has put away (M60); it waits in the bin.
+            AND NOT EXISTS (
+              SELECT 1 FROM settings s
+              WHERE s.firm_id = b.firm_id
+                AND s.setting_key = 'recipe.' || b.id
+                AND s.deleted_at_utc IS NULL
+                AND json_extract(s.setting_value, '\$.hidden') = 1)
           ORDER BY b.name COLLATE NOCASE
           ''',
           variables: [Variable<String>(firmId)],

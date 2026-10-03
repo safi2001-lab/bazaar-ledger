@@ -3619,5 +3619,56 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+  "photoStripTitle": "Photos of the paper",
+  "photoAdd": "Add a photo",
+  "photoFromCamera": "Take a photo with the camera",
+  "photoFromGallery": "Pick from the gallery",
+  "photoOpen": "Open photo {number}",
+  "@photoOpen": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "photoAddedBy": "Added by {name} · {when}",
+  "@photoAddedBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "photoFromEarlier": "This photo is on the earlier entry this one corrected",
+  "photoRemoveConfirm": "Take this photo off? It waits in 'Hidden' and can be brought back from there.",
+  "photoRemoved": "Photo taken off. It can be brought back from 'Hidden'.",
+  "photoFull": "This entry already has {max} photos. Take one off before adding another.",
+  "@photoFull": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "photoPapersNote": "These photos (a CNIC copy, say) stay on this phone only. They never go to another phone or any server; a backup carries them locked with your password.",
+  "photoCameraRefused": "The camera could not open. Pick from the gallery instead.",
+  "photosButton": "Photos",
+  "recycleKeptNote": "Nothing here is ever emptied. Everything comes back with one tap whenever you want, because the old books are not whole without it.",
+  "recycleHiddenBy": "Hidden by {who} · {when}",
+  "@recycleHiddenBy": {
+    "placeholders": {
+      "who": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "recyclePhotos": "Photos",
+  "recyclePhotoFrom": "Photo from {what}",
+  "@recyclePhotoFrom": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "recyclePhotoOfShop": "The shop's logo or QR",
+  "vanPutAway": "Put the van away",
+  "vanPutAwayConfirm": "This van leaves the list. Its sales and settlements stay exactly as they were, and it can come back from 'Hidden'.",
+  "vanPutAwayDone": "Van put away",
+  "recipePutAway": "Put the recipe away",
+  "recipePutAwayConfirm": "This recipe leaves the list. What was made with it, and the books, stay as they were, and it can come back from 'Hidden'.",
+  "recipePutAwayDone": "Recipe put away"
 }

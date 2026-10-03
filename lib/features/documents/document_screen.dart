@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M60
 import '../sales/receipt_screen.dart';
 import '../sales/send_sheet.dart';
 
@@ -104,6 +105,7 @@ class DocumentScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                AttachmentStrip.overPaper(owner: AttachmentOwner.document(documentId)), // M60
                 Expanded(child: PaperPreview(data: data)),
                 Container(
                   decoration: BoxDecoration(

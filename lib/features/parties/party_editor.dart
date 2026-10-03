@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
 import '../khata/opening_balance_sheet.dart';
 import '../khata/reminder_queue_screen.dart' show reminderLanguageName;
@@ -575,6 +576,7 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             contentPadding: EdgeInsets.zero,
                             title: Text(s.partyReminderOptOut),
                           ),
+                          if (_isEdit) AttachmentStrip(owner: AttachmentOwner.party(widget.party!.id)), // M60
                           if (_failure != null) ...[
                             const SizedBox(height: BlTokens.space4),
                             Text(

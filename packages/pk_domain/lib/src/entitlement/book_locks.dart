@@ -80,6 +80,18 @@ const undoingActions = <String>{
   // An item or a customer hidden.
   'ITEM_ARCHIVED',
   'PARTY_ARCHIVED',
+  // Everything else that puts something in the recycle bin (M60): an
+  // expense head or a head of income no longer offered, a member of staff
+  // switched off, a van or a recipe put away, and a photograph taken off an
+  // entry — the supplier's bill a counter boy would most like gone. Spelt
+  // out rather than imported from the bin's own list, so this stays the one
+  // place every guarded code can be read.
+  'EXPENSE_HEAD_HIDDEN',
+  'INCOME_HEAD_HIDDEN',
+  'USER_DEACTIVATED',
+  'VAN_HIDDEN',
+  'RECIPE_HIDDEN',
+  'ATTACHMENT_REMOVED',
   // A loan entry cancelled (M48).
   'LOAN_ENTRY_CANCELLED',
   // The locks themselves: reopening closed books, or turning the PIN off,

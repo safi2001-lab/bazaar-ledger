@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../recycle/put_away.dart'; // M60
 
 final recipesProvider = FutureProvider.autoDispose<List<BomView>>((ref) async {
   ref.watch(refreshTickProvider);
@@ -374,6 +375,7 @@ class _RecipeEditorState extends ConsumerState<RecipeEditorScreen> {
         title: Text(
           widget.recipe == null ? s.recipesNew : widget.recipe!.draft.name,
         ),
+        actions: [PutRecipeAwayButton(recipe: widget.recipe)], // M60
       ),
       body: SafeArea(
         child: ListView(

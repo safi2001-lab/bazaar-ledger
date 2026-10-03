@@ -2411,6 +2411,87 @@ milestones:
       - lib/features/tax/item_tax_fields.dart
       - lib/features/tax/fbr_offline_line.dart
 
+  - id: M60
+    title: A photo of the parchi on any entry, and nothing hidden is ever lost
+    # Opened and sealed 3 Oct 2026 at 1/1. Every shop this is built for runs
+    # on paper beside the phone: the supplier's carbon-copy bill, the bijli
+    # bill, the bank's deposit slip, a cheque, the challan the customer
+    # signed, a customer's CNIC copy. Shopkeepers ask to "photograph the
+    # parchi onto the entry"; Khatabook puts attachments on entries and
+    # Business Khata photo notes. Now a delivery, a quotation or a challan
+    # (on the page each opens to), an expense, a payment taken or made (a
+    # cheque's photograph kept as one), a sale bill, a charge on a khata and
+    # a customer's or supplier's khata each carry a strip of photographs —
+    # from the camera, which needed nothing new (CAMERA came with barcode
+    # scanning), or the gallery through Android's own picker — opened full
+    # size with a pinch to read one figure, saying who put each on and when.
+    # Up to eight an entry, each kept at 1,280 pixels on its long side (a
+    # handwritten figure on an A5 parchi two dozen pixels tall) and under
+    # 192 KB, turned upright, colour kept for the stamps and the red ink. A
+    # corrected expense, payment, charge or bill shows the paper put on the
+    # one it replaced, marked so, and the photograph stays where it was put.
+    #
+    # Kept in the books, inline, as an item's picture is, in kinds the schema
+    # already had (receipt_photo, cheque_image, and other for a party's
+    # papers): no schema change. So they go into every backup and come back
+    # with a restore, the bin with them, and a test does it on disk.
+    #
+    # Found on the way, and the reason pictures stay on the phone: no
+    # picture had ever crossed the shop's wi-fi. The outbox wrote a blob as
+    # JSON numbers, the peer refused a list where a blob belongs, and the
+    # whole merge rolled back — from the first item photograph, logo or QR
+    # in the books (M2, M51), that counter could not sync at all. Building
+    # file transfer is its own milestone; until then the sync store keeps
+    # pictures where they were taken (and ignores one an older build sends),
+    # everything else syncs, and the outbox no longer keeps every picture a
+    # second time at four times its size. A CNIC copy therefore never leaves
+    # the phone except in an encrypted backup the owner makes, and the strip
+    # says so where it is taken; seeing, adding or taking off a party's
+    # papers takes the permission that puts entries right.
+    #
+    # The recycle bin, complete. M5 brought back items and customers; the
+    # shop has since learned to hide expense heads and heads of income (M47)
+    # and switch staff off (M9), and a van sold or a recipe no longer made
+    # had nowhere to go. A van is put away from its page (refused while
+    # goods are on it or a phone sells from it, as M3 refuses a customer who
+    # owes), a recipe from its own (a setting, as M47 keeps a head's, since
+    # boms has no column), and a photograph from its viewer. Hidden lists
+    # all of it — items, customers, both kinds of head, staff, vans,
+    # recipes, photographs with a thumbnail of each — with when it went in
+    # and by whose hand, read from the audit row the act wrote, and brings
+    # each back with one tap through the service that always held it, under
+    # the permission that always guarded it; a section the person at the
+    # phone may not bring back from is not shown. Price lists are prices on
+    # each item (M7, M15), not a thing of their own, so there is nothing to
+    # hide. Decided: nothing is ever emptied. Thirty days is a clock that
+    # one day takes back a customer whose bills still point at them; the
+    # books keep the rows six years, and the bin says so.
+    #
+    # Data Lock (M42) asks a PIN before every act that fills the bin: the
+    # codes for a head or a head of income hidden, staff switched off, a van
+    # or recipe put away and a picture taken off are added to undoingActions
+    # beside the item and the customer, and a test holds the bin's list and
+    # the lock's together. Bringing back asks nothing.
+    #
+    # Not built, and why: photographs reaching other phones over the wi-fi
+    # (file transfer, above); a photograph while a bill is still being rung
+    # up (a photograph needs a row to hang off, as an item's does, so it is
+    # added from the bill's page a moment later); a photograph on a loan
+    # entry, a cheque's own page or an item's batch (pages other milestones
+    # hold, each one more marked line when wanted); voice notes; emptying
+    # the bin.
+    state: sealed
+    owns:
+      - lib/features/attachments/**
+      - lib/features/recycle/recycle_screen.dart
+      - lib/features/recycle/put_away.dart
+      - packages/pk_domain/lib/src/recycle/**
+      - packages/pk_data/lib/src/write/drift_attachments.dart
+      - packages/pk_data/lib/src/write/drift_hidden_things.dart
+      - packages/pk_bootstrap/lib/src/photo_services.dart
+      - packages/pk_bootstrap/lib/src/recycle_services.dart
+      - packages/pk_platform/lib/src/media/paper_photo.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7396,3 +7477,51 @@ features:
       - a salon sets PRA in Tax, and the payment sheet charges 16% in cash and 8% by card
       - a bill FBR has not taken a day after the connection came back is shown on Home and the FBR screen
       - at 200% on a small phone the MRP warning, the buyer's name and the PRA rows fit
+  - id: M60-PHOTO-01
+    milestone: M60
+    title: A photograph of the paper on a delivery, an expense, a payment or cheque, a sale bill, a charge and a khata, kept readable and small, and shown on the entry's page
+    status: done
+    # The reduction proved without a database; the store through the
+    # services against a real one; the pages by taps.
+    proof:
+      - a photograph of the paper a camera-sized parchi comes back at a size that reads, inside the ceiling
+      - a photograph of the paper a photograph that will not compress is made smaller, never refused
+      - a photograph of the paper a small one is not enlarged
+      - a photograph of the paper a phone held upright gives an upright picture
+      - a photograph of the paper something that is not a picture is refused in words
+      - photos on entries the bijli bill photographed onto an expense stays on it, small, saying who put it there
+      - photos on entries a delivery, a payment, a cheque, a sale bill, a charge and a khata each keep their own
+      - photos on entries an entry keeps eight photographs and refuses a ninth in words
+      - photos on entries a corrected expense still shows the bill photographed onto the one it replaced
+      - photos on entries a cashier may photograph a bill, but not take a photograph off nor see a CNIC copy
+      - a photo of the bijli bill shows on its expense and opens full size, saying who put it on
+      - a sale bill carries the strip above its paper, and a khata says its papers stay on this phone
+  - id: M60-PHOTO-02
+    milestone: M60
+    title: A photograph taken off waits in the bin with who took it off, comes back to its entry, asks a PIN under Data Lock, and travels with backup but never stops a sync
+    status: done
+    # On disk for the restore, over a real socket for the sync.
+    proof:
+      - photos on entries a photograph taken off waits in the bin, says who took it off, and comes back
+      - photos on entries with Data Lock on, taking a photograph off asks for a PIN
+      - photos on entries a photograph is not kept a second time in the outbox
+      - photos and the shop wi-fi a picture never stops a counter syncing, and stays on the phone it was taken on
+      - photos travel with backup the bijli bill on an expense comes back with a restore, and so does one waiting in the bin
+      - a photo taken off its entry is asked about first, and waits in the bin
+      - a photo in the bin says whose hand took it off, and comes back to its entry
+  - id: M60-BIN-01
+    milestone: M60
+    title: Everything hidden comes back from one screen with when and by whom — items, customers, heads, staff, vans, recipes, photographs — and Data Lock guards every hiding
+    status: done
+    # Through the services against a real database, and from the screens.
+    proof:
+      - the recycle bin a van with goods on board is not put away; empty, it goes, says who and when, and comes back
+      - the recycle bin a van a phone still sells from is not put away
+      - the recycle bin a recipe put away leaves the list and comes back, its batches untouched
+      - the recycle bin heads, staff, items and customers hidden each say who hid them and when
+      - the recycle bin with Data Lock on, every hiding asks for a PIN and bringing back does not
+      - the recycle bin every act that fills the bin is one Data Lock guards
+      - a van put away from its page waits in Hidden and comes back
+      - a recipe put away from its page comes back from Hidden
+      - an expense head hidden says who hid it and when, and comes back
+      - with Data Lock on, putting a van away asks for the PIN on screen

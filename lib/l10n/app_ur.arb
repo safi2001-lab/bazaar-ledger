@@ -3944,5 +3944,56 @@
     "placeholders": {
       "count": {"type": "int"}
     }
-  }
+  },
+  "photoStripTitle": "Kaghaz ki tasveerein",
+  "photoAdd": "Tasveer lein",
+  "photoFromCamera": "Camera se tasveer khainchein",
+  "photoFromGallery": "Gallery se chunein",
+  "photoOpen": "Tasveer {number} kholein",
+  "@photoOpen": {
+    "placeholders": {
+      "number": {"type": "int"}
+    }
+  },
+  "photoAddedBy": "{name} ne lagayi · {when}",
+  "@photoAddedBy": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "photoFromEarlier": "Yeh tasveer pichhli entry par lagi thi, jise is entry ne theek kiya",
+  "photoRemoveConfirm": "Yeh tasveer hata dein? Yeh 'Hatayi hui cheezein' mein rahegi aur wahan se wapas laayi ja sakti hai.",
+  "photoRemoved": "Tasveer hata di. 'Hatayi hui cheezein' se wapas la sakte hain.",
+  "photoFull": "Is entry par {max} tasveerein lag chuki hain. Nayi lagane se pehle ek hatayein.",
+  "@photoFull": {
+    "placeholders": {
+      "max": {"type": "int"}
+    }
+  },
+  "photoPapersNote": "Yeh tasveerein (jaise CNIC ki copy) sirf isi phone par rehti hain. Kisi doosre phone ya server par nahi jaatin; backup mein sirf aap ke password se band ho kar jaati hain.",
+  "photoCameraRefused": "Camera nahi khul saka. Gallery se chun lein.",
+  "photosButton": "Tasveerein",
+  "recycleKeptNote": "Yahan se kuch khud nahi mitta. Har cheez jab chahein ek tap se wapas aa sakti hai, kyunke purana hisaab un ke baghair poora nahi.",
+  "recycleHiddenBy": "{who} ne hataya · {when}",
+  "@recycleHiddenBy": {
+    "placeholders": {
+      "who": {"type": "String"},
+      "when": {"type": "String"}
+    }
+  },
+  "recyclePhotos": "Tasveerein",
+  "recyclePhotoFrom": "{what} ki tasveer",
+  "@recyclePhotoFrom": {
+    "placeholders": {
+      "what": {"type": "String"}
+    }
+  },
+  "recyclePhotoOfShop": "Dukaan ka logo ya QR",
+  "vanPutAway": "Gaari hatayein",
+  "vanPutAwayConfirm": "Yeh gaari list se hat jaye gi. Is ki bikri aur hisaab jaisa tha waisa rahega, aur 'Hatayi hui cheezein' se wapas aa sakti hai.",
+  "vanPutAwayDone": "Gaari hata di gayi",
+  "recipePutAway": "Recipe hatayein",
+  "recipePutAwayConfirm": "Yeh recipe list se hat jaye gi. Pehle banaya hua maal aur hisaab waise hi rahega, aur 'Hatayi hui cheezein' se wapas aa sakti hai.",
+  "recipePutAwayDone": "Recipe hata di gayi"
 }

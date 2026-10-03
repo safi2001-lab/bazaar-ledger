@@ -78,6 +78,20 @@ final class DriftSyncStore implements SyncPeer {
     };
   }
 
+  /// Tables whose rows stay on the phone that wrote them (M60).
+  ///
+  /// Pictures — an item's photograph, the shop's logo and QR, the parchis
+  /// photographed onto entries — are kept inline as blobs, and this wire is
+  /// JSON. Until M60 a picture's row went out as a list of numbers that no
+  /// device could take in: SQLite refused a list where a blob belongs, the
+  /// whole merge rolled back, and from the first picture on, that counter
+  /// could not sync at all. Sending files is its own piece of work (a size
+  /// budget, resuming, a shop's whole gallery on the first join), and not
+  /// one to slip in here; until it is done, a picture stays on the phone it
+  /// was added on and travels in that phone's backups, and everything else
+  /// syncs as before. The audit row saying a picture was added still goes.
+  static const _keptHere = {'attachments'};
+
   @override
   Future<List<SyncChange>> changesSince(VersionVector known) async {
     final held = List.filled(
@@ -87,6 +101,7 @@ final class DriftSyncStore implements SyncPeer {
     final rows = await _db
         .customSelect(
           'SELECT * FROM change_log WHERE firm_id = ? '
+          "AND entity_table NOT IN ('${_keptHere.join("', '")}') "
           '${held.isEmpty ? '' : 'AND NOT (${held.join(' OR ')}) '}'
           'ORDER BY origin_device_id, seq',
           variables: [
@@ -140,6 +155,12 @@ final class DriftSyncStore implements SyncPeer {
     await _db.transaction(() async {
       var stockMoved = false;
       for (final change in ordered) {
+        // A counter still on an older build sends its pictures; they are
+        // left where they were made, rather than stopping every sync.
+        if (_keptHere.contains(change.row['entity_table'])) {
+          skipped++;
+          continue;
+        }
         final held = await _db
             .customSelect(
               'SELECT 1 FROM change_log WHERE origin_device_id = ? AND seq = ?',
