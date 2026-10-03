@@ -230,7 +230,7 @@ Found by re-reading `docs/competitor_research.md` §6–§8 and the appendix aga
 - [x] M67 · DONE (b22ae86) Reports, deeper: ratio analysis (GP%, NP%, stock turnover, days to collect/pay), one exception report, ABC stock classes, ageing buckets the shop sets, stock valued at cost or sale price, per-column filters and a column chooser, "vs last period" on charts
 
 ### Batch 2 (in progress)
-- [ ] M68 · (in progress) Control: credit control by bill count and days, a temporary limit, stop billing after a bounced cheque; days older than N lock themselves; random stock checks (cycle count); cashier mode (salesman bills, cashier collects)
+- [x] M68 · Control: credit rules (limit, temporary limit, open bills, oldest bill's days, a bounced cheque still owed) that warn or block with the owner's PIN past a block; days older than N, or each day once the drawer is counted, lock themselves; random stock checks posted on the owner's word; cashier mode (salesman bills, cashier collects; stock and books move only when paid)
 - [ ] M69 · (in progress, schema v14) Repair job cards for mobile shops (device, IMEI, fault, estimate, parts from stock, labour, ready/delivered, billed) — schema v14
 - [x] M70 · More bill designs (landscape wholesale / sales tax, ruled bill book, Nafees, Halka; compact and big-total till slips; a design per paper for quotation, challan and PO); after a bill, payment, return or supplier payment, offer the receipt on WhatsApp in the party's language (ask / straight to WhatsApp / never, shop default and per party)
 
