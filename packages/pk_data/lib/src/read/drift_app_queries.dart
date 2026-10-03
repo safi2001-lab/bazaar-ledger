@@ -771,8 +771,13 @@ final class DriftAppQueries implements AppQueries {
           -- per-type sequence put every payment ahead of the bill it paid on
           -- the same day, so the running balance showed the customer in
           -- credit for one line before the bill caught up.
+          --
+          -- M62: no LIMIT here. Oldest first and cut at [limit] kept a
+          -- regular's OLDEST two hundred entries, so a customer with three
+          -- years of bills saw nothing newer than early 2024 on his khata,
+          -- not even the bill just made. The whole account is read (its
+          -- party's own rows, by their indexes) and the newest kept below.
           ORDER BY date_local, recorded, id
-          LIMIT ?
           ''',
           variables: [
             Variable<String>(firmId),
@@ -785,7 +790,6 @@ final class DriftAppQueries implements AppQueries {
             Variable<String>(partyId),
             Variable<String>(firmId),
             Variable<String>(partyId),
-            Variable<int>(limit),
           ],
           readsFrom: {
             _db.documents,
@@ -799,6 +803,11 @@ final class DriftAppQueries implements AppQueries {
     // The running balance is computed here, never stored. A cached one is
     // wrong the moment a backdated bill is entered, which happens in every
     // shop that does its paperwork on Sundays.
+    return _newest(_running(rows), limit); // M62
+  }
+
+  /// [rows] as entries, each with the balance after it, oldest first.
+  static List<LedgerEntry> _running(List<QueryRow> rows) {
     var running = Money.zero;
     return [
       for (final r in rows)
@@ -816,6 +825,14 @@ final class DriftAppQueries implements AppQueries {
         }(),
     ];
   }
+
+  /// The newest [limit] of [entries], still oldest first (M62): the balance
+  /// after each was run over the whole account, so the last one is the
+  /// khata's balance however long the account is.
+  static List<LedgerEntry> _newest(List<LedgerEntry> entries, int limit) =>
+      entries.length <= limit
+      ? entries
+      : entries.sublist(entries.length - limit);
 
   @override
   Future<List<LedgerEntry>> payablesLedger(
@@ -874,15 +891,14 @@ final class DriftAppQueries implements AppQueries {
               AND p.deleted_at_utc IS NULL
           )
           WHERE amount_paisa <> 0
+          -- M62: read whole, the newest kept below, as the khata's.
           ORDER BY date_local, seq, id
-          LIMIT ?
           ''',
           variables: [
             Variable<String>(firmId),
             Variable<String>(partyId),
             Variable<String>(firmId),
             Variable<String>(partyId),
-            Variable<int>(limit),
           ],
           readsFrom: {
             _db.documents,
@@ -894,22 +910,7 @@ final class DriftAppQueries implements AppQueries {
         )
         .get();
 
-    var running = Money.zero;
-    return [
-      for (final r in rows)
-        () {
-          final amount = Money.paisa(r.read<int>('amount_paisa'));
-          running += amount;
-          return LedgerEntry(
-            id: r.read<String>('id'),
-            kind: r.read<String>('kind'),
-            reference: r.read<String>('reference'),
-            dateLocal: r.read<String>('date_local'),
-            amount: amount,
-            balanceAfter: running,
-          );
-        }(),
-    ];
+    return _newest(_running(rows), limit); // M62
   }
 
   @override
@@ -938,6 +939,10 @@ final class DriftAppQueries implements AppQueries {
             -- shop's own debts.
             AND d.doc_type IN ('sale_invoice', 'other_income')
             AND d.balance_paisa > 0
+            -- M62: said again as idx_documents_open_balance says it. `> 0`
+            -- alone cannot prove the partial index's `<> 0`, and without
+            -- it this read every document the shop has ever written.
+            AND d.balance_paisa <> 0
             AND d.party_id IS NOT NULL
             AND d.status NOT IN ('void', 'draft')
             AND d.deleted_at_utc IS NULL
@@ -984,6 +989,7 @@ final class DriftAppQueries implements AppQueries {
             -- chased from the date of a delivery the shop owes on.
             AND d.doc_type IN ('sale_invoice', 'other_income')
             AND d.balance_paisa > 0
+            AND d.balance_paisa <> 0 -- M62: rides idx_documents_open_balance
             AND d.status NOT IN ('void', 'draft')
             AND d.deleted_at_utc IS NULL
             AND p.deleted_at_utc IS NULL
@@ -1112,6 +1118,9 @@ final class DriftAppQueries implements AppQueries {
           WHERE firm_id = ? AND party_id = ?
             AND $typeFilter
             AND balance_paisa > 0
+            -- M62: the index's own condition, so the index above is the
+            -- one read; `> 0` alone cannot prove it.
+            AND balance_paisa <> 0
             AND status NOT IN ('void', 'draft')
             AND deleted_at_utc IS NULL
           ORDER BY doc_date_local, doc_seq, id
@@ -1220,8 +1229,15 @@ final class DriftAppQueries implements AppQueries {
           FROM documents d
           LEFT JOIN parties p
             ON p.id = d.party_id AND p.firm_id = d.firm_id
-          WHERE d.firm_id = ?
-            AND d.doc_type = 'sale_invoice'
+          -- M62: the unary plus keeps the shop and the kind of paper off
+          -- idx_documents_list, so the bills are walked newest first by
+          -- their id and the walk stops at the page. Found by them, every
+          -- sale bill in the book was read and sorted to keep forty: 190 ms
+          -- on a development machine at fifty thousand bills, a second on
+          -- the phone, more with every bill. A search still reads as far
+          -- back as it must to fill a page.
+          WHERE +d.firm_id = ?
+            AND +d.doc_type = 'sale_invoice'
             AND d.deleted_at_utc IS NULL
             AND (? IS NULL OR d.doc_date_local = ?)
             $where
@@ -3041,6 +3057,7 @@ final class DriftAppQueries implements AppQueries {
                        AND d.firm_id = p.firm_id
                        AND d.doc_type IN ('sale_invoice', 'other_income')
                        AND d.balance_paisa > 0
+                       AND d.balance_paisa <> 0 -- M62: the open-bill index
                        AND d.status NOT IN ('void', 'draft')
                        AND d.deleted_at_utc IS NULL),
                    CASE WHEN p.opening_balance_paisa > 0
@@ -3053,6 +3070,7 @@ final class DriftAppQueries implements AppQueries {
                        AND d.firm_id = p.firm_id
                        AND d.doc_type IN ('sale_invoice', 'other_income')
                        AND d.balance_paisa > 0
+                       AND d.balance_paisa <> 0 -- M62: the open-bill index
                        AND d.status NOT IN ('void', 'draft')
                        AND d.deleted_at_utc IS NULL))),
                '9999-12-30')

@@ -75,6 +75,7 @@ final class DayBookEntry {
     this.moneyOut = Money.zero,
     this.documentId,
     this.docType,
+    this.tenders = const {},
   });
 
   final BusinessDate date;
@@ -110,6 +111,11 @@ final class DayBookEntry {
   /// The document behind the entry, for opening it from the report.
   final String? documentId;
   final String? docType;
+
+  /// The tenders taken with the bill at the counter, by `payments.mode`
+  /// (M62), so a bill paid two ways says each with its amount beside the
+  /// one figure of money in. Empty for anything else.
+  final Map<String, Money> tenders;
 }
 
 /// What one item sold for in a period, net of what came back.

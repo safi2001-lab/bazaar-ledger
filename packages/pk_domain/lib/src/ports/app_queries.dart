@@ -553,6 +553,9 @@ abstract interface class AppQueries {
   /// shows what is still owed; this is what settles an argument, because the
   /// question a customer actually asks is "I paid you last week" and the
   /// answer has to be a date and an amount.
+  ///
+  /// The newest [limit] entries, with every balance run over the whole
+  /// account (M62): a regular with three years of bills sees this week's.
   Future<List<LedgerEntry>> partyLedger(
     String firmId,
     String partyId, {
@@ -602,7 +605,8 @@ abstract interface class AppQueries {
 
   /// Everything that moved what the shop owes one party, oldest first, with
   /// the running figure. Positive amounts are deliveries and unpaid
-  /// expenses, negative ones are payments made.
+  /// expenses, negative ones are payments made. The newest [limit], as
+  /// [partyLedger] keeps them (M62).
   Future<List<LedgerEntry>> payablesLedger(
     String firmId,
     String partyId, {

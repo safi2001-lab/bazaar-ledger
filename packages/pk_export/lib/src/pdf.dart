@@ -64,8 +64,14 @@ Future<Uint8List> reportToPdf(
             textDirection: _isLatin(shopName) ? null : pw.TextDirection.rtl,
             style: pw.TextStyle(font: sansBold, fontSize: 14),
           ),
+          // M62: right to left when a name in it is Urdu, as the shop's
+          // name above and the cells below always were. A party statement
+          // and an expiry return note carry the party's name in their
+          // title, and a run left in the default direction prints its
+          // letters loose, unjoined, on the customer's phone.
           pw.Text(
             '${table.title} · ${table.period.label}',
+            textDirection: _isLatin(table.title) ? null : pw.TextDirection.rtl,
             style: pw.TextStyle(font: sans, fontSize: 11),
           ),
           // What the report was narrowed to (M33), so a page forwarded on
@@ -120,7 +126,13 @@ Future<Uint8List> reportToPdf(
         for (final note in table.notes)
           pw.Padding(
             padding: const pw.EdgeInsets.only(bottom: 4),
-            child: pw.Text(note, style: pw.TextStyle(font: sans, fontSize: 9)),
+            child: pw.Text(
+              note,
+              // M62: a note can name the party too ("From the shop to
+              // <supplier>: ...").
+              textDirection: _isLatin(note) ? null : pw.TextDirection.rtl,
+              style: pw.TextStyle(font: sans, fontSize: 9),
+            ),
           ),
       ],
     ),

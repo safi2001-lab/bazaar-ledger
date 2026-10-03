@@ -266,7 +266,19 @@ final class DriftReportSource
                    WHERE jl.journal_entry_id = je.id
                      AND jl.deleted_at_utc IS NULL
                      AND jl.account_id IN (SELECT id FROM money)
-                 ), 0) AS money_out
+                 ), 0) AS money_out,
+                 -- M62: the tenders taken with a bill at the counter, by
+                 -- idx_alloc_doc, so a bill paid two ways says so.
+                 CASE WHEN je.source_type IN ('sale', 'purchase') THEN (
+                   SELECT GROUP_CONCAT(pm.mode || ':' || pa.amount_paisa)
+                   FROM payment_allocations pa
+                   JOIN payments pm ON pm.id = pa.payment_id
+                   WHERE pa.document_id = je.document_id
+                     AND pa.allocation_mode = 'exact'
+                     AND pa.deleted_at_utc IS NULL
+                     AND pm.deleted_at_utc IS NULL
+                     AND pm.status <> 'void'
+                 ) END AS tenders
           FROM journal_entries je
           LEFT JOIN documents d ON d.id = je.document_id
           LEFT JOIN parties dp ON dp.id = d.party_id
@@ -304,6 +316,9 @@ final class DriftReportSource
           moneyOut: Money.paisa(r.read<int>('money_out')),
           documentId: r.readNullable<String>('document_id'),
           docType: r.readNullable<String>('doc_type'),
+          tenders: _TransactionQueries._paidParts(
+            r.readNullable<String>('tenders'),
+          ),
         ),
     ];
   }

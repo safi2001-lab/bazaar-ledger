@@ -201,6 +201,28 @@ abstract final class PaymentMode {
     'adjustment' => 'Adjustment',
     _ => mode,
   };
+
+  /// How something was paid, as a report's "Paid by" says it (M62).
+  ///
+  /// One way, its name: the amount is already in the row's Paid column.
+  /// More than one way, each with its own amount, "Cash 3,000.00 +
+  /// JazzCash 2,000.00" — the split Vyapar's exports get wrong (its top
+  /// review of 2026, +403), and the only way a row in a spreadsheet can be
+  /// summed by mode. In [all]'s order, so a bill reads the same in every
+  /// report; a mode with nothing in it is left out.
+  static String paidBy(Map<String, Money> byMode) {
+    final paid = {
+      for (final e in byMode.entries)
+        if (!e.value.isZero) e.key: e.value,
+    };
+    final modes = [
+      for (final m in all)
+        if (paid.containsKey(m)) m,
+      ...paid.keys.where((m) => !all.contains(m)),
+    ];
+    if (modes.length < 2) return modes.map(label).join(', ');
+    return modes.map((m) => '${label(m)} ${paid[m]!.amountOnly}').join(' + ');
+  }
 }
 
 /// The narrowing chosen for one run of a report. Empty is everything.

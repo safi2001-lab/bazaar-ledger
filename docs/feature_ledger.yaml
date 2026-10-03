@@ -2890,6 +2890,125 @@ milestones:
       - packages/pk_domain/lib/src/recurring/**
       - packages/pk_bootstrap/lib/src/recurring_services.dart
 
+  - id: M62
+    title: Proved, not assumed — an old bill stays as it was, a split payment is two payments everywhere, Urdu reads on paper, and a shop with years of bills stays fast
+    # Opened and sealed 3 Oct 2026 at 4/4. Four things the competitor
+    # research says the market gets wrong (s.5; s.7 items 30, 31, 33, 34)
+    # and this product was assumed to get right. Each was tested first, as
+    # the shopkeeper meets it, and fixed only where the test said so. The
+    # proof is the value: what passed as it was is written down as plainly
+    # as what was found.
+    #
+    # An old bill keeps its word (myBillBook, +550). A bill made at the
+    # counter to a named customer, then the customer's name, address,
+    # phone, NTN and STRN edited and the item renamed and repriced, and the
+    # bill read back every way it leaves the shop. FOUND: the counter's
+    # draft carries the party and its name and nothing else, so no bill
+    # ever kept the address, NTN or STRN; M51's extras fell back to the
+    # khata read on the day of printing, and a bill made for "Shop 5, Shah
+    # Alam Market" reprinted, went out as a PDF in every design and as the
+    # sales tax invoice, and was filed in Annex-C with the NTN the customer
+    # registered afterwards. FIXED beneath every screen: the document
+    # writer (insertDocumentRows, which writes bills, challans, quotations,
+    # orders, goods given on the khata and debit notes) takes the name,
+    # address, NTN and STRN from the khata inside the transaction, for
+    # whatever the draft left empty; what the counter typed (a walk-in's
+    # name and CNIC) wins, and a walk-in is never given an address. The
+    # address is composed as the fallback composes it, so old and new bills
+    # print alike. PASSED as it was: the name on the paper, the screen, the
+    # till roll and the picture drawn from it, the WhatsApp message, every
+    # report row of the bill (Sale report, All transactions, Bill-wise
+    # profit, Day Book, Annex-C), and the line names and rates everywhere
+    # (each line has always kept its own). Read today, deliberately, and so
+    # written down: the phone (no bill column holds one; WhatsApp and the
+    # transporter's copy reach the customer on the number that answers now,
+    # and the customer's own copy prints none); the khata's statement title
+    # and every report about a party or an item (Party-wise P&L, Sales by
+    # item, All parties: they are about the khata or the shelf, which is
+    # one thing whatever it is called now); Annex-C's CNIC, registration
+    # type and province, which no bill keeps; the pack words beside a line
+    # ("2 ctn 5 pc", M45), worked from the item's packs today beside the
+    # line's own quantity; and the address, NTN and STRN of a bill made
+    # before M62, which kept none — the fallback is now that and only that.
+    # Sale returns, deliveries and expenses are written by their own
+    # writers and keep no snapshot; their papers name the party as the
+    # khata has it now.
+    #
+    # A split payment is two payments (Vyapar's top review of 2026, +403).
+    # A day with a bill of Rs 5,000 paid Rs 3,000 cash and Rs 2,000 by
+    # JazzCash, an udhaar bill, and the udhaar paid off Rs 1,500 cash and
+    # Rs 1,000 by JazzCash (two receipts: the sheet takes one mode a
+    # receipt). PASSED as it was: the bill's paper, the Cash flow, the Cash
+    # Book (Rs 3,000 of the bill, not Rs 5,000), the Payment-mode summary,
+    # the Z report and the wallet's bank statement, each tender its own,
+    # every total tying at Rs 4,500 cash and Rs 3,000 JazzCash. FOUND: the
+    # Sale report's Paid by named both modes and not how much each, so its
+    # export could not be summed by mode; All Transactions said nothing of
+    # how anything was paid; the Day Book showed the Rs 5,000 in as one
+    # figure with no word of the split. FIXED: one phrase for all three,
+    # PaymentMode.paidBy — a mode alone when it was one way, "Cash 3,000.00
+    # + JazzCash 2,000.00" when it was more — read off what each payment
+    # allotted to the bill; All Transactions gains a Paid by column; the
+    # Day Book's Details says the split of a bill paid two ways at the
+    # counter. The CSV and Excel carry the same cells.
+    #
+    # Urdu on paper (EasyKhata's unreadable PDFs; s.7 item 34). Every
+    # document the shop hands over made the way the app makes it, with an
+    # Urdu shop, customer, address, item, supplier, recovery man and route,
+    # and read back: the Noto Naskh face embedded, every Urdu letter in the
+    # file as a joined form, none bare. PASSED as it was: the bill in all
+    # four designs, the report's rows and filters, the payment receipt, the
+    # recovery man's sheet, the purchase order, and the till roll's raster
+    # (shop, customer and item drawn, joined, nothing sent as "?"). FOUND:
+    # the report PDF set its title, period line and notes left to right, so
+    # a party statement for an Urdu name printed the name in its title as
+    # loose letters, and the expiry return note its supplier, in the title
+    # and the sentence under the table. FIXED in reportToPdf: those lines
+    # are set right to left when they are not Latin, as the shop's name and
+    # the cells always were. The PDF face is Naskh, not Nastaliq (M2's
+    # reason stands: 178 KB against a 300 KB-2 MB face, behind a setting
+    # still to be built).
+    #
+    # A shop with years of bills stays fast (Rupin at 180 customers;
+    # Vyapar's "Loading..."). Three years of a wholesaler seeded once:
+    # 50,000 bills and 250,000 lines, 2,000 parties in twelve routes,
+    # 5,000 items, 20,000 receipts, 3,000 deliveries, with their payments,
+    # journals and stock movements. Budgets are host budgets, each the
+    # phone's divided by five (a Helio-class Infinix or Tecno against the
+    # development machine), best of three. FOUND and FIXED, with no index
+    # added and no schema change: the sales list sorted every bill in the
+    # book to show its first forty (183 ms here, about a second on the
+    # phone, and growing) — it now walks newest first by id and stops at
+    # the page (3 ms); udhaar by age read every document (SCAN d) because
+    # `balance_paisa > 0` cannot prove the open-bill partial index's
+    # `<> 0`, and the chase list, a khata's open bills and the parties list
+    # by oldest due had the same blind spot — each now says both and rides
+    # idx_documents_open_balance (chase list 128 to 65 ms, oldest due 244 to
+    # 124 ms); and a regular's khata showed his OLDEST two hundred entries,
+    # the history being read oldest first and cut in SQL, so a customer
+    # with three years of bills saw nothing after December 2023 and not the
+    # bill just made — the whole account is read and the newest kept, the
+    # same for a supplier's. Measured after: sales list first page 3 ms,
+    # searches 3-49 ms (a search that matches nothing 42 ms), a regular's
+    # khata 8 ms, parties list 26-124 ms and groups 107 ms, item search 2-4
+    # ms, chase list 65 ms, udhaar by age 11 ms, Sale report for a year
+    # 247 ms, All transactions for a month 22 ms, Stock detail for a month
+    # 511 ms, a regular's party statement for a year 11 ms, the Z report
+    # under 1 ms. The hot lists' query plans are read in the test, and none
+    # reads a table of the book whole; the parties list and the counter's
+    # spelling search read their own list whole by design (M40, M56).
+    #
+    # Not built, and why: a sales list that sorts by bill date rather than
+    # by entry (paging would need a new key); a phone column on a bill (a
+    # schema change, for a number wrong the day it changes); snapshots on
+    # returns, deliveries and expenses (their papers are about the khata as
+    # it stands); a mode filter on the Sale report that counts only that
+    # mode's part (it lists the bill whole and its Paid by says the part;
+    # the Payment-mode summary is the per-mode total); Nastaliq in the PDF
+    # and a font-size setting for paper (s.7 item 34's setting); timing on
+    # a physical handset, which this bench does not have.
+    state: sealed
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -8091,3 +8210,66 @@ features:
       - at 200% on a small phone the card, a bill missed (let go, nothing made) and the set-up fit
       - a repeating bill on the counter says which it is through the app being killed, and a draft without it is an ordinary bill
       - a repeating bill on the counter another customer named on the counter makes it an ordinary bill
+  - id: M62-SNAPSHOT-01
+    milestone: M62
+    title: An old bill says what it said on the day — the customer's name, address, NTN and STRN and each line's name and rate — on screen, the till roll, the picture, every PDF design, WhatsApp, the statement and every report row, after the customer and the item are edited
+    status: done
+    # Found: the counter never kept the address, NTN or STRN, so every
+    # paper read the khata's new ones; fixed in the document writer.
+    proof:
+      - an old bill keeps its word the paper names the customer, their address and tax numbers, and each line, as they were on the day
+      - an old bill keeps its word the reprint on the till roll, and the picture drawn from it, say what the bill said
+      - an old bill keeps its word every PDF design, the sales tax invoice too, says what the bill said
+      - an old bill keeps its word the WhatsApp message greets the customer by the name on the bill, and is sent to the number the khata has today
+      - an old bill keeps its word the transporter's copy rings the buyer on today's number, and names them and their address as the bill did
+      - an old bill keeps its word the khata's statement line for the bill is the bill as it was
+      - an old bill keeps its word every report row that shows the bill names it as it was; the reports about the customer or the item name them as they are
+      - an old bill keeps its word a bill written before the counter kept the address falls back to the khata's record, and only for what it never kept
+      - an old bill keeps its word what the counter typed for the bill wins over the khata, and a walk-in is never given a khata's address
+      - a bill opened and sent after its customer and item were edited reads as it did on the day
+  - id: M62-SPLIT-01
+    milestone: M62
+    title: A bill paid part in cash and part by JazzCash is two payments in every report and export — each tender its mode and amount, nothing counted twice, every total tying
+    status: done
+    # Found: Sale report, All Transactions and the Day Book could not say
+    # how much came each way; the rest passed as they were.
+    proof:
+      - a split payment is two payments the bill's own paper lists each tender with its amount
+      - a split payment is two payments the Sale report says how much each way, and its totals are the bills'
+      - a split payment is two payments All Transactions says how each bill and each receipt was paid, and lists a tender taken with a bill once, inside the bill
+      - a split payment is two payments the Day Book takes the bill's money in once and says how it came
+      - a split payment is two payments the drawer, the wallet and the modes each count only their own part, and every total ties
+      - a split payment is two payments the CSV and Excel files carry each tender with its amount, and the same totals
+  - id: M62-URDU-01
+    milestone: M62
+    title: Urdu reads on every paper — the bill in four designs, the statement, a report, the payment receipt, the expiry return note, the recovery man's sheet, the purchase order and the till roll — the face embedded and every letter joined
+    status: done
+    # Found: the report PDF's title and notes left Urdu names unjoined;
+    # fixed in reportToPdf.
+    proof:
+      - Urdu on every paper a bill, in each of the four designs
+      - Urdu on every paper the customer's statement
+      - Urdu on every paper a report, its rows and what it was narrowed by
+      - Urdu on every paper a payment receipt
+      - Urdu on every paper an expiry return note to the supplier
+      - Urdu on every paper the recovery man's sheet
+      - Urdu on every paper a purchase order to the supplier
+      - Urdu on every paper the till roll still draws Urdu as joined script, the customer and the item as well as the shop
+  - id: M62-SCALE-01
+    milestone: M62
+    title: Three years of a wholesaler — 50,000 bills, 2,000 parties, 5,000 items, 20,000 receipts — and every list and the heaviest reports inside a phone's budget, the hot lists reading no table of the book whole, and a regular's khata showing his newest entries
+    status: done
+    # Found: the sales list sorted the whole book for one page; udhaar by
+    # age scanned every document; a regular's khata stopped at his oldest
+    # 200 entries. Fixed in the queries; no index needed.
+    proof:
+      - the fixture really is three years of a wholesaler
+      - the lists a shopkeeper opens the sales list opens on its newest page without reading the whole book
+      - the lists a shopkeeper opens the sales list finds a bill by name, number, phone or amount, and the search that finds nothing is measured too
+      - the lists a shopkeeper opens a regular's khata opens on his newest entries, and its balance is the khata's
+      - the lists a shopkeeper opens a supplier's account opens on its newest deliveries
+      - the lists a shopkeeper opens the parties list, by name, balance and oldest due, by route, and its groups
+      - the lists a shopkeeper opens items are found however they are spelt
+      - the lists a shopkeeper opens who to chase, and udhaar by age, read only what is owed
+      - the heaviest reports a year of every bill, a month of everything, a month of stock
+      - the heaviest reports a regular's year, and the day's summary

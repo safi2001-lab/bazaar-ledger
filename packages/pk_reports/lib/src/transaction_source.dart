@@ -23,6 +23,7 @@ final class BillRow {
     required this.cost,
     this.partyId,
     this.modes = const [],
+    this.paidByMode = const {},
     this.enteredBy,
   });
 
@@ -56,6 +57,12 @@ final class BillRow {
   /// How it was paid, `payments.mode`, each once: `cash`, `jazzcash`...
   final List<String> modes;
 
+  /// How much of [paid] came each way, by `payments.mode` (M62): what each
+  /// payment allotted to the bill, at the counter or since. A bill paid
+  /// Rs 3,000 in cash and Rs 2,000 by JazzCash is two entries here, so the
+  /// report can say each with its amount rather than only naming both.
+  final Map<String, Money> paidByMode;
+
   /// Who entered it.
   final String? enteredBy;
 
@@ -88,6 +95,7 @@ final class TransactionRow {
     required this.status,
     this.partyId,
     this.forHome = false,
+    this.paidByMode = const {},
   });
 
   final String id;
@@ -112,6 +120,11 @@ final class TransactionRow {
   /// A document's `posted` or `void`; a payment's `cleared`, `pending`,
   /// `bounced` or `void`.
   final String status;
+
+  /// How it was paid, by `payments.mode` (M62): for a bill, what each
+  /// payment allotted to it, so a bill paid two ways at the counter says
+  /// both, each with its amount; for a payment, its own mode and amount.
+  final Map<String, Money> paidByMode;
 
   bool get isVoid => status == 'void';
   bool get isPayment => TransactionType.isPayment(type);

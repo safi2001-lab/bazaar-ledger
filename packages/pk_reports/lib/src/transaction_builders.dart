@@ -95,7 +95,10 @@ ReportTable _billRegister({
             b.total,
             b.paid,
             b.balance,
-            b.modes.map(PaymentMode.label).join(', '),
+            // M62: a bill paid two ways says how much each way.
+            b.paidByMode.isEmpty
+                ? b.modes.map(PaymentMode.label).join(', ')
+                : PaymentMode.paidBy(b.paidByMode),
             paymentStatusLabel(b.status),
           ],
           link: ReportLink.document(
@@ -239,6 +242,9 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
       ReportColumn('Total', CellKind.money),
       ReportColumn('Paid', CellKind.money),
       ReportColumn('Balance', CellKind.money),
+      // M62: how each bill and each payment was paid, a split bill with
+      // each tender's amount, so the export can be summed by mode.
+      ReportColumn('Paid by', CellKind.text),
       ReportColumn('Status', CellKind.text),
     ],
     rows: [
@@ -252,13 +258,14 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
             r.total,
             _settles(r.type) ? r.paid : null,
             _settles(r.type) ? r.balance : null,
+            PaymentMode.paidBy(r.paidByMode),
             _status(r),
           ],
           link: r.isPayment
               ? null
               : ReportLink.document(r.id, label: r.number, docType: r.type),
         ),
-      if (kinds.isNotEmpty) ReportRow.heading('By type', 8),
+      if (kinds.isNotEmpty) ReportRow.heading('By type', 9),
       for (final k in kinds)
         ReportRow([
           '',
@@ -273,6 +280,7 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
               ? sum(byKind[k]!, (r) => r.balance)
               : null,
           '',
+          '',
         ], style: RowStyle.subtotal),
       ReportRow([
         'Total',
@@ -280,6 +288,7 @@ ReportTable allTransactions(ReportPeriod period, List<TransactionRow> rows) {
             ? '1 transaction'
             : '${standing.length} '
                   'transactions',
+        null,
         null,
         null,
         null,

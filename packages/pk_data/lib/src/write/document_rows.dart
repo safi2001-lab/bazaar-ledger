@@ -54,6 +54,49 @@ Future<TaxContext> taxContextOf(Tx tx, String? partyId) async {
   );
 }
 
+/// The khata's name, address and registration numbers for [partyId], read
+/// inside the transaction that writes the document (M62).
+///
+/// myBillBook's most-agreed complaint (+550) was an old bill whose address
+/// changed when the customer's was edited. The counter's draft carries the
+/// party and its name and nothing else, so until M62 no bill kept the
+/// address, NTN or STRN at all, and every paper fell back to the khata read
+/// on the day it was printed: a bill made for "Shop 5, Shah Alam Market"
+/// reprinted, and went out as a sales tax invoice, as "Plot 9, Badami Bagh"
+/// the moment the address was corrected. Read here, beneath every screen —
+/// the counter, a challan, a quotation, an order, goods given on the khata
+/// — the bill keeps what it was made with, in the columns the documents
+/// table has carried since M0.
+///
+/// The address is put together as the bill's paper puts the khata's
+/// together when a bill kept none (line one, line two, city), so a bill
+/// made today and one made before M62 print the same words for the same
+/// party. Null for a walk-in or a party not in this shop.
+Future<({String? name, String? address, String? ntn, String? strn})?>
+_partyAsWritten(Tx tx, String? partyId) async {
+  if (partyId == null) return null;
+  final p = await tx.selectOne(
+    'SELECT name, address_line1, address_line2, city, ntn, strn '
+    'FROM parties WHERE id = ? AND firm_id = ?',
+    [partyId, tx.actor.firmId],
+  );
+  if (p == null) return null;
+  final address = [
+    _given(p.readNullable<String>('address_line1')),
+    _given(p.readNullable<String>('address_line2')),
+    _given(p.readNullable<String>('city')),
+  ].whereType<String>().join(', ');
+  return (
+    name: _given(p.readNullable<String>('name')),
+    address: address.isEmpty ? null : address,
+    ntn: _given(p.readNullable<String>('ntn')),
+    strn: _given(p.readNullable<String>('strn')),
+  );
+}
+
+/// [s], or null when it is empty or only spaces.
+String? _given(String? s) => s == null || s.trim().isEmpty ? null : s;
+
 /// Writes a document and its lines with their taxes, as [status]. Returns the
 /// document id and each line's id by line number.
 ///
@@ -65,6 +108,9 @@ Future<(String, Map<int, String>)> insertDocumentRows(
   List<DocumentLinePosting> lines, {
   String status = 'posted',
 }) async {
+  // M62: the party as they stand while this is written, for whatever the
+  // draft left empty. What the counter typed wins; the khata fills the rest.
+  final party = await _partyAsWritten(tx, doc.partyId);
   final documentId = await tx.insert('documents', {
     'doc_type': doc.docType,
     'doc_no': doc.docNo,
@@ -74,10 +120,11 @@ Future<(String, Map<int, String>)> insertDocumentRows(
     'doc_date_utc': doc.docDateUtcMillis,
     'doc_date_local': doc.docDateLocal,
     'party_id': doc.partyId,
-    'party_name_snapshot': doc.partyNameSnapshot,
-    'party_ntn_snapshot': doc.partyNtnSnapshot,
-    'party_strn_snapshot': doc.partyStrnSnapshot,
-    'party_address_snapshot': doc.partyAddressSnapshot,
+    'party_name_snapshot': _given(doc.partyNameSnapshot) ?? party?.name,
+    'party_ntn_snapshot': _given(doc.partyNtnSnapshot) ?? party?.ntn,
+    'party_strn_snapshot': _given(doc.partyStrnSnapshot) ?? party?.strn,
+    'party_address_snapshot':
+        _given(doc.partyAddressSnapshot) ?? party?.address,
     'status': status,
     'revision': 1,
     'subtotal_paisa': doc.subtotal.inPaisa,

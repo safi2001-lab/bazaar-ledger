@@ -280,7 +280,11 @@ ReportTable dayBook(ReportPeriod period, List<DayBookEntry> entries) {
             e.reference ?? e.entryNo,
             _dayBookType(e),
             e.party ?? '',
-            e.narration,
+            // M62: a bill paid two ways at the counter is one figure of
+            // money in, and says what it was made of.
+            e.tenders.values.where((m) => !m.isZero).length > 1
+                ? '${e.narration} (${PaymentMode.paidBy(e.tenders)})'
+                : e.narration,
             e.amount,
             e.moneyIn.isZero ? null : e.moneyIn,
             e.moneyOut.isZero ? null : e.moneyOut,

@@ -37,7 +37,8 @@ mixin _TransactionQueries implements TransactionReportSource {
                    WHERE pa.document_id = d.id
                      AND pa.deleted_at_utc IS NULL
                      AND pm.deleted_at_utc IS NULL
-                     AND pm.status <> 'void') AS modes
+                     AND pm.status <> 'void') AS modes,
+                 $_paidPartsSql AS paid_parts
           FROM documents d
           LEFT JOIN parties p ON p.id = d.party_id
           LEFT JOIN users u ON u.id = d.created_by
@@ -77,9 +78,38 @@ mixin _TransactionQueries implements TransactionReportSource {
           balance: Money.paisa(r.read<int>('balance_paisa')),
           cost: Money.paisa(r.read<int>('cost_paisa')),
           modes: _modes(r.readNullable<String>('modes')),
+          paidByMode: _paidParts(r.readNullable<String>('paid_parts')),
           enteredBy: r.readNullable<String>('entered_by'),
         ),
     ];
+  }
+
+  /// What each payment allotted to bill `d`, as `mode:paisa` pairs (M62):
+  /// a bill paid Rs 3,000 in cash and Rs 2,000 by JazzCash at the counter
+  /// is two, and a receipt that paid it off later another. By
+  /// idx_alloc_doc, the bill's own allocations, as `modes` reads them.
+  static const _paidPartsSql = '''
+      (SELECT GROUP_CONCAT(pm.mode || ':' || pa.amount_paisa)
+         FROM payment_allocations pa
+         JOIN payments pm ON pm.id = pa.payment_id
+        WHERE pa.document_id = d.id
+          AND pa.deleted_at_utc IS NULL
+          AND pm.deleted_at_utc IS NULL
+          AND pm.status <> 'void')''';
+
+  /// `mode:paisa,mode:paisa...` summed by mode (M62).
+  static Map<String, Money> _paidParts(String? concatenated) {
+    final byMode = <String, Money>{};
+    if (concatenated == null || concatenated.isEmpty) return byMode;
+    for (final part in concatenated.split(',')) {
+      final at = part.lastIndexOf(':');
+      if (at < 0) continue;
+      final paisa = int.tryParse(part.substring(at + 1));
+      if (paisa == null) continue;
+      final mode = part.substring(0, at);
+      byMode[mode] = (byMode[mode] ?? Money.zero) + Money.paisa(paisa);
+    }
+    return byMode;
   }
 
   /// In the order a filter offers them, each once.
@@ -155,7 +185,8 @@ mixin _TransactionQueries implements TransactionReportSource {
                    d.total_paisa AS total, d.paid_paisa AS paid,
                    d.balance_paisa AS balance, d.status AS status,
                    d.created_at_utc AS recorded,
-                   (d.doc_type = 'expense' AND $_forHomeSql) AS for_home
+                   (d.doc_type = 'expense' AND $_forHomeSql) AS for_home,
+                   $_paidPartsSql AS paid_parts
             FROM documents d
             LEFT JOIN parties p ON p.id = d.party_id
             WHERE ${documents ? '1' : '0'}
@@ -177,7 +208,8 @@ mixin _TransactionQueries implements TransactionReportSource {
                    pm.amount_paisa AS total, pm.amount_paisa AS paid,
                    0 AS balance, pm.status AS status,
                    pm.created_at_utc AS recorded,
-                   0 AS for_home
+                   0 AS for_home,
+                   pm.mode || ':' || pm.amount_paisa AS paid_parts
             FROM payments pm
             LEFT JOIN parties pp ON pp.id = pm.party_id
             WHERE ${paymentsApply ? '1' : '0'}
@@ -222,6 +254,7 @@ mixin _TransactionQueries implements TransactionReportSource {
           balance: Money.paisa(r.read<int>('balance')),
           status: r.read<String>('status'),
           forHome: r.read<int>('for_home') == 1,
+          paidByMode: _paidParts(r.readNullable<String>('paid_parts')),
         ),
     ];
   }
