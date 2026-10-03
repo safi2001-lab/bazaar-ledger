@@ -445,7 +445,7 @@ Future<void> _signInBilal(WidgetTester tester, Harness app) async {
 
 Future<void> _openCounter(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
 }
 
