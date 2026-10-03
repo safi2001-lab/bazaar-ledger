@@ -137,7 +137,7 @@ time, on the latest master (schema is v8 today).
 - [x] M39 · DONE (038be4f) Bulk reminder queue: tick the overdue list, send one by one through WhatsApp/SMS from the shop's own phone; templates in Urdu script, Roman Urdu and English with {name} {amount} {due} {shop} {wallet}; per-customer language and opt-out; reminder log
 - [x] M44 · DONE (d955b94) Settlement discount and bad-debt write-off with a reason ("baqi chhor do"); bad debts report
 - [x] M48 · Loan accounts — DONE (895802e): Accounts → Loans; take a loan (fee kept back in one entry), repay with principal/interest/charges split and interest suggested, statement per loan as PDF/CSV, cancel by reversal; interest and fees in P&L, each loan a liability
-  - [ ] Loan Statement in the Reports hub (Loans group) — hook `buildLoanStatement` / `DriftLoanReads` into the registry (small follow-up after M35)
+  - [x] Loan Statement in the Reports hub (Loans group) — done in M58 — hook `buildLoanStatement` / `DriftLoanReads` into the registry (small follow-up after M35)
 - [x] M55 · DONE Goods given rate later ("10 kg ghee given, rate later"): a challan with no rate from the khata or the counter, off the shelf at cost and owing nothing, shown apart on the khata, the chase list and the statement; "Rate lagayein" puts the rates on and bills it at the counter (M25's path, several challans on one bill)
 - [x] M55 · DONE Collection sheet for the recovery man: customers by route, late or due today, numbered WS-…, printed 58/80mm, PDF or WhatsApp; on return each line Paid / Partial / Promise / Shop closed / Refused, receipts and promises on every khata in one go, expected vs collected and cash to hand over
   - Found: a receipt's note never reached the payment row (fixed); not built: cheques on the round, recording one sheet in two sittings
@@ -174,11 +174,11 @@ time, on the latest master (schema is v8 today).
 - [x] M49 · Pharmacy: selling above DRAP MRP blocked, "% off MRP" discount
 
 ### Checks on things we may already do (test, fix if wrong)
-- [ ] An old bill keeps the party's name/address as they were (myBillBook bug +550)
-- [ ] Split payments (cash + JazzCash) are separate rows in every report and export (Vyapar's top 2026 complaint)
+- [ ] M62 · (in progress) An old bill keeps the party's name/address as they were (myBillBook bug +550)
+- [ ] M62 · (in progress) Split payments (cash + JazzCash) are separate rows in every report and export (Vyapar's top 2026 complaint)
 - [x] Never silently sell into negative stock — M53
-- [ ] Big shop performance: 50,000 bills, lists and reports stay fast
-- [ ] Urdu PDFs readable; bigger font option
+- [ ] M62 · (in progress) Big shop performance: 50,000 bills, lists and reports stay fast
+- [ ] M62 · (in progress) Urdu PDFs readable — bigger font option already done in M56
 
 
 ### Follow-ups found while merging — DONE by M58 (55fa8d2) and M36, except the owner decisions
@@ -196,6 +196,20 @@ time, on the latest master (schema is v8 today).
 - [x] M59 found Third Schedule goods sold below MRP were under-taxed (Rs 15.25 instead of Rs 18 on a Rs 118 pack) — fixed
 - [x] M61 · DONE: provincial service tax in the tax rate report, party tax, HS-code sales, Annex-C, the sales tax summary and returns
 - [ ] Owner/accountant to confirm: free bonus lines carry no sales tax; service lines on an FBR-reporting shop go to FBR at 0%; whether PRAL accepts a Rs 0 line
+
+### Polish round — small gaps the milestones reported (queued after M50)
+- [ ] M41: "Challan banayein" for a sale order loaded on the counter (one condition in the payment sheet)
+- [ ] M41: the credit-limit check counts a sale order's advance against the bill it pays
+- [ ] M36 × M43: a copied bill no longer lists its old bonus as "left out" (the counter gives it again)
+- [ ] M45: the stock warning in packs ("Stock sirf 2 ctn + 5 pcs hai"); a dozen line remembers its dozen when a piece is added
+- [ ] M43: a challan billed after its item's scheme changed is billed as sent, not refused
+- [ ] M35: "Expected collections this week" (now that bills have due dates, M38)
+- [ ] M47: one line on Home for monthly bills due
+- [ ] M42: sharing a bill (WhatsApp / PDF / picture) recorded in its history
+- [ ] M49: Schedule items on a delivery challan asked for the prescription; batch MRP on the PO receive sheet; importer maps a "Generic" column
+- [ ] M52: Vyapar's second unit and conversion imported as the item's pack (M53 made packs possible)
+- [ ] M60: photos on loan entries, a cheque's own page and batches
+- [ ] M55: cheques taken on a recovery round
 
 ## Finish line for each wave
 
