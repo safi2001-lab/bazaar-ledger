@@ -15,6 +15,7 @@ import '../expenses/monthly_bills_line.dart'; // M54
 import '../items/items_screen.dart';
 import '../items/low_stock_screen.dart';
 import '../khata/udhaar_due_card.dart';
+import '../khata/udhaar_khata_card.dart'; // M64
 import '../mobile/phone_search_screen.dart'; // M50
 import '../orders/orders_screen.dart';
 import '../parties/parties_screen.dart';
@@ -81,6 +82,8 @@ class HomeScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(BlTokens.space4),
             children: [
               const _DayCard(),
+              // The udhaar khata by its own name, with what is out (M64).
+              const UdhaarKhataCard(),
               const _ChequesDue(),
               // Udhaar due today, late, and promised for today (M38).
               const UdhaarDueCard(),

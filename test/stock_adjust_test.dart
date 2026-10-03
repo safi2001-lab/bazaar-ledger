@@ -17,7 +17,7 @@ void main() {
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500, openingStock: 20);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Cooking Oil').first);
     await tester.pumpAndSettle();
@@ -68,7 +68,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tapButton(tester, 'Naya maal');
     await tester.pumpAndSettle();
@@ -110,7 +110,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tapButton(tester, 'Naya maal');
     await tester.pumpAndSettle();
@@ -141,7 +141,7 @@ void main() {
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500, openingStock: 20);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Cooking Oil').first);
     await tester.pumpAndSettle();
@@ -168,7 +168,7 @@ void main() {
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500, openingStock: 20);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Cooking Oil').first);
     await tester.pumpAndSettle();

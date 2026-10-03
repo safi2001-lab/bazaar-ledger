@@ -71,7 +71,7 @@ void main() {
     await _medicine(app, 'Xanax 0.5', schedule: ScheduleClass.b, onHand: 20);
     await app.seedParty(name: 'Shifa Clinic');
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await tester.enterText(
       find.widgetWithText(TextFormField, 'Talash karein').first,

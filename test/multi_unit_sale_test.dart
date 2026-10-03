@@ -28,7 +28,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Atta');
     await _clearSearch(tester);
@@ -110,7 +110,7 @@ void main() {
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await _clearSearch(tester);

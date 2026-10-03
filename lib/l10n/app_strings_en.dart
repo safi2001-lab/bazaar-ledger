@@ -8154,4 +8154,26 @@ class AppStringsEn extends AppStrings {
   String sheetChequeNoMissing(String name) {
     return '$name: write the cheque\'s number';
   }
+
+  @override
+  String get homeUdhaarKhata => 'Udhaar khata';
+
+  @override
+  String homeUdhaarKhataOwed(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count customers owe you',
+      one: '1 customer owes you',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get homeUdhaarKhataClear => 'Nobody owes you anything';
+
+  @override
+  String homeUdhaarKhataLate(String amount) {
+    return 'Late: Rs $amount';
+  }
 }

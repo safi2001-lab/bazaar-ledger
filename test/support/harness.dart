@@ -205,7 +205,10 @@ Future<void> tapText(WidgetTester tester, String text) async {
     );
   }
   final target = find.text(text).first;
-  await tester.ensureVisible(target);
+  // To the middle of the screen, not just inside its edge: a target scrolled
+  // only as far as the bottom edge sits under the home screen's floating
+  // "Naya Bill" button or a message bar, and the tap lands on those instead.
+  await Scrollable.ensureVisible(tester.element(target), alignment: 0.5);
   await tester.pumpAndSettle();
   await tester.tap(target);
   await tester.pumpAndSettle();

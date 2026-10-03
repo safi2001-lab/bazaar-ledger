@@ -111,7 +111,7 @@ void main() {
       final old = await _soldToRashid(app);
 
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Naya Bill').first);
+      await tapText(tester, 'Naya Bill');
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Bill kis ke naam'));
       await tester.pumpAndSettle();

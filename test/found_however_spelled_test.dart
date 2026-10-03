@@ -17,7 +17,7 @@ void main() {
     await app.seedItem(name: 'Chana Dal', rupees: 300);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     await _search(tester, 'aata');
@@ -50,7 +50,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _search(tester, 'Atta');
     await tester.tap(find.byIcon(Icons.add_circle_outline).first);

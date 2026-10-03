@@ -18,7 +18,7 @@ void main() {
       barcode: '8960123456789',
     );
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _scan(tester, '01089601234567891726083110OLD7');
 
@@ -41,7 +41,7 @@ void main() {
       barcode: '8960123456789',
     );
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _scan(tester, '01089601234567891728123110NEW1');
 
@@ -87,7 +87,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _scan(tester, '356938035643809');
     expect(find.text('Tecno Spark'), findsOneWidget);

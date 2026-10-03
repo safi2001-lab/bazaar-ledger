@@ -509,7 +509,7 @@ Future<void> _openDetails(WidgetTester tester, String name) async {
 /// Rings up a tin of oil and opens the payment sheet.
 Future<void> _ringUpAndPay(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
   await tester.enterText(
     find.widgetWithText(TextFormField, 'Talash karein').first,

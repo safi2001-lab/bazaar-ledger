@@ -226,7 +226,7 @@ void main() {
     await _gala(app, onHand: 53, minStock: 48);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     expect(find.text('2 ctn + 5 pcs mojood'), findsOneWidget);
 
@@ -337,7 +337,7 @@ void main() {
       await _gala(app, name: 'Gala Biscuit Family Pack', onHand: 1253);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Maal').first);
+      await tapText(tester, 'Maal');
       await tester.pumpAndSettle();
       _expectNothingPaintsOffScreen(tester);
       await tester.tap(find.textContaining('Gala Biscuit').first);
@@ -387,7 +387,7 @@ Cart _cart(WidgetTester tester) => ProviderScope.containerOf(
 
 Future<void> _openCounter(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
 }
 

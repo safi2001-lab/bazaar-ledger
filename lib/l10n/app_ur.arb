@@ -4940,5 +4940,19 @@
     "placeholders": {
       "name": {"type": "String"}
     }
+  },
+  "homeUdhaarKhata": "Udhaar Khata",
+  "homeUdhaarKhataOwed": "{count, plural, =1{1 gahak se lena hai} other{{count} gahak se lena hai}}",
+  "@homeUdhaarKhataOwed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "homeUdhaarKhataClear": "Kisi se kuch lena nahi",
+  "homeUdhaarKhataLate": "Der wala: Rs {amount}",
+  "@homeUdhaarKhataLate": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
   }
 }

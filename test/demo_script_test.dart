@@ -42,7 +42,7 @@ void main() {
     expect(find.text('Chishti Kiryana Store'), findsOneWidget);
 
     // ---- 2. Two items, through the editor ---------------------------------
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     expect(find.text('Abhi koi maal nahi'), findsOneWidget);
 
@@ -60,7 +60,7 @@ void main() {
     await tester.pumpAndSettle();
 
     // ---- 3. A cash sale ---------------------------------------------------
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     // Two tins of oil and one bag of rice: 2 x 2500 + 525 = 5525. The oil goes
@@ -161,7 +161,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
 

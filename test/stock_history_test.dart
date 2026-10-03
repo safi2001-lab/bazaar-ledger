@@ -82,7 +82,7 @@ void main() {
     final itemId = await _stock(app, name: 'Cooking Oil 5L', opening: 40);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     await tester.enterText(

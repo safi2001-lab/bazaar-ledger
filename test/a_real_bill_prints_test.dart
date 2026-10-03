@@ -172,7 +172,7 @@ Future<void> _stockAndSell(WidgetTester tester, Harness app) async {
   }
 
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
 
   await _addToCart(tester, 'Cooking Oil');

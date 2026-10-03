@@ -126,7 +126,7 @@ void main() {
       tester.element(find.byType(MaterialApp).first),
     ).read(cartProvider).lines.expand((l) => l.lotLabels).toList();
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _scan(tester, '43809');
     expect(onTheBill(), [imeiA], reason: 'one phone answers, straight on');
@@ -206,7 +206,7 @@ void main() {
       PhoneUnitDraft(imei1: imeiB, pta: PtaStatus.nonCompliant),
     ]);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _scan(tester, imeiB);
     expect(find.text('PTA non-compliant'), findsOneWidget);
@@ -230,7 +230,7 @@ void main() {
     ]);
     await app.seedParty(name: 'Rashid Traders');
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _scan(tester, imeiA);
     await tapButton(tester, 'Paisay lein');

@@ -107,7 +107,7 @@ void main() {
       await app.seedItem(name: 'Gala Biscuit', rupees: 50);
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Maal').first);
+      await tapText(tester, 'Maal');
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Gala Biscuit').first);
       await tester.pumpAndSettle();
@@ -283,7 +283,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Maal').first);
+      await tapText(tester, 'Maal');
       await tester.pumpAndSettle();
       await tester.tap(find.textContaining('Gala Biscuit').first);
       await tester.pumpAndSettle();
@@ -341,7 +341,7 @@ Cart _cart(WidgetTester tester) => ProviderScope.containerOf(
 
 Future<void> _openCounter(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
 }
 

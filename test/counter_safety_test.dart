@@ -18,7 +18,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
 
@@ -62,7 +62,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await tapButton(tester, 'Paisay lein');
@@ -79,7 +79,7 @@ void main() {
     // through `ref` after the await, so a sheet dismissed mid-write left a
     // committed sale with the goods still on the screen — and the shopkeeper
     // rang the same bill again.
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     expect(find.text('Bill abhi khali hai'), findsOneWidget);
     expect(find.text('Cooking Oil 5L'), findsNothing);
@@ -97,7 +97,7 @@ void main() {
     );
     expect(firm, isNotNull);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await tapButton(tester, 'Paisay lein');
@@ -172,7 +172,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 5000);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await tapButton(tester, 'Paisay lein');

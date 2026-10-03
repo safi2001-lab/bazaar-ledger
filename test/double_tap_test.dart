@@ -26,7 +26,7 @@ void main() {
   testWidgets('two taps on Save make one customer', (tester) async {
     final app = await Harness.startWithShop(tester);
 
-    await tester.tap(find.text('Gahak').first);
+    await tapText(tester, 'Gahak');
     await tester.pumpAndSettle();
     await _openEditor(tester, 'Naya gahak');
 
@@ -46,7 +46,7 @@ void main() {
   testWidgets('two taps on Save make one item', (tester) async {
     final app = await Harness.startWithShop(tester);
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await _openEditor(tester, 'Naya maal');
 

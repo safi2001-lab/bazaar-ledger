@@ -251,7 +251,7 @@ void main() {
     final soap = await _item(app, 'Lux Soap', rupees: 50);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Lux Soap').first);
     await tester.pumpAndSettle();
@@ -413,7 +413,7 @@ Future<String> _item(
 
 Future<void> _openCounter(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
 }
 

@@ -27,7 +27,7 @@ void main() {
     await _medicine(app, 'Calpol', generic: 'Paracetamol', onHand: 30);
     await _medicine(app, 'Brufen', generic: 'Ibuprofen', strength: '400 mg');
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _search(tester, 'paracetamol');
     expect(find.text('Panadol'), findsOneWidget);
@@ -36,7 +36,7 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.textContaining('Panadol').first);
     await tester.pumpAndSettle();
@@ -165,7 +165,7 @@ void main() {
     final lot = (await services.queries.lotsOnHand(firm.id)).single;
     await services.pharmacy.holdBatch(lot.lotId, 'DRAP recall');
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     final field = find.widgetWithText(TextFormField, 'Talash karein').first;
     await tester.enterText(field, '01089601234567891727063010B42');
@@ -191,7 +191,7 @@ void main() {
     );
     await _receive(app, panadol, supplier, 'EXP1', '2026-10-20');
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Expiry qareeb — supplier war'));
     await tester.pumpAndSettle();
@@ -300,7 +300,7 @@ void main() {
       );
       navigator.popUntil((route) => route.isFirst);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Maal').first);
+      await tapText(tester, 'Maal');
       await tester.pumpAndSettle();
       await tester.tap(find.byTooltip('Expiry qareeb — supplier war'));
       await tester.pumpAndSettle();
@@ -436,7 +436,7 @@ Future<void> _search(WidgetTester tester, String query) async {
 Future<void> _ring(WidgetTester tester, String query) async {
   await tester.pumpAndSettle();
   if (find.text('Naya Bill').evaluate().isNotEmpty) {
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
   }
   await _search(tester, query);

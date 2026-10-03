@@ -26,7 +26,7 @@ void main() {
     ]);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     // What the wedge does: type the code, press Enter.
@@ -55,7 +55,7 @@ void main() {
     await _stock(app, [('Cooking Oil 5L', '8964000123456', 2500)]);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     await _scan(tester, '8964000123456');
@@ -77,7 +77,7 @@ void main() {
     ]);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     await _scan(tester, '0000000000000');
@@ -98,7 +98,7 @@ void main() {
     ]);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     await _scan(tester, 'Chawal');
@@ -122,7 +122,7 @@ void main() {
     ]);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     await _scan(tester, 'Chawal');

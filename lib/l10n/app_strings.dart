@@ -13885,6 +13885,30 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{name}: cheque ka number likhein'**
   String sheetChequeNoMissing(String name);
+
+  /// No description provided for @homeUdhaarKhata.
+  ///
+  /// In ur, this message translates to:
+  /// **'Udhaar Khata'**
+  String get homeUdhaarKhata;
+
+  /// No description provided for @homeUdhaarKhataOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 gahak se lena hai} other{{count} gahak se lena hai}}'**
+  String homeUdhaarKhataOwed(int count);
+
+  /// No description provided for @homeUdhaarKhataClear.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kisi se kuch lena nahi'**
+  String get homeUdhaarKhataClear;
+
+  /// No description provided for @homeUdhaarKhataLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der wala: Rs {amount}'**
+  String homeUdhaarKhataLate(String amount);
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

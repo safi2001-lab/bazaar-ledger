@@ -4615,5 +4615,19 @@
     "placeholders": {
       "name": {"type": "String"}
     }
+  },
+  "homeUdhaarKhata": "Udhaar khata",
+  "homeUdhaarKhataOwed": "{count, plural, =1{1 customer owes you} other{{count} customers owe you}}",
+  "@homeUdhaarKhataOwed": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "homeUdhaarKhataClear": "Nobody owes you anything",
+  "homeUdhaarKhataLate": "Late: Rs {amount}",
+  "@homeUdhaarKhataLate": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
   }
 }

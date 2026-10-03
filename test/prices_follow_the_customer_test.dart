@@ -40,7 +40,7 @@ void main() {
   testWidgets('an item is given a VIP price from its editor', (tester) async {
     final app = await Harness.startWithShop(tester);
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tapButton(tester, 'Naya maal');
     await typeInto(tester, 'Naam', 'Cooking Oil 5L');

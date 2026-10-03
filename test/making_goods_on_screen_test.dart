@@ -31,7 +31,7 @@ void main() {
     );
     await app.seedItem(name: 'Mirch masala 100g', rupees: 150, openingStock: 0);
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
     await tester.tap(find.byTooltip('Banana (recipe)'));
     await tester.pumpAndSettle();

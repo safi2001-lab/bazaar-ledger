@@ -3281,6 +3281,25 @@ milestones:
       - packages/pk_reports/lib/src/collections_reports.dart
       - packages/pk_data/lib/src/read/reports/collections_queries.dart
 
+  - id: M64
+    title: The udhaar khata on the first screen, by its own name
+    # Opened and sealed 3 Oct 2026 at 1/1. The owner trying the app asked
+    # where the udhaar khata was. Everything a khata does had been built —
+    # what each customer owes, their bills and history, taking a payment,
+    # promises, reminders, write-offs — but it was reached through a tile
+    # called "Gahak", and the udhaar list (M38's chase list) only from an
+    # icon on that screen. Home now carries an "Udhaar Khata" card under the
+    # day's figures: how much is out and with how many customers, how much
+    # of it is late, and a tap opens the udhaar list, each name of which
+    # opens its own khata. Shown on the first day too, saying nobody owes
+    # anything, because that is when the question is asked.
+    #
+    # (M64 was first declared for an Urdu-script screen language; the owner
+    # decided Roman Urdu and English are enough, and the number is used here.)
+    state: sealed
+    owns:
+      - lib/features/khata/udhaar_khata_card.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -8670,3 +8689,11 @@ features:
     proof:
       - a cheque handed over on the recovery round (M55 x M6) becomes a cheque receipt on the khata in the round's one save, waits in Cheques in Hand, and is no cash to hand over
       - the recovery man's cheque is written on his round's line, and becomes a cheque receipt with the rest of the round
+  - id: M64-KHATA-01
+    milestone: M64
+    title: The udhaar khata is on Home by name, with what is out, and opens the udhaar list
+    status: done
+    proof:
+      - a new shop sees the udhaar khata on Home with nobody owing, and it opens the udhaar list
+      - a customer who owes is counted on the card with the total, and their khata is two taps from Home
+      - at 200% on a small phone the udhaar khata card fits with a six-figure total

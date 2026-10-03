@@ -75,7 +75,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L Tin', rupees: 12500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
 
@@ -89,7 +89,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L Tin', rupees: 12500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await tapButton(tester, 'Paisay lein');
@@ -140,7 +140,7 @@ void main() {
       await app.seedItem(name: 'Cooking Oil 5L Tin $i', rupees: 2500);
     }
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     for (var i = 0; i < 8; i++) {
       await _addToCart(tester, 'Cooking Oil 5L Tin $i');
@@ -193,7 +193,7 @@ void main() {
     }
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Gahak').first);
+    await tapText(tester, 'Gahak');
     await tester.pumpAndSettle();
 
     // The balance chip was a non-flex child of the row, so it took its full
@@ -235,7 +235,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await tester.enterText(
@@ -323,7 +323,7 @@ void main() {
     );
     await app.seedItem(name: 'Cooking Oil 5L Tin', rupees: 12500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
 
@@ -344,7 +344,7 @@ void main() {
     // money formatter gets before crore.
     await app.seedItem(name: 'Ghee Drum', rupees: 125000);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     for (var i = 0; i < 4; i++) {
       await _addToCart(tester, 'Ghee');

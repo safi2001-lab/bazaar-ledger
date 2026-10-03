@@ -107,7 +107,7 @@ void main() {
     'the owner marks an item Third Schedule in its editor, and it needs its MRP',
     (tester) async {
       final app = await Harness.startWithShop(tester);
-      await tester.tap(find.text('Maal').first);
+      await tapText(tester, 'Maal');
       await tester.pumpAndSettle();
       await tapButton(tester, 'Naya maal');
       await typeInto(tester, 'Naam', 'Juice 1L');

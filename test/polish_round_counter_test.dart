@@ -319,7 +319,7 @@ Cart _cart(WidgetTester tester) => ProviderScope.containerOf(
 
 Future<void> _openCounter(WidgetTester tester) async {
   await tester.pumpAndSettle();
-  await tester.tap(find.text('Naya Bill').first);
+  await tapText(tester, 'Naya Bill');
   await tester.pumpAndSettle();
 }
 

@@ -58,7 +58,7 @@ void main() {
 
   testWidgets('the counter is usable with an empty catalogue', (tester) async {
     await Harness.startWithShop(tester);
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
@@ -113,7 +113,7 @@ void main() {
     await app.seedItem(name: 'Chawal Basmati', rupees: 525);
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
 
     await typeInto(tester, 'Talash karein', 'Chawal');
@@ -123,7 +123,7 @@ void main() {
 
     await tester.pageBack();
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
 
     // The query lived in a plain global provider while the search field's
@@ -148,7 +148,7 @@ void main() {
     addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
 
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Maal').first);
+    await tapText(tester, 'Maal');
     await tester.pumpAndSettle();
 
     // The app clamps the scaler to 2.0, and the row extent scales with it.

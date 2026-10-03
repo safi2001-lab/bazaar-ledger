@@ -186,7 +186,7 @@ void main() {
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
     await app.seedItem(name: 'Chawal Basmati', rupees: 525);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await _addToCart(tester, 'Cooking Oil');
@@ -216,7 +216,7 @@ void main() {
     final app = await Harness.startWithShop(tester);
     await app.seedItem(name: 'Cooking Oil 5L', rupees: 2500);
 
-    await tester.tap(find.text('Naya Bill').first);
+    await tapText(tester, 'Naya Bill');
     await tester.pumpAndSettle();
     await _addToCart(tester, 'Cooking Oil');
     await tapButton(tester, 'Paisay lein');
