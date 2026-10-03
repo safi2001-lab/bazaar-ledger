@@ -239,6 +239,15 @@ jobs:
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
+      # The first Android build on a fresh runner takes six minutes (Gradle,
+      # CMake). Done inside the emulator step, the emulator sat idle that long
+      # and once dropped offline just after the install: "Failed to start Dart
+      # Development Service" on the first file, which reads as a broken test.
+      # Built here first, every build inside the emulator step is the
+      # half-minute incremental one.
+      - name: Warm the Android build
+        run: flutter build apk --debug
+
       # API 36, matching targetSdk. Running the acceptance suite on an older
       # image would prove the app works under a permission model it does not
       # ship against.
