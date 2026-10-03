@@ -7625,7 +7625,7 @@ abstract class AppStrings {
   /// No description provided for @billDesignIntro.
   ///
   /// In ur, this message translates to:
-  /// **'PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip waisi hi rehti hai; us par sirf baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.'**
+  /// **'PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip printer ke apne font mein chhapti hai; us ka andaaz (aam, compact ya bara total), baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.'**
   String get billDesignIntro;
 
   /// No description provided for @billDesignLayout.
@@ -15376,6 +15376,270 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'{label}: {amount} · pehle {before}'**
   String reportChartPickedBefore(String label, String amount, String before);
+
+  /// No description provided for @receiptOfferTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ko raseed bhejein?'**
+  String receiptOfferTitle(String name);
+
+  /// No description provided for @receiptOfferWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp par raseed'**
+  String get receiptOfferWhatsApp;
+
+  /// No description provided for @receiptOfferPdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ki PDF'**
+  String get receiptOfferPdf;
+
+  /// No description provided for @receiptOfferPicture.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill ki tasveer'**
+  String get receiptOfferPicture;
+
+  /// No description provided for @receiptOfferLater.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi nahi'**
+  String get receiptOfferLater;
+
+  /// No description provided for @receiptOfferFromNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is gahak ko aage se'**
+  String get receiptOfferFromNow;
+
+  /// No description provided for @receiptOfferAsk.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har dafa poochhein'**
+  String get receiptOfferAsk;
+
+  /// No description provided for @receiptOfferAuto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khud bhejein'**
+  String get receiptOfferAuto;
+
+  /// No description provided for @receiptOfferNever.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kabhi nahi'**
+  String get receiptOfferNever;
+
+  /// No description provided for @receiptOfferNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp aap ke phone par isi gahak ki chat par khulega, message likha hua. Send aap khud dabayenge — app khud kabhi kuch nahi bhejta.'**
+  String get receiptOfferNote;
+
+  /// No description provided for @receiptOfferNoWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp nahi khula'**
+  String get receiptOfferNoWhatsApp;
+
+  /// No description provided for @receiptOfferKept.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: {choice}'**
+  String receiptOfferKept(String name, String choice);
+
+  /// No description provided for @settingsReceiptOffer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ko raseed'**
+  String get settingsReceiptOffer;
+
+  /// No description provided for @receiptOfferSettingsIntro.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill, wusooli, maal wapsi aur supplier ki adaigi ke foran baad us ki zabaan mein WhatsApp message: kya hua aur ab hisaab kitna hai. Sirf jin ka mobile number hai; aam gahak ko kabhi nahi.'**
+  String get receiptOfferSettingsIntro;
+
+  /// No description provided for @receiptOfferDefaultTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jin ka alag nahi chuna'**
+  String get receiptOfferDefaultTitle;
+
+  /// No description provided for @receiptOfferAskHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har dafa poochha jayega: WhatsApp, PDF ya abhi nahi'**
+  String get receiptOfferAskHint;
+
+  /// No description provided for @receiptOfferAutoHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp khud khulega, message likha hua; Send aap dabayenge'**
+  String get receiptOfferAutoHint;
+
+  /// No description provided for @receiptOfferNeverHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kuch nahi poochha jayega'**
+  String get receiptOfferNeverHint;
+
+  /// No description provided for @receiptOfferPerParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har gahak ka alag: gahak ke form mein, ya raseed bhejte waqt'**
+  String get receiptOfferPerParty;
+
+  /// No description provided for @receiptOfferSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mehfooz ho gaya'**
+  String get receiptOfferSaved;
+
+  /// No description provided for @partyReceiptOffer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Paisay ki raseed WhatsApp par'**
+  String get partyReceiptOffer;
+
+  /// No description provided for @partyReceiptOfferShop.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi dukan ki setting chal rahi hai'**
+  String get partyReceiptOfferShop;
+
+  /// No description provided for @billThemeLandscape.
+  ///
+  /// In ur, this message translates to:
+  /// **'Landscape (wholesale)'**
+  String get billThemeLandscape;
+
+  /// No description provided for @billThemeLandscapeHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Safha leta hua: HS code, unit, discount aur har line ka tax — registered dukan ke liye poora sales tax invoice'**
+  String get billThemeLandscapeHint;
+
+  /// No description provided for @billThemeRuled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill book'**
+  String get billThemeRuled;
+
+  /// No description provided for @billThemeRuledHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Stationer ki bill book jaisa: border, M/s ki line, khaane, dastkhat'**
+  String get billThemeRuledHint;
+
+  /// No description provided for @billThemeElegant.
+  ///
+  /// In ur, this message translates to:
+  /// **'Nafees'**
+  String get billThemeElegant;
+
+  /// No description provided for @billThemeElegantHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Serif likhai aur baareek lakeerein, dafatir aur showroom ke liye'**
+  String get billThemeElegantHint;
+
+  /// No description provided for @billThemeMinimal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Halka'**
+  String get billThemeMinimal;
+
+  /// No description provided for @billThemeMinimalHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Na rang ki patti na dabbe: naam, cheezen, total'**
+  String get billThemeMinimalHint;
+
+  /// No description provided for @billDesignNotTaxInvoice.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh design sales tax invoice ki har tafseel nahi chhapta. Registered dukan ke bill ke liye Sales tax invoice ya Landscape chunein.'**
+  String get billDesignNotTaxInvoice;
+
+  /// No description provided for @billDesignSlip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Thermal slip ka andaaz'**
+  String get billDesignSlip;
+
+  /// No description provided for @billSlipStandard.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aam'**
+  String get billSlipStandard;
+
+  /// No description provided for @billSlipStandardHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jaisi hamesha chhapti hai'**
+  String get billSlipStandardHint;
+
+  /// No description provided for @billSlipCompact.
+  ///
+  /// In ur, this message translates to:
+  /// **'Compact'**
+  String get billSlipCompact;
+
+  /// No description provided for @billSlipCompactHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam kaghaz: har cheez ek line mein jahan aa sake, faltu lakeerein nahi'**
+  String get billSlipCompactHint;
+
+  /// No description provided for @billSlipBigTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bara total'**
+  String get billSlipBigTotal;
+
+  /// No description provided for @billSlipBigTotalHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Total aur baqaya dugne size mein, buzurg gahakon ke liye'**
+  String get billSlipBigTotalHint;
+
+  /// No description provided for @billDesignPerPaper.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har kaghaz ka design'**
+  String get billDesignPerPaper;
+
+  /// No description provided for @billDesignPerPaperHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation, challan aur purchase order ka alag design; warna bill wala. Paisay ki raseed ka apna ek design hai.'**
+  String get billDesignPerPaperHint;
+
+  /// No description provided for @billDesignSameAsBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill jaisa'**
+  String get billDesignSameAsBill;
+
+  /// No description provided for @billDesignDocQuotation.
+  ///
+  /// In ur, this message translates to:
+  /// **'Quotation ka design'**
+  String get billDesignDocQuotation;
+
+  /// No description provided for @billDesignDocChallan.
+  ///
+  /// In ur, this message translates to:
+  /// **'Delivery challan ka design'**
+  String get billDesignDocChallan;
+
+  /// No description provided for @billDesignDocOrder.
+  ///
+  /// In ur, this message translates to:
+  /// **'Purchase order ka design'**
+  String get billDesignDocOrder;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

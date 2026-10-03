@@ -103,6 +103,7 @@ export 'src/receivables/allowance.dart';
 export 'src/receivables/due_dates.dart';
 export 'src/receivables/expense_builder.dart';
 export 'src/receivables/fifo_allocator.dart';
+export 'src/receivables/money_receipt.dart'; // M70
 export 'src/receivables/promise.dart';
 export 'src/receivables/receipt_builder.dart';
 export 'src/receivables/receipt_posting.dart';

@@ -4342,7 +4342,7 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get billDesignIntro =>
-      'PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip waisi hi rehti hai; us par sirf baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.';
+      'PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip printer ke apne font mein chhapti hai; us ka andaaz (aam, compact ya bara total), baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.';
 
   @override
   String get billDesignLayout => 'Design';
@@ -9051,4 +9051,153 @@ class AppStringsUr extends AppStrings {
   String reportChartPickedBefore(String label, String amount, String before) {
     return '$label: $amount · pehle $before';
   }
+
+  @override
+  String receiptOfferTitle(String name) {
+    return '$name ko raseed bhejein?';
+  }
+
+  @override
+  String get receiptOfferWhatsApp => 'WhatsApp par raseed';
+
+  @override
+  String get receiptOfferPdf => 'Bill ki PDF';
+
+  @override
+  String get receiptOfferPicture => 'Bill ki tasveer';
+
+  @override
+  String get receiptOfferLater => 'Abhi nahi';
+
+  @override
+  String get receiptOfferFromNow => 'Is gahak ko aage se';
+
+  @override
+  String get receiptOfferAsk => 'Har dafa poochhein';
+
+  @override
+  String get receiptOfferAuto => 'Khud bhejein';
+
+  @override
+  String get receiptOfferNever => 'Kabhi nahi';
+
+  @override
+  String get receiptOfferNote =>
+      'WhatsApp aap ke phone par isi gahak ki chat par khulega, message likha hua. Send aap khud dabayenge — app khud kabhi kuch nahi bhejta.';
+
+  @override
+  String get receiptOfferNoWhatsApp => 'WhatsApp nahi khula';
+
+  @override
+  String receiptOfferKept(String name, String choice) {
+    return '$name: $choice';
+  }
+
+  @override
+  String get settingsReceiptOffer => 'Gahak ko raseed';
+
+  @override
+  String get receiptOfferSettingsIntro =>
+      'Bill, wusooli, maal wapsi aur supplier ki adaigi ke foran baad us ki zabaan mein WhatsApp message: kya hua aur ab hisaab kitna hai. Sirf jin ka mobile number hai; aam gahak ko kabhi nahi.';
+
+  @override
+  String get receiptOfferDefaultTitle => 'Jin ka alag nahi chuna';
+
+  @override
+  String get receiptOfferAskHint =>
+      'Har dafa poochha jayega: WhatsApp, PDF ya abhi nahi';
+
+  @override
+  String get receiptOfferAutoHint =>
+      'WhatsApp khud khulega, message likha hua; Send aap dabayenge';
+
+  @override
+  String get receiptOfferNeverHint => 'Kuch nahi poochha jayega';
+
+  @override
+  String get receiptOfferPerParty =>
+      'Har gahak ka alag: gahak ke form mein, ya raseed bhejte waqt';
+
+  @override
+  String get receiptOfferSaved => 'Mehfooz ho gaya';
+
+  @override
+  String get partyReceiptOffer => 'Paisay ki raseed WhatsApp par';
+
+  @override
+  String get partyReceiptOfferShop => 'Abhi dukan ki setting chal rahi hai';
+
+  @override
+  String get billThemeLandscape => 'Landscape (wholesale)';
+
+  @override
+  String get billThemeLandscapeHint =>
+      'Safha leta hua: HS code, unit, discount aur har line ka tax — registered dukan ke liye poora sales tax invoice';
+
+  @override
+  String get billThemeRuled => 'Bill book';
+
+  @override
+  String get billThemeRuledHint =>
+      'Stationer ki bill book jaisa: border, M/s ki line, khaane, dastkhat';
+
+  @override
+  String get billThemeElegant => 'Nafees';
+
+  @override
+  String get billThemeElegantHint =>
+      'Serif likhai aur baareek lakeerein, dafatir aur showroom ke liye';
+
+  @override
+  String get billThemeMinimal => 'Halka';
+
+  @override
+  String get billThemeMinimalHint =>
+      'Na rang ki patti na dabbe: naam, cheezen, total';
+
+  @override
+  String get billDesignNotTaxInvoice =>
+      'Yeh design sales tax invoice ki har tafseel nahi chhapta. Registered dukan ke bill ke liye Sales tax invoice ya Landscape chunein.';
+
+  @override
+  String get billDesignSlip => 'Thermal slip ka andaaz';
+
+  @override
+  String get billSlipStandard => 'Aam';
+
+  @override
+  String get billSlipStandardHint => 'Jaisi hamesha chhapti hai';
+
+  @override
+  String get billSlipCompact => 'Compact';
+
+  @override
+  String get billSlipCompactHint =>
+      'Kam kaghaz: har cheez ek line mein jahan aa sake, faltu lakeerein nahi';
+
+  @override
+  String get billSlipBigTotal => 'Bara total';
+
+  @override
+  String get billSlipBigTotalHint =>
+      'Total aur baqaya dugne size mein, buzurg gahakon ke liye';
+
+  @override
+  String get billDesignPerPaper => 'Har kaghaz ka design';
+
+  @override
+  String get billDesignPerPaperHint =>
+      'Quotation, challan aur purchase order ka alag design; warna bill wala. Paisay ki raseed ka apna ek design hai.';
+
+  @override
+  String get billDesignSameAsBill => 'Bill jaisa';
+
+  @override
+  String get billDesignDocQuotation => 'Quotation ka design';
+
+  @override
+  String get billDesignDocChallan => 'Delivery challan ka design';
+
+  @override
+  String get billDesignDocOrder => 'Purchase order ka design';
 }

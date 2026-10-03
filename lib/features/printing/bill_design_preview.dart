@@ -89,7 +89,7 @@ ReceiptData sampleBill(
 /// through the release gates for one preview). This is a sketch of the
 /// design's choices — where the logo and the name sit, the band, the
 /// colour, the columns, the khata block, the QR, the footer — drawn from
-/// the same sample bill, so the owner can choose between four layouts at a
+/// the same sample bill, so the owner can choose between the layouts at a
 /// glance. The real page is one tap away: the sample PDF button renders it
 /// through the very renderer the bills go through.
 class BillDesignPreview extends StatelessWidget {
@@ -98,6 +98,38 @@ class BillDesignPreview extends StatelessWidget {
     required this.design,
     required this.receipt,
   });
+
+  final BillDesign design;
+  final ReceiptData receipt;
+
+  @override
+  Widget build(BuildContext context) =>
+      _Sheet(design: design, receipt: receipt);
+}
+
+/// One layout, small, for the row of designs to choose from (M70): the
+/// same sketch as [BillDesignPreview], of the same sample bill, at the size
+/// of a thumbnail. A widget of its own so the one large sketch stays the
+/// one large sketch.
+class BillDesignThumbnail extends StatelessWidget {
+  const BillDesignThumbnail({
+    super.key,
+    required this.design,
+    required this.receipt,
+  });
+
+  final BillDesign design;
+  final ReceiptData receipt;
+
+  @override
+  Widget build(BuildContext context) => ExcludeSemantics(
+    child: _Sheet(design: design, receipt: receipt),
+  );
+}
+
+/// The page, scaled whole to fit.
+class _Sheet extends StatelessWidget {
+  const _Sheet({required this.design, required this.receipt});
 
   final BillDesign design;
   final ReceiptData receipt;
@@ -124,19 +156,30 @@ class BillDesignPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final accent = Color(design.accent.argb);
-    // A5 and A4 are the same shape; one ratio serves both.
-    const height = _width * 1.414;
+    // A5 and A4 are the same shape; one ratio serves both. The landscape
+    // layout (M70) turns it on its side.
+    final side = design.theme == BillTheme.landscape;
+    final width = side ? _width * 1.414 : _width;
+    final height = side ? _width : _width * 1.414;
+    final ruled = design.theme == BillTheme.ruled;
     return AspectRatio(
-      aspectRatio: 1 / 1.414,
+      aspectRatio: width / height,
       child: FittedBox(
         child: Container(
-          width: _width,
+          width: width,
           height: height,
           decoration: BoxDecoration(
             color: _paper,
             border: Border.all(color: _rule),
           ),
           padding: EdgeInsets.all(design.theme == BillTheme.compact ? 10 : 14),
+          // The bill book's border round the page (M70).
+          foregroundDecoration: ruled
+              ? BoxDecoration(
+                  border: Border.all(color: accent, width: 2),
+                  borderRadius: BorderRadius.circular(1),
+                )
+              : null,
           // Clipped rather than allowed to overflow: a long footer on a
           // sketch is cut at the page edge, as it would run onto page two.
           //
@@ -146,8 +189,9 @@ class BillDesignPreview extends StatelessWidget {
           // a fixed-size sheet until it runs off the edge.
           child: MediaQuery.withNoTextScaling(
             child: ClipRect(
-              child: SingleChildScrollView(
-                physics: const NeverScrollableScrollPhysics(),
+              child: OverflowBox(
+                alignment: Alignment.topCenter,
+                maxHeight: double.infinity,
                 child: _Page(design: design, d: receipt, accent: accent),
               ),
             ),
@@ -165,9 +209,25 @@ class _Page extends StatelessWidget {
   final ReceiptData d;
   final Color accent;
 
+  static const _paper = _Sheet._paper;
+  static const _ink = _Sheet._ink;
+  static const _muted = _Sheet._muted;
+  static const _rule = _Sheet._rule;
+
   bool get compact => design.theme == BillTheme.compact;
   bool get modern => design.theme == BillTheme.modern;
   bool get tax => design.theme == BillTheme.taxInvoice;
+  // M70's four.
+  bool get landscape => design.theme == BillTheme.landscape;
+  bool get ruled => design.theme == BillTheme.ruled;
+  bool get elegant => design.theme == BillTheme.elegant;
+  bool get minimal => design.theme == BillTheme.minimal;
+
+  /// The landscape page carries the tax line by line when the bill does.
+  bool get taxColumns =>
+      tax ||
+      (landscape && d.lines.any((l) => l.tax?.salesTax.isPositive ?? false));
+
   double get size => compact ? 6.5 : 7.5;
 
   TextStyle style({
@@ -175,15 +235,25 @@ class _Page extends StatelessWidget {
     bool bold = false,
     Color? color,
     bool mono = false,
+    bool italic = false,
+    double? spacing,
   }) => TextStyle(
     fontSize: fontSize ?? size,
     fontWeight: bold ? FontWeight.w700 : FontWeight.w400,
-    color: color ?? BillDesignPreview._ink,
-    fontFamily: mono ? 'monospace' : null,
+    fontStyle: italic ? FontStyle.italic : FontStyle.normal,
+    color: color ?? _ink,
+    fontFamily: mono
+        ? 'monospace'
+        : elegant
+        ? 'serif'
+        : null,
+    letterSpacing: spacing,
     height: 1.25,
   );
 
-  String get title => tax ? 'SALES TAX INVOICE' : d.docTitle.toUpperCase();
+  String get title => tax || (landscape && taxColumns)
+      ? 'SALES TAX INVOICE'
+      : d.docTitle.toUpperCase();
 
   Widget? get logo => d.shop.logoImage == null
       ? null
@@ -201,14 +271,19 @@ class _Page extends StatelessWidget {
     children: [
       head(),
       SizedBox(height: compact ? 4 : 6),
-      if (!tax) ...[party(), SizedBox(height: compact ? 4 : 6)],
+      if (!tax && !landscape) ...[party(), SizedBox(height: compact ? 4 : 6)],
       table(),
       SizedBox(height: compact ? 4 : 6),
       totals(),
       ...payment(),
       const SizedBox(height: 6),
       for (final line in d.footerLines)
-        Text(line, textAlign: TextAlign.center, style: style()),
+        Text(
+          line,
+          textAlign: TextAlign.center,
+          style: style(italic: elegant, color: minimal ? _muted : null),
+        ),
+      if (ruled) ...signature(),
     ],
   );
 
@@ -225,7 +300,7 @@ class _Page extends StatelessWidget {
           Text(
             where,
             textAlign: TextAlign.center,
-            style: style(color: BillDesignPreview._muted),
+            style: style(color: _muted),
           ),
         const SizedBox(height: 4),
         Text(title, style: style(fontSize: 8.5, bold: true, color: accent)),
@@ -243,7 +318,7 @@ class _Page extends StatelessWidget {
           if (logo != null) ...[
             Container(
               padding: const EdgeInsets.all(2),
-              color: BillDesignPreview._paper,
+              color: _paper,
               child: logo,
             ),
             const SizedBox(width: 6),
@@ -254,20 +329,10 @@ class _Page extends StatelessWidget {
               children: [
                 Text(
                   d.shop.name.toUpperCase(),
-                  style: style(
-                    fontSize: 11,
-                    bold: true,
-                    color: BillDesignPreview._paper,
-                  ),
+                  style: style(fontSize: 11, bold: true, color: _paper),
                 ),
                 if (where.isNotEmpty)
-                  Text(
-                    where,
-                    style: style(
-                      fontSize: 6.5,
-                      color: BillDesignPreview._paper,
-                    ),
-                  ),
+                  Text(where, style: style(fontSize: 6.5, color: _paper)),
               ],
             ),
           ),
@@ -275,11 +340,7 @@ class _Page extends StatelessWidget {
             child: Text(
               title,
               textAlign: TextAlign.right,
-              style: style(
-                fontSize: 9,
-                bold: true,
-                color: BillDesignPreview._paper,
-              ),
+              style: style(fontSize: 9, bold: true, color: _paper),
             ),
           ),
         ],
@@ -335,18 +396,176 @@ class _Page extends StatelessWidget {
               ]),
             ),
             const SizedBox(width: 4),
+            Expanded(child: buyer()),
+          ],
+        ),
+      ],
+    ),
+    // M70: the seller, the buyer and the title across one row.
+    BillTheme.landscape => Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ?logo,
+              Text(
+                _seller,
+                style: style(fontSize: 6, bold: true, color: accent),
+              ),
+              Text(
+                d.shop.name.toUpperCase(),
+                style: style(fontSize: 11, bold: true),
+              ),
+              if (where.isNotEmpty) Text(where, style: style(fontSize: 6.5)),
+              Text(
+                [
+                  'NTN',
+                  d.shop.ntn ?? '-',
+                  ' STRN',
+                  d.shop.strn ?? '-',
+                ].join(' '),
+                style: style(fontSize: 6.5, color: _muted),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: 6),
+        Expanded(flex: 4, child: buyer()),
+        const SizedBox(width: 6),
+        Expanded(
+          flex: 3,
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            color: accent,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.right,
+                  style: style(fontSize: 8, bold: true, color: _paper),
+                ),
+                Text(d.docNo, style: style(fontSize: 6.5, color: _paper)),
+                Text(
+                  d.dateTimeLabel,
+                  style: style(fontSize: 6.5, color: _paper),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    ),
+    // M70: the name in the shop's colour over the number, the paper's
+    // pill and the date, as a bill book is printed.
+    BillTheme.ruled => Column(
+      children: [
+        ?logo,
+        Text(
+          d.shop.name.toUpperCase(),
+          textAlign: TextAlign.center,
+          style: style(fontSize: 12, bold: true, color: accent),
+        ),
+        if (where.isNotEmpty)
+          Text(where, textAlign: TextAlign.center, style: style(fontSize: 6.5)),
+        const SizedBox(height: 4),
+        Row(
+          children: [
             Expanded(
-              child: box('BUYER', [
-                d.customerName ?? '-',
-                d.customerAddress ?? '-',
-                'NTN ${d.customerNtn ?? 'Unregistered'}',
-              ]),
+              child: Text(
+                ['No.', d.docNo].join(' '),
+                style: style(fontSize: 6.5, bold: true),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+              decoration: BoxDecoration(
+                color: accent,
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                title,
+                style: style(fontSize: 6.5, bold: true, color: _paper),
+              ),
+            ),
+            Expanded(
+              child: Text(
+                d.dateTimeLabel,
+                textAlign: TextAlign.right,
+                style: style(fontSize: 6.5),
+              ),
             ),
           ],
         ),
       ],
     ),
+    // M70: a serif name spaced out between fine double rules.
+    BillTheme.elegant => Column(
+      children: [
+        ?logo,
+        Text(
+          d.shop.name.toUpperCase(),
+          textAlign: TextAlign.center,
+          style: style(fontSize: 12, bold: true, spacing: 1.5),
+        ),
+        if (where.isNotEmpty)
+          Text(
+            where,
+            textAlign: TextAlign.center,
+            style: style(fontSize: 6.5, italic: true, color: _muted),
+          ),
+        const SizedBox(height: 4),
+        doubleRule(),
+        Text(
+          title,
+          textAlign: TextAlign.center,
+          style: style(fontSize: 7.5, color: accent, spacing: 3),
+        ),
+        doubleRule(),
+      ],
+    ),
+    // M70: the name on the left, the number on the right, and space.
+    BillTheme.minimal => Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (logo != null) ...[logo!, const SizedBox(width: 6)],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(d.shop.name, style: style(fontSize: 11, bold: true)),
+              if (where.isNotEmpty)
+                Text(where, style: style(fontSize: 6, color: _muted)),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(title, style: style(fontSize: 6, color: _muted, spacing: 1.2)),
+            Text(d.docNo, style: style(fontSize: 8, bold: true, mono: true)),
+          ],
+        ),
+      ],
+    ),
   };
+
+  Widget doubleRule() => Column(
+    children: [
+      Container(height: 0.9, color: accent),
+      const SizedBox(height: 1.2),
+      Container(height: 0.3, color: accent),
+    ],
+  );
+
+  Widget buyer() => box('BUYER', [
+    d.customerName ?? '-',
+    d.customerAddress ?? '-',
+    'NTN ${d.customerNtn ?? 'Unregistered'}',
+  ]);
 
   Widget box(String heading, List<String> lines) => Container(
     decoration: BoxDecoration(border: Border.all(color: accent, width: 0.6)),
@@ -370,6 +589,19 @@ class _Page extends StatelessWidget {
   );
 
   Widget party() {
+    if (ruled) {
+      // "M/s" over a dotted line, as the book is filled in by hand.
+      return Container(
+        padding: const EdgeInsets.only(bottom: 1),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: _rule)),
+        ),
+        child: Text(
+          ['M/s', d.customerName ?? ''].join('  '),
+          style: style(bold: true),
+        ),
+      );
+    }
     final bill = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -378,8 +610,16 @@ class _Page extends StatelessWidget {
       ],
     );
     final who = Column(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: elegant || minimal
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.end,
       children: [
+        if (elegant) Text(_billedTo, style: style(italic: true, color: _muted)),
+        if (minimal)
+          Text(
+            d.partyLabel.toUpperCase(),
+            style: style(fontSize: 6, color: _muted, spacing: 1),
+          ),
         if (d.customerName != null)
           Text(d.customerName!, style: style(bold: true)),
         if (d.customerAddress != null) Text(d.customerAddress!, style: style()),
@@ -400,6 +640,17 @@ class _Page extends StatelessWidget {
         ),
       );
     }
+    if (elegant || minimal) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Flexible(child: who),
+          const SizedBox(width: 6),
+          if (elegant) Flexible(child: bill),
+        ],
+      );
+    }
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -412,33 +663,73 @@ class _Page extends StatelessWidget {
   }
 
   Widget table() {
-    final headers = tax
-        ? const ['Item', 'Qty', 'Excl. tax', 'Rate', 'Tax', 'Incl. tax']
-        : const ['Item', 'Qty', 'Rate', 'Amount'];
-    final headerColour = switch (design.theme) {
-      BillTheme.modern => accent,
-      BillTheme.taxInvoice => accent.withValues(alpha: 0.1),
-      BillTheme.classic => BillDesignPreview._rule,
-      BillTheme.compact => null,
-    };
-    List<String> row(ReceiptLine l) => tax
-        ? [
-            l.name,
-            '${l.qtyDisplay} ${l.unitCode}',
+    final List<String> headers;
+    if (landscape) {
+      headers = taxColumns
+          ? const ['Item', 'Qty', 'Unit', 'Rate', 'Excl. tax', 'Tax', 'Incl.']
+          : const ['Item', 'Qty', 'Unit', 'Rate', 'Gross', 'Disc.', 'Net'];
+    } else if (tax) {
+      headers = const ['Item', 'Qty', 'Excl. tax', 'Rate', 'Tax', 'Incl. tax'];
+    } else if (ruled) {
+      headers = const ['Particulars', 'Qty', 'Rate', 'Amount'];
+    } else if (minimal) {
+      headers = const ['ITEM', 'QTY', 'RATE', 'AMOUNT'];
+    } else {
+      headers = const ['Item', 'Qty', 'Rate', 'Amount'];
+    }
+    List<String> cells(ReceiptLine l) {
+      if (landscape) {
+        return [
+          l.name,
+          l.qtyDisplay,
+          l.unitCode,
+          l.rate.amountOnly,
+          if (taxColumns) ...[
             (l.tax?.valueExclTax ?? l.amount).amountOnly,
-            l.tax?.rateLabel ?? '-',
             (l.tax?.salesTax ?? Money.zero).amountOnly,
             (l.tax?.valueInclTax ?? l.amount).amountOnly,
-          ]
-        : [
-            l.name,
-            '${l.qtyDisplay} ${l.unitCode}',
-            l.rate.amountOnly,
+          ] else ...[
             l.amount.amountOnly,
-          ];
+            l.discount.isPositive ? l.discount.amountOnly : '-',
+            (l.amount - l.discount).amountOnly,
+          ],
+        ];
+      }
+      if (tax) {
+        return [
+          l.name,
+          '${l.qtyDisplay} ${l.unitCode}',
+          (l.tax?.valueExclTax ?? l.amount).amountOnly,
+          l.tax?.rateLabel ?? '-',
+          (l.tax?.salesTax ?? Money.zero).amountOnly,
+          (l.tax?.valueInclTax ?? l.amount).amountOnly,
+        ];
+      }
+      return [
+        l.name,
+        '${l.qtyDisplay} ${l.unitCode}',
+        l.rate.amountOnly,
+        l.amount.amountOnly,
+      ];
+    }
+
+    final headerColour = switch (design.theme) {
+      BillTheme.modern || BillTheme.landscape => accent,
+      BillTheme.taxInvoice || BillTheme.ruled => accent.withValues(alpha: 0.1),
+      BillTheme.classic => _rule,
+      _ => null,
+    };
+    final whiteHead = modern || landscape;
+    final small = tax || landscape;
     Widget cell(String v, int i, {bool head = false}) => Expanded(
       flex: i == 0 ? 3 : 2,
-      child: Padding(
+      child: Container(
+        // The bill book rules every column down the page.
+        decoration: ruled && i < headers.length - 1
+            ? BoxDecoration(
+                border: Border(right: BorderSide(color: accent, width: 0.5)),
+              )
+            : null,
         padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 1.5),
         child: Text(
           v,
@@ -446,19 +737,54 @@ class _Page extends StatelessWidget {
           maxLines: 1,
           overflow: TextOverflow.clip,
           style: style(
-            fontSize: tax ? size - 1 : size,
-            bold: head,
-            mono: !head && i > 0,
-            color: head && modern ? BillDesignPreview._paper : null,
+            fontSize: small ? size - 1 : (minimal && head ? size - 1.5 : size),
+            bold: head && !minimal,
+            italic: head && elegant,
+            mono: !head && i > 0 && !elegant,
+            color: head && whiteHead
+                ? _paper
+                : head && (elegant || ruled)
+                ? accent
+                : head && minimal
+                ? _muted
+                : null,
           ),
         ),
       ),
     );
-    return Column(
+    Widget line(List<String> values, {bool shaded = false}) => Container(
+      decoration: BoxDecoration(
+        color: shaded ? accent.withValues(alpha: 0.08) : null,
+        border: minimal
+            ? null
+            : Border(
+                bottom: BorderSide(
+                  color: elegant ? accent.withValues(alpha: 0.3) : _rule,
+                  width: 0.5,
+                ),
+              ),
+      ),
+      child: Row(children: [for (final (i, v) in values.indexed) cell(v, i)]),
+    );
+
+    final rows = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Container(
-          color: headerColour,
+          decoration: BoxDecoration(
+            color: headerColour,
+            border: elegant || minimal
+                ? Border(
+                    top: elegant
+                        ? BorderSide(color: accent, width: 0.8)
+                        : BorderSide.none,
+                    bottom: BorderSide(
+                      color: elegant ? accent : _rule,
+                      width: elegant ? 0.8 : 0.5,
+                    ),
+                  )
+                : null,
+          ),
           child: Row(
             children: [
               for (var i = 0; i < headers.length; i++)
@@ -467,26 +793,32 @@ class _Page extends StatelessWidget {
           ),
         ),
         for (var r = 0; r < d.lines.length; r++)
-          Container(
-            decoration: BoxDecoration(
-              color: modern && r.isOdd ? accent.withValues(alpha: 0.08) : null,
-              border: const Border(
-                bottom: BorderSide(color: BillDesignPreview._rule, width: 0.5),
-              ),
-            ),
-            child: Row(
-              children: [
-                for (final (i, v) in row(d.lines[r]).indexed) cell(v, i),
-              ],
-            ),
-          ),
+          line(cells(d.lines[r]), shaded: modern && r.isOdd),
+        // Two blank rows under the goods, as the book has.
+        if (ruled)
+          for (var r = 0; r < 2; r++) line([for (final _ in headers) '']),
       ],
     );
+    return ruled
+        ? Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: accent, width: 0.8),
+            ),
+            child: rows,
+          )
+        : rows;
   }
 
   Widget totals() {
     final khata = d.khata;
-    Widget pair(String label, String value, {bool bold = false}) => Row(
+    Widget pair(
+      String label,
+      String value, {
+      bool bold = false,
+      bool italic = false,
+      Color? colour,
+      double? fontSize,
+    }) => Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         // The label gives way, never the figure.
@@ -496,13 +828,28 @@ class _Page extends StatelessWidget {
             maxLines: 1,
             softWrap: false,
             overflow: TextOverflow.clip,
-            style: style(bold: bold),
+            style: style(
+              bold: bold,
+              italic: italic,
+              color: colour,
+              fontSize: fontSize,
+            ),
           ),
         ),
         const SizedBox(width: 4),
-        Text(value, style: style(bold: bold, mono: true)),
+        Text(
+          value,
+          style: style(
+            bold: bold,
+            italic: italic,
+            mono: !elegant,
+            color: colour,
+            fontSize: fontSize,
+          ),
+        ),
       ],
     );
+    final taxed = tax || (landscape && taxColumns);
     final total = Container(
       color: modern ? accent : null,
       padding: modern ? const EdgeInsets.symmetric(horizontal: 2) : null,
@@ -511,14 +858,15 @@ class _Page extends StatelessWidget {
         children: [
           Flexible(
             child: Text(
-              tax ? 'Value incl. tax' : 'TOTAL',
+              taxed
+                  ? 'Value incl. tax'
+                  : elegant
+                  ? 'Total'
+                  : 'TOTAL',
               maxLines: 1,
               softWrap: false,
               overflow: TextOverflow.clip,
-              style: style(
-                bold: true,
-                color: modern ? BillDesignPreview._paper : null,
-              ),
+              style: style(bold: true, color: modern ? _paper : null),
             ),
           ),
           const SizedBox(width: 4),
@@ -526,25 +874,63 @@ class _Page extends StatelessWidget {
             d.total.toString(),
             style: style(
               bold: true,
-              mono: true,
-              color: modern ? BillDesignPreview._paper : null,
+              mono: !elegant,
+              fontSize: minimal ? size + 2 : null,
+              color: modern
+                  ? _paper
+                  : minimal
+                  ? accent
+                  : null,
             ),
           ),
         ],
       ),
+    );
+    final figures = Column(
+      children: [
+        pair(taxed ? 'Value excl. tax' : 'Subtotal', d.subtotal.amountOnly),
+        if (d.tax.isPositive) pair('Sales tax', d.tax.amountOnly),
+        if (elegant) doubleRule(),
+        total,
+        for (final t in d.tenders) pair(t.label, t.amount.amountOnly),
+        if (elegant && khata != null)
+          pair(
+            'Amount due',
+            khata.after.toString(),
+            bold: true,
+            italic: true,
+            colour: accent,
+          ),
+      ],
     );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           flex: 3,
-          child: khata == null
-              ? const SizedBox()
-              : Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // The total in words (M70), on the papers that write it.
+              if (ruled || landscape)
+                Text(
+                  rupeesInWords(d.total),
+                  style: style(fontSize: 6, color: _muted),
+                ),
+              if (khata != null)
+                Container(
                   padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: accent, width: 0.6),
-                  ),
+                  decoration: minimal
+                      ? null
+                      : elegant
+                      ? BoxDecoration(
+                          border: Border(
+                            left: BorderSide(color: accent, width: 1.2),
+                          ),
+                        )
+                      : BoxDecoration(
+                          border: Border.all(color: accent, width: 0.6),
+                        ),
                   child: Column(
                     children: [
                       pair('Pichhla baqaya', khata.before.amountOnly),
@@ -553,18 +939,21 @@ class _Page extends StatelessWidget {
                     ],
                   ),
                 ),
+            ],
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
           flex: 4,
-          child: Column(
-            children: [
-              pair(tax ? 'Value excl. tax' : 'Subtotal', d.subtotal.amountOnly),
-              if (d.tax.isPositive) pair('Sales tax', d.tax.amountOnly),
-              total,
-              for (final t in d.tenders) pair(t.label, t.amount.amountOnly),
-            ],
-          ),
+          child: ruled
+              ? Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: accent, width: 0.6),
+                  ),
+                  child: figures,
+                )
+              : figures,
         ),
       ],
     );
@@ -577,7 +966,7 @@ class _Page extends StatelessWidget {
     if (qr == null && alias == null && iban == null) return const [];
     return [
       const SizedBox(height: 6),
-      Divider(color: accent, height: 4, thickness: 0.5),
+      if (!minimal) Divider(color: accent, height: 4, thickness: 0.5),
       Row(
         children: [
           Expanded(
@@ -595,18 +984,37 @@ class _Page extends StatelessWidget {
             Container(
               width: 46,
               height: 46,
-              decoration: BoxDecoration(
-                border: Border.all(color: BillDesignPreview._rule),
-              ),
+              decoration: BoxDecoration(border: Border.all(color: _rule)),
               child: Image.memory(qr, fit: BoxFit.contain),
             ),
         ],
       ),
     ];
   }
+
+  /// The bill book's foot (M70): "E. & O.E." and a line to sign on.
+  List<Widget> signature() => [
+    const SizedBox(height: 10),
+    Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      children: [
+        Text('E. & O.E.', style: style(fontSize: 6, color: _muted)),
+        const Spacer(),
+        Column(
+          children: [
+            Container(width: 70, height: 0.6, color: _muted),
+            Text(_signature, style: style(fontSize: 6, color: _muted)),
+          ],
+        ),
+      ],
+    ),
+  ];
 }
 
 /// The paper's own words. A bill is printed in English and Roman Urdu
 /// whatever language the phone is in, so the sketch of one says what the
 /// paper says rather than the app's translation of it.
 const _payTo = 'Payment ke liye';
+const _seller = 'SELLER';
+const _billedTo = 'Billed to';
+const _signature = 'Signature';

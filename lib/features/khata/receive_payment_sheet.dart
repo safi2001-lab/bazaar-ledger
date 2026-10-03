@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../sales/receipt_offer.dart' show offerAfterReceipt; // M70
 import '../subscription/plans_screen.dart';
 import 'entry_actions.dart';
 import 'khata_providers.dart';
@@ -201,6 +202,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
       );
       final editing = widget.editing;
       final String said;
+      RecordedReceipt? taken; // M70
       if (editing == null && discount.isPositive) {
         // The money and what is let go, in one transaction (M44).
         final settled = await services.udhaar.settleWithDiscount(
@@ -208,6 +210,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
           discount: discount,
           reason: _discountReason.text.trim(),
         );
+        taken = settled.receipt; // M70
         said = s.settleDiscountSaved(
           settled.receipt.amount.amountOnly,
           settled.discount?.amount.amountOnly ?? Money.zero.amountOnly,
@@ -217,6 +220,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
           services.actorNow(),
           draft,
         );
+        taken = receipt; // M70
         said = s.wasooliSaved(receipt.amount.amountOnly);
       } else {
         // One act: the old receipt cancelled and the corrected one taken,
@@ -232,6 +236,7 @@ class _SheetState extends ConsumerState<_ReceivePaymentSheet> {
       container.bumpRefresh();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(said)));
+      if (taken != null) offerAfterReceipt(Navigator.of(context), taken, byCheque: _mode == 'cheque'); // M70
       Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (!mounted) return;

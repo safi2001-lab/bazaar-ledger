@@ -4341,7 +4341,7 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get billDesignIntro =>
-      'How your PDF bills look: layout, colour, logo and payment QR. The till slip stays as it is; only the balance block, the footer and the QR are decided for it here.';
+      'How your PDF bills look: layout, colour, logo and payment QR. The till slip prints in the printer\'s own font; its layout (standard, compact or big total), the balance block, the footer and the QR are decided for it here.';
 
   @override
   String get billDesignLayout => 'Layout';
@@ -9063,4 +9063,152 @@ class AppStringsEn extends AppStrings {
   String reportChartPickedBefore(String label, String amount, String before) {
     return '$label: $amount · before $before';
   }
+
+  @override
+  String receiptOfferTitle(String name) {
+    return 'Send $name a receipt?';
+  }
+
+  @override
+  String get receiptOfferWhatsApp => 'Receipt on WhatsApp';
+
+  @override
+  String get receiptOfferPdf => 'Bill as PDF';
+
+  @override
+  String get receiptOfferPicture => 'Bill as a picture';
+
+  @override
+  String get receiptOfferLater => 'Not now';
+
+  @override
+  String get receiptOfferFromNow => 'From now on, for this party';
+
+  @override
+  String get receiptOfferAsk => 'Ask every time';
+
+  @override
+  String get receiptOfferAuto => 'Open WhatsApp by itself';
+
+  @override
+  String get receiptOfferNever => 'Never';
+
+  @override
+  String get receiptOfferNote =>
+      'WhatsApp opens on this party\'s chat on your phone with the message written. You press Send — the app never sends anything by itself.';
+
+  @override
+  String get receiptOfferNoWhatsApp => 'WhatsApp did not open';
+
+  @override
+  String receiptOfferKept(String name, String choice) {
+    return '$name: $choice';
+  }
+
+  @override
+  String get settingsReceiptOffer => 'Receipts to customers';
+
+  @override
+  String get receiptOfferSettingsIntro =>
+      'Right after a bill, a payment taken, goods returned or a supplier paid: a WhatsApp message in their language saying what happened and where the khata stands now. Only to parties with a mobile number; never to a walk-in.';
+
+  @override
+  String get receiptOfferDefaultTitle => 'For everyone not set on their own';
+
+  @override
+  String get receiptOfferAskHint => 'Asked each time: WhatsApp, PDF or not now';
+
+  @override
+  String get receiptOfferAutoHint =>
+      'WhatsApp opens by itself with the message written; you press Send';
+
+  @override
+  String get receiptOfferNeverHint => 'Nothing is offered';
+
+  @override
+  String get receiptOfferPerParty =>
+      'Each party on their own: on their form, or when a receipt is offered';
+
+  @override
+  String get receiptOfferSaved => 'Saved';
+
+  @override
+  String get partyReceiptOffer => 'Money receipts on WhatsApp';
+
+  @override
+  String get partyReceiptOfferShop => 'Following the shop\'s setting';
+
+  @override
+  String get billThemeLandscape => 'Landscape (wholesale)';
+
+  @override
+  String get billThemeLandscapeHint =>
+      'The page on its side: HS code, unit, discount and the tax on every line — a full sales tax invoice for a registered shop';
+
+  @override
+  String get billThemeRuled => 'Bill book';
+
+  @override
+  String get billThemeRuledHint =>
+      'Like the stationer\'s bill book: a border, the M/s line, ruled columns, a signature';
+
+  @override
+  String get billThemeElegant => 'Elegant';
+
+  @override
+  String get billThemeElegantHint =>
+      'Serif type and fine rules, for offices and showrooms';
+
+  @override
+  String get billThemeMinimal => 'Minimal';
+
+  @override
+  String get billThemeMinimalHint =>
+      'No fills and no boxes: the name, the goods, the total';
+
+  @override
+  String get billDesignNotTaxInvoice =>
+      'This design does not print every particular of a sales tax invoice. For a registered shop\'s bills choose Sales tax invoice or Landscape.';
+
+  @override
+  String get billDesignSlip => 'Till slip layout';
+
+  @override
+  String get billSlipStandard => 'Standard';
+
+  @override
+  String get billSlipStandardHint => 'As it has always printed';
+
+  @override
+  String get billSlipCompact => 'Compact';
+
+  @override
+  String get billSlipCompactHint =>
+      'Less paper: one line an item where it fits, no rule it does not need';
+
+  @override
+  String get billSlipBigTotal => 'Big total';
+
+  @override
+  String get billSlipBigTotalHint =>
+      'The total and what is owed at double size, for elderly customers';
+
+  @override
+  String get billDesignPerPaper => 'A design for each paper';
+
+  @override
+  String get billDesignPerPaperHint =>
+      'Quotation, challan and purchase order in a design of their own; otherwise the bill\'s. A payment receipt keeps its own single layout.';
+
+  @override
+  String get billDesignSameAsBill => 'As the bill';
+
+  @override
+  String get billDesignDocQuotation => 'Quotation design';
+
+  @override
+  String get billDesignDocChallan => 'Delivery challan design';
+
+  @override
+  String get billDesignDocOrder => 'Purchase order design';
 }

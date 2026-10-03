@@ -25,6 +25,7 @@ import '../users/users_screen.dart';
 import 'bill_design_screen.dart';
 import 'books_lock_screen.dart';
 import 'payment_details_screen.dart';
+import 'receipt_offer_screen.dart'; // M70
 import 'reminder_templates_screen.dart';
 import 'schemes_screen.dart'; // M43
 import 'shop_details_screen.dart';
@@ -206,6 +207,18 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () => Navigator.of(context).push(
                   MaterialPageRoute<void>(
                     builder: (_) => const ReminderTemplatesScreen(),
+                  ),
+                ),
+              ),
+            // M70: the receipt offered when money moves, beside the other
+            // message the shop sends its customers.
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.mark_chat_read_outlined,
+                label: s.settingsReceiptOffer,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const ReceiptOfferScreen(),
                   ),
                 ),
               ),

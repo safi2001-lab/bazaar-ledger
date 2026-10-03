@@ -3677,6 +3677,106 @@ milestones:
       - lib/features/reports/column_chooser.dart
       - lib/features/reports/insight_filters.dart
 
+  - id: M70
+    title: More bills to choose from, and the customer's receipt offered the moment money moves
+    # Opened and sealed 3 Oct 2026 at 5/5. Vyapar's theme list is the first
+    # thing its users name after the bill itself (Tally, GST 1 and 3, Double
+    # Divine, French Elite, Landscape 1 and 2, Vintage), and its "transaction
+    # messages" for a sale, a purchase, a payment in and a sale return carry
+    # the party's balance after it. OkCredit sends a receipt for every khata
+    # entry from the shop's own SIM, switchable per customer; what its users
+    # dislike is a message with no off switch.
+    #
+    # Four more PDF layouts beside M51's four, each a different page and not
+    # a different colour of one: Landscape (wholesale), the sheet on its side
+    # with HS code, unit, rate, discount and, for a registered seller, the
+    # value before tax, the rate, the tax and the value with it on every
+    # line, and both parties' names, addresses, NTN and STRN; Bill book, the
+    # stationer's carbon book — a ruled border round the page, the name in
+    # the shop's colour, "M/s" on a dotted line, every column ruled down with
+    # blank rows under the goods, the total in words, "E. & O.E." and a line
+    # to sign on; Nafees (elegant), Times throughout with the name spaced
+    # between fine double rules and the amount due in italic; and Halka
+    # (minimal), no fills and no boxes, the shop's colour only on the figure
+    # the customer pays. Every one keeps what every layout keeps: CANCELLED
+    # above everything, the sheet's own mark, the transporter's copy with no
+    # figure that is money, the khata as the bill's day had it, the shop's
+    # alias and IBAN as text and its own QR picture (never one made here),
+    # FBR's number, the footer in its own direction, and Urdu set right to
+    # left so the PDF joins it.
+    #
+    # Two till slips beside the one every bill has printed since M2: Compact
+    # (an item on one line where its name, quantity, rate and amount fit
+    # whole, the number and the date on one row, no column heads, no
+    # Subtotal that is the total, the shop's name in the printer's own size)
+    # and Bara total (the total, and what the customer owes after it, twice
+    # the width and height on lines of their own, for the elderly customer
+    # reading the slip at arm's length). Both are built from the standard
+    # layout's own lines and change only what they are for, so a line a
+    # later milestone adds to the bill reaches both slips untouched;
+    # receipt_layout.dart is not edited at all. No line of either overhangs
+    # 48, 42 or 32 columns, a large figure is at most half the paper or
+    # stays in its row, and an Urdu line is still drawn as a picture.
+    #
+    # Settings -> Bill design shows every layout as a picture of its page
+    # with the shop's own name and colour on it, two to a row on a phone;
+    # a quotation, a delivery challan and a purchase order may each have a
+    # layout of their own ("Bill jaisa" until picked); and the slip is
+    # chosen beside the khata block, its preview the printer's own strings.
+    # A registered shop that picks a layout without s.23's particulars is
+    # told so on the screen.
+    #
+    # The receipt offered: after a bill is saved at the counter, money is
+    # taken on a khata, goods come back and a supplier is paid, the party is
+    # offered "Gahak ko raseed": a WhatsApp message in their M39 language
+    # (Urdu in its own script, Roman Urdu or English) saying what moved and
+    # where the khata stands now, and for a bill its PDF or its picture as
+    # well. Each party is asked every time, has WhatsApp opened on their
+    # chat by itself, or is never offered one — chosen on the offer itself
+    # or on their form — and a party nobody set is offered as the shop says
+    # in Settings -> Gahak ko raseed (asked, until the owner says). A walk-in
+    # and a party with no number WhatsApp can reach are never offered one.
+    # Each send is written on the paper's history with M54's share codes —
+    # the bill's or the return's on the document, a payment's on the
+    # payment — with the receipt's kind and language in the row.
+    #
+    # Decided: nothing is ever sent from the app. "Khud bhejein" opens the
+    # chat with the words typed through the same whatsapp:// intent M3 and
+    # M39 use, and a person presses Send; there is no SEND_SMS and no API.
+    # The offer starts after the money is in the books and is never awaited
+    # by the sheet that moved it, so a receipt that cannot be offered never
+    # stands between the shop and the next customer. The shop's default and
+    # each party's choice are rows of the firm's settings through the one
+    # write path, audited and synced; the slip and each paper's layout are
+    # two more fields of M51's bill.design JSON, read forgivingly, so a
+    # design kept before M70 reads as it did and one a later version wrote
+    # falls back field by field. Only the tax invoice and the landscape page
+    # carry s.23's particulars, and only the landscape page of a seller with
+    # an STRN (or a bill that charged tax) calls itself a SALES TAX INVOICE.
+    # No schema change.
+    #
+    # Not built, and why: the payment receipt PDF in the shop's layouts (it
+    # is M31's own page, one layout, and the design screen says so); a
+    # layout of its own for a sale order, a delivery the shop received or a
+    # debit note (drawn as the bill); a colour wheel (M51's six presets are
+    # the ones that read white-on and print as grey); a receipt offered for
+    # a corrected payment, a write-off, a recovery round's money or a
+    # challan (the offer follows money taken or paid, not corrections or
+    # goods); Vyapar's purchase message, to a supplier when their delivery
+    # is recorded (the supplier wrote that bill; what they are told is the
+    # payment, and they are); an SMS route from the offer (the khata's
+    # reminder keeps its sms: intent; the offer is WhatsApp's chat or the
+    # bill's file); knowing whether the customer received it (the intent
+    # tells nobody).
+    state: sealed
+    owns:
+      - packages/pk_platform/lib/src/receipt/bill_pdf_designs.dart
+      - packages/pk_platform/lib/src/receipt/receipt_slip.dart
+      - packages/pk_domain/lib/src/receivables/money_receipt.dart
+      - packages/pk_bootstrap/lib/src/receipt_offer_services.dart
+      - lib/features/sales/receipt_offer.dart
+      - lib/features/settings/receipt_offer_screen.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -9260,3 +9360,62 @@ features:
       - ratio analysis and ABC classes over a year of a wholesaler
       - the attention list, the whole shelf and every open bill
       - ageing in the shop's buckets, and the shelf at its sale price
+  - id: M70-DESIGNS-01
+    milestone: M70
+    title: Four more PDF layouts beside M51's four — a landscape wholesale page carrying every s.23 particular for a registered seller, the ruled bill book, a serif page and a bare one — each a different page, the shop's Urdu name joined, the transporter's copy without money and a quotation never a tax invoice
+    status: done
+    proof:
+      - the new PDF designs each new design renders a real PDF with the shop's Urdu name joined, on A5 and A4
+      - the new PDF designs the four are four different pages
+      - the new PDF designs the landscape page carries every particular s.23 asks for, for a registered seller
+      - the new PDF designs the landscape page of an unregistered shop is an invoice, with gross, discount and net
+      - the new PDF designs a quotation is never called a tax invoice, and a transporter's copy carries no money, in any new design
+      - the new PDF designs a cancelled bill is marked, and the khata of a later copy says it is the bill's own day, in every new design
+      - the new PDF designs nothing in the new renderers can draw a QR of their own
+      - the design kept only the tax invoice and the landscape page carry s.23's particulars
+  - id: M70-SLIPS-01
+    milestone: M70
+    title: Two till slips beside the standard one — compact, an item on one line where it fits whole, and big total, the total and what is owed twice the size — built from the standard layout's own lines, never overhanging 48, 42 or 32 columns, Urdu still drawn
+    status: done
+    proof:
+      - the till slips no line of either slip overhangs 48, 42 or 32 columns
+      - the till slips the compact slip says every word and figure the standard one does, on less paper
+      - the till slips the compact slip puts an item on one line where it fits whole, and keeps two where it does not
+      - the till slips the compact slip prints the shop name in the printer's own size, the standard one twice the size
+      - the till slips the big total slip prints the total and what is owed twice the size, each on a line of its own
+      - the till slips a figure too long for half the paper stays in its row
+      - the till slips an Urdu line on a slip is still drawn, never typed
+      - the till slips a slip nobody chose prints exactly as every bill printed before
+      - the design kept dressing a bill carries the shop's slip to the till roll
+  - id: M70-PICKER-01
+    milestone: M70
+    title: Settings, Bill design shows every layout as a picture of its page with the shop's own name, a quotation, challan and purchase order each in a layout of its own, and the slip chosen with its preview, all kept in the firm's design and read forgivingly
+    status: done
+    proof:
+      - more bills to choose from every design is a picture of its page; the bill book, a quotation of its own and the big total are kept and drawn
+      - the design kept the slip and each paper's layout are kept and read back exactly
+      - the design kept a design kept before M70, or one a later version wrote, still reads
+      - the bill design screen fits a small phone at 200%
+  - id: M70-OFFER-01
+    milestone: M70
+    title: After a bill, money taken on a khata, goods taken back and a supplier paid, the party is offered a WhatsApp receipt in their own language with what moved and the khata as it now stands, and a bill's PDF or picture, each send written on the paper's history
+    status: done
+    proof:
+      - the receipt offered a bill saved at the counter offers its receipt in the customer's language, with what they owe now, and the send is on the bill's history
+      - the receipt offered money taken on the khata offers a receipt in Urdu with what is still owed, recorded on the payment
+      - the receipt offered a supplier paid is offered the voucher with what the shop still owes them
+      - the receipt offered a bill's PDF goes from the offer and is written on its history; a party's own choice is kept on their form
+      - the receipt message a bill says what was billed, what was paid and the khata now, in each of the three languages
+      - the receipt message money taken says so, a cheque as a cheque, and a clear khata is said to be clear
+      - the receipt message goods back say what was handed back; a supplier is told what the shop still owes them
+      - the receipt offered the offer fits a small phone at 200%
+  - id: M70-CHOICE-01
+    milestone: M70
+    title: Each party asked every time, opened by itself or never, on the offer or their form, the shop's default in Settings, nothing ever sent without a person pressing Send, and a walk-in or a party with no number never offered one
+    status: done
+    proof:
+      - the receipt offered goods taken back offer the receipt, and Kabhi nahi is never asked again
+      - the receipt offered Khud bhejein set in Settings opens the chat by itself; a walk-in and a customer with no number are never offered one
+      - the receipt offered a bill's PDF goes from the offer and is written on its history; a party's own choice is kept on their form
+      - the receipt message a choice is kept by its name, and anything else is the shop's
+      - the receipt offered a receipt never goes through a browser, and the app holds no way to send one by itself

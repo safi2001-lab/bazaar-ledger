@@ -24,14 +24,18 @@ import 'shop_pictures.dart';
 /// Vyapar's theme picker is the first thing its users mention after the
 /// bill itself, and its reviews from Pakistan say the same two things: the
 /// Urdu must stay readable, and the shop wants its own name and colour on
-/// the paper, not the app's. Four layouts, six colours, a logo and a footer
-/// in any script cover both, and every one of them goes through the same
-/// renderer the bills do.
+/// the paper, not the app's. Eight layouts (M70 added a landscape page for
+/// wholesale, the ruled bill book, a serif page and a bare one), each shown
+/// as a picture of its page with the shop's own name on it, six colours, a
+/// logo and a footer in any script cover both, and every one of them goes
+/// through the same renderer the bills do. A quotation, a challan and a
+/// purchase order may each have a layout of their own (M70).
 ///
 /// The till roll is not designed here. It is 48 columns of the printer's
-/// own font on every shop's counter; what the owner decides for it is
-/// whether the khata block, the footer and the QR go on it, and the second
-/// preview shows exactly the strings the printer will be handed.
+/// own font on every shop's counter; what the owner decides for it is how
+/// tight it is or how large its total (M70), whether the khata block, the
+/// footer and the QR go on it, and the second preview shows exactly the
+/// strings the printer will be handed.
 class BillDesignScreen extends ConsumerStatefulWidget {
   const BillDesignScreen({super.key});
 
@@ -196,12 +200,28 @@ class _BillDesignScreenState extends ConsumerState<BillDesignScreen> {
                 ),
 
                 BlSectionHeader(s.billDesignLayout),
-                for (final theme in BillTheme.values)
-                  _ThemeTile(
-                    theme: theme,
-                    selected: now.theme == theme,
-                    onTap: () => _set((d) => d.copyWith(theme: theme)),
-                  ),
+                // M70: every design as a picture of its page, the shop's own
+                // name and colour on each, two to a row on a phone.
+                _ThemeGrid(
+                  selected: now.theme,
+                  pictureOf: firm == null
+                      ? null
+                      : (theme) => BillDesignThumbnail(
+                          design: now.copyWith(theme: theme),
+                          receipt: sampleBill(
+                            firm,
+                            now.copyWith(theme: theme),
+                            logo: logo,
+                            paymentQr: qr,
+                          ),
+                        ),
+                  onPick: (theme) => _set((d) => d.copyWith(theme: theme)),
+                ),
+                const SizedBox(height: BlTokens.space1),
+                Text(
+                  themeWords(s, now.theme).$2,
+                  style: TextStyle(fontSize: 12, color: t.inkMuted),
+                ),
                 if (now.theme == BillTheme.taxInvoice &&
                     (firm?.ntn == null || firm?.strn == null))
                   Padding(
@@ -209,6 +229,44 @@ class _BillDesignScreenState extends ConsumerState<BillDesignScreen> {
                     child: Text(
                       s.billDesignTaxNeedsNtn,
                       style: TextStyle(fontSize: 12, color: t.warning),
+                    ),
+                  ),
+                // M70: a registered shop is told which designs are not a
+                // sales tax invoice, rather than finding out from a buyer.
+                if ((firm?.isSalesTaxRegistered ?? false) &&
+                    !now.theme.carriesTaxParticulars)
+                  Padding(
+                    padding: const EdgeInsets.only(top: BlTokens.space1),
+                    child: Text(
+                      s.billDesignNotTaxInvoice,
+                      style: TextStyle(fontSize: 12, color: t.warning),
+                    ),
+                  ),
+
+                // M70: a quotation, a challan and an order in a layout of
+                // their own, if the shop wants one.
+                BlSectionHeader(s.billDesignPerPaper),
+                Text(
+                  s.billDesignPerPaperHint,
+                  style: TextStyle(fontSize: 12, color: t.inkMuted),
+                ),
+                const SizedBox(height: BlTokens.space2),
+                for (final doc in BillDesign.themedDocuments)
+                  _PaperTheme(
+                    label: switch (doc) {
+                      'quotation' => s.billDesignDocQuotation,
+                      'delivery_challan' => s.billDesignDocChallan,
+                      _ => s.billDesignDocOrder,
+                    },
+                    chosen: now.documentThemes[doc],
+                    onPick: (theme) => _set(
+                      (d) => d.copyWith(
+                        documentThemes: {
+                          for (final e in d.documentThemes.entries)
+                            if (e.key != doc) e.key: e.value,
+                          doc: ?theme,
+                        },
+                      ),
                     ),
                   ),
 
@@ -263,6 +321,26 @@ class _BillDesignScreenState extends ConsumerState<BillDesignScreen> {
                       _set((d) => d.copyWith(showPreviousBalance: on)),
                   title: Text(s.billDesignKhata),
                   subtitle: Text(s.billDesignKhataHint),
+                ),
+
+                // M70: the till roll as it always was, tight, or with the
+                // total large; the slip preview below shows it.
+                BlSectionHeader(s.billDesignSlip),
+                Wrap(
+                  spacing: BlTokens.space2,
+                  runSpacing: BlTokens.space1,
+                  children: [
+                    for (final slip in ReceiptSlip.values)
+                      ChoiceChip(
+                        label: Text(slipWords(s, slip).$1),
+                        selected: now.slip == slip,
+                        onSelected: (_) => _set((d) => d.copyWith(slip: slip)),
+                      ),
+                  ],
+                ),
+                Text(
+                  slipWords(s, now.slip).$2,
+                  style: TextStyle(fontSize: 12, color: t.inkMuted),
                 ),
 
                 BlSectionHeader(s.billDesignFooter),
@@ -370,65 +448,138 @@ class _BillDesignScreenState extends ConsumerState<BillDesignScreen> {
       };
 }
 
-/// One layout, as a row a thumb can hit, with what it is for.
-class _ThemeTile extends StatelessWidget {
-  const _ThemeTile({
+//// A layout's name and what it is for (M51; M70's four added).
+(String, String) themeWords(AppStrings s, BillTheme theme) => switch (theme) {
+  BillTheme.classic => (s.billThemeClassic, s.billThemeClassicHint),
+  BillTheme.modern => (s.billThemeModern, s.billThemeModernHint),
+  BillTheme.compact => (s.billThemeCompact, s.billThemeCompactHint),
+  BillTheme.taxInvoice => (s.billThemeTax, s.billThemeTaxHint),
+  BillTheme.landscape => (s.billThemeLandscape, s.billThemeLandscapeHint),
+  BillTheme.ruled => (s.billThemeRuled, s.billThemeRuledHint),
+  BillTheme.elegant => (s.billThemeElegant, s.billThemeElegantHint),
+  BillTheme.minimal => (s.billThemeMinimal, s.billThemeMinimalHint),
+};
+
+/// A till slip's name and what it is for (M70).
+(String, String) slipWords(AppStrings s, ReceiptSlip slip) => switch (slip) {
+  ReceiptSlip.standard => (s.billSlipStandard, s.billSlipStandardHint),
+  ReceiptSlip.compact => (s.billSlipCompact, s.billSlipCompactHint),
+  ReceiptSlip.bigTotal => (s.billSlipBigTotal, s.billSlipBigTotalHint),
+};
+
+/// Every layout as a picture of its page, two to a row on a phone and four
+/// on a tablet (M70). Rows that grow with their words rather than a grid of
+/// fixed cells, so a name at 200% wraps instead of overflowing.
+class _ThemeGrid extends StatelessWidget {
+  const _ThemeGrid({
+    required this.selected,
+    required this.pictureOf,
+    required this.onPick,
+  });
+
+  final BillTheme selected;
+
+  /// Null until the shop is read; the names are offered meanwhile.
+  final Widget Function(BillTheme theme)? pictureOf;
+  final ValueChanged<BillTheme> onPick;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final across = constraints.maxWidth >= 560 ? 4 : 2;
+      const themes = BillTheme.values;
+      return Column(
+        children: [
+          for (var i = 0; i < themes.length; i += across)
+            Padding(
+              padding: const EdgeInsets.only(bottom: BlTokens.space2),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  for (var j = i; j < i + across; j++) ...[
+                    if (j > i) const SizedBox(width: BlTokens.space2),
+                    Expanded(
+                      child: j < themes.length
+                          ? _ThemeThumb(
+                              theme: themes[j],
+                              selected: themes[j] == selected,
+                              picture: pictureOf?.call(themes[j]),
+                              onTap: () => onPick(themes[j]),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+        ],
+      );
+    },
+  );
+}
+
+/// One layout: its page in small, and its name under it, ringed when
+/// chosen so the choice is never carried by colour alone.
+class _ThemeThumb extends StatelessWidget {
+  const _ThemeThumb({
     required this.theme,
     required this.selected,
+    required this.picture,
     required this.onTap,
   });
 
   final BillTheme theme;
   final bool selected;
+  final Widget? picture;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
     final t = context.bl;
-    final (name, hint) = switch (theme) {
-      BillTheme.classic => (s.billThemeClassic, s.billThemeClassicHint),
-      BillTheme.modern => (s.billThemeModern, s.billThemeModernHint),
-      BillTheme.compact => (s.billThemeCompact, s.billThemeCompactHint),
-      BillTheme.taxInvoice => (s.billThemeTax, s.billThemeTaxHint),
-    };
-    return Padding(
-      padding: const EdgeInsets.only(bottom: BlTokens.space2),
-      child: Semantics(
-        selected: selected,
-        button: true,
-        child: BlCard(
-          accent: selected,
-          onTap: onTap,
-          padding: const EdgeInsets.symmetric(
-            horizontal: BlTokens.space4,
-            vertical: BlTokens.space3,
+    final (name, _) = themeWords(s, theme);
+    return Semantics(
+      selected: selected,
+      button: true,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+        child: Container(
+          padding: const EdgeInsets.all(BlTokens.space1),
+          decoration: BoxDecoration(
+            color: selected ? t.surfaceRaised : null,
+            borderRadius: BorderRadius.circular(BlTokens.radiusMd),
+            border: Border.all(
+              color: selected ? t.accent : t.line,
+              width: selected ? 2.5 : 1,
+            ),
           ),
-          child: Row(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(
-                selected ? Icons.radio_button_checked : Icons.radio_button_off,
-                color: selected ? t.accent : t.inkFaint,
-              ),
-              const SizedBox(width: BlTokens.space3),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
+              ?picture,
+              const SizedBox(height: BlTokens.space1),
+              Row(
+                children: [
+                  Icon(
+                    selected
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_off,
+                    size: 18,
+                    color: selected ? t.accent : t.inkFaint,
+                  ),
+                  const SizedBox(width: BlTokens.space1),
+                  Expanded(
+                    child: Text(
                       name,
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 13,
                         fontWeight: FontWeight.w700,
                         color: t.ink,
                       ),
                     ),
-                    Text(
-                      hint,
-                      style: TextStyle(fontSize: 12, color: t.inkMuted),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -438,7 +589,113 @@ class _ThemeTile extends StatelessWidget {
   }
 }
 
-/// One colour. Named for a screen reader, and ringed when chosen, so the
+/// One paper's own layout (M70): its name and what it is drawn in, a tap
+/// from the list to choose from. "As the bill" until the shop picks one.
+class _PaperTheme extends StatelessWidget {
+  const _PaperTheme({
+    required this.label,
+    required this.chosen,
+    required this.onPick,
+  });
+
+  final String label;
+  final BillTheme? chosen;
+  final ValueChanged<BillTheme?> onPick;
+
+  Future<void> _choose(BuildContext context) async {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    // A record, so "as the bill" (null) and "closed without choosing" are
+    // two different answers.
+    final picked = await showModalBottomSheet<({BillTheme? theme})>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (sheet) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(BlTokens.space4),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: t.ink,
+                ),
+              ),
+              const SizedBox(height: BlTokens.space2),
+              for (final option in <BillTheme?>[null, ...BillTheme.values])
+                ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: Icon(
+                    option == chosen
+                        ? Icons.radio_button_checked
+                        : Icons.radio_button_off,
+                    color: option == chosen ? t.accent : t.inkFaint,
+                  ),
+                  title: Text(
+                    option == null
+                        ? s.billDesignSameAsBill
+                        : themeWords(s, option).$1,
+                  ),
+                  onTap: () => Navigator.of(sheet).pop((theme: option)),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+    if (picked != null) onPick(picked.theme);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final s = AppStrings.of(context);
+    final t = context.bl;
+    final chosen = this.chosen;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: BlTokens.space2),
+      child: BlCard(
+        onTap: () => unawaited(_choose(context)),
+        padding: const EdgeInsets.symmetric(
+          horizontal: BlTokens.space4,
+          vertical: BlTokens.space3,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    label,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: t.ink,
+                    ),
+                  ),
+                  Text(
+                    chosen == null
+                        ? s.billDesignSameAsBill
+                        : themeWords(s, chosen).$1,
+                    style: TextStyle(fontSize: 12, color: t.inkMuted),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.chevron_right, color: t.inkFaint),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// One colour. Named for a screen reader, and ringed when chosen, so the
 /// choice is never carried by colour alone.
 class _Swatch extends StatelessWidget {
   const _Swatch({

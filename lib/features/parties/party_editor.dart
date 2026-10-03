@@ -13,6 +13,7 @@ import '../audit/history_screen.dart';
 import '../khata/opening_balance_sheet.dart';
 import '../khata/reminder_queue_screen.dart' show reminderLanguageName;
 import '../loyalty/party_prices_screen.dart'; // M66
+import '../sales/receipt_offer.dart' show ReceiptOfferField; // M70
 import '../subscription/plans_screen.dart';
 import 'party_groups.dart';
 import 'quick_party_sheet.dart' show creditDaysFrom;
@@ -592,6 +593,7 @@ class _PartyEditorScreenState extends ConsumerState<PartyEditorScreen> {
                             contentPadding: EdgeInsets.zero,
                             title: Text(s.partyReminderOptOut),
                           ),
+                          if (_isEdit) ReceiptOfferField(partyId: widget.party!.id), // M70
                           if (_isEdit) AttachmentStrip(owner: AttachmentOwner.party(widget.party!.id)), // M60
                           if (_failure != null) ...[
                             const SizedBox(height: BlTokens.space4),

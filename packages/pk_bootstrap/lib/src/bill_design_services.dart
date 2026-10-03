@@ -237,7 +237,9 @@ extension BillDesignServices on AppServices {
     final base = await queries.receiptFor(firm.id, documentId);
     if (base == null) return null;
     final extras = await queries.billExtras(firm.id, documentId);
-    final look = design ?? await billDesign();
+    // M70: a quotation, a challan or a purchase order in the layout the
+    // shop gave that paper, if it gave one.
+    final look = (design ?? await billDesign()).forDocument(extras?.docType);
     final logo = await shopLogo();
     final qr = await paymentQr();
     final dots = thermal != null && look.qrOnThermal && qr != null

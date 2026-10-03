@@ -8,6 +8,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import 'receipt_offer.dart' show offerAfterReturn; // M70
 
 /// Taking goods back off a bill.
 ///
@@ -136,6 +137,7 @@ class _SheetState extends ConsumerState<_ReturnSheet> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(s.returnDone(recorded.docNo))));
+      offerAfterReturn(Navigator.of(context), recorded); // M70
       Navigator.of(context).pop(true);
     } on ReturnRefused catch (refusal) {
       // Its own sentence, not a stack trace. Every refusal here names a

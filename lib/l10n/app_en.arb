@@ -2542,7 +2542,7 @@
   "transportBilty": "Bilty no",
   "transportShipTo": "Ship to",
   "settingsBillDesign": "Bill design",
-  "billDesignIntro": "How your PDF bills look: layout, colour, logo and payment QR. The till slip stays as it is; only the balance block, the footer and the QR are decided for it here.",
+  "billDesignIntro": "How your PDF bills look: layout, colour, logo and payment QR. The till slip prints in the printer's own font; its layout (standard, compact or big total), the balance block, the footer and the QR are decided for it here.",
   "billDesignLayout": "Layout",
   "billThemeClassic": "Classic",
   "billThemeClassicHint": "The shop name centred, like a bill book from the stationer",
@@ -5198,5 +5198,60 @@
       "amount": {"type": "String"},
       "before": {"type": "String"}
     }
-  }
+  },
+  "receiptOfferTitle": "Send {name} a receipt?",
+  "@receiptOfferTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "receiptOfferWhatsApp": "Receipt on WhatsApp",
+  "receiptOfferPdf": "Bill as PDF",
+  "receiptOfferPicture": "Bill as a picture",
+  "receiptOfferLater": "Not now",
+  "receiptOfferFromNow": "From now on, for this party",
+  "receiptOfferAsk": "Ask every time",
+  "receiptOfferAuto": "Open WhatsApp by itself",
+  "receiptOfferNever": "Never",
+  "receiptOfferNote": "WhatsApp opens on this party's chat on your phone with the message written. You press Send — the app never sends anything by itself.",
+  "receiptOfferNoWhatsApp": "WhatsApp did not open",
+  "receiptOfferKept": "{name}: {choice}",
+  "@receiptOfferKept": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "choice": {"type": "String"}
+    }
+  },
+  "settingsReceiptOffer": "Receipts to customers",
+  "receiptOfferSettingsIntro": "Right after a bill, a payment taken, goods returned or a supplier paid: a WhatsApp message in their language saying what happened and where the khata stands now. Only to parties with a mobile number; never to a walk-in.",
+  "receiptOfferDefaultTitle": "For everyone not set on their own",
+  "receiptOfferAskHint": "Asked each time: WhatsApp, PDF or not now",
+  "receiptOfferAutoHint": "WhatsApp opens by itself with the message written; you press Send",
+  "receiptOfferNeverHint": "Nothing is offered",
+  "receiptOfferPerParty": "Each party on their own: on their form, or when a receipt is offered",
+  "receiptOfferSaved": "Saved",
+  "partyReceiptOffer": "Money receipts on WhatsApp",
+  "partyReceiptOfferShop": "Following the shop's setting",
+  "billThemeLandscape": "Landscape (wholesale)",
+  "billThemeLandscapeHint": "The page on its side: HS code, unit, discount and the tax on every line — a full sales tax invoice for a registered shop",
+  "billThemeRuled": "Bill book",
+  "billThemeRuledHint": "Like the stationer's bill book: a border, the M/s line, ruled columns, a signature",
+  "billThemeElegant": "Elegant",
+  "billThemeElegantHint": "Serif type and fine rules, for offices and showrooms",
+  "billThemeMinimal": "Minimal",
+  "billThemeMinimalHint": "No fills and no boxes: the name, the goods, the total",
+  "billDesignNotTaxInvoice": "This design does not print every particular of a sales tax invoice. For a registered shop's bills choose Sales tax invoice or Landscape.",
+  "billDesignSlip": "Till slip layout",
+  "billSlipStandard": "Standard",
+  "billSlipStandardHint": "As it has always printed",
+  "billSlipCompact": "Compact",
+  "billSlipCompactHint": "Less paper: one line an item where it fits, no rule it does not need",
+  "billSlipBigTotal": "Big total",
+  "billSlipBigTotalHint": "The total and what is owed at double size, for elderly customers",
+  "billDesignPerPaper": "A design for each paper",
+  "billDesignPerPaperHint": "Quotation, challan and purchase order in a design of their own; otherwise the bill's. A payment receipt keeps its own single layout.",
+  "billDesignSameAsBill": "As the bill",
+  "billDesignDocQuotation": "Quotation design",
+  "billDesignDocChallan": "Delivery challan design",
+  "billDesignDocOrder": "Purchase order design"
 }

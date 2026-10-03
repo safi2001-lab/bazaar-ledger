@@ -24,6 +24,7 @@ export 'src/receipt/label_renderer.dart';
 export 'src/receipt/payment_receipt_pdf.dart';
 export 'src/receipt/printable.dart';
 export 'src/receipt/receipt_layout.dart';
+export 'src/receipt/receipt_slip.dart'; // M70
 export 'src/receipt/thermal_receipt_renderer.dart';
 export 'src/security/pin_hasher.dart';
 export 'src/storage/file_draft_store.dart';

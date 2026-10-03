@@ -465,6 +465,7 @@ final class ReceiptData {
     this.transport = ReceiptTransport.none,
     this.billOwed,
     this.paymentQr,
+    this.slip = ReceiptSlip.standard, // M70
     this.serviceTaxes = const [],
     this.extraChargesLabel = 'Other Charges',
   });
@@ -550,6 +551,12 @@ final class ReceiptData {
   /// SBP QR standard contemplates.
   final Uint8List? paymentQr;
 
+  /// How the till roll is laid out (M70): as every bill has printed since
+  /// M2, tight to save paper, or with the total and what is owed printed
+  /// large. The shop's choice, carried from its design by [dressBill]; the
+  /// PDF has its own layouts and never reads it.
+  final ReceiptSlip slip;
+
   /// Which sheet this is, when somebody chose (M51). Null leaves it to
   /// [isReprint], which is what every bill printed before M51 relied on.
   final ReceiptCopy? copy;
@@ -615,6 +622,7 @@ final class ReceiptData {
     List<String>? footerLines,
     MonoBitmap? bankQr,
     Uint8List? paymentQr,
+    ReceiptSlip? slip, // M70
     ReceiptCopy? copy,
     String? customerAddress,
     String? customerNtn,
@@ -646,6 +654,7 @@ final class ReceiptData {
     footerLines: footerLines ?? this.footerLines,
     bankQr: bankQr ?? this.bankQr,
     paymentQr: paymentQr ?? this.paymentQr,
+    slip: slip ?? this.slip, // M70
     fbrInvoiceNo: fbrInvoiceNo,
     fbrPending: fbrPending,
     isReprint: isReprint ?? this.isReprint,
@@ -768,11 +777,14 @@ abstract interface class ReceiptRenderer {
   });
 }
 
-/// The four ways a PDF bill can look (M51).
+/// The ways a PDF bill can look: four since M51, eight since M70.
 ///
 /// Few on purpose. Vyapar offers a dozen, and what shopkeepers ask for in
 /// its reviews is not a thirteenth but that the one they picked keeps the
-/// Urdu readable and the totals where they expect them.
+/// Urdu readable and the totals where they expect them. M70 added the four
+/// Vyapar's list is asked for by — a landscape page for wholesale, the
+/// ruled bill book, a serif page and a bare one — each a different page,
+/// not a different colour of the same one.
 enum BillTheme {
   /// Centred, black on white, the shop's colour in its rules: what a bill
   /// book from the stationer looks like.
@@ -789,11 +801,67 @@ enum BillTheme {
   /// asks for: the seller's and the buyer's names, addresses and
   /// registration numbers, and for every line the value excluding tax, the
   /// rate, the tax and the value including it.
-  taxInvoice;
+  taxInvoice,
+
+  /// M70: the page on its side, for a wholesaler's bill with more columns
+  /// than a portrait sheet holds — HS code, unit, rate, discount, the value
+  /// before tax, the rate, the tax and the value with it on every line, and
+  /// both parties' registration numbers. It carries every particular
+  /// [taxInvoice] does, so a registered shop may choose either.
+  landscape,
+
+  /// M70: the bill book from the stationer — the page ruled in a box, the
+  /// shop's name in a panel, "M/s" over a line for the buyer, every column
+  /// ruled down to the foot of the table with blank rows under the goods,
+  /// and a line for the signature: the carbon-copy book shops still keep
+  /// under the counter.
+  ruled,
+
+  /// M70: a serif face, the name spaced across the head between fine
+  /// double rules, hairlines between the lines, the amount due in italic.
+  /// For a shop whose customers are offices and showrooms.
+  elegant,
+
+  /// M70: no fills and no boxes — the name, the lines, the total, and
+  /// space. The shop's colour only on the figure the customer pays.
+  minimal;
+
+  /// M70: whether this layout carries every particular s.23 of the Sales
+  /// Tax Act asks for. The others are not tax invoices, and the design
+  /// screen says so to a registered shop that picks one.
+  bool get carriesTaxParticulars => this == taxInvoice || this == landscape;
 
   static BillTheme parse(Object? value) => BillTheme.values.firstWhere(
     (t) => t.name == value,
     orElse: () => BillTheme.classic,
+  );
+}
+
+/// How the till roll is laid out (M70).
+///
+/// The till roll has no design of its own — it is the printer's own font,
+/// forty-eight columns or thirty-two — but how much paper a bill takes, and
+/// how large the figure the customer pays is printed, are the shop's call.
+/// Vyapar's 2-inch slip is the one its reviews say wastes paper; an elderly
+/// customer at a kiryana counter reads the total off the slip at arm's
+/// length.
+enum ReceiptSlip {
+  /// As every bill has printed since M2.
+  standard,
+
+  /// One line an item where the name, the quantity and the amount fit on
+  /// one; the number and the date on one row; no column heads and no rule a
+  /// section does not need; the shop's name in the printer's own size. The
+  /// same words and figures, on less paper.
+  compact,
+
+  /// The total, and what the customer owes after it, printed twice the
+  /// size, each on a line of its own; everything else as standard.
+  bigTotal;
+
+  static ReceiptSlip parse(Object? value) => ReceiptSlip.values.firstWhere(
+    (s) => s.name == value,
+    orElse: () => ReceiptSlip.standard,
   );
 }
 
@@ -848,11 +916,22 @@ final class BillDesign {
     this.showPreviousBalance = true,
     this.qrOnThermal = false,
     this.footerLines = defaultFooter,
+    this.slip = ReceiptSlip.standard, // M70
+    this.documentThemes = const {}, // M70
   });
 
   /// The line every bill has said since M2, in the firm's settings key
   /// `bill.design`.
   static const settingKey = 'bill.design';
+
+  /// M70: the papers a shop may give a layout of their own, by doc_type. A
+  /// sale bill is drawn in [theme] itself; any paper not named here, or
+  /// named and left alone, is drawn as the bill is.
+  static const themedDocuments = [
+    'quotation',
+    'delivery_challan',
+    'purchase_order',
+  ];
 
   /// The thank-you line the receipt read puts on every bill a customer is
   /// handed. Replaced, never added to, by the shop's own footer.
@@ -881,6 +960,23 @@ final class BillDesign {
   /// script the shop typed them. Empty means no footer at all.
   final List<String> footerLines;
 
+  /// M70: how the till roll is laid out.
+  final ReceiptSlip slip;
+
+  /// M70: a layout of its own for a quotation, a challan or a purchase
+  /// order, by doc_type. Empty: every paper is drawn in [theme].
+  final Map<String, BillTheme> documentThemes;
+
+  /// M70: the layout [docType] is drawn in.
+  BillTheme themeFor(String? docType) => documentThemes[docType] ?? theme;
+
+  /// M70: this design as [docType] is drawn in it — the same colour, page,
+  /// footer and slip, in that paper's own layout.
+  BillDesign forDocument(String? docType) {
+    final own = themeFor(docType);
+    return own == theme ? this : copyWith(theme: own);
+  }
+
   BillDesign copyWith({
     BillTheme? theme,
     BillAccent? accent,
@@ -888,6 +984,8 @@ final class BillDesign {
     bool? showPreviousBalance,
     bool? qrOnThermal,
     List<String>? footerLines,
+    ReceiptSlip? slip, // M70
+    Map<String, BillTheme>? documentThemes, // M70
   }) => BillDesign(
     theme: theme ?? this.theme,
     accent: accent ?? this.accent,
@@ -895,6 +993,8 @@ final class BillDesign {
     showPreviousBalance: showPreviousBalance ?? this.showPreviousBalance,
     qrOnThermal: qrOnThermal ?? this.qrOnThermal,
     footerLines: footerLines ?? this.footerLines,
+    slip: slip ?? this.slip,
+    documentThemes: documentThemes ?? this.documentThemes,
   );
 
   /// [lines] as they are kept: trimmed, blanks dropped, each cut to
@@ -911,6 +1011,11 @@ final class BillDesign {
     'previousBalance': showPreviousBalance,
     'qrOnThermal': qrOnThermal,
     'footer': footerLines,
+    'slip': slip.name, // M70
+    'themes': {
+      for (final MapEntry(:key, :value) in documentThemes.entries)
+        key: value.name,
+    }, // M70
   });
 
   static BillDesign fromJson(String? json) {
@@ -934,7 +1039,21 @@ final class BillDesign {
       footerLines: footer is List
           ? tidyFooter(footer.whereType<String>())
           : defaultFooter,
+      slip: ReceiptSlip.parse(decoded['slip']), // M70
+      documentThemes: _themesOf(decoded['themes']), // M70
     );
+  }
+
+  /// M70: the per-paper layouts as kept. A paper this version does not
+  /// theme, or a layout it does not know, is drawn as the bill is rather
+  /// than refused.
+  static Map<String, BillTheme> _themesOf(Object? kept) {
+    if (kept is! Map) return const {};
+    return {
+      for (final doc in themedDocuments)
+        for (final theme in BillTheme.values)
+          if (kept[doc] == theme.name) doc: theme,
+    };
   }
 
   @override
@@ -945,7 +1064,9 @@ final class BillDesign {
       other.pageSize == pageSize &&
       other.showPreviousBalance == showPreviousBalance &&
       other.qrOnThermal == qrOnThermal &&
-      _sameLines(other.footerLines, footerLines);
+      _sameLines(other.footerLines, footerLines) &&
+      other.slip == slip && // M70
+      _sameThemes(other.documentThemes, documentThemes);
 
   @override
   int get hashCode => Object.hash(
@@ -955,7 +1076,12 @@ final class BillDesign {
     showPreviousBalance,
     qrOnThermal,
     Object.hashAll(footerLines),
+    slip, // M70
+    Object.hashAll([for (final doc in themedDocuments) documentThemes[doc]]),
   );
+
+  static bool _sameThemes(Map<String, BillTheme> a, Map<String, BillTheme> b) =>
+      a.length == b.length && a.entries.every((e) => b[e.key] == e.value);
 
   static bool _sameLines(List<String> a, List<String> b) {
     if (a.length != b.length) return false;
@@ -1037,6 +1163,7 @@ ReceiptData dressBill(
     shop: logo == null ? null : base.shop.withLogoImage(logo),
     paymentQr: paymentQr,
     bankQr: paymentQrDots,
+    slip: design.slip, // M70
   );
 }
 

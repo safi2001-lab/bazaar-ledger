@@ -7,7 +7,7 @@ import 'bill_pdf.dart';
 import 'escpos.dart';
 import 'fbr_qr.dart';
 import 'printable.dart';
-import 'receipt_layout.dart';
+import 'receipt_slip.dart'; // M70
 
 /// Renders receipts to thermal bytes and to PDF.
 ///
@@ -24,7 +24,6 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
     bool cut = true,
     Map<String, MonoBitmap> drawn = const {},
   }) {
-    final layout = ReceiptLayout(paper: paper);
     final out = EscPos()
       ..initialise()
       // PC437. The receipt is Roman Urdu in Latin script, so the ASCII path
@@ -56,21 +55,43 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
       // marks, and question marks on the top line of every receipt a shop
       // hands out is not a thing to ship.
       out.raster(nameBitmap);
+    } else if (data.slip == ReceiptSlip.compact) {
+      // M70: the compact slip spends no paper on a name twice the size.
+      out
+        ..bold()
+        ..lines(_wrapAt(name, paper.columns))
+        ..bold(on: false);
     } else {
       out
         ..bold()
         ..size(width: 2, height: 2)
-        ..lines(_wrapDouble(name, paper))
+        ..lines(_wrapAt(name, paper.columns ~/ 2))
         ..size()
         ..bold(on: false);
     }
     out.align(EscPosAlign.left);
 
-    final lines = layout.render(data);
-    // The shop name is drawn double-size above, so drop the layout's own copy
-    // of it rather than printing it twice.
-    final nameLines = _headerNameLineCount(data, layout);
-    for (final line in lines.skip(nameLines)) {
+    // M70: the slip the shop chose, from the standard layout's own lines.
+    final lines = slipLines(data, paper);
+    // The shop name is drawn above, so drop the layout's own copy of it
+    // rather than printing it twice.
+    final nameLines = _headerNameLineCount(data, [
+      for (final l in lines) l.text,
+    ]);
+    for (final slip in lines.skip(nameLines)) {
+      if (slip.big) {
+        // M70: the total and what is owed, twice the size, centred.
+        out
+          ..align(EscPosAlign.centre)
+          ..bold()
+          ..size(width: 2, height: 2)
+          ..line(slip.text)
+          ..size()
+          ..bold(on: false)
+          ..align(EscPosAlign.left);
+        continue;
+      }
+      final line = slip.text;
       final bitmap = drawn[line];
       if (bitmap == null) {
         // Either it is Latin, or nobody supplied a picture of it. The encoder
@@ -127,10 +148,10 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
     ReceiptData data, {
     ReceiptPaper paper = ReceiptPaper.mm80,
   }) {
-    final layout = ReceiptLayout(paper: paper);
+    // M70: the lines of the slip the shop chose.
+    final lines = slipPreview(data, paper);
     final needed = <String>{};
-    for (final line
-        in layout.render(data).skip(_headerNameLineCount(data, layout))) {
+    for (final line in lines.skip(_headerNameLineCount(data, lines))) {
       if (line.trim().isEmpty) continue;
       if (!isPrintableLatin(line)) needed.add(line);
     }
@@ -148,7 +169,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   List<String> toPreview(
     ReceiptData data, {
     ReceiptPaper paper = ReceiptPaper.mm80,
-  }) => ReceiptLayout(paper: paper).render(data);
+  }) => slipPreview(data, paper); // M70: as the shop's slip lays it out
 
   @override
   Future<Uint8List> toPdf(
@@ -171,8 +192,7 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
 
   /// How many of the layout's leading lines are the shop name, so the caller
   /// can skip them after drawing it double-size.
-  static int _headerNameLineCount(ReceiptData data, ReceiptLayout layout) {
-    final rendered = layout.render(data);
+  static int _headerNameLineCount(ReceiptData data, List<String> rendered) {
     // All whitespace, not only spaces. `_wrap` splits on `\s+`, so a tab or
     // a newline pasted into the shop name from a form left the name unmatched
     // on the first line, the count at zero, and the name printed twice.
@@ -198,8 +218,10 @@ final class ThermalReceiptRenderer implements ReceiptRenderer {
   /// shop the preview showed in full, which breaks the one promise this file
   /// makes: what the shopkeeper approves on screen is what comes out of the
   /// machine.
-  static List<String> _wrapDouble(String s, ReceiptPaper paper) {
-    final max = paper.columns ~/ 2;
+  ///
+  /// M70: [max] is the columns the name has — half the paper at double
+  /// size, all of it on the compact slip.
+  static List<String> _wrapAt(String s, int max) {
     final out = <String>[];
     var current = '';
     for (final word in s.split(RegExp(r'\s+'))) {

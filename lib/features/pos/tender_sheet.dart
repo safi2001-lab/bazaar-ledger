@@ -17,6 +17,7 @@ import '../mobile/qist_sheet.dart'; // M50
 import '../parties/party_groups.dart' show PartyRemarksLine;
 import '../parties/party_picker.dart';
 import '../pharmacy/pharmacy_gate.dart';
+import '../sales/receipt_offer.dart' show offerAfterSale; // M70
 import '../sales/receipt_screen.dart';
 import '../subscription/plans_screen.dart';
 import '../tax/counter_tax.dart'; // M59
@@ -659,6 +660,7 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       // Home is the first route, so this names where to stop rather than how
       // many times to go, and it cannot overshoot.
       navigator.popUntil((route) => route.isFirst);
+      offerAfterSale(navigator, posted); // M70
       await navigator.push(
         MaterialPageRoute<void>(
           builder: (_) =>

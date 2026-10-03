@@ -2656,7 +2656,7 @@
   "transportBilty": "Bilty no",
   "transportShipTo": "Kahan bhejna hai",
   "settingsBillDesign": "Bill ka design",
-  "billDesignIntro": "PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip waisi hi rehti hai; us par sirf baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.",
+  "billDesignIntro": "PDF bill ka andaaz: design, rang, logo aur payment QR. Thermal slip printer ke apne font mein chhapti hai; us ka andaaz (aam, compact ya bara total), baqaya, neeche ki likhai aur QR ka faisla yahan hota hai.",
   "billDesignLayout": "Design",
   "billThemeClassic": "Saada",
   "billThemeClassicHint": "Beech mein dukan ka naam, saada kaghaz jaisa",
@@ -5523,5 +5523,60 @@
       "amount": {"type": "String"},
       "before": {"type": "String"}
     }
-  }
+  },
+  "receiptOfferTitle": "{name} ko raseed bhejein?",
+  "@receiptOfferTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "receiptOfferWhatsApp": "WhatsApp par raseed",
+  "receiptOfferPdf": "Bill ki PDF",
+  "receiptOfferPicture": "Bill ki tasveer",
+  "receiptOfferLater": "Abhi nahi",
+  "receiptOfferFromNow": "Is gahak ko aage se",
+  "receiptOfferAsk": "Har dafa poochhein",
+  "receiptOfferAuto": "Khud bhejein",
+  "receiptOfferNever": "Kabhi nahi",
+  "receiptOfferNote": "WhatsApp aap ke phone par isi gahak ki chat par khulega, message likha hua. Send aap khud dabayenge — app khud kabhi kuch nahi bhejta.",
+  "receiptOfferNoWhatsApp": "WhatsApp nahi khula",
+  "receiptOfferKept": "{name}: {choice}",
+  "@receiptOfferKept": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "choice": {"type": "String"}
+    }
+  },
+  "settingsReceiptOffer": "Gahak ko raseed",
+  "receiptOfferSettingsIntro": "Bill, wusooli, maal wapsi aur supplier ki adaigi ke foran baad us ki zabaan mein WhatsApp message: kya hua aur ab hisaab kitna hai. Sirf jin ka mobile number hai; aam gahak ko kabhi nahi.",
+  "receiptOfferDefaultTitle": "Jin ka alag nahi chuna",
+  "receiptOfferAskHint": "Har dafa poochha jayega: WhatsApp, PDF ya abhi nahi",
+  "receiptOfferAutoHint": "WhatsApp khud khulega, message likha hua; Send aap dabayenge",
+  "receiptOfferNeverHint": "Kuch nahi poochha jayega",
+  "receiptOfferPerParty": "Har gahak ka alag: gahak ke form mein, ya raseed bhejte waqt",
+  "receiptOfferSaved": "Mehfooz ho gaya",
+  "partyReceiptOffer": "Paisay ki raseed WhatsApp par",
+  "partyReceiptOfferShop": "Abhi dukan ki setting chal rahi hai",
+  "billThemeLandscape": "Landscape (wholesale)",
+  "billThemeLandscapeHint": "Safha leta hua: HS code, unit, discount aur har line ka tax — registered dukan ke liye poora sales tax invoice",
+  "billThemeRuled": "Bill book",
+  "billThemeRuledHint": "Stationer ki bill book jaisa: border, M/s ki line, khaane, dastkhat",
+  "billThemeElegant": "Nafees",
+  "billThemeElegantHint": "Serif likhai aur baareek lakeerein, dafatir aur showroom ke liye",
+  "billThemeMinimal": "Halka",
+  "billThemeMinimalHint": "Na rang ki patti na dabbe: naam, cheezen, total",
+  "billDesignNotTaxInvoice": "Yeh design sales tax invoice ki har tafseel nahi chhapta. Registered dukan ke bill ke liye Sales tax invoice ya Landscape chunein.",
+  "billDesignSlip": "Thermal slip ka andaaz",
+  "billSlipStandard": "Aam",
+  "billSlipStandardHint": "Jaisi hamesha chhapti hai",
+  "billSlipCompact": "Compact",
+  "billSlipCompactHint": "Kam kaghaz: har cheez ek line mein jahan aa sake, faltu lakeerein nahi",
+  "billSlipBigTotal": "Bara total",
+  "billSlipBigTotalHint": "Total aur baqaya dugne size mein, buzurg gahakon ke liye",
+  "billDesignPerPaper": "Har kaghaz ka design",
+  "billDesignPerPaperHint": "Quotation, challan aur purchase order ka alag design; warna bill wala. Paisay ki raseed ka apna ek design hai.",
+  "billDesignSameAsBill": "Bill jaisa",
+  "billDesignDocQuotation": "Quotation ka design",
+  "billDesignDocChallan": "Delivery challan ka design",
+  "billDesignDocOrder": "Purchase order ka design"
 }

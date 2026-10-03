@@ -35,6 +35,7 @@ part 'pharmacy_services.dart';
 part 'photo_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
+part 'receipt_offer_services.dart'; // M70
 part 'recurring_services.dart'; // M63
 part 'recycle_services.dart';
 part 'scheme_services.dart'; // M43

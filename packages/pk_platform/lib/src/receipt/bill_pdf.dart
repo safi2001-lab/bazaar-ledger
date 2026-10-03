@@ -6,10 +6,14 @@ import 'package:pk_domain/pk_domain.dart';
 
 import 'printable.dart';
 
+part 'bill_pdf_designs.dart'; // M70
+
 /// A bill as a PDF, in the shop's own design (M51).
 ///
 /// Four layouts — classic, modern, compact and the sales tax invoice — in
-/// the shop's colour, with its logo, on A5 or A4. Every one of them is the
+/// the shop's colour, with its logo, on A5 or A4; and since M70 four more,
+/// in `bill_pdf_designs.dart`: a landscape page for wholesale, the ruled
+/// bill book, a serif page and a bare one. Every one of them is the
 /// same bill: the same lines, the same totals, the same marks. What changes
 /// is where things sit and how loud they are, never what is said.
 ///
@@ -71,14 +75,24 @@ Future<Uint8List> billPdf(
   );
 
   final bill = _Bill(data, design);
+  final sheet =
+      format ??
+      (design.pageSize == BillPageSize.a4
+          ? PdfPageFormat.a4
+          : PdfPageFormat.a5);
   doc.addPage(
     pw.MultiPage(
-      pageFormat:
-          format ??
-          (design.pageSize == BillPageSize.a4
-              ? PdfPageFormat.a4
-              : PdfPageFormat.a5),
-      margin: pw.EdgeInsets.all(bill.compact ? 18 : 24),
+      // M70: the landscape layout turns the sheet on its side, and the
+      // ruled bill book draws its border behind every page.
+      pageTheme: pw.PageTheme(
+        pageFormat: design.theme == BillTheme.landscape
+            ? sheet.landscape
+            : sheet,
+        margin: pw.EdgeInsets.all(bill.compact ? 18 : bill.m70Margin),
+        buildBackground: design.theme == BillTheme.ruled
+            ? bill.ruledBackground
+            : null,
+      ),
       // MultiPage, not Page: a wholesale bill of forty lines is the bill a
       // distributor prints, and it must paginate rather than clip. The shop
       // and the bill's number repeat on every sheet after the first, so page
@@ -124,14 +138,22 @@ final class _Bill {
   final mono = pw.Font.courier();
   final monoBold = pw.Font.courierBold();
 
+  // M70: the elegant layout's face. Times' figures are all one width, so a
+  // column of money in it lines up as Courier's does.
+  final serif = pw.Font.times();
+  final serifBold = pw.Font.timesBold();
+  final serifItalic = pw.Font.timesItalic();
+  final serifBoldItalic = pw.Font.timesBoldItalic();
+
   bool get compact => design.theme == BillTheme.compact;
   bool get modern => design.theme == BillTheme.modern;
   bool get taxInvoice => design.theme == BillTheme.taxInvoice;
   bool get money => d.showsMoney;
 
   /// The body size: one point smaller on the compact layout, which is the
-  /// whole of how it fits a wholesale bill on one sheet.
-  double get size => compact ? 8 : 9;
+  /// whole of how it fits a wholesale bill on one sheet — and on the
+  /// landscape one (M70), whose page carries twelve columns.
+  double get size => compact || design.theme == BillTheme.landscape ? 8 : 9;
 
   static PdfColor _tintOf(PdfColor c) => PdfColor(
     c.red + (1 - c.red) * 0.9,
@@ -226,7 +248,16 @@ final class _Bill {
 
   // --- The page ---------------------------------------------------------------
 
-  List<pw.Widget> body() => [
+  List<pw.Widget> body() => switch (design.theme) {
+    // M70: the four layouts added since, each its own page.
+    BillTheme.landscape ||
+    BillTheme.ruled ||
+    BillTheme.elegant ||
+    BillTheme.minimal => m70Body(),
+    _ => m51Body(),
+  };
+
+  List<pw.Widget> m51Body() => [
     head(),
     pw.SizedBox(height: compact ? 6 : 8),
     ...marks(),
@@ -263,6 +294,12 @@ final class _Bill {
     BillTheme.modern => _modernHead(),
     BillTheme.compact => _compactHead(),
     BillTheme.taxInvoice => _taxHead(),
+    // M70: their heads are their own (bill_pdf_designs.dart); never asked
+    // here, since their body is.
+    BillTheme.landscape ||
+    BillTheme.ruled ||
+    BillTheme.elegant ||
+    BillTheme.minimal => _classicHead(),
   };
 
   pw.Widget _classicHead() => pw.Column(
@@ -739,6 +776,8 @@ final class _Bill {
       BillTheme.classic => const pw.BoxDecoration(color: PdfColors.grey300),
       BillTheme.compact => const pw.BoxDecoration(),
       BillTheme.taxInvoice => pw.BoxDecoration(color: tint),
+      // M70: never reached; their lines are their own.
+      _ => const pw.BoxDecoration(),
     };
     final border = switch (design.theme) {
       BillTheme.compact || BillTheme.modern => pw.TableBorder(

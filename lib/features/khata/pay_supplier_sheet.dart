@@ -9,6 +9,7 @@ import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../cheques/cheque_fields.dart';
+import '../sales/receipt_offer.dart' show offerAfterSupplierPayment; // M70
 import '../subscription/plans_screen.dart';
 import 'entry_actions.dart';
 import 'khata_providers.dart';
@@ -149,8 +150,10 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
       );
       final editing = widget.editing;
       final String said;
+      RecordedReceipt? made; // M70
       if (editing == null) {
         final paid = await services.paySupplier(services.actorNow(), draft);
+        made = paid; // M70
         said = s.paySaved(paid.amount.amountOnly);
       } else {
         // One act: the old payment cancelled and the corrected one made,
@@ -166,6 +169,7 @@ class _SheetState extends ConsumerState<_PaySupplierSheet> {
       container.bumpRefresh();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(said)));
+      if (made != null) offerAfterSupplierPayment(Navigator.of(context), made, byCheque: _byCheque); // M70
       Navigator.of(context).pop(true);
     } on Object catch (error) {
       if (!mounted) return;
