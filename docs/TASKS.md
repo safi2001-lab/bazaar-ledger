@@ -232,7 +232,7 @@ Found by re-reading `docs/competitor_research.md` §6–§8 and the appendix aga
 ### Batch 2 (in progress)
 - [ ] M68 · (in progress) Control: credit control by bill count and days, a temporary limit, stop billing after a bounced cheque; days older than N lock themselves; random stock checks (cycle count); cashier mode (salesman bills, cashier collects)
 - [ ] M69 · (in progress, schema v14) Repair job cards for mobile shops (device, IMEI, fault, estimate, parts from stock, labour, ready/delivered, billed) — schema v14
-- [ ] M70 · (in progress) More bill designs; after a bill or payment, offer to send the customer their receipt (per-customer on/off)
+- [x] M70 · More bill designs (landscape wholesale / sales tax, ruled bill book, Nafees, Halka; compact and big-total till slips; a design per paper for quotation, challan and PO); after a bill, payment, return or supplier payment, offer the receipt on WhatsApp in the party's language (ask / straight to WhatsApp / never, shop default and per party)
 
 ### Considered and left for now
 - Urdu in its own script on screen (اردو, right to left) — the owner decided Roman Urdu and English are enough (3 Oct 2026); Urdu script stays on printed bills, PDFs and reminder templates
