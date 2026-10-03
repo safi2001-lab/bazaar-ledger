@@ -18,6 +18,7 @@ import '../orders/orders_screen.dart';
 import '../parties/parties_screen.dart';
 import '../pos/pos_screen.dart';
 import '../purchases/purchases_screen.dart';
+import '../recurring/recurring_due_card.dart'; // M63
 import '../reports/reports_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
@@ -81,6 +82,7 @@ class HomeScreen extends ConsumerWidget {
               const _ChequesDue(),
               // Udhaar due today, late, and promised for today (M38).
               const UdhaarDueCard(),
+              const RecurringDueCard(), // M63: repeating bills due today
               const FbrOverdueLine(), // M59: FBR bills late under Rule 150XC
               const SizedBox(height: BlTokens.space5),
               BlSectionHeader(s.homeTitle),

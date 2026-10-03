@@ -924,7 +924,10 @@ class _CartList extends ConsumerWidget {
     // Above it, where the bill came from when it was copied or is putting
     // another right (M36).
     final named = cart.partyName != null;
-    final copied = cart.replacesNo != null || cart.copiedFromNo != null;
+    final copied =
+        cart.replacesNo != null ||
+        cart.copiedFromNo != null ||
+        cart.recurring != null; // M63
     final head = (copied ? 1 : 0) + (named ? 1 : 0);
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: BlTokens.space4),
@@ -1002,7 +1005,8 @@ class _CopiedFrom extends ConsumerWidget {
     final t = context.bl;
     final replacing = cart.replacesNo;
     final note = cart.copyNote;
-    if (replacing == null && cart.copiedFromNo == null) {
+    final repeating = cart.recurring; // M63
+    if (replacing == null && cart.copiedFromNo == null && repeating == null) {
       return const SizedBox.shrink();
     }
     return Padding(
@@ -1033,9 +1037,15 @@ class _CopiedFrom extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    replacing == null
-                        ? s.copyLoaded(cart.copiedFromNo!)
-                        : s.correctOnCounter(replacing),
+                    replacing != null
+                        ? s.correctOnCounter(replacing)
+                        // M63: a repeating bill's, for its day.
+                        : repeating != null
+                        ? s.recurringOnCounter(
+                            repeating.partyName,
+                            shortDate(repeating.forDate.value),
+                          )
+                        : s.copyLoaded(cart.copiedFromNo!),
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -1057,7 +1067,7 @@ class _CopiedFrom extends ConsumerWidget {
                 ],
               ),
             ),
-            if (replacing == null)
+            if (replacing == null && repeating == null) // M63: said to the end
               BlIconButton(
                 icon: Icons.close,
                 label: s.actionClose,

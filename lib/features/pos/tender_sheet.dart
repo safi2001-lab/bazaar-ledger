@@ -518,7 +518,8 @@ class _TenderSheetState extends ConsumerState<TenderSheet> {
       final books = cart.forBooks(units, schemesFor(ref)); // M43
       // A rider's phone sells from the van, not from the shop floor (M18).
       final location = await services.counterLocation();
-      final posted = await services.postSale(
+      // M63: a repeating bill moves its template on in the same commit.
+      final posted = await services.recurring.postSaleFor(cart.recurring)(
         services.actorNow(),
         SaleDraft(
           locationCode: location,

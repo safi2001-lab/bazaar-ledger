@@ -4321,5 +4321,298 @@
       "name": {"type": "String"}
     }
   },
-  "reportViewOptions": "View ke options"
+  "reportViewOptions": "View ke options",
+  "recurringAction": "Har hafte / Har mahine banayein",
+  "recurringActionHint": "Isi gahak ka yehi bill, apne din par tayyar",
+  "recurringNewTitle": "Naya baar baar ka bill",
+  "recurringListTitle": "Baar baar ke bill",
+  "recurringFor": "{name} ka bill",
+  "@recurringFor": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringFromBill": "{docNo} se naqal",
+  "@recurringFromBill": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "recurringEvery": "Kab kab",
+  "recurringDaily": "Roz",
+  "recurringWeekly": "Har hafte",
+  "recurringMonthly": "Har mahine",
+  "recurringEveryFewDays": "Har kuch din baad",
+  "recurringDaysField": "Kitne din baad",
+  "recurringDateField": "Mahine ki tareekh (1-31)",
+  "recurringMon": "Peer",
+  "recurringTue": "Mangal",
+  "recurringWed": "Budh",
+  "recurringThu": "Jumeraat",
+  "recurringFri": "Juma",
+  "recurringSat": "Hafta",
+  "recurringSun": "Itwar",
+  "recurringEveryWeekday": "Har {day}",
+  "@recurringEveryWeekday": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "recurringEveryMonthDate": "Har mahine ki {date} tareekh",
+  "@recurringEveryMonthDate": {
+    "placeholders": {
+      "date": {"type": "int"}
+    }
+  },
+  "recurringEveryNDays": "Har {days} din baad",
+  "@recurringEveryNDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "recurringStart": "Kab se",
+  "recurringEnds": "Kab tak",
+  "recurringEndNever": "Jab tak band na karein",
+  "recurringEndOn": "Is tareekh tak",
+  "recurringEndTimes": "Itni dafa",
+  "recurringTimesField": "Kul kitni dafa",
+  "recurringEndOnDate": "{date} tak",
+  "@recurringEndOnDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringTimesLeft": "Kul {times} dafa",
+  "@recurringTimesLeft": {
+    "placeholders": {
+      "times": {"type": "int"}
+    }
+  },
+  "recurringPrices": "Rate",
+  "recurringPricesToday": "Bill banne ke din ke rate",
+  "recurringPricesFixed": "Isi bill ke rate",
+  "recurringMaking": "Kaise banega",
+  "recurringModeRemind": "Sirf yaad dilayein",
+  "recurringModeAuto": "Khud bana dein",
+  "recurringModeAutoHint": "Home par 'Sab bana dein' se gahak ke khate mein udhaar. Credit ki hadd, wapas aaya cheque ya stock ki kami ho to pehle poochha jata hai, jaise counter par.",
+  "recurringModeRemindHint": "Us din Home par dikhega; 'Banayein' se counter par khulega, dekh kar paisay lein.",
+  "recurringItems": "Cheezein",
+  "recurringAddItem": "Cheez jorein",
+  "recurringRemoveLine": "{name} hatayein",
+  "@recurringRemoveLine": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringItemGone": "Ab nahi rakhi",
+  "recurringQty": "Tadaad",
+  "recurringSave": "Mehfooz karein",
+  "recurringSaved": "Baar baar ka bill mehfooz ho gaya",
+  "recurringNoCustomer": "Yeh bill kisi gahak ke khate par banta hai. Is bill par koi gahak nahi.",
+  "recurringNoLines": "Kam az kam ek cheez chahiye.",
+  "recurringBadQty": "{name} ki tadaad likhein.",
+  "@recurringBadQty": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringBadEvery": "Yeh din theek nahi.",
+  "recurringEndBeforeStart": "Khatam hone ki tareekh shuru hone se pehle hai.",
+  "recurringBadTimes": "Kam az kam ek dafa to banega.",
+  "recurringProblemGone": "{names} ab nahi rakhi. Counter par khol kar dekhein, ya is bill se hata dein.",
+  "@recurringProblemGone": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringProblemSerial": "{names} serial number se bikti hai. Yeh bill counter par banayein.",
+  "@recurringProblemSerial": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringProblemUnit": "{names}: is ki unit ab cheez ki unit mein nahi badalti.",
+  "@recurringProblemUnit": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringProblemCustomerGone": "Yeh gahak ab khate mein nahi.",
+  "recurringProblemAlreadyMade": "Is din ka bill pehle hi ban chuka hai ({docNo}).",
+  "@recurringProblemAlreadyMade": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "recurringProblemAlreadyMadePlain": "Is din ka bill pehle hi ban chuka hai.",
+  "recurringProblemNotKept": "Yeh baar baar ka bill ab nahi rakha.",
+  "recurringWhySerial": "{name} (serial wali cheez)",
+  "@recurringWhySerial": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringDueTitle": "Aaj ke bill",
+  "recurringMakeOne": "Banayein",
+  "recurringMakeAll": "Sab bana dein ({count})",
+  "@recurringMakeAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringMissed": "{count} din ke bill reh gaye ({from} – {to})",
+  "@recurringMissed": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "recurringDueSince": "{date} se due",
+  "@recurringDueSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringDueToday": "Aaj due",
+  "recurringByItself": "Khud",
+  "recurringRemind": "Yaad",
+  "recurringItemCount": "{count, plural, =1{1 cheez} other{{count} cheezein}}",
+  "@recurringItemCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringKept": "Baar baar ke bill: {count} · agla {date}",
+  "@recurringKept": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "date": {"type": "String"}
+    }
+  },
+  "recurringKeptNoNext": "Baar baar ke bill: {count}",
+  "@recurringKeptNoNext": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringSeeAll": "Sab dekhein",
+  "recurringGoneWarn": "Ab nahi rakhi: {names}",
+  "@recurringGoneWarn": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringMissedTitle": "{name}: {count} bill reh gaye",
+  "@recurringMissedTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "recurringMissedBody": "In dinon app nahi khula: {dates}. Aap ke kahe baghair kuch nahi banta, aur jo bill ab bane ga woh aaj ki tareekh ka hoga.",
+  "@recurringMissedBody": {
+    "placeholders": {
+      "dates": {"type": "String"}
+    }
+  },
+  "recurringMissedAll": "Sab banayein ({count})",
+  "@recurringMissedAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringMissedLatest": "Sirf aakhri wala ({date})",
+  "@recurringMissedLatest": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringMissedSkip": "Koi nahi, chhor dein",
+  "recurringAsk": "Poochhein",
+  "recurringResultsTitle": "Baar baar ke bill",
+  "recurringMadeLine": "{docNo} · {name} · Rs {amount}",
+  "@recurringMadeLine": {
+    "placeholders": {
+      "docNo": {"type": "String"},
+      "name": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "recurringHeldOverLimit": "{name}: credit ki hadd Rs {limit}, is bill ke baad Rs {after}.",
+  "@recurringHeldOverLimit": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "limit": {"type": "String"},
+      "after": {"type": "String"}
+    }
+  },
+  "recurringHeldBounced": "{name} ka cheque wapas aaya tha aur paisay abhi baqi hain.",
+  "@recurringHeldBounced": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringHeldShort": "{name}: {items} ka stock kam hai.",
+  "@recurringHeldShort": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "items": {"type": "String"}
+    }
+  },
+  "recurringMakeAnyway": "Phir bhi banayein",
+  "recurringNotMade": "{name}: nahi bana. {why}",
+  "@recurringNotMade": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "why": {"type": "String"}
+    }
+  },
+  "recurringNothingToMake": "Abhi banane ko kuch nahi.",
+  "recurringEmpty": "Abhi koi baar baar ka bill nahi",
+  "recurringEmptyHint": "Gahak ka koi bill kholein aur upar ke nuqton mein 'Har hafte / Har mahine banayein' chunein, ya us ke khate se shuru karein.",
+  "recurringPaused": "Ruka hua",
+  "recurringActive": "Chal raha hai",
+  "recurringEnded": "Khatam",
+  "recurringNext": "Agla: {date}",
+  "@recurringNext": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringNoNext": "Aage koi din nahi",
+  "recurringPause": "Rokein",
+  "recurringResume": "Phir chalayein",
+  "recurringEnd": "Khatam karein",
+  "recurringEdit": "Badlein",
+  "recurringEndConfirm": "Yeh bill ab kabhi due nahi hoga. Is ke bane hue bill waise hi rahenge.",
+  "recurringEndedDone": "Baar baar ka bill khatam",
+  "recurringPausedDone": "Rok diya. Phir chalane tak due nahi hoga.",
+  "recurringResumedDone": "Aaj se phir chal raha hai",
+  "recurringHistory": "Is ke bane hue bill",
+  "recurringHistoryEmpty": "Abhi koi bill nahi bana",
+  "recurringHistoryFor": "{date} ka",
+  "@recurringHistoryFor": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringHistoryLate": "{forDate} ka, {madeOn} ko bana",
+  "@recurringHistoryLate": {
+    "placeholders": {
+      "forDate": {"type": "String"},
+      "madeOn": {"type": "String"}
+    }
+  },
+  "recurringCancelled": "Mansookh",
+  "recurringOnKhata": "Baar baar ke bill",
+  "recurringNewForParty": "Naya baar baar ka bill",
+  "recurringOnCounter": "{name} ka {date} wala bill",
+  "@recurringOnCounter": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "recurringPickDate": "Tareekh chunein"
 }

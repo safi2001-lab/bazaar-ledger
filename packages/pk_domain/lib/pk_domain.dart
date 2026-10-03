@@ -101,6 +101,7 @@ export 'src/receivables/receipt_posting.dart';
 export 'src/receivables/reminder.dart';
 export 'src/receivables/reminder_templates.dart';
 export 'src/receivables/supplier_payment_builder.dart';
+export 'src/recurring/recurring_bills.dart'; // M63
 export 'src/recycle/entry_photos.dart';
 export 'src/recycle/hidden_things.dart';
 export 'src/sales/bill_copy.dart';

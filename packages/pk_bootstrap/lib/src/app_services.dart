@@ -33,6 +33,7 @@ part 'pharmacy_services.dart';
 part 'photo_services.dart';
 part 'plan_gates.dart';
 part 'plan_services.dart';
+part 'recurring_services.dart'; // M63
 part 'recycle_services.dart';
 part 'scheme_services.dart'; // M43
 part 'shelf_services.dart';
@@ -190,18 +191,18 @@ final class AppServices {
   /// nothing at all for a shop that is not registered for sales tax.
   static const taxCalculator = SaleCalculator(taxEngine: PakistanTaxEngine());
 
-  PostSaleUseCase get postSale {
+  PostSaleUseCase get postSale =>
+      _postSaleThrough(DriftSaleWriter(runner: _runner));
+
+  /// The sale path with [innermost] writing it, every check above it the
+  /// same. M63: a repeating bill's writer moves its template on in the
+  /// sale's own commit (recurring_services.dart).
+  PostSaleUseCase _postSaleThrough(SaleWriter innermost) {
     require(Permission.sell);
     return PostSaleUseCase(
       // M59: a registered shop's big walk-in bill names its buyer.
       writer: _BuyerNameSales(
-        _FbrSales(
-          _CeilingSales(
-            _PlanSales(DriftSaleWriter(runner: _runner), plans),
-            this,
-          ),
-          this,
-        ),
+        _FbrSales(_CeilingSales(_PlanSales(innermost, plans), this), this),
       ),
       calculator: taxCalculator,
       // M53: a blocked item is refused beneath every screen.
@@ -461,6 +462,9 @@ final class AppServices {
 
   /// Goods given rate-later, and the recovery man's round (M55).
   late final CollectionServices collections = CollectionServices._(this);
+
+  /// The bills that come round every week or month (M63).
+  late final RecurringServices recurring = RecurringServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

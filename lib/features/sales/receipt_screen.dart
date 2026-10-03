@@ -12,6 +12,7 @@ import '../attachments/attachment_strip.dart'; // M60
 import '../audit/history_screen.dart';
 import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
+import '../recurring/repeat_entry.dart'; // M63
 import 'bill_again.dart';
 import 'correct_bill_sheet.dart';
 import 'print_bill.dart';
@@ -145,6 +146,11 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
                   documentId: documentId,
                   docNo: docNo,
                 ),
+                _More.repeat => startRepeatFromBill(
+                  context,
+                  ref,
+                  documentId: documentId,
+                ), // M63
               }),
               itemBuilder: (_) => [
                 if (mayCopy)
@@ -165,6 +171,15 @@ class _ReceiptScreenState extends ConsumerState<ReceiptScreen> {
                         Icons.published_with_changes_outlined,
                       ),
                       title: Text(s.correctAction),
+                    ),
+                  ),
+                if (mayCopy) // M63
+                  PopupMenuItem(
+                    value: _More.repeat,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.event_repeat_outlined),
+                      title: Text(s.recurringAction),
                     ),
                   ),
               ],
@@ -281,8 +296,9 @@ class PaperPreview extends ConsumerWidget {
   }
 }
 
-/// What the bar's dots offer (M36).
-enum _More { copy, correct }
+/// What the bar's dots offer (M36); and the bill repeated every week or
+/// month (M63).
+enum _More { copy, correct, repeat }
 
 /// "Replaces INV-…" on a corrected bill, "Replaced by INV-…" on the one it
 /// put right (M36), each a tap from the other. Nothing at all on a bill

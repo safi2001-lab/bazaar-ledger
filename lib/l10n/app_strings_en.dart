@@ -7192,4 +7192,421 @@ class AppStringsEn extends AppStrings {
 
   @override
   String get reportViewOptions => 'View options';
+
+  @override
+  String get recurringAction => 'Repeat every week / month';
+
+  @override
+  String get recurringActionHint =>
+      'This customer\'s same bill, ready on its day';
+
+  @override
+  String get recurringNewTitle => 'New repeating bill';
+
+  @override
+  String get recurringListTitle => 'Repeating bills';
+
+  @override
+  String recurringFor(String name) {
+    return '$name\'s bill';
+  }
+
+  @override
+  String recurringFromBill(String docNo) {
+    return 'Copied from $docNo';
+  }
+
+  @override
+  String get recurringEvery => 'How often';
+
+  @override
+  String get recurringDaily => 'Every day';
+
+  @override
+  String get recurringWeekly => 'Every week';
+
+  @override
+  String get recurringMonthly => 'Every month';
+
+  @override
+  String get recurringEveryFewDays => 'Every few days';
+
+  @override
+  String get recurringDaysField => 'Every how many days';
+
+  @override
+  String get recurringDateField => 'Date of the month (1-31)';
+
+  @override
+  String get recurringMon => 'Mon';
+
+  @override
+  String get recurringTue => 'Tue';
+
+  @override
+  String get recurringWed => 'Wed';
+
+  @override
+  String get recurringThu => 'Thu';
+
+  @override
+  String get recurringFri => 'Fri';
+
+  @override
+  String get recurringSat => 'Sat';
+
+  @override
+  String get recurringSun => 'Sun';
+
+  @override
+  String recurringEveryWeekday(String day) {
+    return 'Every $day';
+  }
+
+  @override
+  String recurringEveryMonthDate(int date) {
+    return 'Every month on the $date';
+  }
+
+  @override
+  String recurringEveryNDays(int days) {
+    return 'Every $days days';
+  }
+
+  @override
+  String get recurringStart => 'Starting';
+
+  @override
+  String get recurringEnds => 'Until';
+
+  @override
+  String get recurringEndNever => 'Until I stop it';
+
+  @override
+  String get recurringEndOn => 'Until a date';
+
+  @override
+  String get recurringEndTimes => 'This many times';
+
+  @override
+  String get recurringTimesField => 'How many times in all';
+
+  @override
+  String recurringEndOnDate(String date) {
+    return 'Until $date';
+  }
+
+  @override
+  String recurringTimesLeft(int times) {
+    return '$times times in all';
+  }
+
+  @override
+  String get recurringPrices => 'Prices';
+
+  @override
+  String get recurringPricesToday => 'Prices on the day it is made';
+
+  @override
+  String get recurringPricesFixed => 'This bill\'s prices';
+
+  @override
+  String get recurringMaking => 'Making it';
+
+  @override
+  String get recurringModeRemind => 'Only remind me';
+
+  @override
+  String get recurringModeAuto => 'Make it by itself';
+
+  @override
+  String get recurringModeAutoHint =>
+      '\'Make them all\' on Home puts it on the customer\'s khata as udhaar. A credit limit, a bounced cheque or a short shelf is asked first, as at the counter.';
+
+  @override
+  String get recurringModeRemindHint =>
+      'On its day Home shows it; \'Make it\' puts it on the counter to check and take the money.';
+
+  @override
+  String get recurringItems => 'Items';
+
+  @override
+  String get recurringAddItem => 'Add an item';
+
+  @override
+  String recurringRemoveLine(String name) {
+    return 'Take $name off';
+  }
+
+  @override
+  String get recurringItemGone => 'No longer kept';
+
+  @override
+  String get recurringQty => 'Quantity';
+
+  @override
+  String get recurringSave => 'Save';
+
+  @override
+  String get recurringSaved => 'Repeating bill saved';
+
+  @override
+  String get recurringNoCustomer =>
+      'A repeating bill goes on a customer\'s khata. This bill has no customer.';
+
+  @override
+  String get recurringNoLines => 'It needs at least one item.';
+
+  @override
+  String recurringBadQty(String name) {
+    return 'Give $name a quantity above nothing.';
+  }
+
+  @override
+  String get recurringBadEvery => 'That is not a day it can come round on.';
+
+  @override
+  String get recurringEndBeforeStart => 'It ends before it starts.';
+
+  @override
+  String get recurringBadTimes => 'It has to come round at least once.';
+
+  @override
+  String recurringProblemGone(String names) {
+    return '$names is no longer kept. Open it on the counter to check, or take it off the repeating bill.';
+  }
+
+  @override
+  String recurringProblemSerial(String names) {
+    return '$names is sold by serial number. Make this one on the counter.';
+  }
+
+  @override
+  String recurringProblemUnit(String names) {
+    return '$names: its unit no longer converts to the item\'s own.';
+  }
+
+  @override
+  String get recurringProblemCustomerGone =>
+      'The customer is no longer in the khata.';
+
+  @override
+  String recurringProblemAlreadyMade(String docNo) {
+    return 'This day\'s bill is already made ($docNo).';
+  }
+
+  @override
+  String get recurringProblemAlreadyMadePlain =>
+      'This day\'s bill is already made.';
+
+  @override
+  String get recurringProblemNotKept =>
+      'That repeating bill is no longer kept.';
+
+  @override
+  String recurringWhySerial(String name) {
+    return '$name (sold by serial)';
+  }
+
+  @override
+  String get recurringDueTitle => 'Today\'s bills';
+
+  @override
+  String get recurringMakeOne => 'Make it';
+
+  @override
+  String recurringMakeAll(int count) {
+    return 'Make them all ($count)';
+  }
+
+  @override
+  String recurringMissed(int count, String from, String to) {
+    return '$count days not made ($from – $to)';
+  }
+
+  @override
+  String recurringDueSince(String date) {
+    return 'Due since $date';
+  }
+
+  @override
+  String get recurringDueToday => 'Due today';
+
+  @override
+  String get recurringByItself => 'By itself';
+
+  @override
+  String get recurringRemind => 'Reminder';
+
+  @override
+  String recurringItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringKept(int count, String date) {
+    return 'Repeating bills: $count · next $date';
+  }
+
+  @override
+  String recurringKeptNoNext(int count) {
+    return 'Repeating bills: $count';
+  }
+
+  @override
+  String get recurringSeeAll => 'See all';
+
+  @override
+  String recurringGoneWarn(String names) {
+    return 'No longer kept: $names';
+  }
+
+  @override
+  String recurringMissedTitle(String name, int count) {
+    return '$name: $count bills not made';
+  }
+
+  @override
+  String recurringMissedBody(String dates) {
+    return 'The app was not opened on these days: $dates. Nothing is made without your word, and any bill made now is dated today.';
+  }
+
+  @override
+  String recurringMissedAll(int count) {
+    return 'Make them all ($count)';
+  }
+
+  @override
+  String recurringMissedLatest(String date) {
+    return 'Only the latest ($date)';
+  }
+
+  @override
+  String get recurringMissedSkip => 'None of them, let them go';
+
+  @override
+  String get recurringAsk => 'Ask me';
+
+  @override
+  String get recurringResultsTitle => 'Repeating bills';
+
+  @override
+  String recurringMadeLine(String docNo, String name, String amount) {
+    return '$docNo · $name · Rs $amount';
+  }
+
+  @override
+  String recurringHeldOverLimit(String name, String limit, String after) {
+    return '$name: credit limit Rs $limit, Rs $after after this bill.';
+  }
+
+  @override
+  String recurringHeldBounced(String name) {
+    return '$name has a bounced cheque and still owes.';
+  }
+
+  @override
+  String recurringHeldShort(String name, String items) {
+    return '$name: the shelf is short of $items.';
+  }
+
+  @override
+  String get recurringMakeAnyway => 'Make it anyway';
+
+  @override
+  String recurringNotMade(String name, String why) {
+    return '$name: not made. $why';
+  }
+
+  @override
+  String get recurringNothingToMake => 'Nothing to make right now.';
+
+  @override
+  String get recurringEmpty => 'No repeating bills yet';
+
+  @override
+  String get recurringEmptyHint =>
+      'Open a customer\'s bill and choose \'Repeat every week / month\' under the dots, or start one from their khata.';
+
+  @override
+  String get recurringPaused => 'Paused';
+
+  @override
+  String get recurringActive => 'Active';
+
+  @override
+  String get recurringEnded => 'Ended';
+
+  @override
+  String recurringNext(String date) {
+    return 'Next: $date';
+  }
+
+  @override
+  String get recurringNoNext => 'No more days';
+
+  @override
+  String get recurringPause => 'Pause';
+
+  @override
+  String get recurringResume => 'Resume';
+
+  @override
+  String get recurringEnd => 'End it';
+
+  @override
+  String get recurringEdit => 'Change';
+
+  @override
+  String get recurringEndConfirm =>
+      'It will never come due again. The bills it made stay as they are.';
+
+  @override
+  String get recurringEndedDone => 'Repeating bill ended';
+
+  @override
+  String get recurringPausedDone =>
+      'Paused. It will not come due until it is resumed.';
+
+  @override
+  String get recurringResumedDone => 'Resumed from today';
+
+  @override
+  String get recurringHistory => 'Bills it made';
+
+  @override
+  String get recurringHistoryEmpty => 'No bill made yet';
+
+  @override
+  String recurringHistoryFor(String date) {
+    return 'For $date';
+  }
+
+  @override
+  String recurringHistoryLate(String forDate, String madeOn) {
+    return 'For $forDate, made $madeOn';
+  }
+
+  @override
+  String get recurringCancelled => 'Cancelled';
+
+  @override
+  String get recurringOnKhata => 'Repeating bills';
+
+  @override
+  String get recurringNewForParty => 'New repeating bill';
+
+  @override
+  String recurringOnCounter(String name, String date) {
+    return '$name\'s repeating bill for $date';
+  }
+
+  @override
+  String get recurringPickDate => 'Pick a date';
 }

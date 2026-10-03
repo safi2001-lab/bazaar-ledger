@@ -3996,5 +3996,298 @@
       "name": {"type": "String"}
     }
   },
-  "reportViewOptions": "View options"
+  "reportViewOptions": "View options",
+  "recurringAction": "Repeat every week / month",
+  "recurringActionHint": "This customer's same bill, ready on its day",
+  "recurringNewTitle": "New repeating bill",
+  "recurringListTitle": "Repeating bills",
+  "recurringFor": "{name}'s bill",
+  "@recurringFor": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringFromBill": "Copied from {docNo}",
+  "@recurringFromBill": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "recurringEvery": "How often",
+  "recurringDaily": "Every day",
+  "recurringWeekly": "Every week",
+  "recurringMonthly": "Every month",
+  "recurringEveryFewDays": "Every few days",
+  "recurringDaysField": "Every how many days",
+  "recurringDateField": "Date of the month (1-31)",
+  "recurringMon": "Mon",
+  "recurringTue": "Tue",
+  "recurringWed": "Wed",
+  "recurringThu": "Thu",
+  "recurringFri": "Fri",
+  "recurringSat": "Sat",
+  "recurringSun": "Sun",
+  "recurringEveryWeekday": "Every {day}",
+  "@recurringEveryWeekday": {
+    "placeholders": {
+      "day": {"type": "String"}
+    }
+  },
+  "recurringEveryMonthDate": "Every month on the {date}",
+  "@recurringEveryMonthDate": {
+    "placeholders": {
+      "date": {"type": "int"}
+    }
+  },
+  "recurringEveryNDays": "Every {days} days",
+  "@recurringEveryNDays": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "recurringStart": "Starting",
+  "recurringEnds": "Until",
+  "recurringEndNever": "Until I stop it",
+  "recurringEndOn": "Until a date",
+  "recurringEndTimes": "This many times",
+  "recurringTimesField": "How many times in all",
+  "recurringEndOnDate": "Until {date}",
+  "@recurringEndOnDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringTimesLeft": "{times} times in all",
+  "@recurringTimesLeft": {
+    "placeholders": {
+      "times": {"type": "int"}
+    }
+  },
+  "recurringPrices": "Prices",
+  "recurringPricesToday": "Prices on the day it is made",
+  "recurringPricesFixed": "This bill's prices",
+  "recurringMaking": "Making it",
+  "recurringModeRemind": "Only remind me",
+  "recurringModeAuto": "Make it by itself",
+  "recurringModeAutoHint": "'Make them all' on Home puts it on the customer's khata as udhaar. A credit limit, a bounced cheque or a short shelf is asked first, as at the counter.",
+  "recurringModeRemindHint": "On its day Home shows it; 'Make it' puts it on the counter to check and take the money.",
+  "recurringItems": "Items",
+  "recurringAddItem": "Add an item",
+  "recurringRemoveLine": "Take {name} off",
+  "@recurringRemoveLine": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringItemGone": "No longer kept",
+  "recurringQty": "Quantity",
+  "recurringSave": "Save",
+  "recurringSaved": "Repeating bill saved",
+  "recurringNoCustomer": "A repeating bill goes on a customer's khata. This bill has no customer.",
+  "recurringNoLines": "It needs at least one item.",
+  "recurringBadQty": "Give {name} a quantity above nothing.",
+  "@recurringBadQty": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringBadEvery": "That is not a day it can come round on.",
+  "recurringEndBeforeStart": "It ends before it starts.",
+  "recurringBadTimes": "It has to come round at least once.",
+  "recurringProblemGone": "{names} is no longer kept. Open it on the counter to check, or take it off the repeating bill.",
+  "@recurringProblemGone": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringProblemSerial": "{names} is sold by serial number. Make this one on the counter.",
+  "@recurringProblemSerial": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringProblemUnit": "{names}: its unit no longer converts to the item's own.",
+  "@recurringProblemUnit": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringProblemCustomerGone": "The customer is no longer in the khata.",
+  "recurringProblemAlreadyMade": "This day's bill is already made ({docNo}).",
+  "@recurringProblemAlreadyMade": {
+    "placeholders": {
+      "docNo": {"type": "String"}
+    }
+  },
+  "recurringProblemAlreadyMadePlain": "This day's bill is already made.",
+  "recurringProblemNotKept": "That repeating bill is no longer kept.",
+  "recurringWhySerial": "{name} (sold by serial)",
+  "@recurringWhySerial": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringDueTitle": "Today's bills",
+  "recurringMakeOne": "Make it",
+  "recurringMakeAll": "Make them all ({count})",
+  "@recurringMakeAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringMissed": "{count} days not made ({from} – {to})",
+  "@recurringMissed": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "from": {"type": "String"},
+      "to": {"type": "String"}
+    }
+  },
+  "recurringDueSince": "Due since {date}",
+  "@recurringDueSince": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringDueToday": "Due today",
+  "recurringByItself": "By itself",
+  "recurringRemind": "Reminder",
+  "recurringItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@recurringItemCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringKept": "Repeating bills: {count} · next {date}",
+  "@recurringKept": {
+    "placeholders": {
+      "count": {"type": "int"},
+      "date": {"type": "String"}
+    }
+  },
+  "recurringKeptNoNext": "Repeating bills: {count}",
+  "@recurringKeptNoNext": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringSeeAll": "See all",
+  "recurringGoneWarn": "No longer kept: {names}",
+  "@recurringGoneWarn": {
+    "placeholders": {
+      "names": {"type": "String"}
+    }
+  },
+  "recurringMissedTitle": "{name}: {count} bills not made",
+  "@recurringMissedTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+  "recurringMissedBody": "The app was not opened on these days: {dates}. Nothing is made without your word, and any bill made now is dated today.",
+  "@recurringMissedBody": {
+    "placeholders": {
+      "dates": {"type": "String"}
+    }
+  },
+  "recurringMissedAll": "Make them all ({count})",
+  "@recurringMissedAll": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "recurringMissedLatest": "Only the latest ({date})",
+  "@recurringMissedLatest": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringMissedSkip": "None of them, let them go",
+  "recurringAsk": "Ask me",
+  "recurringResultsTitle": "Repeating bills",
+  "recurringMadeLine": "{docNo} · {name} · Rs {amount}",
+  "@recurringMadeLine": {
+    "placeholders": {
+      "docNo": {"type": "String"},
+      "name": {"type": "String"},
+      "amount": {"type": "String"}
+    }
+  },
+  "recurringHeldOverLimit": "{name}: credit limit Rs {limit}, Rs {after} after this bill.",
+  "@recurringHeldOverLimit": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "limit": {"type": "String"},
+      "after": {"type": "String"}
+    }
+  },
+  "recurringHeldBounced": "{name} has a bounced cheque and still owes.",
+  "@recurringHeldBounced": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "recurringHeldShort": "{name}: the shelf is short of {items}.",
+  "@recurringHeldShort": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "items": {"type": "String"}
+    }
+  },
+  "recurringMakeAnyway": "Make it anyway",
+  "recurringNotMade": "{name}: not made. {why}",
+  "@recurringNotMade": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "why": {"type": "String"}
+    }
+  },
+  "recurringNothingToMake": "Nothing to make right now.",
+  "recurringEmpty": "No repeating bills yet",
+  "recurringEmptyHint": "Open a customer's bill and choose 'Repeat every week / month' under the dots, or start one from their khata.",
+  "recurringPaused": "Paused",
+  "recurringActive": "Active",
+  "recurringEnded": "Ended",
+  "recurringNext": "Next: {date}",
+  "@recurringNext": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringNoNext": "No more days",
+  "recurringPause": "Pause",
+  "recurringResume": "Resume",
+  "recurringEnd": "End it",
+  "recurringEdit": "Change",
+  "recurringEndConfirm": "It will never come due again. The bills it made stay as they are.",
+  "recurringEndedDone": "Repeating bill ended",
+  "recurringPausedDone": "Paused. It will not come due until it is resumed.",
+  "recurringResumedDone": "Resumed from today",
+  "recurringHistory": "Bills it made",
+  "recurringHistoryEmpty": "No bill made yet",
+  "recurringHistoryFor": "For {date}",
+  "@recurringHistoryFor": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "recurringHistoryLate": "For {forDate}, made {madeOn}",
+  "@recurringHistoryLate": {
+    "placeholders": {
+      "forDate": {"type": "String"},
+      "madeOn": {"type": "String"}
+    }
+  },
+  "recurringCancelled": "Cancelled",
+  "recurringOnKhata": "Repeating bills",
+  "recurringNewForParty": "New repeating bill",
+  "recurringOnCounter": "{name}'s repeating bill for {date}",
+  "@recurringOnCounter": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "date": {"type": "String"}
+    }
+  },
+  "recurringPickDate": "Pick a date"
 }

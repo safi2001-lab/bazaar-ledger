@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../printing/bill_copy.dart';
 import '../printing/printing_providers.dart';
+import '../recurring/repeat_entry.dart'; // M63
 import 'bill_again.dart';
 import 'print_bill.dart';
 import 'send_bill.dart';
@@ -270,6 +271,28 @@ class _SendSheetState extends ConsumerState<_SendSheet> {
                     subtitle: s.copyHint,
                     busy: false,
                     onTap: _again,
+                  ),
+                // M63: the same bill every week or month, from its row.
+                if (widget.offerPrint &&
+                    ref.watch(appServicesProvider).can(Permission.sell))
+                  _WayTile(
+                    icon: Icons.event_repeat_outlined,
+                    title: s.recurringAction,
+                    subtitle: s.recurringActionHint,
+                    busy: false,
+                    onTap: () {
+                      if (_working != null) return;
+                      final host = _host;
+                      Navigator.of(context).pop();
+                      if (!host.mounted) return;
+                      unawaited(
+                        startRepeatFromBill(
+                          host,
+                          ref,
+                          documentId: widget.documentId,
+                        ),
+                      );
+                    },
                   ),
                 if (_failure != null) ...[
                   const SizedBox(height: BlTokens.space3),

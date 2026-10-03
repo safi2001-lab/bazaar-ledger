@@ -352,3 +352,13 @@ DriftSaleWriter saleWriterFor(
 }) => DriftSaleWriter(
   runner: TxRunner(database: database, ids: ids, hlc: hlc),
 );
+
+/// The sale handle on a transaction somebody else opened (M63): a repeating
+/// bill made from its template writes the bill and moves the template on in
+/// the same commit, so a bill killed half way can never leave the template
+/// saying "due" for a bill that was made, nor "made" for one that was not.
+/// Only ever handed a [Tx], so it cannot be a way round the one write path.
+SaleWriteContext saleContextOn(
+  Tx tx, {
+  SequenceAllocator sequences = const SequenceAllocator(),
+}) => _DriftSaleWriteContext(tx, sequences);

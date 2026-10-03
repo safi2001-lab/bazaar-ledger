@@ -12295,6 +12295,672 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'View ke options'**
   String get reportViewOptions;
+
+  /// No description provided for @recurringAction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har hafte / Har mahine banayein'**
+  String get recurringAction;
+
+  /// No description provided for @recurringActionHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Isi gahak ka yehi bill, apne din par tayyar'**
+  String get recurringActionHint;
+
+  /// No description provided for @recurringNewTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya baar baar ka bill'**
+  String get recurringNewTitle;
+
+  /// No description provided for @recurringListTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ke bill'**
+  String get recurringListTitle;
+
+  /// No description provided for @recurringFor.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka bill'**
+  String recurringFor(String name);
+
+  /// No description provided for @recurringFromBill.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} se naqal'**
+  String recurringFromBill(String docNo);
+
+  /// No description provided for @recurringEvery.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab kab'**
+  String get recurringEvery;
+
+  /// No description provided for @recurringDaily.
+  ///
+  /// In ur, this message translates to:
+  /// **'Roz'**
+  String get recurringDaily;
+
+  /// No description provided for @recurringWeekly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har hafte'**
+  String get recurringWeekly;
+
+  /// No description provided for @recurringMonthly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine'**
+  String get recurringMonthly;
+
+  /// No description provided for @recurringEveryFewDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har kuch din baad'**
+  String get recurringEveryFewDays;
+
+  /// No description provided for @recurringDaysField.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitne din baad'**
+  String get recurringDaysField;
+
+  /// No description provided for @recurringDateField.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine ki tareekh (1-31)'**
+  String get recurringDateField;
+
+  /// No description provided for @recurringMon.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peer'**
+  String get recurringMon;
+
+  /// No description provided for @recurringTue.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mangal'**
+  String get recurringTue;
+
+  /// No description provided for @recurringWed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Budh'**
+  String get recurringWed;
+
+  /// No description provided for @recurringThu.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jumeraat'**
+  String get recurringThu;
+
+  /// No description provided for @recurringFri.
+  ///
+  /// In ur, this message translates to:
+  /// **'Juma'**
+  String get recurringFri;
+
+  /// No description provided for @recurringSat.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hafta'**
+  String get recurringSat;
+
+  /// No description provided for @recurringSun.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itwar'**
+  String get recurringSun;
+
+  /// No description provided for @recurringEveryWeekday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har {day}'**
+  String recurringEveryWeekday(String day);
+
+  /// No description provided for @recurringEveryMonthDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine ki {date} tareekh'**
+  String recurringEveryMonthDate(int date);
+
+  /// No description provided for @recurringEveryNDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har {days} din baad'**
+  String recurringEveryNDays(int days);
+
+  /// No description provided for @recurringStart.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab se'**
+  String get recurringStart;
+
+  /// No description provided for @recurringEnds.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab tak'**
+  String get recurringEnds;
+
+  /// No description provided for @recurringEndNever.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jab tak band na karein'**
+  String get recurringEndNever;
+
+  /// No description provided for @recurringEndOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is tareekh tak'**
+  String get recurringEndOn;
+
+  /// No description provided for @recurringEndTimes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Itni dafa'**
+  String get recurringEndTimes;
+
+  /// No description provided for @recurringTimesField.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul kitni dafa'**
+  String get recurringTimesField;
+
+  /// No description provided for @recurringEndOnDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} tak'**
+  String recurringEndOnDate(String date);
+
+  /// No description provided for @recurringTimesLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kul {times} dafa'**
+  String recurringTimesLeft(int times);
+
+  /// No description provided for @recurringPrices.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rate'**
+  String get recurringPrices;
+
+  /// No description provided for @recurringPricesToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bill banne ke din ke rate'**
+  String get recurringPricesToday;
+
+  /// No description provided for @recurringPricesFixed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Isi bill ke rate'**
+  String get recurringPricesFixed;
+
+  /// No description provided for @recurringMaking.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaise banega'**
+  String get recurringMaking;
+
+  /// No description provided for @recurringModeRemind.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf yaad dilayein'**
+  String get recurringModeRemind;
+
+  /// No description provided for @recurringModeAuto.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khud bana dein'**
+  String get recurringModeAuto;
+
+  /// No description provided for @recurringModeAutoHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Home par \'Sab bana dein\' se gahak ke khate mein udhaar. Credit ki hadd, wapas aaya cheque ya stock ki kami ho to pehle poochha jata hai, jaise counter par.'**
+  String get recurringModeAutoHint;
+
+  /// No description provided for @recurringModeRemindHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Us din Home par dikhega; \'Banayein\' se counter par khulega, dekh kar paisay lein.'**
+  String get recurringModeRemindHint;
+
+  /// No description provided for @recurringItems.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheezein'**
+  String get recurringItems;
+
+  /// No description provided for @recurringAddItem.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cheez jorein'**
+  String get recurringAddItem;
+
+  /// No description provided for @recurringRemoveLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} hatayein'**
+  String recurringRemoveLine(String name);
+
+  /// No description provided for @recurringItemGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ab nahi rakhi'**
+  String get recurringItemGone;
+
+  /// No description provided for @recurringQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tadaad'**
+  String get recurringQty;
+
+  /// No description provided for @recurringSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mehfooz karein'**
+  String get recurringSave;
+
+  /// No description provided for @recurringSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ka bill mehfooz ho gaya'**
+  String get recurringSaved;
+
+  /// No description provided for @recurringNoCustomer.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill kisi gahak ke khate par banta hai. Is bill par koi gahak nahi.'**
+  String get recurringNoCustomer;
+
+  /// No description provided for @recurringNoLines.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam ek cheez chahiye.'**
+  String get recurringNoLines;
+
+  /// No description provided for @recurringBadQty.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ki tadaad likhein.'**
+  String recurringBadQty(String name);
+
+  /// No description provided for @recurringBadEvery.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh din theek nahi.'**
+  String get recurringBadEvery;
+
+  /// No description provided for @recurringEndBeforeStart.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khatam hone ki tareekh shuru hone se pehle hai.'**
+  String get recurringEndBeforeStart;
+
+  /// No description provided for @recurringBadTimes.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kam az kam ek dafa to banega.'**
+  String get recurringBadTimes;
+
+  /// No description provided for @recurringProblemGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'{names} ab nahi rakhi. Counter par khol kar dekhein, ya is bill se hata dein.'**
+  String recurringProblemGone(String names);
+
+  /// No description provided for @recurringProblemSerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'{names} serial number se bikti hai. Yeh bill counter par banayein.'**
+  String recurringProblemSerial(String names);
+
+  /// No description provided for @recurringProblemUnit.
+  ///
+  /// In ur, this message translates to:
+  /// **'{names}: is ki unit ab cheez ki unit mein nahi badalti.'**
+  String recurringProblemUnit(String names);
+
+  /// No description provided for @recurringProblemCustomerGone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh gahak ab khate mein nahi.'**
+  String get recurringProblemCustomerGone;
+
+  /// No description provided for @recurringProblemAlreadyMade.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is din ka bill pehle hi ban chuka hai ({docNo}).'**
+  String recurringProblemAlreadyMade(String docNo);
+
+  /// No description provided for @recurringProblemAlreadyMadePlain.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is din ka bill pehle hi ban chuka hai.'**
+  String get recurringProblemAlreadyMadePlain;
+
+  /// No description provided for @recurringProblemNotKept.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh baar baar ka bill ab nahi rakha.'**
+  String get recurringProblemNotKept;
+
+  /// No description provided for @recurringWhySerial.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} (serial wali cheez)'**
+  String recurringWhySerial(String name);
+
+  /// No description provided for @recurringDueTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ke bill'**
+  String get recurringDueTitle;
+
+  /// No description provided for @recurringMakeOne.
+  ///
+  /// In ur, this message translates to:
+  /// **'Banayein'**
+  String get recurringMakeOne;
+
+  /// No description provided for @recurringMakeAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab bana dein ({count})'**
+  String recurringMakeAll(int count);
+
+  /// No description provided for @recurringMissed.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} din ke bill reh gaye ({from} – {to})'**
+  String recurringMissed(int count, String from, String to);
+
+  /// No description provided for @recurringDueSince.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} se due'**
+  String recurringDueSince(String date);
+
+  /// No description provided for @recurringDueToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj due'**
+  String get recurringDueToday;
+
+  /// No description provided for @recurringByItself.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khud'**
+  String get recurringByItself;
+
+  /// No description provided for @recurringRemind.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yaad'**
+  String get recurringRemind;
+
+  /// No description provided for @recurringItemCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count, plural, =1{1 cheez} other{{count} cheezein}}'**
+  String recurringItemCount(int count);
+
+  /// No description provided for @recurringKept.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ke bill: {count} · agla {date}'**
+  String recurringKept(int count, String date);
+
+  /// No description provided for @recurringKeptNoNext.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ke bill: {count}'**
+  String recurringKeptNoNext(int count);
+
+  /// No description provided for @recurringSeeAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab dekhein'**
+  String get recurringSeeAll;
+
+  /// No description provided for @recurringGoneWarn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ab nahi rakhi: {names}'**
+  String recurringGoneWarn(String names);
+
+  /// No description provided for @recurringMissedTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: {count} bill reh gaye'**
+  String recurringMissedTitle(String name, int count);
+
+  /// No description provided for @recurringMissedBody.
+  ///
+  /// In ur, this message translates to:
+  /// **'In dinon app nahi khula: {dates}. Aap ke kahe baghair kuch nahi banta, aur jo bill ab bane ga woh aaj ki tareekh ka hoga.'**
+  String recurringMissedBody(String dates);
+
+  /// No description provided for @recurringMissedAll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sab banayein ({count})'**
+  String recurringMissedAll(int count);
+
+  /// No description provided for @recurringMissedLatest.
+  ///
+  /// In ur, this message translates to:
+  /// **'Sirf aakhri wala ({date})'**
+  String recurringMissedLatest(String date);
+
+  /// No description provided for @recurringMissedSkip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi nahi, chhor dein'**
+  String get recurringMissedSkip;
+
+  /// No description provided for @recurringAsk.
+  ///
+  /// In ur, this message translates to:
+  /// **'Poochhein'**
+  String get recurringAsk;
+
+  /// No description provided for @recurringResultsTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ke bill'**
+  String get recurringResultsTitle;
+
+  /// No description provided for @recurringMadeLine.
+  ///
+  /// In ur, this message translates to:
+  /// **'{docNo} · {name} · Rs {amount}'**
+  String recurringMadeLine(String docNo, String name, String amount);
+
+  /// No description provided for @recurringHeldOverLimit.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: credit ki hadd Rs {limit}, is bill ke baad Rs {after}.'**
+  String recurringHeldOverLimit(String name, String limit, String after);
+
+  /// No description provided for @recurringHeldBounced.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka cheque wapas aaya tha aur paisay abhi baqi hain.'**
+  String recurringHeldBounced(String name);
+
+  /// No description provided for @recurringHeldShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: {items} ka stock kam hai.'**
+  String recurringHeldShort(String name, String items);
+
+  /// No description provided for @recurringMakeAnyway.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phir bhi banayein'**
+  String get recurringMakeAnyway;
+
+  /// No description provided for @recurringNotMade.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: nahi bana. {why}'**
+  String recurringNotMade(String name, String why);
+
+  /// No description provided for @recurringNothingToMake.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi banane ko kuch nahi.'**
+  String get recurringNothingToMake;
+
+  /// No description provided for @recurringEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi baar baar ka bill nahi'**
+  String get recurringEmpty;
+
+  /// No description provided for @recurringEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Gahak ka koi bill kholein aur upar ke nuqton mein \'Har hafte / Har mahine banayein\' chunein, ya us ke khate se shuru karein.'**
+  String get recurringEmptyHint;
+
+  /// No description provided for @recurringPaused.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ruka hua'**
+  String get recurringPaused;
+
+  /// No description provided for @recurringActive.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chal raha hai'**
+  String get recurringActive;
+
+  /// No description provided for @recurringEnded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khatam'**
+  String get recurringEnded;
+
+  /// No description provided for @recurringNext.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agla: {date}'**
+  String recurringNext(String date);
+
+  /// No description provided for @recurringNoNext.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aage koi din nahi'**
+  String get recurringNoNext;
+
+  /// No description provided for @recurringPause.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rokein'**
+  String get recurringPause;
+
+  /// No description provided for @recurringResume.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phir chalayein'**
+  String get recurringResume;
+
+  /// No description provided for @recurringEnd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Khatam karein'**
+  String get recurringEnd;
+
+  /// No description provided for @recurringEdit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Badlein'**
+  String get recurringEdit;
+
+  /// No description provided for @recurringEndConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh bill ab kabhi due nahi hoga. Is ke bane hue bill waise hi rahenge.'**
+  String get recurringEndConfirm;
+
+  /// No description provided for @recurringEndedDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ka bill khatam'**
+  String get recurringEndedDone;
+
+  /// No description provided for @recurringPausedDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rok diya. Phir chalane tak due nahi hoga.'**
+  String get recurringPausedDone;
+
+  /// No description provided for @recurringResumedDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj se phir chal raha hai'**
+  String get recurringResumedDone;
+
+  /// No description provided for @recurringHistory.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ke bane hue bill'**
+  String get recurringHistory;
+
+  /// No description provided for @recurringHistoryEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi bill nahi bana'**
+  String get recurringHistoryEmpty;
+
+  /// No description provided for @recurringHistoryFor.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ka'**
+  String recurringHistoryFor(String date);
+
+  /// No description provided for @recurringHistoryLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'{forDate} ka, {madeOn} ko bana'**
+  String recurringHistoryLate(String forDate, String madeOn);
+
+  /// No description provided for @recurringCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mansookh'**
+  String get recurringCancelled;
+
+  /// No description provided for @recurringOnKhata.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baar baar ke bill'**
+  String get recurringOnKhata;
+
+  /// No description provided for @recurringNewForParty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya baar baar ka bill'**
+  String get recurringNewForParty;
+
+  /// No description provided for @recurringOnCounter.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ka {date} wala bill'**
+  String recurringOnCounter(String name, String date);
+
+  /// No description provided for @recurringPickDate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tareekh chunein'**
+  String get recurringPickDate;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

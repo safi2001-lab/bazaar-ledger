@@ -10,6 +10,7 @@ import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
 import '../attachments/attachment_strip.dart'; // M60
 import '../parties/party_editor.dart';
+import '../recurring/repeat_entry.dart'; // M63
 import '../sales/receipt_screen.dart';
 import 'charge_sheet.dart';
 import 'due_chip.dart';
@@ -128,6 +129,7 @@ class KhataScreen extends ConsumerWidget {
           ),
           children: [
             if (receivable) ..._receivable(context, ref, current, bills),
+            if (receivable) RecurringOnKhata(partyId: current.id), // M63
             if (receivable && payable) const SizedBox(height: BlTokens.space5),
             if (payable)
               PayablesSection(

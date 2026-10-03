@@ -256,7 +256,13 @@ final class Cart {
     this.copyNote,
     this.bonusWaived = const {},
     this.slabWaived = false,
+    this.recurring, // M63
   });
+
+  /// M63: the repeating bill this one is, and the day it is for. The sale
+  /// moves the template on in its own commit (recurring_services.dart). A
+  /// different customer named on the counter makes it an ordinary bill.
+  final RecurringMark? recurring;
 
   final List<CartLine> lines;
   final String? partyId;
@@ -386,6 +392,9 @@ final class Cart {
     partyDiscountBp: partyDiscountBp ?? this.partyDiscountBp,
     bonusWaived: bonusWaived ?? this.bonusWaived,
     slabWaived: slabWaived ?? this.slabWaived,
+    recurring: clearParty || (partyId != null && partyId != this.partyId)
+        ? null
+        : recurring, // M63
   );
 }
 
@@ -920,6 +929,7 @@ class CartNotifier extends Notifier<Cart> {
     PaidBefore? paidBefore,
     String? copiedFromNo,
     String? copyNote,
+    RecurringMark? recurring, // M63
   }) {
     state = Cart(
       lines: lines,
@@ -933,6 +943,7 @@ class CartNotifier extends Notifier<Cart> {
       paidBefore: replacesId == null ? null : paidBefore,
       copiedFromNo: copiedFromNo,
       copyNote: copyNote,
+      recurring: party == null ? null : recurring, // M63
     );
   }
 

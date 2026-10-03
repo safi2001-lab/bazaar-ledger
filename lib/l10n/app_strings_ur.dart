@@ -7186,4 +7186,419 @@ class AppStringsUr extends AppStrings {
 
   @override
   String get reportViewOptions => 'View ke options';
+
+  @override
+  String get recurringAction => 'Har hafte / Har mahine banayein';
+
+  @override
+  String get recurringActionHint =>
+      'Isi gahak ka yehi bill, apne din par tayyar';
+
+  @override
+  String get recurringNewTitle => 'Naya baar baar ka bill';
+
+  @override
+  String get recurringListTitle => 'Baar baar ke bill';
+
+  @override
+  String recurringFor(String name) {
+    return '$name ka bill';
+  }
+
+  @override
+  String recurringFromBill(String docNo) {
+    return '$docNo se naqal';
+  }
+
+  @override
+  String get recurringEvery => 'Kab kab';
+
+  @override
+  String get recurringDaily => 'Roz';
+
+  @override
+  String get recurringWeekly => 'Har hafte';
+
+  @override
+  String get recurringMonthly => 'Har mahine';
+
+  @override
+  String get recurringEveryFewDays => 'Har kuch din baad';
+
+  @override
+  String get recurringDaysField => 'Kitne din baad';
+
+  @override
+  String get recurringDateField => 'Mahine ki tareekh (1-31)';
+
+  @override
+  String get recurringMon => 'Peer';
+
+  @override
+  String get recurringTue => 'Mangal';
+
+  @override
+  String get recurringWed => 'Budh';
+
+  @override
+  String get recurringThu => 'Jumeraat';
+
+  @override
+  String get recurringFri => 'Juma';
+
+  @override
+  String get recurringSat => 'Hafta';
+
+  @override
+  String get recurringSun => 'Itwar';
+
+  @override
+  String recurringEveryWeekday(String day) {
+    return 'Har $day';
+  }
+
+  @override
+  String recurringEveryMonthDate(int date) {
+    return 'Har mahine ki $date tareekh';
+  }
+
+  @override
+  String recurringEveryNDays(int days) {
+    return 'Har $days din baad';
+  }
+
+  @override
+  String get recurringStart => 'Kab se';
+
+  @override
+  String get recurringEnds => 'Kab tak';
+
+  @override
+  String get recurringEndNever => 'Jab tak band na karein';
+
+  @override
+  String get recurringEndOn => 'Is tareekh tak';
+
+  @override
+  String get recurringEndTimes => 'Itni dafa';
+
+  @override
+  String get recurringTimesField => 'Kul kitni dafa';
+
+  @override
+  String recurringEndOnDate(String date) {
+    return '$date tak';
+  }
+
+  @override
+  String recurringTimesLeft(int times) {
+    return 'Kul $times dafa';
+  }
+
+  @override
+  String get recurringPrices => 'Rate';
+
+  @override
+  String get recurringPricesToday => 'Bill banne ke din ke rate';
+
+  @override
+  String get recurringPricesFixed => 'Isi bill ke rate';
+
+  @override
+  String get recurringMaking => 'Kaise banega';
+
+  @override
+  String get recurringModeRemind => 'Sirf yaad dilayein';
+
+  @override
+  String get recurringModeAuto => 'Khud bana dein';
+
+  @override
+  String get recurringModeAutoHint =>
+      'Home par \'Sab bana dein\' se gahak ke khate mein udhaar. Credit ki hadd, wapas aaya cheque ya stock ki kami ho to pehle poochha jata hai, jaise counter par.';
+
+  @override
+  String get recurringModeRemindHint =>
+      'Us din Home par dikhega; \'Banayein\' se counter par khulega, dekh kar paisay lein.';
+
+  @override
+  String get recurringItems => 'Cheezein';
+
+  @override
+  String get recurringAddItem => 'Cheez jorein';
+
+  @override
+  String recurringRemoveLine(String name) {
+    return '$name hatayein';
+  }
+
+  @override
+  String get recurringItemGone => 'Ab nahi rakhi';
+
+  @override
+  String get recurringQty => 'Tadaad';
+
+  @override
+  String get recurringSave => 'Mehfooz karein';
+
+  @override
+  String get recurringSaved => 'Baar baar ka bill mehfooz ho gaya';
+
+  @override
+  String get recurringNoCustomer =>
+      'Yeh bill kisi gahak ke khate par banta hai. Is bill par koi gahak nahi.';
+
+  @override
+  String get recurringNoLines => 'Kam az kam ek cheez chahiye.';
+
+  @override
+  String recurringBadQty(String name) {
+    return '$name ki tadaad likhein.';
+  }
+
+  @override
+  String get recurringBadEvery => 'Yeh din theek nahi.';
+
+  @override
+  String get recurringEndBeforeStart =>
+      'Khatam hone ki tareekh shuru hone se pehle hai.';
+
+  @override
+  String get recurringBadTimes => 'Kam az kam ek dafa to banega.';
+
+  @override
+  String recurringProblemGone(String names) {
+    return '$names ab nahi rakhi. Counter par khol kar dekhein, ya is bill se hata dein.';
+  }
+
+  @override
+  String recurringProblemSerial(String names) {
+    return '$names serial number se bikti hai. Yeh bill counter par banayein.';
+  }
+
+  @override
+  String recurringProblemUnit(String names) {
+    return '$names: is ki unit ab cheez ki unit mein nahi badalti.';
+  }
+
+  @override
+  String get recurringProblemCustomerGone => 'Yeh gahak ab khate mein nahi.';
+
+  @override
+  String recurringProblemAlreadyMade(String docNo) {
+    return 'Is din ka bill pehle hi ban chuka hai ($docNo).';
+  }
+
+  @override
+  String get recurringProblemAlreadyMadePlain =>
+      'Is din ka bill pehle hi ban chuka hai.';
+
+  @override
+  String get recurringProblemNotKept => 'Yeh baar baar ka bill ab nahi rakha.';
+
+  @override
+  String recurringWhySerial(String name) {
+    return '$name (serial wali cheez)';
+  }
+
+  @override
+  String get recurringDueTitle => 'Aaj ke bill';
+
+  @override
+  String get recurringMakeOne => 'Banayein';
+
+  @override
+  String recurringMakeAll(int count) {
+    return 'Sab bana dein ($count)';
+  }
+
+  @override
+  String recurringMissed(int count, String from, String to) {
+    return '$count din ke bill reh gaye ($from – $to)';
+  }
+
+  @override
+  String recurringDueSince(String date) {
+    return '$date se due';
+  }
+
+  @override
+  String get recurringDueToday => 'Aaj due';
+
+  @override
+  String get recurringByItself => 'Khud';
+
+  @override
+  String get recurringRemind => 'Yaad';
+
+  @override
+  String recurringItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cheezein',
+      one: '1 cheez',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String recurringKept(int count, String date) {
+    return 'Baar baar ke bill: $count · agla $date';
+  }
+
+  @override
+  String recurringKeptNoNext(int count) {
+    return 'Baar baar ke bill: $count';
+  }
+
+  @override
+  String get recurringSeeAll => 'Sab dekhein';
+
+  @override
+  String recurringGoneWarn(String names) {
+    return 'Ab nahi rakhi: $names';
+  }
+
+  @override
+  String recurringMissedTitle(String name, int count) {
+    return '$name: $count bill reh gaye';
+  }
+
+  @override
+  String recurringMissedBody(String dates) {
+    return 'In dinon app nahi khula: $dates. Aap ke kahe baghair kuch nahi banta, aur jo bill ab bane ga woh aaj ki tareekh ka hoga.';
+  }
+
+  @override
+  String recurringMissedAll(int count) {
+    return 'Sab banayein ($count)';
+  }
+
+  @override
+  String recurringMissedLatest(String date) {
+    return 'Sirf aakhri wala ($date)';
+  }
+
+  @override
+  String get recurringMissedSkip => 'Koi nahi, chhor dein';
+
+  @override
+  String get recurringAsk => 'Poochhein';
+
+  @override
+  String get recurringResultsTitle => 'Baar baar ke bill';
+
+  @override
+  String recurringMadeLine(String docNo, String name, String amount) {
+    return '$docNo · $name · Rs $amount';
+  }
+
+  @override
+  String recurringHeldOverLimit(String name, String limit, String after) {
+    return '$name: credit ki hadd Rs $limit, is bill ke baad Rs $after.';
+  }
+
+  @override
+  String recurringHeldBounced(String name) {
+    return '$name ka cheque wapas aaya tha aur paisay abhi baqi hain.';
+  }
+
+  @override
+  String recurringHeldShort(String name, String items) {
+    return '$name: $items ka stock kam hai.';
+  }
+
+  @override
+  String get recurringMakeAnyway => 'Phir bhi banayein';
+
+  @override
+  String recurringNotMade(String name, String why) {
+    return '$name: nahi bana. $why';
+  }
+
+  @override
+  String get recurringNothingToMake => 'Abhi banane ko kuch nahi.';
+
+  @override
+  String get recurringEmpty => 'Abhi koi baar baar ka bill nahi';
+
+  @override
+  String get recurringEmptyHint =>
+      'Gahak ka koi bill kholein aur upar ke nuqton mein \'Har hafte / Har mahine banayein\' chunein, ya us ke khate se shuru karein.';
+
+  @override
+  String get recurringPaused => 'Ruka hua';
+
+  @override
+  String get recurringActive => 'Chal raha hai';
+
+  @override
+  String get recurringEnded => 'Khatam';
+
+  @override
+  String recurringNext(String date) {
+    return 'Agla: $date';
+  }
+
+  @override
+  String get recurringNoNext => 'Aage koi din nahi';
+
+  @override
+  String get recurringPause => 'Rokein';
+
+  @override
+  String get recurringResume => 'Phir chalayein';
+
+  @override
+  String get recurringEnd => 'Khatam karein';
+
+  @override
+  String get recurringEdit => 'Badlein';
+
+  @override
+  String get recurringEndConfirm =>
+      'Yeh bill ab kabhi due nahi hoga. Is ke bane hue bill waise hi rahenge.';
+
+  @override
+  String get recurringEndedDone => 'Baar baar ka bill khatam';
+
+  @override
+  String get recurringPausedDone => 'Rok diya. Phir chalane tak due nahi hoga.';
+
+  @override
+  String get recurringResumedDone => 'Aaj se phir chal raha hai';
+
+  @override
+  String get recurringHistory => 'Is ke bane hue bill';
+
+  @override
+  String get recurringHistoryEmpty => 'Abhi koi bill nahi bana';
+
+  @override
+  String recurringHistoryFor(String date) {
+    return '$date ka';
+  }
+
+  @override
+  String recurringHistoryLate(String forDate, String madeOn) {
+    return '$forDate ka, $madeOn ko bana';
+  }
+
+  @override
+  String get recurringCancelled => 'Mansookh';
+
+  @override
+  String get recurringOnKhata => 'Baar baar ke bill';
+
+  @override
+  String get recurringNewForParty => 'Naya baar baar ka bill';
+
+  @override
+  String recurringOnCounter(String name, String date) {
+    return '$name ka $date wala bill';
+  }
+
+  @override
+  String get recurringPickDate => 'Tareekh chunein';
 }

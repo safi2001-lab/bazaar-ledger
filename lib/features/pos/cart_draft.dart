@@ -70,6 +70,9 @@ abstract final class CartDraft {
     // cashier sees a bonus put back on the counter before the bill goes.
     if (cart.bonusWaived.isNotEmpty) 'bonusWaived': cart.bonusWaived.toList(),
     if (cart.slabWaived) 'slabWaived': true,
+    // M63: the repeating bill this is. Optional, not a new version: a build
+    // before M63 posts it as an ordinary bill and the template stays due.
+    if (cart.recurring case final r?) 'recurring': r.toJson(),
     'lines': [
       for (final line in cart.lines)
         {
@@ -179,6 +182,7 @@ abstract final class CartDraft {
             if (id is String) id,
         },
         slabWaived: root['slabWaived'] == true,
+        recurring: RecurringMark.fromJson(root['recurring']), // M63
       );
     } on Object {
       return null;

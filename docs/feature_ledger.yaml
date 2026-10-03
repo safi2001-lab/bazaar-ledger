@@ -2788,6 +2788,108 @@ milestones:
       - packages/pk_reports/lib/src/saved_view.dart
       - lib/features/reports/saved_views.dart
 
+  - id: M63
+    title: The bills that come round every week or month, ready on the day
+    # Opened and sealed 3 Oct 2026 at 1/1. A hotel takes twenty litres of
+    # milk every morning, a school canteen sends the same order every Monday,
+    # an office has its tea, sugar and biscuits on the first of the month.
+    # The shopkeeper rang each from memory, and the week he was ill the
+    # canteen was not billed at all. Vyapar's Repeat Invoice does this only
+    # with the phone logged into its sync server; here it is kept in the
+    # shop's own books and made on the phone, with no server anywhere.
+    #
+    # A repeating bill is a template, never a posting: a customer in the
+    # khata, the goods and how many in the units they were billed in, and
+    # how often -- every day, every week on one day, every month on one date
+    # (the 31st is the last day of a short month, M47's rule), or every so
+    # many days -- from a start, until a date or for so many times, or until
+    # stopped. Made at the prices of the day it is made (the default: the
+    # customer's tier, the item's quantity slab where that is lower, their
+    # standing discount, the bonus and the bill slab, exactly as the counter
+    # rings a fresh bill, M43) or at the prices of the bill it was copied
+    # from, discounts as typed (M36's discountsAsBilled). And either made by
+    # itself, or only said on the day. It is started from any posted bill
+    # (the receipt's dots, the sales list's send sheet) or from a customer's
+    # khata (their last bill, or empty to fill in), every week on today's
+    # weekday from tomorrow, reminding only, for the shopkeeper to change
+    # before Save. A walk-in's bill is refused in words: it goes on a khata.
+    #
+    # On the day. No job in the background and no notification: the app
+    # follows M20 and M47, so the home screen's "Aaj ke bill" card -- one
+    # widget beside M38's udhaar card -- reads the templates when the app
+    # opens, after every write, and again when the app comes back to the
+    # front. Each due bill has "Banayein": M36's copy flow with the template
+    # in place of a bill, onto the counter at today's prices for the cashier
+    # to check, name the money and save, the counter's head saying whose bill
+    # for which day until it is saved. "Sab bana dein" makes the ones set to
+    # make themselves, each on its customer's khata as udhaar, each its own
+    # bill and transaction through the one sale path, every check the counter
+    # makes made again beneath the screen: the signed-in cashier's discount
+    # ceiling (M22), a shelf set to block (M53, that one bill stops and says
+    # why, the next is made), a loose line on a shop reporting to FBR (M37),
+    # and the bill is queued for FBR as the counter's are (M19). What the
+    # counter only asks -- a customer past their credit limit, a bounced
+    # cheque still owed, a shelf set to warn -- is asked here too: such a bill
+    # is held and listed with "Phir bhi banayein", never made past the
+    # question. Days the app was not opened are never made by themselves:
+    # the card says "4 din ke bill reh gaye (2 Oct – 5 Oct)" and asks -- make
+    # them all, only the latest (the earlier days let go), or none. A bill
+    # set only to remind goes to the counter one day at a time.
+    #
+    # The day the books say: every bill is dated the day it is made, and
+    # recorded for the day it was for, so a bill for a day the app was shut
+    # is made today and its history says "1 Oct ka, 3 Oct ko bana". That is
+    # also the answer for books the owner has closed since (M42): today is
+    # inside closed books only when today itself was closed, and then the
+    # counter could not ring it either.
+    #
+    # Storage, no schema change. One `settings` row per template
+    # (`recurring.sale.<id>`, JSON of integers and strings), its row id
+    # worked out from the template (`recurring-sale-<id>`) so two phones that
+    # change one template while apart write one row and the merge keeps the
+    # later, written through TxRunner with an audit row each time it is set,
+    # changed, paused, resumed, ended or a day let go. Items are named by id
+    # with their names as they were, so a template whose item was hidden
+    # since still says what it was, is flagged on its line, on the card and
+    # in the list, and is left off at the counter (M36's words) and refuses
+    # to be made by itself. The day last handled (`doneThrough`) moves on in
+    # the sale's own commit: the sale path takes its innermost writer as a
+    # parameter now (`_postSaleThrough`, every decorator above it
+    # unchanged), and a repeating bill's writer opens the drift sale handle
+    # on its own transaction (`saleContextOn`, M31's voidContextOn pattern),
+    # moves the template and writes a RECURRING_BILL_MADE audit row naming
+    # the bill, the template and the day -- which is how the template lists
+    # the bills it made, with no new table and no doc_links type (every
+    # existing one links two documents, and a template is not one). The same
+    # transaction refuses a day already made, so a double tap, a counter left
+    # open on yesterday's or a bill made by itself meanwhile cannot bill a
+    # customer twice; a bill on the counter for another customer than the
+    # template's is the cashier's own and goes through unlinked. The cart
+    # carries the mark through the app being killed (one optional key in its
+    # draft, no new version: an older build posts it as an ordinary bill and
+    # the template stays due).
+    #
+    # Roles: everything takes the counter's `sell` -- making one, changing,
+    # pausing, ending, making its bills. An accountant is neither shown it
+    # nor allowed it below the screen.
+    #
+    # Not built, and why: a notification the day before (no plugin, as M38
+    # and M47 decided); two phones apart making the same day's bill (each
+    # refuses its own second, but the shop's wi-fi merges rows, not
+    # decisions -- both bills stand and both are in the history); a bill
+    # made by itself paid in cash (there is nobody to take money from; it is
+    # udhaar and taken later against the khata); changing a fixed price on
+    # the template (start again from a bill at the new price); a line's unit
+    # changed on the template (an added item goes in its own unit); a
+    # serial-numbered item on a template (the piece is chosen at the
+    # counter); repeating bills in the reports (M61's area: the audit rows
+    # and `services.recurring` are there to read).
+    state: sealed
+    owns:
+      - lib/features/recurring/**
+      - packages/pk_domain/lib/src/recurring/**
+      - packages/pk_bootstrap/lib/src/recurring_services.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7947,3 +8049,45 @@ features:
       - a report saved as a view opens again from My views with the same period, filters and sort
       - a view is kept when the app is closed, renamed and deleted from its menu, and the report itself is untouched
       - at 200% on a small phone My views, a view opened, and the save dialog fit
+  - id: M63-RECUR-01
+    milestone: M63
+    title: A bill that comes round every day, week, month or so many days, set up from a bill or a khata, said on Home on its day, put on the counter at today's prices or made all at once on the khatas, with days missed asked about, every counter rule kept, and its history read back
+    status: done
+    # The schedule and the pricing as pure functions; the services against
+    # a real database on a clock the test moves; the screens by taps,
+    # including at 200% on a small phone.
+    proof:
+      - repeating bill schedule a weekly bill comes due on its day and not before
+      - repeating bill schedule a monthly bill on the 31st falls on the last day of a short month, and back on the 31st after it
+      - repeating bill schedule every so many days counts from the start, and daily is every day
+      - repeating bill schedule days the app was not opened are all owed, oldest first
+      - repeating bill schedule a paused bill never comes due, and an ended one never again
+      - repeating bill schedule an end date and a count both stop it
+      - repeating bill schedule nonsense is refused in words before it is kept
+      - repeating bill schedule a change saved from a screen keeps the pause, the end and the day last handled that the books hold
+      - repeating bill schedule kept as JSON of integers and strings, and read back the same
+      - a repeating bill made by itself today's prices are the customer's tier, the item's slab where it is lower, and their standing discount
+      - a repeating bill made by itself fixed prices keep the bill's own rates and discounts
+      - a repeating bill made by itself the bonus a scheme gives goes under its line, and a big bill takes the shop's slab
+      - a repeating bill made by itself an item no longer kept stops the bill and is named, never dropped quietly
+      - repeating bills on the day a weekly bill comes due on its day and not before
+      - repeating bills on the day made by itself, each is an udhaar bill at the day's prices, the khata rises exactly, the template moves on, and the books balance
+      - repeating bills on the day a day already made is refused, and nothing of the second bill is written
+      - repeating bills on the day days the app was not opened are listed and asked about, and each answer does what it says
+      - repeating bills on the day a paused bill never comes due, and once resumed the days it was paused through are not owed
+      - repeating bills keep the counter's rules an item set to block stops that one bill and says why; the next is made
+      - repeating bills keep the counter's rules a customer past their credit limit is held for the cashier's word, and made when it is given
+      - repeating bills keep the counter's rules a cashier's discount ceiling holds for a bill made by itself
+      - repeating bills keep the counter's rules a role that may not sell can neither keep nor make one
+      - repeating bills from the counter a bill rung on the counter for its day moves the template on in the same commit; for another customer it is an ordinary bill
+      - "repeating bills from the counter a template is copied from a bill: a walk-in is refused, and an item hidden since is left off and said"
+      - repeating bills from the counter every change is audited, and the template is one settings row whose id comes from the template
+      - a bill is set to repeat every Monday from its dots, and kept
+      - on its day Home says so, and 'Banayein' puts it on the counter at today's prices; saving it makes the bill and the card moves on
+      - "'Sab bana dein' makes every bill set to make itself on the customers' khatas, and each khata rises by exactly its bill"
+      - days the app was not opened are listed and asked about, never made by themselves; only the latest makes one bill
+      - a paused bill never comes due, and its page lists the bills it made, resumes it and ends it
+      - a customer's khata starts a repeating bill from their last bill
+      - at 200% on a small phone the card, a bill missed (let go, nothing made) and the set-up fit
+      - a repeating bill on the counter says which it is through the app being killed, and a draft without it is an ordinary bill
+      - a repeating bill on the counter another customer named on the counter makes it an ordinary bill
