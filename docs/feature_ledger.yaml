@@ -7186,6 +7186,7 @@ features:
     # database; and the counter, a delivery, the stock lists, the shelf
     # count and the stock summary through the screens, at 200% too.
     proof:
+      - a free carton on a delivery typed 10 ctn 5 is written as 24 pieces, and the shelf holds 269
       - two-unit quantities 53 pieces of a carton of 24 read 2 ctn + 5 pcs, and 2 ctn 5 reads back as exactly 53 pieces
       - two-unit quantities shown as the largest whole pack and what is left, never a decimal of a pack
       - two-unit quantities every quantity reads back from its own words exactly, and no part of it is a fraction of a pack
