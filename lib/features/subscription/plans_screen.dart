@@ -93,6 +93,38 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
                 icon: Icons.science_outlined,
               ),
             ],
+            // First on a test build, not last. At the foot of the page it sat
+            // under three plan cards whose buttons cannot buy anything until
+            // the Play billing key exists, and the owner trying the app took
+            // those buttons for the only way to Gold or Platinum.
+            if (plans.allowTestPlans) ...[
+              const SizedBox(height: BlTokens.space3),
+              BlSectionHeader(s.planTestTitle),
+              Text(
+                s.planTestNote,
+                style: TextStyle(fontSize: 13, color: t.inkMuted),
+              ),
+              const SizedBox(height: BlTokens.space2),
+              Wrap(
+                spacing: BlTokens.space2,
+                runSpacing: BlTokens.space2,
+                children: [
+                  ChoiceChip(
+                    label: Text(s.planTestReal),
+                    selected: plans.testPlan == null,
+                    onSelected: (_) =>
+                        unawaited(_run(() => plans.setTestPlan(null))),
+                  ),
+                  for (final p in Plan.values)
+                    ChoiceChip(
+                      label: Text(planName(p)),
+                      selected: plans.testPlan == p,
+                      onSelected: (_) =>
+                          unawaited(_run(() => plans.setTestPlan(p))),
+                    ),
+                ],
+              ),
+            ],
             if (needed != null && !plan.covers(needed)) ...[
               const SizedBox(height: BlTokens.space3),
               Text(
@@ -148,34 +180,6 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
             if (_error != null) ...[
               const SizedBox(height: BlTokens.space3),
               Text(_error!, style: TextStyle(color: t.danger, fontSize: 14)),
-            ],
-            if (plans.allowTestPlans) ...[
-              const SizedBox(height: BlTokens.space6),
-              BlSectionHeader(s.planTestTitle),
-              Text(
-                s.planTestNote,
-                style: TextStyle(fontSize: 13, color: t.inkMuted),
-              ),
-              const SizedBox(height: BlTokens.space2),
-              Wrap(
-                spacing: BlTokens.space2,
-                runSpacing: BlTokens.space2,
-                children: [
-                  ChoiceChip(
-                    label: Text(s.planTestReal),
-                    selected: plans.testPlan == null,
-                    onSelected: (_) =>
-                        unawaited(_run(() => plans.setTestPlan(null))),
-                  ),
-                  for (final p in Plan.values)
-                    ChoiceChip(
-                      label: Text(planName(p)),
-                      selected: plans.testPlan == p,
-                      onSelected: (_) =>
-                          unawaited(_run(() => plans.setTestPlan(p))),
-                    ),
-                ],
-              ),
             ],
           ],
         ),
