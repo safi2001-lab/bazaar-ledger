@@ -22,7 +22,7 @@ Last updated: 3 Oct 2026.
   `dart analyze --fatal-infos`, `tool/arch_check.dart`, ledger shape, every
   package test, the app tests, and ledger proofs.
 - Every string in both English and Roman Urdu.
-- No database schema change without coordinating the version number (v12 now — M50).
+- No database schema change without coordinating the version number (v13 now — M65; v14 reserved for M69).
 - Agents building this work alone: a subagent may not launch its own
   subagents. Every subagent brief says so.
 
@@ -222,15 +222,17 @@ time, on the latest master (schema is v8 today).
 
 Found by re-reading `docs/competitor_research.md` §6–§8 and the appendix against the ledger. Offline-doable only.
 
-### Batch 1 (in progress)
-- [ ] M65 · (in progress, schema v13) Staff book: employees (not only app users), attendance, salary, advances, payroll posted to the books
-- [ ] M66 · (in progress) Loyalty points; a fixed price list per customer; the margin on a bill shown while billing, owner only
-- [ ] M67 · (in progress) Reports, deeper: ratio analysis (GP%, NP%, stock turnover, days to collect/pay), one exception report, ABC stock classes, ageing buckets the shop sets, stock valued at cost or sale price, per-column filters and a column chooser, "vs last period" on charts
+- [x] M64 · DONE (ae893a4) The udhaar khata on the first screen, by its own name — the owner could not find it behind "Gahak"
 
-### Batch 2 (queued)
-- [ ] M68 · Control: credit control by bill count and days, a temporary limit, stop billing after a bounced cheque; days older than N lock themselves; random stock checks (cycle count); cashier mode (salesman bills, cashier collects)
-- [ ] M69 · Repair job cards for mobile shops (device, IMEI, fault, estimate, parts from stock, labour, ready/delivered, billed) — schema v14
-- [ ] M70 · More bill designs; after a bill or payment, offer to send the customer their receipt (per-customer on/off)
+### Batch 1 — done
+- [x] M65 · DONE (5c9ed78, schema v13) Staff book: employees (not only app users), attendance, salary, advances, payroll posted to the books
+- [x] M66 · DONE (8d39f8b) Loyalty points; a fixed price list per customer; the margin on a bill shown while billing, owner only
+- [x] M67 · DONE (b22ae86) Reports, deeper: ratio analysis (GP%, NP%, stock turnover, days to collect/pay), one exception report, ABC stock classes, ageing buckets the shop sets, stock valued at cost or sale price, per-column filters and a column chooser, "vs last period" on charts
+
+### Batch 2 (in progress)
+- [ ] M68 · (in progress) Control: credit control by bill count and days, a temporary limit, stop billing after a bounced cheque; days older than N lock themselves; random stock checks (cycle count); cashier mode (salesman bills, cashier collects)
+- [ ] M69 · (in progress, schema v14) Repair job cards for mobile shops (device, IMEI, fault, estimate, parts from stock, labour, ready/delivered, billed) — schema v14
+- [ ] M70 · (in progress) More bill designs; after a bill or payment, offer to send the customer their receipt (per-customer on/off)
 
 ### Considered and left for now
 - Urdu in its own script on screen (اردو, right to left) — the owner decided Roman Urdu and English are enough (3 Oct 2026); Urdu script stays on printed bills, PDFs and reminder templates
