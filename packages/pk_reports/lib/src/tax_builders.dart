@@ -29,6 +29,13 @@ const _inputTaxNote =
 /// with each party's NTN and STRN (M35): the register a registered shop's
 /// accountant reconciles the return against. Its output tax is the Sales
 /// tax report's total to the paisa.
+///
+/// A shop whose services the province taxes (M59) gets two more columns
+/// (M61): the services' value and the province's tax on them, net of
+/// returns. Never added into Output tax or Net, which are FBR's, and the
+/// services are taken out of Sales value, which is what FBR's return
+/// counts: the two are owed to different authorities, filed on different
+/// portals, and a figure that adds them is a figure nobody can file.
 ReportTable taxReport(ReportPeriod period, List<PartyTax> parties) {
   final rows =
       parties
@@ -37,7 +44,8 @@ ReportTable taxReport(ReportPeriod period, List<PartyTax> parties) {
                 !p.outputTax.isZero ||
                 !p.netInputTax.isZero ||
                 !(p.salesValue - p.returnsValue).isZero ||
-                !(p.purchasesValue - p.purchaseReturnsValue).isZero,
+                !(p.purchasesValue - p.purchaseReturnsValue).isZero ||
+                !p.netProvincialTax.isZero,
           )
           .toList()
         ..sort((a, b) {
@@ -49,19 +57,29 @@ ReportTable taxReport(ReportPeriod period, List<PartyTax> parties) {
   Money sum(Money Function(PartyTax p) f) => Money.sum(rows.map(f));
   final output = sum((p) => p.outputTax);
   final input = sum((p) => p.netInputTax);
+  // M61: the province's columns only for a shop the province taxed in the
+  // period, so a shop that sells goods alone reads exactly as before.
+  final services = rows.any(
+    (p) => !p.provincialTax.isZero || !p.returnsProvincialTax.isZero,
+  );
+  final provincial = sum((p) => p.netProvincialTax);
   return ReportTable(
     id: 'tax_report',
     title: 'Tax report',
     period: period,
-    columns: const [
-      ReportColumn('Party', CellKind.text),
-      ReportColumn('NTN', CellKind.text),
-      ReportColumn('STRN', CellKind.text),
-      ReportColumn('Sales value', CellKind.money),
-      ReportColumn('Output tax', CellKind.money),
-      ReportColumn('Purchases value', CellKind.money),
-      ReportColumn('Input tax', CellKind.money),
-      ReportColumn('Net', CellKind.money),
+    columns: [
+      const ReportColumn('Party', CellKind.text),
+      const ReportColumn('NTN', CellKind.text),
+      const ReportColumn('STRN', CellKind.text),
+      const ReportColumn('Sales value', CellKind.money),
+      const ReportColumn('Output tax', CellKind.money),
+      const ReportColumn('Purchases value', CellKind.money),
+      const ReportColumn('Input tax', CellKind.money),
+      const ReportColumn('Net', CellKind.money),
+      if (services) ...const [
+        ReportColumn('Services value', CellKind.money),
+        ReportColumn('Provincial tax', CellKind.money),
+      ],
     ],
     rows: [
       for (final p in rows)
@@ -70,11 +88,12 @@ ReportTable taxReport(ReportPeriod period, List<PartyTax> parties) {
             p.name,
             p.ntn ?? '',
             p.strn ?? '',
-            p.salesValue - p.returnsValue,
+            p.netFbrSalesValue,
             p.outputTax,
             p.purchasesValue - p.purchaseReturnsValue,
             p.netInputTax,
             p.outputTax - p.netInputTax,
+            if (services) ...[p.netServicesValue, p.netProvincialTax],
           ],
           link: p.partyId == null
               ? null
@@ -84,19 +103,26 @@ ReportTable taxReport(ReportPeriod period, List<PartyTax> parties) {
         'Total',
         null,
         null,
-        sum((p) => p.salesValue - p.returnsValue),
+        sum((p) => p.netFbrSalesValue),
         output,
         sum((p) => p.purchasesValue - p.purchaseReturnsValue),
         input,
         output - input,
+        if (services) ...[sum((p) => p.netServicesValue), provincial],
       ], style: RowStyle.total),
     ],
     summary: [
       ReportFigure('Output tax', output),
       ReportFigure('Input tax', input),
       ReportFigure('Net', output - input),
+      if (services) ReportFigure('Provincial tax', provincial),
     ],
-    notes: const [_outputTaxNote, _inputTaxNote, _neverSent],
+    notes: [
+      _outputTaxNote,
+      _inputTaxNote,
+      if (services) _partyProvincialNote,
+      _neverSent,
+    ],
   );
 }
 
@@ -110,6 +136,10 @@ enum TaxRegime {
   untaxed('No sales tax charged'),
   furtherTax('Further tax'),
 
+  /// The province's tax on a service (M61): PRA's, SRB's, KPRA's or BRA's,
+  /// each row named by its authority and rate, "PRA 8% (card)".
+  provincial('Provincial tax on services'),
+
   /// Tax given back on a return whose sale could not be found to say on
   /// what footing it was charged.
   givenBack('Given back, footing not known');
@@ -121,6 +151,7 @@ enum TaxRegime {
 
 /// Which footing [r] is on.
 TaxRegime taxRegimeOf(RateTax r) {
+  if (r.kind == 'provincial_st') return TaxRegime.provincial;
   if (r.kind == 'further_tax') return TaxRegime.furtherTax;
   if ((r.code ?? '').endsWith('_RETURN')) return TaxRegime.givenBack;
   if (r.kind == 'sales_tax') {
@@ -144,6 +175,12 @@ TaxRegime taxRegimeOf(RateTax r) {
 /// that carried no tax, and the 4% further tax. Returns are taken back,
 /// each on its own footing, and the tax at the foot is the Sales tax
 /// report's total owed.
+///
+/// The province's tax on services (M61) is its own rows, one per
+/// authority and rate as the bill printed it, "PRA 16%" and "PRA 8%
+/// (card)", and its own figure under the total: "Owed to PRA", the same
+/// figure the Sales tax summary owes PRA. Never in the sales tax, the value
+/// of supplies FBR counts, or the total owed to FBR.
 ReportTable taxRateReport(ReportPeriod period, List<RateTax> rates) {
   final sales = [
     for (final r in rates)
@@ -160,18 +197,23 @@ ReportTable taxRateReport(ReportPeriod period, List<RateTax> rates) {
   final st = taxOf(sales, 'sales_tax') - taxOf(returns, 'sales_tax');
   final ft = taxOf(sales, 'further_tax') - taxOf(returns, 'further_tax');
   // What sales tax was charged on, net: the further tax is charged on the
-  // same supplies and would count them twice.
+  // same supplies and would count them twice, and a service the province
+  // taxed is not a supply FBR's return counts (M61).
   Money valueOf(Iterable<RateTax> rs) => Money.sum([
     for (final r in rs)
-      if (r.kind != 'further_tax') r.value,
+      if (r.kind != 'further_tax' && r.kind != 'provincial_st') r.value,
   ]);
   final value = valueOf(sales) - valueOf(returns);
+  // M61: what each province is owed, net of returns.
+  final owedTo = provincialOwed(rates);
 
   ReportRow row(RateTax r, {required bool back}) {
     final regime = taxRegimeOf(r);
     final sign = back ? -1 : 1;
     return ReportRow([
-      regime.label,
+      regime == TaxRegime.provincial
+          ? serviceTaxLabel(r.code ?? '', r.rateBp)
+          : regime.label,
       regime == TaxRegime.untaxed ||
               regime == TaxRegime.exempt ||
               regime == TaxRegime.givenBack
@@ -210,30 +252,78 @@ ReportTable taxRateReport(ReportPeriod period, List<RateTax> rates) {
         ft,
       ], style: RowStyle.subtotal),
       ReportRow([
-        'Total tax',
+        'Total owed to FBR',
         null,
         null,
         null,
         st + ft,
       ], style: RowStyle.total),
+      for (final o in owedTo)
+        ReportRow([
+          'Owed to ${o.authority}',
+          null,
+          null,
+          o.value,
+          o.tax,
+        ], style: RowStyle.subtotal),
     ],
     summary: [
       ReportFigure('Value of supplies', value),
       ReportFigure('Sales tax', st),
       ReportFigure('Further tax', ft),
+      for (final o in owedTo) ReportFigure('Owed to ${o.authority}', o.tax),
     ],
-    notes: const [_regimeNote, _neverSent],
+    notes: [
+      _regimeNote,
+      if (owedTo.isNotEmpty)
+        _provincialNote([for (final o in owedTo) o.authority]),
+      _neverSent,
+    ],
   );
+}
+
+/// What each province is owed for the services in [rates], net of what
+/// returns gave back (M61): the value the tax was charged on and the tax,
+/// by authority, in the order of their names. The Tax rate report's "Owed
+/// to PRA" is this, and so is the Sales tax summary's.
+List<({String authority, Money value, Money tax})> provincialOwed(
+  Iterable<RateTax> rates,
+) {
+  final value = <String, Money>{};
+  final tax = <String, Money>{};
+  for (final r in rates) {
+    if (r.kind != 'provincial_st') continue;
+    final who = serviceTaxAuthorityOf(r.code ?? '');
+    final sign = r.isReturn ? -1 : 1;
+    value[who] = (value[who] ?? Money.zero) + r.value * sign;
+    tax[who] = (tax[who] ?? Money.zero) + r.tax * sign;
+  }
+  return [
+    for (final who in value.keys.toList()..sort())
+      (authority: who, value: value[who]!, tax: tax[who]!),
+  ];
 }
 
 int _byRegimeAndRate(RateTax a, RateTax b) {
   final byRegime = taxRegimeOf(a).index.compareTo(taxRegimeOf(b).index);
-  return byRegime != 0 ? byRegime : b.rateBp.compareTo(a.rateBp);
+  if (byRegime != 0) return byRegime;
+  // M61: the province's rows by authority first, then the higher rate.
+  if (a.kind == 'provincial_st') {
+    final who = serviceTaxAuthorityOf(
+      a.code ?? '',
+    ).compareTo(serviceTaxAuthorityOf(b.code ?? ''));
+    if (who != 0) return who;
+  }
+  final byRate = b.rateBp.compareTo(a.rateBp);
+  return byRate != 0 ? byRate : (a.code ?? '').compareTo(b.code ?? '');
 }
 
 /// What was sold under each HS code over [period], net of returns (M35),
 /// the biggest first and the lines with no code last: what FBR's Digital
 /// Invoicing and the Annex-C both ask every line for.
+///
+/// The province's tax on services sold under a code is a column of its own
+/// (M61), after FBR's Total tax and never in it.
 ReportTable salesByHsCode(ReportPeriod period, List<HsCodeSales> codes) {
   final rows = codes.toList()
     ..sort((a, b) {
@@ -247,19 +337,24 @@ ReportTable salesByHsCode(ReportPeriod period, List<HsCodeSales> codes) {
     });
   final missing = rows.where((r) => r.hsCode == null).toList();
   Money sum(Money Function(HsCodeSales r) f) => Money.sum(rows.map(f));
+  // M61: a column for the province's tax only where the period has any.
+  final services = rows.any(
+    (r) => !r.provincialTax.isZero || !r.returnsProvincialTax.isZero,
+  );
   return ReportTable(
     id: 'sales_by_hs_code',
     title: 'Sales by HS code',
     period: period,
-    columns: const [
-      ReportColumn('HS code', CellKind.text),
-      ReportColumn('For example', CellKind.text),
-      ReportColumn('Items', CellKind.count),
-      ReportColumn('Lines', CellKind.count),
-      ReportColumn('Value', CellKind.money),
-      ReportColumn('Sales tax', CellKind.money),
-      ReportColumn('Further tax', CellKind.money),
-      ReportColumn('Total tax', CellKind.money),
+    columns: [
+      const ReportColumn('HS code', CellKind.text),
+      const ReportColumn('For example', CellKind.text),
+      const ReportColumn('Items', CellKind.count),
+      const ReportColumn('Lines', CellKind.count),
+      const ReportColumn('Value', CellKind.money),
+      const ReportColumn('Sales tax', CellKind.money),
+      const ReportColumn('Further tax', CellKind.money),
+      const ReportColumn('Total tax', CellKind.money),
+      if (services) const ReportColumn('Provincial tax', CellKind.money),
     ],
     rows: [
       for (final r in rows)
@@ -272,6 +367,7 @@ ReportTable salesByHsCode(ReportPeriod period, List<HsCodeSales> codes) {
           r.netSalesTax,
           r.netFurtherTax,
           r.netTax,
+          if (services) r.netProvincialTax,
         ]),
       ReportRow([
         'Total',
@@ -282,13 +378,20 @@ ReportTable salesByHsCode(ReportPeriod period, List<HsCodeSales> codes) {
         sum((r) => r.netSalesTax),
         sum((r) => r.netFurtherTax),
         sum((r) => r.netTax),
+        if (services) sum((r) => r.netProvincialTax),
       ], style: RowStyle.total),
     ],
     summary: [
       ReportFigure('Value', sum((r) => r.netValue)),
       ReportFigure('Tax', sum((r) => r.netTax)),
+      if (services)
+        ReportFigure('Provincial tax', sum((r) => r.netProvincialTax)),
     ],
-    notes: [_hsNote, if (missing.isNotEmpty) _noHsCode(missing.single.lines)],
+    notes: [
+      _hsNote,
+      if (services) _hsProvincialNote,
+      if (missing.isNotEmpty) _noHsCode(missing.single.lines),
+    ],
   );
 }
 
@@ -376,10 +479,25 @@ const annexAColumns = [
 /// for it (M35), in FBR's own column order: a file the shop's accountant
 /// pastes into FBR's template, validates there, and imports into IRIS.
 /// Nothing is uploaded from the phone.
+///
+/// A service the province taxed (M59) is left out (M61), and a note says
+/// how many lines and how much. Since the Eighteenth Amendment a service is
+/// the province's to tax: it is not a supply on FBR's sales tax return, and
+/// the template has no row for it — M35 checked its columns and lists, and
+/// a salon in Lahore is none of its sale types. Listed as a supply at no
+/// tax, as it used to be, it told IRIS the shop sold something for nothing
+/// tax. The province's own return is filed on the province's own portal,
+/// from the Sales tax summary's "Owed to PRA".
 ReportTable annexC(ReportPeriod period, List<AnnexLine> lines) {
+  bool isSale(AnnexLine l) =>
+      l.docType == 'sale_invoice' || l.docType == 'sale_return';
   final sales = [
     for (final l in lines)
-      if (l.docType == 'sale_invoice' || l.docType == 'sale_return') l,
+      if (isSale(l) && !l.isProvincialService) l,
+  ];
+  final services = [
+    for (final l in lines)
+      if (isSale(l) && l.isProvincialService) l,
   ];
   final problems = _AnnexProblems();
   final rows = [for (final l in sales) ReportRow(_annexCRow(l, problems))];
@@ -393,10 +511,30 @@ ReportTable annexC(ReportPeriod period, List<AnnexLine> lines) {
     notes: [
       _annexHowTo(_dsiTemplate, _dsiVersion, 'Sales Ledger'),
       _creditNoteNote,
+      if (services.isNotEmpty) _servicesLeftOut(services),
       ...problems.notes(),
       _neverSent,
     ],
   );
+}
+
+/// What the Annex-C left out, in a sentence the accountant can act on
+/// (M61): how many service lines, worth how much, carrying how much of
+/// which province's tax, net of returns.
+String _servicesLeftOut(List<AnnexLine> services) {
+  Money net(Money Function(AnnexLine l) f) =>
+      Money.sum([for (final l in services) l.isReturn ? -f(l) : f(l)]);
+  final who = {
+    for (final l in services) serviceTaxAuthorityOf(l.provincialCode ?? ''),
+  }.toList()..sort();
+  final authorities = who.join(' and ');
+  final n = services.length;
+  return '$n ${n == 1 ? 'line is a service' : 'lines are services'} taxed '
+      'by $authorities and left out: Rs ${net((l) => l.value).amountOnly} '
+      'of services and Rs ${net((l) => l.provincialTax).amountOnly} of '
+      '$authorities tax, net of returns. A service the province taxes is not '
+      'a supply on FBR\'s return; file it with $authorities from the Sales '
+      'tax summary.';
 }
 
 /// Every purchase line of [period] as the Annex-A asks for it (M35).
@@ -732,6 +870,24 @@ final class _AnnexProblems {
 const _outputTaxNote =
     'Output tax is sales tax and further tax charged, less what returns gave '
     'back. Values are before tax and net of returns.';
+
+const _partyProvincialNote =
+    'Provincial tax is the province\'s tax on services (PRA, SRB, KPRA or '
+    'BRA), net of returns: owed to the province, not FBR, and never in '
+    'Output tax or Net. Sales value leaves those services out; they are in '
+    'Services value.';
+
+const _hsProvincialNote =
+    'Provincial tax is the province\'s tax on the services sold under a '
+    'code, net of returns. It is owed to the province, not FBR, and is never '
+    'in Total tax.';
+
+String _provincialNote(List<String> authorities) {
+  final who = authorities.join(' and ');
+  return 'Services are taxed by $who, not FBR: their rows are the rates the '
+      'bills charged, in cash and by card, and what is owed to $who is never '
+      'in the sales tax, the value of supplies or the total owed to FBR.';
+}
 
 const _regimeNote =
     'Third Schedule goods are taxed inside their printed retail price; the '

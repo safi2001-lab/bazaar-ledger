@@ -378,7 +378,7 @@ void main() {
           today: today,
         );
         final pra = summary.rows.singleWhere(
-          (r) => r.cells.first == 'PRA_CARD',
+          (r) => r.cells.first == 'PRA 8% (card)',
         );
         expect(pra.cells[1], 800);
         expect(pra.cells[2], const Money.rupees(1000));

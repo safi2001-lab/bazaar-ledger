@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'package:pk_money/pk_money.dart';
 
+import '../tax/service_tax.dart'
+    show percentOfBp, serviceTaxAuthorityOf, serviceTaxLabel;
+
 /// The shop, as it appears at the top of a receipt.
 final class ReceiptShop {
   const ReceiptShop({
@@ -147,7 +150,14 @@ final class ReceiptLineTax {
     this.rateBp,
     this.furtherTax = Money.zero,
     this.hsCode,
+    this.rateParts = const [],
   });
+
+  /// M61: the rates a service line was taxed at, part by part, when the
+  /// province's tax on it came in more than one — a bill paid part by card
+  /// and part in cash is taxed 8% on the card's share and 16% on the rest.
+  /// Empty, or one part, for every other line.
+  final List<ReceiptRatePart> rateParts;
 
   /// After every discount, before any tax: what the tax was charged on.
   final Money valueExclTax;
@@ -172,6 +182,11 @@ final class ReceiptLineTax {
   /// Integer arithmetic on basis points, so the 8th Schedule's 12.75% prints
   /// as exactly that and never as a float's idea of it.
   String get rateLabel {
+    // M61: a line taxed at two rates says both, "16% / 8%", never the
+    // higher beside an amount that is a blend of the two.
+    if (rateParts.length > 1) {
+      return [for (final p in rateParts) percentOfBp(p.rateBp)].join(' / ');
+    }
     final bp = rateBp;
     if (bp == null) return '-';
     final whole = bp ~/ 100;
@@ -180,6 +195,40 @@ final class ReceiptLineTax {
     final digits = part.toString().padLeft(2, '0');
     return '$whole.${digits.endsWith('0') ? digits[0] : digits}%';
   }
+
+  /// M61: how a line taxed at two rates was split, in words for the line's
+  /// own row of a tax invoice: "PRA 16% on Rs 537.04, 8% (card) on Rs
+  /// 462.96". Null for a line taxed at one rate, which the Rate column
+  /// already says in full.
+  String? get rateSplit {
+    if (rateParts.length < 2) return null;
+    final first = rateParts.first;
+    final who = serviceTaxAuthorityOf(first.code);
+    // The authority once, at the front: "PRA 16% on .., 8% (card) on ..".
+    String label(ReceiptRatePart p) {
+      final full = serviceTaxLabel(p.code, p.rateBp);
+      return identical(p, first) || !full.startsWith('$who ')
+          ? full
+          : full.substring(who.length + 1);
+    }
+
+    return [for (final p in rateParts) '${label(p)} on ${p.base}'].join(', ');
+  }
+}
+
+/// One rate of a line taxed at more than one (M61): the tax code it was
+/// charged under (`PRA_CARD`), its rate, and the part of the line's value
+/// it was charged on.
+final class ReceiptRatePart {
+  const ReceiptRatePart({
+    required this.code,
+    required this.rateBp,
+    required this.base,
+  });
+
+  final String code;
+  final int rateBp;
+  final Money base;
 }
 
 /// Which sheet of a bill this is (M51).

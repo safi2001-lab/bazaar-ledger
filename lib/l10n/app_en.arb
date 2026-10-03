@@ -3976,5 +3976,25 @@
   },
   "reportGroupPharmacy": "Pharmacy",
   "reportScheduleRegister": "Schedule B/D register",
-  "reportScheduleRegisterHint": "Every controlled medicine in and out, with its prescription"
+  "reportScheduleRegisterHint": "Every controlled medicine in and out, with its prescription",
+  "reportSaveView": "Save this view",
+  "reportMyViews": "My views",
+  "reportViewName": "Name",
+  "reportViewNameHint": "e.g. Monday udhaar list",
+  "reportViewKeeps": "Keeps this report's period, filters, sort, and table or chart. Kept on this phone only, never in the books.",
+  "reportViewSaved": "Saved under My views: {name}",
+  "@reportViewSaved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "reportViewRename": "Rename",
+  "reportViewDelete": "Delete view",
+  "reportViewDeleteConfirm": "Delete the view \"{name}\"? The report and the books stay exactly as they are.",
+  "@reportViewDeleteConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "reportViewOptions": "View options"
 }

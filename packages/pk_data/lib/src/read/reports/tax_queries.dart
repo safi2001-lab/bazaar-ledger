@@ -11,12 +11,20 @@ mixin _TaxQueries implements TaxReportSource {
   /// returns, one row per line: the tax rows of `document_line_taxes`
   /// summed by kind, with the sales tax's rate and code. Reads `?1` to
   /// `?3` as the firm and the period.
+  ///
+  /// And the province's tax on a service line (M61), `pt`, with one of its
+  /// codes, `pt_code`, to say whose it is: summed apart and never into `st`,
+  /// because it is owed to PRA or SRB and not to FBR.
   static const _lineTaxes = '''
     SELECT t.document_line_id,
            SUM(CASE WHEN t.tax_kind = 'sales_tax'
                     THEN t.amount_paisa ELSE 0 END) AS st,
            SUM(CASE WHEN t.tax_kind = 'further_tax'
                     THEN t.amount_paisa ELSE 0 END) AS ft,
+           SUM(CASE WHEN t.tax_kind = 'provincial_st'
+                    THEN t.amount_paisa ELSE 0 END) AS pt,
+           MAX(CASE WHEN t.tax_kind = 'provincial_st' THEN t.tax_code END)
+             AS pt_code,
            MAX(CASE WHEN t.tax_kind = 'sales_tax' THEN t.rate_bp END)
              AS st_bp,
            MAX(CASE WHEN t.tax_kind = 'sales_tax' THEN t.tax_code END)
@@ -81,6 +89,15 @@ mixin _TaxQueries implements TaxReportSource {
         COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
           WHERE t.document_id = d.id AND t.tax_kind = '$kind'
             AND t.deleted_at_utc IS NULL), 0)''';
+    // M61: the value of the bill's service lines the province taxed, which
+    // is in the bill's taxable value and is not a supply FBR counts.
+    const servicesOf = '''
+        COALESCE((SELECT SUM(l.taxable_paisa) FROM document_lines l
+          WHERE l.document_id = d.id AND l.deleted_at_utc IS NULL
+            AND EXISTS (SELECT 1 FROM document_line_taxes t
+                         WHERE t.document_line_id = l.id
+                           AND t.tax_kind = 'provincial_st'
+                           AND t.deleted_at_utc IS NULL)), 0)''';
     final rows = await _db
         .customSelect(
           '''
@@ -99,6 +116,15 @@ mixin _TaxQueries implements TaxReportSource {
                  SUM(CASE WHEN d.doc_type = 'sale_return'
                           THEN ${taxOf('sales_tax')} + ${taxOf('further_tax')}
                           ELSE 0 END) AS returns_tax,
+                 SUM(CASE WHEN d.doc_type = 'sale_invoice'
+                          THEN $servicesOf ELSE 0 END) AS services,
+                 SUM(CASE WHEN d.doc_type = 'sale_invoice'
+                          THEN ${taxOf('provincial_st')} ELSE 0 END) AS pt,
+                 SUM(CASE WHEN d.doc_type = 'sale_return'
+                          THEN $servicesOf ELSE 0 END) AS returns_services,
+                 SUM(CASE WHEN d.doc_type = 'sale_return'
+                          THEN ${taxOf('provincial_st')} ELSE 0 END)
+                   AS returns_pt,
                  SUM(CASE WHEN d.doc_type = 'purchase_bill'
                           THEN d.taxable_paisa ELSE 0 END) AS purchases,
                  SUM(CASE WHEN d.doc_type = 'purchase_bill'
@@ -150,6 +176,10 @@ mixin _TaxQueries implements TaxReportSource {
           inputTax: Money.paisa(r.read<int>('input')),
           purchaseReturnsValue: Money.paisa(r.read<int>('sent_back')),
           purchaseReturnsTax: Money.paisa(r.read<int>('sent_back_tax')),
+          servicesValue: Money.paisa(r.read<int>('services')),
+          provincialTax: Money.paisa(r.read<int>('pt')),
+          returnsServicesValue: Money.paisa(r.read<int>('returns_services')),
+          returnsProvincialTax: Money.paisa(r.read<int>('returns_pt')),
         ),
     ];
   }
@@ -159,15 +189,25 @@ mixin _TaxQueries implements TaxReportSource {
     final variables = _Params(firmId, period).variables;
     // The tax rows themselves, by kind, code and rate...
     // A return's rows are put on the footing of the sale they return.
+    //
+    // M61: the province's tax on a service too, as its own kind. A return
+    // gives it back under the code it was charged under with _RETURN after
+    // it, at the rate it was charged, so its footing is on the row itself:
+    // a split-tender line's two rows come back as two, and looking them up
+    // on the sale (which has two rows for the one item) could only guess.
     final taxed = await _db
         .customSelect(
           '''
           SELECT t.tax_kind,
-                 CASE WHEN d.doc_type = 'sale_return'
+                 CASE WHEN t.tax_kind = 'provincial_st'
+                      THEN REPLACE(t.tax_code, '_RETURN', '')
+                      WHEN d.doc_type = 'sale_return'
                       THEN COALESCE(${_returned('tax_code', 't.tax_kind')},
                                     t.tax_code)
                       ELSE t.tax_code END AS code,
-                 CASE WHEN d.doc_type = 'sale_return'
+                 CASE WHEN t.tax_kind = 'provincial_st'
+                      THEN t.rate_bp
+                      WHEN d.doc_type = 'sale_return'
                       THEN COALESCE(${_returned('rate_bp', 't.tax_kind')},
                                     t.rate_bp)
                       ELSE t.rate_bp END AS rate,
@@ -183,7 +223,7 @@ mixin _TaxQueries implements TaxReportSource {
             AND d.deleted_at_utc IS NULL
             AND d.doc_date_local BETWEEN ?2 AND ?3
             AND t.deleted_at_utc IS NULL
-            AND t.tax_kind IN ('sales_tax', 'further_tax')
+            AND t.tax_kind IN ('sales_tax', 'further_tax', 'provincial_st')
           GROUP BY t.tax_kind, code, rate, is_return
           ''',
           variables: variables,
@@ -196,7 +236,9 @@ mixin _TaxQueries implements TaxReportSource {
         )
         .get();
     // ...and the lines that carried no sales tax at all, by their item's
-    // rule: exempt, zero-rated, or neither.
+    // rule: exempt, zero-rated, or neither. A service the province taxed
+    // is taxed, by the province, and is under its own rows (M61); it used
+    // to be counted here as a supply on which no tax was charged.
     final untaxed = await _db
         .customSelect(
           '''
@@ -216,7 +258,7 @@ mixin _TaxQueries implements TaxReportSource {
             AND NOT EXISTS (
               SELECT 1 FROM document_line_taxes t
               WHERE t.document_line_id = dl.id
-                AND t.tax_kind = 'sales_tax'
+                AND t.tax_kind IN ('sales_tax', 'provincial_st')
                 AND t.deleted_at_utc IS NULL
             )
           GROUP BY rule, is_return
@@ -284,7 +326,11 @@ mixin _TaxQueries implements TaxReportSource {
                  SUM(CASE WHEN d.doc_type = 'sale_return'
                           THEN COALESCE(lt.st, 0) ELSE 0 END) AS returned_st,
                  SUM(CASE WHEN d.doc_type = 'sale_return'
-                          THEN COALESCE(lt.ft, 0) ELSE 0 END) AS returned_ft
+                          THEN COALESCE(lt.ft, 0) ELSE 0 END) AS returned_ft,
+                 SUM(CASE WHEN d.doc_type = 'sale_invoice'
+                          THEN COALESCE(lt.pt, 0) ELSE 0 END) AS pt,
+                 SUM(CASE WHEN d.doc_type = 'sale_return'
+                          THEN COALESCE(lt.pt, 0) ELSE 0 END) AS returned_pt
           FROM document_lines dl
           JOIN documents d ON d.id = dl.document_id
           LEFT JOIN items i ON i.id = dl.item_id
@@ -319,6 +365,8 @@ mixin _TaxQueries implements TaxReportSource {
           returnsValue: Money.paisa(r.read<int>('returned')),
           returnsSalesTax: Money.paisa(r.read<int>('returned_st')),
           returnsFurtherTax: Money.paisa(r.read<int>('returned_ft')),
+          provincialTax: Money.paisa(r.read<int>('pt')),
+          returnsProvincialTax: Money.paisa(r.read<int>('returned_pt')),
         ),
     ];
   }
@@ -358,6 +406,7 @@ mixin _TaxQueries implements TaxReportSource {
                  CASE WHEN dl.taxable_paisa = 0 THEN dl.line_total_paisa
                       ELSE dl.taxable_paisa END AS taxable_paisa,
                  COALESCE(lt.st, 0) AS st, COALESCE(lt.ft, 0) AS ft,
+                 COALESCE(lt.pt, 0) AS pt, lt.pt_code,
                  CASE WHEN d.doc_type = 'sale_return'
                       THEN COALESCE(${_returned('rate_bp', "'sales_tax'")},
                                     lt.st_bp)
@@ -437,6 +486,9 @@ mixin _TaxQueries implements TaxReportSource {
           reason: r.read<String>('doc_type').endsWith('return')
               ? _blank(r.readNullable<String>('notes'))
               : null,
+          // M61: a service the province taxed, which Annex-C leaves out.
+          provincialTax: Money.paisa(r.read<int>('pt')),
+          provincialCode: r.readNullable<String>('pt_code'),
         ),
     ];
   }

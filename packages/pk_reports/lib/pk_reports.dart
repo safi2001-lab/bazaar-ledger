@@ -28,6 +28,7 @@ export 'src/report_chart.dart';
 export 'src/report_engine.dart';
 export 'src/report_source.dart';
 export 'src/report_table.dart';
+export 'src/saved_view.dart';
 export 'src/staff_builders.dart';
 export 'src/staff_source.dart';
 export 'src/tax_builders.dart';

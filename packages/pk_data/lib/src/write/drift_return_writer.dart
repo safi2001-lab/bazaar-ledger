@@ -24,8 +24,16 @@ import 'tx_runner.dart';
 ///
 /// The money is what the bill stored for the line — its total, its
 /// discount, its taxes and its cost — never rebuilt from the rate (M57).
-/// Every tax the sale credited to Output Sales Tax is summed as sales tax,
-/// as the sale posted them.
+/// Every federal tax the sale credited to Output Sales Tax is summed as
+/// sales tax, as the sale posted them.
+///
+/// The province's tax on a service (M59) is read apart, row by row, as
+/// `code:rate:base:amount:inclusive` joined by `;` (M61): a line paid part by
+/// card carries two rows at two rates, and a return has to give each back
+/// at its own rate and under the province's own code. Summed into sales tax
+/// as it used to be, it came back as federal tax at no rate. Whether the
+/// tax was inside the price is read from either kind's rows, so a service
+/// priced tax-inclusive comes back the way it was sold.
 const soldLinesSql = '''
   SELECT dl.id, dl.item_id, dl.item_name_snapshot, dl.item_code_snapshot,
          dl.hs_code_snapshot, dl.unit_id, dl.unit_code_snapshot,
@@ -55,7 +63,8 @@ const soldLinesSql = '''
          ), 0) AS returned,
          COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
                     WHERE t.document_line_id = dl.id
-                      AND t.tax_kind NOT IN ('further_tax', 'withholding')
+                      AND t.tax_kind NOT IN ('further_tax', 'withholding',
+                                             'provincial_st')
                       AND t.deleted_at_utc IS NULL), 0) AS sales_tax,
          COALESCE((SELECT MAX(t.rate_bp) FROM document_line_taxes t
                     WHERE t.document_line_id = dl.id
@@ -63,8 +72,15 @@ const soldLinesSql = '''
                       AND t.deleted_at_utc IS NULL), 0) AS sales_tax_bp,
          COALESCE((SELECT MAX(t.is_inclusive) FROM document_line_taxes t
                     WHERE t.document_line_id = dl.id
-                      AND t.tax_kind = 'sales_tax'
+                      AND t.tax_kind IN ('sales_tax', 'provincial_st')
                       AND t.deleted_at_utc IS NULL), 0) AS tax_inclusive,
+         (SELECT group_concat(t.tax_code || ':' || t.rate_bp || ':' ||
+                              t.base_paisa || ':' || t.amount_paisa || ':' ||
+                              t.is_inclusive, ';')
+            FROM document_line_taxes t
+           WHERE t.document_line_id = dl.id
+             AND t.tax_kind = 'provincial_st'
+             AND t.deleted_at_utc IS NULL) AS provincial_taxes,
          COALESCE((SELECT SUM(t.amount_paisa) FROM document_line_taxes t
                     WHERE t.document_line_id = dl.id
                       AND t.tax_kind = 'further_tax'
@@ -105,9 +121,39 @@ SoldLine soldLineFrom(QueryRow r) => SoldLine(
   salesTaxBp: r.read<int>('sales_tax_bp'),
   furtherTax: Money.paisa(r.read<int>('further_tax')),
   furtherTaxBp: r.read<int>('further_tax_bp'),
+  provincialTaxes: provincialTaxesFrom(
+    r.readNullable<String>('provincial_taxes'),
+  ),
   taxInclusive: r.read<int>('tax_inclusive') == 1,
   roundingMode: roundingModeFor(r.readNullable<String>('rounding_mode')),
 );
+
+/// The provincial tax rows [soldLinesSql] joins into one column (M61), in
+/// the order of their codes so a line reads the same every time. A part
+/// that does not read is left out rather than guessed: the codes are the
+/// app's own (`PRA_STD`), and never hold a colon or a semicolon.
+List<SoldTax> provincialTaxesFrom(String? joined) {
+  if (joined == null || joined.isEmpty) return const [];
+  final taxes = <SoldTax>[];
+  for (final part in joined.split(';')) {
+    final f = part.split(':');
+    if (f.length != 5) continue;
+    final rate = int.tryParse(f[1]);
+    final base = int.tryParse(f[2]);
+    final amount = int.tryParse(f[3]);
+    if (rate == null || base == null || amount == null) continue;
+    taxes.add(
+      SoldTax(
+        code: f[0],
+        rateBp: rate,
+        base: Money.paisa(base),
+        amount: Money.paisa(amount),
+        isInclusive: f[4] == '1',
+      ),
+    );
+  }
+  return taxes..sort((a, b) => a.code.compareTo(b.code));
+}
 
 /// The drift implementation of [ReturnWriter].
 ///

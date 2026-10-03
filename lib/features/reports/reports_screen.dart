@@ -12,6 +12,7 @@ import '../subscription/plans_screen.dart';
 import 'report_registry.dart';
 import 'report_screen.dart';
 import 'report_shelf.dart';
+import 'saved_views.dart';
 import 'today_strip.dart';
 
 export 'report_registry.dart' show isAccountingReport, reportName;
@@ -29,6 +30,10 @@ export 'report_screen.dart' show ReportScreen;
 ///
 /// Above everything since M46, a strip with today's figures off the night's
 /// Z report, which opens it.
+///
+/// Under it since M61, the shop's own views — a report kept with its
+/// period, filters, sort and chart under a name, "Monday udhaar list" —
+/// each a tap from open, above the favourites they go one better than.
 ///
 /// The list is the registry (`report_registry.dart`), so a report added
 /// there appears here in its group with nothing else to change. A report
@@ -80,6 +85,19 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
     );
   }
 
+  /// A saved view (M61), through the same plan as its report.
+  Future<void> _openView(SavedReportView view) async {
+    final plan = reportEntry(view.kind).plan;
+    Widget screen() => ReportScreen(kind: view.kind, view: view);
+    if (plan != null) {
+      await openWithPlan(context, ref, plan, screen);
+      return;
+    }
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => screen()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final s = AppStrings.of(context);
@@ -98,6 +116,11 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
         e.hint(s).toLowerCase().contains(query);
 
     final byKind = {for (final e in allowed) e.kind: e};
+    // M61: a view of a report this person may not open is not offered.
+    final views = [
+      for (final v in ref.watch(savedViewsProvider))
+        if (byKind.containsKey(v.kind)) v,
+    ];
     final favourites = [for (final k in shelf.favourites) ?byKind[k]];
     final recent = [
       for (final k in shelf.recent)
@@ -171,6 +194,11 @@ class _ReportsScreenState extends ConsumerState<ReportsScreen> {
           ),
           children: [
             if (query.isEmpty) const TodayStrip(),
+            if (query.isEmpty && views.isNotEmpty)
+              MyViewsSection(
+                views: views,
+                onOpen: (v) => unawaited(_openView(v)),
+              ),
             if (query.isEmpty && favourites.isNotEmpty)
               section(s.reportFavourites, favourites),
             if (query.isEmpty && recent.isNotEmpty) ...[

@@ -190,11 +190,55 @@ final class ServiceTaxSetting {
 /// "PRA 16%" or "PRA 8% (card)", from a stored tax code (`PRA_STD`,
 /// `PRA_CARD`) and its rate. The "(card)" stands for card, wallet and QR
 /// alike, as the provinces' own notices say "card payments".
+///
+/// A code given back on a return (M61, `PRA_CARD_RETURN`) reads as the
+/// code it was charged under: the return's own paper already says it is a
+/// return, and "PRA 8% (card)" beside the amount given back is what the
+/// customer was charged.
 String serviceTaxLabel(String code, int rateBp) {
-  final cut = code.lastIndexOf('_');
-  final who = cut < 0 ? code : code.substring(0, cut);
-  final digital = code.endsWith('_CARD');
+  final charged = serviceTaxChargedCode(code);
+  final cut = charged.lastIndexOf('_');
+  final who = cut < 0 ? charged : charged.substring(0, cut);
+  final digital = charged.endsWith('_CARD');
   return '$who ${percentOfBp(rateBp)}${digital ? ' (card)' : ''}';
+}
+
+// ---------------------------------------------------------------------------
+// M61: a provincial tax given back
+// ---------------------------------------------------------------------------
+
+const _returnSuffix = '_RETURN';
+
+/// The code a return gives a provincial tax back under (M61): the code it
+/// was charged under with `_RETURN` after it, so `PRA_CARD` comes back as
+/// `PRA_CARD_RETURN` and `PRA_STD` as `PRA_STD_RETURN`.
+///
+/// Why its own code and not the federal `ST_RETURN` every return used to
+/// write: the tax was charged for the province and is owed to the province,
+/// so what comes back off it has to come off the province's figure. Given
+/// back as `ST_RETURN`, a haircut returned would have lowered what the shop
+/// owes FBR (which it never owed on the haircut) and left PRA's figure as if
+/// the haircut had stood. Keeping the STD and the CARD apart keeps the rate
+/// it was charged at: a split-tender line comes back as two rows, each at
+/// its own rate.
+String serviceTaxReturnCode(String code) =>
+    code.endsWith(_returnSuffix) ? code : '$code$_returnSuffix';
+
+/// The code [code] was charged under: itself, or for a code given back on a
+/// return, the code before `_RETURN`.
+String serviceTaxChargedCode(String code) => code.endsWith(_returnSuffix)
+    ? code.substring(0, code.length - _returnSuffix.length)
+    : code;
+
+/// Whether [code] is a provincial tax given back on a return.
+bool isServiceTaxReturnCode(String code) => code.endsWith(_returnSuffix);
+
+/// Who the tax under [code] is owed to, as the shop writes the authority:
+/// `PRA` for `PRA_CARD` and for `PRA_STD_RETURN`, `SRB` for `SRB_STD`.
+String serviceTaxAuthorityOf(String code) {
+  final charged = serviceTaxChargedCode(code);
+  final cut = charged.indexOf('_');
+  return cut < 0 ? charged : charged.substring(0, cut);
 }
 
 /// `1600` is "16%", `850` is "8.5%", `1275` is "12.75%".

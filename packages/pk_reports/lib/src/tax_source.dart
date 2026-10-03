@@ -21,6 +21,10 @@ final class PartyTax {
     this.partyId,
     this.ntn,
     this.strn,
+    this.servicesValue = Money.zero,
+    this.provincialTax = Money.zero,
+    this.returnsServicesValue = Money.zero,
+    this.returnsProvincialTax = Money.zero,
   });
 
   /// Null for the walk-ins, who are one row.
@@ -29,7 +33,8 @@ final class PartyTax {
   final String? ntn;
   final String? strn;
 
-  /// The value of supplies on the party's sale bills, before tax.
+  /// The value of supplies on the party's sale bills, before tax: goods and
+  /// services alike. [servicesValue] is the part of it the province taxed.
   final Money salesValue;
 
   /// Sales tax charged on them.
@@ -50,8 +55,29 @@ final class PartyTax {
   final Money purchaseReturnsValue;
   final Money purchaseReturnsTax;
 
-  /// Sales and further tax, less what returns gave back.
+  /// The value of the service lines on the party's bills that carried the
+  /// province's tax (M61), and that tax: owed to PRA, SRB, KPRA or BRA,
+  /// never to FBR, and so never in [salesTax] or [outputTax].
+  final Money servicesValue;
+  final Money provincialTax;
+
+  /// What returns of those services took back, and the provincial tax given
+  /// back with them (M61).
+  final Money returnsServicesValue;
+  final Money returnsProvincialTax;
+
+  /// Sales and further tax, less what returns gave back. FBR's alone.
   Money get outputTax => salesTax + furtherTax - returnsTax;
+
+  /// The province's tax on services, less what returns gave back (M61).
+  Money get netProvincialTax => provincialTax - returnsProvincialTax;
+
+  /// Services taxed by the province, net of returns (M61).
+  Money get netServicesValue => servicesValue - returnsServicesValue;
+
+  /// What was sold that FBR's return counts: everything less returns, less
+  /// the services the province taxed (M61).
+  Money get netFbrSalesValue => salesValue - returnsValue - netServicesValue;
 
   /// Tax on purchases, less what went back.
   Money get netInputTax => inputTax - purchaseReturnsTax;
@@ -70,13 +96,14 @@ final class RateTax {
     this.code,
   });
 
-  /// `sales_tax`, `further_tax`, or `none` for lines that carried no sales
-  /// tax at all.
+  /// `sales_tax`, `further_tax`, `provincial_st` for the province's tax on
+  /// a service (M61), or `none` for lines that carried no tax at all.
   final String kind;
 
-  /// The tax code, `ST_STD_18`, `ST_3RD_18`, `FURTHER_4`; or for a line
-  /// with no sales tax, its item's tax rule, `exempt` or `zero_rated`, when
-  /// it has one.
+  /// The tax code, `ST_STD_18`, `ST_3RD_18`, `FURTHER_4`, `PRA_STD`,
+  /// `PRA_CARD` — a provincial tax given back on a return under the code it
+  /// was charged under; or for a line with no tax, its item's tax rule,
+  /// `exempt` or `zero_rated`, when it has one.
   final String? code;
   final int rateBp;
 
@@ -102,6 +129,8 @@ final class HsCodeSales {
     required this.returnsFurtherTax,
     this.hsCode,
     this.example,
+    this.provincialTax = Money.zero,
+    this.returnsProvincialTax = Money.zero,
   });
 
   /// As the bill line or the item carries it; null for lines with none.
@@ -124,10 +153,18 @@ final class HsCodeSales {
   final Money returnsSalesTax;
   final Money returnsFurtherTax;
 
+  /// The province's tax on the services sold under the code, and what
+  /// returns gave back of it (M61). Owed to the province, not FBR.
+  final Money provincialTax;
+  final Money returnsProvincialTax;
+
   Money get netValue => value - returnsValue;
   Money get netSalesTax => salesTax - returnsSalesTax;
   Money get netFurtherTax => furtherTax - returnsFurtherTax;
+
+  /// FBR's tax under the code: sales and further, never the province's.
   Money get netTax => netSalesTax + netFurtherTax;
+  Money get netProvincialTax => provincialTax - returnsProvincialTax;
 }
 
 /// One line of one bill, as the sales tax return's annexure asks for it
@@ -157,6 +194,8 @@ final class AnnexLine {
     this.exemptRule,
     this.reference,
     this.reason,
+    this.provincialTax = Money.zero,
+    this.provincialCode,
   });
 
   final String documentId;
@@ -207,6 +246,15 @@ final class AnnexLine {
 
   /// For a return: why, as typed.
   final String? reason;
+
+  /// The province's tax on a service line, and the code it was charged (or
+  /// given back) under, `PRA_CARD` (M61). A line that carries it is a
+  /// service the province taxes, and FBR's sales register leaves it out.
+  final Money provincialTax;
+  final String? provincialCode;
+
+  /// Whether the line is a service the province taxed (M61).
+  bool get isProvincialService => !provincialTax.isZero;
 
   bool get isThirdSchedule => taxCode == 'ST_3RD_18';
   bool get isReturn => docType == 'sale_return' || docType == 'purchase_return';

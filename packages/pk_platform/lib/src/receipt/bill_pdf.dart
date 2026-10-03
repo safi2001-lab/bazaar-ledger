@@ -759,6 +759,8 @@ final class _Bill {
 
     pw.Widget name(ReceiptLine l) {
       final hs = taxInvoice ? l.tax?.hsCode : null;
+      // M61: a service taxed at two rates says how, under its name.
+      final split = taxInvoice ? l.tax?.rateSplit : null;
       return pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
@@ -766,6 +768,15 @@ final class _Bill {
           if (hs != null)
             pw.Text(
               'HS $hs',
+              style: pw.TextStyle(
+                font: sans,
+                fontSize: 7,
+                color: PdfColors.grey700,
+              ),
+            ),
+          if (split != null) // M61
+            pw.Text(
+              split,
               style: pw.TextStyle(
                 font: sans,
                 fontSize: 7,

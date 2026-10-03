@@ -437,8 +437,8 @@ void main() {
           isReturn: true,
         ),
       ]);
-      expect(_cell(t, 'Sales tax owed', 3), const Money.rupees(1620));
-      expect(_cell(t, 'Further tax owed', 3), const Money.rupees(200));
+      expect(_cell(t, 'Sales tax owed (FBR)', 3), const Money.rupees(1620));
+      expect(_cell(t, 'Further tax owed (FBR)', 3), const Money.rupees(200));
       expect(t.totals.single.cells.last, const Money.rupees(1820));
     });
 

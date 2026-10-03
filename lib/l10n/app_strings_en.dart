@@ -7157,4 +7157,39 @@ class AppStringsEn extends AppStrings {
   @override
   String get reportScheduleRegisterHint =>
       'Every controlled medicine in and out, with its prescription';
+
+  @override
+  String get reportSaveView => 'Save this view';
+
+  @override
+  String get reportMyViews => 'My views';
+
+  @override
+  String get reportViewName => 'Name';
+
+  @override
+  String get reportViewNameHint => 'e.g. Monday udhaar list';
+
+  @override
+  String get reportViewKeeps =>
+      'Keeps this report\'s period, filters, sort, and table or chart. Kept on this phone only, never in the books.';
+
+  @override
+  String reportViewSaved(String name) {
+    return 'Saved under My views: $name';
+  }
+
+  @override
+  String get reportViewRename => 'Rename';
+
+  @override
+  String get reportViewDelete => 'Delete view';
+
+  @override
+  String reportViewDeleteConfirm(String name) {
+    return 'Delete the view \"$name\"? The report and the books stay exactly as they are.';
+  }
+
+  @override
+  String get reportViewOptions => 'View options';
 }

@@ -12235,6 +12235,66 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Har control wali dawai ki aamad o kharch, nuskhe ke saath'**
   String get reportScheduleRegisterHint;
+
+  /// No description provided for @reportSaveView.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh view save karein'**
+  String get reportSaveView;
+
+  /// No description provided for @reportMyViews.
+  ///
+  /// In ur, this message translates to:
+  /// **'Meri views'**
+  String get reportMyViews;
+
+  /// No description provided for @reportViewName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam'**
+  String get reportViewName;
+
+  /// No description provided for @reportViewNameHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'maslan Peer ki udhaar list'**
+  String get reportViewNameHint;
+
+  /// No description provided for @reportViewKeeps.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is report ka arsa, filter, tarteeb, aur table ya chart yaad rahega. Sirf is phone par, hisaab ki kitaab mein nahi.'**
+  String get reportViewKeeps;
+
+  /// No description provided for @reportViewSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Meri views mein save ho gaya: {name}'**
+  String reportViewSaved(String name);
+
+  /// No description provided for @reportViewRename.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam badlein'**
+  String get reportViewRename;
+
+  /// No description provided for @reportViewDelete.
+  ///
+  /// In ur, this message translates to:
+  /// **'View hatayein'**
+  String get reportViewDelete;
+
+  /// No description provided for @reportViewDeleteConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'View \"{name}\" hata dein? Report aur hisaab bilkul waise hi rahenge.'**
+  String reportViewDeleteConfirm(String name);
+
+  /// No description provided for @reportViewOptions.
+  ///
+  /// In ur, this message translates to:
+  /// **'View ke options'**
+  String get reportViewOptions;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

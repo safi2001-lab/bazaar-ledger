@@ -18,6 +18,7 @@ import 'report_filters_bar.dart';
 import 'report_registry.dart';
 import 'report_shelf.dart';
 import 'report_table_view.dart';
+import 'saved_views.dart';
 
 typedef _Request = ({
   ReportKind kind,
@@ -64,10 +65,15 @@ final _previousProvider = FutureProvider.autoDispose
 /// Every figure is computed by `pk_reports` from the books before it gets
 /// here. This screen chooses what to ask for and lays the answer out; it
 /// adds nothing up itself.
+///
+/// Since M61 everything the shop chose here — the period, the filters, the
+/// sort, table or chart — can be kept under a name as a view, from the
+/// bookmark at the top, and a view opens this screen just so.
 class ReportScreen extends ConsumerStatefulWidget {
   const ReportScreen({
     required this.kind,
     this.filters = ReportFilters.none,
+    this.view,
     super.key,
   });
 
@@ -77,6 +83,11 @@ class ReportScreen extends ConsumerStatefulWidget {
   /// row in another report.
   final ReportFilters filters;
 
+  /// The saved view it opens as (M61), which then sets the period, the
+  /// filters, the sort and table or chart in place of [filters] and the
+  /// period last read.
+  final SavedReportView? view;
+
   @override
   ConsumerState<ReportScreen> createState() => _ReportScreenState();
 }
@@ -85,20 +96,68 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
   late final ReportEntry _entry = reportEntry(widget.kind);
   late DatePreset _preset;
   ReportPeriod? _custom;
-  late ReportFilters _filters = widget.filters.only(_entry.filters);
+  late ReportFilters _filters = (widget.view?.filters ?? widget.filters).only(
+    _entry.filters,
+  );
   ReportFormat? _sharing;
   bool _printing = false;
 
   /// Drawn rather than listed (M46), for a report that declares a chart.
-  bool _asChart = false;
+  late bool _asChart = widget.view?.asChart ?? false;
+
+  /// The column the table is sorted by, by its title, and which way (M61):
+  /// held here, not only in the table, so a view keeps them and the table
+  /// comes back sorted after a turn as a chart.
+  late String? _sortColumn = widget.view?.sortColumn;
+  late bool _sortAscending = widget.view?.sortAscending ?? false;
+
+  /// The view this screen is showing, once one is opened or saved.
+  late SavedReportView? _view = widget.view;
 
   @override
   void initState() {
     super.initState();
+    final view = widget.view;
+    if (view != null) {
+      _preset = view.preset;
+      _custom = view.custom;
+      return;
+    }
     // The period this report was last read for, on this phone.
     final saved = ref.read(reportShelfProvider).periodFor(widget.kind);
     _preset = saved?.preset ?? _entry.defaultPreset;
     _custom = saved?.custom;
+  }
+
+  /// Keeps what is on screen as a view, under a name the shop types (M61).
+  Future<void> _saveView() async {
+    final s = AppStrings.of(context);
+    final today = BusinessDate.now(ref.read(appServicesProvider).clock);
+    // A name to start from: the view's own, or the report and its period,
+    // "Bikri report · Is hafta", for the shop to make its own.
+    final period = _preset == DatePreset.custom
+        ? _period(today).label
+        : reportPresetLabel(s, _preset);
+    final kept = await saveReportView(
+      context,
+      ref,
+      SavedReportView(
+        id: '',
+        name:
+            _view?.name ??
+            (_entry.isAsOfToday
+                ? _entry.name(s)
+                : '${_entry.name(s)} · $period'),
+        kind: widget.kind,
+        preset: _preset,
+        custom: _preset == DatePreset.custom ? _period(today) : null,
+        filters: _filters,
+        sortColumn: _sortColumn,
+        sortAscending: _sortAscending,
+        asChart: _asChart,
+      ),
+    );
+    if (kept != null && mounted) setState(() => _view = kept);
   }
 
   ReportPeriod _period(BusinessDate today) =>
@@ -282,7 +341,19 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
 
     return Scaffold(
       backgroundColor: t.paper,
-      appBar: AppBar(title: Text(_entry.name(s))),
+      appBar: AppBar(
+        // A view opens under its own name, and says which report it is at
+        // the head of the page, where large text has room to wrap.
+        title: Text(_view?.name ?? _entry.name(s)),
+        actions: [
+          // M61: keep this report the way it is on screen, by name.
+          BlIconButton(
+            icon: _view == null ? Icons.bookmark_add_outlined : Icons.bookmark,
+            label: s.reportSaveView,
+            onPressed: () => unawaited(_saveView()),
+          ),
+        ],
+      ),
       // The ways out, along the foot where a thumb finds them, each with
       // its name under it: PDF for WhatsApp, Excel and CSV for the
       // accountant, and the counter's own printer.
@@ -344,6 +415,18 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
         child: ListView(
           padding: const EdgeInsets.all(BlTokens.space4),
           children: [
+            // M61: which report a view is.
+            if (_view != null) ...[
+              Text(
+                _entry.name(s),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: t.inkMuted,
+                ),
+              ),
+              const SizedBox(height: BlTokens.space2),
+            ],
             if (_entry.isAsOfToday)
               Text(
                 // A stock report read for a day gone by (M34) says which.
@@ -360,7 +443,7 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                         padding: const EdgeInsets.only(right: BlTokens.space2),
                         child: ChoiceChip(
                           selected: preset == _preset,
-                          label: Text(_presetLabel(s, preset)),
+                          label: Text(reportPresetLabel(s, preset)),
                           onSelected: (_) => preset == DatePreset.custom
                               ? unawaited(_pickDates(today))
                               : _choose(preset),
@@ -449,7 +532,15 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
                           table: table,
                           canOpen: _canOpen,
                           onOpen: _open,
-                          itemId: _filters.itemId, // M45: its quantities in packs
+                          itemId:
+                              _filters.itemId, // M45: its quantities in packs
+                          // M61: the sort a view keeps, and the one it saves.
+                          sortColumn: _sortColumn,
+                          sortAscending: _sortAscending,
+                          onSorted: (column, ascending) {
+                            _sortColumn = column;
+                            _sortAscending = ascending;
+                          },
                         ),
                     ],
                   );
@@ -461,18 +552,6 @@ class _ReportScreenState extends ConsumerState<ReportScreen> {
     );
   }
 }
-
-String _presetLabel(AppStrings s, DatePreset preset) => switch (preset) {
-  DatePreset.today => s.reportToday,
-  DatePreset.yesterday => s.reportYesterday,
-  DatePreset.thisWeek => s.reportThisWeek,
-  DatePreset.thisMonth => s.reportThisMonth,
-  DatePreset.lastMonth => s.reportLastMonth,
-  DatePreset.thisQuarter => s.reportThisQuarter,
-  DatePreset.thisFiscalYear => s.reportThisYear,
-  DatePreset.lastFiscalYear => s.reportLastYear,
-  DatePreset.custom => s.reportCustom,
-};
 
 /// The report's headline figures as tiles, each with how it compares with
 /// the period before once that has been read.

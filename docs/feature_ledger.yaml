@@ -2712,6 +2712,82 @@ milestones:
       - packages/pk_bootstrap/lib/src/pharmacy_services.dart
       - lib/features/pharmacy/**
 
+  - id: M61
+    title: The province's tax in every tax report, a return that gives it back as it was charged, and a report kept the way the shop likes it
+    # Opened and sealed 3 Oct 2026 at 4/4. M59 put the province's tax on a
+    # service at the rate of the tender and left a list of what the reports
+    # got wrong about it; each is put right here, and the rule they now share
+    # is the one a salon owner in Lahore already lives by: PRA's money and
+    # FBR's money are owed to two different offices, filed on two different
+    # portals, and a figure that adds them is a figure nobody can file.
+    #
+    # The tax rate report reads the province's rows as their own, "PRA 16%"
+    # and "PRA 8% (card)" by authority and rate, a return given back at the
+    # rate it was charged, and "Owed to PRA" under FBR's total; a service the
+    # province taxed is no longer counted as a supply on which no tax was
+    # charged, nor in the value of supplies FBR's return counts. The Sales
+    # tax summary names those rows (it printed PRA_CARD) and gives them a
+    # section of their own under "Total owed to FBR", ending in "Owed to PRA"
+    # -- the same figure to the paisa, because both are the bills' own
+    # provincial tax rows less what returns gave back, and a test ties the
+    # rate report, the summary and the rows on the bills. Its FBR lines now
+    # say FBR. The party tax report and Sales by HS code carry a Provincial
+    # tax column after FBR's figures and never in them, the party register's
+    # Sales value leaving the services out with a Services value beside; a
+    # shop that sells goods alone sees exactly the columns it always saw.
+    # Annex-C leaves a service the province taxed out and says how many
+    # lines, worth how much, carrying how much of whose tax: M35 checked the
+    # DSI template's columns and lists, and a salon's haircut is none of its
+    # sale types. It used to go to IRIS as a supply at no tax.
+    #
+    # Returns. A service line's provincial tax came back as ST_RETURN, a
+    # federal code at no rate, and whether the price included the tax was
+    # read from sales-tax rows only. Now each provincial row on the line
+    # comes back as its own row under its own code with _RETURN after it
+    # (PRA_CARD_RETURN, PRA_STD_RETURN), at the rate it was charged, its
+    # share worked out the way M57's returnedShare works out every other --
+    # cumulative, rounded once -- so a split-tender line given back a piece
+    # at a time gives back exactly the two rows it carried (proved on 300
+    # random lines, tax inside the price and on top) and a whole one leaves
+    # PRA owed nothing. The money still comes off Output Sales Tax, where
+    # M59's sale put it, so the books balance as before. A return's paper
+    # says "PRA 16%" where it said Sales Tax, and the FBR credit note, which
+    # reads sales-tax rows only, no longer sends a haircut's PRA tax to FBR
+    # as federal tax given back.
+    #
+    # M51's tax invoice printed the higher rate beside a blended amount on a
+    # line paid part by card. It now says "16% / 8%" in the Rate column and,
+    # under the line, "PRA 16% on Rs 537.04, 8% (card) on Rs 462.96".
+    #
+    # Saved report views (TASKS; research s.1.12, Zoho's saved views). Every
+    # report screen has a bookmark at the top: "Save this view" keeps the
+    # report, its period as chosen (a preset is worked out afresh each time
+    # it is opened, so "this week" is always this week; picked dates stay
+    # those dates), its filters with the names they were chosen by, the
+    # column it is sorted by and which way (by the column's title, which
+    # survives a report gaining a column), and table or chart. The views sit
+    # under My views on the hub, above the favourites, each with its report,
+    # period and filters in a line under its name; one tap opens it through
+    # its report's own plan, and its menu renames or deletes it. Saved again
+    # under its own name a view is changed rather than doubled. A view of a
+    # report this person may not open is not shown. Kept in
+    # report_views.json beside M33's report shelf: never in the books, never
+    # synced or backed up, and a file this build cannot read is no views
+    # rather than a hub that will not open.
+    #
+    # Not built, and why: a separate "PRA payable" account (M59's reason
+    # stands: a new system account needs every shop's chart seeded, which is
+    # a migration); the province's own return file (PRA's and SRB's
+    # e-filing are their own integrations, and nothing new may be sent); a
+    # service returned before this milestone, whose tax went back as
+    # ST_RETURN, stays in FBR's figures (M59 was merged the same day, so no
+    # shop has one); views shared with another phone (a view is one
+    # person's, by design); a view pinned to Home.
+    state: sealed
+    owns:
+      - packages/pk_reports/lib/src/saved_view.dart
+      - lib/features/reports/saved_views.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -7823,3 +7899,51 @@ features:
       - near expiry by supplier: the batches are ticked and go back to the supplier
       - the shop says it is a pharmacy in its details, with its discount off the MRP, and the counter rings it
       - at 200% on a small phone the prescription and the near-expiry list fit
+  - id: M61-TAX-01
+    milestone: M61
+    title: The province's tax on services in the tax rate report, the sales tax summary, the party and HS code reports, owed to PRA apart from FBR, and out of Annex-C
+    status: done
+    # The builders proved without a database; then a salon's month against
+    # a real one, the rate report, the summary and the rows on the bills
+    # tied to the paisa.
+    proof:
+      - provincial tax in the reports the tax rate report lists PRA 16% and PRA 8% (card) as rows of their own, gives a return back at its rate, and owes PRA apart from FBR
+      - provincial tax in the reports the sales tax summary names the province's rows and owes PRA beside FBR, the same figure as the rate report, never added together
+      - provincial tax in the reports two provinces are owed apart, each its own figure
+      - provincial tax in the reports the tax report and sales by HS code carry the province's tax in a column of its own, out of FBR's figures
+      - provincial tax in the reports Annex-C leaves out a service the province taxed, and says how many lines and how much
+      - provincial tax in the reports a shop that sells only goods reads exactly as before
+      - provincial tax reports PRA's tax in the rate report is PRA's in the summary is the tax rows on the bills, and none of it is FBR's
+  - id: M61-RETURN-01
+    milestone: M61
+    title: A service given back gives the province's tax back under the province's own code at the rate it was charged, and a whole one leaves PRA owed nothing
+    status: done
+    # Pure and property-style over 300 random lines, then on a real
+    # database with the return's own tax rows and its paper.
+    proof:
+      - a service given back paid part by card, it comes back as two rows of the province's own, each at the rate it was charged, and never as federal tax
+      - a service given back given back a piece at a time, every row of the province's tax comes back to the paisa it was charged, never more
+      - a service given back a tax given back reads as the tax it was charged, owed to its own authority
+      - a service given back goods given back still come back as federal tax, and a service with no provincial tax gives none back
+      - provincial tax reports a service paid two ways and given back whole leaves PRA owed nothing, and the return says PRA on its paper
+  - id: M61-INVOICE-01
+    milestone: M61
+    title: The tax invoice of a service paid part by card says both rates and how the line was split, not the higher rate beside a blend
+    status: done
+    proof:
+      - the tax invoice of a split service a line taxed at two rates says both, and how the line was split, never the higher rate alone
+      - a split service on a tax invoice the PDF says both rates in the Rate column, and the split under the line
+      - a split service on a tax invoice a bill not printed as a tax invoice carries no split note
+  - id: M61-VIEWS-01
+    milestone: M61
+    title: A report saved as a view — period as chosen, filters, sort, table or chart — under My views on the hub, opened in one tap, renamed and deleted, kept on the phone
+    status: done
+    # The view written down and read back without a database; then saved,
+    # reopened, renamed and deleted from the screen, at 200% too.
+    proof:
+      - saved views a view keeps its report, its period as chosen, its filters, its sort and its chart, and reads back the same
+      - saved views a this-week view opens on the week it is opened in, and picked dates stay those dates
+      - saved views a view this build cannot open is dropped, never the rest, and nonsense is no views
+      - a report saved as a view opens again from My views with the same period, filters and sort
+      - a view is kept when the app is closed, renamed and deleted from its menu, and the report itself is untouched
+      - at 200% on a small phone My views, a view opened, and the save dialog fit

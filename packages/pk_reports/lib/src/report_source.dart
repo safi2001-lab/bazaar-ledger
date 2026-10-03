@@ -241,10 +241,12 @@ final class TaxLine {
     required this.isReturn,
   });
 
-  /// `ST_STD_18`, `ST_3RD_18`, `FURTHER_4`, `ST_RETURN`...
+  /// `ST_STD_18`, `ST_3RD_18`, `FURTHER_4`, `ST_RETURN`... and for the
+  /// province's tax on a service `PRA_STD`, `PRA_CARD`, and what a return
+  /// gave back of them, `PRA_CARD_RETURN` (M61).
   final String code;
 
-  /// `sales_tax` or `further_tax`.
+  /// `sales_tax`, `further_tax`, or `provincial_st` (M61).
   final String kind;
   final int rateBp;
   final Money base;

@@ -46,6 +46,21 @@
 /// line was sold in. See [returnedShare] for how the shares are rounded so
 /// that a line coming back a piece at a time gives back exactly what it was
 /// charged, to the paisa, and never more.
+///
+/// ## The province's tax comes back to the province (M61)
+///
+/// A service line (M59) carries the province's tax, PRA's or SRB's, not
+/// FBR's — sometimes as two rows, 16% on the part paid in cash and 8% on the
+/// part paid by card. A return used to sum every such row into "sales tax"
+/// and give it back as `ST_RETURN`, a federal code, at the federal rate it
+/// never had; the summary then took a haircut's tax off what the shop owes
+/// FBR and left PRA's figure as if the haircut had never come back. Now
+/// each provincial row comes back as its own row, under its own code with
+/// `_RETURN` after it (`PRA_CARD_RETURN`), at the rate it was charged, its
+/// share worked out exactly as every other share is, so a whole line given
+/// back gives back exactly the tax it carried and PRA's figure falls to
+/// nothing. The money goes where the sale put it — Output Sales Tax, which
+/// is where the sale credited it (M59) — so the books balance as before.
 library;
 
 import 'package:pk_money/pk_money.dart';
@@ -53,6 +68,7 @@ import 'package:pk_money/pk_money.dart';
 import '../identity/actor_context.dart';
 import '../sales/sale_posting.dart';
 import '../sales/sale_posting_builder.dart';
+import '../tax/service_tax.dart';
 import '../tax/tax_charge.dart';
 
 /// What one return takes of an amount spread over a line.
@@ -133,6 +149,40 @@ RoundingMode roundingModeFor(String? code) => switch (code) {
   _ => RoundingMode.halfUp,
 };
 
+/// One provincial tax row on a sold line, as the bill stored it (M61): the
+/// code it was charged under (`PRA_STD`, `PRA_CARD`), its rate, and what
+/// it was charged on and came to for the whole line.
+final class SoldTax {
+  const SoldTax({
+    required this.code,
+    required this.rateBp,
+    required this.base,
+    required this.amount,
+    this.isInclusive = false,
+  });
+
+  final String code;
+  final int rateBp;
+  final Money base;
+  final Money amount;
+  final bool isInclusive;
+
+  @override
+  bool operator ==(Object other) =>
+      other is SoldTax &&
+      other.code == code &&
+      other.rateBp == rateBp &&
+      other.base == base &&
+      other.amount == amount &&
+      other.isInclusive == isInclusive;
+
+  @override
+  int get hashCode => Object.hash(code, rateBp, base, amount, isInclusive);
+
+  @override
+  String toString() => 'SoldTax($code @ $rateBp: $amount on $base)';
+}
+
 /// One line of the original bill, as it was sold.
 ///
 /// The money fields are what the bill STORED for the whole line, read off
@@ -157,6 +207,7 @@ final class SoldLine {
     this.salesTaxBp = 0,
     this.furtherTax = Money.zero,
     this.furtherTaxBp = 0,
+    this.provincialTaxes = const [],
     this.taxInclusive = false,
     this.roundingMode = RoundingMode.halfUp,
     this.itemCode,
@@ -222,21 +273,35 @@ final class SoldLine {
       _charged ??
       rate.amountFor(qty, mode: roundingMode) -
           discount +
-          (taxInclusive ? Money.zero : salesTax) +
+          (taxInclusive ? Money.zero : salesTax + provincialTax) +
           furtherTax;
 
   /// The line discount and the line's share of the bill discount, together:
   /// what the sale debited to Discount Given for this line.
   final Money discount;
 
-  /// Every tax on the line that the sale credited to Output Sales Tax, and
-  /// its rate. Whether it was inside the price is [taxInclusive].
+  /// Every federal tax on the line that the sale credited to Output Sales
+  /// Tax — the sales tax, and the extra tax, FED or cess charged in its
+  /// place — and its rate. Whether it was inside the price is
+  /// [taxInclusive]. The province's tax on a service is not here: it is
+  /// [provincialTaxes] (M61).
   final Money salesTax;
   final int salesTaxBp;
 
   /// The further tax on the line, always on top of the price.
   final Money furtherTax;
   final int furtherTaxBp;
+
+  /// The province's tax on a service line, row by row as the bill stored it
+  /// (M61): one row at the rate of the tender, or two for a bill paid part
+  /// by card and part in cash. Empty for goods.
+  final List<SoldTax> provincialTaxes;
+
+  /// All of [provincialTaxes] together.
+  Money get provincialTax =>
+      Money.sum([for (final t in provincialTaxes) t.amount]);
+
+  /// Whether the tax — federal or provincial — was inside the price.
   final bool taxInclusive;
 
   /// How the bill rounded. Its shares round the same way.
@@ -314,22 +379,49 @@ final class SoldLine {
     final refund = part(charged);
     var st = part(salesTax);
     var ft = part(furtherTax);
+    // M61: each provincial row's own share, at its own rate, so a line paid
+    // part by card comes back as two rows and the whole line gives back
+    // exactly the two it carried.
+    final provincial = [
+      for (final t in provincialTaxes) (tax: t, amount: part(t.amount)),
+    ];
+    Money provincialSum() => Money.sum([for (final p in provincial) p.amount]);
     // The value of the goods is what is left of the refund once the taxes
-    // on it are taken out, so the three always add back to the refund and
-    // the entry balances to the paisa. Each is rounded on its own, so on a
+    // on it are taken out, so they always add back to the refund and the
+    // entry balances to the paisa. Each is rounded on its own, so on a
     // return worth less than a few paisa the taxes could come to more than
     // the refund; the tax gives way, because the refund is what the
     // customer is owed and a negative value of goods is not a return.
-    var taxable = refund - st - ft;
+    var taxable = refund - st - ft - provincialSum();
     if (taxable.isNegative) {
       var short = -taxable;
       final fromFurther = short < ft ? short : ft;
       ft -= fromFurther;
       short -= fromFurther;
-      st -= short < st ? short : st;
-      taxable = refund - st - ft;
+      final fromSales = short < st ? short : st;
+      st -= fromSales;
+      short -= fromSales;
+      for (var i = provincial.length - 1; i >= 0 && short.isPositive; i--) {
+        final p = provincial[i];
+        final from = short < p.amount ? short : p.amount;
+        provincial[i] = (tax: p.tax, amount: p.amount - from);
+        short -= from;
+      }
+      taxable = refund - st - ft - provincialSum();
     }
     final discount = part(this.discount);
+    final provincialBack = [
+      for (final p in provincial)
+        if (!p.amount.isZero)
+          ReturnedTax(
+            code: serviceTaxReturnCode(p.tax.code),
+            rateBp: p.tax.rateBp,
+            base: part(p.tax.base),
+            amount: p.amount,
+            isInclusive: p.tax.isInclusive,
+          ),
+    ];
+    final insidePrice = taxInclusive ? st + provincialSum() : Money.zero;
     return ReturnShare(
       qty: inUnit,
       baseQty: base,
@@ -338,17 +430,39 @@ final class SoldLine {
       taxable: taxable,
       salesTax: st,
       furtherTax: ft,
-      gross: taxable + discount + (taxInclusive ? st : Money.zero),
+      provincialTaxes: provincialBack,
+      gross: taxable + discount + insidePrice,
       cost: part(cost),
     );
   }
 }
 
+/// A provincial tax given back on one return line (M61): under the code it
+/// was charged under with `_RETURN` after it, at the rate it was charged,
+/// on its share of what the tax was charged on.
+final class ReturnedTax {
+  const ReturnedTax({
+    required this.code,
+    required this.rateBp,
+    required this.base,
+    required this.amount,
+    this.isInclusive = false,
+  });
+
+  /// `PRA_STD_RETURN`, `PRA_CARD_RETURN`.
+  final String code;
+  final int rateBp;
+  final Money base;
+  final Money amount;
+  final bool isInclusive;
+}
+
 /// What one line gives back when part or all of it comes back.
 ///
 /// Each figure is the returned share of what the sale stored, so it mirrors
-/// the sale line for line: [refund] is [taxable] plus both taxes, and
-/// [gross] is the price before the discount, as on the bill.
+/// the sale line for line: [refund] is [taxable] plus every tax — federal,
+/// further and the province's — and [gross] is the price before the
+/// discount, as on the bill.
 final class ReturnShare {
   const ReturnShare({
     required this.qty,
@@ -360,6 +474,7 @@ final class ReturnShare {
     required this.furtherTax,
     required this.gross,
     required this.cost,
+    this.provincialTaxes = const [],
   });
 
   /// In the unit it was sold in.
@@ -376,6 +491,13 @@ final class ReturnShare {
   final Money taxable;
   final Money salesTax;
   final Money furtherTax;
+
+  /// The province's tax given back, row by row (M61).
+  final List<ReturnedTax> provincialTaxes;
+
+  /// All of [provincialTaxes] together.
+  Money get provincialTax =>
+      Money.sum([for (final t in provincialTaxes) t.amount]);
   final Money gross;
 
   /// At what the goods left at. See the library comment.
@@ -538,6 +660,7 @@ final class ReturnBuilder {
     var taxableBack = Money.zero;
     var salesTaxBack = Money.zero;
     var furtherTaxBack = Money.zero;
+    var provincialTaxBack = Money.zero; // M61
     var costBack = Money.zero;
     var roundingMode = RoundingMode.halfUp;
     var lineNo = 1;
@@ -563,6 +686,7 @@ final class ReturnBuilder {
       taxableBack += share.taxable;
       salesTaxBack += share.salesTax;
       furtherTaxBack += share.furtherTax;
+      provincialTaxBack += share.provincialTax;
       costBack += share.cost;
 
       lines.add(
@@ -585,7 +709,7 @@ final class ReturnBuilder {
           discount: share.discount,
           discountBp: 0,
           taxable: share.taxable,
-          tax: share.salesTax + share.furtherTax,
+          tax: share.salesTax + share.furtherTax + share.provincialTax,
           lineTotal: share.refund,
           cost: share.cost,
           isFreeItem: false,
@@ -608,6 +732,17 @@ final class ReturnBuilder {
                 rateBp: sold.furtherTaxBp,
                 base: share.taxable,
                 amount: share.furtherTax,
+              ),
+            // M61: the province's tax, back to the province, row by row at
+            // the rate each part was charged.
+            for (final t in share.provincialTaxes)
+              TaxCharge(
+                kind: TaxKind.provincialSt,
+                code: t.code,
+                rateBp: t.rateBp,
+                base: t.base,
+                amount: t.amount,
+                isInclusive: t.isInclusive,
               ),
           ],
         ),
@@ -694,8 +829,11 @@ final class ReturnBuilder {
       narration: 'Returned on $originalDocNo',
     );
     post(key: 'discount_given', credit: discountBack);
-    // The tax charged on what came back is no longer owed over.
-    post(key: 'output_tax', debit: salesTaxBack);
+    // The tax charged on what came back is no longer owed over. The
+    // province's tax was credited to Output Sales Tax by the sale (M59), so
+    // it comes back off the same account (M61); which authority it was owed
+    // to is on the tax rows, where the summary reads it.
+    post(key: 'output_tax', debit: salesTaxBack + provincialTaxBack);
     post(key: 'further_tax_payable', debit: furtherTaxBack);
 
     // Cash out of the drawer for what was handed back now.
@@ -773,7 +911,7 @@ final class ReturnBuilder {
         lineDiscount: discountBack,
         billDiscount: Money.zero,
         taxable: taxableBack,
-        tax: salesTaxBack,
+        tax: salesTaxBack + provincialTaxBack,
         furtherTax: furtherTaxBack,
         withholding: Money.zero,
         extraCharges: Money.zero,

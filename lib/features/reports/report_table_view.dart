@@ -21,10 +21,24 @@ class ReportTableView extends ConsumerStatefulWidget {
     this.canOpen,
     this.onOpen,
     this.itemId, // M45
+    this.sortColumn, // M61
+    this.sortAscending = false,
+    this.onSorted,
     super.key,
   });
 
   final ReportTable table;
+
+  /// M61: the column to open sorted by, by its title, and which way — a
+  /// saved view's sort, or the one held while the report was a chart. A
+  /// title the table does not have, or a table that cannot be sorted, opens
+  /// in the report's own order.
+  final String? sortColumn;
+  final bool sortAscending;
+
+  /// M61: told the column's title and the way whenever a header is tapped,
+  /// so the screen can keep the sort in a view.
+  final void Function(String column, bool ascending)? onSorted;
 
   /// M45: the one item every quantity in the table is of, where the report
   /// is narrowed to one (an item's day-by-day detail), so its quantities
@@ -47,6 +61,20 @@ class _ReportTableViewState extends ConsumerState<ReportTableView> {
   bool _ascending = false;
 
   @override
+  void initState() {
+    super.initState();
+    // M61: a saved view's sort, found by its column's title.
+    final title = widget.sortColumn;
+    if (title != null && widget.table.isSortable) {
+      final i = widget.table.columns.indexWhere((c) => c.title == title);
+      if (i >= 0) {
+        _sortColumn = i;
+        _ascending = widget.sortAscending;
+      }
+    }
+  }
+
+  @override
   void didUpdateWidget(ReportTableView old) {
     super.didUpdateWidget(old);
     if (!identical(old.table, widget.table)) {
@@ -59,17 +87,20 @@ class _ReportTableViewState extends ConsumerState<ReportTableView> {
     }
   }
 
-  void _sortBy(int column) => setState(() {
-    if (_sortColumn == column) {
-      _ascending = !_ascending;
-    } else {
-      // Newest, largest, last in the alphabet first: the order a shop owner
-      // reaching for a header is looking for, since the report already
-      // opens oldest first.
-      _sortColumn = column;
-      _ascending = false;
-    }
-  });
+  void _sortBy(int column) {
+    setState(() {
+      if (_sortColumn == column) {
+        _ascending = !_ascending;
+      } else {
+        // Newest, largest, last in the alphabet first: the order a shop
+        // owner reaching for a header is looking for, since the report
+        // already opens oldest first.
+        _sortColumn = column;
+        _ascending = false;
+      }
+    });
+    widget.onSorted?.call(widget.table.columns[column].title, _ascending);
+  }
 
   @override
   Widget build(BuildContext context) {

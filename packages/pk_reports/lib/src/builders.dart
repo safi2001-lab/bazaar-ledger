@@ -793,14 +793,22 @@ String _pastDate(int batches, Money value) {
 /// rate, and what is owed over for it: the figures the monthly return asks
 /// for, computed here and typed in by the shop or its accountant. Nothing is
 /// sent anywhere.
+///
+/// A shop whose services the province taxes (M59) owes two authorities, and
+/// the summary keeps them apart (M61): FBR's rows and "Total owed to FBR"
+/// first, exactly as before, then a section of the province's own — "PRA
+/// 16%", "PRA 8% (card)", what returns gave back of each, and "Owed to PRA"
+/// — which is the figure the province's own return is filed from. The two
+/// are never added together: a shop cannot pay PRA's tax to FBR.
 ReportTable salesTaxSummary(ReportPeriod period, List<TaxLine> lines) {
+  bool provincial(TaxLine l) => l.kind == 'provincial_st';
   final charged = [
     for (final l in lines)
-      if (!l.isReturn) l,
+      if (!l.isReturn && !provincial(l)) l,
   ]..sort((a, b) => a.code.compareTo(b.code));
   final returned = [
     for (final l in lines)
-      if (l.isReturn) l,
+      if (l.isReturn && !provincial(l)) l,
   ];
   Money sum(Iterable<TaxLine> ls, String kind) => Money.sum([
     for (final l in ls)
@@ -808,6 +816,63 @@ ReportTable salesTaxSummary(ReportPeriod period, List<TaxLine> lines) {
   ]);
   final st = sum(charged, 'sales_tax') - sum(returned, 'sales_tax');
   final ft = sum(charged, 'further_tax') - sum(returned, 'further_tax');
+
+  // M61: the province's own section, authority by authority, the higher
+  // rate first, and what came back under each after what was charged.
+  final services = [
+    for (final l in lines)
+      if (provincial(l)) l,
+  ];
+  final authorities = {
+    for (final l in services) serviceTaxAuthorityOf(l.code),
+  }.toList()..sort();
+  int byRate(TaxLine a, TaxLine b) {
+    final r = b.rateBp.compareTo(a.rateBp);
+    return r != 0 ? r : a.code.compareTo(b.code);
+  }
+
+  final owed = <String, Money>{};
+  final provincialRows = <ReportRow>[];
+  for (final who in authorities) {
+    final mine = [
+      for (final l in services)
+        if (serviceTaxAuthorityOf(l.code) == who) l,
+    ];
+    final out = [
+      for (final l in mine)
+        if (!l.isReturn) l,
+    ]..sort(byRate);
+    final back = [
+      for (final l in mine)
+        if (l.isReturn) l,
+    ]..sort(byRate);
+    owed[who] =
+        Money.sum([for (final l in out) l.amount]) -
+        Money.sum([for (final l in back) l.amount]);
+    provincialRows.addAll([
+      for (final l in out)
+        ReportRow([
+          serviceTaxLabel(l.code, l.rateBp),
+          l.rateBp,
+          l.base,
+          l.amount,
+        ]),
+      for (final l in back)
+        ReportRow([
+          '${serviceTaxLabel(l.code, l.rateBp)} given back on returns',
+          l.rateBp,
+          -l.base,
+          -l.amount,
+        ]),
+      ReportRow([
+        'Owed to $who',
+        null,
+        null,
+        owed[who],
+      ], style: RowStyle.subtotal),
+    ]);
+  }
+
   return ReportTable(
     id: 'sales_tax',
     title: 'Sales tax',
@@ -823,12 +888,48 @@ ReportTable salesTaxSummary(ReportPeriod period, List<TaxLine> lines) {
         ReportRow([_taxName(l.code), l.rateBp, l.base, l.amount]),
       for (final l in returned)
         ReportRow([_taxName(l.code), null, -l.base, -l.amount]),
-      ReportRow(['Sales tax owed', null, null, st], style: RowStyle.subtotal),
-      ReportRow(['Further tax owed', null, null, ft], style: RowStyle.subtotal),
-      ReportRow(['Total owed', null, null, st + ft], style: RowStyle.total),
+      ReportRow([
+        'Sales tax owed (FBR)',
+        null,
+        null,
+        st,
+      ], style: RowStyle.subtotal),
+      ReportRow([
+        'Further tax owed (FBR)',
+        null,
+        null,
+        ft,
+      ], style: RowStyle.subtotal),
+      ReportRow([
+        'Total owed to FBR',
+        null,
+        null,
+        st + ft,
+      ], style: RowStyle.total),
+      if (provincialRows.isNotEmpty) ...[
+        ReportRow.heading('Provincial tax on services', 4),
+        ...provincialRows,
+      ],
     ],
-    notes: const [_noInputTax, _neverSent],
+    summary: [
+      if (owed.isNotEmpty) ...[
+        ReportFigure('Owed to FBR', st + ft),
+        for (final who in authorities) ReportFigure('Owed to $who', owed[who]!),
+      ],
+    ],
+    notes: [
+      _noInputTax,
+      if (owed.isNotEmpty) _owedToProvince(authorities),
+      _neverSent,
+    ],
   );
+}
+
+String _owedToProvince(List<String> authorities) {
+  final who = authorities.join(' and ');
+  return 'The tax on services is owed to $who, not FBR, and is filed on '
+      '$who\'s own portal: it is never in the sales tax or the total owed '
+      'to FBR. A service given back is taken off at the rate it was charged.';
 }
 
 const _noInputTax =

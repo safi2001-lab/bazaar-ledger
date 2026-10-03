@@ -4301,5 +4301,25 @@
   },
   "reportGroupPharmacy": "Pharmacy",
   "reportScheduleRegister": "Schedule B/D register",
-  "reportScheduleRegisterHint": "Har control wali dawai ki aamad o kharch, nuskhe ke saath"
+  "reportScheduleRegisterHint": "Har control wali dawai ki aamad o kharch, nuskhe ke saath",
+  "reportSaveView": "Yeh view save karein",
+  "reportMyViews": "Meri views",
+  "reportViewName": "Naam",
+  "reportViewNameHint": "maslan Peer ki udhaar list",
+  "reportViewKeeps": "Is report ka arsa, filter, tarteeb, aur table ya chart yaad rahega. Sirf is phone par, hisaab ki kitaab mein nahi.",
+  "reportViewSaved": "Meri views mein save ho gaya: {name}",
+  "@reportViewSaved": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "reportViewRename": "Naam badlein",
+  "reportViewDelete": "View hatayein",
+  "reportViewDeleteConfirm": "View \"{name}\" hata dein? Report aur hisaab bilkul waise hi rahenge.",
+  "@reportViewDeleteConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "reportViewOptions": "View ke options"
 }

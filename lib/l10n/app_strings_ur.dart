@@ -7151,4 +7151,39 @@ class AppStringsUr extends AppStrings {
   @override
   String get reportScheduleRegisterHint =>
       'Har control wali dawai ki aamad o kharch, nuskhe ke saath';
+
+  @override
+  String get reportSaveView => 'Yeh view save karein';
+
+  @override
+  String get reportMyViews => 'Meri views';
+
+  @override
+  String get reportViewName => 'Naam';
+
+  @override
+  String get reportViewNameHint => 'maslan Peer ki udhaar list';
+
+  @override
+  String get reportViewKeeps =>
+      'Is report ka arsa, filter, tarteeb, aur table ya chart yaad rahega. Sirf is phone par, hisaab ki kitaab mein nahi.';
+
+  @override
+  String reportViewSaved(String name) {
+    return 'Meri views mein save ho gaya: $name';
+  }
+
+  @override
+  String get reportViewRename => 'Naam badlein';
+
+  @override
+  String get reportViewDelete => 'View hatayein';
+
+  @override
+  String reportViewDeleteConfirm(String name) {
+    return 'View \"$name\" hata dein? Report aur hisaab bilkul waise hi rahenge.';
+  }
+
+  @override
+  String get reportViewOptions => 'View ke options';
 }

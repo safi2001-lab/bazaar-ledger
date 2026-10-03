@@ -3231,6 +3231,28 @@ final class DriftAppQueries implements AppQueries {
   static String? _blankToNull(String? s) =>
       s == null || s.trim().isEmpty ? null : s;
 
+  /// M61: a line's provincial tax rows, joined as `code:rate:base;...`, as
+  /// the parts of its rate, the higher rate first so the paper reads "PRA
+  /// 16% on .., 8% (card) on ..". A part that does not read is left out.
+  static List<ReceiptRatePart> _rateParts(String? joined) {
+    if (joined == null || joined.isEmpty) return const [];
+    final parts = <ReceiptRatePart>[];
+    for (final part in joined.split(';')) {
+      final f = part.split(':');
+      if (f.length != 3) continue;
+      final rate = int.tryParse(f[1]);
+      final base = int.tryParse(f[2]);
+      if (rate == null || base == null) continue;
+      parts.add(
+        ReceiptRatePart(code: f[0], rateBp: rate, base: Money.paisa(base)),
+      );
+    }
+    return parts..sort((a, b) {
+      final byRate = b.rateBp.compareTo(a.rateBp);
+      return byRate != 0 ? byRate : a.code.compareTo(b.code);
+    });
+  }
+
   static String _modeLabel(String mode) => switch (mode) {
     'cash' => 'Cash',
     'bank_transfer' => 'Bank Transfer',
@@ -3325,7 +3347,15 @@ final class DriftAppQueries implements AppQueries {
                    WHERE t.document_line_id = l.id
                      AND t.deleted_at_utc IS NULL
                      AND t.tax_kind = 'further_tax'), 0)
-                   AS further_tax_paisa
+                   AS further_tax_paisa,
+                 -- M61: the province's rates on a split-tender service
+                 -- line, each with the part it was charged on.
+                 (SELECT group_concat(t.tax_code || ':' || t.rate_bp || ':' ||
+                                      t.base_paisa, ';')
+                    FROM document_line_taxes t
+                   WHERE t.document_line_id = l.id
+                     AND t.deleted_at_utc IS NULL
+                     AND t.tax_kind = 'provincial_st') AS provincial_parts
           FROM document_lines l
           WHERE l.document_id = ? AND l.deleted_at_utc IS NULL
           ORDER BY l.line_no
@@ -3362,6 +3392,7 @@ final class DriftAppQueries implements AppQueries {
             rateBp: l.readNullable<int>('rate_bp'),
             furtherTax: Money.paisa(l.read<int>('further_tax_paisa')),
             hsCode: _blankToNull(l.readNullable<String>('hs_code_snapshot')),
+            rateParts: _rateParts(l.readNullable<String>('provincial_parts')),
           ),
       ],
       khata: docType == 'sale_invoice' && partyId != null
