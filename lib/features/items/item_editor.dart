@@ -6,6 +6,7 @@ import '../../app/providers.dart';
 import '../../design/components.dart';
 import '../../design/tokens.dart';
 import '../../l10n/app_strings.dart';
+import '../audit/history_screen.dart';
 import '../batches/stock_places_screen.dart';
 import '../scan/scan_screen.dart';
 import '../subscription/plans_screen.dart';
@@ -334,6 +335,12 @@ class _ItemEditorScreenState extends ConsumerState<ItemEditorScreen> {
       appBar: AppBar(
         title: Text(_isEdit ? s.itemsEdit : s.itemsAdd),
         actions: [
+          // Who changed its price, its name, its rule and when (M42).
+          if (_isEdit)
+            HistoryButton(
+              record: RecordRef.item(widget.item!.id),
+              label: widget.item!.name,
+            ),
           // Reachable from the item, because that is where a shopkeeper is
           // standing when they notice the shelf and the screen disagree.
           if (_isEdit && widget.item!.tracksStock)
