@@ -11,6 +11,7 @@ import 'order_source.dart';
 import 'party_source.dart';
 import 'period.dart';
 import 'pharmacy_reports.dart';
+import 'staff_book_reports.dart'; // M65
 import 'staff_source.dart';
 import 'tax_source.dart';
 import 'transaction_source.dart';
@@ -321,7 +322,9 @@ abstract interface class ReportSource
         // M50
         MobileReportSource,
         // M54
-        CollectionsReportSource {
+        CollectionsReportSource,
+        // M65
+        StaffBookReportSource {
   /// What a filter can be set to: the items, categories, party groups or
   /// staff the shop has, matching [query] (M33).
   Future<List<ReportChoice>> choices(

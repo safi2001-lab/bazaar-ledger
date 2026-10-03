@@ -15,6 +15,7 @@ import '../items/shelf_rule.dart';
 import '../printing/printer_setup_screen.dart';
 import '../recycle/recycle_screen.dart';
 import '../scale/scale_screen.dart';
+import '../staff/staff_rules_screen.dart'; // M65
 import '../subscription/plans_screen.dart';
 import '../subscription/play_billing.dart';
 import '../sync/sync_screen.dart';
@@ -218,6 +219,17 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
             ),
+            // M65: the staff book's rules, the owner's.
+            if (services.can(Permission.settings))
+              _Row(
+                icon: Icons.badge_outlined,
+                label: s.staffRulesTitle,
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const StaffRulesScreen(),
+                  ),
+                ),
+              ),
             // M43: bonus, quantity slabs and the big-bill discount. Everyone
             // may read them; only the owner changes them.
             _Row(

@@ -100,6 +100,20 @@ const List<AccountSpec> defaultChartOfAccounts = [
     systemKey: 'cheques_in_hand',
     parentCode: '1000',
   ),
+  // M65: what the shop's people have taken against their wages (peshgi).
+  // An asset, as any money owed to the shop is, and apart from Receivables:
+  // the boy who carries the sacks is not a customer, and his Rs 2,000
+  // comes back off his salary, never on a khata. Each one's share is the
+  // `staff:<employee id>` tag on its lines.
+  AccountSpec(
+    code: '1160',
+    nameEn: 'Staff Advances',
+    nameUr: 'Mulazim Peshgi',
+    type: AccountType.asset,
+    normalSide: NormalSide.debit,
+    systemKey: 'staff_advances',
+    parentCode: '1000',
+  ),
   AccountSpec(
     code: '1200',
     nameEn: 'Inventory',

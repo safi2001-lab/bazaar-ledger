@@ -9,6 +9,7 @@ import 'drift_app_queries.dart';
 import 'drift_loan_reads.dart';
 import 'drift_mobile_reads.dart'; // M50
 import 'drift_order_reads.dart';
+import 'drift_staff_book_reads.dart'; // M65
 import 'drift_udhaar_queries.dart';
 
 part 'reports/business_queries.dart';
@@ -21,6 +22,7 @@ part 'reports/order_queries.dart';
 part 'reports/party_queries.dart';
 part 'reports/pharmacy_queries.dart';
 part 'reports/sql_filters.dart';
+part 'reports/staff_book_queries.dart'; // M65
 part 'reports/staff_queries.dart';
 part 'reports/tax_queries.dart';
 part 'reports/transaction_queries.dart';
@@ -58,7 +60,9 @@ final class DriftReportSource
         // M50
         _MobileQueries,
         // M54
-        _CollectionsQueries
+        _CollectionsQueries,
+        // M65
+        _StaffBookQueries
     implements ReportSource {
   const DriftReportSource(this._db);
 

@@ -18,6 +18,11 @@
 ///                                keep one Other Income account, which the
 ///                                profit and loss already reads; the head
 ///                                is this tag.
+///   `staff:<employee id>`        M65. Every line of an advance given to one
+///                                of the shop's people and of the wages
+///                                that paid him, reversals included, so
+///                                what he owes is the tag's balance on
+///                                Staff Advances (`staff_book.dart`).
 ///
 /// A tag marks the entry that put something on the books. A cancellation
 /// (M31) mirrors the entry without it, and is found by the document's

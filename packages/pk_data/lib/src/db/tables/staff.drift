@@ -1,0 +1,202 @@
+import 'core.drift';
+import 'catalogue.drift';
+import 'ledger.drift';
+
+-- Bazaar Ledger — schema v13 (M65): the staff book.
+--
+-- A shop's payroll has always lived in a register under the counter: who
+-- came today, who took Rs 2,000 against his wages on the 12th, and what was
+-- handed over on the 1st. DigiKhata sells exactly this as its Staff Book.
+-- The people in it are not the app's users. The boy who carries the sacks
+-- never touches the phone and is still paid every month; the cashier who
+-- does is paid too, and may be linked to his sign-in, but needn't be.
+--
+-- What is money stays in the ledger. An advance (peshgi) is an entry, Dr
+-- Staff Advances, Cr the drawer or the bank, every line tagged
+-- `staff:<employee id>` in journal_lines.cost_centre as M48 tags a loan's;
+-- what one employee still owes the shop is that tag's balance on the Staff
+-- Advances account, so the balance sheet and the staff book cannot
+-- disagree. A month's wages are an entry too: Dr Salaries and Wages, Cr
+-- Staff Advances for what was taken back, Cr the drawer for what was handed
+-- over. These tables keep what the ledger cannot: who the people are, the
+-- daily register, and how each slip was worked out.
+
+-- Somebody the shop pays.
+CREATE TABLE employees (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  name TEXT NOT NULL CHECK (length(trim(name)) > 0),
+  phone TEXT,
+  -- Optional, and never asked for: DigiKhata's CNIC prompts are among what
+  -- its users complain of. Thirteen digits without the dashes when given.
+  cnic TEXT CHECK (cnic IS NULL
+    OR (length(cnic) = 13 AND cnic NOT GLOB '*[^0-9]*')),
+  -- What he does in the shop.
+  kaam TEXT NOT NULL DEFAULT 'helper'
+    CHECK (kaam IN ('salesman', 'helper', 'rider', 'munshi', 'other')),
+  joined_on_local TEXT NOT NULL,
+  -- Paid by the month, or by the day he came.
+  pay_basis TEXT NOT NULL CHECK (pay_basis IN ('monthly', 'daily')),
+  -- The month's salary, or the day's wage.
+  rate_paisa INTEGER NOT NULL CHECK (rate_paisa > 0),
+  -- The last day he worked. Empty while he still works here.
+  left_on_local TEXT,
+  -- His own sign-in, when he has one (M9). A link, never a requirement.
+  user_id TEXT REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  -- Put in the recycle bin (M60). Never deleted: his slips point at him.
+  is_hidden INTEGER NOT NULL DEFAULT 0 CHECK (is_hidden IN (0, 1)),
+  note TEXT,
+  CHECK (left_on_local IS NULL OR left_on_local >= joined_on_local)
+) STRICT AS EmployeeRow;
+
+CREATE INDEX idx_employees_firm ON employees (firm_id, is_hidden, name);
+CREATE INDEX idx_employees_user ON employees (user_id);
+
+-- One day of the register: who came, who did not.
+--
+-- One row per employee per day, and its id says which: `att-<employee
+-- id>-<YYYY-MM-DD>`. Two counters marking the same boy on the same day
+-- while apart therefore write the same row, and the LAN merge keeps the
+-- later mark, as it keeps the later of any edit, instead of two marks
+-- clashing on a key. A mark is changed, never removed; a day nobody marked
+-- has no row at all.
+CREATE TABLE attendance (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  employee_id TEXT NOT NULL REFERENCES employees(id) DEFERRABLE INITIALLY DEFERRED,
+  -- The shop's own day (M42 files the mark under it, so a closed day's
+  -- register stays as it was closed).
+  day_local TEXT NOT NULL CHECK (length(day_local) = 10),
+  mark TEXT NOT NULL CHECK (mark IN (
+    'present', 'late', 'half_day', 'paid_leave', 'unpaid_leave', 'absent')),
+  note TEXT
+) STRICT AS AttendanceRow;
+
+CREATE INDEX idx_attendance_employee ON attendance (employee_id, day_local);
+CREATE INDEX idx_attendance_firm_day ON attendance (firm_id, day_local);
+
+-- One month's wages paid to one employee, and how they were worked out.
+--
+-- Written once, with the entry that pays it, and never edited: a slip
+-- entered wrong is cancelled (the opposite entry, dated the day it is
+-- cancelled) or corrected (cancelled and paid again in one act, the new
+-- slip pointing at the one it replaced), as M31 puts every entry right.
+-- Nothing here is unique by month: two counters that each paid the same
+-- boy while apart both handed money over, and both slips must stand until
+-- somebody cancels one.
+CREATE TABLE salary_slips (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  slip_no TEXT NOT NULL,
+  employee_id TEXT NOT NULL REFERENCES employees(id) DEFERRABLE INITIALLY DEFERRED,
+  -- The month the wages are for, `YYYY-MM`.
+  month_local TEXT NOT NULL CHECK (length(month_local) = 7),
+  -- The day the money was handed over; the books file the slip under it.
+  paid_on_local TEXT NOT NULL,
+
+  -- The terms it was worked out on, copied as they stood, so a raise next
+  -- month changes no slip already paid.
+  pay_basis TEXT NOT NULL CHECK (pay_basis IN ('monthly', 'daily')),
+  rate_paisa INTEGER NOT NULL CHECK (rate_paisa > 0),
+  day_rule TEXT CHECK (day_rule IS NULL OR day_rule IN ('thirty', 'calendar')),
+  -- What a month's salary is divided by: 30, or the month's own days.
+  basis_days INTEGER NOT NULL CHECK (basis_days BETWEEN 1 AND 31),
+  -- The days of the month he was on the payroll.
+  employed_days INTEGER NOT NULL CHECK (employed_days BETWEEN 0 AND 31),
+  present_days INTEGER NOT NULL DEFAULT 0 CHECK (present_days >= 0),
+  late_days INTEGER NOT NULL DEFAULT 0 CHECK (late_days >= 0),
+  half_days INTEGER NOT NULL DEFAULT 0 CHECK (half_days >= 0),
+  paid_leave_days INTEGER NOT NULL DEFAULT 0 CHECK (paid_leave_days >= 0),
+  unpaid_leave_days INTEGER NOT NULL DEFAULT 0 CHECK (unpaid_leave_days >= 0),
+  absent_days INTEGER NOT NULL DEFAULT 0 CHECK (absent_days >= 0),
+  unmarked_days INTEGER NOT NULL DEFAULT 0 CHECK (unmarked_days >= 0),
+  -- The days paid for, counted in half days so a half day is exact.
+  paid_halves INTEGER NOT NULL CHECK (paid_halves >= 0),
+
+  base_pay_paisa INTEGER NOT NULL CHECK (base_pay_paisa >= 0),
+  -- Bonus and overtime, the lines summed.
+  additions_paisa INTEGER NOT NULL DEFAULT 0 CHECK (additions_paisa >= 0),
+  -- Fines and other cuts, the lines summed.
+  deductions_paisa INTEGER NOT NULL DEFAULT 0 CHECK (deductions_paisa >= 0),
+  -- What came off the advance he had taken.
+  advance_recovered_paisa INTEGER NOT NULL DEFAULT 0
+    CHECK (advance_recovered_paisa >= 0),
+  -- What was put in his hand.
+  net_paid_paisa INTEGER NOT NULL CHECK (net_paid_paisa >= 0),
+  payment_account_id TEXT REFERENCES payment_accounts(id) DEFERRABLE INITIALLY DEFERRED,
+  journal_entry_id TEXT NOT NULL REFERENCES journal_entries(id) DEFERRABLE INITIALLY DEFERRED,
+
+  status TEXT NOT NULL DEFAULT 'paid' CHECK (status IN ('paid', 'void')),
+  void_reason TEXT,
+  reversal_entry_id TEXT REFERENCES journal_entries(id) DEFERRABLE INITIALLY DEFERRED,
+  -- The slip this one corrected (M31's pattern).
+  replaces_slip_id TEXT REFERENCES salary_slips(id) DEFERRABLE INITIALLY DEFERRED,
+  note TEXT,
+
+  -- The slip adds up, to the paisa, in the database itself.
+  CHECK (base_pay_paisa + additions_paisa - deductions_paisa
+         - advance_recovered_paisa = net_paid_paisa),
+  -- Wages of nothing are not a slip.
+  CHECK (base_pay_paisa + additions_paisa - deductions_paisa > 0),
+  CHECK (net_paid_paisa = 0 OR payment_account_id IS NOT NULL),
+  CHECK (status = 'paid'
+    OR (void_reason IS NOT NULL AND length(trim(void_reason)) > 0))
+) STRICT AS SalarySlipRow;
+
+CREATE INDEX idx_slips_firm_month ON salary_slips (firm_id, month_local);
+CREATE INDEX idx_slips_employee ON salary_slips (employee_id, month_local);
+CREATE INDEX idx_slips_account ON salary_slips (payment_account_id);
+CREATE INDEX idx_slips_entry ON salary_slips (journal_entry_id);
+CREATE INDEX idx_slips_reversal ON salary_slips (reversal_entry_id);
+CREATE INDEX idx_slips_replaces ON salary_slips (replaces_slip_id);
+
+-- A bonus, overtime, or a cut, on one slip.
+CREATE TABLE salary_lines (
+  id TEXT NOT NULL PRIMARY KEY,
+  firm_id TEXT NOT NULL REFERENCES firms(id) DEFERRABLE INITIALLY DEFERRED,
+  created_at_utc INTEGER NOT NULL,
+  updated_at_utc INTEGER NOT NULL,
+  created_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  updated_by TEXT NOT NULL REFERENCES users(id) DEFERRABLE INITIALLY DEFERRED,
+  deleted_at_utc INTEGER,
+  origin_device_id TEXT NOT NULL REFERENCES devices(id) DEFERRABLE INITIALLY DEFERRED,
+  hlc TEXT NOT NULL,
+  rev INTEGER NOT NULL DEFAULT 1,
+
+  slip_id TEXT NOT NULL REFERENCES salary_slips(id) DEFERRABLE INITIALLY DEFERRED,
+  line_no INTEGER NOT NULL CHECK (line_no >= 1),
+  kind TEXT NOT NULL CHECK (kind IN ('bonus', 'overtime', 'deduction')),
+  -- "Eid bonus", "Sunday overtime", "Broken glass".
+  label TEXT NOT NULL CHECK (length(trim(label)) > 0),
+  amount_paisa INTEGER NOT NULL CHECK (amount_paisa > 0)
+) STRICT AS SalaryLineRow;
+
+CREATE UNIQUE INDEX idx_salary_lines_seq ON salary_lines (slip_id, line_no);
+CREATE INDEX idx_salary_lines_firm ON salary_lines (firm_id, slip_id);

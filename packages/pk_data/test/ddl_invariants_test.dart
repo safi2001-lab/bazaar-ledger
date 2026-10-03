@@ -337,7 +337,53 @@ const _tablesByVersion = <int, List<String>>{
   10: _tablesV7,
   11: _tablesV11,
   12: _tablesV12,
+  13: _tablesV13,
 };
+
+/// v13 (M65): the staff book's employees, the daily register, and each
+/// month's salary slips with their lines.
+const _tablesV13 = <String>[
+  'accounts',
+  'assemblies',
+  'attachments',
+  'attendance',
+  'audit_log',
+  'bom_lines',
+  'boms',
+  'change_log',
+  'devices',
+  'doc_links',
+  'document_line_taxes',
+  'document_lines',
+  'documents',
+  'employees',
+  'firms',
+  'items',
+  'journal_entries',
+  'journal_lines',
+  'numbering_sequences',
+  'parties',
+  'payment_accounts',
+  'payment_allocations',
+  'payments',
+  'prescriptions',
+  'print_jobs',
+  'qist_instalments',
+  'qist_plans',
+  'salary_lines',
+  'salary_slips',
+  'settings',
+  'stock_ledger',
+  'stock_lots',
+  'tax_rules',
+  'unit_conversions',
+  'units',
+  'used_phone_buys',
+  'users',
+  'van_settlements',
+  'vans',
+  'warranty_claims',
+];
 
 /// v12 (M50): used phones bought, warranty claims, qist plans and their
 /// instalments. Spelt out whole, as every version is, in name order.

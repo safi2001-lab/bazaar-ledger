@@ -91,6 +91,7 @@ const hidingActions = <String, String>{
   vanHiddenAction: 'vans',
   recipeHiddenAction: 'boms',
   photoRemovedAction: 'attachments',
+  'EMPLOYEE_HIDDEN': 'employees', // M65
 };
 
 /// The settings key a recipe's being put away is kept under.

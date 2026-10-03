@@ -89,6 +89,12 @@ final _staffProvider = _hidden<StaffMember>(
   (s) => s.recycle.switchedOffStaff(),
 );
 
+// M65: the staff book's people, for whoever keeps it.
+final _employeesProvider = _hidden<Employee>(
+  (s) => s.staffBook.mayKeep,
+  (s) => s.staffBook.hiddenEmployees(),
+);
+
 final _vansProvider = _hidden<HiddenVan>(
   (s) => s.recycle.mayPutVansAway,
   (s) => s.recycle.hiddenVans(),
@@ -132,9 +138,19 @@ class RecycleScreen extends ConsumerWidget {
     final vans = ref.watch(_vansProvider);
     final recipes = ref.watch(_recipesProvider);
     final photos = ref.watch(_photosProvider);
+    final employees = ref.watch(_employeesProvider); // M65
     final marks = ref.watch(_marksProvider).valueOrNull ?? const {};
 
-    final sections = [items, parties, heads, incomes, staff, vans, recipes];
+    final sections = [
+      items,
+      parties,
+      heads,
+      incomes,
+      staff,
+      vans,
+      recipes,
+      employees, // M65
+    ];
     final loaded = sections.every((a) => a.hasValue) && photos.hasValue;
     final empty =
         loaded &&
@@ -224,6 +240,16 @@ class RecycleScreen extends ConsumerWidget {
                   mark: mark('users', member.id),
                   restore: (services) =>
                       services.setStaffActive(member.id, active: true),
+                ),
+              ),
+              // M65
+              ...section(
+                s.staffBookTitle,
+                employees,
+                (man) => _HiddenRow(
+                  name: man.name,
+                  mark: mark('employees', man.id),
+                  restore: (services) => services.staffBook.restore(man.id),
                 ),
               ),
               ...section(
@@ -336,6 +362,7 @@ class _HiddenRowState extends ConsumerState<_HiddenRow> {
             PhotoRefused(:final reason) => reason,
             PermissionDenied(:final reason) => reason,
             HeadRefused(:final reason) => reason,
+            StaffRefused(:final reason) => reason, // M65
             _ => '${s.commonSomethingWentWrong}: $error',
           }),
         ),

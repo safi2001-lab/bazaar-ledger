@@ -71,6 +71,17 @@ enum Permission {
 
   /// Change the shop's details and preferences.
   settings,
+
+  // M65: the staff book. Two, because they are held by different people:
+  // the owner and the manager decide who works here and for how much; the
+  // accountant pays them, as he pays every other bill, without being the
+  // one who hires. What anybody is paid is seen only by these roles.
+
+  /// Add the shop's employees, set what each is paid, mark who has left.
+  keepStaff,
+
+  /// See what each employee is paid, give an advance, pay a month's wages.
+  payStaff,
 }
 
 /// Why something was refused, in words the person at the counter can act on.
@@ -128,6 +139,8 @@ enum Role {
       Permission.seeCosts,
       Permission.closeDay,
       Permission.audit,
+      Permission.keepStaff, // M65
+      Permission.payStaff, // M65
     },
     accountant => {
       Permission.journal,
@@ -140,6 +153,7 @@ enum Role {
       Permission.seeCosts,
       Permission.closeDay,
       Permission.audit,
+      Permission.payStaff, // M65
     },
     cashier => {Permission.sell, Permission.takePayments, Permission.closeDay},
   };

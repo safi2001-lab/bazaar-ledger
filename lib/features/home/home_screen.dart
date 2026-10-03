@@ -25,6 +25,8 @@ import '../recurring/recurring_due_card.dart'; // M63
 import '../reports/reports_screen.dart';
 import '../sales/sales_screen.dart';
 import '../settings/settings_screen.dart';
+import '../staff/staff_book_screen.dart'; // M65
+import '../staff/staff_providers.dart'; // M65
 import '../subscription/plans_screen.dart';
 import '../tax/fbr_offline_line.dart'; // M59
 import '../vans/vans_screen.dart';
@@ -214,6 +216,14 @@ class HomeScreen extends ConsumerWidget {
                     icon: Icons.production_quantity_limits_outlined,
                     onTap: () => _open(context, const LowStockScreen()),
                   ),
+                  // M65: the staff book, for whoever keeps or pays the staff,
+                  // and a cashier the owner lets mark the register.
+                  if (ref.watch(staffBookOpensProvider).valueOrNull ?? false)
+                    _NavTile(
+                      label: s.staffBookTitle,
+                      icon: Icons.badge_outlined,
+                      onTap: () => _open(context, const StaffBookScreen()),
+                    ),
                   // M50: a mobile shop's phones by IMEI, used phones bought
                   // and qist (mobile/phone_search_screen.dart).
                   if (firm?.isMobileShop ?? false)

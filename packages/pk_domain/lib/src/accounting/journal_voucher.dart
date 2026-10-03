@@ -27,6 +27,8 @@ const controlAccountKeys = {
   'cheques_issued',
   'customer_advances',
   'goods_on_challan',
+  // M65: the staff book's, where every line says whose advance it is.
+  'staff_advances',
 };
 
 /// Why a voucher cannot be posted, in words.

@@ -13,6 +13,7 @@ import 'period.dart';
 import 'pharmacy_reports.dart';
 import 'report_source.dart';
 import 'report_table.dart';
+import 'staff_book_reports.dart'; // M65
 import 'transaction_builders.dart';
 
 /// The reports a shop can run.
@@ -244,6 +245,16 @@ enum ReportKind {
 
   /// What each customer should pay this week: falling due and promised.
   expectedCollections,
+  // M65: the staff book, in `staff_book_reports.dart`.
+
+  /// Each man's register over the period in totals.
+  staffAttendance,
+
+  /// Every slip for a month in the period: gross, cuts, advance, paid.
+  salaryRegister,
+
+  /// What each man still owes of his advances; as of today.
+  staffAdvances,
 }
 
 /// Runs a report: reads its rows from a [ReportSource] and builds the table.
@@ -272,7 +283,8 @@ final class ReportEngine {
       // M58
       moneyOwedReportsAsOfToday.contains(kind) ||
       kind == ReportKind.qistInstalments || // M50
-      collectionsReportKinds.contains(kind); // M54
+      collectionsReportKinds.contains(kind) || // M54
+      kind == ReportKind.staffAdvances; // M65
 
   /// Whether [kind] is about what goods cost through and through: the cost
   /// of sales, a profit per bill, a shelf at cost. A role that may not see
@@ -583,6 +595,17 @@ final class ReportEngine {
       kind,
       source: source,
       firmId: firmId,
+      today: today,
+      filters: filters,
+    ),
+    // M65
+    ReportKind.staffAttendance ||
+    ReportKind.salaryRegister ||
+    ReportKind.staffAdvances => buildStaffBookReport(
+      kind,
+      source: source,
+      firmId: firmId,
+      period: period,
       today: today,
       filters: filters,
     ),

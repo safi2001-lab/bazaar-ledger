@@ -513,7 +513,16 @@ final class Tx {
     // under the day it was written down.
     'qist_plans': 'sold_on_local',
     'warranty_claims': 'claimed_on_local',
+    // M65: a day of the staff register under its day, and a month's wages
+    // under the day they were handed over.
+    'attendance': 'day_local',
+    'salary_slips': 'paid_on_local',
   };
+
+  /// Rows whose every change is a change to what their day says (M65). A
+  /// register mark has no status and never moves day; changing Monday's
+  /// "absent" to "present" is still changing Monday, which the owner closed.
+  static const _guardedWhole = {'attendance'};
 
   /// Papers that are not in the books at all. A quotation dated last month
   /// changes no figure anybody was given.
@@ -564,6 +573,17 @@ final class Tx {
   ) async {
     final column = _dateOf[table];
     if (column == null) return;
+    if (_guardedWhole.contains(table)) {
+      // M65: judged by the day it already carries.
+      final was = await selectOne(
+        'SELECT * FROM $table WHERE id = ? AND firm_id = ?',
+        [id, actor.firmId],
+      );
+      if (was?.data[column] case final String date) {
+        await _guardDate(table, id, date, _describe(table, was!.data));
+      }
+      return;
+    }
     final status = values['status'];
     final undoes = status == 'void';
     if (!undoes && status != 'posted' && !values.containsKey(column)) return;
@@ -626,9 +646,15 @@ final class Tx {
       'journal_entries' => 'Journal entry',
       'qist_plans' => 'Qist plan', // M50
       'warranty_claims' => 'Warranty claim', // M50
+      'attendance' => 'The staff register', // M65
+      'salary_slips' => 'Salary slip', // M65
       _ => 'A stock movement',
     };
-    final no = row['doc_no'] ?? row['payment_no'] ?? row['entry_no'];
+    final no =
+        row['doc_no'] ??
+        row['payment_no'] ??
+        row['entry_no'] ??
+        row['slip_no']; // M65
     final named = no is String ? '$what $no' : what;
     return undoing
         ? 'Cancelling ${named[0].toLowerCase()}${named.substring(1)}'

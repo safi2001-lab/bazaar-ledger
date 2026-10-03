@@ -3300,6 +3300,129 @@ milestones:
     owns:
       - lib/features/khata/udhaar_khata_card.dart
 
+  - id: M65
+    title: The staff book — who came, what they are owed, what they took in advance, and the wages in the books
+    # Opened and sealed 3 Oct 2026 at 1/1. Every shop this is built for keeps
+    # a register of its people beside the khata: who came today, who took
+    # Rs 2,000 against his wages on the 12th, what was handed over on the
+    # 1st. DigiKhata sells it as its Staff Book (attendance, salary,
+    # advance), Rupin and Udhaar Book as payroll; here it is offline, in the
+    # books, and free on every plan. Home has "Staff ki kitaab" for whoever
+    # may open it; Settings has its rules for the owner.
+    #
+    # The people are not the app's users. The boy who carries the sacks
+    # never touches the phone and is on the payroll all the same; a cashier
+    # who signs in may be linked to his sign-in, one sign-in to one man, and
+    # needn't be. Each has a name, a phone (for his slip on WhatsApp), what
+    # he does (salesman, helper, rider, munshi, other), the day he joined,
+    # monthly or daily pay and its rate, and the day he left once he has.
+    # A CNIC is kept as thirteen digits if the shop has it and never asked
+    # for: DigiKhata's CNIC prompts are among what its users complain of.
+    # He goes into M60's recycle bin and comes back from it with one tap;
+    # hiding him is refused while he owes an advance, as M3 refuses hiding
+    # a customer who owes.
+    #
+    # The register: one screen for the day, everybody on the payroll that
+    # day, six marks each a tap — present, late, half day, leave paid,
+    # leave unpaid, absent — and "everyone else present". Any past day the
+    # owner has not closed can be changed; a day not yet come, or before a
+    # man joined or after he left, is refused. One row per man per day, its
+    # id worked out from the two, so two counters marking him while apart
+    # write one row and the LAN merge keeps the later mark, on both, with no
+    # clash. Each man's page has the month as a calendar grid.
+    #
+    # The salary rule, decided and said on the slip. Monthly: the salary,
+    # less a day's pay for each day away unpaid (absent or unpaid leave, a
+    # half day half); a day's pay is the salary over 30 under the shop's
+    # "30-day month" rule (the default) or over the month's own days under
+    # "calendar days", the owner choosing in the rules. A whole month on the
+    # payroll is the whole salary in February too; a man who joined or left
+    # inside the month is paid his days on it at a day's pay. A day nobody
+    # marked is worked — the shop marks what differs — and the salary
+    # screen says how many there were before paying. Daily: the wage for
+    # each day present, late or on paid leave, a half day half; a day
+    # nobody marked is not paid. Base pay is rounded to the whole rupee,
+    # half up. Bonus and overtime are added and cuts (a fine for broken
+    # glass) taken off as typed; then as much of his advance as the
+    # shopkeeper chooses — all the month will bear, unless he says less —
+    # never more than he owes or than the month earned; the rest is put in
+    # his hand. A month already paid is refused until its slip is cancelled
+    # or corrected.
+    #
+    # The books. An advance (peshgi) is an entry: Dr Staff Advances, Cr the
+    # drawer or the bank. Staff Advances is a new asset (1160, beside
+    # Cheques in Hand) in the shipped chart, added to a shop set up before
+    # M65 the first time a posting needs it (chart_top_up, as M6 and M44
+    # added theirs), and a control account a voucher may not post to. A
+    # month's wages are one entry: Dr Salaries and Wages (the chart's own
+    # since M0) for what the month earned, Cr Staff Advances for what came
+    # back, Cr the drawer or bank for what was handed over; the profit and
+    # loss shows the wages, the balance sheet what is still owed, and the
+    # drawer is down by both. Every line of both carries
+    # staff:<employee id> in journal_lines.cost_centre (listed in
+    # shop_money/tags.dart beside M47's and M48's), so what one man owes is
+    # that tag's balance and the staff book cannot disagree with the
+    # balance sheet. A slip is numbered SAL-; it is cancelled by the
+    # opposite entry dated that day (what it took off his advance is owed
+    # again) or corrected — cancelled and paid again in one act, the new
+    # slip pointing at the old — as M31 puts entries right. An advance is
+    # cancelled the same way, refused once it has come back off his wages.
+    # The slip goes out as a PDF through the report export (its Urdu face,
+    # so a name in Urdu script prints) and as a WhatsApp message to his
+    # number from the phone's own WhatsApp.
+    #
+    # Who, decided: two new permissions. keepStaff — the owner and the
+    # manager add people, set their pay and mark who left. payStaff — the
+    # owner, the manager and the accountant see what anybody is paid, give
+    # advances, pay, cancel and correct, and read the three reports; the
+    # accountant pays wages as he pays every bill, without hiring. Nobody
+    # else sees a rupee of it. A cashier marks the register only when the
+    # owner switches it on, and then sees names and marks alone. The rules
+    # are the owner's (the settings permission). All of it checked at the
+    # service, beneath the screens.
+    #
+    # The owner's locks. attendance is filed under its day and salary_slips
+    # under the day paid in M42's closed books (Tx._dateOf), and a register
+    # mark is judged by its day on every change, not only a status or a
+    # date moved (Tx._guardedWhole), so a closed day's register stays as it
+    # was closed. STAFF_ADVANCE_CANCELLED, SALARY_CANCELLED,
+    # SALARY_CORRECTED and EMPLOYEE_HIDDEN are in Data Lock's
+    # undoingActions; EMPLOYEE_HIDDEN in the bin's hidingActions.
+    #
+    # Reports, a Staff group in the hub: Attendance summary (each man's
+    # marks over the period), Salary register (every slip for a month in
+    # the period: base, bonus and overtime, gross, cuts, advance taken back,
+    # paid; cancelled ones listed and left out of the totals) and Advances
+    # outstanding (given, taken back, still owed; as of today). The reports
+    # hub needs the reports permission, which only the payStaff roles have.
+    #
+    # Schema v13: new tables employees, attendance, salary_slips (with the
+    # figures it was worked out on, CHECKed to add up to the paisa) and
+    # salary_lines; nothing else touched. The rows travel to the other
+    # counters as every TxRunner write does, a test proving a mark over a
+    # real socket.
+    #
+    # Not built, and why: piece rates (monthly and daily cover the shops
+    # asked about; a piece rate is typed as overtime); paying part of a
+    # month's wages now and the rest later (the slip pays what is due in one
+    # go, and an advance is the shop's way of paying early); a deduction for
+    # so many late days (the owner types the cut); letting go of an advance
+    # a man who left never repaid (it stays owed, on his page and the
+    # balance sheet, until a later round lets it go as M44 lets udhaar go;
+    # Staff Advances is closed to hand vouchers so nothing untagged lands
+    # there); a payslip in Urdu script (the PDF's labels are English as
+    # every report's are; his name prints in its own script); a reminder on
+    # Home on salary day (Home's cards belong to others this round).
+    state: sealed
+    owns:
+      - lib/features/staff/**
+      - packages/pk_domain/lib/src/staff_book/**
+      - packages/pk_data/lib/src/read/drift_staff_book_reads.dart
+      - packages/pk_data/lib/src/read/reports/staff_book_queries.dart
+      - packages/pk_data/lib/src/write/drift_staff_book_writer.dart
+      - packages/pk_reports/lib/src/staff_book_reports.dart
+      - packages/pk_bootstrap/lib/src/staff_book_services.dart
+
 features:
   # ---------------------------------------------------------------------------
   # M0 — the walking skeleton: one real sale
@@ -8697,3 +8820,46 @@ features:
       - a new shop sees the udhaar khata on Home with nobody owing, and it opens the udhaar list
       - a customer who owes is counted on the card with the total, and their khata is two taps from Home
       - at 200% on a small phone the udhaar khata card fits with a six-figure total
+  - id: M65-STAFF-01
+    milestone: M65
+    title: A staff book — the people the shop pays (users or not), the day's register a tap a man, advances in Staff Advances, a month's wages worked out from the register under the shop's day rule and paid with the advance taken back, the slip as a PDF or on WhatsApp, cancelled or corrected, three reports, and schema v13
+    status: done
+    # The rules alone; then against a real database, the books balancing and
+    # the owner's locks; through the services, by role and over a real
+    # socket between two phones; through the screens, at 200% on a small
+    # phone; and the schema change by migrating a v12 shop.
+    proof:
+      - a month of a monthly salary under the 30-day rule a day is a thirtieth, absences and half days cut, paid leave and late do not
+      - a month of a monthly salary under the calendar rule a day is the month own share, rounded to the rupee
+      - a month of a monthly salary a whole month with no day away is the whole salary, in February too
+      - a month of a monthly salary unpaid leave is cut as an absence is
+      - a month of a monthly salary a man who joined in the middle of the month is paid for his days on the payroll
+      - a month of a monthly salary a man who left in the middle is paid up to his last day
+      - a month of a daily wage a day he came is a day wage, a half day half, and a day nobody marked is not paid
+      - a slip adds bonus and overtime, takes cuts and the advance, and its entry balances
+      - a slip no more of an advance comes back than he owes, or than the month earned
+      - a slip a month not yet come, and cuts past the gross, are refused
+      - an employee a CNIC is optional and kept as its thirteen digits; a bad one, a blank name or a day not yet come is refused
+      - an employee an advance is Dr Staff Advances, Cr the drawer, and is refused before he joined
+      - the register marks a day, a mark changed is the same row, and a day not yet come or before he joined is refused
+      - a month of wages a monthly salary is worked out from the register and paid: wages in the profit and loss, the drawer down, the books balance
+      - a month of wages under the calendar rule the same month is paid by its own days
+      - a month of wages a daily wage pays the days he came, half days half
+      - a month of wages a month paid already is refused until its slip is cancelled
+      - advances an advance is an asset until it comes back off his wages, and the staff book and the balance sheet agree
+      - advances more of an advance than he owes is refused, and nothing is written
+      - advances an advance cancelled is reversed, and one already taken back off his wages is refused
+      - advances a man who still owes an advance cannot be put in the recycle bin
+      - advances a shop set up before the staff book gets Staff Advances when its first advance is given
+      - putting a slip right a cancelled salary is reversed by the opposite entry, and what it took off his advance is owed again
+      - putting a slip right a slip corrected is cancelled and paid again in one act, the new slip pointing at the old
+      - the owner's locks closed books refuse a mark, a salary or a cancel dated inside them
+      - the owner's locks Data Lock asks for a PIN before a salary or an advance is cancelled
+      - the reports the attendance summary, the salary register and the advances outstanding read the staff book
+      - v12 to v13 — the staff book a shop that paid wages by hand comes through with its books whole, and its people, register and slips can be kept
+      - the owner and a manager keep the staff book, the accountant pays from it, and a cashier marks the register only when the owner lets him, never seeing a rupee
+      - a mark made on one counter reaches the other over the shop wi-fi, and the later mark of a day wins on both
+      - with Data Lock on, cancelling a salary asks for a PIN, and a man put in the recycle bin comes back with one tap
+      - the day register is marked a tap a man, and everyone else present with one more
+      - a month of wages is worked out from the register, the advance comes off it, the slip goes out as a PDF, and a cancelled slip puts the books back
+      - at 200% on a small phone the staff book, the register, a man page and his wages fit

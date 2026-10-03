@@ -13909,6 +13909,837 @@ abstract class AppStrings {
   /// In ur, this message translates to:
   /// **'Der wala: Rs {amount}'**
   String homeUdhaarKhataLate(String amount);
+
+  /// No description provided for @staffBookTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff ki kitaab'**
+  String get staffBookTitle;
+
+  /// No description provided for @staffRulesTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff ki kitaab ke usool'**
+  String get staffRulesTitle;
+
+  /// No description provided for @staffAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naya mulazim'**
+  String get staffAdd;
+
+  /// No description provided for @staffEdit.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tafseel badlein'**
+  String get staffEdit;
+
+  /// No description provided for @staffRegisterToday.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aaj ki hazri'**
+  String get staffRegisterToday;
+
+  /// No description provided for @staffRegisterTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hazri register'**
+  String get staffRegisterTitle;
+
+  /// No description provided for @staffAdvancesOwedTotal.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi jo wapas aani hai'**
+  String get staffAdvancesOwedTotal;
+
+  /// No description provided for @staffEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi koi mulazim nahi'**
+  String get staffEmpty;
+
+  /// No description provided for @staffEmptyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Jinhein tankhwah dete hain unhein shamil karein: salesman, helper, rider, munshi. Unhein phone chalana zaroori nahi.'**
+  String get staffEmptyHint;
+
+  /// No description provided for @staffLeftOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ko chhor gaya'**
+  String staffLeftOn(String date);
+
+  /// No description provided for @staffAdvanceOwedChip.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi Rs {amount}'**
+  String staffAdvanceOwedChip(String amount);
+
+  /// No description provided for @staffKaamSalesman.
+  ///
+  /// In ur, this message translates to:
+  /// **'Salesman'**
+  String get staffKaamSalesman;
+
+  /// No description provided for @staffKaamHelper.
+  ///
+  /// In ur, this message translates to:
+  /// **'Helper'**
+  String get staffKaamHelper;
+
+  /// No description provided for @staffKaamRider.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rider'**
+  String get staffKaamRider;
+
+  /// No description provided for @staffKaamMunshi.
+  ///
+  /// In ur, this message translates to:
+  /// **'Munshi'**
+  String get staffKaamMunshi;
+
+  /// No description provided for @staffKaamOther.
+  ///
+  /// In ur, this message translates to:
+  /// **'Koi aur kaam'**
+  String get staffKaamOther;
+
+  /// No description provided for @staffMarkPresent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haazir'**
+  String get staffMarkPresent;
+
+  /// No description provided for @staffMarkLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'Der se'**
+  String get staffMarkLate;
+
+  /// No description provided for @staffMarkHalfDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Aadha din'**
+  String get staffMarkHalfDay;
+
+  /// No description provided for @staffMarkPaidLeave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chutti (tankhwah ke saath)'**
+  String get staffMarkPaidLeave;
+
+  /// No description provided for @staffMarkUnpaidLeave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Chutti (bina tankhwah)'**
+  String get staffMarkUnpaidLeave;
+
+  /// No description provided for @staffMarkAbsent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ghair haazir'**
+  String get staffMarkAbsent;
+
+  /// No description provided for @staffMarkShortPresent.
+  ///
+  /// In ur, this message translates to:
+  /// **'H'**
+  String get staffMarkShortPresent;
+
+  /// No description provided for @staffMarkShortLate.
+  ///
+  /// In ur, this message translates to:
+  /// **'D'**
+  String get staffMarkShortLate;
+
+  /// No description provided for @staffMarkShortPaidLeave.
+  ///
+  /// In ur, this message translates to:
+  /// **'C'**
+  String get staffMarkShortPaidLeave;
+
+  /// No description provided for @staffMarkShortUnpaidLeave.
+  ///
+  /// In ur, this message translates to:
+  /// **'BC'**
+  String get staffMarkShortUnpaidLeave;
+
+  /// No description provided for @staffMarkShortAbsent.
+  ///
+  /// In ur, this message translates to:
+  /// **'G'**
+  String get staffMarkShortAbsent;
+
+  /// No description provided for @staffPayMonthly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana Rs {amount}'**
+  String staffPayMonthly(String amount);
+
+  /// No description provided for @staffPayDaily.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dihari Rs {amount}'**
+  String staffPayDaily(String amount);
+
+  /// No description provided for @staffRegisterRestMarked.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} ki hazri lag gayi'**
+  String staffRegisterRestMarked(int count);
+
+  /// No description provided for @staffDayBefore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichla din'**
+  String get staffDayBefore;
+
+  /// No description provided for @staffDayAfter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agla din'**
+  String get staffDayAfter;
+
+  /// No description provided for @staffPickDay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Din chunein'**
+  String get staffPickDay;
+
+  /// No description provided for @staffRegisterEmpty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Us din koi mulazim nahi tha'**
+  String get staffRegisterEmpty;
+
+  /// No description provided for @staffRegisterRestPresent.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi sab haazir'**
+  String get staffRegisterRestPresent;
+
+  /// No description provided for @staffRegisterNotMarked.
+  ///
+  /// In ur, this message translates to:
+  /// **'Abhi hazri nahi lagi'**
+  String get staffRegisterNotMarked;
+
+  /// No description provided for @staffRegisterMarkedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{mark}, {name} ne lagayi'**
+  String staffRegisterMarkedBy(String mark, String name);
+
+  /// No description provided for @staffRateInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah raqam mein likhein, jaise 25000'**
+  String get staffRateInvalid;
+
+  /// No description provided for @staffSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save ho gaya'**
+  String get staffSaved;
+
+  /// No description provided for @staffHidden.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} recycle bin mein chala gaya'**
+  String staffHidden(String name);
+
+  /// No description provided for @staffName.
+  ///
+  /// In ur, this message translates to:
+  /// **'Naam'**
+  String get staffName;
+
+  /// No description provided for @staffKaam.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaam'**
+  String get staffKaam;
+
+  /// No description provided for @staffBasisMonthly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana tankhwah'**
+  String get staffBasisMonthly;
+
+  /// No description provided for @staffBasisDaily.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dihari'**
+  String get staffBasisDaily;
+
+  /// No description provided for @staffSalary.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana tankhwah (Rs)'**
+  String get staffSalary;
+
+  /// No description provided for @staffDayWage.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek din ki dihari (Rs)'**
+  String get staffDayWage;
+
+  /// No description provided for @staffJoinedLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kab se kaam par hai'**
+  String get staffJoinedLabel;
+
+  /// No description provided for @staffPhone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Phone (WhatsApp par slip ke liye)'**
+  String get staffPhone;
+
+  /// No description provided for @staffCnic.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC (marzi se)'**
+  String get staffCnic;
+
+  /// No description provided for @staffSignIn.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is app par uska apna login (marzi se)'**
+  String get staffSignIn;
+
+  /// No description provided for @staffSignInNone.
+  ///
+  /// In ur, this message translates to:
+  /// **'App nahi chalata'**
+  String get staffSignInNone;
+
+  /// No description provided for @staffNote.
+  ///
+  /// In ur, this message translates to:
+  /// **'Note'**
+  String get staffNote;
+
+  /// No description provided for @staffHasLeft.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kaam chhor gaya'**
+  String get staffHasLeft;
+
+  /// No description provided for @staffHide.
+  ///
+  /// In ur, this message translates to:
+  /// **'Recycle bin mein dalein'**
+  String get staffHide;
+
+  /// No description provided for @staffSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Save karein'**
+  String get staffSave;
+
+  /// No description provided for @staffAdvanceCancelTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh peshgi cancel karein'**
+  String get staffAdvanceCancelTitle;
+
+  /// No description provided for @staffAdvanceCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi cancel ho gayi ({number})'**
+  String staffAdvanceCancelled(String number);
+
+  /// No description provided for @staffCancelReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kyun? (entry ke saath rahega)'**
+  String get staffCancelReason;
+
+  /// No description provided for @staffCancelConfirm.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel karein'**
+  String get staffCancelConfirm;
+
+  /// No description provided for @staffJoinedOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} se'**
+  String staffJoinedOn(String date);
+
+  /// No description provided for @staffSignsInAs.
+  ///
+  /// In ur, this message translates to:
+  /// **'App par {name} ke naam se'**
+  String staffSignsInAs(String name);
+
+  /// No description provided for @staffCnicShown.
+  ///
+  /// In ur, this message translates to:
+  /// **'CNIC {cnic}'**
+  String staffCnicShown(String cnic);
+
+  /// No description provided for @staffAdvanceOwed.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi baqi'**
+  String get staffAdvanceOwed;
+
+  /// No description provided for @staffGiveAdvance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi dein'**
+  String get staffGiveAdvance;
+
+  /// No description provided for @staffMonthBefore.
+  ///
+  /// In ur, this message translates to:
+  /// **'Pichla mahina'**
+  String get staffMonthBefore;
+
+  /// No description provided for @staffMonthAfter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Agla mahina'**
+  String get staffMonthAfter;
+
+  /// No description provided for @staffMonthWages.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din ki tankhwah'**
+  String staffMonthWages(String days);
+
+  /// No description provided for @staffMonthPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'{number} par di gayi'**
+  String staffMonthPaid(String number);
+
+  /// No description provided for @staffPayMonth.
+  ///
+  /// In ur, this message translates to:
+  /// **'{month} ki tankhwah dein'**
+  String staffPayMonth(String month);
+
+  /// No description provided for @staffNotMarkedCount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hazri nahi lagi'**
+  String get staffNotMarkedCount;
+
+  /// No description provided for @staffSlips.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah ki slips'**
+  String get staffSlips;
+
+  /// No description provided for @staffSlipCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel'**
+  String get staffSlipCancelled;
+
+  /// No description provided for @staffAdvanceGiven.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi di'**
+  String get staffAdvanceGiven;
+
+  /// No description provided for @staffAdvanceRecovered.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah se kati'**
+  String get staffAdvanceRecovered;
+
+  /// No description provided for @staffAdvanceGivenCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi cancel'**
+  String get staffAdvanceGivenCancelled;
+
+  /// No description provided for @staffAdvanceRecoveryCancelled.
+  ///
+  /// In ur, this message translates to:
+  /// **'Slip cancel, peshgi phir baqi'**
+  String get staffAdvanceRecoveryCancelled;
+
+  /// No description provided for @staffAdvances.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi'**
+  String get staffAdvances;
+
+  /// No description provided for @staffAdvanceOwedAfter.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is ke baad baqi: Rs {amount}'**
+  String staffAdvanceOwedAfter(String amount);
+
+  /// No description provided for @staffAmountInvalid.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam likhein, jaise 2000'**
+  String get staffAmountInvalid;
+
+  /// No description provided for @staffAdvanceSaved.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi de di ({number})'**
+  String staffAdvanceSaved(String number);
+
+  /// No description provided for @staffAdvanceTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name} ko peshgi'**
+  String staffAdvanceTitle(String name);
+
+  /// No description provided for @staffAdvanceAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kitni raqam (Rs)'**
+  String get staffAdvanceAmount;
+
+  /// No description provided for @staffPaidFrom.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kahan se di'**
+  String get staffPaidFrom;
+
+  /// No description provided for @staffAdvanceHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh tankhwah se wapas katti hai, har mahine jitni aap chahein.'**
+  String get staffAdvanceHint;
+
+  /// No description provided for @staffCorrectReasonNeeded.
+  ///
+  /// In ur, this message translates to:
+  /// **'Likhein slip kyun theek ho rahi hai'**
+  String get staffCorrectReasonNeeded;
+
+  /// No description provided for @staffRuleDaily.
+  ///
+  /// In ur, this message translates to:
+  /// **'Dihari Rs {amount}: har din jo aaya, aadha din aadhi'**
+  String staffRuleDaily(String amount);
+
+  /// No description provided for @staffRuleCalendar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} mahana; ek din 1/{days} (mahine ke din)'**
+  String staffRuleCalendar(String amount, int days);
+
+  /// No description provided for @staffRuleThirty.
+  ///
+  /// In ur, this message translates to:
+  /// **'Rs {amount} mahana; ek din 1/30 (30 din ka mahina)'**
+  String staffRuleThirty(String amount);
+
+  /// No description provided for @staffSalaryTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{name}: {month}'**
+  String staffSalaryTitle(String name, String month);
+
+  /// No description provided for @staffCorrectTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'{number} theek karein'**
+  String staffCorrectTitle(String number);
+
+  /// No description provided for @staffOnPayroll.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine {days} din kaam par'**
+  String staffOnPayroll(int days);
+
+  /// No description provided for @staffUnmarkedPaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} din hazri nahi lagi: kaam ke din gine gaye'**
+  String staffUnmarkedPaid(int count);
+
+  /// No description provided for @staffUnmarkedUnpaid.
+  ///
+  /// In ur, this message translates to:
+  /// **'{count} din hazri nahi lagi: dihari mein nahi gine gaye'**
+  String staffUnmarkedUnpaid(int count);
+
+  /// No description provided for @staffBasePay.
+  ///
+  /// In ur, this message translates to:
+  /// **'{days} din ki tankhwah'**
+  String staffBasePay(String days);
+
+  /// No description provided for @staffLines.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus, overtime aur katoti'**
+  String get staffLines;
+
+  /// No description provided for @staffLineRemove.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hatayein'**
+  String get staffLineRemove;
+
+  /// No description provided for @staffLineLabel.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kis cheez ka (jaise Eid bonus)'**
+  String get staffLineLabel;
+
+  /// No description provided for @staffLineAmount.
+  ///
+  /// In ur, this message translates to:
+  /// **'Raqam (Rs)'**
+  String get staffLineAmount;
+
+  /// No description provided for @staffLineAdd.
+  ///
+  /// In ur, this message translates to:
+  /// **'Shamil karein'**
+  String get staffLineAdd;
+
+  /// No description provided for @staffLineBonus.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus'**
+  String get staffLineBonus;
+
+  /// No description provided for @staffLineOvertime.
+  ///
+  /// In ur, this message translates to:
+  /// **'Overtime'**
+  String get staffLineOvertime;
+
+  /// No description provided for @staffLineDeduction.
+  ///
+  /// In ur, this message translates to:
+  /// **'Katoti'**
+  String get staffLineDeduction;
+
+  /// No description provided for @staffAdvanceOwedNow.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi baqi: Rs {amount}'**
+  String staffAdvanceOwedNow(String amount);
+
+  /// No description provided for @staffRecover.
+  ///
+  /// In ur, this message translates to:
+  /// **'Is mahine kitni katein (Rs)'**
+  String get staffRecover;
+
+  /// No description provided for @staffGross.
+  ///
+  /// In ur, this message translates to:
+  /// **'Bonus samet tankhwah'**
+  String get staffGross;
+
+  /// No description provided for @staffDeductions.
+  ///
+  /// In ur, this message translates to:
+  /// **'Katoti'**
+  String get staffDeductions;
+
+  /// No description provided for @staffRecoveredShort.
+  ///
+  /// In ur, this message translates to:
+  /// **'Peshgi kati'**
+  String get staffRecoveredShort;
+
+  /// No description provided for @staffInHand.
+  ///
+  /// In ur, this message translates to:
+  /// **'Haath mein'**
+  String get staffInHand;
+
+  /// No description provided for @staffCorrectReason.
+  ///
+  /// In ur, this message translates to:
+  /// **'Kyun theek ho rahi hai?'**
+  String get staffCorrectReason;
+
+  /// No description provided for @staffPaySave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah dein'**
+  String get staffPaySave;
+
+  /// No description provided for @staffCorrectSave.
+  ///
+  /// In ur, this message translates to:
+  /// **'Theek karke dein'**
+  String get staffCorrectSave;
+
+  /// No description provided for @staffSlipMessage.
+  ///
+  /// In ur, this message translates to:
+  /// **'{shop}\n{month} ki tankhwah: {name}\nDin: {days}\nTankhwah: Rs {gross}\nKatoti aur peshgi: Rs {cuts}\nHaath mein: Rs {net}\nSlip {slip}'**
+  String staffSlipMessage(
+    String shop,
+    String name,
+    String month,
+    String days,
+    String gross,
+    String cuts,
+    String net,
+    String slip,
+  );
+
+  /// No description provided for @staffSlipCancelTitle.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh slip cancel karein'**
+  String get staffSlipCancelTitle;
+
+  /// No description provided for @staffSlipCancelDone.
+  ///
+  /// In ur, this message translates to:
+  /// **'Slip cancel ho gayi ({number})'**
+  String staffSlipCancelDone(String number);
+
+  /// No description provided for @staffSlipPdf.
+  ///
+  /// In ur, this message translates to:
+  /// **'Slip (PDF)'**
+  String get staffSlipPdf;
+
+  /// No description provided for @staffSlipCancelledWhy.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cancel: {reason}'**
+  String staffSlipCancelledWhy(String reason);
+
+  /// No description provided for @staffSlipReplacedBy.
+  ///
+  /// In ur, this message translates to:
+  /// **'{number} se theek ki gayi'**
+  String staffSlipReplacedBy(String number);
+
+  /// No description provided for @staffSlipDays.
+  ///
+  /// In ur, this message translates to:
+  /// **'{employed} mein se {days} din ki tankhwah'**
+  String staffSlipDays(String days, int employed);
+
+  /// No description provided for @staffSlipPaidOn.
+  ///
+  /// In ur, this message translates to:
+  /// **'{date} ko {from} se, {name} ne di'**
+  String staffSlipPaidOn(String date, String from, String name);
+
+  /// No description provided for @staffSlipWhatsApp.
+  ///
+  /// In ur, this message translates to:
+  /// **'WhatsApp par bhejein'**
+  String get staffSlipWhatsApp;
+
+  /// No description provided for @staffSlipCorrect.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh slip theek karein'**
+  String get staffSlipCorrect;
+
+  /// No description provided for @staffDayRuleHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahana tankhwah mein ek din kaise gina jaye, ghair haazri ki katoti ke liye.'**
+  String get staffDayRuleHint;
+
+  /// No description provided for @staffDayRuleThirty.
+  ///
+  /// In ur, this message translates to:
+  /// **'30 din ka mahina'**
+  String get staffDayRuleThirty;
+
+  /// No description provided for @staffDayRuleThirtyHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mahine ek din tankhwah ka 30wan hissa. Poora mahina, poori tankhwah.'**
+  String get staffDayRuleThirtyHint;
+
+  /// No description provided for @staffDayRuleCalendar.
+  ///
+  /// In ur, this message translates to:
+  /// **'Mahine ke asal din'**
+  String get staffDayRuleCalendar;
+
+  /// No description provided for @staffDayRuleCalendarHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Ek din mahine ke apne dinon ka hissa: February mein 1/28, October mein 1/31.'**
+  String get staffDayRuleCalendarHint;
+
+  /// No description provided for @staffCashierMarks.
+  ///
+  /// In ur, this message translates to:
+  /// **'Cashier hazri laga sakta hai'**
+  String get staffCashierMarks;
+
+  /// No description provided for @staffCashierMarksHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Woh sirf naam aur hazri dekhega, kisi ki tankhwah nahi.'**
+  String get staffCashierMarksHint;
+
+  /// No description provided for @staffWhoSeesPay.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah, peshgi aur slips sirf owner, manager aur accountant dekh sakte hain.'**
+  String get staffWhoSeesPay;
+
+  /// No description provided for @staffRulesOwnerOnly.
+  ///
+  /// In ur, this message translates to:
+  /// **'Yeh usool sirf owner badal sakta hai.'**
+  String get staffRulesOwnerOnly;
+
+  /// No description provided for @reportGroupStaff.
+  ///
+  /// In ur, this message translates to:
+  /// **'Staff'**
+  String get reportGroupStaff;
+
+  /// No description provided for @reportStaffAttendance.
+  ///
+  /// In ur, this message translates to:
+  /// **'Hazri ka khulasa'**
+  String get reportStaffAttendance;
+
+  /// No description provided for @reportStaffAttendanceHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mulazim: haazir, der se, aadha din, chutti aur ghair haazir'**
+  String get reportStaffAttendanceHint;
+
+  /// No description provided for @reportSalaryRegister.
+  ///
+  /// In ur, this message translates to:
+  /// **'Tankhwah register'**
+  String get reportSalaryRegister;
+
+  /// No description provided for @reportSalaryRegisterHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har slip: tankhwah, katoti, peshgi kati, di gayi'**
+  String get reportSalaryRegisterHint;
+
+  /// No description provided for @reportStaffAdvances.
+  ///
+  /// In ur, this message translates to:
+  /// **'Baqi peshgi'**
+  String get reportStaffAdvances;
+
+  /// No description provided for @reportStaffAdvancesHint.
+  ///
+  /// In ur, this message translates to:
+  /// **'Har mulazim ki kitni peshgi abhi baqi hai'**
+  String get reportStaffAdvancesHint;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {

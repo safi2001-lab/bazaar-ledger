@@ -8166,4 +8166,500 @@ class AppStringsUr extends AppStrings {
   String homeUdhaarKhataLate(String amount) {
     return 'Der wala: Rs $amount';
   }
+
+  @override
+  String get staffBookTitle => 'Staff ki kitaab';
+
+  @override
+  String get staffRulesTitle => 'Staff ki kitaab ke usool';
+
+  @override
+  String get staffAdd => 'Naya mulazim';
+
+  @override
+  String get staffEdit => 'Tafseel badlein';
+
+  @override
+  String get staffRegisterToday => 'Aaj ki hazri';
+
+  @override
+  String get staffRegisterTitle => 'Hazri register';
+
+  @override
+  String get staffAdvancesOwedTotal => 'Peshgi jo wapas aani hai';
+
+  @override
+  String get staffEmpty => 'Abhi koi mulazim nahi';
+
+  @override
+  String get staffEmptyHint =>
+      'Jinhein tankhwah dete hain unhein shamil karein: salesman, helper, rider, munshi. Unhein phone chalana zaroori nahi.';
+
+  @override
+  String staffLeftOn(String date) {
+    return '$date ko chhor gaya';
+  }
+
+  @override
+  String staffAdvanceOwedChip(String amount) {
+    return 'Peshgi Rs $amount';
+  }
+
+  @override
+  String get staffKaamSalesman => 'Salesman';
+
+  @override
+  String get staffKaamHelper => 'Helper';
+
+  @override
+  String get staffKaamRider => 'Rider';
+
+  @override
+  String get staffKaamMunshi => 'Munshi';
+
+  @override
+  String get staffKaamOther => 'Koi aur kaam';
+
+  @override
+  String get staffMarkPresent => 'Haazir';
+
+  @override
+  String get staffMarkLate => 'Der se';
+
+  @override
+  String get staffMarkHalfDay => 'Aadha din';
+
+  @override
+  String get staffMarkPaidLeave => 'Chutti (tankhwah ke saath)';
+
+  @override
+  String get staffMarkUnpaidLeave => 'Chutti (bina tankhwah)';
+
+  @override
+  String get staffMarkAbsent => 'Ghair haazir';
+
+  @override
+  String get staffMarkShortPresent => 'H';
+
+  @override
+  String get staffMarkShortLate => 'D';
+
+  @override
+  String get staffMarkShortPaidLeave => 'C';
+
+  @override
+  String get staffMarkShortUnpaidLeave => 'BC';
+
+  @override
+  String get staffMarkShortAbsent => 'G';
+
+  @override
+  String staffPayMonthly(String amount) {
+    return 'Mahana Rs $amount';
+  }
+
+  @override
+  String staffPayDaily(String amount) {
+    return 'Dihari Rs $amount';
+  }
+
+  @override
+  String staffRegisterRestMarked(int count) {
+    return '$count ki hazri lag gayi';
+  }
+
+  @override
+  String get staffDayBefore => 'Pichla din';
+
+  @override
+  String get staffDayAfter => 'Agla din';
+
+  @override
+  String get staffPickDay => 'Din chunein';
+
+  @override
+  String get staffRegisterEmpty => 'Us din koi mulazim nahi tha';
+
+  @override
+  String get staffRegisterRestPresent => 'Baqi sab haazir';
+
+  @override
+  String get staffRegisterNotMarked => 'Abhi hazri nahi lagi';
+
+  @override
+  String staffRegisterMarkedBy(String mark, String name) {
+    return '$mark, $name ne lagayi';
+  }
+
+  @override
+  String get staffRateInvalid => 'Tankhwah raqam mein likhein, jaise 25000';
+
+  @override
+  String get staffSaved => 'Save ho gaya';
+
+  @override
+  String staffHidden(String name) {
+    return '$name recycle bin mein chala gaya';
+  }
+
+  @override
+  String get staffName => 'Naam';
+
+  @override
+  String get staffKaam => 'Kaam';
+
+  @override
+  String get staffBasisMonthly => 'Mahana tankhwah';
+
+  @override
+  String get staffBasisDaily => 'Dihari';
+
+  @override
+  String get staffSalary => 'Mahana tankhwah (Rs)';
+
+  @override
+  String get staffDayWage => 'Ek din ki dihari (Rs)';
+
+  @override
+  String get staffJoinedLabel => 'Kab se kaam par hai';
+
+  @override
+  String get staffPhone => 'Phone (WhatsApp par slip ke liye)';
+
+  @override
+  String get staffCnic => 'CNIC (marzi se)';
+
+  @override
+  String get staffSignIn => 'Is app par uska apna login (marzi se)';
+
+  @override
+  String get staffSignInNone => 'App nahi chalata';
+
+  @override
+  String get staffNote => 'Note';
+
+  @override
+  String get staffHasLeft => 'Kaam chhor gaya';
+
+  @override
+  String get staffHide => 'Recycle bin mein dalein';
+
+  @override
+  String get staffSave => 'Save karein';
+
+  @override
+  String get staffAdvanceCancelTitle => 'Yeh peshgi cancel karein';
+
+  @override
+  String staffAdvanceCancelled(String number) {
+    return 'Peshgi cancel ho gayi ($number)';
+  }
+
+  @override
+  String get staffCancelReason => 'Kyun? (entry ke saath rahega)';
+
+  @override
+  String get staffCancelConfirm => 'Cancel karein';
+
+  @override
+  String staffJoinedOn(String date) {
+    return '$date se';
+  }
+
+  @override
+  String staffSignsInAs(String name) {
+    return 'App par $name ke naam se';
+  }
+
+  @override
+  String staffCnicShown(String cnic) {
+    return 'CNIC $cnic';
+  }
+
+  @override
+  String get staffAdvanceOwed => 'Peshgi baqi';
+
+  @override
+  String get staffGiveAdvance => 'Peshgi dein';
+
+  @override
+  String get staffMonthBefore => 'Pichla mahina';
+
+  @override
+  String get staffMonthAfter => 'Agla mahina';
+
+  @override
+  String staffMonthWages(String days) {
+    return '$days din ki tankhwah';
+  }
+
+  @override
+  String staffMonthPaid(String number) {
+    return '$number par di gayi';
+  }
+
+  @override
+  String staffPayMonth(String month) {
+    return '$month ki tankhwah dein';
+  }
+
+  @override
+  String get staffNotMarkedCount => 'Hazri nahi lagi';
+
+  @override
+  String get staffSlips => 'Tankhwah ki slips';
+
+  @override
+  String get staffSlipCancelled => 'Cancel';
+
+  @override
+  String get staffAdvanceGiven => 'Peshgi di';
+
+  @override
+  String get staffAdvanceRecovered => 'Tankhwah se kati';
+
+  @override
+  String get staffAdvanceGivenCancelled => 'Peshgi cancel';
+
+  @override
+  String get staffAdvanceRecoveryCancelled => 'Slip cancel, peshgi phir baqi';
+
+  @override
+  String get staffAdvances => 'Peshgi';
+
+  @override
+  String staffAdvanceOwedAfter(String amount) {
+    return 'Is ke baad baqi: Rs $amount';
+  }
+
+  @override
+  String get staffAmountInvalid => 'Raqam likhein, jaise 2000';
+
+  @override
+  String staffAdvanceSaved(String number) {
+    return 'Peshgi de di ($number)';
+  }
+
+  @override
+  String staffAdvanceTitle(String name) {
+    return '$name ko peshgi';
+  }
+
+  @override
+  String get staffAdvanceAmount => 'Kitni raqam (Rs)';
+
+  @override
+  String get staffPaidFrom => 'Kahan se di';
+
+  @override
+  String get staffAdvanceHint =>
+      'Yeh tankhwah se wapas katti hai, har mahine jitni aap chahein.';
+
+  @override
+  String get staffCorrectReasonNeeded => 'Likhein slip kyun theek ho rahi hai';
+
+  @override
+  String staffRuleDaily(String amount) {
+    return 'Dihari Rs $amount: har din jo aaya, aadha din aadhi';
+  }
+
+  @override
+  String staffRuleCalendar(String amount, int days) {
+    return 'Rs $amount mahana; ek din 1/$days (mahine ke din)';
+  }
+
+  @override
+  String staffRuleThirty(String amount) {
+    return 'Rs $amount mahana; ek din 1/30 (30 din ka mahina)';
+  }
+
+  @override
+  String staffSalaryTitle(String name, String month) {
+    return '$name: $month';
+  }
+
+  @override
+  String staffCorrectTitle(String number) {
+    return '$number theek karein';
+  }
+
+  @override
+  String staffOnPayroll(int days) {
+    return 'Is mahine $days din kaam par';
+  }
+
+  @override
+  String staffUnmarkedPaid(int count) {
+    return '$count din hazri nahi lagi: kaam ke din gine gaye';
+  }
+
+  @override
+  String staffUnmarkedUnpaid(int count) {
+    return '$count din hazri nahi lagi: dihari mein nahi gine gaye';
+  }
+
+  @override
+  String staffBasePay(String days) {
+    return '$days din ki tankhwah';
+  }
+
+  @override
+  String get staffLines => 'Bonus, overtime aur katoti';
+
+  @override
+  String get staffLineRemove => 'Hatayein';
+
+  @override
+  String get staffLineLabel => 'Kis cheez ka (jaise Eid bonus)';
+
+  @override
+  String get staffLineAmount => 'Raqam (Rs)';
+
+  @override
+  String get staffLineAdd => 'Shamil karein';
+
+  @override
+  String get staffLineBonus => 'Bonus';
+
+  @override
+  String get staffLineOvertime => 'Overtime';
+
+  @override
+  String get staffLineDeduction => 'Katoti';
+
+  @override
+  String staffAdvanceOwedNow(String amount) {
+    return 'Peshgi baqi: Rs $amount';
+  }
+
+  @override
+  String get staffRecover => 'Is mahine kitni katein (Rs)';
+
+  @override
+  String get staffGross => 'Bonus samet tankhwah';
+
+  @override
+  String get staffDeductions => 'Katoti';
+
+  @override
+  String get staffRecoveredShort => 'Peshgi kati';
+
+  @override
+  String get staffInHand => 'Haath mein';
+
+  @override
+  String get staffCorrectReason => 'Kyun theek ho rahi hai?';
+
+  @override
+  String get staffPaySave => 'Tankhwah dein';
+
+  @override
+  String get staffCorrectSave => 'Theek karke dein';
+
+  @override
+  String staffSlipMessage(
+    String shop,
+    String name,
+    String month,
+    String days,
+    String gross,
+    String cuts,
+    String net,
+    String slip,
+  ) {
+    return '$shop\n$month ki tankhwah: $name\nDin: $days\nTankhwah: Rs $gross\nKatoti aur peshgi: Rs $cuts\nHaath mein: Rs $net\nSlip $slip';
+  }
+
+  @override
+  String get staffSlipCancelTitle => 'Yeh slip cancel karein';
+
+  @override
+  String staffSlipCancelDone(String number) {
+    return 'Slip cancel ho gayi ($number)';
+  }
+
+  @override
+  String get staffSlipPdf => 'Slip (PDF)';
+
+  @override
+  String staffSlipCancelledWhy(String reason) {
+    return 'Cancel: $reason';
+  }
+
+  @override
+  String staffSlipReplacedBy(String number) {
+    return '$number se theek ki gayi';
+  }
+
+  @override
+  String staffSlipDays(String days, int employed) {
+    return '$employed mein se $days din ki tankhwah';
+  }
+
+  @override
+  String staffSlipPaidOn(String date, String from, String name) {
+    return '$date ko $from se, $name ne di';
+  }
+
+  @override
+  String get staffSlipWhatsApp => 'WhatsApp par bhejein';
+
+  @override
+  String get staffSlipCorrect => 'Yeh slip theek karein';
+
+  @override
+  String get staffDayRuleHint =>
+      'Mahana tankhwah mein ek din kaise gina jaye, ghair haazri ki katoti ke liye.';
+
+  @override
+  String get staffDayRuleThirty => '30 din ka mahina';
+
+  @override
+  String get staffDayRuleThirtyHint =>
+      'Har mahine ek din tankhwah ka 30wan hissa. Poora mahina, poori tankhwah.';
+
+  @override
+  String get staffDayRuleCalendar => 'Mahine ke asal din';
+
+  @override
+  String get staffDayRuleCalendarHint =>
+      'Ek din mahine ke apne dinon ka hissa: February mein 1/28, October mein 1/31.';
+
+  @override
+  String get staffCashierMarks => 'Cashier hazri laga sakta hai';
+
+  @override
+  String get staffCashierMarksHint =>
+      'Woh sirf naam aur hazri dekhega, kisi ki tankhwah nahi.';
+
+  @override
+  String get staffWhoSeesPay =>
+      'Tankhwah, peshgi aur slips sirf owner, manager aur accountant dekh sakte hain.';
+
+  @override
+  String get staffRulesOwnerOnly => 'Yeh usool sirf owner badal sakta hai.';
+
+  @override
+  String get reportGroupStaff => 'Staff';
+
+  @override
+  String get reportStaffAttendance => 'Hazri ka khulasa';
+
+  @override
+  String get reportStaffAttendanceHint =>
+      'Har mulazim: haazir, der se, aadha din, chutti aur ghair haazir';
+
+  @override
+  String get reportSalaryRegister => 'Tankhwah register';
+
+  @override
+  String get reportSalaryRegisterHint =>
+      'Har slip: tankhwah, katoti, peshgi kati, di gayi';
+
+  @override
+  String get reportStaffAdvances => 'Baqi peshgi';
+
+  @override
+  String get reportStaffAdvancesHint =>
+      'Har mulazim ki kitni peshgi abhi baqi hai';
 }

@@ -52,6 +52,8 @@ enum ReportGroup {
   pharmacy,
   // M50
   mobile,
+  // M65
+  staff,
 }
 
 /// A group's heading, as the shop reads it.
@@ -66,6 +68,7 @@ String reportGroupName(AppStrings s, ReportGroup group) => switch (group) {
   ReportGroup.loans => s.reportGroupLoans,
   ReportGroup.pharmacy => s.reportGroupPharmacy, // M49
   ReportGroup.mobile => s.reportGroupMobile, // M50
+  ReportGroup.staff => s.reportGroupStaff, // M65
 };
 
 /// One report in the hub.
@@ -842,6 +845,32 @@ final _pharmacyReports = [
   ),
 ];
 
+/// M65: the staff book's register in totals, the salary register, and what
+/// each man still owes of his advances.
+final _staffBookReports = [
+  ReportEntry(
+    kind: ReportKind.staffAttendance,
+    group: ReportGroup.staff,
+    name: (s) => s.reportStaffAttendance,
+    hint: (s) => s.reportStaffAttendanceHint,
+    icon: Icons.fact_check_outlined,
+  ),
+  ReportEntry(
+    kind: ReportKind.salaryRegister,
+    group: ReportGroup.staff,
+    name: (s) => s.reportSalaryRegister,
+    hint: (s) => s.reportSalaryRegisterHint,
+    icon: Icons.account_balance_wallet_outlined,
+  ),
+  ReportEntry(
+    kind: ReportKind.staffAdvances,
+    group: ReportGroup.staff,
+    name: (s) => s.reportStaffAdvances,
+    hint: (s) => s.reportStaffAdvancesHint,
+    icon: Icons.payments_outlined,
+  ),
+];
+
 /// Every report, group by group, in the order the hub lists them.
 final List<ReportEntry> reportRegistry = List.unmodifiable([
   ..._transactionReports,
@@ -854,6 +883,7 @@ final List<ReportEntry> reportRegistry = List.unmodifiable([
   ..._loanReports,
   ..._pharmacyReports, // M49
   ..._mobileReports, // M50
+  ..._staffBookReports, // M65
 ]);
 
 final Map<ReportKind, ReportEntry> _byKind = {

@@ -237,6 +237,14 @@ other counters over its wi-fi, and leaves the shop only as a PDF or Excel the
 shopkeeper shares. The photograph of the seller's CNIC does not travel even
 that far: it stays on the phone it was taken on (M60).
 
+**The staff book (M65).** An employee's name, phone, CNIC (only if the shop
+typed one), pay, attendance, advances and slips are rows of the books like
+any other: they reach the shop's own counters over its wi-fi and go into its
+backups, and nowhere else. A slip leaves the phone only when the shopkeeper
+sends it: as a PDF through the share sheet, or as a WhatsApp message typed
+into the phone's own WhatsApp on the employee's chat, which the shopkeeper
+then sends. Nothing is sent to the employee by the app on its own.
+
 The `<queries>` block naming `com.whatsapp` and `com.whatsapp.w4b` exists so
 `canLaunchUrl` can answer whether WhatsApp is there before the button offers
 itself. On Android 11 and above it returns false without that block however

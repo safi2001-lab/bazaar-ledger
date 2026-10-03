@@ -10,6 +10,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v10.dart' as v10;
 import 'generated/schema_v11.dart' as v11;
+import 'generated/schema_v12.dart' as v12;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
@@ -917,6 +918,184 @@ void main() {
     });
   });
 
+  group('v12 to v13 — the staff book', () {
+    test('a shop that paid wages by hand comes through with its books whole, '
+        'and its people, register and slips can be kept', () async {
+      // Purely additive: four new tables and their indexes. What matters is
+      // that nothing already there moves — a month of wages paid before M65
+      // as a journal entry stays exactly where it was — and that the new
+      // tables hold what they are for and refuse what they are not.
+      final schema = await verifier.schemaAt(12);
+      final old = v12.DatabaseAtV12(schema.newConnection());
+      const firmId = 'FIRM0000000000000000000001';
+      const userId = 'USER0000000000000000000001';
+      const deviceId = 'DEV00000000000000000000001';
+      const wagesId = 'ACCT000000000000000000WAGE';
+      const cashId = 'ACCT000000000000000000CASH';
+      const entryId = 'JE00000000000000000000001';
+      const env =
+          'id, firm_id, created_at_utc, updated_at_utc, created_by, '
+          'updated_by, origin_device_id, hlc, rev';
+      await old.customStatement('PRAGMA foreign_keys = OFF');
+      await old.customStatement(
+        'INSERT INTO firms ($env, name, fiscal_year_start_month, '
+        'base_currency, rounding_mode) '
+        "VALUES (?, ?, 1, 1, ?, ?, ?, 'a', 3, 'Chishti Kiryana', 7, 'PKR', "
+        "'half_up')",
+        [firmId, firmId, userId, userId, deviceId],
+      );
+      await old.customStatement(
+        'INSERT INTO users ($env, name, role) '
+        "VALUES (?, ?, 1, 1, ?, ?, ?, 'b', 1, 'Malik Sahib', 'owner')",
+        [userId, firmId, userId, userId, deviceId],
+      );
+      await old.customStatement(
+        'INSERT INTO devices ($env, label, platform) '
+        "VALUES (?, ?, 1, 1, ?, ?, ?, 'c', 1, 'Counter 1', 'test')",
+        [deviceId, firmId, userId, userId, deviceId],
+      );
+      for (final (id, code, name, type, key) in [
+        (wagesId, '6200', 'Salaries and Wages', 'expense', 'salaries'),
+        (cashId, '1010', 'Cash in Hand', 'asset', 'cash_in_hand'),
+      ]) {
+        await old.customStatement(
+          'INSERT INTO accounts ($env, code, name, account_type, normal_side, '
+          "system_key) VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, ?, ?, 'debit', ?)",
+          [
+            id,
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'd-$id',
+            code,
+            name,
+            type,
+            key,
+          ],
+        );
+      }
+      await old.customStatement(
+        'INSERT INTO journal_entries ($env, entry_no, entry_date_utc, '
+        'entry_date_local, fiscal_year, source_type, narration, '
+        'total_debit_paisa, total_credit_paisa) '
+        "VALUES (?, ?, 1, 1, ?, ?, ?, 'e', 1, 'JV-2627-00001', 1, "
+        "'2026-09-30', 2627, 'manual', 'Bilal ki tankhwah', 2500000, 2500000)",
+        [entryId, firmId, userId, userId, deviceId],
+      );
+      for (final (n, account, debit, credit) in [
+        (1, wagesId, 2500000, 0),
+        (2, cashId, 0, 2500000),
+      ]) {
+        await old.customStatement(
+          'INSERT INTO journal_lines ($env, journal_entry_id, line_no, '
+          'account_id, debit_paisa, credit_paisa) '
+          'VALUES (?, ?, 1, 1, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)',
+          [
+            'JL0000000000000000000000$n',
+            firmId,
+            userId,
+            userId,
+            deviceId,
+            'f-$n',
+            entryId,
+            n,
+            account,
+            debit,
+            credit,
+          ],
+        );
+      }
+      await old.close();
+
+      final db = AppDatabase(schema.newConnection());
+      addTearDown(db.close);
+      await verifier.migrateAndValidate(db, 13);
+
+      final entry = await db
+          .customSelect(
+            'SELECT entry_no, narration, total_debit_paisa FROM '
+            'journal_entries',
+          )
+          .getSingle();
+      expect(entry.data, {
+        'entry_no': 'JV-2627-00001',
+        'narration': 'Bilal ki tankhwah',
+        'total_debit_paisa': 2500000,
+      });
+      final wages = await db
+          .customSelect(
+            'SELECT SUM(debit_paisa) - SUM(credit_paisa) AS wages FROM '
+            'journal_lines WHERE account_id = ?',
+            variables: [Variable<String>(wagesId)],
+          )
+          .getSingle();
+      expect(wages.data['wages'], 2500000, reason: 'the wages stand');
+      expect(await db.findLedgerImbalances(), isEmpty);
+
+      // The new tables hold a man and his day...
+      await db.customStatement(
+        'INSERT INTO employees ($env, name, kaam, joined_on_local, '
+        'pay_basis, rate_paisa) '
+        "VALUES ('EMP1', ?, 1, 1, ?, ?, ?, 'g', 1, 'Bilal', 'helper', "
+        "'2026-09-01', 'monthly', 2500000)",
+        [firmId, userId, userId, deviceId],
+      );
+      await db.customStatement(
+        'INSERT INTO attendance ($env, employee_id, day_local, mark) '
+        "VALUES ('att-EMP1-2026-10-01', ?, 1, 1, ?, ?, ?, 'h', 1, 'EMP1', "
+        "'2026-10-01', 'half_day')",
+        [firmId, userId, userId, deviceId],
+      );
+      // ...and refuse what they are not for.
+      await expectLater(
+        db.customStatement(
+          "UPDATE attendance SET mark = 'holiday' WHERE id = "
+          "'att-EMP1-2026-10-01'",
+        ),
+        throwsA(anything),
+        reason: 'a mark the register does not know',
+      );
+      await expectLater(
+        db.customStatement('UPDATE employees SET rate_paisa = 0'),
+        throwsA(anything),
+        reason: 'nobody works for nothing',
+      );
+      await expectLater(
+        db.customStatement("UPDATE employees SET cnic = '35202-1234567-1'"),
+        throwsA(anything),
+        reason: 'a CNIC is kept as its thirteen digits',
+      );
+      await expectLater(
+        db.customStatement(
+          'INSERT INTO salary_slips ($env, slip_no, employee_id, '
+          'month_local, paid_on_local, pay_basis, rate_paisa, basis_days, '
+          'employed_days, paid_halves, base_pay_paisa, '
+          'advance_recovered_paisa, net_paid_paisa, journal_entry_id) '
+          "VALUES ('SLIP1', ?, 1, 1, ?, ?, ?, 'i', 1, 'SAL-2627-0001', "
+          "'EMP1', '2026-09', '2026-09-30', 'monthly', 2500000, 30, 30, 60, "
+          '2500000, 0, 2400000, ?)',
+          [firmId, userId, userId, deviceId, entryId],
+        ),
+        throwsA(anything),
+        reason: 'a slip that does not add up is refused by the database',
+      );
+      final tables = await db
+          .customSelect(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name IN "
+            "('employees', 'attendance', 'salary_slips', 'salary_lines') "
+            'ORDER BY name',
+          )
+          .get();
+      expect(
+        [for (final t in tables) t.read<String>('name')],
+        ['attendance', 'employees', 'salary_lines', 'salary_slips'],
+      );
+      final dangling = await db.customSelect('PRAGMA foreign_key_check').get();
+      expect(dangling, isEmpty, reason: 'nothing points at nothing');
+    });
+  });
+
   test('foreign keys are enforced and nothing is dangling', () async {
     // Deferred during a migration and re-checked before it commits. SQLite's
     // twelve-step table rebuild moves rows through a temporary table, and with
@@ -945,4 +1124,4 @@ void main() {
 /// real one below. A loop bounded by `db.schemaVersion` would silently keep
 /// passing when a version was added and its dump was not — which is the one
 /// thing these tests exist to catch.
-const _currentVersion = 12;
+const _currentVersion = 13;

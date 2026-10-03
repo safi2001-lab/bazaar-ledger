@@ -58,6 +58,9 @@ final class DocumentSeries {
     // M55: the recovery man's round, numbered so his paper, the owner's
     // screen and the activity log name the same sheet.
     DocumentSeries(docType: 'collection_sheet', prefix: 'WS', padWidth: 4),
+    // M65: a month's wages, so the slip in the boy's hand, the staff book
+    // and the activity log name the same paper.
+    DocumentSeries(docType: 'salary_slip', prefix: 'SAL', padWidth: 4),
   ];
 
   static DocumentSeries? forType(String docType) {

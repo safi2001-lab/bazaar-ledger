@@ -8176,4 +8176,500 @@ class AppStringsEn extends AppStrings {
   String homeUdhaarKhataLate(String amount) {
     return 'Late: Rs $amount';
   }
+
+  @override
+  String get staffBookTitle => 'Staff book';
+
+  @override
+  String get staffRulesTitle => 'Staff book rules';
+
+  @override
+  String get staffAdd => 'New employee';
+
+  @override
+  String get staffEdit => 'Change details';
+
+  @override
+  String get staffRegisterToday => 'Today\'s attendance';
+
+  @override
+  String get staffRegisterTitle => 'Attendance register';
+
+  @override
+  String get staffAdvancesOwedTotal => 'Advances still owed';
+
+  @override
+  String get staffEmpty => 'Nobody on the payroll yet';
+
+  @override
+  String get staffEmptyHint =>
+      'Add the people you pay: salesman, helper, rider, munshi. They do not need to use the phone.';
+
+  @override
+  String staffLeftOn(String date) {
+    return 'Left on $date';
+  }
+
+  @override
+  String staffAdvanceOwedChip(String amount) {
+    return 'Advance Rs $amount';
+  }
+
+  @override
+  String get staffKaamSalesman => 'Salesman';
+
+  @override
+  String get staffKaamHelper => 'Helper';
+
+  @override
+  String get staffKaamRider => 'Rider';
+
+  @override
+  String get staffKaamMunshi => 'Munshi';
+
+  @override
+  String get staffKaamOther => 'Other';
+
+  @override
+  String get staffMarkPresent => 'Present';
+
+  @override
+  String get staffMarkLate => 'Late';
+
+  @override
+  String get staffMarkHalfDay => 'Half day';
+
+  @override
+  String get staffMarkPaidLeave => 'Leave (paid)';
+
+  @override
+  String get staffMarkUnpaidLeave => 'Leave (unpaid)';
+
+  @override
+  String get staffMarkAbsent => 'Absent';
+
+  @override
+  String get staffMarkShortPresent => 'P';
+
+  @override
+  String get staffMarkShortLate => 'L';
+
+  @override
+  String get staffMarkShortPaidLeave => 'CL';
+
+  @override
+  String get staffMarkShortUnpaidLeave => 'UL';
+
+  @override
+  String get staffMarkShortAbsent => 'A';
+
+  @override
+  String staffPayMonthly(String amount) {
+    return 'Monthly Rs $amount';
+  }
+
+  @override
+  String staffPayDaily(String amount) {
+    return 'Daily Rs $amount';
+  }
+
+  @override
+  String staffRegisterRestMarked(int count) {
+    return '$count marked present';
+  }
+
+  @override
+  String get staffDayBefore => 'Day before';
+
+  @override
+  String get staffDayAfter => 'Day after';
+
+  @override
+  String get staffPickDay => 'Pick a day';
+
+  @override
+  String get staffRegisterEmpty => 'Nobody was on the payroll that day';
+
+  @override
+  String get staffRegisterRestPresent => 'Everyone else present';
+
+  @override
+  String get staffRegisterNotMarked => 'Not marked yet';
+
+  @override
+  String staffRegisterMarkedBy(String mark, String name) {
+    return '$mark, marked by $name';
+  }
+
+  @override
+  String get staffRateInvalid => 'Write the pay as an amount, like 25000';
+
+  @override
+  String get staffSaved => 'Saved';
+
+  @override
+  String staffHidden(String name) {
+    return '$name is in the recycle bin';
+  }
+
+  @override
+  String get staffName => 'Name';
+
+  @override
+  String get staffKaam => 'Work';
+
+  @override
+  String get staffBasisMonthly => 'Monthly salary';
+
+  @override
+  String get staffBasisDaily => 'Daily wage';
+
+  @override
+  String get staffSalary => 'Monthly salary (Rs)';
+
+  @override
+  String get staffDayWage => 'A day\'s wage (Rs)';
+
+  @override
+  String get staffJoinedLabel => 'Working here since';
+
+  @override
+  String get staffPhone => 'Phone (for his slip on WhatsApp)';
+
+  @override
+  String get staffCnic => 'CNIC (optional)';
+
+  @override
+  String get staffSignIn => 'His own sign-in on this app (optional)';
+
+  @override
+  String get staffSignInNone => 'Does not use the app';
+
+  @override
+  String get staffNote => 'Note';
+
+  @override
+  String get staffHasLeft => 'Has left';
+
+  @override
+  String get staffHide => 'Put in the recycle bin';
+
+  @override
+  String get staffSave => 'Save';
+
+  @override
+  String get staffAdvanceCancelTitle => 'Cancel this advance';
+
+  @override
+  String staffAdvanceCancelled(String number) {
+    return 'Advance cancelled ($number)';
+  }
+
+  @override
+  String get staffCancelReason => 'Why? (kept with the entry)';
+
+  @override
+  String get staffCancelConfirm => 'Cancel it';
+
+  @override
+  String staffJoinedOn(String date) {
+    return 'Since $date';
+  }
+
+  @override
+  String staffSignsInAs(String name) {
+    return 'Signs in as $name';
+  }
+
+  @override
+  String staffCnicShown(String cnic) {
+    return 'CNIC $cnic';
+  }
+
+  @override
+  String get staffAdvanceOwed => 'Advance still owed';
+
+  @override
+  String get staffGiveAdvance => 'Give advance';
+
+  @override
+  String get staffMonthBefore => 'Month before';
+
+  @override
+  String get staffMonthAfter => 'Month after';
+
+  @override
+  String staffMonthWages(String days) {
+    return 'Wages for $days days';
+  }
+
+  @override
+  String staffMonthPaid(String number) {
+    return 'Paid on $number';
+  }
+
+  @override
+  String staffPayMonth(String month) {
+    return 'Pay wages for $month';
+  }
+
+  @override
+  String get staffNotMarkedCount => 'Not marked';
+
+  @override
+  String get staffSlips => 'Salary slips';
+
+  @override
+  String get staffSlipCancelled => 'Cancelled';
+
+  @override
+  String get staffAdvanceGiven => 'Advance given';
+
+  @override
+  String get staffAdvanceRecovered => 'Taken back from wages';
+
+  @override
+  String get staffAdvanceGivenCancelled => 'Advance cancelled';
+
+  @override
+  String get staffAdvanceRecoveryCancelled => 'Slip cancelled, owed again';
+
+  @override
+  String get staffAdvances => 'Advances';
+
+  @override
+  String staffAdvanceOwedAfter(String amount) {
+    return 'Owed after: Rs $amount';
+  }
+
+  @override
+  String get staffAmountInvalid => 'Write an amount, like 2000';
+
+  @override
+  String staffAdvanceSaved(String number) {
+    return 'Advance given ($number)';
+  }
+
+  @override
+  String staffAdvanceTitle(String name) {
+    return 'Advance to $name';
+  }
+
+  @override
+  String get staffAdvanceAmount => 'How much (Rs)';
+
+  @override
+  String get staffPaidFrom => 'Paid from';
+
+  @override
+  String get staffAdvanceHint =>
+      'It comes back off his wages, as much each month as you choose.';
+
+  @override
+  String get staffCorrectReasonNeeded => 'Say why the slip is being put right';
+
+  @override
+  String staffRuleDaily(String amount) {
+    return 'Daily wage Rs $amount: every day he came, a half day half';
+  }
+
+  @override
+  String staffRuleCalendar(String amount, int days) {
+    return 'Rs $amount a month; a day is 1/$days (calendar days)';
+  }
+
+  @override
+  String staffRuleThirty(String amount) {
+    return 'Rs $amount a month; a day is 1/30 (30-day month)';
+  }
+
+  @override
+  String staffSalaryTitle(String name, String month) {
+    return '$name: $month';
+  }
+
+  @override
+  String staffCorrectTitle(String number) {
+    return 'Put $number right';
+  }
+
+  @override
+  String staffOnPayroll(int days) {
+    return 'On the payroll $days days this month';
+  }
+
+  @override
+  String staffUnmarkedPaid(int count) {
+    return '$count days not marked: counted as worked';
+  }
+
+  @override
+  String staffUnmarkedUnpaid(int count) {
+    return '$count days not marked: not paid on a daily wage';
+  }
+
+  @override
+  String staffBasePay(String days) {
+    return 'Pay for $days days';
+  }
+
+  @override
+  String get staffLines => 'Bonus, overtime and cuts';
+
+  @override
+  String get staffLineRemove => 'Remove';
+
+  @override
+  String get staffLineLabel => 'What for (e.g. Eid bonus)';
+
+  @override
+  String get staffLineAmount => 'Amount (Rs)';
+
+  @override
+  String get staffLineAdd => 'Add';
+
+  @override
+  String get staffLineBonus => 'Bonus';
+
+  @override
+  String get staffLineOvertime => 'Overtime';
+
+  @override
+  String get staffLineDeduction => 'Cut';
+
+  @override
+  String staffAdvanceOwedNow(String amount) {
+    return 'Advance owed: Rs $amount';
+  }
+
+  @override
+  String get staffRecover => 'Take back from this month (Rs)';
+
+  @override
+  String get staffGross => 'Wages with bonus';
+
+  @override
+  String get staffDeductions => 'Cuts';
+
+  @override
+  String get staffRecoveredShort => 'Advance taken back';
+
+  @override
+  String get staffInHand => 'In his hand';
+
+  @override
+  String get staffCorrectReason => 'Why is it being put right?';
+
+  @override
+  String get staffPaySave => 'Pay wages';
+
+  @override
+  String get staffCorrectSave => 'Put right and pay';
+
+  @override
+  String staffSlipMessage(
+    String shop,
+    String name,
+    String month,
+    String days,
+    String gross,
+    String cuts,
+    String net,
+    String slip,
+  ) {
+    return '$shop\nWages for $month: $name\nDays paid: $days\nWages: Rs $gross\nCuts and advance: Rs $cuts\nIn hand: Rs $net\nSlip $slip';
+  }
+
+  @override
+  String get staffSlipCancelTitle => 'Cancel this slip';
+
+  @override
+  String staffSlipCancelDone(String number) {
+    return 'Slip cancelled ($number)';
+  }
+
+  @override
+  String get staffSlipPdf => 'Slip (PDF)';
+
+  @override
+  String staffSlipCancelledWhy(String reason) {
+    return 'Cancelled: $reason';
+  }
+
+  @override
+  String staffSlipReplacedBy(String number) {
+    return 'Put right as $number';
+  }
+
+  @override
+  String staffSlipDays(String days, int employed) {
+    return '$days days paid of $employed on the payroll';
+  }
+
+  @override
+  String staffSlipPaidOn(String date, String from, String name) {
+    return 'Paid $date from $from by $name';
+  }
+
+  @override
+  String get staffSlipWhatsApp => 'Send on WhatsApp';
+
+  @override
+  String get staffSlipCorrect => 'Put this slip right';
+
+  @override
+  String get staffDayRuleHint =>
+      'How a day of a monthly salary is counted, for cutting days away unpaid.';
+
+  @override
+  String get staffDayRuleThirty => '30-day month';
+
+  @override
+  String get staffDayRuleThirtyHint =>
+      'A day is a thirtieth of the salary in every month. A full month is the full salary.';
+
+  @override
+  String get staffDayRuleCalendar => 'Calendar days';
+
+  @override
+  String get staffDayRuleCalendarHint =>
+      'A day is the salary over that month\'s own days: 1/28 in February, 1/31 in October.';
+
+  @override
+  String get staffCashierMarks => 'Cashier may mark attendance';
+
+  @override
+  String get staffCashierMarksHint =>
+      'He sees names and marks only, never anybody\'s pay.';
+
+  @override
+  String get staffWhoSeesPay =>
+      'Pay, advances and slips are seen only by the owner, a manager and the accountant.';
+
+  @override
+  String get staffRulesOwnerOnly => 'Only the owner changes these rules.';
+
+  @override
+  String get reportGroupStaff => 'Staff';
+
+  @override
+  String get reportStaffAttendance => 'Attendance summary';
+
+  @override
+  String get reportStaffAttendanceHint =>
+      'Each employee: present, late, half days, leave and absent';
+
+  @override
+  String get reportSalaryRegister => 'Salary register';
+
+  @override
+  String get reportSalaryRegisterHint =>
+      'Every slip: wages, cuts, advance taken back, paid';
+
+  @override
+  String get reportStaffAdvances => 'Advances outstanding';
+
+  @override
+  String get reportStaffAdvancesHint =>
+      'What each employee still owes of his advances';
 }

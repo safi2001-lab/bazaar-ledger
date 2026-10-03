@@ -39,6 +39,7 @@ part 'recycle_services.dart';
 part 'scheme_services.dart'; // M43
 part 'shelf_services.dart';
 part 'shop_money_services.dart';
+part 'staff_book_services.dart'; // M65
 part 'sync_services.dart';
 part 'udhaar_services.dart';
 
@@ -471,6 +472,10 @@ final class AppServices {
   /// The mobile-shop pack: a phone's IMEI story, PTA, warranty, used phones
   /// bought over the counter, and qist (M50).
   late final MobileServices mobile = MobileServices._(this);
+
+  /// The staff book: the shop's people, the day's register, advances and
+  /// each month's wages (M65).
+  late final StaffBookServices staffBook = StaffBookServices._(this);
 
   // ---------------------------------------------------------------------
   // Who is at the phone

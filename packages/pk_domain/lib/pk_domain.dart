@@ -121,6 +121,9 @@ export 'src/shop_money/monthly_bills.dart';
 export 'src/shop_money/other_income.dart';
 export 'src/shop_money/tags.dart';
 export 'src/shop_money/views.dart';
+// M65: the staff book.
+export 'src/staff_book/staff_book.dart';
+export 'src/staff_book/wages.dart';
 export 'src/stock/lots.dart';
 export 'src/tax/buyer_name.dart';
 export 'src/tax/fbr/fbr_invoice.dart';

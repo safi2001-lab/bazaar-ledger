@@ -21,6 +21,7 @@ export 'src/read/drift_record_history.dart';
 export 'src/read/drift_report_source.dart';
 export 'src/read/drift_shelf_reads.dart';
 export 'src/read/drift_shop_money_reads.dart';
+export 'src/read/drift_staff_book_reads.dart' show DriftStaffBookReads; // M65
 export 'src/read/drift_udhaar_queries.dart';
 export 'src/sync/admit.dart';
 export 'src/sync/drift_sync_store.dart';
@@ -52,6 +53,7 @@ export 'src/write/drift_return_writer.dart';
 export 'src/write/drift_sale_writer.dart';
 export 'src/write/drift_settlement_writer.dart';
 export 'src/write/drift_shop_money_writer.dart';
+export 'src/write/drift_staff_book_writer.dart'; // M65
 export 'src/write/drift_staff_store.dart';
 export 'src/write/drift_udhaar_store.dart';
 export 'src/write/drift_van_writer.dart' show DriftVanWriter;

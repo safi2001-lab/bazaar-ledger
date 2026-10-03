@@ -4954,5 +4954,320 @@
     "placeholders": {
       "amount": {"type": "String"}
     }
-  }
+  },
+  "staffBookTitle": "Staff ki kitaab",
+  "staffRulesTitle": "Staff ki kitaab ke usool",
+  "staffAdd": "Naya mulazim",
+  "staffEdit": "Tafseel badlein",
+  "staffRegisterToday": "Aaj ki hazri",
+  "staffRegisterTitle": "Hazri register",
+  "staffAdvancesOwedTotal": "Peshgi jo wapas aani hai",
+  "staffEmpty": "Abhi koi mulazim nahi",
+  "staffEmptyHint": "Jinhein tankhwah dete hain unhein shamil karein: salesman, helper, rider, munshi. Unhein phone chalana zaroori nahi.",
+  "staffLeftOn": "{date} ko chhor gaya",
+  "@staffLeftOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "staffAdvanceOwedChip": "Peshgi Rs {amount}",
+  "@staffAdvanceOwedChip": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffKaamSalesman": "Salesman",
+  "staffKaamHelper": "Helper",
+  "staffKaamRider": "Rider",
+  "staffKaamMunshi": "Munshi",
+  "staffKaamOther": "Koi aur kaam",
+  "staffMarkPresent": "Haazir",
+  "staffMarkLate": "Der se",
+  "staffMarkHalfDay": "Aadha din",
+  "staffMarkPaidLeave": "Chutti (tankhwah ke saath)",
+  "staffMarkUnpaidLeave": "Chutti (bina tankhwah)",
+  "staffMarkAbsent": "Ghair haazir",
+  "staffMarkShortPresent": "H",
+  "staffMarkShortLate": "D",
+  "staffMarkShortPaidLeave": "C",
+  "staffMarkShortUnpaidLeave": "BC",
+  "staffMarkShortAbsent": "G",
+  "staffPayMonthly": "Mahana Rs {amount}",
+  "@staffPayMonthly": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffPayDaily": "Dihari Rs {amount}",
+  "@staffPayDaily": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffRegisterRestMarked": "{count} ki hazri lag gayi",
+  "@staffRegisterRestMarked": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "staffDayBefore": "Pichla din",
+  "staffDayAfter": "Agla din",
+  "staffPickDay": "Din chunein",
+  "staffRegisterEmpty": "Us din koi mulazim nahi tha",
+  "staffRegisterRestPresent": "Baqi sab haazir",
+  "staffRegisterNotMarked": "Abhi hazri nahi lagi",
+  "staffRegisterMarkedBy": "{mark}, {name} ne lagayi",
+  "@staffRegisterMarkedBy": {
+    "placeholders": {
+      "mark": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "staffRateInvalid": "Tankhwah raqam mein likhein, jaise 25000",
+  "staffSaved": "Save ho gaya",
+  "staffHidden": "{name} recycle bin mein chala gaya",
+  "@staffHidden": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "staffName": "Naam",
+  "staffKaam": "Kaam",
+  "staffBasisMonthly": "Mahana tankhwah",
+  "staffBasisDaily": "Dihari",
+  "staffSalary": "Mahana tankhwah (Rs)",
+  "staffDayWage": "Ek din ki dihari (Rs)",
+  "staffJoinedLabel": "Kab se kaam par hai",
+  "staffPhone": "Phone (WhatsApp par slip ke liye)",
+  "staffCnic": "CNIC (marzi se)",
+  "staffSignIn": "Is app par uska apna login (marzi se)",
+  "staffSignInNone": "App nahi chalata",
+  "staffNote": "Note",
+  "staffHasLeft": "Kaam chhor gaya",
+  "staffHide": "Recycle bin mein dalein",
+  "staffSave": "Save karein",
+  "staffAdvanceCancelTitle": "Yeh peshgi cancel karein",
+  "staffAdvanceCancelled": "Peshgi cancel ho gayi ({number})",
+  "@staffAdvanceCancelled": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffCancelReason": "Kyun? (entry ke saath rahega)",
+  "staffCancelConfirm": "Cancel karein",
+  "staffJoinedOn": "{date} se",
+  "@staffJoinedOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "staffSignsInAs": "App par {name} ke naam se",
+  "@staffSignsInAs": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "staffCnicShown": "CNIC {cnic}",
+  "@staffCnicShown": {
+    "placeholders": {
+      "cnic": {"type": "String"}
+    }
+  },
+  "staffAdvanceOwed": "Peshgi baqi",
+  "staffGiveAdvance": "Peshgi dein",
+  "staffMonthBefore": "Pichla mahina",
+  "staffMonthAfter": "Agla mahina",
+  "staffMonthWages": "{days} din ki tankhwah",
+  "@staffMonthWages": {
+    "placeholders": {
+      "days": {"type": "String"}
+    }
+  },
+  "staffMonthPaid": "{number} par di gayi",
+  "@staffMonthPaid": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffPayMonth": "{month} ki tankhwah dein",
+  "@staffPayMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
+  "staffNotMarkedCount": "Hazri nahi lagi",
+  "staffSlips": "Tankhwah ki slips",
+  "staffSlipCancelled": "Cancel",
+  "staffAdvanceGiven": "Peshgi di",
+  "staffAdvanceRecovered": "Tankhwah se kati",
+  "staffAdvanceGivenCancelled": "Peshgi cancel",
+  "staffAdvanceRecoveryCancelled": "Slip cancel, peshgi phir baqi",
+  "staffAdvances": "Peshgi",
+  "staffAdvanceOwedAfter": "Is ke baad baqi: Rs {amount}",
+  "@staffAdvanceOwedAfter": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffAmountInvalid": "Raqam likhein, jaise 2000",
+  "staffAdvanceSaved": "Peshgi de di ({number})",
+  "@staffAdvanceSaved": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffAdvanceTitle": "{name} ko peshgi",
+  "@staffAdvanceTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "staffAdvanceAmount": "Kitni raqam (Rs)",
+  "staffPaidFrom": "Kahan se di",
+  "staffAdvanceHint": "Yeh tankhwah se wapas katti hai, har mahine jitni aap chahein.",
+  "staffCorrectReasonNeeded": "Likhein slip kyun theek ho rahi hai",
+  "staffRuleDaily": "Dihari Rs {amount}: har din jo aaya, aadha din aadhi",
+  "@staffRuleDaily": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffRuleCalendar": "Rs {amount} mahana; ek din 1/{days} (mahine ke din)",
+  "@staffRuleCalendar": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "staffRuleThirty": "Rs {amount} mahana; ek din 1/30 (30 din ka mahina)",
+  "@staffRuleThirty": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffSalaryTitle": "{name}: {month}",
+  "@staffSalaryTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "month": {"type": "String"}
+    }
+  },
+  "staffCorrectTitle": "{number} theek karein",
+  "@staffCorrectTitle": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffOnPayroll": "Is mahine {days} din kaam par",
+  "@staffOnPayroll": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "staffUnmarkedPaid": "{count} din hazri nahi lagi: kaam ke din gine gaye",
+  "@staffUnmarkedPaid": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "staffUnmarkedUnpaid": "{count} din hazri nahi lagi: dihari mein nahi gine gaye",
+  "@staffUnmarkedUnpaid": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "staffBasePay": "{days} din ki tankhwah",
+  "@staffBasePay": {
+    "placeholders": {
+      "days": {"type": "String"}
+    }
+  },
+  "staffLines": "Bonus, overtime aur katoti",
+  "staffLineRemove": "Hatayein",
+  "staffLineLabel": "Kis cheez ka (jaise Eid bonus)",
+  "staffLineAmount": "Raqam (Rs)",
+  "staffLineAdd": "Shamil karein",
+  "staffLineBonus": "Bonus",
+  "staffLineOvertime": "Overtime",
+  "staffLineDeduction": "Katoti",
+  "staffAdvanceOwedNow": "Peshgi baqi: Rs {amount}",
+  "@staffAdvanceOwedNow": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffRecover": "Is mahine kitni katein (Rs)",
+  "staffGross": "Bonus samet tankhwah",
+  "staffDeductions": "Katoti",
+  "staffRecoveredShort": "Peshgi kati",
+  "staffInHand": "Haath mein",
+  "staffCorrectReason": "Kyun theek ho rahi hai?",
+  "staffPaySave": "Tankhwah dein",
+  "staffCorrectSave": "Theek karke dein",
+  "staffSlipMessage": "{shop}\n{month} ki tankhwah: {name}\nDin: {days}\nTankhwah: Rs {gross}\nKatoti aur peshgi: Rs {cuts}\nHaath mein: Rs {net}\nSlip {slip}",
+  "@staffSlipMessage": {
+    "placeholders": {
+      "shop": {"type": "String"},
+      "name": {"type": "String"},
+      "month": {"type": "String"},
+      "days": {"type": "String"},
+      "gross": {"type": "String"},
+      "cuts": {"type": "String"},
+      "net": {"type": "String"},
+      "slip": {"type": "String"}
+    }
+  },
+  "staffSlipCancelTitle": "Yeh slip cancel karein",
+  "staffSlipCancelDone": "Slip cancel ho gayi ({number})",
+  "@staffSlipCancelDone": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffSlipPdf": "Slip (PDF)",
+  "staffSlipCancelledWhy": "Cancel: {reason}",
+  "@staffSlipCancelledWhy": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "staffSlipReplacedBy": "{number} se theek ki gayi",
+  "@staffSlipReplacedBy": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffSlipDays": "{employed} mein se {days} din ki tankhwah",
+  "@staffSlipDays": {
+    "placeholders": {
+      "days": {"type": "String"},
+      "employed": {"type": "int"}
+    }
+  },
+  "staffSlipPaidOn": "{date} ko {from} se, {name} ne di",
+  "@staffSlipPaidOn": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "from": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "staffSlipWhatsApp": "WhatsApp par bhejein",
+  "staffSlipCorrect": "Yeh slip theek karein",
+  "staffDayRuleHint": "Mahana tankhwah mein ek din kaise gina jaye, ghair haazri ki katoti ke liye.",
+  "staffDayRuleThirty": "30 din ka mahina",
+  "staffDayRuleThirtyHint": "Har mahine ek din tankhwah ka 30wan hissa. Poora mahina, poori tankhwah.",
+  "staffDayRuleCalendar": "Mahine ke asal din",
+  "staffDayRuleCalendarHint": "Ek din mahine ke apne dinon ka hissa: February mein 1/28, October mein 1/31.",
+  "staffCashierMarks": "Cashier hazri laga sakta hai",
+  "staffCashierMarksHint": "Woh sirf naam aur hazri dekhega, kisi ki tankhwah nahi.",
+  "staffWhoSeesPay": "Tankhwah, peshgi aur slips sirf owner, manager aur accountant dekh sakte hain.",
+  "staffRulesOwnerOnly": "Yeh usool sirf owner badal sakta hai.",
+  "reportGroupStaff": "Staff",
+  "reportStaffAttendance": "Hazri ka khulasa",
+  "reportStaffAttendanceHint": "Har mulazim: haazir, der se, aadha din, chutti aur ghair haazir",
+  "reportSalaryRegister": "Tankhwah register",
+  "reportSalaryRegisterHint": "Har slip: tankhwah, katoti, peshgi kati, di gayi",
+  "reportStaffAdvances": "Baqi peshgi",
+  "reportStaffAdvancesHint": "Har mulazim ki kitni peshgi abhi baqi hai"
 }

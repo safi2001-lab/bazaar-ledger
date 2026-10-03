@@ -29,6 +29,8 @@ part 'app_database.g.dart';
     'tables/vans.drift',
     // M50: used phones bought, warranty claims, qist plans.
     'tables/mobile.drift',
+    // M65: the staff book: employees, the daily register, salary slips.
+    'tables/staff.drift',
   },
 )
 class AppDatabase extends _$AppDatabase {
@@ -43,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
   /// A constant as well as the override, so a restore can refuse a backup
   /// made by a newer build before it replaces anything — rather than after,
   /// when drift finds a database it has no migration down from.
-  static const currentSchemaVersion = 12;
+  static const currentSchemaVersion = 13;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -282,6 +284,40 @@ class AppDatabase extends _$AppDatabase {
               schema.idxQistParty,
               schema.idxQinstPlanSeq,
               schema.idxQinstFirmDue,
+            ]) {
+              await migrator.create(index);
+            }
+          },
+          // v12 → v13 (M65): the staff book. Four new tables and their
+          // indexes — the shop's employees, the daily register, and each
+          // month's salary slip with its bonus and cut lines — and nothing
+          // else. No existing table is touched: an advance and a month's
+          // wages are journal entries like any other, so the ledger needed
+          // no column to carry them, only a Staff Advances account, which a
+          // shop set up before M65 is given in the transaction of its first
+          // advance or slip (chart_top_up), not by this step.
+          from12To13: (migrator, schema) async {
+            for (final table in [
+              schema.employees,
+              schema.attendance,
+              schema.salarySlips,
+              schema.salaryLines,
+            ]) {
+              await migrator.createTable(table);
+            }
+            for (final index in [
+              schema.idxEmployeesFirm,
+              schema.idxEmployeesUser,
+              schema.idxAttendanceEmployee,
+              schema.idxAttendanceFirmDay,
+              schema.idxSlipsFirmMonth,
+              schema.idxSlipsEmployee,
+              schema.idxSlipsAccount,
+              schema.idxSlipsEntry,
+              schema.idxSlipsReversal,
+              schema.idxSlipsReplaces,
+              schema.idxSalaryLinesSeq,
+              schema.idxSalaryLinesFirm,
             ]) {
               await migrator.create(index);
             }

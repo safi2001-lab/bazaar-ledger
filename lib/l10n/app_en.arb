@@ -4629,5 +4629,320 @@
     "placeholders": {
       "amount": {"type": "String"}
     }
-  }
+  },
+  "staffBookTitle": "Staff book",
+  "staffRulesTitle": "Staff book rules",
+  "staffAdd": "New employee",
+  "staffEdit": "Change details",
+  "staffRegisterToday": "Today's attendance",
+  "staffRegisterTitle": "Attendance register",
+  "staffAdvancesOwedTotal": "Advances still owed",
+  "staffEmpty": "Nobody on the payroll yet",
+  "staffEmptyHint": "Add the people you pay: salesman, helper, rider, munshi. They do not need to use the phone.",
+  "staffLeftOn": "Left on {date}",
+  "@staffLeftOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "staffAdvanceOwedChip": "Advance Rs {amount}",
+  "@staffAdvanceOwedChip": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffKaamSalesman": "Salesman",
+  "staffKaamHelper": "Helper",
+  "staffKaamRider": "Rider",
+  "staffKaamMunshi": "Munshi",
+  "staffKaamOther": "Other",
+  "staffMarkPresent": "Present",
+  "staffMarkLate": "Late",
+  "staffMarkHalfDay": "Half day",
+  "staffMarkPaidLeave": "Leave (paid)",
+  "staffMarkUnpaidLeave": "Leave (unpaid)",
+  "staffMarkAbsent": "Absent",
+  "staffMarkShortPresent": "P",
+  "staffMarkShortLate": "L",
+  "staffMarkShortPaidLeave": "CL",
+  "staffMarkShortUnpaidLeave": "UL",
+  "staffMarkShortAbsent": "A",
+  "staffPayMonthly": "Monthly Rs {amount}",
+  "@staffPayMonthly": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffPayDaily": "Daily Rs {amount}",
+  "@staffPayDaily": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffRegisterRestMarked": "{count} marked present",
+  "@staffRegisterRestMarked": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "staffDayBefore": "Day before",
+  "staffDayAfter": "Day after",
+  "staffPickDay": "Pick a day",
+  "staffRegisterEmpty": "Nobody was on the payroll that day",
+  "staffRegisterRestPresent": "Everyone else present",
+  "staffRegisterNotMarked": "Not marked yet",
+  "staffRegisterMarkedBy": "{mark}, marked by {name}",
+  "@staffRegisterMarkedBy": {
+    "placeholders": {
+      "mark": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "staffRateInvalid": "Write the pay as an amount, like 25000",
+  "staffSaved": "Saved",
+  "staffHidden": "{name} is in the recycle bin",
+  "@staffHidden": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "staffName": "Name",
+  "staffKaam": "Work",
+  "staffBasisMonthly": "Monthly salary",
+  "staffBasisDaily": "Daily wage",
+  "staffSalary": "Monthly salary (Rs)",
+  "staffDayWage": "A day's wage (Rs)",
+  "staffJoinedLabel": "Working here since",
+  "staffPhone": "Phone (for his slip on WhatsApp)",
+  "staffCnic": "CNIC (optional)",
+  "staffSignIn": "His own sign-in on this app (optional)",
+  "staffSignInNone": "Does not use the app",
+  "staffNote": "Note",
+  "staffHasLeft": "Has left",
+  "staffHide": "Put in the recycle bin",
+  "staffSave": "Save",
+  "staffAdvanceCancelTitle": "Cancel this advance",
+  "staffAdvanceCancelled": "Advance cancelled ({number})",
+  "@staffAdvanceCancelled": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffCancelReason": "Why? (kept with the entry)",
+  "staffCancelConfirm": "Cancel it",
+  "staffJoinedOn": "Since {date}",
+  "@staffJoinedOn": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+  "staffSignsInAs": "Signs in as {name}",
+  "@staffSignsInAs": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "staffCnicShown": "CNIC {cnic}",
+  "@staffCnicShown": {
+    "placeholders": {
+      "cnic": {"type": "String"}
+    }
+  },
+  "staffAdvanceOwed": "Advance still owed",
+  "staffGiveAdvance": "Give advance",
+  "staffMonthBefore": "Month before",
+  "staffMonthAfter": "Month after",
+  "staffMonthWages": "Wages for {days} days",
+  "@staffMonthWages": {
+    "placeholders": {
+      "days": {"type": "String"}
+    }
+  },
+  "staffMonthPaid": "Paid on {number}",
+  "@staffMonthPaid": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffPayMonth": "Pay wages for {month}",
+  "@staffPayMonth": {
+    "placeholders": {
+      "month": {"type": "String"}
+    }
+  },
+  "staffNotMarkedCount": "Not marked",
+  "staffSlips": "Salary slips",
+  "staffSlipCancelled": "Cancelled",
+  "staffAdvanceGiven": "Advance given",
+  "staffAdvanceRecovered": "Taken back from wages",
+  "staffAdvanceGivenCancelled": "Advance cancelled",
+  "staffAdvanceRecoveryCancelled": "Slip cancelled, owed again",
+  "staffAdvances": "Advances",
+  "staffAdvanceOwedAfter": "Owed after: Rs {amount}",
+  "@staffAdvanceOwedAfter": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffAmountInvalid": "Write an amount, like 2000",
+  "staffAdvanceSaved": "Advance given ({number})",
+  "@staffAdvanceSaved": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffAdvanceTitle": "Advance to {name}",
+  "@staffAdvanceTitle": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+  "staffAdvanceAmount": "How much (Rs)",
+  "staffPaidFrom": "Paid from",
+  "staffAdvanceHint": "It comes back off his wages, as much each month as you choose.",
+  "staffCorrectReasonNeeded": "Say why the slip is being put right",
+  "staffRuleDaily": "Daily wage Rs {amount}: every day he came, a half day half",
+  "@staffRuleDaily": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffRuleCalendar": "Rs {amount} a month; a day is 1/{days} (calendar days)",
+  "@staffRuleCalendar": {
+    "placeholders": {
+      "amount": {"type": "String"},
+      "days": {"type": "int"}
+    }
+  },
+  "staffRuleThirty": "Rs {amount} a month; a day is 1/30 (30-day month)",
+  "@staffRuleThirty": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffSalaryTitle": "{name}: {month}",
+  "@staffSalaryTitle": {
+    "placeholders": {
+      "name": {"type": "String"},
+      "month": {"type": "String"}
+    }
+  },
+  "staffCorrectTitle": "Put {number} right",
+  "@staffCorrectTitle": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffOnPayroll": "On the payroll {days} days this month",
+  "@staffOnPayroll": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+  "staffUnmarkedPaid": "{count} days not marked: counted as worked",
+  "@staffUnmarkedPaid": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "staffUnmarkedUnpaid": "{count} days not marked: not paid on a daily wage",
+  "@staffUnmarkedUnpaid": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "staffBasePay": "Pay for {days} days",
+  "@staffBasePay": {
+    "placeholders": {
+      "days": {"type": "String"}
+    }
+  },
+  "staffLines": "Bonus, overtime and cuts",
+  "staffLineRemove": "Remove",
+  "staffLineLabel": "What for (e.g. Eid bonus)",
+  "staffLineAmount": "Amount (Rs)",
+  "staffLineAdd": "Add",
+  "staffLineBonus": "Bonus",
+  "staffLineOvertime": "Overtime",
+  "staffLineDeduction": "Cut",
+  "staffAdvanceOwedNow": "Advance owed: Rs {amount}",
+  "@staffAdvanceOwedNow": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "staffRecover": "Take back from this month (Rs)",
+  "staffGross": "Wages with bonus",
+  "staffDeductions": "Cuts",
+  "staffRecoveredShort": "Advance taken back",
+  "staffInHand": "In his hand",
+  "staffCorrectReason": "Why is it being put right?",
+  "staffPaySave": "Pay wages",
+  "staffCorrectSave": "Put right and pay",
+  "staffSlipMessage": "{shop}\nWages for {month}: {name}\nDays paid: {days}\nWages: Rs {gross}\nCuts and advance: Rs {cuts}\nIn hand: Rs {net}\nSlip {slip}",
+  "@staffSlipMessage": {
+    "placeholders": {
+      "shop": {"type": "String"},
+      "name": {"type": "String"},
+      "month": {"type": "String"},
+      "days": {"type": "String"},
+      "gross": {"type": "String"},
+      "cuts": {"type": "String"},
+      "net": {"type": "String"},
+      "slip": {"type": "String"}
+    }
+  },
+  "staffSlipCancelTitle": "Cancel this slip",
+  "staffSlipCancelDone": "Slip cancelled ({number})",
+  "@staffSlipCancelDone": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffSlipPdf": "Slip (PDF)",
+  "staffSlipCancelledWhy": "Cancelled: {reason}",
+  "@staffSlipCancelledWhy": {
+    "placeholders": {
+      "reason": {"type": "String"}
+    }
+  },
+  "staffSlipReplacedBy": "Put right as {number}",
+  "@staffSlipReplacedBy": {
+    "placeholders": {
+      "number": {"type": "String"}
+    }
+  },
+  "staffSlipDays": "{days} days paid of {employed} on the payroll",
+  "@staffSlipDays": {
+    "placeholders": {
+      "days": {"type": "String"},
+      "employed": {"type": "int"}
+    }
+  },
+  "staffSlipPaidOn": "Paid {date} from {from} by {name}",
+  "@staffSlipPaidOn": {
+    "placeholders": {
+      "date": {"type": "String"},
+      "from": {"type": "String"},
+      "name": {"type": "String"}
+    }
+  },
+  "staffSlipWhatsApp": "Send on WhatsApp",
+  "staffSlipCorrect": "Put this slip right",
+  "staffDayRuleHint": "How a day of a monthly salary is counted, for cutting days away unpaid.",
+  "staffDayRuleThirty": "30-day month",
+  "staffDayRuleThirtyHint": "A day is a thirtieth of the salary in every month. A full month is the full salary.",
+  "staffDayRuleCalendar": "Calendar days",
+  "staffDayRuleCalendarHint": "A day is the salary over that month's own days: 1/28 in February, 1/31 in October.",
+  "staffCashierMarks": "Cashier may mark attendance",
+  "staffCashierMarksHint": "He sees names and marks only, never anybody's pay.",
+  "staffWhoSeesPay": "Pay, advances and slips are seen only by the owner, a manager and the accountant.",
+  "staffRulesOwnerOnly": "Only the owner changes these rules.",
+  "reportGroupStaff": "Staff",
+  "reportStaffAttendance": "Attendance summary",
+  "reportStaffAttendanceHint": "Each employee: present, late, half days, leave and absent",
+  "reportSalaryRegister": "Salary register",
+  "reportSalaryRegisterHint": "Every slip: wages, cuts, advance taken back, paid",
+  "reportStaffAdvances": "Advances outstanding",
+  "reportStaffAdvancesHint": "What each employee still owes of his advances"
 }

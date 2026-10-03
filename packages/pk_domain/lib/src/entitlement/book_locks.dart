@@ -94,6 +94,12 @@ const undoingActions = <String>{
   'ATTACHMENT_REMOVED',
   // A loan entry cancelled (M48).
   'LOAN_ENTRY_CANCELLED',
+  // M65: an advance or a month's wages cancelled, a slip corrected, and an
+  // employee put in the recycle bin.
+  'STAFF_ADVANCE_CANCELLED',
+  'SALARY_CANCELLED',
+  'SALARY_CORRECTED',
+  'EMPLOYEE_HIDDEN',
   // The locks themselves: reopening closed books, or turning the PIN off,
   // is the first thing anybody who meant harm would do.
   booksReopenedAction,
