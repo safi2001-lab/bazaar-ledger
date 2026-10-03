@@ -1,11 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// The bill finder on the smallest screen it ships to, font all the way up
 /// (M30).
@@ -16,7 +14,7 @@ import 'support/harness.dart';
 /// past the edge of the screen on the counter, so it is checked the way
 /// large_text_test checks the counter: with a real font, on the geometry.
 void main() {
-  setUpAll(_loadRealFont);
+  setUpAll(loadRealFont);
 
   testWidgets('the sales list, its filters and the send sheet fit a small '
       'phone at 200%', (tester) async {
@@ -102,20 +100,3 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-/// A real font, because the test font draws every glyph as a square of one
-/// width and every overflow test passes against it.
-Future<void> _loadRealFont() async {
-  for (final path in [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ]) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}

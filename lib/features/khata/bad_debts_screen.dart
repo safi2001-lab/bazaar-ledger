@@ -88,7 +88,17 @@ class _BadDebtsScreenState extends ConsumerState<BadDebtsScreen> {
                           style: TextStyle(fontSize: 13, color: t.inkMuted),
                         ),
                       ),
-                      BlMoney(standing, size: 22, withSymbol: true),
+                      // Allowed to shrink: at 200% text on a 360dp phone a
+                      // six-figure total is wider than the card, and the
+                      // row overflowed (measured in Roboto, as phones draw).
+                      Flexible(
+                        flex: 2,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: AlignmentDirectional.centerEnd,
+                          child: BlMoney(standing, size: 22, withSymbol: true),
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -177,7 +187,13 @@ class _Row extends ConsumerWidget {
               ),
             ),
             const SizedBox(width: BlTokens.space2),
-            BlMoney(row.amount, size: 16),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: AlignmentDirectional.topEnd,
+                child: BlMoney(row.amount, size: 16),
+              ),
+            ),
           ],
         ),
       ),

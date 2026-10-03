@@ -6,13 +6,13 @@ import 'package:bazaar_ledger/features/collections/sheet_paper.dart';
 import 'package:bazaar_ledger/features/home/home_screen.dart';
 import 'package:bazaar_ledger/l10n/app_strings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// The recovery man's round on one sheet (M55), driven through the screens
 /// against a real database.
@@ -165,7 +165,7 @@ void main() {
     tester,
   ) async {
     // Real IO: a widget test's clock is fake, and the font is read from disk.
-    await tester.runAsync(_loadRealFont);
+    await tester.runAsync(loadRealFont);
     tester.view
       ..physicalSize = const Size(720, 1600)
       ..devicePixelRatio = 2;
@@ -261,21 +261,6 @@ void _expectNothingOffScreen(WidgetTester tester) {
   }
 }
 
-Future<void> _loadRealFont() async {
-  for (final path in [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ]) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}
 
 final class _FakeShareSheet extends SharePlatform {
   final paths = <String>[];

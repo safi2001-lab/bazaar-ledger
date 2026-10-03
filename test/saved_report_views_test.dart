@@ -4,11 +4,11 @@ import 'package:bazaar_ledger/features/parties/party_picker.dart';
 import 'package:bazaar_ledger/features/reports/report_shelf.dart';
 import 'package:bazaar_ledger/features/reports/saved_views.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// Saved report views (M61), from the screen: a report narrowed, sorted and
 /// set to this week is kept under a name, sits under My views on the hub
@@ -173,7 +173,7 @@ void main() {
   );
 
   group('at 200% on a small phone', () {
-    setUpAll(_loadRealFont);
+    setUpAll(loadRealFont);
 
     testWidgets('My views, a view opened, and the save dialog fit', (
       tester,
@@ -263,24 +263,6 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-/// The test font draws every glyph as a square of the font size, which
-/// measures nothing; a real font says what a phone would show.
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}
 
 /// A bill of one item at [rupees], [paid] of it in cash.
 Future<PostedSale> _sell(

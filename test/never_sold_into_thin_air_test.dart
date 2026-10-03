@@ -1,15 +1,13 @@
-import 'dart:io';
-
 import 'package:bazaar_ledger/design/components.dart';
 import 'package:bazaar_ledger/features/pos/cart.dart';
 import 'package:bazaar_ledger/features/pos/pos_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// Never sold into thin air, and packed by the carton, through the screens
 /// (M53).
@@ -244,7 +242,7 @@ void main() {
   });
 
   group('at 200% on a small phone', () {
-    setUpAll(_loadRealFont);
+    setUpAll(loadRealFont);
 
     testWidgets('the question at the counter and the refusal fit', (
       tester,
@@ -411,19 +409,3 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}

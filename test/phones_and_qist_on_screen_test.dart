@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:bazaar_ledger/app/providers.dart';
 import 'package:bazaar_ledger/design/components.dart';
 import 'package:bazaar_ledger/features/mobile/phone_story_screen.dart';
@@ -7,12 +5,12 @@ import 'package:bazaar_ledger/features/mobile/qist_sheet.dart';
 import 'package:bazaar_ledger/features/mobile/used_phone_screen.dart';
 import 'package:bazaar_ledger/features/pos/cart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// The mobile-shop pack through the screens (M50).
 ///
@@ -265,7 +263,7 @@ void main() {
   });
 
   group('at 200% on a small phone', () {
-    setUpAll(_loadRealFont);
+    setUpAll(loadRealFont);
 
     testWidgets("a phone's story, the used phone form and the qist sheet fit", (
       tester,
@@ -342,22 +340,6 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}
 
 /// The shop says it is a mobile shop, and the screens follow.
 Future<Harness> _mobileShop(WidgetTester tester) async {

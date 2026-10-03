@@ -1,14 +1,12 @@
-import 'dart:io';
-
 import 'package:bazaar_ledger/design/components.dart';
 import 'package:bazaar_ledger/features/pos/cart.dart';
 import 'package:bazaar_ledger/features/pos/cart_draft.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// Bonus and slabs at the counter, driven by taps (M43).
 ///
@@ -20,7 +18,7 @@ import 'support/harness.dart';
 void main() {
   // Measured in a real font, as the other small-phone checks are: the test
   // font's square glyphs make every line wider than any phone would.
-  setUpAll(_loadRealFont);
+  setUpAll(loadRealFont);
 
   testWidgets('ten soaps rung put the free one under the line; the cashier '
       'takes it off and puts it back, and the bill carries it', (tester) async {
@@ -486,19 +484,3 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}

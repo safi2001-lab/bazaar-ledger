@@ -5,12 +5,12 @@ import 'package:bazaar_ledger/features/printing/bill_design_preview.dart';
 import 'package:bazaar_ledger/features/sales/sales_screen.dart';
 import 'package:bazaar_ledger/features/settings/bill_design_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 import 'package:share_plus_platform_interface/share_plus_platform_interface.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// A bill that looks like the shop's own (M51), driven through the app.
 ///
@@ -249,7 +249,7 @@ void main() {
   ) async {
     // A real disk read, so on the real clock: under the test's fake one the
     // font never arrives.
-    await tester.runAsync(_loadRealFont);
+    await tester.runAsync(loadRealFont);
     tester.view
       ..physicalSize = const Size(720, 1600)
       ..devicePixelRatio = 2;
@@ -477,20 +477,3 @@ final class _RecordingPrinter implements PrinterTransport {
   }
 }
 
-/// A real font, because the test font draws every glyph as a square of one
-/// width and every overflow test passes against it.
-Future<void> _loadRealFont() async {
-  for (final path in [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ]) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}

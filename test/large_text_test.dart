@@ -1,14 +1,12 @@
-import 'dart:io';
-
 import 'package:bazaar_ledger/app/preferences.dart';
 import 'package:bazaar_ledger/app/providers.dart';
 import 'package:bazaar_ledger/design/components.dart';
 import 'package:bazaar_ledger/design/text_size.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// The app on the smallest screen it ships to, with the font turned all the
 /// way up.
@@ -27,7 +25,7 @@ import 'support/harness.dart';
 /// overflow assertion, so in release the cashier simply read "Rs 12,500."
 /// aloud off a bill for Rs 12,500.75.
 void main() {
-  setUpAll(_loadRealFont);
+  setUpAll(loadRealFont);
 
   /// 360x800 dp — an Infinix Smart at its 720x1600 native resolution.
   void useASmallPhone(WidgetTester tester, {double textScale = 2}) {
@@ -368,32 +366,3 @@ Future<void> _addToCart(WidgetTester tester, String query) async {
   await tester.pumpAndSettle();
 }
 
-/// Loads a real font, because the default test font lies about width.
-///
-/// `flutter_test` renders every glyph as an identical box in Ahem, so a string
-/// that overflows a real screen measures narrow enough to fit and every
-/// overflow test passes vacuously. The Flutter SDK ships Roboto, so there is
-/// nothing to vendor.
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(
-        file.readAsBytes().then((b) => ByteData.view(b.buffer)),
-      );
-    await loader.load();
-    return;
-  }
-  // No system font to borrow. Say so rather than passing on Ahem's square
-  // glyphs, which would make every assertion here meaningless.
-  fail(
-    'no real font found to measure text with; this suite cannot prove '
-    'anything against the test font',
-  );
-}

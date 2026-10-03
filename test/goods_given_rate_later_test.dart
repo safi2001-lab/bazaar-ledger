@@ -1,17 +1,15 @@
-import 'dart:io';
-
 import 'package:bazaar_ledger/app/providers.dart';
 import 'package:bazaar_ledger/features/home/home_screen.dart';
 import 'package:bazaar_ledger/features/khata/goods_given.dart';
 import 'package:bazaar_ledger/features/khata/statement.dart';
 import 'package:bazaar_ledger/l10n/app_strings.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// Goods on the khata now, priced later (M55), driven through the screens
 /// against a real database.
@@ -262,7 +260,7 @@ void _smallPhone() {
   testWidgets('at 200% on a small phone goods given, and their rates, fit', (
     tester,
   ) async {
-    await tester.runAsync(_loadRealFont);
+    await tester.runAsync(loadRealFont);
     tester.view
       ..physicalSize = const Size(720, 1600)
       ..devicePixelRatio = 2;
@@ -305,21 +303,6 @@ void _expectNothingOffScreen(WidgetTester tester) {
   }
 }
 
-Future<void> _loadRealFont() async {
-  for (final path in [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ]) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}
 
 Future<void> _giveRateLater(
   Harness app,

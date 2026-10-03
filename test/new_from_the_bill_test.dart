@@ -1,17 +1,15 @@
-import 'dart:io';
-
 import 'package:bazaar_ledger/app/preferences.dart';
 import 'package:bazaar_ledger/app/providers.dart';
 import 'package:bazaar_ledger/design/components.dart';
 import 'package:bazaar_ledger/features/home/home_screen.dart';
 import 'package:bazaar_ledger/features/pos/cart_draft.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// A new customer or a new item, added from the bill without leaving it (M32).
 ///
@@ -465,7 +463,7 @@ void main() {
   });
 
   group('at 200% on a small phone', () {
-    setUpAll(_loadRealFont);
+    setUpAll(loadRealFont);
 
     testWidgets('the new-item offer and sheet fit', (tester) async {
       _useASmallPhone(tester);
@@ -700,21 +698,3 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-/// A real font, because the test font's square glyphs make every width
-/// assertion pass.
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}

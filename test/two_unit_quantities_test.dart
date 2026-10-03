@@ -5,12 +5,12 @@ import 'package:bazaar_ledger/features/pos/cart.dart';
 import 'package:bazaar_ledger/features/pos/pos_screen.dart';
 import 'package:bazaar_ledger/features/reports/report_shelf.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pk_bootstrap/pk_bootstrap.dart';
 
 import 'support/harness.dart';
+import 'support/real_font.dart';
 
 /// M45 from the screen: an item kept in cartons of 24 shown as "2 ctn + 5
 /// pcs" wherever its quantity is, typed as "2 ctn 5" at the counter and on
@@ -286,7 +286,7 @@ void main() {
   });
 
   group('at 200% on a small phone', () {
-    setUpAll(_loadRealFont);
+    setUpAll(loadRealFont);
 
     testWidgets('the counter line, its quantity box with the stepper and the '
         'carton calculator fit', (tester) async {
@@ -455,19 +455,3 @@ void _expectNothingPaintsOffScreen(WidgetTester tester) {
   }
 }
 
-Future<void> _loadRealFont() async {
-  final candidates = [
-    'C:/Windows/Fonts/segoeui.ttf',
-    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
-    '/System/Library/Fonts/Helvetica.ttc',
-  ];
-  for (final path in candidates) {
-    final file = File(path);
-    if (!file.existsSync()) continue;
-    final loader = FontLoader('Roboto')
-      ..addFont(file.readAsBytes().then((b) => ByteData.view(b.buffer)));
-    await loader.load();
-    return;
-  }
-  fail('no real font found to measure text with');
-}
